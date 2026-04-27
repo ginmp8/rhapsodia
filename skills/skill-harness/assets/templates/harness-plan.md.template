@@ -1,0 +1,62 @@
+# Harness Plan: {{target_name}}
+
+## Mode
+{{mode}}
+
+## Decision Statement
+After this harness runs, we need to decide whether {{target_name}} can {{decision}}.
+
+## Evidence Policy
+- Allowed sources: {{allowed_sources}}
+- Excluded sources: {{excluded_sources}}
+- Open questions: {{open_questions}}
+
+## Baseline Summary
+- Target path: {{target_path}}
+- Inventory path: {{inventory_path}}
+- Audit path: {{audit_path}}
+- Baseline score: {{baseline_score}}
+- Blocking gates: {{blocking_gates}}
+
+## Hypotheses
+{{hypotheses}}
+
+## Harness Map
+
+### Control Plane
+{{control_plane_changes}}
+
+### References
+{{reference_changes}}
+
+### Scripts
+{{script_changes}}
+
+### Templates and Assets
+{{template_asset_changes}}
+
+### Scenarios
+{{scenario_plan}}
+
+### Metrics
+{{metrics}}
+
+### Evaluators
+{{evaluators}}
+
+### Validation
+{{validation_plan}}
+
+### Packaging
+{{packaging_plan}}
+
+## Implementation Sequence
+1. {{step_1}}
+2. {{step_2}}
+3. {{step_3}}
+
+## Acceptance Gates
+{{acceptance_gates}}
+
+## Risks
+{{risks}}

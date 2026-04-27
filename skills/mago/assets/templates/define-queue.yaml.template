@@ -1,0 +1,20 @@
+# Use this file as a structural reference when creating or reconciling
+# {BOARD_ROOT}/define-queue.yaml.
+# Replace every <...> token with repository-truth values.
+# Never claim a downstream mode or seed artifact set that the linked discovery evidence does not support.
+
+schema_version: 1
+cycle_version: "<cycle_version>"
+entries:
+  - spec_id: "<spec_id>"
+    feature_key: "<feature_key>"
+    title: "<title>"
+    handoff_status: "<ready_for_prepare_define|blocked|needs_discovery>"
+    downstream_mode: "<define|define-product|define-tasks>"
+    package_shape: "<full|product_only|tasks_only>"
+    source_candidates: []
+    seed_artifacts:
+      - manifest.yaml
+      - notes.md
+    define_target: "{BOARD_ROOT}/specs/<spec_id>"
+    blockers: []

@@ -1,0 +1,46 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Never copy placeholder or example values blindly into generated files.
+-->
+---
+spec_id: "<spec_id>"
+order: "<order>"
+feature_key: "<feature_key>"
+title: "<title>"
+type: "<type>"
+classification: "<classification>"
+status: "<status>"
+phase: "<phase>"
+cycle_version: "<cycle_version>"
+feature_version: "<feature_version>"
+depends_on_features: []
+depends_on_specs: []
+---
+
+# PRD - <title>
+
+## Context
+
+## Problem Statement
+
+## Goals
+
+## Non-Goals
+
+## Current State
+
+## Proposed Outcome
+
+## Functional Requirements
+
+## Non-Functional Requirements
+
+## Constraints
+
+## Risks and Trade-Offs
+<!-- Keep this section concise and decision-level. Put supporting repository detail, evolving nuance, and working analysis in notes.md. -->
+
+## Acceptance Criteria
+
+## Open Questions

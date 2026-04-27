@@ -1,0 +1,11 @@
+interface:
+  display_name: Skill Hardening
+  short_description: Harden skills beyond SKILL.md with resources, scripts, templates,
+    and validation.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

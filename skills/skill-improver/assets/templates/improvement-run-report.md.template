@@ -1,0 +1,79 @@
+# Skill Improvement Harness Report: {{target_skill}}
+
+## 1. Baseline inventory and audit
+
+- Target path: {{target_path}}
+- Baseline static score: {{baseline_static_score}}
+- Baseline harness audit score: {{baseline_harness_score}}
+- Baseline verdict: {{baseline_verdict}}
+- Baseline blockers: {{baseline_blockers}}
+
+## 2. Research and context summary
+
+### Supplied context
+{{supplied_context_summary}}
+
+### Target package evidence
+{{target_package_summary}}
+
+### Additional research
+{{additional_research_summary}}
+
+## 3. Harness design
+
+- Decision supported: {{decision_supported}}
+- Behavior under test: {{behavior_under_test}}
+- Evaluators: {{evaluators}}
+- Metrics: {{metrics}}
+- Gates: {{gates}}
+
+## 4. Improvement hypotheses
+
+{{improvement_hypotheses}}
+
+## 5. Applied changes
+
+### SKILL.md
+{{skill_md_changes}}
+
+### References
+{{reference_changes}}
+
+### Scripts
+{{script_changes}}
+
+### Templates and assets
+{{template_asset_changes}}
+
+### Scenarios
+{{scenario_changes}}
+
+### Validation
+{{validation_changes}}
+
+### Packaging
+{{packaging_changes}}
+
+## 6. Commands executed and results
+
+{{commands_executed}}
+
+## 7. Before and after comparison
+
+{{before_after_comparison}}
+
+## 8. Residual risks
+
+{{residual_risks}}
+
+## 9. Final package
+
+- Package path: {{package_path}}
+- Package validator result: {{package_validator_result}}
+- Packaged file count: {{packaged_file_count}}
+- Rollback path: {{rollback_path}}
+
+## 10. Evidence boundary
+
+- Measured evidence: {{measured_evidence}}
+- Proposed or unmeasured evidence: {{unmeasured_evidence}}

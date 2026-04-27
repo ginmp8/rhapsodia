@@ -1,0 +1,38 @@
+# Release Notes
+
+## Audience
+
+Stakeholders, beta workspace administration users, Support, Customer Success, and customer-facing teams.
+
+## Summary
+
+Saved-query sharing controls are available for beta workspace administration customers.
+
+## User Impact
+
+Admins can review saved-query visibility and make beta-scoped sharing adjustments with less Support assistance.
+
+## Changes
+
+- Added admin-facing saved-query sharing controls.
+- Clarified saved-query visibility behavior in the beta administration workflow.
+- Kept dashboard role preview outside this release.
+
+## Availability And Rollout
+
+Rollout status: available to beta workspace administration customers.
+
+Release evidence: release record `REL-2026-0519`.
+
+## Validation Status
+
+Validation evidence: passed in summarized execution evidence for `spec022`.
+
+## Known Limitations
+
+- Dashboard role preview is not included.
+- General availability timing has not been announced.
+
+## Support Notes
+
+- Route dashboard role-preview requests to the product feedback queue.

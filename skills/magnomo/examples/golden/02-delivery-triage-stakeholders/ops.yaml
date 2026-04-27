@@ -1,0 +1,69 @@
+schema_version: 1
+spec_id: spec021
+request:
+  title: CSV export should preserve filtered dashboard table columns
+  requester: customer-success
+  requested_date: 2026-04-20
+  source: github_issue
+  context: Enterprise customers expect dashboard table exports to match the filtered view.
+ownership:
+  owner: analytics-experience
+  backup_owner: platform-analytics
+  stakeholders:
+    - customer-success
+    - support
+    - enterprise-sales
+  decision_maker: analytics-experience-lead
+  watchers:
+    - renewal-desk
+planning:
+  sprint: 2026-W18
+  bucket: retention
+  target_date: 2026-05-08
+  commitment: targeted
+  milestone: enterprise-export-fixes
+  rollout_target: affected-enterprise-accounts
+priority:
+  level: high
+  urgency: high
+  impact: high
+  risk: medium
+  rationale: Two enterprise renewals depend on a credible fix timeline.
+  cost_of_delay: Renewal teams continue manual export cleanup.
+status:
+  state: triage
+  summary: Owner and stakeholders are identified; Mago spec definition is next.
+  updated_at: 2026-04-23
+  confidence: medium
+  evidence_summary: Delivery triage is complete. Mago and Magia evidence are not recorded.
+  manual:
+    summary: Product owner accepted triage ownership.
+    updated_at: 2026-04-23
+    source: triage_notes
+  inferred:
+    summary: No execution progress inferred.
+    updated_at: null
+    evidence: []
+blockers:
+  - id: blk-001
+    summary: Confirm whether exports should include hidden columns when filters hide them.
+    owner: analytics-experience
+    needed_by: 2026-04-26
+risks:
+  - id: risk-001
+    summary: Export behavior may vary by visualization type.
+    severity: medium
+    owner: analytics-experience
+replanning: []
+tags:
+  - export
+  - enterprise
+  - retention
+repos:
+  candidate_impacted: []
+links:
+  mago:
+    - docs/board/2026/specs/spec021/manifest.yaml
+  magia: []
+  external:
+    - https://github.com/example/redash/issues/4821

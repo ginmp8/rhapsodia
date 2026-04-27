@@ -1,0 +1,52 @@
+# Skill Harness Report: {{target_name}}
+
+## Executive Summary
+{{executive_summary}}
+
+## Mode and Target
+- Mode: {{mode}}
+- Mutation mode: {{mutation_mode}}
+- Target path: {{target_path}}
+
+## Decision Statement
+{{decision_statement}}
+
+## Evidence Sources
+{{evidence_sources}}
+
+## Baseline
+- Inventory: {{inventory_path}}
+- Audit: {{baseline_audit_path}}
+- Baseline score: {{baseline_score}}
+- Baseline gates: {{baseline_gates}}
+
+## Harness Plan
+- Hypotheses: {{hypotheses}}
+- Scenarios: {{scenarios}}
+- Metrics: {{metrics}}
+- Evaluators: {{evaluators}}
+- Gates: {{gates}}
+
+## Harness Map
+{{harness_map}}
+
+## Changes Made
+{{changes_made}}
+
+## Validation Evidence
+{{validation_evidence}}
+
+## Before/After Comparison
+{{comparison}}
+
+## Auxiliary Metrics
+{{auxiliary_metrics}}
+
+## Residual Risks
+{{residual_risks}}
+
+## Recommendation
+{{recommendation}}
+
+## Package Artifact
+{{package_artifact}}

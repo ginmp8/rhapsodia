@@ -1,0 +1,27 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep unknown only when the final artifact truthfully remains unknown.
+-->
+
+# Internal Notes
+
+## Summary
+
+<summary_or_unknown>
+
+## Internal Details
+
+<internal_detail_or_unknown>
+
+## Follow-ups
+
+- <follow_up_or_unknown>
+
+## Operational Watchpoints
+
+- <operational_watchpoint_or_unknown>
+
+## Private References
+
+- <private_reference_or_unknown>

@@ -1,0 +1,45 @@
+# Skill Hardening Report: {{target_skill_name}}
+
+## Executive Summary
+
+{{executive_summary}}
+
+## Scorecard
+
+| Layer | Score | Evidence |
+|---|---:|---|
+| static_structure | {{static_structure_score}} | {{static_structure_evidence}} |
+| package_semantics | {{package_semantics_score}} | {{package_semantics_evidence}} |
+| resource_integration | {{resource_integration_score}} | {{resource_integration_evidence}} |
+| validation_behavior | {{validation_behavior_score}} | {{validation_behavior_evidence}} |
+
+## Gates
+
+| Gate | Status | Evidence |
+|---|---|---|
+| valid_skill_md | {{gate_valid_skill_md}} | {{gate_valid_skill_md_evidence}} |
+| specific_description | {{gate_specific_description}} | {{gate_specific_description_evidence}} |
+| output_contract | {{gate_output_contract}} | {{gate_output_contract_evidence}} |
+| validation_rules | {{gate_validation_rules}} | {{gate_validation_rules_evidence}} |
+| references_resolve | {{gate_references_resolve}} | {{gate_references_resolve_evidence}} |
+| no_placeholders | {{gate_no_placeholders}} | {{gate_no_placeholders_evidence}} |
+
+## Resource Inventory
+
+{{resource_inventory}}
+
+## Prioritized Improvements
+
+1. {{improvement_1}}
+2. {{improvement_2}}
+3. {{improvement_3}}
+
+## Commands Executed
+
+```text
+{{commands_executed}}
+```
+
+## Verdict
+
+{{verdict}}

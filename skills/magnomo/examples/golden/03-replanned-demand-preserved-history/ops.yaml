@@ -1,0 +1,75 @@
+schema_version: 1
+spec_id: spec021
+request:
+  title: CSV export should preserve filtered dashboard table columns
+  requester: customer-success
+  requested_date: 2026-04-20
+  source: github_issue
+  context: Enterprise customers expect dashboard and scheduled table exports to match filtered views.
+ownership:
+  owner: analytics-experience
+  backup_owner: platform-analytics
+  stakeholders:
+    - customer-success
+    - support
+    - enterprise-sales
+  decision_maker: analytics-experience-lead
+  watchers:
+    - renewal-desk
+planning:
+  sprint: 2026-W18
+  bucket: retention
+  original_target_date: 2026-05-08
+  target_date: 2026-05-15
+  commitment: targeted
+  milestone: enterprise-export-fixes
+  rollout_target: affected-enterprise-accounts
+priority:
+  level: high
+  urgency: high
+  impact: high
+  risk: medium
+  rationale: Renewal impact remains high, and scheduled exports are now in MVP scope.
+  cost_of_delay: Renewal teams continue manual export cleanup.
+status:
+  state: planned
+  summary: Delivery was replanned to include scheduled exports in the MVP.
+  updated_at: 2026-04-24
+  confidence: medium
+  evidence_summary: Mago planning link exists. Magia execution evidence is not recorded.
+  manual:
+    summary: Target date moved after scope expansion decision.
+    updated_at: 2026-04-24
+    source: replan_decision
+  inferred:
+    summary: No execution progress inferred.
+    updated_at: null
+    evidence: []
+blockers: []
+risks:
+  - id: risk-001
+    summary: Scheduled export behavior may require extra validation before release communication.
+    severity: medium
+    owner: analytics-experience
+replanning:
+  - date: 2026-04-24
+    changed_fields:
+      - target_date
+      - scope
+    from: 2026-05-08
+    to: 2026-05-15
+    reason: Scheduled exports were confirmed as part of the MVP.
+    impact: Target moves one week later; stakeholder message must mention the added scope.
+    decision_maker: analytics-experience-lead
+tags:
+  - export
+  - enterprise
+  - retention
+repos:
+  candidate_impacted: []
+links:
+  mago:
+    - docs/board/2026/specs/spec021/manifest.yaml
+  magia: []
+  external:
+    - https://github.com/example/redash/issues/4821

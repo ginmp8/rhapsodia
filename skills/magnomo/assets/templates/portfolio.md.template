@@ -1,0 +1,43 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep unknown only when the final artifact truthfully remains unknown.
+-->
+
+# Portfolio
+
+## Summary
+
+<summary_or_unknown>
+
+## Items
+
+- <portfolio_item_or_unknown>
+
+## Blocked
+
+- <blocked_item_or_unknown>
+
+## Overdue
+
+- <overdue_item_or_unknown>
+
+## Missing Owners
+
+- <missing_owner_item_or_unknown>
+
+## At Risk
+
+- <at_risk_item_or_unknown>
+
+## Multi-Repo
+
+- <multi_repo_item_or_unknown>
+
+## Risks
+
+- <portfolio_risk_or_unknown>
+
+## Replans
+
+- <replan_item_or_unknown>

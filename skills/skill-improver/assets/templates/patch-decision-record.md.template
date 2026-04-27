@@ -1,0 +1,42 @@
+# Patch Decision Record: {{hypothesis_id}}
+
+## Run metadata
+
+- Target skill: {{target_skill}}
+- Mode: {{mode}}
+- Evaluator: {{evaluator}}
+- Benchmark lock or hash: {{benchmark_lock}}
+- Safety mode: {{safety_mode}}
+
+## Hypothesis
+
+{{hypothesis_statement}}
+
+## Scope
+
+- Allowed paths: {{allowed_paths}}
+- Blocked paths: {{blocked_paths}}
+- Files changed: {{files_changed}}
+
+## Scores and gates
+
+| Measurement | Score | Status | Notes |
+|---|---:|---|---|
+| Baseline | {{baseline_score}} | {{baseline_status}} | {{baseline_notes}} |
+| Candidate | {{candidate_score}} | {{candidate_status}} | {{candidate_notes}} |
+
+## Decision
+
+- Decision: {{accepted_or_rejected}}
+- Reason: {{decision_reason}}
+- Rollback action: {{rollback_action}}
+
+## Commands executed
+
+```text
+{{commands_executed}}
+```
+
+## Residual risks
+
+{{residual_risks}}

@@ -1,0 +1,27 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Use the empty-state line only while no entries exist.
+-->
+
+# Replanning
+
+## Entries
+
+No replanning entries recorded.
+
+<!--
+Append entries using this shape:
+
+### YYYY-MM-DD - Summary
+
+Changed: `<field>` from <from_value_or_unknown> to <to_value_or_unknown>.
+
+Reason: <reason_or_unknown>.
+
+Impact: <impact_or_unknown>.
+
+Decision Maker: <decision_maker_or_unknown>.
+
+Follow-up: <follow_up_or_unknown>.
+-->

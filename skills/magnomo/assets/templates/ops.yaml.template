@@ -1,0 +1,82 @@
+## Use this file as a structural reference only.
+## Prefer scripts/write_ops_scaffold.py when creating a new ops.yaml.
+## Replace every <...> token with repository-truth values.
+## Use null or unknown only when the final artifact truthfully remains unknown.
+
+schema_version: 1
+spec_id: "<spec_id_or_null_for_off_repository_draft>"
+request:
+  title: "<request_title_or_null>"
+  requester: "<requester_or_null>"
+  requested_date: "<YYYY-MM-DD_or_null>"
+  source: "<source_enum_or_unknown>"
+  context: "<request_context_or_null>"
+ownership:
+  owner: "<owner_or_null>"
+  backup_owner: "<backup_owner_or_null>"
+  ## stakeholders/watchers entries must be non-empty strings.
+  stakeholders: []
+  decision_maker: "<decision_maker_or_null>"
+  watchers: []
+planning:
+  sprint: "<sprint_or_null>"
+  bucket: "<bucket_enum_or_unknown>"
+  target_date: "<YYYY-MM-DD_or_null>"
+  commitment: "<commitment_enum_or_unknown>"
+  milestone: "<milestone_or_null>"
+  rollout_target: "<rollout_target_or_null>"
+priority:
+  level: "<priority_level_enum_or_unknown>"
+  urgency: "<urgency_enum_or_unknown>"
+  impact: "<impact_enum_or_unknown>"
+  risk: "<risk_enum_or_unknown>"
+  rationale: "<priority_rationale_or_null>"
+  cost_of_delay: "<cost_of_delay_or_null>"
+status:
+  state: "<status_state_enum_or_unknown>"
+  summary: "<status_summary_or_null>"
+  updated_at: "<YYYY-MM-DD_or_null>"
+  confidence: "<confidence_enum_or_unknown>"
+  evidence_summary: "<evidence_summary_or_null>"
+  manual:
+    summary: "<manual_status_summary_or_null>"
+    updated_at: "<YYYY-MM-DD_or_null>"
+    source: "<manual_status_source_or_null>"
+  inferred:
+    summary: "<inferred_status_summary_or_null>"
+    updated_at: "<YYYY-MM-DD_or_null>"
+    ## evidence entries must be non-empty strings describing supplied proof.
+    evidence: []
+## blocker item shape:
+## - id: "<blocker_id>"
+##   summary: "<blocker_summary>"
+##   owner: "<owner_or_unknown>"
+##   needed_by: "<YYYY-MM-DD_or_null>"
+blockers: []
+## risk item shape:
+## - id: "<risk_id>"
+##   summary: "<risk_summary>"
+##   severity: "<risk_severity_enum_or_unknown>"
+##   owner: "<owner_or_unknown>"
+risks: []
+## replanning item shape:
+## - date: "<YYYY-MM-DD>"
+##   changed_fields:
+##     - "<changed_field>"
+##   from: "<from_value_or_unknown>"
+##   to: "<to_value_or_unknown>"
+##   reason: "<reason>"
+##   impact: "<impact>"
+##   decision_maker: "<decision_maker_or_unknown>"
+replanning: []
+## tag entries must be non-empty strings. Prefer stable lowercase slugs.
+tags: []
+repos:
+  ## candidate_impacted entries must be non-empty repository identifiers or repository-relative paths.
+  candidate_impacted: []
+links:
+  ## links.mago and links.magia entries should be repository-relative paths when they point to local artifacts.
+  ## links.external entries should be external URLs or stable external references.
+  mago: []
+  magia: []
+  external: []

@@ -1,0 +1,22 @@
+# Use this file as a structural reference when creating or reconciling
+# {BOARD_ROOT}/discovery-index.yaml.
+# Replace every <...> token with repository-truth values.
+# Keep candidate ids stable across iterations.
+
+schema_version: 1
+discovery_root: "{BOARD_ROOT}"
+project_root: "<project_root>"
+last_iteration: 0
+candidates:
+  - candidate_id: "<candidate_id>"
+    title: "<title>"
+    status: "<new|updated|provisional|ready_for_order|blocked|duplicate>"
+    candidate_doc: "{BOARD_ROOT}/candidates/<candidate_id>.md"
+    frontier: "<frontier>"
+    core_files: []
+    supporting_files: []
+    provisional_feature_key: "<feature_key_or_empty>"
+    triage_confidence: "<low|medium|high>"
+    boundary_risk: "<low|medium|high>"
+    suggested_next_step: "<continue_discovery|order|drop>"
+    duplicate_of: "<candidate_id_or_empty>"

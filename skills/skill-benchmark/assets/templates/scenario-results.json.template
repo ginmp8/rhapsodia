@@ -1,0 +1,14 @@
+[
+  {
+    "id": "A001",
+    "category": "should_activate",
+    "prompt": "benchmark the target skill package and produce the canonical report",
+    "expected_activation": true,
+    "expected_behavior": "activate skill-benchmark, inspect the target package, generate or draft a benchmark report, and validate the report structure",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned result record; populate actual fields only after execution"
+  }
+]

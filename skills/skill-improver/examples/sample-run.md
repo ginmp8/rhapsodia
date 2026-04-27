@@ -1,0 +1,58 @@
+# Sample runs
+
+## Skill-benchmark evaluator
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target ./skills/magnomo \
+  --evaluator skill-benchmark \
+  --max-iterations 10 \
+  --min-delta 1.0 \
+  --codex-mode full-auto
+```
+
+This uses the installed `skill-benchmark` generator, writes reports under `.skill-improver/skill-benchmark-reports/`, freezes evaluator inputs, enforces blocker gates, and reverts candidates that do not improve.
+
+## Hybrid static plus behavioral benchmark
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target ./skills/magnomo \
+  --evaluator skill-benchmark \
+  --skill-benchmark-results /path/to/frozen-scenario-results.json \
+  --benchmark-lock-path /path/to/frozen-scenario-results.json \
+  --blocked-path ./evals \
+  --max-iterations 10 \
+  --min-delta 1.0 \
+  --codex-mode full-auto
+```
+
+Use this when activation and output behavior matter. The scenario result file is locked so the agent cannot improve the score by weakening the benchmark.
+
+## Custom evaluator command
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target ./skills/customer-research \
+  --evaluator command \
+  --eval-command 'python ../../evals/customer_research_eval.py --target .' \
+  --benchmark-lock-path ./evals/customer_research_eval.py \
+  --required-gate packaging \
+  --max-iterations 8 \
+  --min-delta 0.5
+```
+
+The command should print JSON with at least `score`. Include `status` and `gates` for stronger acceptance rules.
+
+## Yolo mode only in a disposable environment
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target ./skills/magnomo \
+  --evaluator skill-benchmark \
+  --max-iterations 50 \
+  --codex-mode yolo \
+  --sandbox-acknowledged
+```
+
+Do not run this on a normal developer workstation.
