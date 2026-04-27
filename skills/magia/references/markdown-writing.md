@@ -1,6 +1,6 @@
 # Markdown Writing
 
-Apply these rules to generated or updated `notes.md` and `validation.md`.
+Apply these rules to generated or updated notes.md and validation.md.
 
 ## Rules
 
@@ -15,12 +15,12 @@ Apply these rules to generated or updated `notes.md` and `validation.md`.
 - use fenced code blocks for multi-line snippets and add a language tag when useful
 - use tables only for genuinely tabular comparisons
 - mark examples clearly as examples, not repository truth
-- use repository-relative POSIX paths such as `docs/boards/prj/m1/specs/spec001/notes.md`; avoid backslashes, Windows paths, and absolute machine-local paths unless documenting an unavoidable external literal
+- use repository-relative POSIX paths such as a repository-relative board notes path; avoid backslashes, Windows paths, and absolute machine-local paths unless documenting an unavoidable external literal
 - keep MAGIA-created or MAGIA-updated durable docs under `BOARD_ROOT`
 - prefer plain, direct language; explain non-obvious jargon briefly; preserve factual nuance
 - avoid decorative emoji and noisy emphasis
 - preserve canonical headings, field labels, and checklist ordering when the file already follows the expected structure
 - when toggling a checklist item or updating an execution-log line, edit the existing list item in place; keep its relative position and keep any attached context immediately below it
 - do not sort checklist items or execution-log entries by completion state
-- `validation.md`: record evidence and residual gaps for fast human judgment
-- `notes.md`: keep assumptions, findings, decisions, follow-ups, and blockers distinct
+- validation.md: record evidence and residual gaps for fast human judgment
+- notes.md: keep assumptions, findings, decisions, follow-ups, and blockers distinct

@@ -196,7 +196,7 @@ def collect_errors(spec_package: Path) -> list[str]:
         status = notes_status.get(task_id)
         if is_checked and status != "done":
             errors.append(
-                f"tasks.md marks `{task_id}` done but notes.md status is `{status or 'missing'}` instead of `done`."
+                f"tasks.md marks `{task_id}` done but notes.md status is `{status or 'missing'}` instead of done."
             )
         if not is_checked and status == "done":
             errors.append(f"notes.md marks `{task_id}` done but tasks.md leaves the checkbox unchecked.")
@@ -209,9 +209,9 @@ def collect_errors(spec_package: Path) -> list[str]:
 
     open_tasks = [task_id for task_id, is_checked in tasks.items() if not is_checked]
     if manifest_status == "done" and open_tasks:
-        errors.append(f"manifest.yaml is `done` but tasks remain open: {', '.join(open_tasks)}")
+        errors.append(f"manifest.yaml is done but tasks remain open: {', '.join(open_tasks)}")
     if manifest_phase == "done" and open_tasks:
-        errors.append(f"manifest.yaml phase is `done` but tasks remain open: {', '.join(open_tasks)}")
+        errors.append(f"manifest.yaml phase is done but tasks remain open: {', '.join(open_tasks)}")
     if catalog_status == "done" and open_tasks:
         errors.append(f"spec-catalog.yaml marks `{spec_id}` done but tasks remain open: {', '.join(open_tasks)}")
 
@@ -223,7 +223,7 @@ def main(argv: list[str]) -> int:
         description="Validate MAGIA execution-state consistency across tasks.md, notes.md, validation.md, manifest.yaml, and spec-catalog.yaml."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form `specNNN`.")
+    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
     args = parser.parse_args(argv)
 
     board_root = Path(args.board_root).resolve()

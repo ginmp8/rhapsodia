@@ -168,7 +168,7 @@ def main(argv: list[str]) -> int:
         description="Repair narrow MAGIA execution-state drift using only existing notes.md and validation.md evidence."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form `specNNN`.")
+    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
     args = parser.parse_args(argv)
 
     board_root = Path(args.board_root).resolve()

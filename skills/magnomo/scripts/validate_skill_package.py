@@ -12,7 +12,7 @@ from typing import Any
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
-REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden"]
+REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals"]
 REQUIRED_FILES = [
     "SKILL.md",
     "agents/openai.yaml",
@@ -42,6 +42,7 @@ REQUIRED_FILES = [
     "scripts/validate_golden_examples.py",
     "scripts/package_skill.py",
     "examples/activation-scenarios.json",
+    "evals/activation-boundary-scenarios.json",
 ]
 REQUIRED_TEMPLATE_NAMES = {
     "ops.yaml.template",
@@ -256,6 +257,69 @@ def validate_scenarios(root: Path, errors: list[str]) -> None:
             errors.append(f"activation scenario category {category} has {count}; expected at least 5")
 
 
+
+def validate_harness_scenarios(root: Path, errors: list[str]) -> None:
+    """Validate harness-compatible prompt scenarios used by external skill evaluators."""
+    scenario_path = root / "evals" / "activation-boundary-scenarios.json"
+    try:
+        data = json.loads(read_text(scenario_path))
+    except Exception as exc:
+        errors.append(f"harness scenarios are not valid JSON: {exc}")
+        return
+    if not isinstance(data, dict):
+        errors.append("harness scenarios must be a JSON object")
+        return
+    if data.get("target_skill") != "magnomo":
+        errors.append("harness scenarios target_skill must be magnomo")
+    if data.get("status") not in {"planned", "measured"}:
+        errors.append("harness scenarios status must be planned or measured")
+    scenarios = data.get("scenarios")
+    if not isinstance(scenarios, list) or not scenarios:
+        errors.append("harness scenarios must include a non-empty scenarios list")
+        return
+
+    required_fields = {"id", "type", "prompt", "expected_behavior", "acceptance_criteria"}
+    counts = {category: 0 for category in SCENARIO_CATEGORIES}
+    seen_ids: set[str] = set()
+    seen_prompts: set[str] = set()
+    for index, item in enumerate(scenarios):
+        label = item.get("id", index) if isinstance(item, dict) else index
+        if not isinstance(item, dict):
+            errors.append(f"harness scenario {index} must be an object")
+            continue
+        missing = sorted(required_fields - set(item))
+        if missing:
+            errors.append(f"harness scenario {label} missing required fields: {', '.join(missing)}")
+        scenario_id = item.get("id")
+        if not isinstance(scenario_id, str) or not scenario_id.strip():
+            errors.append(f"harness scenario {index} has no id")
+        elif scenario_id in seen_ids:
+            errors.append(f"duplicate harness scenario id: {scenario_id}")
+        else:
+            seen_ids.add(scenario_id)
+        category = item.get("type")
+        if category not in SCENARIO_CATEGORIES:
+            errors.append(f"harness scenario {label} has invalid type: {category}")
+        else:
+            counts[category] += 1
+        prompt = item.get("prompt")
+        if not isinstance(prompt, str) or len(prompt.strip()) < 20:
+            errors.append(f"harness scenario {label} prompt is too short")
+        else:
+            normalized_prompt = " ".join(prompt.lower().split())
+            if normalized_prompt in seen_prompts:
+                errors.append(f"harness scenario {label} duplicates an earlier prompt")
+            seen_prompts.add(normalized_prompt)
+        behavior = item.get("expected_behavior")
+        if not isinstance(behavior, str) or len(behavior.strip()) < 40:
+            errors.append(f"harness scenario {label} expected_behavior is too short")
+        criteria = item.get("acceptance_criteria")
+        if not isinstance(criteria, list) or len(criteria) < 2 or not all(isinstance(value, str) and value.strip() for value in criteria):
+            errors.append(f"harness scenario {label} must include at least two acceptance criteria")
+    for category, count in sorted(counts.items()):
+        if count < 5:
+            errors.append(f"harness scenario category {category} has {count}; expected at least 5")
+
 def validate_package(root: Path) -> list[str]:
     errors: list[str] = []
     if not root.is_dir():
@@ -265,6 +329,7 @@ def validate_package(root: Path) -> list[str]:
         validate_skill_md(root, errors)
     validate_no_markers(root, errors)
     validate_scenarios(root, errors)
+    validate_harness_scenarios(root, errors)
     return errors
 
 

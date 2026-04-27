@@ -1,6 +1,6 @@
 ---
 name: magnomo
-description: create, update, normalize, validate, and report on magnomo-owned delivery governance artifacts, including board/spec scoped portfolio, roadmap, feature map, rfc proposals, adr records, ops/status/stakeholder/replanning records, feature reports, release notes, internal notes, ownership, stakeholder status, roadmap handoff, artifact validation, and readiness measurement. use when users ask for governance records or human-ready delivery reporting. do not use for repository implementation, tests, deployments, runners, branches, commits, pull requests, mago planning files, magia execution records, or implementation task decomposition.
+description: use when asked to create, update, normalize, validate, audit, or report on target magnomo-owned delivery governance artifacts, including board/spec portfolio, roadmap, feature map, rfc proposals, adr records, ops/status/stakeholder/replanning records, feature reports, release notes, internal notes, ownership, stakeholder status, roadmap handoff, artifact validation, activation scenarios, package validation, and readiness measurement. supports human-ready delivery reporting from supplied evidence only. do not use for repository implementation, tests, deployments, runners, branches, commits, pull requests, mago planning files, magia execution records, or implementation task decomposition unless those files are only cited as evidence for magnomo governance output.
 ---
 
 # Magnomo
@@ -13,7 +13,9 @@ Magnomo owns governance records only. It may create, update, normalize, validate
 
 Activate Magnomo only when the requested outcome is a governance artifact, governance report, readiness/contract validation, or activation-scenario/package validation for this skill. Do not activate merely because the prompt mentions delivery, roadmap, release, status, Mago, or Magia; first confirm that the requested output stays inside Magnomo ownership. If the prompt mixes Magnomo-owned output with implementation, Mago, Magia, deployment, source-control, or task-decomposition work, perform only the Magnomo-owned portion and explicitly list the refused or untouched portions.
 
-Use [references/contracts.md](references/contracts.md) when selecting or validating ownership boundaries. Use [references/activation-and-evaluation.md](references/activation-and-evaluation.md) when routing ambiguous activation, changing scenario coverage, or reporting activation-readiness evidence. Use [scripts/](scripts/) for deterministic scaffolding, normalization, and validation. Use [assets/templates/](assets/templates/) only through bundled scripts when a matching script exists.
+Activation decision checklist: identify the requested artifact family, classify ownership against Magnomo/Mago/Magia boundaries, require supplied evidence for volatile facts, choose exactly one Magnomo mode, and stop before writing if the request requires non-Magnomo files or missing repository-facing inputs.
+
+Use [references/contracts.md](references/contracts.md) when selecting or validating ownership boundaries. Use [references/activation-and-evaluation.md](references/activation-and-evaluation.md) when routing ambiguous activation, changing scenario coverage, or reporting activation-readiness evidence. Use [references/template-integration.md](references/template-integration.md) when selecting a template-backed artifact family or checking template integration. Use [scripts/](scripts/) for deterministic scaffolding, normalization, and validation. Use [assets/templates/](assets/templates/) only through bundled scripts when a matching script exists.
 
 ## Required Inputs
 
@@ -48,16 +50,19 @@ Pick exactly one mode before doing work.
    - adr record mode: [references/modes/adr.md](references/modes/adr.md)
    - reporting modes: [references/modes/reporting.md](references/modes/reporting.md)
    - validation and normalization modes: [references/modes/validation.md](references/modes/validation.md)
-4. Open artifact references only when creating, editing, normalizing, or validating that artifact family:
+4. Open [references/template-integration.md](references/template-integration.md) only when choosing or auditing a template-backed artifact scaffold.
+5. Open artifact references only when creating, editing, normalizing, or validating that artifact family:
    - delivery artifacts: [references/artifacts/delivery.md](references/artifacts/delivery.md)
    - roadmap artifacts: [references/artifacts/roadmap.md](references/artifacts/roadmap.md)
    - rfc artifacts: [references/artifacts/rfc.md](references/artifacts/rfc.md)
    - adr artifacts: [references/artifacts/adr.md](references/artifacts/adr.md)
    - reporting artifacts: [references/artifacts/reporting.md](references/artifacts/reporting.md)
-5. Open [references/roadmap-to-mago-contract.md](references/roadmap-to-mago-contract.md) only for roadmap-to-spec handoff validation.
-6. Open [references/activation-and-evaluation.md](references/activation-and-evaluation.md) when checking activation behavior, scenario coverage, scenario-suite maintenance, or ambiguous routing between Magnomo and Mago/Magia/implementation work.
-7. Open [references/package-validation.md](references/package-validation.md) when validating structural edits, running golden examples, or producing `skill.zip`.
-8. Use [examples/golden/index.md](examples/golden/index.md), [examples/golden/validation-commands.md](examples/golden/validation-commands.md), and [examples/activation-scenarios.json](examples/activation-scenarios.json) when checking activation behavior or output conformance; mark scenario metrics as measured only when prompts were actually executed and reviewed.
+6. Open [references/roadmap-to-mago-contract.md](references/roadmap-to-mago-contract.md) only for roadmap-to-spec handoff validation.
+7. Open [references/activation-and-evaluation.md](references/activation-and-evaluation.md) when checking activation behavior, scenario coverage, scenario-suite maintenance, or ambiguous routing between Magnomo and Mago/Magia/implementation work.
+8. Open [references/package-validation.md](references/package-validation.md) when validating structural edits, running golden examples, or producing `skill.zip`.
+9. Use [examples/golden/](examples/golden/), including [examples/golden/index.md](examples/golden/index.md) and [examples/golden/validation-commands.md](examples/golden/validation-commands.md), when checking golden output conformance or explaining packaged example coverage.
+10. Use [examples/activation-scenarios.json](examples/activation-scenarios.json) when checking native Magnomo activation behavior. Use [examples/hardening-scenarios.json](examples/hardening-scenarios.json) when a package hardening validator expects the generic scenario schema with planned activation, non-activation, ambiguous, and edge-case coverage.
+11. Use [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json) when an external skill harness, benchmark, or reviewer needs prompt-level acceptance criteria for activation, ambiguous, edge, regression, and adversarial routing. Mark scenario metrics as measured only when prompts were actually executed and reviewed.
 
 ## Execution Workflow
 
@@ -76,6 +81,7 @@ Pick exactly one mode before doing work.
 - Populate supported list fields with `scripts/update_template_lists.py`; extend that script before hand-editing unsupported mechanical list shapes.
 - Validate touched artifacts with `scripts/validate_artifact.py`; use specialized validators only when the mode reference or validation output requires them.
 - Validate activation scenarios with `scripts/validate_activation_scenarios.py` after changing [examples/activation-scenarios.json](examples/activation-scenarios.json).
+- Validate the harness-compatible scenario suite through `scripts/validate_skill_package.py` after changing [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json).
 - Validate all golden examples with `scripts/validate_golden_examples.py` after changing templates, validators, example fixtures, or output contracts.
 - Validate package hygiene with `scripts/validate_skill_package.py` before packaging or after structural edits to this skill.
 - Produce release packages with `scripts/package_skill.py --output <output-dir>/skill.zip` so structural, activation, and golden gates run before the zip is written.
@@ -97,6 +103,7 @@ For repository-facing writes, close only after touched Magnomo artifacts pass th
 - Unknown or volatile facts remain unknown rather than invented.
 - Touched Magnomo artifacts pass the artifact validator, and repository-facing writes also pass board-path validation.
 - Activation scenario changes pass the scenario validator and preserve at least five cases in each required category.
+- Harness-compatible scenario changes under [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json) pass package validation and preserve planned acceptance criteria for activation, non-activation, ambiguous, edge, regression, and adversarial cases.
 - Structural edits to this skill pass the package validator before packaging.
 - Golden examples pass the golden-example runner after validator, template, example, or output-contract changes.
 - `skill.zip` is produced only by a packaging run that passes structural, activation, and golden gates.

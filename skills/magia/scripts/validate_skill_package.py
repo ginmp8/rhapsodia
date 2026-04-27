@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the MAGIA skill package structure and optional packaged zip."""
+"""Validate the MAGIA skill folder and optional packaged zip artifact."""
 
 from __future__ import annotations
 
@@ -7,17 +7,16 @@ import argparse
 import json
 import py_compile
 import re
-import sys
 import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
-SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with actual|this is a placeholder)", re.IGNORECASE)
+SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with actual|this is a " + "placeholder)", re.IGNORECASE)
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 INLINE_PATH_RE = re.compile(r"`([^`]+\.(?:md|py|sh|yaml|yml|json|template|txt))`")
-BLOCKED_ZIP_PREFIXES = (".git/", "__pycache__/", "evals/", "benchmark-reports/", "test-results/")
+BLOCKED_ZIP_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "benchmark-reports", "test-results", "tmp", ".tmp"}
 BLOCKED_ZIP_NAMES = {"test-results.json"}
 SECRET_NAME_RE = re.compile(r"(secret|credential|private[_-]?key|\.env$|id_rsa|token)", re.IGNORECASE)
 
@@ -75,6 +74,61 @@ def rel(path: Path, root: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
+ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
+REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
+REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
+
+
+def validate_eval_scenarios(path: Path) -> list[str]:
+    errors: list[str] = []
+    if not path.exists():
+        return [f"missing eval scenario suite: {path.name}"]
+    try:
+        payload = json.loads(read_text(path))
+    except Exception as exc:  # noqa: BLE001
+        return [f"eval scenario suite is invalid JSON: {exc}"]
+    scenarios = payload.get("scenarios")
+    if not isinstance(scenarios, list) or not scenarios:
+        return ["eval scenario suite must contain a non-empty scenarios array"]
+    seen: set[str] = set()
+    type_counts: dict[str, int] = {}
+    category_counts: dict[str, int] = {}
+    for index, scenario in enumerate(scenarios):
+        if not isinstance(scenario, dict):
+            errors.append(f"eval scenario at index {index} is not an object")
+            continue
+        missing = REQUIRED_EVAL_FIELDS - set(scenario)
+        sid = scenario.get("id") or f"index {index}"
+        if missing:
+            errors.append(f"eval scenario {sid} missing fields: {sorted(missing)}")
+        if scenario.get("id") in seen:
+            errors.append(f"duplicate eval scenario id: {scenario.get('id')}")
+        if scenario.get("id"):
+            seen.add(scenario["id"])
+        stype = scenario.get("type")
+        category = scenario.get("category")
+        if stype not in ALLOWED_EVAL_SCENARIO_TYPES:
+            errors.append(f"eval scenario {sid} has invalid type: {stype}")
+        else:
+            type_counts[stype] = type_counts.get(stype, 0) + 1
+        if category not in ALLOWED_EVAL_SCENARIO_TYPES:
+            errors.append(f"eval scenario {sid} has invalid category: {category}")
+        else:
+            category_counts[category] = category_counts.get(category, 0) + 1
+        if stype and category and stype != category:
+            errors.append(f"eval scenario {sid} type/category mismatch: {stype} != {category}")
+        criteria = scenario.get("acceptance_criteria")
+        if not isinstance(criteria, list) or not criteria or not all(isinstance(item, str) and item.strip() for item in criteria):
+            errors.append(f"eval scenario {sid} must have non-empty string acceptance criteria")
+    missing_types = REQUIRED_EVAL_SCENARIO_TYPES - set(type_counts)
+    missing_categories = REQUIRED_EVAL_SCENARIO_TYPES - set(category_counts)
+    if missing_types:
+        errors.append(f"eval scenario suite missing required types: {sorted(missing_types)}")
+    if missing_categories:
+        errors.append(f"eval scenario suite missing required categories: {sorted(missing_categories)}")
+    return errors
+
+
 def validate_target(target: Path) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -118,6 +172,7 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/canonical-paths.md",
         "references/common-execution.md",
         "references/resource-map.md",
+        "references/package-delivery.md",
         "references/modes/adhoc.md",
         "references/modes/ralph.md",
         "references/artifacts/execution-records.md",
@@ -129,6 +184,9 @@ def validate_target(target: Path) -> dict[str, Any]:
         "assets/templates/notes.md.template",
         "assets/templates/validation.md.template",
         "examples/activation-scenarios.json",
+        "evals/activation-scenarios.json",
+        "scripts/package_skill.py",
+        "scripts/validate_skill_package.py",
     ]
     for required in required_paths:
         if not (target / required).exists():
@@ -182,7 +240,23 @@ def validate_target(target: Path) -> dict[str, Any]:
         errors.append(f"activation scenario suite is invalid JSON: {exc}")
     checks.append("activation scenarios")
 
+    errors.extend(validate_eval_scenarios(target / "evals" / "activation-scenarios.json"))
+    checks.append("eval scenarios")
+
     return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings, "checks": checks}
+
+
+def zip_required_resources() -> list[str]:
+    return [
+        "SKILL.md",
+        "agents/openai.yaml",
+        "references/resource-map.md",
+        "references/package-delivery.md",
+        "examples/activation-scenarios.json",
+        "evals/activation-scenarios.json",
+        "scripts/package_skill.py",
+        "scripts/validate_skill_package.py",
+    ]
 
 
 def validate_zip(zip_path: Path) -> dict[str, Any]:
@@ -191,25 +265,54 @@ def validate_zip(zip_path: Path) -> dict[str, Any]:
     checks: list[str] = []
     if not zip_path.exists():
         return {"status": "fail", "errors": [f"zip does not exist: {zip_path}"], "warnings": warnings, "checks": checks}
-    with zipfile.ZipFile(zip_path) as archive:
-        names = archive.namelist()
-    if "SKILL.md" not in names:
-        errors.append("zip must contain root-level SKILL.md")
-    if any(name.endswith("/") for name in names):
-        warnings.append("zip contains explicit directory entries")
-    for name in names:
-        normalized = name.lstrip("/")
-        if normalized != name or ".." in Path(normalized).parts:
-            errors.append(f"unsafe zip path: {name}")
-        if normalized in BLOCKED_ZIP_NAMES or normalized.startswith(BLOCKED_ZIP_PREFIXES):
-            errors.append(f"blocked path included in zip: {name}")
-        if any(part == "__pycache__" for part in Path(normalized).parts):
-            errors.append(f"cache path included in zip: {name}")
-        if SECRET_NAME_RE.search(Path(normalized).name):
-            errors.append(f"secret-like file name included in zip: {name}")
-    for required in ["agents/openai.yaml", "references/resource-map.md", "examples/activation-scenarios.json", "scripts/validate_skill_package.py"]:
-        if required not in names:
-            errors.append(f"zip missing required resource: {required}")
+    try:
+        with zipfile.ZipFile(zip_path) as archive:
+            bad = archive.testzip()
+            names = sorted(name for name in archive.namelist() if not name.endswith("/"))
+            if bad:
+                errors.append(f"corrupt zip member: {bad}")
+            if not names:
+                errors.append("zip has no files")
+                return {"status": "fail", "errors": errors, "warnings": warnings, "checks": checks}
+            if any("/" not in name for name in names):
+                errors.append("zip must not contain loose root-level files; expected one top-level skill directory")
+                root = ""
+            else:
+                top_levels = {name.split("/", 1)[0] for name in names}
+                if len(top_levels) != 1:
+                    errors.append(f"zip must contain exactly one top-level skill directory, found {sorted(top_levels)}")
+                    root = sorted(top_levels)[0] if top_levels else ""
+                else:
+                    root = next(iter(top_levels))
+            normalized_names = {name.split("/", 1)[1] for name in names if "/" in name}
+            for name in names:
+                normalized = name.lstrip("/")
+                if normalized != name or ".." in Path(normalized).parts:
+                    errors.append(f"unsafe zip path: {name}")
+                rel_parts = Path(name.split("/", 1)[1] if "/" in name else name).parts
+                if any(part in BLOCKED_ZIP_DIRS for part in rel_parts):
+                    errors.append(f"blocked path included in zip: {name}")
+                if Path(name).name in BLOCKED_ZIP_NAMES:
+                    errors.append(f"blocked file included in zip: {name}")
+                if SECRET_NAME_RE.search(Path(name).name):
+                    errors.append(f"secret-like file name included in zip: {name}")
+            for required in zip_required_resources():
+                if required not in normalized_names:
+                    errors.append(f"zip missing required resource: {required}")
+            if root and f"{root}/SKILL.md" in names:
+                skill_text = archive.read(f"{root}/SKILL.md").decode("utf-8")
+                frontmatter, fm_errors = parse_frontmatter(skill_text)
+                errors.extend(fm_errors)
+                if set(frontmatter) != {"name", "description"}:
+                    errors.append(f"archived frontmatter keys must be exactly ['description', 'name'], found {sorted(frontmatter)}")
+                if any(value != value.lower() for value in frontmatter.values()):
+                    errors.append("archived frontmatter values must be lowercase")
+                for ref in referenced_paths(skill_text):
+                    ref_prefix = ref.rstrip("/") + "/"
+                    if ref not in normalized_names and not any(item.startswith(ref_prefix) for item in normalized_names):
+                        errors.append(f"archived SKILL.md reference is missing: {ref}")
+    except zipfile.BadZipFile:
+        errors.append("zip is not a readable zip file")
     checks.append("zip structure")
     return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings, "checks": checks}
 

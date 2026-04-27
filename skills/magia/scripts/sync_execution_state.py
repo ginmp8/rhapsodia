@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Synchronize task completion state and manifest `last_execution` for a truthful MAGIA run.
+Synchronize task completion state and manifest last_execution for a truthful MAGIA run.
 """
 
 from __future__ import annotations
@@ -92,11 +92,11 @@ def update_manifest_file(
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
-        description="Synchronize `tasks.md` and `manifest.yaml.last_execution` for a truthful MAGIA run."
+        description="Synchronize tasks.md and manifest.yaml last_execution for a truthful MAGIA run."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form `specNNN`.")
-    parser.add_argument("--task-id", required=True, help="Executed task id in the form `taskNNN`.")
+    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
+    parser.add_argument("--task-id", required=True, help="Executed task id in the form taskNNN.")
     parser.add_argument(
         "--status",
         required=True,
@@ -108,7 +108,7 @@ def main(argv: list[str]) -> int:
         default=date.today().isoformat(),
         help="Execution date in YYYY-MM-DD format. Defaults to today.",
     )
-    parser.add_argument("--summary", help="Short truthful execution summary for `manifest.yaml.last_execution`.")
+    parser.add_argument("--summary", help="Short truthful execution summary for manifest.yaml last_execution.")
     parser.add_argument(
         "--files-changed",
         nargs="*",
@@ -129,9 +129,9 @@ def main(argv: list[str]) -> int:
 
     try:
         if not tasks_path.exists():
-            raise FileNotFoundError(f"Missing `tasks.md`: {tasks_path}")
+            raise FileNotFoundError(f"Missing tasks.md: {tasks_path}")
         if not manifest_path.exists():
-            raise FileNotFoundError(f"Missing `manifest.yaml`: {manifest_path}")
+            raise FileNotFoundError(f"Missing manifest.yaml: {manifest_path}")
 
         update_tasks_file(tasks_path, args.task_id, args.status)
         update_manifest_file(manifest_path, args.task_id, args.date, args.summary, args.files_changed)

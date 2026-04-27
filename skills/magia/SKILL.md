@@ -1,6 +1,6 @@
 ---
 name: magia
-description: use when executing, auditing, validating, hardening, documenting, or unblocking bounded repository work with magia. use for adhoc direct code or config changes, targeted validation, documentation, and ralph execution from a concrete board contract and selected spec package. expects repository scope, mode inputs, validation evidence, truthful execution-state updates, and refusal of broad planning or governance claims.
+description: use when asked to execute, audit, validate, harden, document, unblock, or package bounded repository work in magia. supports adhoc direct code or config changes, targeted tests, local validators, execution evidence, and ralph execution from a concrete board contract plus selected spec package. expects repository scope, selected mode inputs, observable validation, and truthful execution-state synchronization. do not use for roadmap shaping, stakeholder updates, release notes, portfolio reporting, broad planning, or claims without current evidence.
 ---
 
 # MAGIA
@@ -16,7 +16,8 @@ MAGIA executes bounded repository work from current code, runtime evidence, and 
 5. Load [references/artifacts/execution-evidence.md](references/artifacts/execution-evidence.md) only when structured downstream evidence is requested or useful.
 6. Load [references/validation-and-closure.md](references/validation-and-closure.md) before finalizing any run that changed code, docs, validation evidence, task state, or execution state.
 7. Load [references/markdown-writing.md](references/markdown-writing.md) when generating or editing durable Markdown records.
-8. Use [references/resource-map.md](references/resource-map.md), [scripts/](scripts/), [assets/templates/](assets/templates/), and [examples/](examples/) when scaffolding, validating, packaging, or checking activation behavior.
+8. Load [references/package-delivery.md](references/package-delivery.md) only when validating, exporting, or packaging the MAGIA skill itself.
+9. Use [references/resource-map.md](references/resource-map.md), [scripts/](scripts/), [assets/templates/](assets/templates/), [examples/](examples/), and [evals/](evals/) only when scaffolding, validating, packaging, or checking activation behavior.
 
 ## Mode Selection Matrix
 
@@ -27,16 +28,26 @@ MAGIA executes bounded repository work from current code, runtime evidence, and 
 | Request changes product intent, task definitions, sequencing, roadmap, ownership, or governance outputs | Planning handoff | Evidence of the planning gap | Blocker or handoff summary only | No planning artifact rewritten by MAGIA |
 | Required roots, selected ids, target files, or validation evidence are missing | Blocker | Missing input list and partial evidence gathered | Honest blocker with any safe partial work | No invented state or completion claim |
 
+## Required Inputs by Mode
+
+Resolve these before mutating repository or board files:
+
+- ADHOC: repository root or file scope, requested behavior, target files when known, allowed write scope, blocked paths, and at least one observable validation command or check.
+- RALPH: board root or resolvable board id plus cycle version, selected spec id, selected task id or dependency-safe batch, repository scope, allowed write scope, and applicable board/spec validators.
+- Package validation: target skill root, requested artifact path, packaging exclusions, and the package validator command that must pass before claiming readiness.
+- Blocker or handoff: exact missing inputs, evidence already inspected, and the next specific evidence needed.
+
 ## Execution Workflow
 
-1. Resolve the mode and concrete scope before editing.
-2. Inspect the relevant repository files, runtime evidence, and active contract artifacts for the chosen mode.
-3. Define at least one observable validation check before treating work as complete.
-4. Make the smallest safe change that satisfies the selected executable objective.
-5. Use local scripts before manual editing for template-backed writes, execution logs, execution-state sync, healing, artifact validation, boundary validation, and package validation.
-6. Keep implementation, validation evidence, task state, notes, manifest state, and catalog state aligned when RALPH records change.
-7. Run the narrowest validation set that proves the work and the mechanical MAGIA validators that apply.
-8. Finalize with concise evidence: what changed, what passed, what failed or was not run, and what remains.
+1. Resolve the mode and concrete scope before editing. If the request is still ambiguous, inspect available repository or board evidence first, then continue only when the conservative scope remains truthful and bounded.
+2. Load only the references needed for that branch. Do not load both ADHOC and RALPH mode references unless the request truly spans both modes.
+3. Inspect the relevant repository files, runtime evidence, and active contract artifacts for the chosen mode.
+4. Define at least one observable validation check before treating work as complete.
+5. Make the smallest safe change that satisfies the selected executable objective.
+6. Use local scripts before manual editing for template-backed writes, execution logs, execution-state sync, healing, artifact validation, boundary validation, and package validation.
+7. Keep implementation, validation evidence, task state, notes, manifest state, and catalog state aligned when RALPH records change.
+8. Run the narrowest validation set that proves the work and the mechanical MAGIA validators that apply.
+9. Finalize with concise evidence: what changed, what passed, what failed or was not run, and what remains.
 
 ## Operating Rules
 
@@ -76,13 +87,7 @@ Do not claim completion without current validation evidence. When blocked, repor
 
 ## Package Requests
 
-When the user asks to package, export, or validate the MAGIA skill package:
-
-1. Keep edits inside the target skill folder and keep evaluator files, benchmark reports, frozen scenarios, expected outputs, evals/, test-results.json, caches, secrets, and unrelated blocked paths out of the package.
-2. Create the archive so it expands to the skill files directly and contains a root-level SKILL.md, not an extra parent directory.
-3. When creating the zip, exclude __pycache__, .git, evals/, benchmark-reports/, test-results/, test-results.json, and temporary run outputs.
-4. Validate the folder and artifact with scripts/validate_skill_package.py --target <skill-root> --zip <skill.zip> before claiming the package is ready.
-5. If packaging cannot be completed, report the blocker, remaining gap, and next evidence needed instead of delivering a partial package as complete.
+When the user asks to package, export, or validate the MAGIA skill package, load [references/package-delivery.md](references/package-delivery.md), use `scripts/package_skill.py`, and validate both the folder and `skill.zip` with `scripts/validate_skill_package.py` before claiming readiness. If packaging cannot be completed, report the blocker, remaining gap, and next evidence needed instead of delivering a partial package as complete.
 
 ## Validation Checklist
 
@@ -94,7 +99,7 @@ Before final response:
 - Validate touched template-backed artifacts with the local validator or narrower validator.
 - In RALPH, run the repository board validator before final response when the local repository is available.
 - Run the skill package validator when changing MAGIA package files or preparing a package.
-- Verify no placeholders, fabricated evidence, unresolved links, or unreported validation gaps remain.
+- Verify no placeholders, fabricated evidence, unresolved links, unvalidated scenario schema, or unreported validation gaps remain.
 
 ## Activation Examples
 

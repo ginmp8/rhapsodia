@@ -21,6 +21,15 @@ Apply this ladder before selecting a mode:
 5. Check evidence. Preserve owners, dates, deployment state, review state, validation results, and release facts as unknown unless supplied by user evidence or existing Magnomo artifacts.
 6. Select exactly one mode. If multiple modes appear valid, choose the narrowest mode that produces the requested Magnomo-owned artifact family and list deferred artifacts as not touched.
 
+## Scenario Assets
+
+Magnomo maintains two complementary scenario assets:
+
+- `examples/activation-scenarios.json` is the native package gate. It uses Magnomo's compact `category`, `expected_activation`, `expected_behavior`, and `notes` schema and is validated by `scripts/validate_activation_scenarios.py`.
+- `evals/activation-boundary-scenarios.json` is the harness-compatible suite. It uses prompt-level `type` and `acceptance_criteria` fields so external skill harnesses can review activation, non-activation, ambiguous, edge-case, regression, and adversarial expectations without depending on Magnomo-specific schema names.
+
+Keep both assets aligned when activation boundaries change. The native suite proves package coverage; the harness suite makes evaluator criteria explicit. Neither asset proves measured behavior until its prompts are executed and reviewed.
+
 ## Scenario Categories
 
 The scenario suite must include at least five cases in each category:
@@ -62,9 +71,10 @@ When changing activation behavior or examples:
 
 1. Update the smallest scenario set that covers the changed boundary.
 2. Preserve at least five cases per category; prefer six or more when adding a new boundary so future deletions do not drop coverage below the gate.
-3. Keep golden output files as fixtures unless the expected artifact shape has intentionally changed.
-4. Run `scripts/validate_activation_scenarios.py` after scenario edits and `scripts/validate_skill_package.py` after structural edits.
-5. Report validator output separately from measured prompt execution. A passing scenario-file validator proves coverage and schema only; it does not prove that the assistant routed every prompt correctly.
+3. Update `evals/activation-boundary-scenarios.json` whenever the change affects external harness expectations or acceptance criteria.
+4. Keep golden output files as fixtures unless the expected artifact shape has intentionally changed.
+5. Run `scripts/validate_activation_scenarios.py` after native scenario edits and `scripts/validate_skill_package.py` after harness scenario or structural edits.
+6. Report validator output separately from measured prompt execution. A passing scenario-file validator proves coverage and schema only; it does not prove that the assistant routed every prompt correctly.
 
 ## Packaging Gate
 
@@ -72,8 +82,8 @@ Run:
 
 ```bash
 python .github/skills/magnomo/scripts/validate_activation_scenarios.py .github/skills/magnomo/examples/activation-scenarios.json
-python .github/skills/magnomo/scripts/validate_golden_examples.py --skill-root .github/skills/magnomo
 python .github/skills/magnomo/scripts/validate_skill_package.py --target .github/skills/magnomo
+python .github/skills/magnomo/scripts/validate_golden_examples.py --skill-root .github/skills/magnomo
 ```
 
-The package is not ready if scenario validation fails, required categories are missing, golden examples fail, or any package validator error remains. For release packaging, prefer `scripts/package_skill.py --target .github/skills/magnomo --output <output-dir>/skill.zip` because it reruns the structural, activation, and golden gates before writing the archive.
+The package is not ready if native scenario validation fails, harness scenario coverage is invalid, required categories are missing, golden examples fail, or any package validator error remains. For release packaging, prefer `scripts/package_skill.py --target .github/skills/magnomo --output <output-dir>/skill.zip` because it reruns the structural, activation, and golden gates before writing the archive.

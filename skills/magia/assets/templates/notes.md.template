@@ -33,11 +33,11 @@ Add non-canonical sections only when the actual spec requires them.
 
 ### taskNNN - <short title>
 
-<!-- Use `Status` only from `not_started`, `in_progress`, `blocked`, or `done`. -->
+<!-- Use Status only from not_started, in_progress, blocked, or done. -->
 - Status: <not_started|in_progress|blocked|done>
 - Summary: <what this execution actually did>
 - Changes: <code, docs, config, schema, or behavior changes>
 - Context Docs: <context_doc_paths_or_none>
 - Decisions: <execution_level_decisions_or_none>
 - Follow-Ups: <next_step_implications_or_none>
-- Blockers: <blocker details, or `none`>
+- Blockers: <blocker details, or none>

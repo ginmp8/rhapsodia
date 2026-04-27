@@ -1,0 +1,11 @@
+skills/magia/scripts/__pycache__/close_execution_state.cpython-314.pyc
+skills/magia/scripts/__pycache__/heal_execution_state.cpython-314.pyc
+skills/magia/scripts/__pycache__/magia_utils.cpython-314.pyc
+skills/magia/scripts/__pycache__/sync_execution_state.cpython-314.pyc
+skills/magia/scripts/__pycache__/update_template_lists.cpython-314.pyc
+skills/magia/scripts/__pycache__/validate_artifact.cpython-314.pyc
+skills/magia/scripts/__pycache__/validate_boundary.cpython-314.pyc
+skills/magia/scripts/__pycache__/validate_execution_state.cpython-314.pyc
+skills/magia/scripts/__pycache__/validate_repo_board.cpython-314.pyc
+skills/magia/scripts/__pycache__/write_artifact_scaffold.cpython-314.pyc
+skills/magia/scripts/__pycache__/write_execution_log.cpython-314.pyc

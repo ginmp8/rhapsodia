@@ -9,7 +9,7 @@
 
 ## When to Use ADHOC
 
-Use ADHOC when the work is a direct repository change and execution is not driven by an active `spec-catalog.yaml` plus a selected spec package.
+Use ADHOC when the work is a direct repository change and execution is not driven by an active spec-catalog.yaml plus a selected spec package.
 
 Typical cases:
 
