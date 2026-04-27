@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Canonical MAGIA writer for `notes.md` Execution Log entries."""
+"""Canonical MAGIA writer for notes.md Execution Log entries."""
 
 from __future__ import annotations
 
@@ -147,9 +147,9 @@ def write_execution_log(
     tasks_path = spec_package / "tasks.md"
 
     if not notes_path.exists():
-        raise FileNotFoundError(f"Missing `notes.md`: {notes_path}")
+        raise FileNotFoundError(f"Missing notes.md: {notes_path}")
     if not tasks_path.exists():
-        raise FileNotFoundError(f"Missing `tasks.md`: {tasks_path}")
+        raise FileNotFoundError(f"Missing tasks.md: {tasks_path}")
     if not summary.strip():
         raise ValueError("`--summary` must not be empty.")
 
@@ -194,11 +194,11 @@ def write_execution_log(
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
-        description="Append or refresh one canonical MAGIA `notes.md` Execution Log subsection at EOF."
+        description="Append or refresh one canonical MAGIA notes.md Execution Log subsection at EOF."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form `specNNN`.")
-    parser.add_argument("--task-id", required=True, help="Executed task id in the form `taskNNN`.")
+    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
+    parser.add_argument("--task-id", required=True, help="Executed task id in the form taskNNN.")
     parser.add_argument(
         "--status",
         required=True,
@@ -210,31 +210,31 @@ def main(argv: list[str]) -> int:
         "--change",
         action="append",
         default=[],
-        help="Repeat for each `Changes` list item. Omit to write `none`.",
+        help="Repeat for each Changes list item. Omit to write none.",
     )
     parser.add_argument(
         "--context-doc",
         action="append",
         default=[],
-        help="Repeat for each `Context Docs` list item. Omit to write `none`.",
+        help="Repeat for each Context Docs list item. Omit to write none.",
     )
     parser.add_argument(
         "--decision",
         action="append",
         default=[],
-        help="Repeat for each `Decisions` list item. Omit to write `none`.",
+        help="Repeat for each Decisions list item. Omit to write none.",
     )
     parser.add_argument(
         "--follow-up",
         action="append",
         default=[],
-        help="Repeat for each `Follow-Ups` list item. Omit to write `none`.",
+        help="Repeat for each Follow-Ups list item. Omit to write none.",
     )
     parser.add_argument(
         "--blocker",
         action="append",
         default=[],
-        help="Repeat for each `Blockers` list item. Omit to write `none`.",
+        help="Repeat for each Blockers list item. Omit to write none.",
     )
     args = parser.parse_args(argv)
 

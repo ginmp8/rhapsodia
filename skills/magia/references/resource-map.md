@@ -15,6 +15,7 @@ Use this reference when deciding which MAGIA support file, script, template, or 
 | `references/validation-and-closure.md` | Closing any run that changed code, docs, evidence, task state, or execution state. |
 | `references/markdown-writing.md` | Writing durable Markdown records such as notes and validation evidence. |
 | `references/resource-map.md` | Auditing package resources, package validation, or selecting local MAGIA tooling. |
+| `references/package-delivery.md` | Validating, exporting, or packaging the MAGIA skill itself. |
 
 ## Script Map
 
@@ -30,6 +31,7 @@ Use this reference when deciding which MAGIA support file, script, template, or 
 | `scripts/validate_execution_state.py` | Validate selected package execution-state consistency. | `python scripts/validate_execution_state.py <board-root> --spec-id <specNNN>` |
 | `scripts/validate_repo_board.py` | Validate a repository board and selected cycle after RALPH execution. | `python scripts/validate_repo_board.py <repo-root> --board_id <board_id> --cycle_version <cycle_version>` |
 | `scripts/validate_boundary.py` | Validate MAGIA ownership boundaries for created or changed durable docs. | `python scripts/validate_boundary.py <args>` |
+| `scripts/package_skill.py` | Build `skill.zip` with one top-level skill directory and optional archive validation. | `python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate` |
 | `scripts/validate_skill_package.py` | Validate the MAGIA skill package structure, links, placeholders, scripts, and optional zip artifact. | `python scripts/validate_skill_package.py --target <skill-root> --zip <skill.zip>` |
 
 Use the local scripts before manual editing whenever they can perform the operation mechanically. If a script is missing an option needed for a template-backed field, extend the script first instead of hand-editing the structure.
@@ -46,9 +48,9 @@ Use the local scripts before manual editing whenever they can perform the operat
 
 Templates are not examples. Treat them as machine-oriented inputs for scaffolding, population, and validation scripts.
 
-## Scenario Suite
+## Scenario Suites
 
-`examples/activation-scenarios.json` contains planned activation, non-activation, ambiguity, and edge-case prompts. Use it as a behavioral check plan. Do not report scenario metrics as measured unless the scenarios were actually executed.
+`examples/activation-scenarios.json` keeps the legacy human-readable activation plan. `evals/activation-scenarios.json` is the harness-readable planned scenario suite with activation, non-activation, ambiguity, edge-case, regression, and adversarial coverage. Use either as behavioral check plans only; do not report scenario metrics as measured unless the scenarios were actually executed and evaluator decisions were captured.
 
 ## Package Validation Gates
 
@@ -56,7 +58,7 @@ A MAGIA package is ready only when all applicable gates pass:
 
 1. `SKILL.md` exists and frontmatter contains only lowercase `name` and lowercase `description`.
 2. `SKILL.md` resolves every linked local reference or directory.
-3. The package has references, scripts, templates, agent metadata, and activation scenarios when those resources are present in the workflow.
+3. The package has references, scripts, templates, agent metadata, examples, and harness-readable eval scenarios when those resources are present in the workflow.
 4. No scaffold placeholders remain outside templates.
 5. Python scripts compile.
-6. Optional zip validation confirms the archive contains one root-level skill package, excludes caches and blocked folders, and includes the expected package resources.
+6. Optional zip validation confirms the archive contains exactly one top-level skill directory, excludes caches and blocked folders, and includes the expected package resources.

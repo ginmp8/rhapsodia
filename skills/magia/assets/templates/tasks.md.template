@@ -4,7 +4,7 @@ Replace every <...> token with repository-truth values.
 The five phase headings below are mandatory and must stay in order.
 Every phase must contain at least one real task.
 When a phase has no product change, create a bounded confirmation task that records why no additional work is required.
-Use stable task ids in the form `taskNNN`. Keep numbering global across the spec and do not restart per phase.
+Use stable task ids in the form taskNNN. Keep numbering global across the spec and do not restart per phase.
 Use `Task type` only from this enum: `analysis`, `setup`, `implementation`, `integration`, `validation`, `hardening`, `migration`, `rollout`, `confirmation`, `refinement`.
 Use `Specialist Support` only from this enum: `not_required`, `required`, `optional`.
 Always define `Required LOAD`, `Optional LOAD`, and `Selection Hint` from repository truth.

@@ -27,7 +27,7 @@ def infer_template_name(destination: Path) -> str | None:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Write a MAGIA artifact scaffold from the canonical template workflow.")
     parser.add_argument("path", help="Destination artifact path.")
-    parser.add_argument("--template", help="Explicit template file name, for example `notes.md.template`.")
+    parser.add_argument("--template", help="Explicit template file name, for example `assets/templates/notes.md.template`.")
     parser.add_argument("--list-data", help="YAML payload for scripts/update_template_lists.py.")
     parser.add_argument("--force", action="store_true", help="Overwrite the destination file if it already exists.")
     args = parser.parse_args(argv)

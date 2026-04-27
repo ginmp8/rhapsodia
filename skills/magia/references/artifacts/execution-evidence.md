@@ -31,7 +31,7 @@ Use `null`, an empty string, or an empty list for missing evidence. Do not infer
 
 ## Field Rules
 
-* `spec_id`: active `specNNN` when known; otherwise `null`.
+* `spec_id`: active specNNN when known; otherwise `null`.
 * `feature_key`: active feature key when known; otherwise `null`.
 * `repo`: repository name when known; otherwise `null`.
 * `branch`: observed current branch when known; otherwise `null`.
@@ -56,7 +56,7 @@ Use `null`, an empty string, or an empty list for missing evidence. Do not infer
 
 ## Boundaries
 
-When the active execution mode allows it, Magia may update controlled execution-state fields in canonical active spec packages, including truthful task checkboxes, validation evidence, execution logs, and `manifest.yaml.last_execution`.
+When the active execution mode allows it, Magia may update controlled execution-state fields in canonical active spec packages, including truthful task checkboxes, validation evidence, execution logs, and manifest.yaml last_execution.
 
 Magia must not rewrite planning intent, task definitions, roadmap inputs, product scope, acceptance criteria, feature sequencing, or PRD content. If execution reveals that planning content needs to change, record the blocker or follow-up as execution evidence and hand off instead of rewriting planning artifacts.
 

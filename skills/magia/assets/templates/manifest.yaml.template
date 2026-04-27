@@ -25,7 +25,7 @@ traceability:
   supporting_discovery_files: []
   discovery_frontier: "<discovery_frontier_or_empty>"
 
-# Omit `last_execution` until a task has truthfully executed.
+# Omit last_execution until a task has truthfully executed.
 # Canonical shape:
 # last_execution:
 #   task_id: "<taskNNN>"

@@ -88,7 +88,7 @@ def canonical_spec_package_error(spec_package_path: Path) -> str | None:
     if index is None:
         return f"spec package path must be under `{CANONICAL_SPEC_PACKAGE_TEMPLATE}`."
     if len(parts) <= index + 5:
-        return "spec package path must include `<board_id>`, `<cycle_version>`, `specs`, and `specNNN`."
+        return "spec package path must include `<board_id>`, `<cycle_version>`, `specs`, and specNNN."
 
     board_id = parts[index + 2]
     cycle_version = parts[index + 3]
@@ -155,7 +155,7 @@ def resolve_spec_package_path(
     if spec_error:
         raise ValueError(spec_error)
     if spec_id is None or not SPEC_ID_RE.match(spec_id):
-        raise ValueError(f"spec_id must match `specNNN`, got `{spec_id or '<empty>'}`.")
+        raise ValueError(f"spec_id must match specNNN, got `{spec_id or '<empty>'}`.")
 
     resolved_board_root = resolve_board_root(
         repo_root,

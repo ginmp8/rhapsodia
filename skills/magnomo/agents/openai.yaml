@@ -1,7 +1,7 @@
 interface:
   display_name: Magnomo
-  short_description: Delivery governance, roadmap, RFCs, ADRs, portfolio, reports, and validation
-  default_prompt: Use $magnomo to create, normalize, validate, or report on Magnomo-owned delivery governance artifacts without implementing code or writing Mago/Magia files.
+  short_description: Magnomo-owned delivery governance artifacts, reporting, validation, and package readiness
+  default_prompt: Use $magnomo to create, normalize, validate, or report on Magnomo-owned delivery governance artifacts from supplied evidence, without implementing code or writing Mago/Magia files.
 policy:
   products:
     - chatgpt

@@ -26,8 +26,8 @@ def main(argv: list[str]) -> int:
         description="Synchronize MAGIA task state and validate cross-artifact execution records in one closure step."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form `specNNN`.")
-    parser.add_argument("--task-id", required=True, help="Executed task id in the form `taskNNN`.")
+    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
+    parser.add_argument("--task-id", required=True, help="Executed task id in the form taskNNN.")
     parser.add_argument(
         "--status",
         required=True,
@@ -35,7 +35,7 @@ def main(argv: list[str]) -> int:
         help="Truthful task execution status for this closure pass.",
     )
     parser.add_argument("--date", help="Execution date in YYYY-MM-DD format.")
-    parser.add_argument("--summary", help="Short truthful execution summary for `manifest.yaml.last_execution`.")
+    parser.add_argument("--summary", help="Short truthful execution summary for manifest.yaml last_execution.")
     parser.add_argument(
         "--files-changed",
         nargs="*",

@@ -1,6 +1,6 @@
 ---
 name: mago
-description: plan and audit target repository or workspace work into canonical board-scoped mago spec packages. use when asked for discovery, ordering, adaptation, define preparation, full spec definition, spec refinement, spec-scoped technical design, product-only planning, task-only planning, or task reshaping under a concrete board_id and cycle_version. require evidence-backed board_root resolution, write only canonical planning artifacts, refuse implementation, runtime execution, release governance, noncanonical docs, and code changes.
+description: use when asked to plan, normalize, audit, define, or refine canonical mago repository planning artifacts for a target repository or planning workspace under a resolved board root with concrete board_id and cycle_version; supports discovery, ordering, adapt, prepare-define, define, refine, technical-design, product-only planning, task-only planning, and task reshaping. do not use for implementation, code changes, runtime testing, deployment, release notes, delivery governance, portfolio reporting, stakeholder status, or noncanonical docs; require evidence-backed board_root resolution, one primary mode, validators, and planning-only output.
 ---
 
 # MAGO
@@ -84,6 +84,30 @@ Choose exactly one primary mode before loading mode details.
 8. Use [scripts/](scripts/) for scaffolding, list updates, normalization, artifact validation, board validation, boundary checks, and package-level skill validation.
 9. Review [examples/activation-scenarios.json](examples/activation-scenarios.json) when activation or refusal behavior needs scenario evidence.
 
+## Template Asset Contract
+
+Use template-backed artifact creation instead of freehand structure whenever a supported artifact is created or normalized. Prefer `scripts/write_artifact_scaffold.py` for new files and `scripts/update_template_lists.py` for supported list fields. The operational templates are:
+
+- `assets/templates/discovery-state.json.template` for discovery run state.
+- `assets/templates/discovery-index.yaml.template` for discovery indexes.
+- `assets/templates/discovery-candidate.md.template` for discovery candidate records.
+- `assets/templates/spec-catalog.yaml.template` for ordered spec catalog entries.
+- `assets/templates/define-queue.yaml.template` for define queue handoff records.
+- `assets/templates/manifest.yaml.template` for package manifests and source-of-truth metadata.
+- `assets/templates/prd.md.template` for product requirement documents.
+- `assets/templates/tasks.md.template` for canonical task plans.
+- `assets/templates/notes.md.template` for package notes, decisions, and assumptions.
+- `assets/templates/validation.md.template` for validation plans and recorded validator outcomes.
+- `assets/templates/technical-design.md.template` for spec-scoped architecture alignment.
+
+Do not copy template placeholders into final artifacts unless the selected mode explicitly creates a scaffold. For completed planning artifacts, replace dynamic fields with evidence-backed values or record the unresolved value as an assumption, blocker, or open question.
+
+## Scenario and Package Quality Contract
+
+Activation behavior is part of MAGO package quality. Keep `examples/activation-scenarios.json` as the deterministic oracle used by `scripts/validate_activation_scenarios.py` and keep `evals/activation-scenarios.json` as the planned prompt-review suite for future live or human evaluation. Update both when activation boundaries, mode routing, stop conditions, or handoff rules materially change.
+
+Before packaging the MAGO skill itself, run the package-level gates in [references/validation-and-packaging.md](references/validation-and-packaging.md). Treat deterministic scenario metrics as static oracle evidence only; do not claim live activation precision or recall unless the prompts were executed and the results were recorded.
+
 ## Script Routing
 
 - Create new template-backed artifacts with `scripts/write_artifact_scaffold.py`.
@@ -95,6 +119,7 @@ Choose exactly one primary mode before loading mode details.
 - Normalize legacy package drift with `scripts/normalize_package.py` when the change is mechanical and evidence-preserving.
 - Validate activation, ambiguity, refusal, and mode-routing scenarios with `scripts/validate_activation_scenarios.py` during hardening or packaging.
 - Validate MAGO skill package integrity with `scripts/validate_skill_package.py` during hardening or packaging.
+- Build and archive the MAGO skill itself with `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate` only after package-level gates pass.
 - Validate package evidence and traceability with `scripts/validate_evidence_contract.py` when touched artifacts include repository facts, execution-state, validation-state, dependency-state, or source-of-truth claims.
 - Run `scripts/validate_boundary.py` when changes could blur MAGO planning boundaries with governance or execution workflows.
 
