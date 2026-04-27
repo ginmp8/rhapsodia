@@ -1,0 +1,77 @@
+schema_version: 1
+roadmap_id: workspace-admin-controls
+title: Workspace administration controls
+owner: product-platform
+horizon: next
+description: Improve enterprise administration workflows for shared analytics assets.
+goals:
+  - Make visibility controls easier for admins to explain.
+  - Reduce support escalations about shared analytics assets.
+outcomes:
+  - Admins can review and adjust key sharing settings before workspace expansion.
+themes:
+  - permissions clarity
+  - admin confidence
+stakeholders:
+  - security
+  - customer-success
+  - support
+constraints:
+  - Do not redesign dashboard permissions in the first candidate.
+assumptions:
+  - Saved-query controls can ship before dashboard role preview.
+success_measures:
+  - Fewer support escalations about saved-query visibility.
+risks:
+  - Dashboard inheritance may require a separate feature.
+features:
+  - feature_key: saved-query-sharing-controls
+    name: Saved-query sharing controls
+    problem: Admins cannot easily review who can see saved queries.
+    outcome: Admins can review and adjust beta-scoped saved-query sharing.
+    horizon: next
+    commitment: targeted
+    confidence: medium
+    dependencies: []
+    ready_for_spec: true
+    candidate_spec_id: spec022
+    scope_summary: Admin-facing saved-query visibility controls.
+    mvp_boundary:
+      - Saved-query sharing visibility.
+      - Admin-facing controls only.
+    later_phases:
+      - Role preview for dashboard access.
+    non_goals:
+      - General dashboard permission redesign.
+  - feature_key: dashboard-role-preview
+    name: Dashboard role preview
+    problem: Admins cannot preview effective dashboard access.
+    outcome: Admins can understand dashboard role impact before changing access policies.
+    horizon: later
+    commitment: exploratory
+    confidence: low
+    dependencies:
+      - saved-query-sharing-controls
+    ready_for_spec: false
+    candidate_spec_id: null
+    scope_summary: Preview dashboard role effects after sharing controls are clearer.
+    mvp_boundary: []
+    later_phases: []
+    non_goals:
+      - Full permission audit export.
+  - feature_key: admin-activity-summary
+    name: Admin activity summary
+    problem: Admins lack a concise view of recent administration changes.
+    outcome: Admins can review recent changes without asking Support.
+    horizon: future
+    commitment: parking_lot
+    confidence: low
+    dependencies:
+      - saved-query-sharing-controls
+    ready_for_spec: false
+    candidate_spec_id: null
+    scope_summary: Summarize recent admin changes after core controls exist.
+    mvp_boundary: []
+    later_phases: []
+    non_goals:
+      - Compliance-grade audit log.

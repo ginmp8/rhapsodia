@@ -1,0 +1,18 @@
+## Use this file as a structural reference only.
+## Replace every <...> token with repository-truth values.
+## Use null or unknown only when the final artifact truthfully remains unknown.
+
+schema_version: 1
+portfolio_id: "<portfolio_id>"
+updated_at: "<YYYY-MM-DD_or_null>"
+items: []
+blocked: []
+risks: []
+replans: []
+flags:
+  blocked: []
+  overdue: []
+  replanned: []
+  missing_owner: []
+  at_risk: []
+  multi_repo: []

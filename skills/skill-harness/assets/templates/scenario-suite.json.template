@@ -1,0 +1,41 @@
+{
+  "target_skill": "{{target_name}}",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "activate-001",
+      "type": "should_activate",
+      "prompt": "{{activation_prompt}}",
+      "expected_behavior": "{{activation_expected_behavior}}",
+      "acceptance_criteria": ["{{activation_criterion}}"]
+    },
+    {
+      "id": "nonactivate-001",
+      "type": "should_not_activate",
+      "prompt": "{{nonactivation_prompt}}",
+      "expected_behavior": "{{nonactivation_expected_behavior}}",
+      "acceptance_criteria": ["{{nonactivation_criterion}}"]
+    },
+    {
+      "id": "ambiguous-001",
+      "type": "ambiguous",
+      "prompt": "{{ambiguous_prompt}}",
+      "expected_behavior": "{{ambiguous_expected_behavior}}",
+      "acceptance_criteria": ["{{ambiguous_criterion}}"]
+    },
+    {
+      "id": "edge-001",
+      "type": "edge_case",
+      "prompt": "{{edge_prompt}}",
+      "expected_behavior": "{{edge_expected_behavior}}",
+      "acceptance_criteria": ["{{edge_criterion}}"]
+    },
+    {
+      "id": "adversarial-001",
+      "type": "adversarial",
+      "prompt": "{{adversarial_prompt}}",
+      "expected_behavior": "{{adversarial_expected_behavior}}",
+      "acceptance_criteria": ["{{adversarial_criterion}}"]
+    }
+  ]
+}

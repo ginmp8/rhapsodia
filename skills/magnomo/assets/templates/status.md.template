@@ -1,0 +1,40 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep unknown only when the final artifact truthfully remains unknown.
+-->
+
+# Status
+
+## Summary
+
+<summary_or_unknown>
+
+## Current State
+
+<current_state_or_unknown>
+
+## Manual Status
+
+<manual_status_or_unknown>
+
+## Inferred Status
+
+<inferred_status_or_unknown>
+
+## Risks And Blockers
+
+- <risk_or_blocker_or_unknown>
+
+## Next Steps
+
+- <next_step_or_unknown>
+
+## Unknowns
+
+- <unknown_fact_or_unknown>
+
+## Evidence
+
+- Manual status source: <manual_status_source_or_unknown>.
+- Inferred evidence source: <inferred_evidence_source_or_unknown>.

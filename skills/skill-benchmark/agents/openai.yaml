@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Benchmark
+  short_description: Generate standardized, measurable skill benchmark reports.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

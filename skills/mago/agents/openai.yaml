@@ -1,0 +1,19 @@
+interface:
+  display_name: MAGO
+  short_description: Plan and audit canonical board specs only
+  default_prompt: Use $mago to discover repository features into structured discovery
+    artifacts, order them into spec-catalog.yaml and define-queue.yaml, adapt
+    existing planning docs into the MAGO structure without inventing unsupported artifacts,
+    prepare ordered specs into define-compatible package seeds, define or refine full
+    planning packages, create spec-scoped technical-design.md for architecture
+    alignment, reshape broad task plans, define and refine product documentation without
+    touching tasks.md, or define and refine tasks.md without changing product
+    docs. Keep the run docs-only and do not switch into implementation or execution
+    workflows.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

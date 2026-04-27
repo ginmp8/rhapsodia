@@ -1,0 +1,11 @@
+interface:
+  display_name: Karpathy Guidelines
+  short_description: Keep coding help small, explicit, and verifiable
+  default_prompt: Use karpathy-guidelines for this coding or technical artifact task. Prefer explicit assumptions, smallest sufficient changes, concrete validation, and honest reporting of what was or was not verified.
+policy:
+  allow_implicit_invocation: true
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas

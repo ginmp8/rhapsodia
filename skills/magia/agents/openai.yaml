@@ -1,0 +1,12 @@
+interface:
+  display_name: MAGIA
+  short_description: Safe scoped repository execution
+  default_prompt: Use $magia to execute a bounded repository task in ADHOC mode or
+    RALPH mode with truthful execution-record updates.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

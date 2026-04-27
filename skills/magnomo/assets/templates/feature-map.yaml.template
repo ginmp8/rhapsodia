@@ -1,0 +1,22 @@
+## Use this file as a structural reference only.
+## Replace every <...> token with repository-truth values.
+## Use null or unknown only when the final artifact truthfully remains unknown.
+
+schema_version: 1
+roadmap_id: "<roadmap_id>"
+features: []
+# Handoff feature shape:
+# - feature_key: lowercase-hyphen-key
+#   ready_for_spec: false
+#   candidate_spec_id: <spec_id_or_null>
+#   title: <title_or_null>
+#   scope_summary: <scope_summary_or_null>
+#   dependencies: []
+#   recommended_mago_mode: <recommended_mago_mode_or_unknown>
+#   handoff_status: <handoff_status_or_unknown>
+#   source_summary: <source_summary_or_null>
+#   mago_inputs:
+#     - roadmap.yaml
+#     - roadmap.md
+#     - adr-records.md
+#   notes: <notes_or_null>

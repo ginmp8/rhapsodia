@@ -1,0 +1,41 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep unknown only when the final artifact truthfully remains unknown.
+-->
+
+# Release Notes
+
+## Audience
+
+<stakeholder_audience>
+
+## Summary
+
+<summary_or_draft_status>
+
+## User Impact
+
+<user_impact_or_unknown>
+
+## Changes
+
+- <change_or_unknown>
+
+## Availability And Rollout
+
+Rollout status: <rollout_status_or_unknown>.
+
+Release evidence: <release_evidence_or_not_recorded>.
+
+## Validation Status
+
+Validation evidence: <validation_evidence_or_unknown>.
+
+## Known Limitations
+
+- <known_limitation_or_unknown>
+
+## Support Notes
+
+- <support_note_or_unknown>

@@ -1,0 +1,43 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep unknown only when the final artifact truthfully remains unknown.
+-->
+
+# Roadmap
+
+## Context
+
+<context_or_unknown>
+
+## Themes
+
+- <theme_or_unknown>
+
+## Goals And Outcomes
+
+- <goal_or_outcome_or_unknown>
+
+## MVP Boundary
+
+- <mvp_boundary_item_or_unknown>
+
+## Sequencing
+
+<sequencing_or_unknown>
+
+## Dependencies
+
+- <dependency_or_unknown>
+
+## Risks
+
+- <risk_or_unknown>
+
+## Stakeholders
+
+- <stakeholder_or_unknown>
+
+## Open Decisions
+
+- <open_decision_or_unknown>

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "A001",
+    "category": "should_activate",
+    "prompt": "{{should_activate_prompt}}",
+    "expected_activation": true,
+    "expected_behavior": "{{should_activate_expected_behavior}}",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  },
+  {
+    "id": "N001",
+    "category": "should_not_activate",
+    "prompt": "{{should_not_activate_prompt}}",
+    "expected_activation": false,
+    "expected_behavior": "{{should_not_activate_expected_behavior}}",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  },
+  {
+    "id": "M001",
+    "category": "ambiguous",
+    "prompt": "{{ambiguous_prompt}}",
+    "expected_activation": true,
+    "expected_behavior": "{{ambiguous_expected_behavior}}",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  },
+  {
+    "id": "E001",
+    "category": "edge_case",
+    "prompt": "{{edge_case_prompt}}",
+    "expected_activation": true,
+    "expected_behavior": "{{edge_case_expected_behavior}}",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  }
+]

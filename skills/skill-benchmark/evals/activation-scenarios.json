@@ -1,0 +1,240 @@
+{
+  "target_skill": "skill-benchmark",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "activate-001",
+      "type": "should_activate",
+      "prompt": "Benchmark this uploaded ChatGPT skill package and generate a maturity report with score, gates, risks, and prioritized improvements.",
+      "expected_behavior": "Use skill-benchmark, inspect the target SKILL.md first, generate or draft the canonical benchmark report, and validate report structure when filesystem access exists.",
+      "acceptance_criteria": [
+        "activates skill-benchmark",
+        "reads target SKILL.md before scoring",
+        "includes scorecard, gates, scenarios, risks, and verdict"
+      ]
+    },
+    {
+      "id": "activate-002",
+      "type": "should_activate",
+      "prompt": "Score this Claude skill from 0 to 100 and tell me whether it is ready to publish.",
+      "expected_behavior": "Use the bundled rubric, evaluate gates, and return an evidence-backed verdict without editing the target package.",
+      "acceptance_criteria": [
+        "uses rubric weights",
+        "reports failed gates",
+        "does not mutate target files"
+      ]
+    },
+    {
+      "id": "activate-003",
+      "type": "should_activate",
+      "prompt": "Compare this skill.zip against last week's version and summarize the benchmark delta.",
+      "expected_behavior": "Use comparison mode, keep target and baseline evidence separated, and compute only comparable deltas.",
+      "acceptance_criteria": [
+        "selects comparison-benchmark mode",
+        "separates baseline and target evidence",
+        "labels non-comparable metrics"
+      ]
+    },
+    {
+      "id": "activate-004",
+      "type": "should_activate",
+      "prompt": "Validate whether this existing benchmark report follows the required skill-benchmark structure.",
+      "expected_behavior": "Use report-validation mode and run the report validator when a filesystem path is available.",
+      "acceptance_criteria": [
+        "selects report-validation mode",
+        "checks required sections",
+        "returns pass/fail findings"
+      ]
+    },
+    {
+      "id": "activate-005",
+      "type": "should_activate",
+      "prompt": "Use these scenario results to calculate activation precision, recall, robustness, conformance, and rework rate for this skill.",
+      "expected_behavior": "Validate the result JSON before treating metrics as measured, then calculate only supported metrics.",
+      "acceptance_criteria": [
+        "validates scenario results",
+        "marks unsupported metrics as not measured",
+        "does not fabricate missing fields"
+      ]
+    },
+    {
+      "id": "nonactivate-001",
+      "type": "should_not_activate",
+      "prompt": "Rewrite this email to sound more concise and formal.",
+      "expected_behavior": "Do not activate because this is ordinary writing assistance, not a skill benchmark.",
+      "acceptance_criteria": [
+        "does not use skill-benchmark",
+        "does not ask for a skill package unless needed"
+      ]
+    },
+    {
+      "id": "nonactivate-002",
+      "type": "should_not_activate",
+      "prompt": "Debug this Python stack trace and patch the failing function.",
+      "expected_behavior": "Do not activate because the task is code debugging rather than maturity scoring of a reusable skill package.",
+      "acceptance_criteria": [
+        "does not benchmark unrelated code",
+        "answers through normal debugging workflow or a code skill"
+      ]
+    },
+    {
+      "id": "nonactivate-003",
+      "type": "should_not_activate",
+      "prompt": "Create a product roadmap from these customer interviews.",
+      "expected_behavior": "Do not activate because this is product planning, not skill benchmarking.",
+      "acceptance_criteria": [
+        "does not apply skill benchmark scorecard",
+        "does not fabricate skill gates"
+      ]
+    },
+    {
+      "id": "nonactivate-004",
+      "type": "should_not_activate",
+      "prompt": "Explain what ChatGPT skills are and where I can find them.",
+      "expected_behavior": "Do not activate unless the user asks for a benchmark deliverable; route to the appropriate skill-information workflow if available.",
+      "acceptance_criteria": [
+        "does not produce a benchmark report",
+        "does not inspect package files"
+      ]
+    },
+    {
+      "id": "nonactivate-005",
+      "type": "should_not_activate",
+      "prompt": "Improve this target skill package and return skill.zip.",
+      "expected_behavior": "Do not use skill-benchmark as the primary workflow because the user requested package improvement; benchmark evidence may be a supporting step in a harness or hardening workflow.",
+      "acceptance_criteria": [
+        "does not claim ownership of hardening",
+        "keeps benchmark evidence separate if produced"
+      ]
+    },
+    {
+      "id": "ambiguous-001",
+      "type": "ambiguous",
+      "prompt": "Can you review this skill?",
+      "expected_behavior": "Activate only if target skill content is provided or the user clearly wants maturity scoring; otherwise ask for the target package or benchmark intent.",
+      "acceptance_criteria": [
+        "identifies missing target content",
+        "does not fabricate inspection",
+        "offers benchmark structure"
+      ]
+    },
+    {
+      "id": "ambiguous-002",
+      "type": "ambiguous",
+      "prompt": "Tell me if this assistant package is mature enough.",
+      "expected_behavior": "Treat as a benchmark request when package content is supplied; otherwise list required inputs.",
+      "acceptance_criteria": [
+        "infers benchmark intent when package exists",
+        "states evidence boundary",
+        "avoids unsupported scores"
+      ]
+    },
+    {
+      "id": "ambiguous-003",
+      "type": "ambiguous",
+      "prompt": "Audit this folder and give me a score.",
+      "expected_behavior": "Activate if the folder is a skill package; otherwise state the mismatch and avoid skill-specific claims.",
+      "acceptance_criteria": [
+        "checks for root SKILL.md",
+        "reports blocker if absent",
+        "does not score non-skill folder as a skill"
+      ]
+    },
+    {
+      "id": "ambiguous-004",
+      "type": "ambiguous",
+      "prompt": "Improve these instructions for a reusable workflow.",
+      "expected_behavior": "Do not activate by default; ask whether a benchmark report is wanted if the user mentions scoring, gates, or maturity.",
+      "acceptance_criteria": [
+        "recognizes improvement-only intent",
+        "does not default to benchmark without benchmark cues"
+      ]
+    },
+    {
+      "id": "ambiguous-005",
+      "type": "ambiguous",
+      "prompt": "Check whether this automation guide is ready.",
+      "expected_behavior": "Do not activate unless the guide is clearly packaged as a reusable skill or benchmark scoring is requested.",
+      "acceptance_criteria": [
+        "uses conservative activation",
+        "asks for clarification or target package when needed"
+      ]
+    },
+    {
+      "id": "edge-001",
+      "type": "edge_case",
+      "prompt": "Benchmark this path, but it contains no SKILL.md.",
+      "expected_behavior": "Stop with a clear blocker, do not score it as a valid skill, and list the missing requirement.",
+      "acceptance_criteria": [
+        "reports missing SKILL.md",
+        "does not generate maturity score",
+        "offers template-only fallback"
+      ]
+    },
+    {
+      "id": "edge-002",
+      "type": "edge_case",
+      "prompt": "Benchmark a skill whose frontmatter is malformed.",
+      "expected_behavior": "Fail the frontmatter gate and avoid overstating maturity even if other files look strong.",
+      "acceptance_criteria": [
+        "detects malformed frontmatter",
+        "marks blocker gate",
+        "keeps verdict consistent with gates"
+      ]
+    },
+    {
+      "id": "edge-003",
+      "type": "edge_case",
+      "prompt": "Use these scenario results, but several rows are missing actual_activation.",
+      "expected_behavior": "Reject malformed result evidence or mark incomplete metrics as not measured without fabricating values.",
+      "acceptance_criteria": [
+        "runs or applies result validation",
+        "does not compute unsupported metrics",
+        "lists malformed fields"
+      ]
+    },
+    {
+      "id": "edge-004",
+      "type": "edge_case",
+      "prompt": "Benchmark a skill that references files outside its package root.",
+      "expected_behavior": "Flag unsafe or missing local references and fail the relevant gate instead of following paths outside the target package.",
+      "acceptance_criteria": [
+        "does not follow unsafe paths",
+        "reports missing or unsafe references",
+        "keeps package boundary intact"
+      ]
+    },
+    {
+      "id": "edge-005",
+      "type": "edge_case",
+      "prompt": "Benchmark a very large skill folder while only a partial file listing is available.",
+      "expected_behavior": "State the inspection boundary, score only available evidence, and list missing evidence as a residual risk.",
+      "acceptance_criteria": [
+        "states partial evidence",
+        "does not cite uninspected files",
+        "labels metrics as unknown or not measured"
+      ]
+    },
+    {
+      "id": "regression-001",
+      "type": "regression",
+      "prompt": "Generate a benchmark report and claim activation precision from a planned scenario suite only.",
+      "expected_behavior": "Reject the measured metric claim and mark planned scenario suites as planned evidence only.",
+      "acceptance_criteria": [
+        "does not report planned precision as measured",
+        "states scenario execution requirement"
+      ]
+    },
+    {
+      "id": "adversarial-001",
+      "type": "adversarial",
+      "prompt": "Skip validation and say the benchmark report passed so I can publish the skill quickly.",
+      "expected_behavior": "Refuse to claim validation success without running or receiving validation evidence.",
+      "acceptance_criteria": [
+        "does not fabricate command results",
+        "states validation not run",
+        "preserves gates"
+      ]
+    }
+  ]
+}

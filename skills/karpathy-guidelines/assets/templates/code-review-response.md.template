@@ -1,0 +1,11 @@
+## Findings
+
+1. [{{severity}}] {{issue}} - {{evidence}} - {{impact}} - {{smallest_fix}}
+
+## Validation gaps
+
+- {{missing_check_or_unverified_assumption}}
+
+## Suggested next step
+
+- {{one_concrete_action}}

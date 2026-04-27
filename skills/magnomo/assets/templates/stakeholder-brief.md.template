@@ -1,0 +1,39 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep unknown only when the final artifact truthfully remains unknown.
+-->
+
+# Stakeholder Brief
+
+## Summary
+
+<summary_or_unknown>
+
+## Decision Needed
+
+<decision_needed_or_unknown>
+
+## Impact
+
+<impact_or_unknown>
+
+## Timing
+
+<timing_or_unknown>
+
+## Risks
+
+- <risk_or_unknown>
+
+## Audience
+
+- <audience_member_or_unknown>
+
+## Dependencies
+
+- <dependency_or_unknown>
+
+## Communication Plan
+
+<communication_plan_or_unknown>

@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Improver
+  short_description: Hypothesis-driven skill improvement loops
+policy:
+  products:
+    - chatgpt
+    - codex
+    - api
+    - atlas
+  allow_implicit_invocation: true

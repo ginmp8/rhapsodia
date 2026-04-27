@@ -1,0 +1,23 @@
+## Assumptions
+
+- {{assumption_that_affects_correctness}}
+
+## Minimal change
+
+```{{language}}
+{{minimal_code_or_patch}}
+```
+
+## Validation evidence
+
+Executed:
+
+- {{executed_check_or_none}}
+
+Not executed:
+
+- {{suggested_check_or_reason}}
+
+## Residual risks
+
+- {{material_risk_or_omit_section}}

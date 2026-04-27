@@ -1,0 +1,32 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep evidence concise and repository-relative.
+-->
+---
+candidate_id: "<candidate_id>"
+title: "<title>"
+status: "<new|updated|provisional|ready_for_order|blocked|duplicate>"
+provisional_feature_key: "<feature_key_or_empty>"
+triage_confidence: "<low|medium|high>"
+boundary_risk: "<low|medium|high>"
+last_frontier: "<frontier>"
+---
+
+# Discovery Candidate - <title>
+
+## Scope Summary
+
+## Observed Behavior
+
+## Entry Points
+
+## Core Files
+
+## Supporting Files
+
+## Dependencies and Integrations
+
+## Open Questions
+
+## Promotion Decision

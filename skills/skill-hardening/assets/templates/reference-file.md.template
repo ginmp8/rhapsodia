@@ -1,0 +1,32 @@
+# {{reference_title}}
+
+Use this reference when {{loading_condition}}.
+
+## Purpose
+
+{{purpose}}
+
+## Rules
+
+- {{rule_1}}
+- {{rule_2}}
+- {{rule_3}}
+
+## Examples
+
+### Positive
+
+Input: {{positive_input}}
+
+Expected behavior: {{positive_expected_behavior}}
+
+### Negative
+
+Input: {{negative_input}}
+
+Expected behavior: {{negative_expected_behavior}}
+
+## Validation
+
+- {{validation_rule_1}}
+- {{validation_rule_2}}

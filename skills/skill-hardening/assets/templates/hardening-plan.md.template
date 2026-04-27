@@ -1,0 +1,71 @@
+# Hardening Plan: {{target_skill_name}}
+
+## Target
+
+- Target path: {{target_skill_path}}
+- Baseline audit: {{baseline_audit_path}}
+- Mutation mode: {{mode}}
+- Allowed scope: {{allowed_scope}}
+- Blocked paths: {{blocked_paths}}
+
+## Executive Summary
+
+{{summary}}
+
+## Hardening Map
+
+### control_plane
+
+- Hypothesis: {{control_plane_hypothesis}}
+- Files: {{control_plane_files}}
+- Validation: {{control_plane_validation}}
+
+### references
+
+- Hypothesis: {{references_hypothesis}}
+- Files: {{references_files}}
+- Validation: {{references_validation}}
+
+### scripts
+
+- Hypothesis: {{scripts_hypothesis}}
+- Files: {{scripts_files}}
+- Validation: {{scripts_validation}}
+
+### templates_assets
+
+- Hypothesis: {{templates_assets_hypothesis}}
+- Files: {{templates_assets_files}}
+- Validation: {{templates_assets_validation}}
+
+### scenarios
+
+- Hypothesis: {{scenarios_hypothesis}}
+- Files: {{scenarios_files}}
+- Validation: {{scenarios_validation}}
+
+### packaging
+
+- Hypothesis: {{packaging_hypothesis}}
+- Files: {{packaging_files}}
+- Validation: {{packaging_validation}}
+
+## Change Batches
+
+| Batch | Hypothesis | Files | Expected improvement | Gate |
+|---|---|---|---|---|
+| H001 | {{batch_1_hypothesis}} | {{batch_1_files}} | {{batch_1_expected_improvement}} | {{batch_1_gate}} |
+
+## Validation Plan
+
+- {{validation_step_1}}
+- {{validation_step_2}}
+- {{validation_step_3}}
+
+## Rollback Plan
+
+{{rollback_plan}}
+
+## Residual Risks
+
+- {{risk_1}}

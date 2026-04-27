@@ -1,0 +1,60 @@
+schema_version: 1
+spec_id: null
+request:
+  title: CSV export should preserve filtered dashboard table columns
+  requester: customer-success
+  requested_date: 2026-04-20
+  source: github_issue
+  context: Customer reports exports include hidden columns after dashboard filters are applied.
+ownership:
+  owner: null
+  backup_owner: null
+  stakeholders: []
+  decision_maker: null
+  watchers:
+    - customer-success
+planning:
+  sprint: null
+  bucket: retention
+  target_date: null
+  commitment: unknown
+  milestone: null
+  rollout_target: null
+priority:
+  level: unknown
+  urgency: high
+  impact: medium
+  risk: unknown
+  rationale: Renewal impact is reported, but product priority has not been confirmed.
+  cost_of_delay: Renewal conversation remains blocked until scope and timing are clarified.
+status:
+  state: intake
+  summary: Intake captured from GitHub issue; triage is still needed.
+  updated_at: 2026-04-20
+  confidence: low
+  evidence_summary: GitHub issue only. Mago spec and Magia execution evidence are not recorded.
+  manual:
+    summary: Renewal impact reported by Customer Success.
+    updated_at: 2026-04-20
+    source: github_issue
+  inferred:
+    summary: No execution progress inferred.
+    updated_at: null
+    evidence: []
+blockers: []
+risks:
+  - id: risk-001
+    summary: Renewal impact is reported but not yet sized.
+    severity: medium
+    owner: customer-success
+replanning: []
+tags:
+  - export
+  - retention
+repos:
+  candidate_impacted: []
+links:
+  mago: []
+  magia: []
+  external:
+    - https://github.com/example/redash/issues/4821

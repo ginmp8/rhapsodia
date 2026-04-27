@@ -1,0 +1,65 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep unknown only when the final artifact truthfully remains unknown.
+-->
+
+# Feature Report
+
+## Audience
+
+<audience>
+
+## Summary
+
+<summary_or_unknown>
+
+## Business Context
+
+<business_context_or_unknown>
+
+## Delivered Scope
+
+<delivered_scope_or_unknown>
+
+## Impacted Systems
+
+- <impacted_system_or_unknown>
+
+## Changed Behavior
+
+<changed_behavior_or_unknown>
+
+## Evidence
+
+Evidence status: <evidence_status_or_unknown>.
+
+- Delivery evidence: <delivery_evidence_or_unknown>.
+- Execution evidence: <execution_evidence_or_unknown>.
+- Release or deployment evidence: <release_or_deployment_evidence_or_unknown>.
+
+## Validation Evidence
+
+Validation status: <validation_status_or_unknown>.
+
+- <validation_evidence_or_unknown>
+
+## Operational Impact
+
+<operational_impact_or_unknown>
+
+## Rollout And Rollback
+
+Rollout status: <rollout_status_or_unknown>.
+
+Deployment evidence: <deployment_evidence_or_not_recorded>.
+
+Rollback notes: <rollback_notes_or_unknown>.
+
+## Risks And Limitations
+
+- <risk_or_limitation_or_unknown>
+
+## Follow-ups
+
+- <follow_up_or_unknown>

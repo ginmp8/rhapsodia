@@ -1,0 +1,74 @@
+<!--
+Use this file as a structural reference only.
+Replace every <...> token with repository-truth values.
+Keep architectural contracts high-level; do not include implementation code or CLI runbooks.
+-->
+---
+spec_id: "<spec_id>"
+order: "<order>"
+feature_key: "<feature_key>"
+title: "<title>"
+type: "<type>"
+classification: "<classification>"
+status: "<status>"
+phase: "<phase>"
+cycle_version: "<cycle_version>"
+feature_version: "<feature_version>"
+project_size: "<small|medium|large|unknown>"
+project_types: []
+depends_on_features: []
+depends_on_specs: []
+---
+
+# Technical Design - <title>
+
+## Context
+
+## Problem Statement
+
+## Scope
+
+### In Scope
+
+### Out of Scope
+
+### Future Considerations
+
+## Technical Solution
+
+### Architecture Overview
+
+### Data Flow
+
+### Existing Reuse
+
+### External Dependencies
+
+### API and Data Contracts
+
+### Failure Modes
+
+### Performance Requirements
+
+### Migration Plan
+
+## Architecture Decisions
+
+### Alternatives Considered
+
+### Decision Criteria
+
+## Security Considerations
+
+## Testing Strategy
+
+## Monitoring and Observability
+
+## Rollback Plan
+
+## Risks
+
+## Implementation Plan
+<!-- Keep this at phase/approach level. Detailed executable decomposition belongs in tasks.md. -->
+
+## Open Questions

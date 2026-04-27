@@ -1,0 +1,63 @@
+# Skill Benchmark: {{target_skill_name}}
+
+## 1. Executive summary
+
+{{executive_summary}}
+
+## 2. Scorecard
+
+| Dimension | Weight | Score | Evidence | Main improvement |
+|---|---:|---:|---|---|
+| Scope and specialization | 15 | {{scope_score}} | {{scope_evidence}} | {{scope_improvement}} |
+| Trigger description | 15 | {{trigger_score}} | {{trigger_evidence}} | {{trigger_improvement}} |
+| Execution workflow | 15 | {{workflow_score}} | {{workflow_evidence}} | {{workflow_improvement}} |
+| Output quality | 15 | {{output_score}} | {{output_evidence}} | {{output_improvement}} |
+| Supporting resources | 10 | {{resources_score}} | {{resources_evidence}} | {{resources_improvement}} |
+| Validation and acceptance criteria | 10 | {{validation_score}} | {{validation_evidence}} | {{validation_improvement}} |
+| Context efficiency | 10 | {{context_score}} | {{context_evidence}} | {{context_improvement}} |
+| Maintainability | 10 | {{maintainability_score}} | {{maintainability_evidence}} | {{maintainability_improvement}} |
+| **Total** | **100** | **{{total_score}}** |  |  |
+
+## 3. Gate evaluation
+
+{{gate_evaluation}}
+
+## 4. Static structure inventory
+
+{{static_structure_inventory}}
+
+## 5. Behavioral metrics
+
+{{behavioral_metrics}}
+
+## 6. Scenario suite
+
+{{scenario_suite}}
+
+## 7. Evidence-based findings
+
+{{evidence_based_findings}}
+
+## 8. Top prioritized improvements
+
+{{prioritized_improvements}}
+
+## 9. Risks if used as-is
+
+{{risks}}
+
+## 10. Suggested improved description
+
+{{suggested_description}}
+
+## 11. Suggested ideal file structure
+
+{{suggested_file_structure}}
+
+## 12. Verdict
+
+{{verdict}}
+
+## 13. Benchmark metadata
+
+{{benchmark_metadata}}

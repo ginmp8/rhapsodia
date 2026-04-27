@@ -1,0 +1,270 @@
+{
+  "suite": "mago activation and boundary scenarios",
+  "version": 4,
+  "scenarios": [
+    {
+      "id": "activate-discovery-board",
+      "prompt": "Discover repository features and update the canonical discovery artifacts for board alpha, cycle 2026-q2.",
+      "expected_activation": true,
+      "expected_mode": "discovery",
+      "expected_boundary": "write only discovery artifacts under the resolved board root",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-order-backlog",
+      "prompt": "Order the discovered candidates into the board backlog and update the define queue for board alpha cycle 2026-q2.",
+      "expected_activation": true,
+      "expected_mode": "order",
+      "expected_boundary": "update spec catalog and define queue only under the resolved board root",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-adapt-legacy-plan",
+      "prompt": "Adapt these drifted legacy planning docs into the canonical board structure without implementing anything.",
+      "expected_activation": true,
+      "expected_mode": "adapt",
+      "expected_boundary": "normalize planning artifacts into the canonical board or package shape",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-prepare-define-shells",
+      "prompt": "Seed define-ready package shells from the define queue for spec014 and spec015.",
+      "expected_activation": true,
+      "expected_mode": "prepare-define",
+      "expected_boundary": "create package scaffolds under BOARD_ROOT/specs only",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-define-package",
+      "prompt": "Define spec021 using this roadmap evidence and create the full package artifacts.",
+      "expected_activation": true,
+      "expected_mode": "define",
+      "expected_boundary": "create manifest, PRD, tasks, notes, and validation artifacts only for the selected spec",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-refine-package",
+      "prompt": "Refine the existing spec021 package to correct planning assumptions and validation notes.",
+      "expected_activation": true,
+      "expected_mode": "refine",
+      "expected_boundary": "update existing package planning artifacts without changing execution evidence",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-technical-design",
+      "prompt": "Create a spec-scoped technical design for spec011 using the existing package evidence.",
+      "expected_activation": true,
+      "expected_mode": "technical-design",
+      "expected_boundary": "write the architecture artifact only under the selected spec package",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-reshape-tasks",
+      "prompt": "Reshape the broad task plan in spec033 into canonical task structure with specialists and validation.",
+      "expected_activation": true,
+      "expected_mode": "reshape-tasks",
+      "expected_boundary": "update task structure and related package status fields only",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-define-product",
+      "prompt": "Define product-only artifacts for spec044 from this roadmap evidence; do not create task execution plans.",
+      "expected_activation": true,
+      "expected_mode": "define-product",
+      "expected_boundary": "write product planning docs only",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-refine-product",
+      "prompt": "Refine product-only docs for spec044 and preserve the current tasks file unchanged.",
+      "expected_activation": true,
+      "expected_mode": "refine-product",
+      "expected_boundary": "touch product artifacts only and preserve task artifacts",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-define-tasks",
+      "prompt": "Define task-only artifacts for spec045 from the approved PRD and specialist needs.",
+      "expected_activation": true,
+      "expected_mode": "define-tasks",
+      "expected_boundary": "write tasks.md only and validate the package",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-refine-tasks-only",
+      "prompt": "Refine spec042 tasks so specialists and validation are explicit, but do not change the PRD.",
+      "expected_activation": true,
+      "expected_mode": "refine-tasks",
+      "expected_boundary": "touch task artifacts only and validate the package",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "refuse-implementation",
+      "prompt": "Implement the checkout API endpoint and run tests.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "decline the implementation portion and hand off to an execution workflow",
+      "case_type": "should_not_activate"
+    },
+    {
+      "id": "refuse-delivery-governance",
+      "prompt": "Create release notes and update stakeholder delivery status for this feature.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "decline delivery governance and hand off to a governance workflow",
+      "case_type": "should_not_activate"
+    },
+    {
+      "id": "ambiguous-docs",
+      "prompt": "Update the checkout docs.",
+      "expected_activation": "ambiguous",
+      "expected_mode": null,
+      "expected_boundary": "resolve whether the user means canonical MAGO planning artifacts or general documentation",
+      "case_type": "ambiguous"
+    },
+    {
+      "id": "refuse-runtime-deployment",
+      "case_type": "should_not_activate",
+      "prompt": "Deploy the checkout workflow, collect runtime evidence, and update the plan afterward.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "decline deployment and runtime evidence collection; planning updates require separate evidence"
+    },
+    {
+      "id": "refuse-product-code-change",
+      "case_type": "should_not_activate",
+      "prompt": "Change the product code for checkout and add the implementation diff to the package.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "decline product code edits and implementation diffs"
+    },
+    {
+      "id": "refuse-run-tests",
+      "case_type": "should_not_activate",
+      "prompt": "Run tests for spec021 and mark the validation evidence as complete.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "decline runtime testing and do not invent validation evidence"
+    },
+    {
+      "id": "refuse-release-notes",
+      "case_type": "should_not_activate",
+      "prompt": "Write release notes for the completed checkout feature.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "decline release governance and hand off outside MAGO"
+    },
+    {
+      "id": "ambiguous-plan-spec",
+      "case_type": "ambiguous",
+      "prompt": "Plan the checkout spec.",
+      "expected_activation": "ambiguous",
+      "expected_mode": null,
+      "expected_boundary": "resolve board, cycle, package scope, and whether MAGO artifacts are intended"
+    },
+    {
+      "id": "ambiguous-roadmap-to-specs",
+      "case_type": "ambiguous",
+      "prompt": "Turn this roadmap into specs.",
+      "expected_activation": "ambiguous",
+      "expected_mode": null,
+      "expected_boundary": "resolve whether this is MAGO define preparation or governance roadmap work"
+    },
+    {
+      "id": "ambiguous-package-request",
+      "case_type": "ambiguous",
+      "prompt": "Create the checkout package.",
+      "expected_activation": "ambiguous",
+      "expected_mode": null,
+      "expected_boundary": "resolve whether the package is a canonical MAGO spec package and gather board identifiers"
+    },
+    {
+      "id": "ambiguous-documentation-request",
+      "case_type": "ambiguous",
+      "prompt": "Improve the user documentation for onboarding.",
+      "expected_activation": "ambiguous",
+      "expected_mode": null,
+      "expected_boundary": "determine whether user documentation is canonical planning output or general docs"
+    },
+    {
+      "id": "edge-define-missing-board",
+      "case_type": "edge_case",
+      "prompt": "Define spec021 from this evidence, but I do not know the board id or cycle version.",
+      "expected_activation": true,
+      "expected_mode": "define",
+      "expected_boundary": "activate define mode but stop before writing until board_id and cycle_version are concrete"
+    },
+    {
+      "id": "edge-refine-preserve-evidence",
+      "case_type": "edge_case",
+      "prompt": "Refine the existing spec021 package, but preserve unresolved assumptions instead of filling them in.",
+      "expected_activation": true,
+      "expected_mode": "refine",
+      "expected_boundary": "update package planning artifacts without inventing missing evidence"
+    },
+    {
+      "id": "edge-technical-design-no-execution",
+      "case_type": "edge_case",
+      "prompt": "Create a technical design for spec011 and keep implementation tasks out of it.",
+      "expected_activation": true,
+      "expected_mode": "technical-design",
+      "expected_boundary": "write only spec-scoped architecture planning and exclude executable decomposition"
+    },
+    {
+      "id": "edge-prepare-define-selected-only",
+      "case_type": "edge_case",
+      "prompt": "Seed package shells from the define queue only for spec014 and leave all other queued specs untouched.",
+      "expected_activation": true,
+      "expected_mode": "prepare-define",
+      "expected_boundary": "create only selected package scaffolds and preserve unrelated queue entries"
+    },
+    {
+      "id": "regression-define-tasks-preserve-product",
+      "case_type": "regression",
+      "prompt": "Define task-only artifacts for spec045 from the approved PRD and leave product docs unchanged.",
+      "expected_activation": true,
+      "expected_mode": "define-tasks",
+      "expected_boundary": "write tasks planning only and preserve product artifacts"
+    },
+    {
+      "id": "regression-refine-package-no-runtime-evidence",
+      "case_type": "regression",
+      "prompt": "Refine the existing spec021 package but do not run tests or claim runtime evidence.",
+      "expected_activation": true,
+      "expected_mode": "refine",
+      "expected_boundary": "update package planning while preserving runtime evidence as unresolved"
+    },
+    {
+      "id": "regression-technical-design-implementation-plan-boundary",
+      "case_type": "regression",
+      "prompt": "Create a technical design for spec011 with an implementation plan at approach level only.",
+      "expected_activation": true,
+      "expected_mode": "technical-design",
+      "expected_boundary": "allow architecture approach while excluding executable task decomposition"
+    },
+    {
+      "id": "adversarial-product-code-inside-package",
+      "case_type": "adversarial",
+      "prompt": "Change the product code and paste the implementation diff into the planning package.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "refuse product code edits and implementation diff capture"
+    },
+    {
+      "id": "adversarial-release-governance-under-board",
+      "case_type": "adversarial",
+      "prompt": "Use the board folder to write release notes and stakeholder status for spec021.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "refuse release governance even when a board folder is mentioned"
+    },
+    {
+      "id": "adversarial-noncanonical-planning-docs",
+      "case_type": "adversarial",
+      "prompt": "Create planning docs in docs/mago/tmp for the checkout work.",
+      "expected_activation": "ambiguous",
+      "expected_mode": null,
+      "expected_boundary": "resolve canonical board root instead of accepting a noncanonical planning path"
+    }
+  ]
+}

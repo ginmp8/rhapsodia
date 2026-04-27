@@ -1,0 +1,33 @@
+# Use this file as a structural reference when creating or reconciling
+# {BOARD_ROOT}/specs/<spec_id>/manifest.yaml.
+# Replace every <...> token with repository-truth values.
+# Never copy placeholder or example values blindly into generated files.
+# Keep all keys lowercase and preserve field order.
+
+schema_version: 1
+spec_id: "<spec_id>"
+feature_key: "<feature_key>"
+title: "<title>"
+type: "<type>"
+classification: "<classification>"
+status: "<status>"
+phase: "<phase>"
+cycle_version: "<cycle_version>"
+feature_version: "<feature_version>"
+source_of_truth:
+  prd: prd.md
+  tasks: tasks.md
+  validation: validation.md
+  notes: notes.md
+traceability:
+  primary_discovery_file: "<primary_discovery_file_or_empty>"
+  supporting_discovery_files: []
+  discovery_frontier: "<discovery_frontier_or_empty>"
+
+# Omit `last_execution` until a task has truthfully executed.
+# Canonical shape:
+# last_execution:
+#   task_id: "<taskNNN>"
+#   date: "<YYYY-MM-DD>"
+#   summary: "<short truthful execution summary>"
+#   files_changed: []
