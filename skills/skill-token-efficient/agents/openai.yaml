@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Token Efficient
+  short_description: Refactor skill instructions for lower token cost while preserving behavior.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
