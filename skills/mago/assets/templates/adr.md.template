@@ -1,0 +1,44 @@
+---
+schema_version: mago.architecture-decision.v1
+spec_id: "<spec_id>"
+status: proposed
+owner: unknown
+---
+
+# ADR - <decision-title>
+
+## Status
+
+proposed
+
+## Context
+
+Describe the technical forces, constraints, existing behavior, and evidence that made this decision necessary.
+
+## Decision
+
+State one architecture or implementation decision directly.
+
+## Alternatives Considered
+
+- Alternative: rationale for rejection.
+
+## Consequences
+
+Describe trade-offs, risks, operational impact, migration impact, and future constraints.
+
+## Evidence
+
+- PRD/technical design/tasks/source reference/user input: unknown
+
+## Validation Expectations
+
+- Planned check: unknown
+
+## Owner
+
+unknown
+
+## Links
+
+none

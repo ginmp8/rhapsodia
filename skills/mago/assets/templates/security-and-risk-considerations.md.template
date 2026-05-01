@@ -1,0 +1,28 @@
+# Security and Risk Considerations
+
+## Scope
+
+- Spec: `unknown`
+- Domain: `auth | authorization | pii | secrets | encryption | compliance | other`
+
+## Planned Controls
+
+- Authentication: `unknown`
+- Authorization: `unknown`
+- Data handling: `unknown`
+- Secret handling: `unknown`
+- Logging constraints: `unknown`
+
+## Risks
+
+- `unknown`
+
+## Validation Expectations for Magia
+
+- `unknown`
+
+## Required Review
+
+- Security review: `unknown`
+- Compliance review: `unknown`
+

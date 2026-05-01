@@ -1,6 +1,6 @@
 # Input
 
-Mode: adr-record
+Mode: governance decision-record
 
 Decision: Use staged roadmap handoff for candidates that are not ready for Mago.
 
@@ -11,5 +11,5 @@ Context:
 
 Generated artifacts:
 
-- `adr-records.md`
+- `governance decision-records.md`
 

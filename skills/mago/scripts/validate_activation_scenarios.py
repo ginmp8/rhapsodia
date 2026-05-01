@@ -22,6 +22,7 @@ REQUIRED_MODES = {
     "refine",
     "reshape-tasks",
     "technical-design",
+    "complexity-reduction",
 }
 REQUIRED_KEYS = {"id", "case_type", "prompt", "expected_activation", "expected_mode", "expected_boundary"}
 CASE_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
@@ -79,6 +80,9 @@ def classify_prompt(prompt: str) -> tuple[bool | str, str | None]:
         return False, None
     if "technical design" in text or ("architecture" in text and "spec" in text):
         return True, "technical-design"
+
+    if ("complexity reduction" in text or "simplification" in text or "simplify" in text or "de abstract" in text or "de abstraction" in text or "unnecessary abstraction" in text or "over engineered" in text or "overengineered" in text or "refactoring plan" in text) and ("plan" in text or "spec" in text or "strategy" in text or "technical" in text or "create" in text):
+        return True, "complexity-reduction"
     if "reshape" in text and "task" in text:
         return True, "reshape-tasks"
     product_only = "product only" in text or "product documentation" in text or "product docs" in text

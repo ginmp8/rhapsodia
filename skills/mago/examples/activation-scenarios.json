@@ -51,6 +51,14 @@
       "case_type": "should_activate"
     },
     {
+      "id": "activate-architecture-decision",
+      "prompt": "Create a spec-scoped Architecture Decision Record for spec021 choosing Temporal workflows over chained Kafka consumers, with alternatives and validation expectations.",
+      "expected_activation": true,
+      "expected_mode": "technical-design",
+      "expected_boundary": "write only Mago-owned technical-design or architecture decision planning artifacts under the selected spec package",
+      "case_type": "should_activate"
+    },
+    {
       "id": "activate-technical-design",
       "prompt": "Create a spec-scoped technical design for spec011 using the existing package evidence.",
       "expected_activation": true,
@@ -265,6 +273,46 @@
       "expected_activation": "ambiguous",
       "expected_mode": null,
       "expected_boundary": "resolve canonical board root instead of accepting a noncanonical planning path"
+    },
+    {
+      "id": "reject-governance-status",
+      "prompt": "Update the stakeholder brief with who requested the feature, the promised due date, and the current delivery status for the PO review.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "route to Magnomo because this is governance/status bookkeeping, not tech-lead planning",
+      "case_type": "should_not_activate"
+    },
+    {
+      "id": "activate-architecture-decision-record",
+      "prompt": "Create a technical design entry and planned ADR for spec021 choosing Temporal over chained Kafka consumers, including alternatives and validation expectations for Magia.",
+      "expected_activation": true,
+      "expected_mode": "technical-design",
+      "expected_boundary": "write only Mago-owned planned technical design and architecture decision artifacts under the selected spec package",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "activate-contract-spec",
+      "prompt": "Create a technical design for the event contract spec and migration strategy for spec021 without implementing code.",
+      "expected_activation": true,
+      "expected_mode": "technical-design",
+      "expected_boundary": "write planned contract and migration artifacts only, no repository code or Magia evidence",
+      "case_type": "should_activate"
+    },
+    {
+      "id": "reject-implementation-evidence",
+      "prompt": "Update validation-evidence.md with the tests you ran after implementing the parser.",
+      "expected_activation": false,
+      "expected_mode": null,
+      "expected_boundary": "execution evidence belongs to Magia",
+      "case_type": "should_not_activate"
+    },
+    {
+      "id": "activate-complexity-reduction-plan",
+      "prompt": "Create a complexity-reduction plan for spec012 to remove unnecessary abstractions from the onboarding service without changing user-visible behavior.",
+      "expected_activation": true,
+      "expected_mode": "complexity-reduction",
+      "expected_boundary": "produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff; do not edit code",
+      "case_type": "should_activate"
     }
   ]
 }

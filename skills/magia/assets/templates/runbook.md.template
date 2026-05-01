@@ -1,0 +1,43 @@
+# Runbook
+
+## Scope
+
+- Feature/task: `unknown`
+- Service/module: `unknown`
+
+## Health Signals
+
+- Logs: `unknown`
+- Metrics: `unknown`
+- Traces: `unknown`
+- Dashboards/alerts: `unknown`
+
+## Normal Operation
+
+Describe expected runtime behavior.
+
+## Common Operations
+
+### Reprocess
+
+- Preconditions: `unknown`
+- Steps: `unknown`
+- Validation: `unknown`
+
+### Disable or Mitigate
+
+- Feature flag/config: `unknown`
+- Steps: `unknown`
+- Risk: `unknown`
+
+### Rollback
+
+- Steps: `unknown`
+- Data compatibility: `unknown`
+- Validation: `unknown`
+
+## Escalation
+
+- Owner: `unknown`
+- Handoff: `unknown`
+

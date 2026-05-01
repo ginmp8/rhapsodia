@@ -6,11 +6,11 @@ Input:
 
 Generated artifacts:
 
-- `adr-records.md`
+- `governance decision-records.md`
 
 Validation expectations:
 
-- `validate_artifact.py adr-records.md` exits `0`.
+- `validate_artifact.py governance decision-records.md` exits `0`.
 - No warnings are expected.
 
 Warnings:
@@ -19,6 +19,6 @@ Warnings:
 
 Proves:
 
-- Magnomo records accepted material decisions as append-only ADR records.
-- ADR entries preserve context, alternatives, rationale, impact, links, and supersession state.
+- Magnomo records accepted material decisions as append-only governance decision records.
+- governance decision entries preserve context, alternatives, rationale, impact, links, and supersession state.
 

@@ -21,6 +21,7 @@ Apply this ladder before selecting a mode:
 5. Check evidence. Preserve owners, dates, deployment state, review state, validation results, and release facts as unknown unless supplied by user evidence or existing Magnomo artifacts.
 6. Select exactly one mode. If multiple modes appear valid, choose the narrowest mode that produces the requested Magnomo-owned artifact family and list deferred artifacts as not touched.
 
+
 ## Scenario Assets
 
 Magnomo maintains two complementary scenario assets:

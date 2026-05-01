@@ -1,0 +1,35 @@
+# Validation Evidence
+
+## Scope
+
+- Spec or task: `unknown`
+- Change under validation: `unknown`
+
+## Executed Checks
+
+| Check | Command or method | Result | Evidence |
+|---|---|---|---|
+| unknown | unknown | not-run | unknown |
+
+## Failed Checks
+
+- `none`
+
+## Not-Run Checks
+
+| Check | Reason not run | Risk |
+|---|---|---|
+| unknown | unknown | unknown |
+
+## Static Evidence
+
+- `unknown`
+
+## Residual Risk
+
+- `unknown`
+
+## Recommended Follow-Up
+
+- `none`
+

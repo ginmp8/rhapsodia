@@ -1,0 +1,44 @@
+# Implementation Notes
+
+## Scope
+
+- Spec or task: `unknown`
+- Repository area: `unknown`
+- Date: `unknown`
+- Implementer: `unknown`
+
+## Summary
+
+Describe what was implemented in repository terms.
+
+## Files and Modules Changed
+
+- `unknown`
+
+## Actual Flow
+
+Describe how the implemented flow works after the change.
+
+## Deviations from Mago Plan
+
+- `none`
+
+## Constraints and Limitations
+
+- `unknown`
+
+## Validation
+
+- Executed: `unknown`
+- Not run: `unknown`
+- Static evidence: `unknown`
+
+## Residual Risks
+
+- `unknown`
+
+## Handoff
+
+- Mago: `none`
+- Magnomo: `none`
+

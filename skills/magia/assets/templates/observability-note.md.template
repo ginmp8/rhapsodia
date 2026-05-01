@@ -1,0 +1,39 @@
+# Observability Note
+
+## Scope
+
+- Feature/task: `unknown`
+- Service/module: `unknown`
+
+## Logs
+
+- Structured fields: `unknown`
+- Correlation ids: `unknown`
+- Sensitive data guard: `unknown`
+
+## Metrics
+
+- Name: `unknown`
+- Tags: `unknown`
+- Expected range: `unknown`
+
+## Traces
+
+- Spans: `unknown`
+- Tags: `unknown`
+
+## Dashboards and Alerts
+
+- Dashboard: `unknown`
+- Alert: `unknown`
+- Threshold: `unknown`
+
+## Validation Evidence
+
+- Executed: `unknown`
+- Not run: `unknown`
+
+## Gaps
+
+- `unknown`
+

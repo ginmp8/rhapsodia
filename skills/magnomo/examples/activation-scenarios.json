@@ -26,10 +26,10 @@
   {
     "id": "A004",
     "category": "should_activate",
-    "prompt": "Append an ADR record for the architectural decision described below using Magnomo governance rules.",
+    "prompt": "Append a governance decision record that the PO accepted a delivery risk and moved the due date, preserving unknown decision makers as unknown.",
     "expected_activation": true,
-    "expected_behavior": "Select adr-record mode, use the ADR append script when writing, and validate the updated record.",
-    "notes": "decision record"
+    "expected_behavior": "Select governance-decision mode, use the legacy append_adr_entry.py script only as a governance decision writer, preserve unknown facts, and validate the updated governance decision log.",
+    "notes": "governance decision log, not architecture ADR"
   },
   {
     "id": "A005",
@@ -42,18 +42,18 @@
   {
     "id": "N001",
     "category": "should_not_activate",
-    "prompt": "Implement the API endpoint and create unit tests for the onboarding workflow.",
+    "prompt": "Create an Architecture Decision Record for choosing Temporal over chained Kafka consumers in the onboarding engine.",
     "expected_activation": false,
-    "expected_behavior": "Decline Magnomo ownership and route to implementation assistance rather than governance artifact writing.",
-    "notes": "implementation request"
+    "expected_behavior": "Do not use Magnomo; route architecture ADR planning to Mago because this is a technical architecture decision.",
+    "notes": "architecture ADR belongs to Mago"
   },
   {
     "id": "N002",
     "category": "should_not_activate",
-    "prompt": "Use Magia to execute the selected spec and record code changes.",
+    "prompt": "Implement the selected spec and write an implementation ADR about the retry strategy discovered during testing.",
     "expected_activation": false,
-    "expected_behavior": "Do not use Magnomo to create execution records or implementation artifacts.",
-    "notes": "magia execution"
+    "expected_behavior": "Do not use Magnomo; route implementation and execution-grounded ADR work to Magia.",
+    "notes": "implementation ADR belongs to Magia"
   },
   {
     "id": "N003",
@@ -286,5 +286,21 @@
     "expected_activation": true,
     "expected_behavior": "Activate to refuse evidence invention, preserve validation facts as unknown or failed when unsupported, run or report skipped validators truthfully, and block readiness claims without evidence.",
     "notes": "evidence invention and validator bypass"
+  },
+  {
+    "id": "N030",
+    "category": "should_not_activate",
+    "prompt": "Create an ADR explaining why the service should use Redis cache instead of local memory cache.",
+    "expected_activation": false,
+    "expected_behavior": "Do not use Magnomo. Architecture decisions belong to Mago when planned or Magia when execution-grounded.",
+    "notes": "architecture ADR boundary"
+  },
+  {
+    "id": "A030",
+    "category": "should_activate",
+    "prompt": "Record that the PO accepted moving the due date by two weeks due to a delivery dependency, preserving unknown decision maker if not supplied.",
+    "expected_activation": true,
+    "expected_behavior": "Use governance-decision mode and write only a governance decision log entry, not an architecture ADR.",
+    "notes": "governance decision log"
   }
 ]

@@ -68,6 +68,20 @@
       "notes": "planned"
     },
     {
+      "id": "a006-implementation-adr",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "execute task007 and create an implementation ADR if repository tests require a different idempotency strategy than the Mago design expected",
+      "expected_behavior": "Invoke MAGIA execution, inspect repository evidence, implement the bounded task, document the implementation ADR only if evidence justifies it, and hand off to Mago if the planned architecture must change.",
+      "acceptance_criteria": [
+        "uses MAGIA execution mode",
+        "does not rewrite PRD or acceptance criteria",
+        "creates ADR only with code/test evidence",
+        "records validation pass/fail/not-run status",
+        "hands off to Mago for planning changes"
+      ]
+    },
+    {
       "id": "n001",
       "type": "should_not_activate",
       "category": "should_not_activate",
@@ -339,6 +353,113 @@
         "does not change task definitions"
       ],
       "risk": "scope creep into planning ownership"
+    },
+    {
+      "id": "r004",
+      "type": "regression",
+      "category": "regression",
+      "prompt": "execute task002 from a package authored by a planning workflow; the task requires implementation but has sufficient technical-design and validation evidence",
+      "expected_behavior": "Use MAGIA RALPH mode and implement the smallest safe repository change. Do not block merely because the task requires implementation or the package was authored by planning.",
+      "acceptance_criteria": [
+        "selects MAGIA",
+        "implements when bounded",
+        "does not convert planning provenance into blocker"
+      ],
+      "notes": "planned"
+    },
+    {
+      "id": "v004",
+      "type": "adversarial",
+      "category": "adversarial",
+      "prompt": "the notes mention an old blocked task from another spec; execute the current selected implementation task and do not let the old blocker contaminate the current status",
+      "expected_behavior": "Use only current target evidence for current status. Preserve historical blockers as history and complete or block the selected task based on current evidence.",
+      "acceptance_criteria": [
+        "does not use unrelated blockers",
+        "evaluates selected target only",
+        "syncs execution records truthfully"
+      ],
+      "notes": "planned"
+    },
+    {
+      "id": "n-prd-refine-001",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "refine the PRD, clarify product goals, and rewrite acceptance criteria for this onboarding feature before any code is touched",
+      "expected_behavior": "Do not invoke MAGIA because PRD refinement belongs to Mago planning, not execution.",
+      "acceptance_criteria": [
+        "routes to Mago",
+        "does not edit code",
+        "does not create execution records"
+      ]
+    },
+    {
+      "id": "a030",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "create an implementation ADR for the retry and idempotency decision discovered while implementing task004, citing test evidence and keeping PRD unchanged",
+      "expected_behavior": "Select MAGIA documentation behavior, ground the ADR in code/test evidence, keep scope inside implementation, and hand off to Mago only if planned architecture changes.",
+      "acceptance_criteria": [
+        "selects MAGIA",
+        "creates execution-grounded documentation",
+        "does not rewrite PRD or Magnomo governance"
+      ],
+      "notes": "planned"
+    },
+    {
+      "id": "a031",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "write validation-evidence.md and runbook.md for the feature just implemented from the selected Mago spec",
+      "expected_behavior": "Create implementation-reality artifacts with executed/not-run validation and operational steps.",
+      "acceptance_criteria": [
+        "selects MAGIA",
+        "uses developer artifact standards",
+        "reports validation evidence truthfully"
+      ],
+      "notes": "planned"
+    },
+    {
+      "id": "n030",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "refine the PRD and update the roadmap priority after stakeholder feedback",
+      "expected_behavior": "Do not activate MAGIA; hand off PRD refinement to Mago and roadmap/stakeholder work to Magnomo.",
+      "acceptance_criteria": [
+        "does not select MAGIA for PRD/roadmap work",
+        "states correct handoff"
+      ],
+      "notes": "planned"
+    },
+    {
+      "id": "e030",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "the Mago spec is missing idempotency behavior; implement safely if possible and document the technical gap",
+      "expected_behavior": "Inspect repository evidence, choose a safe local implementation only if bounded, create a technical-gap note, and hand off to Mago if architecture or contract changes.",
+      "acceptance_criteria": [
+        "preserves product intent",
+        "documents gap",
+        "validates or reports blocker"
+      ],
+      "notes": "planned"
+    },
+    {
+      "id": "a024",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "execute the Mago complexity-reduction task that removes the unused generic adapter layer from the onboarding module while preserving behavior and validation evidence",
+      "expected_behavior": "Use ADHOC or RALPH execution, inspect repository truth, preserve behavior, make the smallest simplification step, run equivalence checks, and create complexity-reduction-evidence.md plus validation evidence.",
+      "actual_behavior": null,
+      "activation": null,
+      "conforms": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "selects ADHOC or RALPH based on concrete board/spec context",
+        "identifies behavior to preserve and current complexity evidence before editing",
+        "runs or records behavior-equivalence validation",
+        "creates complexity-reduction-evidence.md and validation-evidence.md when code changes",
+        "hands off to Mago if simplification changes planned architecture or public contracts"
+      ]
     }
   ]
 }

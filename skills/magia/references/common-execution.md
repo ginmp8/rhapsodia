@@ -11,22 +11,30 @@
 ## Source of Truth
 
 - repository code, runtime evidence, and the active docs contract
-- in RALPH: the board spec catalog plus the selected package files under `{BOARD_ROOT}/specs/<spec_id>/`
+- in RALPH: the board spec catalog plus the selected package files under `{BOARD_ROOT}/specs/<spec_id>`; package authorship is provenance, not an implementation prohibition
 - `board_id` and `cycle_version` are mandatory concrete dynamic path segments for every RALPH run
 - auxiliary docs may exist under the active `BOARD_ROOT`; treat them as read-only evidence unless the selected task explicitly requires updating them
 - do not invent product rules, scope, or status claims that belong in those files
+
+## Planning-Origin Execution Inputs
+
+- Specs and docs authored by planning or governance workflows are executable inputs for MAGIA when a RALPH task is selected.
+- Planning authorship means the artifact was not implemented by its authoring workflow; it does not mean MAGIA must not implement it.
+- If the selected task requires implementation, implement the smallest safe repository change unless a concrete execution blocker remains.
+- Do not record a blocker solely because implementation is required, the package began in a planning phase, or the manifest status is planned.
+- A valid implementation blocker must name the missing target, dependency, credential, validation path, or conflicting source-of-truth evidence.
 
 ## Core Rules
 
 - prefer the smallest safe implementation that satisfies the selected work
 - read the relevant code and docs before editing
 - validation is mandatory; code change alone is not completion
-- when work is underdefined, derive the smallest concrete implementation only if the selected task already bounds the work enough for honest execution
+- when work is underdefined, derive the smallest concrete implementation only if the selected task and directly relevant repository evidence bound the work enough for honest execution
 - translate the selected task into at least one concrete success check before editing
 - prefer the simplest implementation a senior engineer would consider sufficient
 - preserve truthful supported behavior unless the active contract explicitly allows change
 - touch only the files and abstractions needed for that implementation
-- if the active package carries original-solution or source-reference paths, use them only as read-only evidence for behavior and traceability
+- if the active package carries original-solution, planning, governance, roadmap, discovery, or source-reference paths, use them as read-only evidence for behavior and traceability; do not treat their authorship boundary as a runtime implementation ban
 - in RALPH, treat prd.md as read-only and tasks.md as read-mostly; execution may only toggle an existing task checkbox in place when that task is truthfully complete
 - when editing execution records, load `references/artifacts/execution-records.md` and preserve canonical structure in place
 - use local scripts for every available template operation: `scripts/write_artifact_scaffold.py` for template-backed writes and `scripts/validate_artifact.py` or the narrower validator script for validation; never let template copying, placeholder resolution, or structure validation depend only on LLM judgment when a script exists

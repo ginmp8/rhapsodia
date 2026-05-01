@@ -1,0 +1,37 @@
+# Migration Execution Note
+
+## Scope
+
+- Migration: `unknown`
+- Spec/task: `unknown`
+
+## Change Applied
+
+- Schema/data/topic/cache/index/file change: `unknown`
+
+## Execution Order
+
+1. `unknown`
+
+## Compatibility
+
+- Backward compatibility: `unknown`
+- Forward compatibility: `unknown`
+- Partial deploy behavior: `unknown`
+
+## Rollback
+
+- Rollback steps: `unknown`
+- Rollback risk: `unknown`
+
+## Validation Evidence
+
+- Pre-checks: `unknown`
+- Post-checks: `unknown`
+- Not-run checks: `unknown`
+
+## Handoff
+
+- Mago: `none`
+- Magnomo: `none`
+

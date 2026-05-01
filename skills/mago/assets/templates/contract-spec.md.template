@@ -1,0 +1,31 @@
+# Contract Spec
+
+## Scope
+
+- Spec: `unknown`
+- Contract type: `api | event | schema | file | interface | other`
+
+## Producer and Consumers
+
+- Producer: `unknown`
+- Consumers: `unknown`
+
+## Intended Contract
+
+Describe fields, payload, schema, endpoint, topic, method, or file shape.
+
+## Compatibility
+
+- Breaking change: `unknown`
+- Versioning: `unknown`
+- Migration window: `unknown`
+
+## Validation Expectations for Magia
+
+- Contract tests: `unknown`
+- Consumer compatibility checks: `unknown`
+
+## Open Questions
+
+- `none`
+

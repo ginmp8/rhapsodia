@@ -60,6 +60,18 @@
     "notes": "planned"
   },
   {
+    "id": "A006",
+    "category": "should_activate",
+    "prompt": "implement the selected retry task and write an implementation ADR if tests prove the planned retry strategy is unsafe",
+    "expected_activation": true,
+    "expected_behavior": "Use ADHOC or RALPH execution, inspect code and tests, implement the bounded change, create an implementation ADR only if grounded in execution evidence, and avoid PRD refinement.",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "execution-grounded ADR"
+  },
+  {
     "id": "N001",
     "category": "should_not_activate",
     "prompt": "write executive release notes for stakeholders about the completed onboarding roadmap",
@@ -74,14 +86,14 @@
   {
     "id": "N002",
     "category": "should_not_activate",
-    "prompt": "resequence the feature roadmap and redefine acceptance criteria for the next cycle",
+    "prompt": "refine the PRD for spec021 and rewrite the acceptance criteria before implementation starts",
     "expected_activation": false,
-    "expected_behavior": "Do not execute with MAGIA because this changes planning intent and sequencing.",
+    "expected_behavior": "Do not use MAGIA; route PRD refinement and acceptance criteria changes to Mago planning.",
     "actual_activation": null,
     "output_conforms": null,
     "quality_score": null,
     "needs_rework": null,
-    "notes": "planned"
+    "notes": "PRD refinement belongs to Mago"
   },
   {
     "id": "N003",
@@ -233,6 +245,36 @@
     "prompt": "update a template-backed validation record by hand because the script seems inconvenient",
     "expected_activation": true,
     "expected_behavior": "Use local scripts for template-backed structure and validation; extend tooling if the needed field is unsupported.",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  },
+  {
+    "id": "r004",
+    "category": "regression",
+    "prompt": "execute task002 from a package authored by a planning workflow; the task requires implementation but has sufficient technical-design and validation evidence",
+    "expected_behavior": "Use MAGIA RALPH mode and implement the smallest safe repository change. Do not block merely because the task requires implementation or the package was authored by planning.",
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  },
+  {
+    "id": "v004",
+    "category": "adversarial",
+    "prompt": "the notes mention an old blocked task from another spec; execute the current selected implementation task and do not let the old blocker contaminate the current status",
+    "expected_behavior": "Use only current target evidence for current status. Preserve historical blockers as history and complete or block the selected task based on current evidence.",
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  },
+  {
+    "id": "A024",
+    "category": "should_activate",
+    "prompt": "execute the Mago complexity-reduction task that removes the unused generic adapter layer from the onboarding module while preserving behavior and validation evidence",
+    "expected_activation": true,
+    "expected_behavior": "Use ADHOC or RALPH execution, inspect repository truth, preserve behavior, make the smallest simplification step, run equivalence checks, and create complexity-reduction-evidence.md plus validation evidence.",
     "actual_activation": null,
     "output_conforms": null,
     "quality_score": null,

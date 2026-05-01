@@ -1,0 +1,29 @@
+# Operational Requirements
+
+## Scope
+
+- Spec: `unknown`
+- Feature/service: `unknown`
+
+## Required Operations
+
+- Reprocess: `unknown`
+- Retry: `unknown`
+- Disable/mitigate: `unknown`
+- Recover: `unknown`
+- Rollback: `unknown`
+
+## Support Expectations
+
+- Logs needed: `unknown`
+- Metrics needed: `unknown`
+- Ownership/escalation: `unknown`
+
+## Runbook Expectations for Magia
+
+- `unknown`
+
+## Risks
+
+- `unknown`
+

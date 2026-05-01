@@ -1,0 +1,34 @@
+# Observability Design
+
+## Scope
+
+- Spec: `unknown`
+- Service/module: `unknown`
+
+## Required Logs
+
+- Event/message: `unknown`
+- Structured fields: `unknown`
+- Sensitive data constraints: `unknown`
+
+## Required Metrics
+
+- Metric: `unknown`
+- Tags: `unknown`
+- Expected range: `unknown`
+
+## Required Traces
+
+- Span: `unknown`
+- Tags: `unknown`
+
+## Dashboards and Alerts
+
+- Dashboard: `unknown`
+- Alert: `unknown`
+- Threshold: `unknown`
+
+## Validation Expectations for Magia
+
+- `unknown`
+

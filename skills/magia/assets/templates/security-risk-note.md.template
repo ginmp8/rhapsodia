@@ -1,0 +1,38 @@
+# Security and Risk Note
+
+## Scope
+
+- Feature/task: `unknown`
+- Security domain: `auth | authorization | pii | secrets | encryption | compliance | other`
+
+## Risk
+
+Describe the implementation-level risk.
+
+## Evidence
+
+- Files inspected: `unknown`
+- Commands/tests: `unknown`
+- Logs/runtime: `unknown`
+
+## Mitigation
+
+- Implemented: `unknown`
+- Remaining: `unknown`
+
+## Sensitive Data Handling
+
+- Secrets exposed: `unknown`
+- PII involved: `unknown`
+- Logging guard: `unknown`
+
+## Validation
+
+- Executed: `unknown`
+- Not run: `unknown`
+
+## Handoff
+
+- Mago: `none`
+- Magnomo: `none`
+

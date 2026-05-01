@@ -12,6 +12,13 @@ Load this reference when execution updates tasks.md, spec-catalog.yaml, manifest
 - if honest execution would require changing the task plan or task metadata, stop and hand off to the planning workflow
 - use `assets/templates/tasks.md.template` only through `scripts/write_artifact_scaffold.py` when a canonical execution artifact must be seeded, or as a read-only contract reference after script validation when you need to understand why the input task structure is malformed
 
+## Planning-Origin Package Rules
+
+- Treat planning-origin package fields as execution contract inputs, not as a ban on implementation.
+- Preserve planning fields and provenance while executing the selected task.
+- Do not write execution logs that classify implementation requirement, roadmap provenance, governance provenance, or pre-execution planned status as blockers.
+- If a previous execution log recorded that invalid blocker, do not repeat it as current truth; record a corrected execution decision only when the selected task is actually re-executed or repaired with evidence.
+
 ## Canonical Structure
 
 - spec-catalog.yaml: preserve `schema_version`, `board_id`, `cycle_version`, `board_status`, and the `specs` sequence; within the selected spec preserve `order`, `spec_id`, `feature_key`, `title`, `type`, `classification`, `depends_on_features`, `depends_on_specs`, `status`, and `feature_version`

@@ -1,33 +1,41 @@
-# ADR Artifacts
+# Governance Decision Log Artifact
 
-## adr-records.md
+`adr-records.md` is a legacy filename used by Magnomo for governance decision logs. It is not an Architecture Decision Record artifact.
 
-Append-only governance decision log owned by Magnomo. Use after a material decision is made.
+## Ownership
 
-Required sections:
+Magnomo may record delivery, roadmap, owner, stakeholder, due date, accepted risk, release posture, or handoff decisions. Magnomo must not record architecture decisions, implementation decisions, technical designs, code decisions, or execution-grounded ADRs as its own decision.
 
-- `# ADR Records`
-- `## Entries`
+Architecture Decision Records belong to Mago for planned/spec decisions and Magia for implementation/runtime decisions.
 
-Use one `### YYYY-MM-DD - Title` heading per ADR entry. The title must describe the decision as a noun phrase or imperative outcome, not a question.
+## File
 
-Each ADR entry must include these labels in order:
+- Board-scoped path: `BOARD_ROOT/adr-records.md`
+- Template: [assets/templates/adr-records.md.template](../../assets/templates/adr-records.md.template)
+- Writer: `scripts/append_adr_entry.py` as a legacy governance decision writer
+- Validator: `scripts/validate_artifact.py`
 
-- `Status`
-- `Decision`
-- `Context`
-- `Reason`
-- `Alternatives`
-- `Impact`
-- `Decision Maker`
-- `Links`
-- `Supersedes`
+## Required Sections
 
-Quality rules:
+Each entry should include:
 
-- Record the decision after it is made; keep undecided items in `rfc-proposals.md` or `roadmap.md` `Open Decisions`.
-- Include honest downsides or accepted trade-offs in `Impact` or `Reason`.
-- Include why rejected alternatives were not chosen when alternatives exist.
-- Supersede or correct with a new entry instead of editing old historical meaning.
-- Keep code-only architecture ADRs outside Magnomo unless the user explicitly frames them as roadmap or governance decisions.
+- Date
+- Status
+- Decision
+- Context
+- Reason
+- Alternatives
+- Impact
+- Decision Maker
+- Links
+- Supersedes
+
+## Boundary Examples
+
+- In scope: PO accepted delivery risk and moved the due date.
+- In scope: roadmap item was split before Mago handoff.
+- In scope: stakeholder alignment changed the release communication plan.
+- Out of scope: use Temporal instead of Kafka consumers.
+- Out of scope: implement idempotency by composite key.
+- Out of scope: change API contract or persistence model.
 

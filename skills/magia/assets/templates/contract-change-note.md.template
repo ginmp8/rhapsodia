@@ -1,0 +1,31 @@
+# Contract Change Note
+
+## Scope
+
+- Contract type: `api | event | schema | file | interface | other`
+- Producer: `unknown`
+- Consumers: `unknown`
+
+## Change
+
+- Previous behavior/schema: `unknown`
+- New behavior/schema: `unknown`
+- Breaking change: `unknown`
+
+## Compatibility Strategy
+
+- Versioning: `unknown`
+- Migration window: `unknown`
+- Fallback: `unknown`
+
+## Validation Evidence
+
+- Contract tests: `unknown`
+- Consumer checks: `unknown`
+- Not-run checks: `unknown`
+
+## Handoff
+
+- Mago: `none`
+- Magnomo: `none`
+
