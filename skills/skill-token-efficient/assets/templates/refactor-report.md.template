@@ -1,0 +1,47 @@
+# Token-Efficient Skill Refactor Report
+
+## Mode / Target
+- Mode:
+- Target:
+- Level:
+
+## Evidence
+- Files:
+- Sources:
+- Commands:
+
+## Token Delta
+- Before:
+- After:
+- Delta:
+- Reduction:
+
+## Changes
+- `SKILL.md`:
+- `references/`:
+- `scripts/`:
+- `assets/templates/`:
+- `examples/`:
+- `evals/`:
+- `agents/`:
+
+## Semantic Preservation
+- Preserved:
+- Moved:
+- Changed:
+- Removed redundancy:
+- Risk:
+
+## Protected Regions
+- Status:
+- Differences:
+
+## Validation
+- Links:
+- Scripts:
+- Validators:
+- Package:
+
+## Rollback
+
+## Risks / Next Pass
