@@ -1,0 +1,34 @@
+# Technical Gap Note
+
+## Gap Summary
+
+Describe the missing, ambiguous, incorrect, or contradicted Mago specification detail.
+
+## Evidence
+
+- Mago artifact: `unknown`
+- Repository/code evidence: `unknown`
+- Runtime/test evidence: `unknown`
+
+## Local Decision
+
+- Decision taken by MAGIA: `none`
+- Scope guard: `unknown`
+
+## Impact
+
+- Implementation: `unknown`
+- Architecture/contract: `unknown`
+- Validation: `unknown`
+- Delivery/governance: `unknown`
+
+## Handoff Decision
+
+- Mago: `required | not-required | unknown`
+- Magnomo: `required | not-required | unknown`
+- Blocking: `yes | no | unknown`
+
+## Recommended Follow-Up
+
+- `unknown`
+

@@ -1,8 +1,11 @@
 interface:
-  display_name: MAGIA
-  short_description: Safe scoped repository execution
-  default_prompt: Use $magia to execute a bounded repository task in ADHOC mode or
-    RALPH mode with truthful execution-record updates.
+  display_name: Magia
+  short_description: Senior engineering execution for bounded implementation, validation,
+    hardening, technical docs, and implementation ADRs.
+  default_prompt: Use $magia to implement, validate, debug, harden, document, and
+    synchronize execution from current code and Mago specs without rewriting PRDs
+    or governance artifacts.
+  allow_implicit_invocation: true
 policy:
   products:
   - chatgpt

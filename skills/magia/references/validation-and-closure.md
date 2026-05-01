@@ -12,7 +12,7 @@ Run the smallest validation set that proves the selected work is correct.
 Keep execution records truthful:
 
 - preserve stable task ids when recording execution history
-- keep blockers explicit
+- keep blockers explicit and tied to concrete execution facts
 - record factual decisions, assumptions, and trade-offs in notes.md
 - keep durable MAGIA documentation inside `BOARD_ROOT`
 - after each executed task, use `scripts/write_execution_log.py <board_root> --spec-id <specNNN> --task-id <taskNNN> ...` to append or refresh that task's Execution Log subsection in notes.md when the local script is available
@@ -45,16 +45,19 @@ Keep execution records truthful:
 4. record assumptions and residual ambiguity in notes.md when they materially affect future work
 5. if execution creates new durable docs or architecture guidance, place them under `BOARD_ROOT` and list them in that task's Context Docs field in notes.md
 
-If no honest and verifiable objective can be derived without changing the task plan, stop and treat the task as blocked and hand off to the planning workflow.
+If no honest and verifiable objective can be derived without changing the task plan, stop and treat the task as blocked and hand off to the planning workflow. Do not use implementation requirement or planning provenance alone as the blocker.
 
 ## Blockers
 
 1. stop broadening scope
-2. record the blocker clearly
-3. preserve partial truth in docs
-4. do not mark the task done
+2. classify the blocker as a concrete execution blocker, not an authoring-boundary assumption
+3. record the blocker clearly in notes.md and validation.md
+4. preserve partial truth in docs
+5. do not mark the task done
 
-Report what is blocked, why, what was completed, and what remains.
+Valid blockers include missing implementation targets, unresolved dependencies, unavailable credentials or services, contradictory source-of-truth artifacts, unsafe secret access, missing validation path, or required planning changes. Invalid blockers include implementation being required, the package being authored by a planning workflow, roadmap provenance, governance provenance, or pre-execution manifest state such as `status: planned`.
+
+Report what is blocked, why, what was completed, what concrete evidence is missing, and what remains.
 
 ## Final Closure Pass
 

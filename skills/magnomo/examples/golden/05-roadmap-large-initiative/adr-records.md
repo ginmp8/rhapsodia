@@ -14,3 +14,6 @@
 - Links: roadmap.yaml; feature-map.yaml
 - Supersedes: none
 
+
+
+Governance note: this legacy file records delivery governance decisions only, not architecture decisions.

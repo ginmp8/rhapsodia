@@ -1,0 +1,54 @@
+# Complexity Reduction Plan: <spec_id> - <title>
+
+## Scope
+
+- Board: <board_id>
+- Cycle: <cycle_version>
+- Spec: <spec_id>
+- Repository area: <paths or unknown>
+
+## Preserved behavior
+
+- <behavior, contract, or outcome that must remain unchanged>
+
+## Non-goals
+
+- <what this simplification must not change>
+
+## Evidence inspected
+
+- <repository files, tests, incidents, user examples, or assumptions>
+
+## Complexity inventory
+
+| Area | Symptom | Classification | Evidence | Risk | Candidate action |
+|---|---|---|---|---|---|
+| <module/flow> | <indirection/layer/genericity/etc.> | accidental/essential/unknown/out-of-scope | <evidence> | low/medium/high | keep/remove/merge/split/defer |
+
+## Simplification hypotheses
+
+| Hypothesis | Expected benefit | Blast radius | Validation | Rollback |
+|---|---|---|---|---|
+| <change> | <why it reduces complexity> | <affected area> | <checks> | <how to revert> |
+
+## Target end-state
+
+- <intended simpler structure>
+
+## Phased task plan for Magia
+
+1. <small executable task> -> verify: <check>
+2. <small executable task> -> verify: <check>
+
+## ADR / decision triggers
+
+- <when a planned ADR or implementation decision is required>
+
+## Open questions and blockers
+
+- <unknowns to resolve before or during execution>
+
+## Handoff instructions
+
+- Magia must create or update: implementation-notes.md, validation-evidence.md, and complexity-reduction-evidence.md when code changes.
+- Magia must create technical-gap-note.md if repository truth contradicts this plan.

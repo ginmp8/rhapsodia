@@ -1,12 +1,18 @@
-<!--
-Use this file as a structural reference only.
-Append only factual ADR entries with scripts/append_adr_entry.py.
-Use dated correction or supersession entries instead of rewriting historical meaning.
--->
-
 # ADR Records
 
-## Entries
+This file uses the legacy name `adr-records.md`, but entries are governance decisions only. Do not use it for Architecture Decision Records.
 
-No ADR records recorded.
+## Decisions
+
+### <date> - <decision-title>
+
+- Status: accepted
+- Decision: <governance or delivery decision>
+- Context: <why the decision was needed>
+- Reason: <why this option was selected>
+- Alternatives: <alternatives or none>
+- Impact: <roadmap, delivery, stakeholder, ownership, risk, or handoff impact>
+- Decision Maker: unknown
+- Links: none
+- Supersedes: none
 

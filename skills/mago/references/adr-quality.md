@@ -1,19 +1,22 @@
 # ADR Quality
 
-Use when notes.md `Design Decisions` or `Trade-Offs` are in scope.
+Use when `notes.md` design decisions, `technical-design.md` trade-offs, `architecture-decisions.md`, or spec-scoped ADR files are in scope.
 
-Mago may record planning-level rationale inside the selected spec package, but it does not own Magnomo ADR records, repository-wide ADRs, or Magia execution decisions.
+MAGO owns planning-level architecture rationale and planned Architecture Decision Records. It does not own Magnomo governance decision logs and it does not own Magia execution-grounded implementation ADRs.
 
 ## Planning Decision Quality
 
 - State decisions directly; avoid titles or bullets phrased as questions.
-- Include the context or force that made the decision necessary.
-- Tie the choice to repository truth, discovery evidence, roadmap evidence, or a necessary downstream planning constraint.
+- Include the technical context or force that made the decision necessary.
+- Tie the choice to repository truth, discovery evidence, Magnomo handoff, roadmap evidence, explicit user input, or a necessary downstream planning constraint.
 - Record the main rejected alternative when it affects future planning.
 - Include the accepted downside or trade-off when one exists.
+- Include validation expectations for Magia, not executed validation claims.
 - Preserve historical rationale unless repository truth shows it was wrong; add a new dated note or correction instead of silently rewriting meaning.
 
-Good planning rationale includes spec boundary choices, non-goals, dependency posture, validation strategy, package shape, or task split rationale.
+Good planning rationale includes system boundary choices, contracts, data persistence, workflow orchestration, eventing, dependency posture, validation strategy, package shape, migration strategy, rollback strategy, observability, security posture, and task split rationale.
 
-Do not create governance ADRs from Mago. For material roadmap, priority, stakeholder, ownership, or handoff decisions, use Magnomo `adr-record`.
+Do not create governance decision logs from Mago. For material roadmap, priority, stakeholder, ownership, due date, or business-risk decisions, hand off to Magnomo.
+
+Do not create implementation ADRs from Mago after code has been changed unless Magia supplied execution evidence and the request is to refine planning records based on that evidence.
 

@@ -1,0 +1,34 @@
+# Migration Strategy
+
+## Scope
+
+- Spec: `unknown`
+- Migration type: `schema | data | topic | cache | index | file | other`
+
+## Intended Change
+
+Describe the planned migration.
+
+## Rollout Sequence
+
+1. `unknown`
+
+## Compatibility
+
+- Backward compatibility: `unknown`
+- Forward compatibility: `unknown`
+- Partial deploy behavior: `unknown`
+
+## Rollback Strategy
+
+- `unknown`
+
+## Validation Expectations for Magia
+
+- Pre-checks: `unknown`
+- Post-checks: `unknown`
+
+## Risks
+
+- `unknown`
+

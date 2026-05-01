@@ -1,0 +1,47 @@
+# Implementation ADR: <decision-title>
+
+## Status
+
+proposed
+
+## Context
+
+State the code, runtime, dependency, or validation facts that forced this decision.
+
+## Decision
+
+State the implementation decision directly.
+
+## Alternatives Considered
+
+- Option: `unknown`
+  - Reason rejected: `unknown`
+
+## Consequences
+
+- Positive: `unknown`
+- Negative/trade-off: `unknown`
+- Operational impact: `unknown`
+- Future constraint: `unknown`
+
+## Evidence
+
+- Files inspected: `unknown`
+- Commands/tests/logs: `unknown`
+- Mago artifacts: `unknown`
+
+## Validation
+
+- Executed: `unknown`
+- Not run: `unknown`
+- Remaining gaps: `unknown`
+
+## Scope Guard
+
+Explain why this decision stays inside the selected task and product intent.
+
+## Handoff
+
+- Mago: `none`
+- Magnomo: `none`
+

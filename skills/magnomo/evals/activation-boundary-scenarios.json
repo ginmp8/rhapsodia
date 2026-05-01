@@ -33,15 +33,15 @@
     {
       "id": "activate-003",
       "type": "should_activate",
-      "prompt": "Append an ADR record for this accepted architecture decision, preserving unknown dates and reviewers as unknown.",
-      "expected_behavior": "Invoke Magnomo adr-record mode, use the append script for the ADR record, and keep volatile facts unknown unless supplied.",
+      "prompt": "Append a governance decision record for accepting delivery risk and changing the Mago handoff date, preserving unknown reviewers as unknown.",
+      "expected_behavior": "Invoke Magnomo governance-decision mode, use the legacy append script for the governance decision log, and keep volatile facts unknown unless supplied.",
       "acceptance_criteria": [
-        "selected mode is adr-record",
-        "uses append_adr_entry.py for repository-facing write",
-        "does not infer reviewers or dates",
-        "validates updated adr artifact"
+        "selected mode is governance-decision or legacy adr-record alias for governance only",
+        "does not create an Architecture Decision Record",
+        "uses append_adr_entry.py for repository-facing governance write",
+        "validates updated governance decision artifact"
       ],
-      "mode": "adr-record",
+      "mode": "governance-decision",
       "risk": "decision-record trigger"
     },
     {

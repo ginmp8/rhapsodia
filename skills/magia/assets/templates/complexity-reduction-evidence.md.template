@@ -1,0 +1,43 @@
+# Complexity Reduction Evidence: <task_or_spec>
+
+## Scope
+
+- Board/spec/task: <ids or none>
+- Repository area: <paths>
+- Simplification hypothesis: <hypothesis>
+
+## Behavior preserved
+
+- <behavior, contract, or invariant preserved>
+
+## Before
+
+- Files/types/layers involved: <list>
+- Complexity symptom: <indirection/layer/genericity/configuration/etc.>
+- Evidence: <code, tests, command output, or static reasoning>
+
+## Change made
+
+- Action: remove/inline/merge/split/localize/replace/defer
+- Summary: <what changed>
+- Files changed: <list>
+
+## After
+
+- Simpler structure: <new flow or ownership>
+- Abstractions removed or retained: <list and reason>
+- Residual complexity: <what remains and why>
+
+## Validation evidence
+
+| Check | Status | Evidence | Notes |
+|---|---|---|---|
+| <test/build/static/manual> | executed/static/not-run/blocked | <result> | <reason or gap> |
+
+## Rollback / recovery
+
+- <how to revert or mitigate>
+
+## Handoff decision
+
+- none/mago/magnomo/both: <reason>

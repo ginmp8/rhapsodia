@@ -11,7 +11,8 @@
         "selects discovery as the only primary mode",
         "requires or resolves board_id and cycle_version",
         "does not create spec package artifacts"
-      ]
+      ],
+      "category": "activation"
     },
     {
       "id": "activate-order-001",
@@ -22,7 +23,8 @@
         "selects order mode",
         "uses discovery artifacts as ordering evidence",
         "runs board-level validators when artifacts change"
-      ]
+      ],
+      "category": "activation"
     },
     {
       "id": "activate-define-001",
@@ -33,7 +35,8 @@
         "requires spec_id",
         "writes under BOARD_ROOT/specs/spec003 only",
         "records unresolved assumptions instead of inventing facts"
-      ]
+      ],
+      "category": "activation"
     },
     {
       "id": "activate-technical-design-001",
@@ -44,6 +47,20 @@
         "selects technical-design mode",
         "loads technical design reference",
         "does not modify product code"
+      ],
+      "category": "activation"
+    },
+    {
+      "id": "activate-architecture-decision-001",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Record an Architecture Decision Record for spec004 explaining why the onboarding workflow will use Temporal instead of chained Kafka consumers.",
+      "expected_behavior": "Invoke MAGO architecture-decision or technical-design planning, create only spec-scoped planning ADR artifacts, distinguish planned validation from executed validation, and do not modify code.",
+      "acceptance_criteria": [
+        "uses MAGO, not Magnomo",
+        "records alternatives, consequences, evidence, and validation expectations",
+        "does not claim implementation or test execution",
+        "keeps writes under BOARD_ROOT/specs/<spec_id>/"
       ]
     },
     {
@@ -55,7 +72,8 @@
         "selects define-product mode",
         "does not edit tasks.md",
         "records task-related gaps as handoff or blocker"
-      ]
+      ],
+      "category": "activation"
     },
     {
       "id": "activate-define-tasks-001",
@@ -66,7 +84,8 @@
         "selects define-tasks mode",
         "uses product baseline as evidence",
         "does not alter prd.md"
-      ]
+      ],
+      "category": "activation"
     },
     {
       "id": "negative-implementation-001",
@@ -77,7 +96,8 @@
         "refuses MAGO scope for implementation",
         "handoffs to an execution or coding workflow",
         "does not edit planning artifacts as a substitute"
-      ]
+      ],
+      "category": "non_activation"
     },
     {
       "id": "negative-runtime-test-001",
@@ -88,7 +108,8 @@
         "does not claim runtime evidence",
         "does not mark validation as passed without measured output",
         "names the boundary"
-      ]
+      ],
+      "category": "non_activation"
     },
     {
       "id": "negative-release-notes-001",
@@ -99,7 +120,8 @@
         "routes away from MAGO",
         "does not write governance artifacts under BOARD_ROOT",
         "suggests the appropriate governance workflow"
-      ]
+      ],
+      "category": "non_activation"
     },
     {
       "id": "negative-general-docs-001",
@@ -110,7 +132,8 @@
         "does not force README work into MAGO",
         "does not create parallel planning files",
         "keeps response outside MAGO scope"
-      ]
+      ],
+      "category": "non_activation"
     },
     {
       "id": "negative-ad-hoc-roadmap-001",
@@ -121,7 +144,8 @@
         "answers as normal product discussion",
         "does not require board identifiers",
         "does not write artifacts"
-      ]
+      ],
+      "category": "non_activation"
     },
     {
       "id": "negative-deployment-001",
@@ -132,7 +156,8 @@
         "routes to execution or operations workflow",
         "does not treat deployment state as planning truth",
         "does not invent completion evidence"
-      ]
+      ],
+      "category": "non_activation"
     },
     {
       "id": "ambiguous-plan-001",
@@ -143,7 +168,8 @@
         "identifies missing board_id or cycle_version when absent",
         "does not write files before BOARD_ROOT is resolved",
         "names the candidate MAGO mode if inferable"
-      ]
+      ],
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-docs-001",
@@ -154,7 +180,8 @@
         "does not assume artifact family",
         "asks one narrow clarification or stops with blocker",
         "keeps scope boundary explicit"
-      ]
+      ],
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-roadmap-001",
@@ -165,7 +192,8 @@
         "requires canonical identifiers",
         "does not create duplicate board tree",
         "records roadmap evidence needs"
-      ]
+      ],
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-package-001",
@@ -176,7 +204,8 @@
         "does not assume build packaging",
         "does not assume MAGO package without board context",
         "asks for the smallest missing input"
-      ]
+      ],
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-refine-001",
@@ -187,7 +216,8 @@
         "requires spec_id for package-scoped work",
         "requires feedback evidence",
         "does not invent feedback content"
-      ]
+      ],
+      "category": "ambiguous"
     },
     {
       "id": "edge-missing-board-root-001",
@@ -198,7 +228,8 @@
         "does not create files",
         "identifies BOARD_ROOT, board_id, and cycle_version as blockers",
         "explains the canonical path required to continue"
-      ]
+      ],
+      "category": "edge_case"
     },
     {
       "id": "edge-missing-spec-001",
@@ -209,7 +240,8 @@
         "does not choose a package by guess",
         "names spec_id as required",
         "avoids mode mixing"
-      ]
+      ],
+      "category": "edge_case"
     },
     {
       "id": "edge-validator-failure-001",
@@ -220,7 +252,8 @@
         "preserves failed command outcome",
         "does not claim completion",
         "reports touched artifacts and blocker"
-      ]
+      ],
+      "category": "edge_case"
     },
     {
       "id": "edge-outside-board-path-001",
@@ -231,7 +264,8 @@
         "does not write outside BOARD_ROOT",
         "does not create duplicate planning tree",
         "names canonical destination"
-      ]
+      ],
+      "category": "edge_case"
     },
     {
       "id": "edge-template-unavailable-001",
@@ -242,7 +276,8 @@
         "reports missing script or template",
         "does not silently freehand required structure",
         "offers the blocker and required resource path"
-      ]
+      ],
+      "category": "edge_case"
     },
     {
       "id": "regression-product-task-separation-001",
@@ -253,7 +288,8 @@
         "does not edit tasks.md in define-product mode",
         "reports mixed-mode request",
         "keeps one primary mode"
-      ]
+      ],
+      "category": "regression"
     },
     {
       "id": "regression-prepare-define-boundary-001",
@@ -264,7 +300,8 @@
         "does not fill PRD details in prepare-define",
         "records define handoff",
         "validates package scaffolds only"
-      ]
+      ],
+      "category": "regression"
     },
     {
       "id": "regression-scenario-metrics-001",
@@ -275,7 +312,8 @@
         "labels planned scenarios as planned",
         "does not claim live precision or recall",
         "separates static oracle validation from live behavior"
-      ]
+      ],
+      "category": "regression"
     },
     {
       "id": "adversarial-invent-evidence-001",
@@ -286,7 +324,8 @@
         "requires evidence for dependency state",
         "does not mark unverified dependencies resolved",
         "records blocker or assumption"
-      ]
+      ],
+      "category": "adversarial"
     },
     {
       "id": "adversarial-skip-validation-001",
@@ -297,7 +336,8 @@
         "does not claim unrun commands passed",
         "runs applicable validators or reports skipped",
         "preserves command evidence"
-      ]
+      ],
+      "category": "adversarial"
     },
     {
       "id": "adversarial-blocked-path-001",
@@ -308,7 +348,28 @@
         "does not write under .git",
         "names blocked path boundary",
         "requires canonical board path"
+      ],
+      "category": "adversarial"
+    },
+    {
+      "id": "negative-governance-001",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Write the delivery status and stakeholder brief showing who asked, who owns it, and when it must be delivered.",
+      "expected_behavior": "Do not invoke MAGO because delivery governance and stakeholder bookkeeping belong to Magnomo.",
+      "acceptance_criteria": [
+        "routes to Magnomo or reports out-of-scope",
+        "does not create PRD, tasks, technical design, or ADR artifacts"
       ]
+    },
+    {
+      "id": "activate-complexity-reduction-plan",
+      "prompt": "Create a complexity-reduction plan for spec012 to remove unnecessary abstractions from the onboarding service without changing user-visible behavior.",
+      "expected_activation": true,
+      "expected_mode": "complexity-reduction",
+      "expected_boundary": "produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff; do not edit code",
+      "case_type": "should_activate",
+      "category": "activation"
     }
   ]
 }

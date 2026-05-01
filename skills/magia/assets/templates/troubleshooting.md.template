@@ -1,0 +1,31 @@
+# Troubleshooting Guide
+
+## Scope
+
+- Feature/task: `unknown`
+- Service/module: `unknown`
+
+## Symptoms
+
+| Symptom | Likely cause | Diagnostic evidence | Corrective action |
+|---|---|---|---|
+| unknown | unknown | unknown | unknown |
+
+## Diagnostic Steps
+
+1. `unknown`
+
+## Logs and Metrics
+
+- Logs: `unknown`
+- Metrics: `unknown`
+- Traces: `unknown`
+
+## Safe Mitigations
+
+- `unknown`
+
+## Escalation
+
+- `unknown`
+
