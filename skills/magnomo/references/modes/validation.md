@@ -1,45 +1,35 @@
 # Validation
 
+Use for `validate-contracts` and `normalize-human-artifacts`.
+
 ## Canonical Rules
 
-- `BOARD_ROOT` is required when validation touches repository-facing Magnomo artifacts.
-- Prompt-provided `BOARD_ROOT` takes precedence after validation; otherwise derive it from `references/canonical-paths.md`.
-- A selected spec path is required only when validation checks spec-scoped Magnomo artifacts.
-- Keep validator ownership scoped to Magnomo artifacts and boundaries under `BOARD_ROOT` and selected spec packages.
+`BOARD_ROOT` is required when validation touches repository-facing Magnomo artifacts. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from [references/canonical-paths.md](../canonical-paths.md). A selected spec path is required only for spec-scoped validation. Keep scope to Magnomo artifacts and boundaries under `BOARD_ROOT` and selected spec packages.
 
-Magnomo validators check Magnomo artifacts and ownership boundaries. They do not execute repository code, load Mago/Magia skill files, or infer missing facts.
+Magnomo validators check artifacts and ownership boundaries. They do not execute repository code, load Mago/Magia skill files, or infer missing facts.
 
 ## Scripts
 
-- `scripts/write_artifact_scaffold.py`: create any Magnomo artifact scaffold from the canonical template workflow.
-- `scripts/validate_artifact.py`: dispatch validation to the canonical Magnomo validator for the selected artifact.
+- `scripts/write_artifact_scaffold.py`: create Magnomo artifact scaffold.
+- `scripts/validate_artifact.py`: dispatch canonical validator for one artifact.
 - `scripts/validate_ops.py`: validate `ops.yaml`.
-- `scripts/write_ops_scaffold.py`: create a canonical `ops.yaml` scaffold with safe defaults and explicit collection shapes.
+- `scripts/write_ops_scaffold.py`: create canonical `ops.yaml` with safe defaults and explicit collections.
 - `scripts/validate_roadmap.py`: validate `roadmap.yaml` and `feature-map.yaml`.
-- `scripts/validate_reporting.py`: validate `feature-report.md`, `release-notes.md`, and optional `internal-notes.md`.
+- `scripts/validate_reporting.py`: validate `feature-report.md`, `release-notes.md`, optional `internal-notes.md`.
 - `scripts/validate_portfolio.py`: validate `portfolio.yaml` and `portfolio.md`.
-- `scripts/validate_human_artifacts.py`: validate canonical Magnomo markdown artifacts that rely on headings and resolved placeholders.
+- `scripts/validate_human_artifacts.py`: validate heading/placeholder-based markdown artifacts.
 - `scripts/validate_contracts.py`: validate cross-skill contracts and actor write boundaries.
 - `scripts/validate_board_paths.py`: validate canonical `BOARD_ROOT` placement.
-- `scripts/normalize_human_artifacts.py`: normalize Magnomo artifacts without inventing content.
-- `scripts/magnomo_utils.py`: shared helpers for validators; import it from scripts, do not run it directly.
+- `scripts/normalize_human_artifacts.py`: normalize without inventing content.
+- `scripts/magnomo_utils.py`: shared helpers; import, do not run directly.
 
-## Validation Rules
+## Rules
 
-- Print clear errors and warnings.
-- Return non-zero when errors are present.
-- Use `scripts/write_artifact_scaffold.py` to start a new artifact from a template and `scripts/validate_artifact.py` to validate the result; do not leave template selection, template-backed writes, normalization, or validator selection to ad hoc LLM judgment when a local script exists.
-- Treat missing required artifacts as errors only when the selected mode requires them.
-- Treat unresolved template tokens such as `<...>` in generated artifacts as errors.
-- Treat missing owners, stakeholders, target dates, and validation evidence as warnings unless the artifact schema requires the field.
-- Never invent owners, dates, stakeholders, status, or evidence during validation or normalization.
-- Reuse `scripts/magnomo_utils.py` for shared YAML loading, path normalization, message deduplication, missing-value checks, and ISO date handling. Keep artifact-specific rules inside the validator that owns them.
+Print clear errors/warnings. Exit non-zero on errors. Use scaffold writers and validators; do not leave template selection, template-backed writes, normalization, or validator selection to ad hoc judgment when a local script exists. Missing required artifacts are errors only when selected mode requires them. Unresolved `<...>` template tokens in generated artifacts are errors. Missing owners, stakeholders, target dates, and validation evidence warn unless schema requires the field. Never invent owners, dates, stakeholders, status, or evidence. Keep shared YAML, path, missing-value, and ISO-date helpers in `magnomo_utils.py`; keep artifact-specific rules in their owning validators.
 
 ## Exit Behavior
 
-- `ERROR:` lines mean the artifact violates a required schema, enum, date, contract, or write-boundary rule. The script exits with status `1`.
-- `WARNING:` lines mean the artifact is structurally usable but incomplete or risky for human governance. The script exits with status `0` when no errors are present.
-- Normalization with `--check` exits with status `1` when files would change; without `--check`, it rewrites only formatting-safe content.
+`ERROR:` = required schema, enum, date, contract, or boundary violation; exit `1`. `WARNING:` = structurally usable but incomplete/risky; exit `0` when no errors. Normalization with `--check` exits `1` when files would change; without `--check`, rewrites formatting-safe content only.
 
 ## Commands
 
@@ -57,31 +47,10 @@ python .github/skills/magnomo/scripts/validate_board_paths.py --changed-files pa
 python .github/skills/magnomo/scripts/normalize_human_artifacts.py path/to/ops.yaml path/to/feature-report.md
 ```
 
-## Board Path Validation
+## Validator Coverage
 
-`scripts/validate_board_paths.py` checks:
+Board-path validation checks Magnomo-owned artifact placement under `BOARD_ROOT` or `BOARD_ROOT/specs/<spec_id>/`, slug-safe `<board_id>/<cycle_version>`, `specNNN` ids, and board/spec artifact names in allowed locations.
 
-- Magnomo-owned repository artifacts are under `BOARD_ROOT` or a selected spec package under `BOARD_ROOT/specs/<spec_id>/`.
-- `<board_id>` and `<cycle_version>` are present and slug-safe.
-- Spec-scoped artifacts use `specNNN` package ids.
-- Board-scoped and spec-scoped artifact names appear only in their allowed canonical locations.
+Roadmap validation checks required fields, enums, feature-key format, dependency references, candidate spec consistency, and handoff boundary violations in `feature-map.yaml`.
 
-## Roadmap Validation
-
-`scripts/validate_roadmap.py` checks:
-
-- required roadmap and handoff fields
-- enum values, feature-key format, dependency references, and candidate spec consistency
-- handoff boundary violations in `feature-map.yaml`
-
-## Reporting Validation
-
-`scripts/validate_reporting.py` checks:
-
-- required sections and audience
-- evidence, validation, rollout, deployment, and rollback status
-- unsupported release or availability claims
-- internal-only or sensitive detail in `release-notes.md`
-- unresolved unknown placeholders as warnings
-
-Use `--mode feature-report`, `--mode release-notes`, or `--mode all` to choose which required artifacts are enforced. The default is `all`.
+Reporting validation checks required sections, audience, evidence, validation, rollout, deployment, rollback status, unsupported shipment/availability claims, internal-only or sensitive detail in `release-notes.md`, and unresolved unknown placeholders as warnings. Use `--mode feature-report`, `--mode release-notes`, or `--mode all`; default is `all`.

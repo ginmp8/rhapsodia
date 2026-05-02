@@ -1,134 +1,56 @@
-# Skill Improver Harness Design
+# Harness Design
 
-Use this reference when a run asks for a complete improvement harness for `skill-improver` or when the static score is saturated and a second, non-saturated contract is required before claiming improvement.
+Use when building a complete `skill-improver` harness or when a saturated static score needs a non-saturated auxiliary contract before claiming improvement.
 
-## Decision supported
+## Decision
 
-After this harness runs, decide whether the target package can be used or packaged for controlled skill-improvement work with acceptable risk. The decision must distinguish: accept, accept with risks, reject, validation-only, and plan-only.
+After the harness runs, decide: accept, accept with risks, reject, validation-only, or plan-only. Distinguish measured evidence from proposed evidence.
 
-## Skill behavior under test
+## Behavior under test
 
-The harness evaluates whether the skill reliably guides a user or agent through:
-
-1. inspecting a target skill before mutation;
-2. preparing and freezing a benchmark or auxiliary evaluator;
-3. measuring a baseline;
-4. selecting one falsifiable hypothesis at a time;
-5. applying only allowed edits;
-6. accepting, rejecting, or reverting candidates from measured evidence;
-7. packaging or installing only after validation;
-8. reporting commands, evidence, blocked paths, and residual risks truthfully.
+Verify the skill guides a user/agent to: inspect target before mutation; prepare/freeze benchmark; measure baseline; choose one falsifiable hypothesis; edit only allowed paths; accept/reject/revert from evidence; validate/package/install only after gates; report commands, evidence, blocked paths, and risks truthfully.
 
 ## Source basis
 
-### Supplied context
+- Supplied context: small mutable surface, fixed budget, baseline first, one measurable metric, accept/discard, logged outcomes.
+- Target package: already defines benchmark freezing, blocked paths, saturated metrics, self-improvement safeguards, runner, and static scorer.
+- External research: use only for concrete gaps after reading target package/context, such as changed external evaluator CLI; record sources separately.
 
-The supplied autoresearch repository establishes the primary pattern used here: a small mutable surface, fixed evaluation budget, baseline first, one measurable metric, accept or discard each experiment, and log outcomes. For skill improvement, the mutable surface is the target skill folder, the metric is the frozen evaluator score or scenario conformance, and the accept/discard decision is the patch decision.
+## Scope
 
-### Target package
+In scope: `SKILL.md` activation/workflow/modes/stops/output; `references/` policies; `scripts/` runners/validators; `evals/` scenarios; `references/report-template.md` plus templates consumed by `scripts/skill_improver_loop.py`; packaging exclusions, evidence, and resource-integration checks.
 
-The target package already defines benchmark freezing, blocked paths, saturated metric handling, self-improvement safeguards, a bundled runner, and a starter static scorer. This harness makes those rules testable through scenarios and a deterministic package validator.
-
-### Additional research
-
-Use additional external research only when a concrete gap remains after reading the target package and supplied context, such as a changed command interface for an external evaluator. Record the source and keep researched recommendations separate from the supplied-context rules.
-
-## Scope boundary
-
-In scope:
-
-- `SKILL.md` activation, workflow, modes, stop conditions, and output contracts;
-- `references/` evaluation, benchmark, hypothesis, and harness policies;
-- `scripts/` deterministic runners and validators;
-- `evals/` planned or measured scenario suites;
-- canonical report guidance in `references/report-template.md` plus executable templates in `assets/templates/` consumed by `scripts/skill_improver_loop.py`;
-- packaging exclusions, validation evidence, and resource-integration checks that distinguish script-consumed templates, workflow-filled templates, references, examples, fixtures, and unused scaffolding.
-
-Out of scope unless explicitly requested:
-
-- modifying locked evaluator fixtures or expected outputs during an improvement iteration;
-- editing secrets, caches, package artifacts, generated evidence reports, or `.git`;
-- claiming scenario pass rates without executed prompt outputs;
-- running unbounded autonomous loops outside a disposable sandbox.
+Out of scope unless requested: modifying locked fixtures/expected outputs during an improvement iteration; editing secrets, caches, package artifacts, generated evidence, or `.git`; claiming scenario pass rates without executed outputs; unbounded autonomous loops outside a disposable sandbox.
 
 ## Scenario suite
 
-Use `evals/skill-improver-scenarios.json` as the frozen planned suite. A measured suite may be derived from it, but the measured results must be locked before candidate edits. Required categories are:
-
-- `should_activate`: prompts that clearly require hypothesis-driven skill improvement;
-- `should_not_activate`: generic coding, writing, or product questions outside skill-improvement scope;
-- `ambiguous`: prompts that require benchmark/mode/scope clarification or conservative defaults;
-- `edge_case`: missing target path, dirty git state, saturated metric, blocked path edits, or unsafe sandbox modes;
-- `regression`: known failure modes such as changing the evaluator mid-run or claiming improvement from a saturated score.
+Use `evals/skill-improver-scenarios.json` as the frozen planned suite. A measured suite may derive from it, but measured results must be locked before candidate edits. Required categories: `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`, `regression`.
 
 ## Evaluators
 
-Structural evaluator:
-
-- skill-harness inventory and audit for package structure, references, placeholders, scenarios, validation, and maintainability.
-
-Activation evaluator:
-
-- scenario review against the planned or measured suite; calculate precision and recall only when actual activation decisions are captured.
-
-Output-conformance evaluator:
-
-- check final reports for baseline, final score, evaluator hash, accepted/rejected hypotheses, files changed, gates, package result, and residual risks.
-
-Safety and scope evaluator:
-
-- verify blocked paths were not modified, mutation scope was respected, sandbox mode was stated, and unsupported persistence claims are absent.
-
-Packaging evaluator:
-
-- run `scripts/validate_skill_improver_package.py` and verify the package archive excludes evidence, caches, secrets, and transient state;
-- verify `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template` are consumed by `scripts/skill_improver_loop.py`; for other target skills, verify templates are consumed by a script, explicitly referenced by a workflow, copied or filled by the agent, or validated by a gate before treating them as integrated.
+- Structural: inventory and audit package structure, references, placeholders, scenarios, validation, maintainability.
+- Activation: review planned/measured scenarios; calculate precision/recall only when actual activation decisions are captured.
+- Output conformance: final report includes baseline, final score, evaluator hash, accepted/rejected hypotheses, files changed, gates, package result, risks.
+- Safety/scope: blocked paths unchanged, mutation scope respected, sandbox stated, no unsupported persistence claims.
+- Packaging: run `scripts/validate_skill_improver_package.py`; verify archive excludes evidence, caches, secrets, transient state; verify `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template` are consumed by `scripts/skill_improver_loop.py`. For other skills, templates must be script-consumed, workflow-filled/copied, explicitly referenced, or validator-gated before counting as integrated.
 
 ## Metrics
 
-- Activation precision: measured correct activations divided by actual activations; mark not measured until outputs exist.
-- Activation recall: measured correct activations divided by expected activations; mark not measured until outputs exist.
-- Output conformance: required report sections satisfied divided by required sections.
-- Criteria coverage: required harness criteria satisfied divided by required criteria.
-- Robustness: passed edge and regression scenarios divided by executed edge and regression scenarios.
-- Rework risk: qualitative low, medium, or high based on failed gates, unmeasured behavior, and manual-review burden.
+- Activation precision: correct activations / actual activations; not measured until outputs exist.
+- Activation recall: correct activations / expected activations; not measured until outputs exist.
+- Output conformance: required report sections satisfied / required sections.
+- Criteria coverage: required harness criteria satisfied / required criteria.
+- Robustness: passed edge+regression scenarios / executed edge+regression scenarios.
+- Rework risk: low/medium/high from failed gates, unmeasured behavior, and manual-review burden.
 
 ## Gates
 
-Blocking gates:
+Blocking: exactly one skill file; frontmatter name/description; no unresolved placeholders; referenced resources exist; required scenario categories exist; deterministic validator passes; reusable templates integrated through runner/workflow/copy-fill instruction/validation gate; no blocked paths or generated evidence added as target content; package archive produced when requested.
 
-1. exactly one skill file exists;
-2. frontmatter name and description exist;
-3. no unresolved placeholder markers remain;
-4. all referenced target resources exist;
-5. required scenario categories are present;
-6. deterministic validator passes;
-7. reusable asset templates are integrated through a runner, declared workflow, copy/fill instruction, or validation gate when present;
-8. no blocked paths or generated evidence were modified as target content;
-9. package archive is produced when packaging is requested.
+Warnings: activation metrics planned but not measured; auxiliary metric needed because primary metric is saturated; external evaluator unavailable in runtime; self-improvement lacks separate persistent installation destination.
 
-Warning gates:
-
-1. activation metrics are planned but not measured;
-2. auxiliary metric is used because the primary metric is saturated;
-3. behavior depends on an external evaluator not available in the runtime;
-4. self-improvement was performed without a separate persistent installation destination.
-
-Informational gates:
-
-1. additional research was not needed;
-2. package applies to the current runtime copy only unless installed elsewhere;
-3. scenario suite should be expanded after user feedback or incident evidence.
+Informational: no extra research needed; package applies only to current runtime unless installed elsewhere; scenario suite should grow after user feedback/incidents.
 
 ## Evidence record
 
-A complete harness run records:
-
-- baseline inventory, audit, static score, and evaluator hashes;
-- source summary separated into supplied context, target contents, and researched sources;
-- harness map and improvement hypotheses;
-- changed files grouped by control plane, references, scripts, templates/assets, scenarios, validation, and packaging;
-- commands executed and pass/fail outputs;
-- before/after comparison;
-- package path and exclusions;
-- residual risks and next hypotheses.
+Record baseline inventory/audit/static score/evaluator hashes; source summary split by supplied context, target contents, and researched sources; harness map and hypotheses; changed files by control plane, references, scripts, templates/assets, scenarios, validation, packaging; commands and pass/fail outputs; before/after comparison; package path/exclusions; residual risks and next hypotheses.

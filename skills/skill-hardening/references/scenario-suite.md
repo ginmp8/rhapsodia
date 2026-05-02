@@ -1,15 +1,10 @@
 # Scenario Suite
 
-Use this reference when creating behavioral tests for a hardened skill.
+Use when creating behavioral tests for a hardened skill.
 
-## Minimum scenario set
+## Minimum set
 
-Create at least 20 scenarios when behavior is in scope:
-
-- 5 `should_activate` prompts;
-- 5 `should_not_activate` prompts;
-- 5 `ambiguous` prompts;
-- 5 `edge_case` prompts.
+Create at least 20 scenarios: 5 `should_activate`, 5 `should_not_activate`, 5 `ambiguous`, 5 `edge_case`.
 
 ## JSON schema
 
@@ -30,28 +25,22 @@ Create at least 20 scenarios when behavior is in scope:
 ]
 ```
 
-## Scoring rules
+## Scoring
 
-Only mark a metric as measured when the scenario was actually executed or the user supplied execution results.
+Metrics are measured only after scenario execution or user-supplied execution results.
 
 - Activation precision = correct actual activations / all actual activations.
 - Activation recall = correct actual activations / all expected activations.
-- Output conformance = conforming outputs / all executed scenarios.
-- Robustness = passed edge cases / all executed edge cases.
-- Rework rate = scenarios needing rework / all executed scenarios.
+- Output conformance = conforming outputs / executed scenarios.
+- Robustness = passed edge cases / executed edge cases.
+- Rework rate = scenarios needing rework / executed scenarios.
 
 ## Quality bar
 
-A hardened skill should target:
+Targets: activation precision >= 90%; recall >= 85%; output conformance >= 90%; robustness >= 75%; rework rate <= 10%.
 
-- activation precision at least 90 percent;
-- activation recall at least 85 percent;
-- output conformance at least 90 percent;
-- robustness at least 75 percent;
-- rework rate at most 10 percent.
+## Placement
 
-## Scenario file placement
+For package-level hardening, keep reusable planned scenarios under `examples/` unless the target owns a stricter path. Scenario examples must be referenced from `SKILL.md`, cover all four core categories, and keep execution fields null until measured; repeated null execution fields may be stored once as shared defaults.
 
-For package-level hardening, keep reusable planned scenarios under `examples/` unless the target skill already owns a stricter scenario path. A scenario example file should be referenced from `SKILL.md`, should contain all four categories, and should keep execution fields null until results are actually measured.
-
-The bundled `examples/hardening-scenarios.json` demonstrates the minimum category mix for this skill. Use it as a calibration example, not as evidence that another target skill's scenarios passed.
+`examples/hardening-scenarios.json` is calibration, not evidence that another target skill's scenarios passed.

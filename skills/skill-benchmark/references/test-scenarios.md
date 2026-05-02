@@ -1,26 +1,24 @@
 # Test Scenario Methodology
 
-Use this guide to create measurable behavioral benchmarks for a target skill.
+Use this guide for measurable behavioral benchmarks.
 
-## Scenario categories
+## Scenario set
 
-Each benchmark should include at least 20 scenarios:
+Include at least 20 scenarios:
 
-1. `should_activate`: 5 prompts where the skill should clearly activate.
-2. `should_not_activate`: 5 prompts where the skill should not activate.
-3. `ambiguous`: 5 prompts where the skill must clarify, choose a safe default, or proceed with explicit assumptions.
-4. `edge_case`: 5 prompts involving missing files, incomplete inputs, conflicting instructions, large content, invalid paths, or unsupported output requests.
+1. `should_activate`: 5 clear activation prompts.
+2. `should_not_activate`: 5 clear non-activation prompts.
+3. `ambiguous`: 5 prompts requiring clarification, safe default, or explicit assumptions.
+4. `edge_case`: 5 prompts with missing files, incomplete inputs, conflicts, large content, invalid paths, or unsupported outputs.
 
-## Scenario table schema
-
-Use this table when results are manually recorded:
+## Manual result table
 
 | ID | Category | Prompt | Expected activation | Actual activation | Output conforms | Quality score 0-5 | Needs rework | Notes |
 |---|---|---|---|---|---|---:|---|---|
 
 ## Optional JSON result schema
 
-The generator script can consume this shape:
+Generator-compatible shape:
 
 ```json
 [
@@ -38,24 +36,19 @@ The generator script can consume this shape:
 ]
 ```
 
-Allowed categories:
+Allowed categories: `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`.
 
-- `should_activate`
-- `should_not_activate`
-- `ambiguous`
-- `edge_case`
+## Deterministic validation
 
-## Deterministic result validation
-
-When scenario results are supplied as JSON, run the bundled validator before computing measured metrics:
+Validate supplied JSON before computing measured metrics:
 
 ```bash
 python3 -S scripts/validate_scenario_results.py --results <scenario-results-json> --json-output <validation-output-json>
 ```
 
-The validator requires an array of result objects with stable IDs, allowed categories, boolean expected and actual activation fields, boolean or null conformance and rework fields, and a quality score from 0 to 5 when provided. If validation fails, do not calculate measured precision, recall, robustness, output conformance, or rework rate from that file.
+The validator requires an array of stable result objects; allowed category; boolean expected/actual activation; boolean or null conformance/rework; quality score 0-5 when present. If validation fails, do not calculate measured precision, recall, robustness, output conformance, or rework rate from that file.
 
-## Metric formulas
+## Formulas
 
 - Activation precision = correct actual activations / all actual activations.
 - Activation recall = correct actual activations / all expected activations.
@@ -66,21 +59,11 @@ The validator requires an array of result objects with stable IDs, allowed categ
 
 ## Status labels
 
-Use these labels:
-
-- `measured`: evidence was executed or supplied.
+- `measured`: executed or supplied evidence exists.
 - `planned`: scenario exists but was not executed.
-- `blocked`: scenario could not be executed due missing environment, tool, file, or permission.
-- `not applicable`: scenario does not apply to the target skill.
+- `blocked`: missing environment, tool, file, or permission.
+- `not applicable`: scenario does not apply.
 
 ## Interpretation
 
-A target skill is behaviorally mature when:
-
-- Activation precision is at least 90 percent.
-- Activation recall is at least 85 percent.
-- Output conformance is at least 90 percent.
-- Robustness is at least 75 percent.
-- Rework rate is at most 10 percent.
-
-Never report these as measured unless execution evidence exists.
+Behaviorally mature target: activation precision >= 90 percent; activation recall >= 85 percent; output conformance >= 90 percent; robustness >= 75 percent; rework rate <= 10 percent. Never report these as measured without execution evidence.

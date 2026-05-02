@@ -1,160 +1,76 @@
 # Hypothesis Catalog
 
-Use one hypothesis per iteration. Prefer specific hypotheses tied to observed benchmark weaknesses.
+Use one specific, observed-weakness hypothesis per iteration.
 
-## Trigger and activation hypotheses
+## Trigger and activation
 
-### H001 - Improve frontmatter trigger specificity
+### H001 - Frontmatter trigger specificity
+Mechanism: clearer description improves activation precision/recall.
+Changes: make description action-oriented; include concrete triggers, target inputs/outputs, and negative boundaries.
+Evidence: activation score improves; false positives do not increase.
 
-Expected mechanism: a clearer description improves activation precision and recall.
+### H002 - Negative activation boundaries
+Mechanism: exclusions reduce accidental activation.
+Changes: add non-goals to description when routing-relevant; add body-level refusal/delegation rules.
+Evidence: negative prompts stop activating or redirect correctly.
 
-Candidate changes:
-- Make the description action-oriented.
-- Include concrete task triggers.
-- Include target inputs and outputs.
-- Include explicit negative boundaries.
+## Workflow
 
-Acceptance evidence:
-- Better activation prompt score.
-- No increase in false positives.
+### H010 - Deterministic step order
+Mechanism: sequential workflow improves output conformance.
+Changes: numbered steps, branch decision points, finalization criteria.
+Evidence: outputs follow required structure more often.
 
-### H002 - Add negative activation boundaries
+### H011 - Mode selection matrix
+Mechanism: explicit modes reduce ambiguity.
+Changes: map user intent to mode, inputs, outputs, validators.
+Evidence: ambiguous prompts choose the expected path more often.
 
-Expected mechanism: explicit exclusions reduce accidental activation.
+## Output
 
-Candidate changes:
-- Add non-goals to the description when they affect routing.
-- Add body-level refusal or delegation rules.
+### H020 - Output contract
+Mechanism: mandatory sections reduce incomplete/inconsistent responses.
+Changes: required final structure, artifact naming/path rules, evidence/citation rules when applicable.
+Evidence: output conformance improves.
 
-Acceptance evidence:
-- Negative prompts no longer activate or are correctly redirected.
+### H021 - Examples
+Mechanism: examples calibrate style, granularity, and edge decisions.
+Changes: add one positive, one negative, one ambiguous example.
+Evidence: qualitative conformance and edge handling improve.
 
-## Workflow hypotheses
+## Validation
 
-### H010 - Add deterministic step order
+### H030 - Validation checklist
+Mechanism: explicit gates catch invalid outputs before final answer.
+Changes: closing checklist, pass/fail criteria, required scripts when available.
+Evidence: fewer failed gates.
 
-Expected mechanism: a clearer sequential workflow improves output conformance.
+### H031 - Deterministic validator
+Mechanism: repeatable script replaces fragile manual checks.
+Changes: check frontmatter, required files, schema, or report structure.
+Evidence: evaluator confirms validation support.
 
-Candidate changes:
-- Add numbered workflow steps.
-- Add decision points for branching modes.
-- Add finalization criteria.
+## Context efficiency
 
-Acceptance evidence:
-- Output follows required structure more often.
-
-### H011 - Add mode selection matrix
-
-Expected mechanism: explicit mode selection reduces ambiguity in multi-mode skills.
-
-Candidate changes:
-- Add a table mapping user intent to mode, inputs, outputs, and validators.
-
-Acceptance evidence:
-- Ambiguous prompt handling improves.
-
-## Output hypotheses
-
-### H020 - Add output contract
-
-Expected mechanism: strict required sections reduce incomplete or inconsistent responses.
-
-Candidate changes:
-- Add mandatory final response structure.
-- Add artifact naming and path rules.
-- Add evidence and citation requirements when applicable.
-
-Acceptance evidence:
-- Output conformance improves.
-
-### H021 - Add examples
-
-Expected mechanism: examples teach style, granularity, and expected decisions.
-
-Candidate changes:
-- Add one positive example.
-- Add one negative example.
-- Add one ambiguous example.
-
-Acceptance evidence:
-- Qualitative conformance and edge-case handling improve.
-
-## Validation hypotheses
-
-### H030 - Add validation checklist
-
-Expected mechanism: explicit gates catch invalid outputs before final answer.
-
-Candidate changes:
-- Add a closing checklist.
-- Add pass/fail criteria.
-- Require script execution when available.
-
-Acceptance evidence:
-- Fewer failed gates.
-
-### H031 - Add deterministic validator script
-
-Expected mechanism: fragile manual validation becomes repeatable.
-
-Candidate changes:
-- Add a script that checks frontmatter, required files, schema, or report structure.
-
-Acceptance evidence:
-- Evaluator confirms validation support.
-
-## Context efficiency hypotheses
-
-### H040 - Move long details to references
-
-Expected mechanism: compact SKILL.md improves context efficiency while preserving capability.
-
-Candidate changes:
-- Move detailed rubrics or examples to `references/`.
-- Keep SKILL.md as a control plane.
-
-Acceptance evidence:
-- Static context-efficiency score improves.
+### H040 - Move details to references
+Mechanism: compact `SKILL.md` improves context efficiency without capability loss.
+Changes: move long rubrics/examples to `references/`; keep `SKILL.md` as control plane.
+Evidence: context-efficiency score improves.
 
 ### H041 - Integrate or remove unused resources
+Mechanism: resources become trustworthy when connected to workflow; truly unused files are removed.
+Diagnosis: classify each weak resource as operational template, script input/output, explanatory reference, example, fixture, or unused scaffold before deleting.
+Changes: integrate useful templates/references/examples/scripts via workflow references, loading rules, writer/validator coverage, or package checks; preserve `assets/templates/` for repeatable skeletons rendered/copied/filled by a declared workflow; move explanatory-only content to `references/`; delete placeholders, duplicates, obsolete files, unreferenced assets, or stale examples only after confirming no behavior depends on them.
+Evidence: resource, maintainability, or validation score improves without reducing output quality, workflow clarity, or reusable artifact coverage; removals have rationale and preserved resources have consumers/gates.
 
-Expected mechanism: supporting resources become easier to trust because useful resources are connected to the workflow and truly unused resources are removed.
+## Safety and robustness
 
-Diagnosis rule:
-- Do not treat a weakly integrated resource as disposable by default. First classify it as an operational template, script input/output, explanatory reference, example, fixture, or unused scaffold.
+### H050 - Safety boundaries
+Mechanism: better handling of unsafe/out-of-scope/unsupported requests.
+Changes: non-goals, escalation/clarification rules, unknown-preservation rules.
+Evidence: edge-case prompts improve.
 
-Candidate changes:
-- Integrate useful templates, references, examples, or scripts by adding explicit workflow references, loading conditions, writer/validator coverage, or package checks.
-- Preserve `assets/templates/` when the files are repeatable artifact skeletons rendered, copied, or filled by a declared workflow, even if no script reads them directly.
-- Move content to `references/` only when it is explanatory guidance rather than a reusable artifact skeleton.
-- Delete placeholder files, duplicated resources, obsolete resources, unreferenced assets, or stale examples only after confirming they are not useful target behavior.
-
-Acceptance evidence:
-- Supporting-resource, maintainability, or validation score improves without reducing output quality, workflow clarity, or reusable artifact coverage.
-- Any removed resource has an explicit removal rationale, and any preserved resource has a stated consumer or validation path.
-
-## Safety and robustness hypotheses
-
-### H050 - Add safety boundaries
-
-Expected mechanism: the skill better handles unsafe, out-of-scope, or unsupported requests.
-
-Candidate changes:
-- Add non-goals.
-- Add escalation or clarification rules.
-- Add unknown-preservation rules.
-
-Acceptance evidence:
-- Edge-case prompts improve.
-
-### H051 - Add rollback or failure handling
-
-Expected mechanism: the workflow becomes safer under partial failures.
-
-Candidate changes:
-- Add stop conditions.
-- Add recovery rules.
-- Add explicit no-fabrication rules.
-
-Acceptance evidence:
-- Robustness score improves.
+### H051 - Rollback/failure handling
+Mechanism: safer partial-failure behavior.
+Changes: stop conditions, recovery rules, no-fabrication rules.
+Evidence: robustness score improves.

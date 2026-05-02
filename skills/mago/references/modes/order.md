@@ -3,7 +3,7 @@
 ## Canonical Rules
 
 - `BOARD_ROOT` is required for catalog and queue reconciliation.
-- Use prompt-provided `BOARD_ROOT` when present; otherwise derive it from `references/canonical-paths.md`.
+- Use prompt-provided `BOARD_ROOT` when present; otherwise derive it from `canonical-paths.md`.
 - No separate spec root is active in `order`; queued spec targets are derived package paths under `BOARD_ROOT/specs/<spec_id>/`.
 - Keep spec-catalog.yaml and define-queue.yaml under `BOARD_ROOT` only.
 
@@ -14,7 +14,7 @@
 
 ## Ordering Workflow
 
-1. Work only inside the resolved `BOARD_ROOT` from [../canonical-paths.md](references/canonical-paths.md).
+1. Work only inside the resolved `BOARD_ROOT` from [../canonical-paths.md](../canonical-paths.md).
 2. Locate the highest open catalog in that resolved `BOARD_ROOT` whose `cycle_status` is `planned` or `in_progress`.
 3. If no open catalog exists in that resolved `BOARD_ROOT`, create the bootstrap initial catalog there: `cycle_version: 01.00.00`, `cycle_status: planned`.
 4. Load discovery-index.yaml and the candidate docs referenced by the candidates you are ordering.

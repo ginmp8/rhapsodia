@@ -12,7 +12,7 @@
 1. Read the current product docs first and preserve what is still true.
 2. Load only the directly relevant repository facts, discovery evidence, and concept docs needed to resolve current product ambiguity.
 3. Tighten or reconcile prd.md, notes.md, and optional validation.md without widening into execution planning.
-4. Open references/markdown-writing.md for changed Markdown artifacts and use local scripts for template-backed writes, normalization, and validation whenever prd.md, notes.md, or validation.md needs template reconciliation.
+4. Open ../markdown-writing.md for changed Markdown artifacts and use local scripts for template-backed writes, normalization, and validation whenever prd.md, notes.md, or validation.md needs template reconciliation.
 5. Stop once the docs are clearer, internally consistent, and still product-only.
 
 ## Boundaries

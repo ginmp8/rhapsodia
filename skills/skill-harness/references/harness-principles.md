@@ -1,85 +1,36 @@
 # Harness Principles
 
-Use this reference when translating the generic harness model into a concrete skill-improvement harness.
+Use to turn the generic harness model into a concrete skill-improvement harness.
 
-## Definition
+## Definition and Criteria
 
-A harness is a controlled structure for executing, evaluating, comparing, and improving a system. For a target skill, the harness surrounds the skill with inputs, scenarios, evaluators, metrics, gates, and evidence records.
+A harness is the decision system around a target skill: inputs, scenarios, evaluators, metrics, gates, evidence records, and runner commands. It decides whether the skill is ready, improved, regressed, unsafe, or under-specified.
 
-The harness is not just a test runner. It is the decision system that lets the user say whether a target skill is ready, improved, regressed, unsafe, or under-specified.
+A good harness is repeatable; uses named scenarios and explicit pass/fail criteria; covers happy path, edge, ambiguity, non-activation, regressions, adversarial prompts; declares dependencies; makes failures observable; uses decision-relevant metrics; records baseline first; automates local/CI checks where practical; and recommends accept, reject, fix, or investigate.
 
-## Good Harness Criteria
+## Skill Components
 
-A good harness has:
-
-1. Repeatability: same target, same inputs, same config, comparable result.
-2. Clear scenarios: each case tests a named behavior.
-3. Objective success criteria: pass/fail conditions are explicit.
-4. Relevant coverage: happy path, edge cases, ambiguity, non-activation, regressions, adversarial prompts.
-5. Controlled isolation: real and simulated dependencies are declared.
-6. Observability: failures explain what happened and where.
-7. Useful metrics: metrics inform a decision, not vanity reporting.
-8. Baseline comparison: current state is measured before changes.
-9. Automation: commands are easy to run locally or in CI when possible.
-10. Actionability: reports recommend accept, reject, fix, or investigate.
-
-## Harness Components for Skills
-
-For target skills, map the harness into these package areas:
-
-- `SKILL.md`: activation boundaries, mode selection, required inputs, workflow, stop conditions, output contract.
-- `references/`: detailed rules, rubrics, scenario schemas, domain context, source policy.
+- `SKILL.md`: activation, modes, inputs, workflow, stops, output contract.
+- `references/`: rules, rubrics, schemas, domain context, source policy.
 - `scripts/`: deterministic checks, validators, inventory, converters, report generators.
-- `assets/templates/`: stable artifact shapes such as reports, plans, scenario files, and checklists. These are operational assets when the workflow copies, fills, renders, or validates them; script consumption is useful but not required.
-- `examples/` or `evals/`: optional examples or scenario suites when the target skill needs measured behavior.
-- `agents/`: UI metadata, if supported.
+- `assets/templates/`: recurring plan/report/scenario/checklist shapes; operational when copied, filled, rendered, validated, or declared in workflow.
+- `examples/` or `evals/`: examples or scenario suites.
+- `agents/`: UI metadata when supported.
 
-## Resource Integration Principle
+## Resource Integration
 
-A weakly integrated supporting resource is not automatically unused. First classify it:
+Weak integration is not proof of disuse. Classify a resource as operational template/output skeleton, script input/output or validator fixture, explanatory reference, example/scenario evidence, or unused scaffold/duplicate/obsolete artifact. For the first four, prefer workflow reference, loading condition, copy/fill instruction, or validation gate before moving/deleting. Remove only placeholders, duplicates, obsolete/misleading files, or resources with no declared workflow use.
 
-1. operational template or output skeleton;
-2. script input, script output, or validator fixture;
-3. explanatory reference;
-4. example or scenario evidence;
-5. unused scaffold, duplicate, or obsolete artifact.
+## Decision and Scenarios
 
-For categories 1-4, prefer adding a workflow reference, loading condition, copy/fill instruction, or validation gate before moving or deleting the file. Remove a resource only when it is a placeholder, duplicate, obsolete, misleading, or has no declared workflow use.
-
-## Decision Statement Pattern
-
-Write the decision statement before the plan:
+Decision pattern:
 
 ```text
 After this harness runs, we need to decide whether <target skill/version> can <advance to next stage> for <users/use case> with acceptable risk.
 ```
 
-Examples:
-
-```text
-After this harness runs, we need to decide whether the updated skill can be packaged as skill.zip.
-```
-
-```text
-After this harness runs, we need to decide whether the target skill is mature enough to use for recurring governance reports.
-```
-
-## Minimum Scenario Set
-
-For a mature target skill, propose or implement at least:
-
-- 5 prompts that should activate the skill.
-- 5 prompts that should not activate the skill.
-- 5 ambiguous prompts that require mode selection or clarification.
-- 5 difficult prompts involving edge cases, missing inputs, invalid files, volatile facts, or blocked operations.
-- Known regressions from user feedback, incidents, or benchmark failures.
-
-Mark scenarios as `measured` only when they were actually executed or the user provided results. Otherwise mark them as `planned`.
+Mature scenario set: at least 5 `should_activate`, 5 `should_not_activate`, 5 `ambiguous`, 5 `edge_case`, plus known regressions from feedback/incidents/benchmarks. Mark `measured` only when executed or supplied with results; otherwise `planned`.
 
 ## Evidence Rules
 
-- Treat script output as measured only if the command was actually run.
-- Treat scenario metrics as measured only if prompts were executed and results were captured.
-- Treat researched references as support, not proof that the target package is correct.
-- Preserve unknowns as unknown.
-- Never invent package validation, installation state, benchmark scores, or source citations.
+Script output is measured only if run; scenario metrics only if prompts executed and results captured; researched references support claims but do not prove correctness; unknowns stay unknown; never invent package validation, installation state, benchmark scores, or citations.

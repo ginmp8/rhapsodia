@@ -1,108 +1,88 @@
 # Skill Benchmark Rubric
 
-Use this rubric to score a target skill from 0 to 100.
+Score target skills from 0 to 100.
 
-## Score dimensions
+## Dimensions
 
-### 1. Scope and specialization - 15 points
+### 1. Scope and specialization - 15
 
-- 0-3: unclear purpose, multiple unrelated jobs, or mostly generic assistant behavior.
-- 4-7: recognizable purpose but broad, overlapping, or weakly bounded.
-- 8-11: clear domain and task family with minor ambiguity.
-- 12-15: narrow, opinionated, reusable workflow with clear non-goals and trigger boundaries.
+- 0-3: unclear purpose, unrelated jobs, or generic assistant behavior.
+- 4-7: recognizable but broad, overlapping, or weakly bounded.
+- 8-11: clear domain/task family with minor ambiguity.
+- 12-15: narrow reusable workflow with clear non-goals and trigger boundaries.
+- Evidence: name, description, overview, examples, boundaries, non-goals.
 
-Evidence to inspect: skill name, description, overview, examples, explicit boundaries, non-goals.
-
-### 2. Trigger description - 15 points
+### 2. Trigger description - 15
 
 - 0-3: missing, too short, or generic.
-- 4-7: describes topic but not trigger situations.
-- 8-11: includes common use cases and context.
-- 12-15: includes task, context, concrete triggers, expected artifacts, and exclusion boundaries.
+- 4-7: topic only; trigger situations unclear.
+- 8-11: common use cases and context.
+- 12-15: task, context, concrete triggers, artifacts, exclusions.
+- Evidence: frontmatter `description` as primary activation surface. Do not give full credit when trigger guidance appears only in the body.
 
-Evidence to inspect: frontmatter `description`. The description is the primary activation surface. Do not give full credit if trigger guidance only appears in the body.
-
-### 3. Execution workflow - 15 points
+### 3. Execution workflow - 15
 
 - 0-3: no clear process.
-- 4-7: loose recommendations without step order.
-- 8-11: clear workflow with some decision points.
-- 12-15: complete sequential or conditional workflow with inputs, steps, tool use, failure handling, and finalization rules.
+- 4-7: unordered recommendations.
+- 8-11: ordered workflow with some decisions.
+- 12-15: complete sequential/conditional workflow with inputs, steps, tools, failure handling, finalization.
+- Evidence: workflow sections, decision trees, tool rules, sequencing, failure handling.
 
-Evidence to inspect: workflow sections, decision trees, tool instructions, sequencing, failure handling.
-
-### 4. Output quality - 15 points
+### 4. Output quality - 15
 
 - 0-3: no defined output.
-- 4-7: output guidance is present but vague.
-- 8-11: templates or checklists guide final output.
-- 12-15: strict output contract, examples, evidence requirements, and quality criteria are present.
+- 4-7: vague output guidance.
+- 8-11: templates or checklists guide output.
+- 12-15: strict output contract, examples, evidence requirements, quality criteria.
+- Evidence: templates, examples, rubrics, response structure, acceptance criteria.
 
-Evidence to inspect: templates, examples, rubrics, response structure, acceptance criteria.
+### 5. Supporting resources - 10
 
-### 5. Supporting resources - 10 points
+- 0-2: needed resources missing, obsolete scaffold remains, or assets/templates are unreferenced and unexplained.
+- 3-5: resources exist but are weakly organized, under-referenced, or role-ambiguous.
+- 6-8: useful references, scripts, templates, or assets are present and workflow-referenced.
+- 9-10: minimal, scoped resources are loaded, executed, copied, filled, rendered, or validated conditionally.
+- Evidence: `references/`, `scripts/`, `assets/`, `assets/templates/`, `agents/`, `SKILL.md` links, script usage, validator coverage.
+- Rule: do not reward asset absence over useful integrated assets. Classify assets before recommending removal: operational template, script input/output, explanatory reference, example, obsolete file, or scaffold.
 
-- 0-2: missing resources where they are clearly needed, obsolete scaffold files remain, or assets/templates are unreferenced and unexplained.
-- 3-5: resources exist but are weakly organized, under-referenced, or their operational role is unclear.
-- 6-8: useful references, scripts, templates, or assets are present and referenced by the workflow.
-- 9-10: resources are minimal, well-scoped, directly useful, and loaded, executed, copied, filled, rendered, or validated conditionally.
-
-Evidence to inspect: `references/`, `scripts/`, `assets/`, `assets/templates/`, `agents/`, links from `SKILL.md`, script usage, and validator coverage. Do not reward asset absence over useful integrated assets. When assets exist, classify them before recommending removal: operational template, script input or output, explanatory reference, example, obsolete file, or scaffold.
-
-### 6. Validation and acceptance criteria - 10 points
+### 6. Validation and acceptance criteria - 10
 
 - 0-2: no validation.
 - 3-5: informal checklist only.
 - 6-8: explicit acceptance criteria or repeatable review checklist.
-- 9-10: deterministic checks, test scenarios, scoring, or scripts exist and are integrated into the workflow.
+- 9-10: deterministic checks, test scenarios, scoring, or integrated scripts.
+- Evidence: quality gates, validators, tests, expected metrics, failure criteria.
 
-Evidence to inspect: quality gates, validators, tests, expected metrics, failure criteria.
+### 7. Context efficiency - 10
 
-### 7. Context efficiency - 10 points
-
-- 0-2: `SKILL.md` is a knowledge dump or contains large irrelevant material.
+- 0-2: `SKILL.md` is a knowledge dump or includes irrelevant material.
 - 3-5: useful but long, repetitive, or poorly separated.
-- 6-8: compact `SKILL.md` with references for details.
-- 9-10: strong progressive loading design, shallow references, and no irrelevant content.
+- 6-8: compact `SKILL.md` with details in references.
+- 9-10: strong progressive loading, shallow references, no irrelevant content.
+- Evidence: `SKILL.md` length, reference structure, duplication, large static data.
 
-Evidence to inspect: `SKILL.md` length, reference structure, duplication, large static data.
-
-### 8. Maintainability - 10 points
+### 8. Maintainability - 10
 
 - 0-2: hard to understand, edit, or package.
 - 3-5: understandable but inconsistent or fragile.
-- 6-8: clean file organization and clear update points.
-- 9-10: maintainable structure, versionable references, tested scripts, and clear evolution path.
+- 6-8: clean organization and clear update points.
+- 9-10: maintainable structure, versionable references, tested scripts, clear evolution path.
+- Evidence: naming, layout, script ergonomics, comments, changelog/version notes, lack of placeholders.
 
-Evidence to inspect: naming, folder layout, script ergonomics, comments, changelog or version notes, lack of placeholders.
+## Critical gates and verdict
 
-## Critical gate handling
+Critical gates shape the verdict:
 
-Critical gates do not directly replace the score, but they affect the final verdict:
-
-- `approve`: score >= 85 and no critical gates fail.
+- `approve`: score >= 85 and no critical gate fails.
 - `approve with reservations`: score >= 70 and no blocker gate fails, or score >= 85 with minor gate failures.
 - `reject`: score < 70 or any blocker gate fails.
 
-Blocker gates:
-
-1. Missing or invalid `SKILL.md`.
-2. Missing `name` or `description` frontmatter.
-3. Expected output is unclear.
-4. Instructions are materially contradictory.
-5. Required referenced files or scripts are missing.
+Blocker gates: missing/invalid `SKILL.md`; missing `name` or `description` frontmatter; unclear expected output; material contradictions; missing required referenced files/scripts.
 
 ## Evidence rules
 
-For each score, cite or quote only the minimum necessary evidence from the skill. Prefer paraphrase. Do not infer content from unavailable files.
+Cite or quote only the minimum necessary evidence. Prefer paraphrase. Do not infer from unavailable files.
 
 ## Recommended thresholds
 
-A mature skill should target:
-
-- Static benchmark score >= 85.
-- Activation precision >= 90 percent.
-- Activation recall >= 85 percent.
-- Output conformance >= 90 percent.
-- Robustness >= 75 percent.
-- Rework rate <= 10 percent.
+Mature skill target: static score >= 85; activation precision >= 90 percent; activation recall >= 85 percent; output conformance >= 90 percent; robustness >= 75 percent; rework rate <= 10 percent.

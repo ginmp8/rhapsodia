@@ -1,127 +1,60 @@
 # Skill Benchmark Report Template
 
-Use this exact section order for generated benchmark reports. The canonical output path pattern is docs/skill-benchmark/{target}/skill-benchmark.md; that path is an output artifact location, not a bundled reference inside this skill package.
+Use this exact section order. Canonical output path: `docs/skill-benchmark/{target}/skill-benchmark.md` (output artifact, not bundled reference).
 
 ```markdown
 # Skill Benchmark: <target>
 
 ## 1. Executive summary
 
-- Target skill: `<target>`
-- Benchmark date: `<yyyy-mm-dd>`
-- Report path: `<output path>`
-- Overall score: `<score>/100`
-- Maturity classification: `<classification>`
-- Verdict: `<approve | approve with reservations | reject>`
+Fields: Target skill; Benchmark date `<yyyy-mm-dd>`; Report path; Overall score `<score>/100`; Maturity classification; Verdict `<approve | approve with reservations | reject>`.
 
-<One concise paragraph summarizing the benchmark result, biggest strengths, biggest risks, and most important next action.>
+Add one concise paragraph covering result, strengths, risks, and next action.
 
 ## 2. Scorecard
 
-| Dimension | Weight | Score | Evidence | Main improvement |
-|---|---:|---:|---|---|
-| Scope and specialization | 15 |  |  |  |
-| Trigger description | 15 |  |  |  |
-| Execution workflow | 15 |  |  |  |
-| Output quality | 15 |  |  |  |
-| Supporting resources | 10 |  |  |  |
-| Validation and acceptance criteria | 10 |  |  |  |
-| Context efficiency | 10 |  |  |  |
-| Maintainability | 10 |  |  |  |
-| **Total** | **100** | **<score>** |  |  |
+Table columns: Dimension | Weight | Score | Evidence | Main improvement.
+Rows/weights: Scope and specialization 15; Trigger description 15; Execution workflow 15; Output quality 15; Supporting resources 10; Validation and acceptance criteria 10; Context efficiency 10; Maintainability 10; Total 100.
 
 ## 3. Gate evaluation
 
-| Gate | Status | Evidence | Required action |
-|---|---|---|---|
-| Valid SKILL.md exists |  |  |  |
-| Frontmatter has name and description |  |  |  |
-| Description is specific and actionable |  |  |  |
-| Scope is clear |  |  |  |
-| Expected input is clear |  |  |  |
-| Expected output is clear |  |  |  |
-| No unresolved scaffold markers |  |  |  |
-| No contradictory instructions |  |  |  |
-| Resources are useful and referenced correctly |  |  |  |
-| Quality criteria or validation exists |  |  |  |
-| No volatile data hardcoded as stable knowledge |  |  |  |
-| Structure is maintainable |  |  |  |
+Table columns: Gate | Status | Evidence | Required action.
+Gates: Valid SKILL.md exists; Frontmatter has name and description; Description is specific and actionable; Scope is clear; Expected input is clear; Expected output is clear; No unresolved scaffold markers; No contradictory instructions; Resources are useful and referenced correctly; Quality criteria or validation exists; No volatile data hardcoded as stable knowledge; Structure is maintainable.
 
 ## 4. Static structure inventory
 
-```text
-<target skill tree>
-```
-
-- `SKILL.md` lines: `<count>`
-- Description length: `<count>` characters
-- References: `<count>` files
-- Scripts: `<count>` files
-- Assets: `<count>` files
-- Agent metadata: `<present|missing>`
+Include target tree in a `text` code block, then counts for `SKILL.md` lines, description characters, references, scripts, assets, and agent metadata.
 
 ## 5. Behavioral metrics
 
-| Metric | Result | Status | Notes |
-|---|---:|---|---|
-| Activation precision | `<value or not measured>` |  |  |
-| Activation recall | `<value or not measured>` |  |  |
-| Output conformance | `<value or not measured>` |  |  |
-| Criteria coverage | `<value or not measured>` |  |  |
-| Robustness | `<value or not measured>` |  |  |
-| Rework rate | `<value or not measured>` |  |  |
+Table columns: Metric | Result | Status | Notes.
+Rows: Activation precision; Activation recall; Output conformance; Criteria coverage; Robustness; Rework rate. Use `<value or not measured>` and explicit status.
 
 ## 6. Scenario suite
 
 ### 6.1 Should activate
-
-| ID | Prompt | Expected result | Status |
-|---|---|---|---|
-| A1 |  | skill should activate | planned |
+Table columns: ID | Prompt | Expected result | Status. Expected result: skill should activate.
 
 ### 6.2 Should not activate
-
-| ID | Prompt | Expected result | Status |
-|---|---|---|---|
-| N1 |  | skill should not activate | planned |
+Table columns: ID | Prompt | Expected result | Status. Expected result: skill should not activate.
 
 ### 6.3 Ambiguous prompts
-
-| ID | Prompt | Expected decision rule | Status |
-|---|---|---|---|
-| M1 |  | clarify or proceed with assumptions | planned |
+Table columns: ID | Prompt | Expected decision rule | Status. Decision rule: clarify or proceed with assumptions.
 
 ### 6.4 Edge cases
-
-| ID | Prompt | Expected behavior | Status |
-|---|---|---|---|
-| E1 |  |  | planned |
+Table columns: ID | Prompt | Expected behavior | Status.
 
 ## 7. Evidence-based findings
 
-### Strengths
-
-1. `<finding>`
-
-### Weaknesses
-
-1. `<finding>`
-
-### Missing evidence
-
-1. `<missing evidence>`
+Subsections: Strengths; Weaknesses; Missing evidence. Use numbered findings.
 
 ## 8. Top prioritized improvements
 
-| Priority | Improvement | Impact | Effort | Owner action |
-|---:|---|---|---|---|
-| 1 |  | high | low |  |
+Table columns: Priority | Improvement | Impact | Effort | Owner action.
 
 ## 9. Risks if used as-is
 
-| Risk | Severity | Why it matters | Mitigation |
-|---|---|---|---|
-|  |  |  |  |
+Table columns: Risk | Severity | Why it matters | Mitigation.
 
 ## 10. Suggested improved description
 
@@ -145,7 +78,7 @@ description: <improved lowercase description>
 
 `<approve | approve with reservations | reject>`
 
-<Final rationale with the minimum changes required to reach the next maturity level.>
+Final rationale and minimum changes for next maturity level.
 
 ## 13. Benchmark metadata
 

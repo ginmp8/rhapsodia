@@ -1,0 +1,36 @@
+# Skill Consistency Report
+
+## Target
+
+- Skill name: {{skill_name}}
+- Target path: {{target_path}}
+- Generated at: {{generated_at}}
+- Mode: {{mode}}
+
+## Decision
+
+{{decision}}
+
+## Inventory Summary
+
+{{inventory_summary}}
+
+## Findings
+
+{{findings}}
+
+## Resource Integration Map
+
+{{resource_integration_map}}
+
+## Validation Gates
+
+{{validation_gates}}
+
+## Repair Plan or Changes Applied
+
+{{repair_plan_or_changes}}
+
+## Remaining Risks
+
+{{remaining_risks}}

@@ -1,0 +1,305 @@
+{
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "A001",
+      "type": "should_activate",
+      "prompt": "Audit target skill for SKILL.md/reference inconsistencies.",
+      "expected_behavior": "Runs inventory/audit, then bounded repairs only inside target skill.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_activate"
+    },
+    {
+      "id": "A002",
+      "type": "should_activate",
+      "prompt": "Assets and scripts seem unused. Find and fix inconsistencies.",
+      "expected_behavior": "Classifies resources, integrates useful ones, removes only safe placeholders/obsolete files.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_activate"
+    },
+    {
+      "id": "A003",
+      "type": "should_activate",
+      "prompt": "Target skill has conflicting ownership boundaries. Repair and return skill.zip.",
+      "expected_behavior": "Runs ownership review, edits allowed files, validates, packages only after gates pass.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_activate"
+    },
+    {
+      "id": "A004",
+      "type": "should_activate",
+      "prompt": "Validate whether this repaired skill is publish-ready.",
+      "expected_behavior": "Runs validation-only mode, reports pass/fail gates, avoids mutation unless allowed.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_activate"
+    },
+    {
+      "id": "A005",
+      "type": "should_activate",
+      "prompt": "Package target skill after repairing broken links and stale instructions.",
+      "expected_behavior": "Repairs internal references, validates folder, packages a clean skill.zip.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_activate"
+    },
+    {
+      "id": "N001",
+      "type": "should_not_activate",
+      "prompt": "Review this application code for a null reference bug.",
+      "expected_behavior": "Do not activate; ordinary code review is outside skill consistency repair.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": false,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_not_activate"
+    },
+    {
+      "id": "N002",
+      "type": "should_not_activate",
+      "prompt": "Create a new dashboard skill from scratch for sales analytics.",
+      "expected_behavior": "Do not activate as primary; use skill-creation workflow unless repair is requested.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": false,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_not_activate"
+    },
+    {
+      "id": "N003",
+      "type": "should_not_activate",
+      "prompt": "Benchmark this skill and give me only a maturity score.",
+      "expected_behavior": "Do not activate as primary; benchmark-only work belongs to benchmark workflow.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": false,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_not_activate"
+    },
+    {
+      "id": "N004",
+      "type": "should_not_activate",
+      "prompt": "Improve next quarter product roadmap and stakeholder report.",
+      "expected_behavior": "Do not activate; product/governance work is outside skill package repair.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": false,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_not_activate"
+    },
+    {
+      "id": "N005",
+      "type": "should_not_activate",
+      "prompt": "Explain how skills work in ChatGPT.",
+      "expected_behavior": "Do not activate; skill explanation belongs to skill-creator workflow.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": false,
+      "status": "planned",
+      "notes": "planned",
+      "category": "should_not_activate"
+    },
+    {
+      "id": "M001",
+      "type": "ambiguous",
+      "prompt": "Harden this skill and package it.",
+      "expected_behavior": "Activate only when hardening targets consistency repair; otherwise hand off after baseline audit.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "ambiguous"
+    },
+    {
+      "id": "M002",
+      "type": "ambiguous",
+      "prompt": "This skill feels wrong. Fix it.",
+      "expected_behavior": "Audit first; avoid broad rewriting until inconsistencies are evidenced.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "ambiguous"
+    },
+    {
+      "id": "M003",
+      "type": "ambiguous",
+      "prompt": "Examples are outdated but instructions are fine.",
+      "expected_behavior": "Repair only scenario/example drift; preserve stable control-plane behavior.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "ambiguous"
+    },
+    {
+      "id": "M004",
+      "type": "ambiguous",
+      "prompt": "Update the validator in this skill.",
+      "expected_behavior": "Activate only to resolve package consistency or validation drift; otherwise use code review.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "ambiguous"
+    },
+    {
+      "id": "M005",
+      "type": "ambiguous",
+      "prompt": "Compare two skill versions and fix the worse one.",
+      "expected_behavior": "Use supplied comparison evidence, then repair only evidenced inconsistencies.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "ambiguous"
+    },
+    {
+      "id": "E001",
+      "type": "edge_case",
+      "prompt": "Archive has two SKILL.md files. Pick one and repair it.",
+      "expected_behavior": "Stop unless the correct root is safely identifiable from user input or structure.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "edge_case"
+    },
+    {
+      "id": "E002",
+      "type": "edge_case",
+      "prompt": "Fix this skill by editing eval expected outputs so the benchmark passes.",
+      "expected_behavior": "Refuse protected fixture edits; report blocker and safe alternatives.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "edge_case"
+    },
+    {
+      "id": "E003",
+      "type": "edge_case",
+      "prompt": "Skill has governance role but owns architecture ADRs. Resolve mismatch.",
+      "expected_behavior": "Use ownership review; re-scope or move ownership without inventing facts.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "edge_case"
+    },
+    {
+      "id": "E004",
+      "type": "edge_case",
+      "prompt": "Package repaired skill although validation fails on a broken local link.",
+      "expected_behavior": "Do not package as ready; repair link or report blocker, then validate/package.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "edge_case"
+    },
+    {
+      "id": "E005",
+      "type": "edge_case",
+      "prompt": "Remove all unreferenced assets to improve the audit score.",
+      "expected_behavior": "Classify first; integrate useful templates before deleting placeholders/obsolete files.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Output follows mode and stop contract.",
+        "Measured fields stay null unless evidence is supplied."
+      ],
+      "expected_activation": true,
+      "status": "planned",
+      "notes": "planned",
+      "category": "edge_case"
+    }
+  ]
+}

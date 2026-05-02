@@ -1,79 +1,51 @@
-﻿# Validation and Closure
+# Validation and Closure
 
 ## Validation Policy
 
-Run the smallest validation set that proves the selected work is correct.
-
-- typical validation: targeted unit or integration tests, build or compile checks, schema or parser checks, and lint or formatting only when changed files participate in those checks or repository policy requires them
-- when behavior changes and coverage tooling exists for the changed area, run targeted coverage if it can be done with the existing test harness; otherwise record the uncovered gap in validation.md
+Run the smallest validation set that proves selected work: targeted unit/integration tests, build/compile, schema/parser checks, lint/format only when changed files participate or policy requires. If behavior changed and coverage tooling exists, run targeted coverage when available; otherwise record the gap in validation.md.
 
 ## Execution Records Sync
 
-Keep execution records truthful:
+Keep records truthful:
 
-- preserve stable task ids when recording execution history
-- keep blockers explicit and tied to concrete execution facts
-- record factual decisions, assumptions, and trade-offs in notes.md
-- keep durable MAGIA documentation inside `BOARD_ROOT`
-- after each executed task, use `scripts/write_execution_log.py <board_root> --spec-id <specNNN> --task-id <taskNNN> ...` to append or refresh that task's Execution Log subsection in notes.md when the local script is available
-- each executed task subsection must record at least: Status, Summary, Changes, Context Docs, Decisions, Follow-Ups, and Blockers
-- use Context Docs to list repository-relative POSIX paths to docs created or updated under `BOARD_ROOT`, or none
-- use none when an execution-log field is intentionally empty
-- use Follow-Ups to capture architecture, behavior, migration, or dependency implications that later tasks need
-- if a task truthfully executed in this run, update manifest.yaml last_execution to that taskNNN; keep `task_id` required and add `date`, `summary`, or `files_changed` only when they are truthful for this run; if no task executed, do not invent last_execution
-- record real commands, evidence, outcomes, and residual gaps in validation.md
-- when execution records are touched, follow `references/artifacts/execution-records.md`
-- when a touched execution record is template-backed, validate it with `scripts/validate_artifact.py <artifact-path>` or the narrower local validator before relying on manual review
-- apply the common execution sync invariant before closing so tasks.md, validation.md, notes.md, manifest.yaml, and spec-catalog.yaml stay aligned
-- when task completion state changed truthfully in this run or execution records changed and the local script is available, use `scripts/close_execution_state.py` before the final manual closure review
-- fall back to `scripts/sync_execution_state.py <board_root> --spec-id <specNNN> ...` plus `scripts/validate_execution_state.py <board_root> --spec-id <specNNN>` only when `scripts/close_execution_state.py` is unavailable
-- when the package is blocked only by narrow execution-state drift already evidenced by notes.md and validation.md, run `scripts/heal_execution_state.py <board_root> --spec-id <specNNN>` before handing off to planning
-- run `scripts/validate_repo_board.py <repo_root> --board_id <board_id> --cycle_version <cycle_version>` before final response when local repository files are available
-- when a validation.md final checklist item becomes true because the work and evidence are complete, check that box in place during the same closure pass; if it remains unchecked, record the real gap or blocker and do not claim full completion
-- move both manifest.yaml and spec-catalog.yaml to in_progress only when implementation really started
-- set `manifest.yaml phase: execute` when implementation really started
-- mark both manifest.yaml and spec-catalog.yaml done only when required work, required checklist items, and validation are complete
-- set `manifest.yaml phase: done` only when required work, required checklist items, and validation are complete
-- if any required task is not recorded as done in notes.md, any required final checklist item remains unchecked, or validation evidence is still missing, do not mark the spec done
-- if notes.md or manifest.yaml last_execution references a taskNNN missing from tasks.md, stop closure and hand off to planning instead of repairing the package during execution
+- preserve stable task ids; tie blockers to concrete execution facts;
+- record factual decisions, assumptions, and trade-offs in notes.md;
+- keep durable MAGIA docs under `BOARD_ROOT`;
+- after each executed task, use `scripts/write_execution_log.py <board_root> --spec-id <specNNN> --task-id <taskNNN> ...` when available;
+- each executed task subsection records Status, Summary, Changes, Context Docs, Decisions, Follow-Ups, Blockers; use none for intentionally empty fields;
+- Context Docs lists repository-relative POSIX paths under `BOARD_ROOT`, or none;
+- use Follow-Ups for architecture, behavior, migration, or dependency implications;
+- if a task executed, update manifest.yaml last_execution to that taskNNN; keep `task_id` required and add `date`, `summary`, `files_changed` only when true for this run; invent no last_execution;
+- record real commands, outcomes, residual gaps, and skipped checks in validation.md;
+- when records are touched, follow `references/artifacts/execution-records.md` and validate template-backed artifacts with `scripts/validate_artifact.py <artifact-path>` or narrower validator;
+- reconcile tasks.md, validation.md, notes.md, manifest.yaml, and spec-catalog.yaml before close;
+- when completion state or records changed, use `scripts/close_execution_state.py`; fall back to `scripts/sync_execution_state.py <board_root> --spec-id <specNNN> ...` plus `scripts/validate_execution_state.py <board_root> --spec-id <specNNN>` only if close wrapper is unavailable;
+- for narrow drift already evidenced by notes.md and validation.md, run `scripts/heal_execution_state.py <board_root> --spec-id <specNNN>` before planning handoff;
+- run `scripts/validate_repo_board.py <repo_root> --board_id <board_id> --cycle_version <cycle_version>` before final response when local repo files exist;
+- check validation.md final checklist items only when work/evidence satisfies them; otherwise record gap/blocker;
+- move manifest.yaml and spec-catalog.yaml to in_progress only when implementation started;
+- set `manifest.yaml phase: execute` only for active implementation and `manifest.yaml phase: done` only when required work, required checklist items, and validation are complete;
+- do not mark done if any required task is not done in notes.md, checklist item remains unchecked, or validation evidence is missing;
+- if notes.md or manifest.yaml last_execution references a taskNNN missing from tasks.md, stop closure and hand off to planning.
 
-## Underdefined Task Handling
+## Underdefined Tasks
 
-1. derive the narrowest concrete objective that still satisfies the selected task and active spec package
-2. define at least one observable validation check before treating the work as complete
-3. implement only the code, docs, and tests needed for that bounded objective
-4. record assumptions and residual ambiguity in notes.md when they materially affect future work
-5. if execution creates new durable docs or architecture guidance, place them under `BOARD_ROOT` and list them in that task's Context Docs field in notes.md
+1. Derive the narrowest concrete objective satisfying the selected task and active spec.
+2. Define at least one observable validation check before completion.
+3. Implement only needed code/docs/tests.
+4. Record material assumptions and ambiguity in notes.md.
+5. Put new durable docs/guidance under `BOARD_ROOT` and list them in Context Docs.
 
-If no honest and verifiable objective can be derived without changing the task plan, stop and treat the task as blocked and hand off to the planning workflow. Do not use implementation requirement or planning provenance alone as the blocker.
+If no honest verifiable objective can be derived without changing the task plan, stop as blocked and hand off. Implementation requirement, planning provenance, roadmap provenance, governance provenance, or pre-execution `status: planned` are not blockers.
 
 ## Blockers
 
-1. stop broadening scope
-2. classify the blocker as a concrete execution blocker, not an authoring-boundary assumption
-3. record the blocker clearly in notes.md and validation.md
-4. preserve partial truth in docs
-5. do not mark the task done
-
-Valid blockers include missing implementation targets, unresolved dependencies, unavailable credentials or services, contradictory source-of-truth artifacts, unsafe secret access, missing validation path, or required planning changes. Invalid blockers include implementation being required, the package being authored by a planning workflow, roadmap provenance, governance provenance, or pre-execution manifest state such as `status: planned`.
-
-Report what is blocked, why, what was completed, what concrete evidence is missing, and what remains.
+Stop broadening scope; classify a concrete execution blocker; record it in notes.md and validation.md; preserve partial truth; do not mark task done. Valid blockers: missing targets, unresolved dependencies, unavailable credentials/services, contradictory source-of-truth, unsafe secret access, missing validation path, or required planning changes. Report what is blocked, why, what completed, missing evidence, and what remains.
 
 ## Final Closure Pass
 
-1. verify the changed code matches the selected work
-2. verify spec-catalog.yaml and manifest.yaml match actual execution state, and if either changed in this run they were reconciled together
-3. verify manifest.yaml uses phase: execute for active work and phase: done only for fully completed work
-4. verify the selected task's tasks.md checkbox and notes.md Execution Log subsection match actual completion state
-5. verify manifest.yaml last_execution is omitted or points to an existing truthful taskNNN
-6. verify validation.md records real evidence and that satisfied required checklist items are checked
-7. verify notes.md reflects blocker and decision truth
-8. verify every executed task has a truthful Execution Log subsection and no execution-log subsection references a missing task
-9. verify no required canonical section, field, or checklist structure disappeared from touched execution records
-10. verify no MAGIA-created or MAGIA-updated durable documentation exists outside `BOARD_ROOT`
-11. run `scripts/close_execution_state.py ...` when task completion or execution records changed; otherwise run `scripts/validate_execution_state.py <board_root> --spec-id <specNNN>` when available and, for narrow mechanical drift only, try `scripts/heal_execution_state.py <board_root> --spec-id <specNNN>` before closing the run as blocked
-12. run `scripts/validate_repo_board.py <repo_root> --board_id <board_id> --cycle_version <cycle_version>` when local repository files are available
+Verify: changed code matches selected work; spec-catalog.yaml and manifest.yaml match actual state and were reconciled together if changed; manifest phase is execute for active work or done only for full completion; tasks.md checkbox and notes.md Execution Log match completion; last_execution is omitted or points to an existing truthful taskNNN; validation.md records real evidence and checked items are satisfied; notes.md reflects blockers/decisions; every executed task has a truthful log and no log references a missing task; canonical sections/fields/checklists survived; no MAGIA durable docs exist outside `BOARD_ROOT`. Run `scripts/close_execution_state.py ...` when state changed; otherwise run validation/state scripts as applicable, including `scripts/validate_repo_board.py <repo_root> --board_id <board_id> --cycle_version <cycle_version>` when local files exist.
 
 ## Final Response
 
-Summarize what changed, what validation ran, what passed or failed, assumptions or trade-offs, blockers, and what remains next.
+Summarize changed, validated, passed/failed/not-run checks, assumptions/trade-offs, blockers, residual risk, and next remaining work.

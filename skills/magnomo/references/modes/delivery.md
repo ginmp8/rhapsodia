@@ -1,90 +1,39 @@
-# Delivery Mode
-
-## Canonical Rules
-
-- `BOARD_ROOT` is required for repository-facing delivery artifacts.
-- Prompt-provided `BOARD_ROOT` takes precedence after validation; otherwise derive it from `references/canonical-paths.md`.
-- `delivery-intake`, `delivery-triage`, `delivery-status`, and `delivery-replan` require a selected spec package under `BOARD_ROOT/specs/<spec_id>/`.
-- Keep `ops.yaml`, `status.md`, `stakeholder-brief.md`, and `replanning.md` in the selected spec package.
-- Keep `portfolio.yaml` and `portfolio.md` directly under `BOARD_ROOT`.
-- Do not create missing spec package directories or Mago package files from a delivery mode.
+# Delivery Modes
 
 Use for `delivery-intake`, `delivery-triage`, `delivery-status`, `delivery-replan`, and `delivery-portfolio`.
 
-Keep the work delivery-governance only. Do not create roadmap artifacts, reporting artifacts, Mago task plans, Magia execution records, repository code, or release communication from a delivery mode.
+## Canonical Rules
 
-## Shared Rules
+`BOARD_ROOT` is required for repository-facing artifacts. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from [references/canonical-paths.md](../canonical-paths.md). Spec-scoped artifacts require `BOARD_ROOT/specs/<spec_id>/`. Board-scoped portfolio artifacts stay directly under `BOARD_ROOT`.
 
-- Use `ops.yaml` in the selected spec package as the structured source of truth for delivery metadata.
-- Create or refresh Magnomo delivery artifacts with local scripts whenever a script can perform the template-backed operation. Use `scripts/write_artifact_scaffold.py` before filling factual values. Do not copy template text manually.
-- Do not invent owners, stakeholders, repos, dates, commitments, blockers, status, or evidence.
-- Treat candidate impacted repos as triage candidates, not confirmed implementation ownership.
-- Run `scripts/validate_artifact.py` after creating or changing any Magnomo delivery artifact.
+Create/refresh template-backed artifacts with local scripts; validate with `scripts/validate_artifact.py` or narrower validators. Do not copy template text manually when a script can write or validate.
 
-## delivery-intake
+## delivery-intake / delivery-triage
 
-Convert raw demand into initial `ops.yaml`.
+Purpose: register or triage a demand into governance records.
 
-Inputs may be GitHub issue text, chat notes, email text, support notes, or rough demand. Extract only stated facts:
+Inputs: requester, problem/request, source, desired outcome, target date, owner, stakeholders, priority, risk, links when supplied. Unknowns remain explicit.
 
-- Request title, requester, requested date, source, and context.
-- Known owner, backup owner, stakeholders, watchers, or decision maker.
-- Known sprint, planning bucket, target date, commitment, milestone, or rollout target.
-- Known priority rationale, urgency, impact, risk, and cost of delay.
-- Known blockers, tags, external links, and candidate impacted repos.
-
-Set `status.state` to `intake` unless evidence supports a later state. Use the scaffold script and set `spec_id` to the selected package id.
-
-Preferred creation command:
-
-- `python .github/skills/magnomo/scripts/write_artifact_scaffold.py BOARD_ROOT/specs/<spec_id>/ops.yaml --spec-id <spec_id>`
-
-## delivery-triage
-
-Classify demand so humans can make planning decisions.
-
-Update `ops.yaml` with planning bucket, priority, urgency, impact, risk, known owners/stakeholders, known dates/commitments, candidate repos, blockers, risks, tags, and links.
-
-Create `stakeholder-brief.md` with `scripts/write_artifact_scaffold.py` when stakeholder communication, business decision making, timing alignment, or risk communication is required. Keep it business-facing and do not include implementation task lists.
+Outputs: `ops.yaml` and, when useful, `status.md` or `stakeholder-brief.md` in the selected spec package. Use `scripts/write_ops_scaffold.py` or `scripts/write_artifact_scaffold.py`; populate supported lists with `scripts/update_template_lists.py`; validate touched artifacts and board paths.
 
 ## delivery-status
 
-Update `status.md` from `ops.yaml` and optional supplied evidence.
+Purpose: update human delivery status without claiming technical validation or deployment.
 
-Clearly separate:
-
-- manual status: explicitly entered delivery status from `ops.yaml` or human notes
-- inferred status: status derived from supplied or linked planning/execution evidence
-- unknowns: missing evidence or facts that cannot be inferred
-
-Do not claim implementation progress, validation, release, or deployment without evidence. If evidence is absent, say that evidence is unknown.
+Inputs: current state evidence, notes, risks, blockers, next steps, validation/release/deployment evidence when supplied. Outputs: `status.md` and relevant `ops.yaml.status` updates. Preserve missing validation/release/deployment as unknown.
 
 ## delivery-replan
 
-Record material changes to date, sprint, scope, owner, blocker, or commitment.
+Purpose: record material changes to target date, sprint, scope, owner, commitment, priority, or risk.
 
-Always append a new event. Never rewrite prior replanning events except to add a dated correction for a factual error.
-
-Update `ops.yaml`, `replanning.md`, and `status.md` together.
-
-Each replanning event should include date, changed fields, from, to, reason, impact, and decision maker when known.
+Outputs: append `replanning.md` entry and mirror structured `ops.yaml.replanning` change. Include date, changed fields, from, to, reason, impact, and decision maker when known. Do not use for routine status updates.
 
 ## delivery-portfolio
 
-Generate consolidated human-readable and machine-readable portfolio views across delivery specs.
+Purpose: board-level delivery summary across specs.
 
-Create or update:
+Outputs: `portfolio.yaml` and `portfolio.md` under `BOARD_ROOT`. Derive from supplied `ops.yaml` files and evidence. Use `scripts/update_template_lists.py` for mechanical list population. Validate with `scripts/validate_portfolio.py` or `scripts/validate_artifact.py`, then board paths.
 
-- `portfolio.yaml`
-- `portfolio.md`
+## Boundaries
 
-The portfolio view must identify:
-
-- blocked items
-- overdue items
-- replanned items
-- missing-owner items
-- at-risk items
-- multi-repo items
-
-Keep every portfolio item traceable to source `ops.yaml`, supplied roadmap context, or supplied execution evidence. Do not invent delivery state.
+Do not store branches, PRs, commits, checks, review state, deployments, or last commit age as maintained Magnomo status. Do not create Mago tasks, implementation plans, technical designs, code changes, tests, or execution evidence. Use such material only as linked evidence when supplied.

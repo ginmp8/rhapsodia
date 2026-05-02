@@ -1,41 +1,22 @@
 # Governance Decision Log Artifact
 
-`adr-records.md` is a legacy filename used by Magnomo for governance decision logs. It is not an Architecture Decision Record artifact.
+`adr-records.md` is Magnomo's legacy governance decision-log filename, not an Architecture Decision Record.
 
 ## Ownership
 
-Magnomo may record delivery, roadmap, owner, stakeholder, due date, accepted risk, release posture, or handoff decisions. Magnomo must not record architecture decisions, implementation decisions, technical designs, code decisions, or execution-grounded ADRs as its own decision.
-
-Architecture Decision Records belong to Mago for planned/spec decisions and Magia for implementation/runtime decisions.
+May record delivery, roadmap, owner, stakeholder, due date, accepted risk, release posture, or handoff decisions. Must not record architecture, implementation, technical design, code, or execution-grounded ADR decisions as Magnomo-owned. Architecture Decision Records belong to Mago for planned/spec decisions and Magia for implementation/runtime decisions.
 
 ## File
 
-- Board-scoped path: `BOARD_ROOT/adr-records.md`
+- Board path: `BOARD_ROOT/adr-records.md`
 - Template: [assets/templates/adr-records.md.template](../../assets/templates/adr-records.md.template)
-- Writer: `scripts/append_adr_entry.py` as a legacy governance decision writer
+- Writer: `scripts/append_adr_entry.py` as legacy governance decision writer
 - Validator: `scripts/validate_artifact.py`
 
-## Required Sections
+## Entry Fields
 
-Each entry should include:
-
-- Date
-- Status
-- Decision
-- Context
-- Reason
-- Alternatives
-- Impact
-- Decision Maker
-- Links
-- Supersedes
+Each entry includes: Date, Status, Decision, Context, Reason, Alternatives, Impact, Decision Maker, Links, Supersedes.
 
 ## Boundary Examples
 
-- In scope: PO accepted delivery risk and moved the due date.
-- In scope: roadmap item was split before Mago handoff.
-- In scope: stakeholder alignment changed the release communication plan.
-- Out of scope: use Temporal instead of Kafka consumers.
-- Out of scope: implement idempotency by composite key.
-- Out of scope: change API contract or persistence model.
-
+In scope: PO accepted delivery risk and moved due date; roadmap item split before Mago handoff; stakeholder alignment changed release communication. Out of scope: choosing Temporal over Kafka consumers; idempotency by composite key; API contract or persistence-model changes.

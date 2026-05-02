@@ -1,80 +1,29 @@
 # Reporting Artifacts
 
-Reporting artifacts communicate what was delivered after delivery activity. They must separate stakeholder-facing communication from internal-only detail and must preserve uncertainty when evidence is missing.
+Reporting artifacts communicate delivered work after delivery activity, separate stakeholder-facing communication from internal-only detail, and preserve missing evidence as unknown.
 
 ## feature-report.md
 
-Purpose: Post-delivery report for one feature or spec. Store it in the selected spec package. It is useful to tech leads, stakeholders, operations, support, and future onboarding.
+Post-delivery report for one feature/spec in the selected spec package. Audience: tech leads, stakeholders, operations, support, future onboarding.
 
-Required sections:
+Required sections: `# Feature Report`, `## Audience`, `## Summary`, `## Business Context`, `## Delivered Scope`, `## Impacted Systems`, `## Changed Behavior`, `## Evidence`, `## Validation Evidence`, `## Operational Impact`, `## Rollout And Rollback`, `## Risks And Limitations`, `## Follow-ups`.
 
-- `# Feature Report`
-- `## Audience`
-- `## Summary`
-- `## Business Context`
-- `## Delivered Scope`
-- `## Impacted Systems`
-- `## Changed Behavior`
-- `## Evidence`
-- `## Validation Evidence`
-- `## Operational Impact`
-- `## Rollout And Rollback`
-- `## Risks And Limitations`
-- `## Follow-ups`
-
-Validation rules:
-
-- Delivered scope must be based on delivery and execution evidence, not roadmap intent alone.
-- Evidence and validation must be summarized; do not paste raw logs.
-- Rollout and deployment status must cite evidence or be marked unknown, draft, pending, not released, or not recorded.
-- Rollback notes must be present, even when rollback status is unknown.
-- Follow-ups must be human-readable and must not become Mago-owned task decomposition.
-- Internal-only details should move to `internal-notes.md`.
+Rules: delivered scope comes from delivery/execution evidence, not roadmap intent alone; summarize evidence/validation, do not paste raw logs; rollout/deployment status cites evidence or is `unknown`, `draft`, `pending`, `not released`, or `not recorded`; rollback notes exist even when unknown; follow-ups stay human-readable and not Mago task decomposition; move internal-only detail to `internal-notes.md`.
 
 ## release-notes.md
 
-Purpose: Stakeholder-facing release communication for one or more delivered specs or features. Store it directly under `BOARD_ROOT`.
+Stakeholder-facing release communication for delivered specs/features directly under `BOARD_ROOT`.
 
-Required sections:
+Required sections: `# Release Notes`, `## Audience`, `## Summary`, `## User Impact`, `## Changes`, `## Availability And Rollout`, `## Validation Status`, `## Known Limitations`, `## Support Notes`.
 
-- `# Release Notes`
-- `## Audience`
-- `## Summary`
-- `## User Impact`
-- `## Changes`
-- `## Availability And Rollout`
-- `## Validation Status`
-- `## Known Limitations`
-- `## Support Notes`
-
-Validation rules:
-
-- Content must be stakeholder-facing and understandable without repository context.
-- Do not claim availability, release, deployment, or production rollout without explicit evidence.
-- If release evidence is missing, mark the artifact as draft or the rollout status as unknown, pending, not released, or not recorded.
-- Do not expose internal-only language, private links, secrets, credentials, raw logs, branch names, commit hashes, or pull request status.
-- Known limitations must be clear and non-sensitive.
+Rules: content is understandable without repository context; do not claim availability, release, deployment, or production rollout without explicit evidence; missing release evidence means draft or rollout status `unknown`, `pending`, `not released`, or `not recorded`; do not expose internal-only language, private links, secrets, credentials, raw logs, branch names, commit hashes, or PR status; known limitations are clear and non-sensitive.
 
 ## internal-notes.md
 
-Purpose: Optional board-scoped companion notes for details that should not appear in `release-notes.md`. Store it directly under `BOARD_ROOT`.
+Optional board-scoped companion for details excluded from `release-notes.md`, directly under `BOARD_ROOT`.
 
-Required sections when the file exists:
+Required sections when present: `# Internal Notes`, `## Summary`, `## Internal Details`, `## Follow-ups`.
 
-- `# Internal Notes`
-- `## Summary`
-- `## Internal Details`
-- `## Follow-ups`
+Rules: keep internal-only content out of stakeholder artifacts; private references must not include secrets or credentials; unknown facts remain unknown.
 
-Validation rules:
-
-- Keep internal-only content out of stakeholder-facing artifacts.
-- Private references must not include secrets or credentials.
-- Unknown facts must remain unknown.
-
-Must not store:
-
-- secrets, credentials, tokens, or raw sensitive operational data
-- full raw execution logs
-- branch, PR, commit, check, review, or deployment state as manually maintained source-of-truth fields
-- delivery metadata that belongs in `ops.yaml`
+Must not store secrets, credentials, tokens, raw sensitive operational data, full raw execution logs, branch/PR/commit/check/review/deployment state as manually maintained source of truth, or delivery metadata that belongs in `ops.yaml`.

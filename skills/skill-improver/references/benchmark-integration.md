@@ -1,25 +1,23 @@
 # Skill Benchmark Integration
 
-## Role separation
+## Roles
 
-Use `skill-benchmark` as the default structural benchmark and report generator. Use `skill-improver` as the experiment orchestrator.
+Use `skill-benchmark` for structural scoring/reporting. Use `skill-improver` to propose, patch, evaluate, accept, or revert hypotheses.
 
 ```text
 skill-benchmark -> evaluates and reports
-skill-improver -> proposes, patches, evaluates, accepts, or reverts hypotheses
+skill-improver -> orchestrates experiments
 ```
 
-The improver must not make subjective acceptance decisions without an evaluator. The benchmark does not need to exist before the project starts, but it must exist, run successfully, and be frozen before the first candidate hypothesis is tested.
+Never accept subjectively without an evaluator. A benchmark may be created first, but it must run successfully and be frozen before candidate testing.
 
-## When skill-benchmark is enough
+## Static benchmark enough when optimizing
 
-Use the built-in `skill-benchmark` evaluator by itself when the goal is structural maturity:
-
-- better frontmatter trigger;
-- clearer scope and non-goals;
-- explicit input/output contract;
+- frontmatter trigger clarity;
+- scope/non-goals;
+- input/output contract;
 - validation checklist;
-- supporting resources and scripts;
+- resource/script integration;
 - context efficiency and maintainability.
 
 Run:
@@ -32,11 +30,9 @@ python scripts/skill_improver_loop.py \
   --min-delta 1.0
 ```
 
-## When skill-benchmark is not enough
+## Add behavioral evidence when
 
-Static score alone can be gamed by adding benchmark-friendly words without improving behavior. Add behavioral evidence when the target skill depends on activation quality or generated output quality.
-
-Recommended hybrid setup:
+Activation quality or generated-output quality matters; static score is saturated; or benchmark-friendly wording could game the result.
 
 ```bash
 python scripts/skill_improver_loop.py \
@@ -49,7 +45,7 @@ python scripts/skill_improver_loop.py \
   --min-delta 1.0
 ```
 
-The `--skill-benchmark-results` file should use the scenario result schema supported by `skill-benchmark`:
+Scenario-result schema:
 
 ```json
 [
@@ -69,25 +65,8 @@ The `--skill-benchmark-results` file should use the scenario result schema suppo
 
 ## Guardrail defaults
 
-For `--evaluator skill-benchmark`, keep these defaults unless there is a reason to relax them:
+For `--evaluator skill-benchmark`: freeze benchmark inputs; enforce blocker gates; reject new gate failures relative to baseline; block evaluator/scenario paths; reject benchmark verdict `reject`; write the run report under the configured state directory. Use `--enforce-all-gates` only when the benchmark is mature enough for every gate to pass.
 
-- freeze benchmark inputs;
-- enforce blocker gates;
-- reject new gate failures relative to baseline;
-- block evaluator and scenario paths;
-- reject if `skill-benchmark` returns `reject`;
-- generate a run report under the configured state directory.
+## Benchmark-design phase
 
-Use `--enforce-all-gates` only when the benchmark is mature enough that every gate is expected to pass. During early hardening, a candidate may still be useful if it improves the score and does not introduce new failed gates.
-
-## Benchmark design phase
-
-If no benchmark exists, run a separate benchmark-design phase before improvement:
-
-1. Run `skill-benchmark` once for a static baseline.
-2. Create at least 20 planned or measured scenarios: activate, do not activate, ambiguous, and edge cases.
-3. Convert measured scenario outputs to a locked scenario-results JSON file.
-4. Lock the result file and evaluator configuration.
-5. Start the improvement loop only after the baseline score is recorded.
-
-Do not add new tests during the same candidate acceptance loop. Add new tests only in a separate benchmark-hardening phase, then start a new improvement run.
+If no benchmark exists: run `skill-benchmark` once; create at least 20 planned/measured scenarios across activate, do-not-activate, ambiguous, and edge cases; convert measured outputs to locked scenario-results JSON; lock results/config; record baseline; then start a new improvement run. Do not add tests inside the same candidate acceptance loop.

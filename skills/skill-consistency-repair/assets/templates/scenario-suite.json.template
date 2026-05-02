@@ -1,0 +1,14 @@
+[
+  {
+    "id": "A001",
+    "category": "should_activate",
+    "prompt": "Audit the uploaded skill for internal inconsistencies and propose a repair plan.",
+    "expected_activation": true,
+    "expected_behavior": "Inspects the target skill, runs baseline consistency audit, and returns findings grouped by severity.",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned"
+  }
+]

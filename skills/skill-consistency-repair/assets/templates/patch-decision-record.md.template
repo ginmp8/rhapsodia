@@ -1,0 +1,25 @@
+# Patch Decision Record
+
+## Inconsistency
+
+{{inconsistency_id}} - {{summary}}
+
+## Hypothesis
+
+{{hypothesis}}
+
+## Files Changed
+
+{{files_changed}}
+
+## Validation
+
+{{validation}}
+
+## Decision
+
+{{accepted_or_rejected}}
+
+## Residual Risk
+
+{{residual_risk}}

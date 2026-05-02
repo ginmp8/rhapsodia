@@ -2,37 +2,10 @@
 
 ## rfc-proposals.md
 
-Mutable governance proposal log owned by Magnomo. Use for material decisions that are not decided yet.
+Mutable Magnomo governance proposal log for material decisions not yet decided.
 
-Required sections:
+Required sections: `# RFC Proposals`, `## Entries`. Use one `### <proposal_id> - Title` heading per RFC entry; `proposal_id` is stable lowercase hyphen-case.
 
-- `# RFC Proposals`
-- `## Entries`
+Each entry includes labels in order: `Status`, `Impact`, `Driver`, `Approvers`, `Contributors`, `Informed`, `Due Date`, `Background`, `Assumptions`, `Decision Criteria`, `Options`, `Recommendation`, `Outcome`, `Links`.
 
-Use one `### <proposal_id> - Title` heading per RFC entry. `proposal_id` must be lowercase hyphen-case and stable across edits.
-
-Each RFC entry must include these labels in order:
-
-- `Status`
-- `Impact`
-- `Driver`
-- `Approvers`
-- `Contributors`
-- `Informed`
-- `Due Date`
-- `Background`
-- `Assumptions`
-- `Decision Criteria`
-- `Options`
-- `Recommendation`
-- `Outcome`
-- `Links`
-
-Quality rules:
-
-- Define decision criteria before options.
-- Include at least two real options; include status quo or `Do Nothing` when relevant.
-- Include assumptions with confidence and invalidation triggers when known.
-- Keep `Outcome: pending` until the decision is made.
-- Do not include implementation task decomposition, acceptance criteria, code instructions, or Magia execution evidence.
-
+Quality rules: define criteria before options; include at least two real options and `Do Nothing`/status quo when relevant; include assumptions with confidence and invalidation triggers when known; keep `Outcome: pending` until decision; exclude implementation task decomposition, acceptance criteria, code instructions, and Magia execution evidence.

@@ -1,94 +1,53 @@
 # CLI and Packaging Contract
 
-Use this reference when running deterministic skill-harness commands, interpreting exit codes, or packaging a target skill.
+Use for deterministic skill-harness commands, exits, and packaging.
 
-## Script Contracts
+## Commands
 
 ### `scripts/skill_harness_inventory.py`
 
-Purpose: create deterministic structural inventory for a target skill folder.
-
-Required command shape:
+Creates deterministic structural inventory.
 
 ```bash
 python /home/oai/skills/skill-harness/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
 ```
 
-Expected output: JSON with target path, `SKILL.md` count, frontmatter, top-level directory presence, file metadata, referenced paths, missing references, and unresolved scaffold-marker hits.
-
-Exit semantics: nonzero only when Python execution fails or the target cannot be read. Treat a successful JSON write as measured inventory evidence.
+Output: JSON with target path, `SKILL.md` count, frontmatter, top-level dirs, file metadata, referenced/missing paths, unresolved scaffold hits. Nonzero only for Python/read failure. Written JSON is measured inventory evidence.
 
 ### `scripts/skill_harness_audit.py`
 
-Purpose: score harness readiness from structural evidence.
-
-Required command shape:
+Scores structural harness readiness.
 
 ```bash
 python /home/oai/skills/skill-harness/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
 ```
 
-Expected output: Markdown and JSON reports with score, dimension scores, gates, findings, and verdict.
-
-Exit semantics: zero when the audit report is produced. A high score is not enough to claim behavioral readiness unless scenarios or validators were actually executed.
+Output: Markdown/JSON score, dimensions, gates, findings, verdict. Zero means report produced. High score does not prove behavioral readiness without executed scenarios or validators.
 
 ### `scripts/skill_harness_validate.py`
 
-Purpose: validate structural readiness, scenario schema, Python script syntax, missing references, and unresolved scaffold markers.
-
-Required command shape:
+Validates structure, scenario schema, Python syntax, references, scaffold markers.
 
 ```bash
 python /home/oai/skills/skill-harness/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --output <report-dir>/validation.json
 ```
 
-Expected output: JSON report with verdict, gates, scenario details, and inventory summary.
-
-Exit semantics: zero for `accept` or `accept with risks`; nonzero for `reject`.
+Output: JSON verdict, gates, scenario details, inventory summary. Exit zero for `accept`/`accept with risks`, nonzero for `reject`.
 
 ### `scripts/skill_harness_package.py`
 
-Purpose: validate a skill folder and produce an installable zip archive.
-
-Required command shape:
+Validates and writes an installable zip.
 
 ```bash
 python /home/oai/skills/skill-harness/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json
 ```
 
-Expected output: JSON package report with `packaged`, output path, archive entries, excluded dirs, excluded suffixes, and embedded validation result.
+Output: JSON with `packaged`, output path, archive entries, exclusions, embedded validation. Exit zero only when zip is written. Use `--strict` when major risks should block packaging.
 
-Exit semantics: zero only when the zip was written. Use `--strict` when major validation risks should block packaging.
+## Exclusions and Evidence
 
-## Packaging Exclusions
+Package excludes `.git`, `.hg`, `.svn`, caches, `dist`, `build`, nested zips, `.DS_Store`. Do not package reports, scratch dirs, secrets, external evaluator outputs, or benchmark baselines unless the target owns them as durable resources.
 
-Packaging must exclude transient or unsafe content:
+Report as measured only commands run in the current run; scenario metrics only with executed prompts plus evaluator decisions; package success only with successful package script and existing zip. Preserve failures as failures.
 
-- version-control directories such as `.git`, `.hg`, and `.svn`;
-- Python and tool caches;
-- generated build folders such as `dist` and `build`;
-- nested zip archives;
-- platform metadata files such as `.DS_Store`.
-
-Do not add reports, scratch directories, secrets, external evaluator outputs, or benchmark baselines to the skill package unless the target skill explicitly owns them as durable resources.
-
-## Evidence Rules
-
-- Report a command as measured only when it was executed in the current run.
-- Report scenario metrics as measured only when prompts were executed and evaluator decisions were captured.
-- Report package success only when the package script returns success and the zip exists at the stated path.
-- Preserve command failures as failures; do not relabel them as passing because a related command succeeded.
-
-## Representative Validation Sequence
-
-For package mode, prefer this order:
-
-1. inventory;
-2. static audit;
-3. bounded edits;
-4. re-inventory;
-5. re-audit;
-6. validator;
-7. Python syntax check for scripts;
-8. package command;
-9. zip entry inspection.
+Package mode order: inventory, audit, edits, re-inventory, re-audit, validator, Python syntax check, package, zip entry inspection.

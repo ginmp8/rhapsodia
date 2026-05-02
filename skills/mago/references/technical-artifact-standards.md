@@ -1,72 +1,44 @@
 # Technical Artifact Standards
 
-Load this reference when MAGO defines or refines planned technical artifacts for a selected spec package.
+Load when MAGO defines/refines planned technical artifacts for a selected spec.
 
-## Ownership Model
+## Ownership and Evidence
 
-Mago documents intended design. Magia documents implementation reality.
+Mago documents intended design; Magia documents implementation reality. MAGO artifacts must be grounded in repository evidence, Magnomo handoff evidence, user constraints, or explicit assumptions. Do not claim code changes, test runs, deployments, or runtime observations unless supplied evidence proves them.
 
-MAGO artifacts must be grounded in repository evidence, Magnomo handoff evidence, user-provided constraints, or explicit assumptions. They must not claim code was changed, tests were run, deployments happened, or runtime behavior was observed unless supplied evidence proves it.
+## Canonical Technical Artifacts
 
-## Canonical Planning Artifact Set
+- `technical-design.md`: trigger non-trivial design/architecture alignment; purpose intended components, boundaries, data flow, dependencies, constraints; template [assets/templates/technical-design.md.template](../assets/templates/technical-design.md.template).
+- `complexity-reduction-plan.md`: trigger unnecessary abstractions, accidental complexity, excessive indirection, hard-to-change design; purpose evidence-backed simplification strategy, target seams, removal/merge candidates, phases, validation, rollback, Magia handoff; template [assets/templates/complexity-reduction-plan.md.template](../assets/templates/complexity-reduction-plan.md.template).
+- `architecture-decisions.md` or `adrs/<adr_id>.md`: trigger material planned architecture decision; purpose ADR context/alternatives/consequences/validation expectations; template [assets/templates/adr.md.template](../assets/templates/adr.md.template).
+- `implementation-plan.md`: trigger execution needs sequencing/strategy; purpose approach for Magia without writing code; template [assets/templates/implementation-plan.md.template](../assets/templates/implementation-plan.md.template).
+- `tasks.md`: trigger work decomposition; purpose executable task structure for Magia; template [assets/templates/tasks.md.template](../assets/templates/tasks.md.template).
+- `validation.md`: trigger proof plan; purpose checks Magia must run or evidence needed; template [assets/templates/validation.md.template](../assets/templates/validation.md.template).
+- `contract-spec.md`: trigger intended/changed API, event, schema, interface, or file contract; purpose expected contract and compatibility; template [assets/templates/contract-spec.md.template](../assets/templates/contract-spec.md.template).
+- `migration-strategy.md`: trigger data/schema/topic/cache/index migration; purpose order, compatibility, rollout, rollback; template [assets/templates/migration-strategy.md.template](../assets/templates/migration-strategy.md.template).
+- `observability-design.md`: trigger production signals; purpose logs, metrics, traces, dashboards, alerts; template [assets/templates/observability-design.md.template](../assets/templates/observability-design.md.template).
+- `operational-requirements.md`: trigger runbook/support/reprocessing needs; purpose expected operability requirements for Magia to implement/document; template [assets/templates/operational-requirements.md.template](../assets/templates/operational-requirements.md.template).
+- `security-and-risk-considerations.md`: trigger security, PII, permissions, secrets, auth, compliance; purpose planned constraints/risks; template [assets/templates/security-and-risk-considerations.md.template](../assets/templates/security-and-risk-considerations.md.template).
+- `open-questions.md`: trigger unresolved planning facts; purpose preserve questions/blockers, not invented facts; template [assets/templates/open-questions.md.template](../assets/templates/open-questions.md.template).
 
-| Artifact | Trigger | Purpose | Template |
-|---|---|---|---|
-| `technical-design.md` | Non-trivial design or architecture alignment | Explain intended components, boundaries, data flow, dependencies, constraints | [assets/templates/technical-design.md.template](../assets/templates/technical-design.md.template) |
-| `complexity-reduction-plan.md` | Application, module, or flow has unnecessary abstractions, accidental complexity, excessive indirection, or hard-to-change design | Define evidence-backed simplification strategy, target seams, removal/merge candidates, safe phases, validation, rollback, and Magia handoff | [assets/templates/complexity-reduction-plan.md.template](../assets/templates/complexity-reduction-plan.md.template) |
-| `architecture-decisions.md` or `adrs/<adr_id>.md` | Material planned architecture decision | Record planned ADR with context, alternatives, consequences, and validation expectations | [assets/templates/adr.md.template](../assets/templates/adr.md.template) |
-| `implementation-plan.md` | Execution needs sequencing or strategy | Explain how Magia should approach implementation without writing code | [assets/templates/implementation-plan.md.template](../assets/templates/implementation-plan.md.template) |
-| `tasks.md` | Work needs decomposition | Create executable task structure for Magia | [assets/templates/tasks.md.template](../assets/templates/tasks.md.template) |
-| `validation.md` | Work needs proof plan | Define checks Magia must run or evidence needed | [assets/templates/validation.md.template](../assets/templates/validation.md.template) |
-| `contract-spec.md` | API/event/schema/interface/file contract is intended or changed | Define expected contract and compatibility | [assets/templates/contract-spec.md.template](../assets/templates/contract-spec.md.template) |
-| `migration-strategy.md` | Data/schema/topic/cache/index migration is planned | Define order, compatibility, rollout, and rollback expectation | [assets/templates/migration-strategy.md.template](../assets/templates/migration-strategy.md.template) |
-| `observability-design.md` | Production signals are needed | Define required logs, metrics, traces, dashboards, and alerts | [assets/templates/observability-design.md.template](../assets/templates/observability-design.md.template) |
-| `operational-requirements.md` | Feature has runbook/support/reprocessing needs | Define expected operability requirements for Magia to implement/document | [assets/templates/operational-requirements.md.template](../assets/templates/operational-requirements.md.template) |
-| `security-and-risk-considerations.md` | Security, PII, permissions, secrets, auth, or compliance matters | Define planned constraints and risks | [assets/templates/security-and-risk-considerations.md.template](../assets/templates/security-and-risk-considerations.md.template) |
-| `open-questions.md` | Planning facts are unresolved | Preserve questions and blockers rather than inventing facts | [assets/templates/open-questions.md.template](../assets/templates/open-questions.md.template) |
+## Quality Bar
 
-## Required Quality Bar
-
-Every technical planning artifact must include:
-
-- scope and selected spec;
-- evidence or assumptions;
-- intended design/decision/strategy;
-- alternatives or explicit `none` when relevant;
-- validation expectations for Magia;
-- risks and trade-offs;
-- handoff instructions or blockers.
+Every technical planning artifact includes: scope and selected spec; evidence or assumptions; intended design/decision/strategy; alternatives or explicit `none` where relevant; Magia validation expectations; risks/trade-offs; handoff instructions or blockers.
 
 ## ADR Criteria
 
-Create a planned ADR when the decision affects one or more of:
-
-- architecture, public contracts, persistence, distributed consistency, retries, idempotency, ordering, concurrency, security, migration, rollback, operability, observability, dependency selection, or future extension.
-
-Do not create a planned ADR for trivial task breakdown, local naming, or implementation details Magia can safely decide during execution.
+Create a planned ADR for decisions affecting architecture, public contracts, persistence, distributed consistency, retries, idempotency, ordering, concurrency, security, migration, rollback, operability, observability, dependency selection, or future extension. Do not create ADRs for trivial task breakdown, local naming, or implementation details Magia can safely decide.
 
 ## Handoff to Magia
 
-For every technical plan that expects implementation, provide enough information for Magia to avoid guessing:
-
-- expected code areas when known;
-- constraints and non-goals;
-- validation commands or checks when known;
-- migration and rollback expectations;
-- contract compatibility requirements;
-- observability and operational requirements;
-- risks that must be revalidated during implementation.
+For implementation-bound technical plans, provide expected code areas when known; constraints/non-goals; validation commands/checks when known; migration/rollback expectations; contract compatibility; observability/operational requirements; risks Magia must revalidate.
 
 ## Boundary with Magia
 
-MAGO can say how implementation should be approached. It cannot say how implementation actually behaved unless Magia or repository evidence proves it. If implementation reality changes the design, consume Magia's technical-gap note or implementation ADR in a later refine run.
+MAGO may prescribe approach; it cannot claim implementation behavior unless Magia or repository evidence proves it. If implementation reality changes the design, consume Magia's technical-gap note or implementation ADR in a later refine run.
 
+## Complexity-Reduction Criteria
 
+Create `complexity-reduction-plan.md` when the primary change simplifies an existing system rather than adds behavior. Distinguish accidental from essential domain complexity and preserve externally observable behavior unless the spec explicitly requires behavior change.
 
-## Complexity-Reduction Planning Criteria
-
-Create a `complexity-reduction-plan.md` when the requested change is primarily about simplifying an existing system rather than adding behavior. The plan must distinguish accidental complexity from essential domain complexity and must preserve externally observable behavior unless the selected spec explicitly requires behavior change.
-
-Complexity-reduction planning must name the simplification hypothesis before task decomposition, for example: "remove unused abstraction layer", "inline generic pipeline", "merge redundant service interfaces", "replace speculative configurability with explicit code path", or "split an over-broad module around stable seams". Each hypothesis must include evidence, expected benefit, blast radius, validation check, and rollback path.
-
-Do not plan a broad rewrite merely because code looks complex. Prefer small, reversible, behavior-preserving slices that Magia can execute and validate independently.
+Name the simplification hypothesis before task decomposition, such as "remove unused abstraction layer", "inline generic pipeline", "merge redundant service interfaces", "replace speculative configurability with explicit code path", or "split an over-broad module around stable seams". Each hypothesis needs evidence, expected benefit, blast radius, validation check, and rollback path. Do not plan broad rewrites because code looks complex; prefer small, reversible, behavior-preserving slices that Magia can execute and validate independently.
