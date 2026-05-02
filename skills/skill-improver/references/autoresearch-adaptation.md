@@ -1,52 +1,26 @@
-# Autoresearch Adaptation for Skill Improvement
+# Autoresearch Adaptation
 
-## Core mapping
+## Mapping
 
-| Autoresearch concept | Skill-improver equivalent |
-|---|---|
-| Autoresearch training file edited by the agent | target skill files edited by the agent |
-| fixed 8-minute training budget | fixed iteration, time, or token budget |
-| validation metric such as val_bpb | skill benchmark score, eval score, activation accuracy, or conformance score |
-| keep or discard experiment | accept patch or revert patch |
-| Autoresearch program instructions | skill-improver workflow plus Codex prompt |
-| overnight autonomous run | bounded CI/container run with logs and rollback |
+- autoresearch training file -> target skill files
+- fixed 8-minute budget -> fixed iteration/time/token budget
+- `val_bpb` or validation metric -> skill benchmark, eval, activation, or conformance score
+- keep/discard experiment -> accept/revert patch
+- program instructions -> `skill-improver` workflow plus Codex prompt
+- overnight autonomous run -> bounded CI/container run with logs and rollback
 
-## Design principles
+## Principles
 
-1. Single objective per run.
-   Pick one primary metric, such as benchmark score or activation recall. Secondary gates can block acceptance, but they should not obscure the optimization target.
+1. Single objective: choose one primary metric; secondary gates may block but must not hide the optimization target.
+2. Minimal mutation: target skill folder only; evaluator files, secrets, and unrelated repo content are read-only.
+3. Comparable trials: same evaluation command before/after each hypothesis; do not change prompts, scoring, or fixtures mid-run unless objective is eval design.
+4. Patch accountability: every iteration needs small diff, named hypothesis, eval results, and accept/reject decision.
+5. Falsification: rejected hypotheses are evidence; log them and avoid equivalent retries.
 
-2. Minimal mutation scope.
-   Limit the agent to the target skill folder. For safety, treat evaluator files, secrets, and unrelated repository content as read-only.
+## Skill-specific risk
 
-3. Comparable trials.
-   Use the same evaluation command before and after a hypothesis. Do not change prompts, scoring rules, or test fixtures mid-run unless the experiment is explicitly about eval design.
+Skill packages are discrete and can overfit small eval suites. Counter with activation, negative, ambiguous, edge, static-structure, packaging, and qualitative-review checks. Edge cases include missing files, invalid paths, conflicting goals, and unsafe requests.
 
-4. Patch-level accountability.
-   Each iteration should produce a small diff, a named hypothesis, eval results, and an accept/reject decision.
+## Acceptance policy
 
-5. Progress through falsification.
-   A rejected hypothesis is useful evidence. Log it and avoid repeating equivalent changes.
-
-## Difference from model research
-
-Skill improvement is more discrete than neural network training. A skill can appear to improve through overfitting to a small eval suite. Counter this by using:
-
-- activation prompts that should trigger the skill,
-- negative prompts that should not trigger the skill,
-- ambiguous prompts with expected decision rules,
-- edge cases involving missing files, invalid paths, conflicting goals, and unsafe requests,
-- static structure checks,
-- packaging validation,
-- qualitative review.
-
-## Recommended acceptance policy
-
-Accept a candidate patch only when all are true:
-
-1. The primary score improves by at least `min_delta`.
-2. All mandatory gates pass.
-3. The patch modifies only allowed paths.
-4. The patch does not weaken safety or ownership boundaries.
-5. The patch does not remove or trivialize tests.
-6. The report explains the mechanism of improvement.
+Accept a candidate only when: primary score improves by at least `min_delta`; all mandatory gates pass; only allowed paths changed; safety/ownership boundaries remain intact; tests are not removed or trivialized; and the report explains why the patch improved the metric.

@@ -1,37 +1,17 @@
 # Execution Evidence
 
-Use this reference when MAGIA produces structured downstream evidence, implementation notes, or execution-grounded technical documentation.
+Use when MAGIA produces structured downstream evidence, implementation notes, or execution-grounded technical documentation.
 
-MAGIA evidence is for implementation truth: repository changes, files touched, tests, commands, runtime output, blockers, implementation decisions, validation results, and residual risks.
-
-Magia does not create downstream governance or communication artifacts, including roadmap, release, status, stakeholder, portfolio, feature reporting, or release communication documents. Magia exposes evidence only; downstream consumers decide how to interpret and communicate it.
+MAGIA evidence records implementation truth: repository changes, files touched, tests, commands, runtime output, blockers, implementation decisions, validation results, and residual risks. Magia does not create roadmap, release, status, stakeholder, portfolio, feature-reporting, or release-communication artifacts; downstream consumers interpret evidence themselves.
 
 ## Evidence Types
 
-Record only evidence that was inspected, produced, or explicitly supplied:
+Record only inspected, produced, or supplied evidence: files inspected/changed; commands; passed/failed tests; static reasoning; logs/runtime output with secrets redacted; implementation decisions/ADRs; blockers/follow-ups; validation gaps and not-run reasons.
 
-- files inspected or changed;
-- commands executed;
-- tests passed or failed;
-- static reasoning checks;
-- logs or runtime output with secrets redacted;
-- implementation decisions and ADRs;
-- blockers and follow-ups;
-- validation gaps and not-run reasons.
+## Decisions and ADR Links
 
-## Implementation Decisions and ADR Links
+For each technical decision or implementation ADR, include title, path, evidence source, validation status, scope guard proving product intent was not rewritten, and handoff target when Mago or Magnomo must review.
 
-When execution produces a technical decision or implementation ADR, include:
+## Boundaries
 
-- decision title;
-- path to the documentation or ADR;
-- evidence source;
-- validation status;
-- scope guard explaining why the decision did not rewrite product intent;
-- handoff target when Mago or Magnomo must review.
-
-## Boundary Rules
-
-MAGIA must not rewrite planning intent, PRD content, task definitions, roadmap inputs, product scope, acceptance criteria, feature sequencing, or delivery commitments. Planning-origin artifacts remain execution inputs; their provenance is not a blocker. If execution reveals that planning content itself must change before safe implementation, record the concrete blocker or follow-up as execution evidence and hand off instead of rewriting planning artifacts.
-
-Do not create or update downstream governance or communication artifacts from Magia. Do not add validators for downstream governance or communication artifacts.
+MAGIA must not rewrite planning intent, PRD content, task definitions, roadmap inputs, product scope, acceptance criteria, feature sequencing, or delivery commitments. Planning-origin artifacts remain execution inputs; provenance is not a blocker. If planning content must change before safe implementation, record the concrete blocker/follow-up as execution evidence and hand off instead of editing planning artifacts. Do not create/update downstream governance or communication artifacts, or validators for them.

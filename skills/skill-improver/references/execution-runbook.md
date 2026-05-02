@@ -1,26 +1,23 @@
-# Skill Improver Execution Runbook
+# Execution Runbook
 
-Use this reference when a run needs operational detail beyond the control plane in `SKILL.md`: CLI commands, benchmark modes, self-improvement safeguards, packaging, and rollback.
+Use for CLI details, benchmark modes, defaults, self-improvement safeguards, packaging, and rollback beyond `SKILL.md`.
 
-## Default operating assumptions
+## Defaults
 
-When the user asks to improve a skill but omits details, continue with conservative defaults instead of stalling:
-
-- Evaluator: use `skill-benchmark` when available. If it is saturated at `100/100`, keep it as a gate and add an auxiliary non-saturated signal before claiming improvement.
-- Budget: one manual patch or up to `--max-iterations 3` for an automated loop.
+When details are omitted, continue conservatively:
+- Evaluator: `skill-benchmark` when available; if `100/100`, treat as gate and add non-saturated auxiliary evidence before claiming improvement.
+- Budget: one manual patch or `--max-iterations 3`.
 - Minimum delta: `1.0` unless the evaluator has a smaller meaningful unit.
-- Scope: edit only the target skill folder.
-- Blocked paths: evaluator scripts, expected outputs, scenario fixtures, benchmark reports used as fixtures, lockfiles, `.git`, caches, package artifacts, and secrets.
-- Safety: prefer a separate working copy and manual patch review unless the user explicitly provides a disposable sandbox or CI runner.
+- Scope: target skill folder only.
+- Blocked: evaluator scripts, expected outputs, scenario fixtures, benchmark reports used as fixtures, lockfiles, `.git`, caches, package artifacts, secrets.
+- Safety: separate working copy and manual review unless the user provides a disposable sandbox or CI runner.
 
 ## Benchmark modes
 
-| Mode | Use when | Required guardrail |
-|---|---|---|
-| `existing-command` | The user already has a deterministic evaluator command. | Require JSON score or a score regex and lock evaluator inputs. |
-| `skill-benchmark` | Structural maturity and canonical reporting are enough to start. | Parse score, verdict, and blocker gates; reject blocker failures. |
-| `hybrid` | Activation or output behavior matters. | Use static structure plus a locked behavioral result file. |
-| `generate-first` | No benchmark exists. | Create the benchmark, measure baseline, freeze it, then start improvement. |
+- `existing-command`: user supplies deterministic evaluator; require JSON score or score regex; lock inputs.
+- `skill-benchmark`: structural maturity; parse score/verdict/blocker gates; reject blocker failures.
+- `hybrid`: behavior matters; combine static score with locked behavioral result file.
+- `generate-first`: no benchmark; create it, baseline, freeze it, then improve.
 
 ## Skill-benchmark run
 
@@ -34,9 +31,9 @@ python scripts/skill_improver_loop.py \
   --codex-mode full-auto
 ```
 
-This mode uses the installed benchmark report generator, writes reports under `.skill-improver/skill-benchmark-reports/`, freezes evaluator inputs, enforces blocker gates, and reverts candidates that do not improve.
+Writes reports under `.skill-improver/skill-benchmark-reports/`, freezes inputs, enforces blocker gates, and reverts non-improving candidates.
 
-## Hybrid run with fixed behavioral results
+## Hybrid run
 
 ```bash
 python scripts/skill_improver_loop.py \
@@ -49,9 +46,9 @@ python scripts/skill_improver_loop.py \
   --min-delta 1.0
 ```
 
-Use this when activation and output behavior matter. The scenario result file is locked so the agent cannot improve the score by weakening the benchmark.
+Use for activation/output behavior; lock scenario results so the agent cannot weaken the benchmark.
 
-## Custom evaluator command
+## Custom evaluator
 
 ```bash
 python scripts/skill_improver_loop.py \
@@ -64,11 +61,11 @@ python scripts/skill_improver_loop.py \
   --min-delta 0.5
 ```
 
-The command should print JSON containing at least `score`. Include `status`, `gates`, `direction`, and `report_path` for stronger acceptance decisions.
+Command should print JSON with at least `score`; add `status`, `gates`, `direction`, and `report_path` for stronger decisions.
 
-## Yolo mode rule
+## Yolo mode
 
-Only use yolo mode inside a disposable environment that the user explicitly acknowledges:
+Only inside an explicitly acknowledged disposable environment:
 
 ```bash
 python scripts/skill_improver_loop.py \
@@ -79,20 +76,18 @@ python scripts/skill_improver_loop.py \
   --sandbox-acknowledged
 ```
 
-Never use this mode on a normal developer workstation or broad filesystem mount.
+Never use on a normal workstation or broad filesystem mount.
 
-## Installation and packaging flow
+## Install/package
 
-When the user asks to install or package the improved skill:
+1. Preserve backup before overwriting an installed skill.
+2. Confirm destination is writable; otherwise produce zip/patch artifact.
+3. Copy only accepted skill folder, excluding evaluator work files, temp reports, caches, secrets, and prior packages.
+4. Re-run validation on installed/packaged contents.
+5. State whether installation is persistent or current-session only.
+6. Include rollback instructions from backup path.
 
-1. Preserve a backup before overwriting an installed skill.
-2. Confirm the destination is writable. If it is not, produce a zip or patch artifact.
-3. Install by copying the accepted skill folder only, excluding evaluator work files, temporary reports, caches, secrets, and prior package artifacts.
-4. Re-run validation on the installed or packaged contents.
-5. State whether the installation is persistent or only applies to the current runtime/session.
-6. Include rollback instructions based on the backup path.
-
-For this package, use:
+For this package:
 
 ```bash
 python scripts/validate_skill_improver_package.py --target /path/to/skill-improver
@@ -101,24 +96,8 @@ python scripts/package_skill.py --target /path/to/skill-improver --output /path/
 
 ## Self-improvement safeguards
 
-When improving `skill-improver` itself:
+For `skill-improver` itself: work in a separate copy; record backup/hash; block `evals/`, benchmark reports, expected outputs, and external evaluator scripts unless benchmark design was requested; use one bounded hypothesis per patch; integrate useful resources before deletion; remove templates only after classifying them as placeholders, duplicates, obsolete, or unconsumed; treat static `100/100` as gate only; report bootstrapping, self-reference, and unmeasured behavior.
 
-- work in a separate copy when possible;
-- record a pre-change hash or backup;
-- keep `evals/`, benchmark reports, expected outputs, and external evaluator scripts blocked unless the user requested benchmark-design work;
-- use one bounded hypothesis per patch;
-- when improving supporting resources, integrate useful assets before deleting them; only remove templates after classifying them as placeholders, duplicated, obsolete, or not consumed by any script, reference, declared workflow, or validation gate;
-- treat the static `100/100` score as a gate rather than a proof of improvement;
-- make the final report explicit about bootstrapping, self-reference, and any unmeasured behavior.
+## Reject/revert when
 
-## Rejection reasons
-
-Reject or revert a candidate patch when any of these occur:
-
-- benchmark hash or locked fixture hash changed;
-- a blocked path changed;
-- files outside allowed scope changed;
-- required gates failed;
-- evaluator output was missing, unparsable, or lower confidence than baseline;
-- score failed to improve by the configured delta;
-- the patch weakened safety boundaries, removed difficult tests, or claimed unmeasured scenario results.
+Benchmark or locked-fixture hash changed; a blocked path changed; files outside scope changed; required gates failed; evaluator output is missing/unparsable/lower confidence; score misses configured delta; safety boundaries weaken; difficult tests are removed; or unmeasured scenario results are claimed.

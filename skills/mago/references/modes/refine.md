@@ -28,7 +28,7 @@
 
 When refining tasks.md:
 
-- follow the canonical tasks.md contract in [../artifacts/templates-and-status.md](references/artifacts/templates-and-status.md)
+- follow the canonical tasks.md contract in [../artifacts/templates-and-status.md](../artifacts/templates-and-status.md)
 - preserve or restore the canonical minimum phase coverage for every phase
 - preserve the existing five-phase sequence, phase goals, exit criteria, and stable global `taskNNN` ids
 - preserve or create a bounded confirmation task instead of leaving a phase empty

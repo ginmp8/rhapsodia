@@ -36,7 +36,7 @@ Prefer the smallest task size that still produces a meaningful, reviewable outco
 
 ## Task Contract
 
-- follow the canonical tasks.md contract in [../artifacts/templates-and-status.md](references/artifacts/templates-and-status.md)
+- follow the canonical tasks.md contract in [../artifacts/templates-and-status.md](../artifacts/templates-and-status.md)
 - keep the existing five-phase sequence intact while making broad work execution-ready
 - do not invent placeholder tasks; every retained or added task must produce evidence, code, docs, or an explicit repository-truth confirmation
 - when additional bounded work appears, append new `taskNNN` ids into the existing semantically correct phase

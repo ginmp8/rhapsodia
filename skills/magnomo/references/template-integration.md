@@ -1,36 +1,23 @@
 # Template Integration
 
-Use this reference when deciding which reusable template backs a Magnomo-owned artifact family. Templates are operational assets: scaffold or update them through bundled scripts, then validate the touched artifact.
+Use when choosing, scaffolding, auditing, or normalizing a template-backed Magnomo artifact.
 
-## Delivery Templates
+## Rule
 
-- `assets/templates/ops.yaml.template`: spec-scoped delivery metadata and operational state.
-- `assets/templates/status.md.template`: spec-scoped stakeholder-readable delivery status.
-- `assets/templates/stakeholder-brief.md.template`: spec-scoped stakeholder brief for alignment, timing, and risk communication.
-- `assets/templates/replanning.md.template`: spec-scoped append-only replanning history.
+Prefer scripts over manual template copying. Templates define shape; writers and validators enforce current contract.
 
-## Portfolio and Roadmap Templates
+## Writers
 
-- `assets/templates/portfolio.yaml.template`: board-scoped structured portfolio state.
-- `assets/templates/portfolio.md.template`: board-scoped human-readable portfolio summary.
-- `assets/templates/roadmap.yaml.template`: board-scoped structured roadmap.
-- `assets/templates/roadmap.md.template`: board-scoped human-readable roadmap.
-- `assets/templates/feature-map.yaml.template`: board-scoped roadmap-to-spec handoff map.
+- General artifacts: `scripts/write_artifact_scaffold.py <path> [--spec-id specNNN]`.
+- Ops: `scripts/write_ops_scaffold.py <path> --spec-id specNNN`.
+- RFC entries: `scripts/upsert_rfc_entry.py`.
+- Governance decisions: `scripts/append_adr_entry.py` as legacy governance decision writer.
+- Mechanical lists: `scripts/update_template_lists.py <path> --data <payload.yaml>`; inspect schema with `scripts/update_template_lists.py --schema --artifact-name <name>`.
 
-## Proposal and Decision Templates
+## Validators
 
-- `assets/templates/rfc-proposals.md.template`: board-scoped RFC proposal log.
-- `assets/templates/adr-records.md.template`: board-scoped ADR record log.
+Run `scripts/validate_artifact.py <path>` after writes. Use narrower validators when required by mode output: `validate_ops.py`, `validate_roadmap.py`, `validate_reporting.py`, `validate_portfolio.py`, `validate_contracts.py`, or `validate_board_paths.py`.
 
-## Reporting Templates
+## Manual Edit Boundary
 
-- `assets/templates/feature-report.md.template`: spec-scoped feature report after delivery evidence is supplied.
-- `assets/templates/release-notes.md.template`: board-scoped stakeholder-facing release notes.
-- `assets/templates/internal-notes.md.template`: board-scoped internal delivery notes.
-
-## Usage Rules
-
-1. Prefer `scripts/write_artifact_scaffold.py` or `scripts/write_ops_scaffold.py` over manual structure creation when a template-backed artifact does not exist.
-2. Prefer `scripts/update_template_lists.py` for supported mechanical list updates.
-3. Preserve unknown facts as unknown in generated artifacts rather than filling template slots with inferred owners, dates, deployment status, review status, or validation facts.
-4. Run the artifact validator and, for repository-facing writes, board-path validation after using a template.
+Manual prose edits are allowed inside existing human sections when facts are supplied or marked unknown. Do not hand-select a fresh template shape, invent required metadata, bypass a writer for template-backed creation, or rewrite unsupported mechanical list structures; extend the script instead.

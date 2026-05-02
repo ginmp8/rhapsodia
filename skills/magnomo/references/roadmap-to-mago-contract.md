@@ -1,36 +1,22 @@
-# Roadmap To Mago Contract
+# Roadmap to Mago Contract
 
-Magnomo produces roadmap artifacts that Mago may later consume as upstream human intent. This is a handoff contract, not a dependency on Mago files.
+Use only for Magnomo governance handoff from roadmap to Mago. Magnomo prepares handoff facts; Mago owns the planning package and technical decomposition.
 
-## Handoff Rules
+## Handoff Preconditions
 
-- `feature_key` must be stable within a roadmap.
-- `candidate_spec_id` should use `specNNN` only when a candidate id is known.
-- `ready_for_spec: true` means the feature is ready for Mago to define or refine planning artifacts.
-- `feature-map.yaml` handoffs should include `feature_key`, `candidate_spec_id`, `title`, `scope_summary`, `dependencies`, and `recommended_mago_mode`.
-- `recommended_mago_mode` should describe the likely Mago planning action, such as `define`, `refine`, or `split`.
-- The handoff may include product context, constraints, stakeholders, risks, outcomes, non-goals, MVP boundaries, acceptance themes, and whether a Mago `technical-design.md` is recommended before execution.
-- The handoff must not include acceptance criteria, implementation-ready task decomposition, code execution steps, repository change instructions, validation plans, or Magia execution evidence.
-- Candidate spec values must stay consistent between `roadmap.yaml` and `feature-map.yaml`.
+Before `roadmap-to-specs`, collect or preserve unknowns for: feature key/title, problem, desired outcome, requester/stakeholders, owner/decision maker, priority/bucket, risk, target cycle/date, candidate spec ids, dependencies, acceptance or handoff notes, and links/evidence.
 
-## Roadmap-To-Specs Output Shape
+## Magnomo May Do
 
-When running `roadmap-to-specs`, produce or update `feature-map.yaml` entries with this shape:
+- Mark `feature-map.yaml` handoff status as `ready_for_mago`, `handed_off`, `blocked`, or `unknown` based on evidence.
+- Link roadmap items to candidate specs.
+- Record governance rationale, open questions, blockers, and handoff notes.
+- Validate that handoff facts are sufficient for Mago to start.
 
-```yaml
-features:
-  - feature_key: saved-query-sharing-controls
-    ready_for_spec: true
-    candidate_spec_id: spec014
-    title: Saved-query sharing controls
-    scope_summary: Admins need clearer saved-query visibility controls.
-    dependencies: []
-    recommended_mago_mode: define
-    handoff_status: ready
-    mago_inputs:
-      - roadmap.yaml
-      - roadmap.md
-      - adr-records.md
-    recommended_mago_artifacts:
-      - technical-design.md
-```
+## Magnomo Must Not Do
+
+Do not create Mago spec packages, write PRDs, technical designs, tasks, validation plans, ADRs, implementation plans, architecture decisions, or engineering acceptance criteria. Do not infer technical scope from roadmap intent.
+
+## Validation
+
+Run `scripts/validate_contracts.py` and `scripts/validate_roadmap.py` when handoff artifacts change. Missing owner, candidate spec, outcome, or evidence is a warning/blocker according to validator output; never invent it.

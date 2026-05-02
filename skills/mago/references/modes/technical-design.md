@@ -9,7 +9,7 @@ Use for `technical-design`.
 - `BOARD_ROOT` and `spec_id` are required.
 - Keep technical-design.md under `BOARD_ROOT/specs/<spec_id>/`.
 - Use scripts/write_artifact_scaffold.py <BOARD_ROOT>/specs/<spec_id>/technical-design.md when creating the file.
-- Open [../artifacts/technical-design.md](references/artifacts/technical-design.md) before writing or validating content.
+- Open [../artifacts/technical-design.md](../artifacts/technical-design.md) before writing or validating content.
 - Load only the selected package, relevant discovery or roadmap evidence, and directly relevant repository code or tests.
 - Keep product requirements in prd.md; keep executable decomposition in tasks.md; keep validation expectations in validation.md; keep evolving assumptions and decisions in notes.md.
 - Do not implement code, write repository execution steps, or claim validation evidence.

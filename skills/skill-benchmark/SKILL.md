@@ -1,156 +1,80 @@
 ---
 name: skill-benchmark
-description: use when asked to benchmark, audit, score, validate, compare, or measure maturity of a chatgpt, claude, copilot, codex, or agent skill package and produce an evidence-based markdown benchmark report with scorecard, gates, inventory, scenario suite, behavioral metrics, risks, prioritized improvements, and verdict. use report-validation mode for existing benchmark reports and comparison mode for two versions. do not use for generic code review, product planning, prompt advice, document writing, skill creation, or target package hardening unless the requested output includes a reusable skill benchmark.
+description: use when asked to benchmark, audit, score, validate, compare, or measure maturity of chatgpt, claude, copilot, codex, or compatible agent skill packages by producing an evidence-based markdown report with scorecard, gates, inventory, scenarios, behavioral metrics, risks, improvements, and verdict. use report-validation for existing reports and comparison for two versions. do not use for generic code review, product planning, prompt advice, document writing, skill creation, or hardening unless a reusable skill benchmark is the requested artifact.
 ---
 
 # Skill Benchmark
 
 ## Purpose
 
-Generate a measurable, standardized, and repeatable benchmark report for a reusable skill package. This skill owns benchmark evidence, scoring, report validation, and comparison. It does not own editing or hardening the benchmarked package; when the user asks for improvement work, first produce or preserve the benchmark evidence and clearly separate any later mutation work from the benchmark result.
+Produce measurable, repeatable benchmark reports for reusable skill packages. Own evidence, scoring, report validation, comparison, and verdicts. Do not edit or harden the target; preserve benchmark evidence and route later mutation work to its owning workflow.
 
-## Activation boundary
+## Activation
 
-Use this skill when the requested deliverable is a benchmark, audit, scorecard, maturity assessment, validation report, or comparison for a ChatGPT, Claude, Copilot, Codex, or compatible agent skill package.
+Use when the requested artifact is a benchmark, audit, scorecard, maturity assessment, validation report, comparison, publish-readiness decision, standardized markdown report, or evidence review for a ChatGPT, Claude, Copilot, Codex, or compatible agent skill package.
 
-Strong triggers include:
+Strong triggers: benchmark/score/audit this skill, validate this benchmark report, compare skill versions, measure maturity, generate a skill benchmark report, decide publish readiness, or calculate activation precision/recall, output conformance, robustness, or rework rate from supplied results.
 
-- benchmark this skill, score this skill, audit this skill package, validate this benchmark report, compare these skill versions, measure skill maturity, generate a skill benchmark report, or decide whether this skill is ready to publish;
-- requests for a standardized markdown report with score, gates, inventory, scenarios, risks, and prioritized improvements;
-- review of supplied scenario results where activation precision, recall, output conformance, robustness, or rework rate must be calculated from evidence.
+Do not use for generic code review, product planning, prompt advice, document writing, skill creation from scratch, repository refactoring, explaining how skills work, or target hardening unless the deliverable is a reusable skill benchmark. For edit/hardening-only work, use the owning hardening/harness workflow and keep benchmark output as evidence.
 
-Do not use this skill for generic code review, product planning, prompt advice, document writing, skill creation from scratch, ordinary repository refactoring, or explaining how skills work unless the user explicitly asks for a reusable skill benchmark deliverable. Do not use this skill as the primary workflow when the user only asks to edit or harden a target package; use a hardening or harness workflow and keep benchmark output as evidence.
+## Scope, inputs, assumptions
 
-## Scope boundaries and assumptions
+- Scope: benchmark evidence and report artifacts only. Out of scope unless another workflow owns it: target edits, implementation, generic prompt rewrites, hardening.
+- Protected: fixtures, expected outputs, secrets, credentials, user-declared read-only paths.
+- Required inputs: target content, target identity/path/source, mode, optional evidence, optional baseline, output location or inline report.
+- Target content may be a skill folder, extracted `skill.zip`, pasted content, or enough text to inspect.
+- Optional evidence includes prior outputs, scenario results, expected activation cases, issue links, review notes, feedback, or older benchmark reports.
+- Behavioral metrics stay unknown until prompts are executed or supplied results pass schema validation.
+- If static scores saturate, keep the score as a gate and use scenario conformance, evidence completeness, or validator coverage before claiming improvement.
+- If target content is unavailable, return the structure from [`references/report-template.md`](references/report-template.md), list missing inputs, and do not claim inspection or scoring.
 
-Operate only on benchmark evidence and benchmark report artifacts. Treat target package edits, repository implementation, generic prompt rewrites, and hardening work as out of scope unless another workflow explicitly owns those changes. Do not overwrite protected fixtures, expected outputs, secrets, credentials, or user-declared blocked paths.
+## Modes
 
-Assume behavioral metrics are unknown until scenario prompts are executed or the user supplies validated result evidence. If static scores are saturated, preserve the score as a gate and use an auxiliary metric such as scenario conformance, evidence completeness, or validator coverage before claiming improvement.
-
-## Required inputs
-
-Resolve these inputs from the user request or available filesystem before generating a benchmark:
-
-1. Target content: a skill folder, extracted `skill.zip`, pasted skill contents, or enough target content to inspect.
-2. Target identity: target skill name and inspected path or source description.
-3. Benchmark mode: single skill, comparison, report validation, behavioral evidence, or template-only.
-4. Optional evidence: prior outputs, scenario results, expected activation cases, issue links, review notes, user feedback, or an older benchmark report.
-5. Optional comparison baseline: previous skill version, previous benchmark report, or another skill package.
-6. Output location when files can be written; otherwise return report content in the response.
-
-If target content is unavailable, return the report structure from [`references/report-template.md`](references/report-template.md), list the missing inputs, and do not claim inspection or scoring evidence.
-
-## Mode selection
-
-| User intent | Mode | Required inputs | Primary output | Closure check |
-|---|---|---|---|---|
-| Benchmark one skill package | `single-skill-benchmark` | target package or contents | canonical markdown benchmark report | report validator passes or limitations are stated |
-| Compare two versions or packages | `comparison-benchmark` | target plus baseline | benchmark report with delta section | evidence sets are separated and only comparable deltas are claimed |
-| Validate an existing report | `report-validation` | report path or report text | pass/fail findings and fixes | [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py) when filesystem access is available |
-| Use supplied scenario results | `behavioral-evidence-benchmark` | target plus result json or table | benchmark with measured metrics | result schema is validated before metrics are treated as measured |
-| No inspectable target | `template-only` | target name or benchmark intent | report template and missing-input list | no claims of inspection are made |
+- `single-skill-benchmark`: target -> canonical markdown report; validator passes or limitations stated.
+- `comparison-benchmark`: target + baseline -> delta report; evidence stays separated; claim only comparable deltas.
+- `report-validation`: report path/text -> pass/fail findings/fixes; run [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py) when files exist.
+- `behavioral-evidence-benchmark`: target + result JSON/table -> measured metrics only after schema validation.
+- `template-only`: no inspectable target -> template and missing-input list; no inspection claims.
 
 ## Progressive loading
 
-Load only what the branch needs:
+Load only branch-relevant resources:
 
-- [`references/benchmark-workflow.md`](references/benchmark-workflow.md): command sequence, evidence handling, path rules, and finalization workflow.
-- [`references/benchmark-rubric.md`](references/benchmark-rubric.md): score dimensions, scoring bands, maturity classification, and gate interpretation.
-- [`references/test-scenarios.md`](references/test-scenarios.md): scenario schema, behavioral metric formulas, and measured-versus-planned rules.
-- [`references/report-template.md`](references/report-template.md): required final report structure and section contract.
-- [`assets/templates/benchmark-report.md.template`](assets/templates/benchmark-report.md.template): reusable markdown skeleton when a report must be drafted manually.
-- [`assets/templates/scenario-results.json.template`](assets/templates/scenario-results.json.template): reusable scenario result skeleton when collecting execution evidence.
-- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation, non-activation, ambiguous, edge, regression, and adversarial coverage for this skill package.
-- [`examples/hardening-scenarios.json`](examples/hardening-scenarios.json): example legacy result-style scenario records for benchmark review.
-- [`scripts/generate_benchmark_report.js`](scripts/generate_benchmark_report.js): deterministic report generator for filesystem targets.
-- [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py): deterministic report quality validator.
-- [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py): deterministic validator for supplied behavioral result json.
-- [`scripts/package_skill.py`](scripts/package_skill.py): package and archive validator used when this skill package itself must be delivered as `skill.zip`.
+- [`references/benchmark-workflow.md`](references/benchmark-workflow.md): commands, evidence hierarchy, paths, final response.
+- [`references/benchmark-rubric.md`](references/benchmark-rubric.md): dimensions, bands, maturity classes, gates.
+- [`references/test-scenarios.md`](references/test-scenarios.md): scenario schema, formulas, status labels.
+- [`references/report-template.md`](references/report-template.md): required report sections and order.
+- [`assets/templates/benchmark-report.md.template`](assets/templates/benchmark-report.md.template): manual report skeleton.
+- [`assets/templates/scenario-results.json.template`](assets/templates/scenario-results.json.template): scenario result skeleton.
+- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation, non-activation, ambiguous, edge, regression, adversarial coverage.
+- [`examples/hardening-scenarios.json`](examples/hardening-scenarios.json): legacy result examples.
+- [`scripts/generate_benchmark_report.js`](scripts/generate_benchmark_report.js): deterministic report generator.
+- [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py): report validator.
+- [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py): behavioral result validator.
+- [`scripts/package_skill.py`](scripts/package_skill.py): package/archive validator when this skill itself is delivered as `skill.zip`.
 
 ## Workflow
 
-1. Locate and inspect the target skill.
-   - Read the target `SKILL.md` first.
-   - Confirm the target has exactly one root `SKILL.md` when filesystem access is available.
-   - List the package tree and identify `agents/`, `references/`, `scripts/`, `assets/`, `assets/templates/`, `examples/`, and `evals/` if present.
-   - Record which files were actually inspected.
-
-2. Select the benchmark mode and evidence policy.
-   - Use the mode table above.
-   - Treat target files and command output from the current run as primary evidence.
-   - Treat supplied scenario results as measured only after schema validation.
-   - Treat proposed scenario prompts as planned until executed.
-
-3. Classify supporting resources before scoring or recommending deletion.
-   - Treat `references/` as conditional guidance, schemas, rubrics, or rules.
-   - Treat `assets/templates/` as reusable artifact skeletons that may be copied, filled, or rendered.
-   - Do not treat references and templates as interchangeable merely because their topics overlap.
-   - Do not recommend removing a useful template, asset, example, script, or reference solely to improve a static score. Prefer integration through workflow references, script usage, or validation coverage.
-
-4. Generate static benchmark evidence when a filesystem target is available.
-   - Run [`scripts/generate_benchmark_report.js`](scripts/generate_benchmark_report.js) with `--target` and, when needed, `--out`.
-   - Keep generated reports outside the target skill package unless the surrounding repository explicitly owns benchmark reports.
-   - Use [`references/benchmark-workflow.md`](references/benchmark-workflow.md) for command details and path decisions.
-
-5. Add behavioral evidence only when available.
-   - Validate supplied result json with [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py) before calculating metrics.
-   - Apply [`references/test-scenarios.md`](references/test-scenarios.md) for formulas and status labels.
-   - Do not invent activation precision, recall, robustness, output conformance, criteria coverage, or rework rate.
-
-6. Enrich the report with qualitative review.
-   - Apply [`references/benchmark-rubric.md`](references/benchmark-rubric.md) to score dimensions and gates.
-   - Apply [`references/report-template.md`](references/report-template.md) as the required structure.
-   - Clearly separate automated static findings, behavioral findings, and reviewer judgment.
-
-7. Validate and finalize.
-   - Run [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py) on any generated report when filesystem access is available.
-   - Confirm all required sections exist, no unresolved scaffold markers remain, and measured metrics are backed by execution evidence.
-   - Return the report path or report content, command outcomes, failed gates, missing evidence, and residual risks.
+1. Locate target. Read target `SKILL.md` first; confirm exactly one root `SKILL.md` when possible; inventory `agents/`, `references/`, `scripts/`, `assets/`, `assets/templates/`, `examples/`, `evals/`; record inspected files.
+2. Select mode/evidence policy. Current target files and command output are primary evidence. Supplied scenario results are measured only after schema validation; proposed prompts are planned.
+3. Classify resources before scoring or deletion recommendations. `references/` are guidance/schemas/rubrics/rules; `assets/templates/` are reusable skeletons. Do not treat them as interchangeable or delete useful resources only to raise a static score; prefer workflow integration, script usage, or validation coverage.
+4. For filesystem targets, run [`scripts/generate_benchmark_report.js`](scripts/generate_benchmark_report.js) with `--target` and optional `--out`. Keep reports outside the target package unless the caller repo explicitly owns them. See [`references/benchmark-workflow.md`](references/benchmark-workflow.md).
+5. Add behavioral evidence only when available. Validate JSON with [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py), apply [`references/test-scenarios.md`](references/test-scenarios.md), and never invent precision, recall, robustness, output conformance, criteria coverage, or rework rate.
+6. Enrich with qualitative review using [`references/benchmark-rubric.md`](references/benchmark-rubric.md) and [`references/report-template.md`](references/report-template.md). Separate automated static findings, behavioral findings, and reviewer judgment.
+7. Validate/finalize. Run [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py) on generated reports when available. Confirm required sections, no scaffold markers, and evidence-backed measured metrics. Return report path/content, command outcomes, failed gates, missing evidence, residual risks.
 
 ## Output contract
 
-A benchmark response or report must include:
-
-1. Target skill name and inspected path or source description.
-2. Evidence sources and explicit missing evidence.
-3. Scorecard on a 0 to 100 scale using the bundled rubric.
-4. Gate evaluation with pass/fail status and evidence.
-5. Static structure inventory.
-6. Behavioral metrics, marked measured, supplied, planned, blocked, or not measured.
-7. Scenario suite with activation, non-activation, ambiguous, and edge-case prompts.
-8. Evidence-based findings, risks, and prioritized improvements.
-9. Suggested improved activation description when relevant.
-10. Verdict: approve, approve with reservations, or reject.
-11. Validation commands executed and outcomes when commands were available.
-12. Clear statement that scenario metrics are not measured when no executed or supplied scenario evidence exists.
+Benchmark responses/reports must include target name/path/source; evidence and missing evidence; 0-100 rubric scorecard; gate evaluation with evidence; static inventory; behavioral metrics marked measured, supplied, planned, blocked, or not measured; scenario suite with activation, non-activation, ambiguous, and edge-case prompts; findings, risks, prioritized improvements; suggested improved activation description when relevant; verdict (`approve`, `approve with reservations`, or `reject`); validation commands/outcomes; and an explicit not-measured statement when no executed/supplied scenario evidence exists.
 
 ## Stop conditions
 
-Stop and report a blocker before scoring or finalizing when:
-
-- The target path is missing, unreadable, or contains no root `SKILL.md`.
-- More than one possible target skill root is present and the user did not identify which one to benchmark.
-- The request would require changing the target package when the user only asked for a benchmark.
-- The user asks for measured behavioral metrics but no scenario execution results are available.
-- The report would need to cite files that were not inspected.
-- The output path would overwrite protected fixtures, expected outputs, secrets, credentials, or user-declared read-only paths.
-- Supplied scenario result evidence is malformed and cannot support requested metrics.
-- The generated report fails validation and cannot be corrected within the available evidence.
+Stop before scoring/finalizing when the target is missing, unreadable, or has no root `SKILL.md`; multiple roots are ambiguous; the request requires target mutation under benchmark-only scope; measured behavioral metrics are requested without results; the report would cite uninspected files; output would overwrite protected fixtures, expected outputs, secrets, credentials, or read-only paths; scenario evidence is malformed; or generated report validation fails and cannot be corrected from available evidence.
 
 ## Validation rules
 
-Before declaring a benchmark complete:
+Before completion, confirm stable target identity; inspected or explicitly unavailable `SKILL.md` frontmatter/body; all [`references/report-template.md`](references/report-template.md) sections; visible failed gates; metric status distinctions among measured, supplied, planned, blocked, and not measured; every named local resource exists or is clearly an output path; asset/template findings distinguish absent, integrated, unreferenced, and obsolete scaffold files; useful integrated assets are not penalized versus absence; [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py) passes when runnable; [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py) passes before scenario data becomes measured evidence.
 
-- The target identity is stable and reproducible.
-- `SKILL.md` frontmatter and body were inspected or explicitly unavailable.
-- All required report sections from [`references/report-template.md`](references/report-template.md) are present.
-- Failed gates are not hidden by a high numerical score.
-- Behavioral metrics distinguish measured, supplied, planned, blocked, and not measured evidence.
-- Every local resource named in the report exists or is clearly described as an output path rather than a bundled reference.
-- Asset/template findings distinguish absent assets, integrated operational templates, unreferenced assets, and obsolete scaffold files. Absence of assets is not scored as better than useful integrated assets.
-- [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py) passes when a report file exists and the script can run.
-- [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py) passes before scenario results are used as measured behavioral evidence.
+## Finalization
 
-## Finalization checklist
-
-Report exactly what was done: inspected files, generated paths, commands executed, score, gate status, missing evidence, and residual risks. If validation fails, do not claim the benchmark is complete; return the partial report and the failed gates.
+Report inspected files, generated paths, commands run, score, gate status, missing evidence, and residual risks. If validation fails, do not claim completion; return the partial report and failed gates.

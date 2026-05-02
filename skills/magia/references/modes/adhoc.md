@@ -2,34 +2,24 @@
 
 ## Canonical Rules
 
-- `BOARD_ROOT` is optional unless the run touches durable MAGIA documentation.
-- If the prompt provides `BOARD_ROOT`, use it after validation.
-- If durable MAGIA docs are required and no override is provided, derive the needed package path from `BOARD_ROOT` via `references/canonical-paths.md`.
-- If the run is code-only and no durable MAGIA docs are in scope, no canonical board path needs to be resolved.
+- `BOARD_ROOT` is optional unless durable MAGIA docs are touched.
+- If prompt provides `BOARD_ROOT`, use it after validation.
+- If durable docs are required and no override exists, derive the package path from `BOARD_ROOT` via `references/canonical-paths.md`.
+- Code-only runs with no durable MAGIA docs need no board path.
 
-## When to Use ADHOC
+## Use When
 
-Use ADHOC when the work is a direct repository change and execution is not driven by an active spec-catalog.yaml plus a selected spec package.
+Use ADHOC for direct repository work not driven by active spec-catalog.yaml plus selected spec package: direct fixes, small implementation tasks without a planning package, targeted validation, or hardening outside RALPH.
 
-Typical cases:
+## Workflow
 
-- a direct user-requested fix
-- a small implementation task without a current planning package
-- a targeted validation or hardening pass outside the RALPH workflow
-
-## ADHOC Workflow
-
-1. Read the user request.
-2. Load only the minimum relevant code and docs.
-3. Inspect the impacted files.
+1. Read request.
+2. Load minimum relevant code/docs.
+3. Inspect impacted files.
 4. Make the smallest safe change.
-5. Run the validation needed to prove the change.
-6. Summarize what changed, what was validated, and any remaining risks.
+5. Run validation proving the change.
+6. Summarize changes, validation, and remaining risks.
 
-## ADHOC Rules
+## Rules
 
-- Do not automatically load board artifacts unless the task clearly depends on them.
-- Keep scope local to the requested change.
-- Update durable MAGIA planning, execution, validation, or architecture docs only under `BOARD_ROOT`.
-- Do not create ad hoc MAGIA documentation elsewhere to compensate for missing board or version context.
-- Do not claim broader completion than the executed change actually proves.
+Do not auto-load board artifacts unless the task depends on them. Keep scope local. Update durable MAGIA planning/execution/validation/architecture docs only under `BOARD_ROOT`. Do not create ad hoc MAGIA docs elsewhere to compensate for missing board/version context. Do not claim broader completion than evidence proves.

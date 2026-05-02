@@ -12,7 +12,7 @@
 1. Load only the directly relevant product context: the request, discovery evidence, existing concept docs, and repository facts that shape users, scope, constraints, or risks.
 2. Produce the smallest truthful product documentation set: prd.md, notes.md, and optional validation.md.
 3. Create or reconcile YAML only when an existing sequential container truly requires it and the required values are already justified by evidence.
-4. Open references/markdown-writing.md for changed Markdown artifacts and use `scripts/write_artifact_scaffold.py` plus `scripts/validate_artifact.py` when prd.md, notes.md, or validation.md is template-backed.
+4. Open ../markdown-writing.md for changed Markdown artifacts and use `scripts/write_artifact_scaffold.py` plus `scripts/validate_artifact.py` when prd.md, notes.md, or validation.md is template-backed.
 5. Stop once the idea is clear enough for later planning without inventing execution detail.
 
 ## Boundaries

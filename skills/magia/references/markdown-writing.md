@@ -1,26 +1,23 @@
 # Markdown Writing
 
-Apply these rules to generated or updated notes.md and validation.md.
+Apply to generated or updated notes.md and validation.md.
 
 ## Rules
 
-- keep the canonical section set required by the active template or mode
-- use one H1 only when the file format expects it; keep heading levels sequential
-- use descriptive headings with natural capitalization
-- keep sections scannable with short paragraphs, small lists, and blank lines around headings, lists, and fenced blocks
-- use descriptive link text; avoid bare URLs and vague text such as `here`
-- use real Markdown lists; keep nesting rare; never fake bullets with symbols or emoji
-- if an execution doc includes an image, use meaningful alt text or remove the image if it adds no value
-- use inline code for file names, commands, ids, YAML keys, and literal status values
-- use fenced code blocks for multi-line snippets and add a language tag when useful
-- use tables only for genuinely tabular comparisons
-- mark examples clearly as examples, not repository truth
-- use repository-relative POSIX paths such as a repository-relative board notes path; avoid backslashes, Windows paths, and absolute machine-local paths unless documenting an unavoidable external literal
-- keep MAGIA-created or MAGIA-updated durable docs under `BOARD_ROOT`
-- prefer plain, direct language; explain non-obvious jargon briefly; preserve factual nuance
-- avoid decorative emoji and noisy emphasis
-- preserve canonical headings, field labels, and checklist ordering when the file already follows the expected structure
-- when toggling a checklist item or updating an execution-log line, edit the existing list item in place; keep its relative position and keep any attached context immediately below it
-- do not sort checklist items or execution-log entries by completion state
-- validation.md: record evidence and residual gaps for fast human judgment
-- notes.md: keep assumptions, findings, decisions, follow-ups, and blockers distinct
+- Keep canonical sections required by the active template/mode.
+- Use one H1 when expected; keep heading levels sequential and descriptive.
+- Keep sections scannable with short paragraphs, small lists, and blank lines around headings/lists/fences.
+- Use descriptive link text; avoid bare URLs and vague `here`.
+- Use real Markdown lists, rare nesting, no fake bullets or decorative emoji.
+- For images, use meaningful alt text or remove if they add no value.
+- Use inline code for file names, commands, ids, YAML keys, and literal statuses; fenced code with language tag for multi-line snippets.
+- Use tables only for true tabular comparisons.
+- Mark examples as examples, not repository truth.
+- Use repository-relative POSIX paths; avoid Windows or absolute local paths unless documenting unavoidable external literals.
+- Keep MAGIA-created or updated durable docs under `BOARD_ROOT`.
+- Prefer plain direct language; explain non-obvious jargon briefly; preserve nuance.
+- Preserve canonical headings, field labels, and checklist ordering.
+- When toggling a checklist item or execution-log line, edit it in place; keep position and attached context.
+- Do not sort checklist items or execution logs by completion state.
+- validation.md: record evidence and residual gaps for fast judgment.
+- notes.md: keep assumptions, findings, decisions, follow-ups, and blockers distinct.

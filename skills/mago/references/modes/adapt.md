@@ -21,7 +21,7 @@ After adaptation, continue later work with the smallest ordinary mode that match
    - product-only: prd.md, notes.md, and optional validation.md
    - tasks-only: tasks.md
    - blocked partial adaptation when current evidence is still too contradictory or incomplete
-3. Open `references/artifacts/templates-and-status.md` for canonical structure. Open references/markdown-writing.md for changed Markdown artifacts, references/specialist-spellbook.md only when tasks are in scope, and use local scripts for template-backed writes, normalization, and validation whenever they exist.
+3. Open `../artifacts/templates-and-status.md` for canonical structure. Open ../markdown-writing.md for changed Markdown artifacts, ../specialist-spellbook.md only when tasks are in scope, and use local scripts for template-backed writes, normalization, and validation whenever they exist.
 4. Normalize the existing material into the chosen target shape conservatively.
 5. Stop once the package is MAGO-compatible enough for later normal modes without inventing unsupported structure.
 

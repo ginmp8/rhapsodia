@@ -1,68 +1,18 @@
 # Delivery Artifacts
 
-Delivery artifacts belong to Magnomo. They communicate human delivery governance without becoming implementation plans or execution records.
+Magnomo delivery artifacts communicate human delivery governance, not implementation plans or execution records.
 
-Repository-facing `ops.yaml`, `status.md`, `stakeholder-brief.md`, and `replanning.md` belong in one selected spec package under `BOARD_ROOT/specs/<spec_id>/`.
-
-Repository-facing `portfolio.yaml` and `portfolio.md` stay directly under `BOARD_ROOT`.
+Placement: spec-scoped `ops.yaml`, `status.md`, `stakeholder-brief.md`, `replanning.md` live under `BOARD_ROOT/specs/<spec_id>/`. Board-scoped `portfolio.yaml` and `portfolio.md` live directly under `BOARD_ROOT`.
 
 ## ops.yaml
 
-Structured source of truth for delivery metadata.
+Structured source of truth for one spec's delivery metadata.
 
-Required top-level keys:
+Required top-level keys: `schema_version`, `spec_id`, `request`, `ownership`, `planning`, `priority`, `status`, `blockers`, `replanning`, `tags`, `links`.
 
-- `schema_version`
-- `spec_id`
-- `request`
-- `ownership`
-- `planning`
-- `priority`
-- `status`
-- `blockers`
-- `replanning`
-- `tags`
-- `links`
+Required nested keys: `request.title`, `request.requester`, `request.requested_date`, `request.source`, `ownership.owner`, `ownership.backup_owner`, `ownership.stakeholders`, `planning.sprint`, `planning.bucket`, `planning.target_date`, `planning.commitment`, `priority.level`, `priority.rationale`, `status.state`, `status.summary`, `status.updated_at`, `links.mago`, `links.magia`, `links.external`. Values may be `null`, `unknown`, or empty lists when facts are missing.
 
-Required nested keys must exist, but values may be `null`, `unknown`, or empty lists when facts are missing:
-
-- `request.title`
-- `request.requester`
-- `request.requested_date`
-- `request.source`
-- `ownership.owner`
-- `ownership.backup_owner`
-- `ownership.stakeholders`
-- `planning.sprint`
-- `planning.bucket`
-- `planning.target_date`
-- `planning.commitment`
-- `priority.level`
-- `priority.rationale`
-- `status.state`
-- `status.summary`
-- `status.updated_at`
-- `links.mago`
-- `links.magia`
-- `links.external`
-
-Optional delivery fields should be present in new files when practical. Missing optional fields warn, not fail:
-
-- `request.context`
-- `ownership.decision_maker`
-- `ownership.watchers`
-- `planning.milestone`
-- `planning.rollout_target`
-- `priority.urgency`
-- `priority.impact`
-- `priority.risk`
-- `priority.cost_of_delay`
-- `status.confidence`
-- `status.evidence_summary`
-- `status.manual`
-- `status.inferred`
-- `risks`
-- `repos.candidate_impacted`
+Optional fields for new files when practical: `request.context`, `ownership.decision_maker`, `ownership.watchers`, `planning.milestone`, `planning.rollout_target`, `priority.urgency`, `priority.impact`, `priority.risk`, `priority.cost_of_delay`, `status.confidence`, `status.evidence_summary`, `status.manual`, `status.inferred`, `risks`, `repos.candidate_impacted`. Missing optional fields warn, not fail.
 
 Enums:
 
@@ -76,193 +26,50 @@ Enums:
 - `status.state`: `unknown`, `intake`, `triage`, `planned`, `in_progress`, `blocked`, `at_risk`, `done`, `canceled`
 - `status.confidence`: `unknown`, `low`, `medium`, `high`
 
-Rules:
+Rules: `schema_version` = `1`; repository `spec_id` matches `specNNN` and enclosing spec package; off-repository drafts may keep `spec_id: null`; dates use `YYYY-MM-DD`; `ownership.stakeholders`, `ownership.watchers`, `blockers`, `risks`, `replanning`, `tags`, `repos.candidate_impacted`, and all `links.*` values are lists. Missing owner, stakeholders, target date, priority, urgency, impact, risk, and candidate repos warn. Invalid enums, dates, types, required keys, or replanning entries fail. Replanning changes to `target_date`, `sprint`, `scope`, `owner`, or `commitment` require `date`, `changed_fields`, `from`, `to`, `reason`, `impact`.
 
-- `schema_version` must be `1`.
-- Repository-facing `spec_id` must match `specNNN` and the enclosing selected spec package.
-- Off-repository intake drafts may keep `spec_id` as `null` until a spec is assigned.
-- Dates must use `YYYY-MM-DD`.
-- `ownership.stakeholders`, `ownership.watchers`, `blockers`, `risks`, `replanning`, `tags`, `repos.candidate_impacted`, and every `links.*` value must be lists.
-- Missing owner, stakeholders, target date, priority, urgency, impact, risk, and candidate impacted repos warn, not fail.
-- Invalid enum values, malformed dates, broken types, missing required keys, and malformed replanning entries fail.
-- A replanning entry that changes `target_date`, `sprint`, `scope`, `owner`, or `commitment` must include `date`, `changed_fields`, `from`, `to`, `reason`, and `impact`.
+Collection shapes: simple-list entries (`ownership.stakeholders`, `ownership.watchers`, `status.inferred.evidence`, `tags`, `repos.candidate_impacted`, `links.*`) are non-empty strings. `blockers[]`: mappings with `id`, `summary`, optional `owner`, `needed_by`. `risks[]`: mappings with `id`, `summary`, `severity`, optional `owner`. `replanning[]`: mappings with `date`, `changed_fields`, `reason`, `impact`, plus conditional `from`/`to` for material changes.
 
-Expected collection shapes:
+Authoring: create with `scripts/write_ops_scaffold.py <path> --spec-id <specNNN>` or `scripts/write_artifact_scaffold.py <path> --spec-id <specNNN>`; never freehand a fresh shape. Populate supported lists with `scripts/update_template_lists.py <path> --data <payload.yaml>`; inspect support via `scripts/update_template_lists.py --schema --artifact-name ops.yaml`. Validate with `scripts/validate_artifact.py <path>` or `scripts/validate_ops.py <path>`.
 
-- `ownership.stakeholders`, `ownership.watchers`, `status.inferred.evidence`, `tags`, `repos.candidate_impacted`, and every `links.*` entry are non-empty strings.
-- `blockers[]` entries are mappings with `id`, `summary`, optional `owner`, and optional `needed_by`.
-- `risks[]` entries are mappings with `id`, `summary`, `severity`, and optional `owner`.
-- `replanning[]` entries are mappings with `date`, `changed_fields`, `reason`, `impact`, and conditional `from` and `to` fields for material field changes.
-
-Authoring rule:
-
-- Use `scripts/write_ops_scaffold.py <path> --spec-id <specNNN>` or `scripts/write_artifact_scaffold.py <path> --spec-id <specNNN>` to create new `ops.yaml` files. Do not freehand a fresh `ops.yaml` shape.
-- Use `scripts/update_template_lists.py <path> --data <payload.yaml>` to populate `ownership.stakeholders`, `ownership.watchers`, `status.inferred.evidence`, `blockers`, `risks`, `replanning`, `tags`, `repos.candidate_impacted`, and `links.*`; check supported shapes with `scripts/update_template_lists.py --schema --artifact-name ops.yaml`.
-- After writing or editing `ops.yaml`, run `scripts/validate_artifact.py <path>` or `scripts/validate_ops.py <path>` before treating it as valid.
-
-Must not store:
-
-- Branches, pull requests, commits, checks, reviews, deployment state, or last commit age as maintained fields.
-- Raw execution logs or test output.
-- Mago task decomposition or implementation-ready plans.
-- Internal-only stakeholder politics or sensitive private details.
+Must not store branches, PRs, commits, checks, reviews, deployment state, last commit age, raw logs, test output, Mago task decomposition, implementation-ready plans, internal-only politics, or sensitive private details.
 
 ## status.md
 
-Human-readable status derived from `ops.yaml` and optional supplied evidence.
+Human status beside `ops.yaml`, derived from `ops.yaml` and supplied evidence.
 
-Store `status.md` beside `ops.yaml` in the selected spec package.
+Required sections: `# Status`, `## Summary`, `## Current State`, `## Manual Status`, `## Inferred Status`, `## Risks And Blockers`, `## Next Steps`, `## Unknowns`. Optional: `## Evidence`, `## Recent Changes`, `## Decisions Needed`, `## Stakeholders`.
 
-Required sections:
-
-- `# Status`
-- `## Summary`
-- `## Current State`
-- `## Manual Status`
-- `## Inferred Status`
-- `## Risks And Blockers`
-- `## Next Steps`
-- `## Unknowns`
-
-Optional sections:
-
-- `## Evidence`
-- `## Recent Changes`
-- `## Decisions Needed`
-- `## Stakeholders`
-
-Rules:
-
-- Manual status must come from explicit human-entered status in `ops.yaml` or notes.
-- Inferred status must cite supplied or linked planning/execution evidence.
-- Unknown status, validation, release, or deployment evidence must remain unknown.
-- Risks and blockers must align with structured `ops.yaml` blockers and risks when present.
-
-Must not store manually maintained branch, pull request, commit, check, review, or deployment state.
+Rules: manual status comes from explicit human-entered status in `ops.yaml` or notes; inferred status cites supplied/linked planning or execution evidence; unknown status, validation, release, or deployment remains unknown; risks/blockers align with structured `ops.yaml` when present. Do not maintain branch, PR, commit, check, review, or deployment state.
 
 ## stakeholder-brief.md
 
-Business-facing delivery summary for stakeholders.
+Business-facing summary beside `ops.yaml` for stakeholder communication, timing alignment, decisions, or risk communication.
 
-Store `stakeholder-brief.md` beside `ops.yaml` in the selected spec package.
+Required sections: `# Stakeholder Brief`, `## Summary`, `## Decision Needed`, `## Impact`, `## Timing`, `## Risks`. Optional: `## Audience`, `## Non-Goals`, `## Dependencies`, `## Communication Plan`.
 
-Required sections:
-
-- `# Stakeholder Brief`
-- `## Summary`
-- `## Decision Needed`
-- `## Impact`
-- `## Timing`
-- `## Risks`
-
-Optional sections:
-
-- `## Audience`
-- `## Non-Goals`
-- `## Dependencies`
-- `## Communication Plan`
-
-Rules:
-
-- Create when stakeholder communication, timing alignment, decision making, or risk communication is required.
-- Timing, ownership, and risk must match `ops.yaml` or be marked unknown.
-- Keep implementation details out unless needed to explain impact or risk.
-- Move internal-only details to `internal-notes.md` only if reporting work is explicitly in scope.
+Rules: timing, ownership, and risk match `ops.yaml` or stay unknown; keep implementation detail out unless needed for impact/risk; move internal-only details to `internal-notes.md` only when reporting work is in scope.
 
 ## replanning.md
 
-Append-only narrative history for material delivery changes.
+Append-only material delivery-change history beside `ops.yaml`.
 
-Store `replanning.md` beside `ops.yaml` in the selected spec package.
-
-Required sections:
-
-- `# Replanning`
-- `## Entries`
-
-Rules:
-
-- Append new entries using `### YYYY-MM-DD - <summary>`.
-- Include changed fields, from, to, reason, impact, and decision maker when known.
-- Mirror structured changes in `ops.yaml.replanning`.
-- Do not rewrite old entries except with a dated correction.
-- Do not use replanning for routine status updates.
+Required sections: `# Replanning`, `## Entries`. Append entries as `### YYYY-MM-DD - <summary>` with changed fields, from, to, reason, impact, and decision maker when known. Mirror structured changes in `ops.yaml.replanning`. Do not rewrite old entries except via dated correction. Do not use for routine status updates.
 
 ## portfolio.yaml
 
-Machine-readable consolidated delivery portfolio.
+Machine-readable board portfolio under `BOARD_ROOT`.
 
-Store `portfolio.yaml` directly under `BOARD_ROOT`.
+Required top-level keys: `schema_version`, `portfolio_id`, `updated_at`, `items`, `blocked`, `risks`, `replans`. Recommended keys: `flags.blocked`, `flags.overdue`, `flags.replanned`, `flags.missing_owner`, `flags.at_risk`, `flags.multi_repo`.
 
-Required top-level keys:
+Item fields: `spec_id`, `feature_key`, `title`, `owner`, `state`, `target_date`, `priority`, `urgency`, `impact`, `risk`, `confidence`, `candidate_impacted_repos`, `source`.
 
-- `schema_version`
-- `portfolio_id`
-- `updated_at`
-- `items`
-- `blocked`
-- `risks`
-- `replans`
-
-Recommended top-level keys:
-
-- `flags.blocked`
-- `flags.overdue`
-- `flags.replanned`
-- `flags.missing_owner`
-- `flags.at_risk`
-- `flags.multi_repo`
-
-Item fields:
-
-- `spec_id`
-- `feature_key`
-- `title`
-- `owner`
-- `state`
-- `target_date`
-- `priority`
-- `urgency`
-- `impact`
-- `risk`
-- `confidence`
-- `candidate_impacted_repos`
-- `source`
-
-Rules:
-
-- `schema_version` must be `1`.
-- `updated_at` and item `target_date` values must use `YYYY-MM-DD`.
-- Item `spec_id` must be `null` or match `specNNN`.
-- Item `state`, `priority`, `urgency`, `impact`, `risk`, and `confidence` use the same enums as `ops.yaml`.
-- `items`, `blocked`, `risks`, `replans`, `flags.*`, and `candidate_impacted_repos` must be lists where present.
-- Populate `items`, `blocked`, `risks`, `replans`, and `flags.*` with `scripts/update_template_lists.py <portfolio.yaml> --data <payload.yaml>`; do not hand-shape portfolio list entries.
-- Missing item owner warns.
-- Duplicate spec IDs warn.
-- Past target dates on non-terminal items warn as overdue.
-- Items with more than one candidate impacted repo should appear in `flags.multi_repo`.
+Rules: `schema_version` = `1`; `updated_at` and `target_date` use `YYYY-MM-DD`; item `spec_id` is `null` or `specNNN`; item `state`, `priority`, `urgency`, `impact`, `risk`, `confidence` reuse `ops.yaml` enums; `items`, `blocked`, `risks`, `replans`, `flags.*`, `candidate_impacted_repos` are lists. Populate lists with `scripts/update_template_lists.py <portfolio.yaml> --data <payload.yaml>`; do not hand-shape entries. Missing item owner, duplicate spec IDs, overdue non-terminal items, and multi-repo items warn.
 
 ## portfolio.md
 
-Human-readable consolidated delivery portfolio.
+Human board portfolio under `BOARD_ROOT`.
 
-Store `portfolio.md` directly under `BOARD_ROOT`.
+Required sections: `# Portfolio`, `## Summary`, `## Items`, `## Blocked`, `## Overdue`, `## Missing Owners`, `## At Risk`, `## Multi-Repo`, `## Risks`, `## Replans`.
 
-Required sections:
-
-- `# Portfolio`
-- `## Summary`
-- `## Items`
-- `## Blocked`
-- `## Overdue`
-- `## Missing Owners`
-- `## At Risk`
-- `## Multi-Repo`
-- `## Risks`
-- `## Replans`
-
-Rules:
-
-- Derive the summary from `portfolio.yaml`, `ops.yaml`, and available evidence.
-- Do not introduce new canonical delivery metadata that belongs in `ops.yaml` or `portfolio.yaml`.
-- Unknown placeholders warn until intentionally retained.
+Rules: derive summary from `portfolio.yaml`, `ops.yaml`, and evidence; do not introduce canonical metadata that belongs in `ops.yaml` or `portfolio.yaml`; unknown placeholders warn until intentionally retained.

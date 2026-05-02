@@ -1,66 +1,44 @@
 # Complexity Reduction Execution
 
-Load this reference when MAGIA executes simplification, de-abstraction, behavior-preserving refactoring, or a Mago complexity-reduction plan.
+Load for simplification, de-abstraction, behavior-preserving refactor, or Mago complexity-reduction plans.
 
 ## Objective
 
-Reduce accidental complexity in current code while preserving product intent, externally observable behavior, contracts, and validation truth. The goal is not to make the code match a personal style preference; it is to make future maintenance, testing, operation, and local reasoning easier with evidence.
+Reduce accidental complexity in current code while preserving product intent, observable behavior, contracts, and validation truth. Optimize maintenance, testing, operation, and local reasoning with evidence; not personal style.
 
-## Required Starting Point
+## Starting Point
 
-Before editing, identify:
+Before editing, identify: target files/modules/flow/task; behavior preserved and allowed to change; simplification hypothesis; complexity evidence; validation safety net; rollback path or smallest reversible step.
 
-- target scope: files, modules, flow, or selected Mago task;
-- behavior to preserve and behavior explicitly allowed to change;
-- simplification hypothesis;
-- current complexity evidence;
-- validation safety net: tests, build, type checks, lint, characterization tests, contract checks, smoke checks, or static reasoning;
-- rollback path or smallest reversible step.
+If preserved behavior is unknown and no validation path exists, create/request a safety net before deleting abstractions unless the change is trivially local and statically provable.
 
-If the behavior to preserve is unknown and no validation path exists, create or request a safety net before deleting abstractions unless the change is trivially local and statically provable.
+## Workflow
 
-## Execution Workflow
-
-1. Inspect the current flow and existing conventions before changing code.
-2. Classify the complexity: accidental, essential, unknown, or outside scope.
-3. Choose one small simplification step: inline, remove, merge, split, rename, localize, or replace with a simpler existing convention.
-4. Prefer deletion or inlining when an abstraction has one real implementation and no current variation point.
-5. Preserve public behavior, contracts, persistence semantics, retries, idempotency, ordering, security posture, and observability unless the selected task explicitly changes them.
-6. Update or add tests when the existing safety net is weak and the change is not statically obvious.
-7. Run the narrowest meaningful validation and record pass/fail/not-run evidence.
+1. Inspect current flow and conventions.
+2. Classify complexity: accidental, essential, unknown, or outside scope.
+3. Choose one small step: inline, remove, merge, split, rename, localize, or replace with a simpler existing convention.
+4. Prefer deletion/inlining when an abstraction has one real implementation and no current variation point.
+5. Preserve public behavior, contracts, persistence, retries, idempotency, ordering, security posture, and observability unless the selected task changes them.
+6. Add/update tests when the safety net is weak and the change is not statically obvious.
+7. Run narrow validation and record pass/fail/not-run evidence.
 8. Document before/after evidence in `complexity-reduction-evidence.md` when structure materially changed.
-9. Create `implementation-adr.md` only when simplification creates a durable architecture or extension-policy decision.
-10. Create `technical-gap-note.md` when the Mago plan is contradicted by repository truth or when the safe simplification requires changing the planned design.
+9. Create `implementation-adr.md` only for durable architecture or extension-policy decisions.
+10. Create `technical-gap-note.md` when repository truth contradicts the Mago plan or safe simplification needs a planned-design change.
 
-## Safe Simplification Patterns
+## Safe Patterns
 
-- Inline a pass-through interface, service, factory, or adapter that has one real implementation and no credible test seam or boundary value.
-- Merge thin layers that only forward calls without policy, isolation, transformation, or domain meaning.
-- Replace speculative generic configuration with explicit code paths when there is no real runtime variability.
-- Split an over-broad module only around stable seams and tests, not around arbitrary architecture categories.
-- Keep local duplication when two concepts change for different reasons; avoid false DRY.
-- Remove dead extension points after confirming no runtime discovery, reflection, configuration, or external contract depends on them.
-- Replace custom mini-framework code with direct framework usage when behavior remains clear and validated.
+- Inline pass-through interfaces, services, factories, or adapters with one real implementation and no credible seam value.
+- Merge forwarding layers with no policy, isolation, transformation, or domain meaning.
+- Replace speculative generic configuration with explicit code when runtime variability is not real.
+- Split broad modules only around stable seams and tests.
+- Keep local duplication when concepts change for different reasons; avoid false DRY.
+- Remove dead extension points only after checking runtime discovery, reflection, configuration, and external contracts.
+- Replace custom mini-frameworks with direct framework usage when behavior remains clear and validated.
 
-## Stop Conditions
+## Stop
 
-Stop and report a blocker or handoff when:
+Stop and report blocker/handoff when simplification needs a broad rewrite; behavior equivalence cannot be tested or reasoned honestly; public contracts, data model, security posture, or user-visible behavior would change beyond the task; deletion removes a real security/transaction/resilience/observability/ownership boundary; product or architecture decisions are required first; or validation fails and fixing it exceeds scope.
 
-- the requested simplification requires a broad rewrite rather than bounded steps;
-- behavior equivalence cannot be tested or reasoned about honestly;
-- public contracts, data model, security posture, or user-visible behavior would change beyond the selected task;
-- deleting an abstraction would remove a real boundary for security, transactionality, resilience, observability, or cross-team ownership;
-- the simplification depends on product or architecture decisions Mago must make first;
-- validation fails and the fix would expand beyond the selected scope.
+## Evidence
 
-## Required Evidence
-
-For each simplification, record:
-
-- before shape: files/types/layers/flow or call depth affected;
-- action taken: remove, inline, merge, split, localize, replace, or defer;
-- preserved behavior and compatibility;
-- executed validation and skipped checks;
-- residual complexity and why it remains;
-- rollback or recovery path;
-- handoff decision: none, Mago, Magnomo, or both.
+For each simplification record: before shape including files/types/layers/flow; action taken; preserved behavior/compatibility; executed validation and skipped checks; residual complexity; rollback/recovery; handoff decision `none`, `mago`, `magnomo`, or `both`.

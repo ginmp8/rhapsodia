@@ -1,0 +1,24 @@
+# Skill Consistency Repair Plan
+
+## Objective
+
+Repair {{target_skill}} so activation, ownership, workflow, resources, validation, and package output form one consistent contract.
+
+## Frozen Evidence
+
+- Inventory command: {{inventory_command}}
+- Audit command: {{audit_command}}
+- Baseline report: {{baseline_report}}
+- Blocked paths: {{blocked_paths}}
+
+## Hypotheses
+
+{{hypotheses}}
+
+## Validation Gates
+
+{{validation_gates}}
+
+## Rollback
+
+{{rollback}}

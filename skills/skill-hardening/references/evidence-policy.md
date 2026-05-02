@@ -1,46 +1,27 @@
 # Evidence Policy
 
-Use this reference when a hardening run includes research, measured validation, benchmark evidence, or claims about package readiness.
+Use when a run includes research, measured validation, benchmark evidence, or readiness claims.
 
-## Evidence hierarchy
+## Evidence order
 
-Prefer evidence in this order:
+1. Target package files and current filesystem.
+2. User constraints, failed prompts, prior outputs, benchmark reports.
+3. Target-domain repository truth or official docs when the skill depends on an external tool/platform.
+4. Current public skill-format guidance for structure, activation, progressive loading, packaging, or validation gaps.
+5. Model judgment only for prioritization, never sole proof that a gate passed.
 
-1. target package files and current filesystem state;
-2. user-provided constraints, failed prompts, prior outputs, or benchmark reports;
-3. target-domain repository truth or official project documentation when the skill depends on an external tool or platform;
-4. current public skill-format guidance when the weakness concerns skill structure, activation, progressive loading, packaging, or validation;
-5. model judgment only for prioritization, never as sole proof that a gate passed.
+## Research
 
-## Research use
+Research only concrete inspection gaps: trigger ambiguity, missing output contracts, weak progressive loading, thin scenario coverage, unclear packaging expectations. Do not add generic excerpts or background summaries.
 
-Use research only to answer a concrete weakness found during inspection, such as trigger ambiguity, missing output contracts, weak progressive loading, insufficient scenario coverage, or unclear packaging expectations. Do not add generic excerpts or long background summaries to the target package.
+When external research is used: record sources in the final report; prefer official docs/primary repos; reconcile conflicts against purpose and user constraints; avoid undated time-sensitive facts unless essential.
 
-When external research is used:
+## Measured vs proposed
 
-- record which sources influenced the change in the final report;
-- prefer official docs or primary repositories over commentary;
-- reconcile conflicts against the target skill's existing purpose and user constraints;
-- avoid hardcoding time-sensitive facts unless they are essential and dated.
+A result is measured only if executed in this run or supplied as execution evidence. Scenario suites, benchmark plans, evaluator rubrics, and gates stay proposed until prompts/tests run and decisions are recorded.
 
-## Measured versus proposed claims
+Never claim scenario precision/recall/robustness/pass rate from a planned suite; package readiness before folder/archive validators pass; script correctness before a representative run or syntax check; benchmark improvement when baseline is saturated unless an auxiliary metric improved.
 
-A result is measured only when it was executed in the current run or supplied as execution evidence by the user. Scenario suites, benchmark plans, evaluator rubrics, and acceptance gates are proposed until prompts or tests are actually run and decisions are recorded.
+## Evidence record
 
-Never claim:
-
-- scenario precision, recall, robustness, or pass rate from a planned suite;
-- package readiness before folder and archive validators pass;
-- script correctness before a representative run or syntax check succeeds;
-- benchmark improvement when the baseline metric is already saturated unless an auxiliary non-saturated metric improved.
-
-## Evidence record minimums
-
-For applied hardening or package delivery, preserve or report:
-
-- baseline inventory and audit results;
-- hardening map with hypotheses and gates;
-- changed files;
-- commands executed with pass/fail outcomes;
-- final validator and package results;
-- residual risks and unmeasured behavior.
+For applied hardening or package delivery, report baseline inventory/audit, hardening map with hypotheses/gates, changed files, commands with pass/fail outcomes, final validator/package results, residual risks, and unmeasured behavior.
