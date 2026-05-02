@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
-SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with actual|this is a " + "placeholder)", re.IGNORECASE)
+SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with " + "actual|this is a " + "placeholder)", re.IGNORECASE)
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 INLINE_PATH_RE = re.compile(r"`([^`]+\.(?:md|py|sh|yaml|yml|json|template|txt))`")
 BLOCKED_ZIP_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "benchmark-reports", "test-results", "tmp", ".tmp"}
@@ -59,13 +59,14 @@ def normalize_ref(raw: str) -> str | None:
 
 def referenced_paths(text: str) -> list[str]:
     refs: set[str] = set()
+    skill_resource_prefixes = ("agents/", "assets/", "evals/", "examples/", "references/", "scripts/")
     for match in MARKDOWN_LINK_RE.finditer(text):
         ref = normalize_ref(match.group(1))
         if ref:
             refs.add(ref)
     for match in INLINE_PATH_RE.finditer(text):
         ref = normalize_ref(match.group(1))
-        if ref:
+        if ref and ref.startswith(skill_resource_prefixes):
             refs.add(ref)
     return sorted(refs)
 
@@ -77,6 +78,36 @@ def rel(path: Path, root: Path) -> str:
 ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
 REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
+
+
+def validate_shared_artifact_boundaries(target: Path) -> list[str]:
+    errors: list[str] = []
+    planning_templates = {
+        "spec-catalog.yaml.template",
+        "manifest.yaml.template",
+        "tasks.md.template",
+        "notes.md.template",
+        "validation.md.template",
+    }
+    templates_dir = target / "assets" / "templates"
+    for template in planning_templates:
+        if (templates_dir / template).exists():
+            errors.append(f"MAGIA must not carry MAGO-owned planning template: assets/templates/{template}")
+
+    update_script = target / "scripts" / "update_template_lists.py"
+    if update_script.exists():
+        script_text = read_text(update_script)
+        forbidden_support = (
+            '"manifest.yaml": {',
+            '"spec-catalog.yaml": {',
+            '"board_status": FieldRule',
+            '"specs": ListRule',
+            '"traceability.supporting_discovery_files": ListRule',
+        )
+        for term in forbidden_support:
+            if term in script_text:
+                errors.append(f"update_template_lists.py still supports MAGO-owned planning update path: {term}")
+    return errors
 
 
 def validate_eval_scenarios(path: Path) -> list[str]:
@@ -178,11 +209,9 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/artifacts/execution-records.md",
         "references/artifacts/execution-evidence.md",
         "references/validation-and-closure.md",
-        "assets/templates/spec-catalog.yaml.template",
-        "assets/templates/manifest.yaml.template",
-        "assets/templates/tasks.md.template",
-        "assets/templates/notes.md.template",
-        "assets/templates/validation.md.template",
+        "assets/templates/implementation-notes.md.template",
+        "assets/templates/validation-evidence.md.template",
+        "assets/templates/technical-gap-note.md.template",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
         "scripts/package_skill.py",
@@ -242,6 +271,9 @@ def validate_target(target: Path) -> dict[str, Any]:
 
     errors.extend(validate_eval_scenarios(target / "evals" / "activation-scenarios.json"))
     checks.append("eval scenarios")
+
+    errors.extend(validate_shared_artifact_boundaries(target))
+    checks.append("shared artifact boundaries")
 
     return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings, "checks": checks}
 

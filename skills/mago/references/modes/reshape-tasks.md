@@ -36,12 +36,12 @@ Prefer the smallest task size that still produces a meaningful, reviewable outco
 
 ## Task Contract
 
-- follow the canonical tasks.md contract in [../artifacts/templates-and-status.md](../artifacts/templates-and-status.md)
+- follow the canonical tasks.md contract in `references/artifacts/templates-and-status.md`
 - keep the existing five-phase sequence intact while making broad work execution-ready
 - do not invent placeholder tasks; every retained or added task must produce evidence, code, docs, or an explicit repository-truth confirmation
 - when additional bounded work appears, append new `taskNNN` ids into the existing semantically correct phase
 - when the work represents a new material execution wave after the current spec is effectively complete, create another spec instead of another phase cycle
-- when decomposition introduces new task ids, expect matching `Execution Log` subsections in notes.md once those tasks start execution
+- when decomposition introduces new task ids, expect matching MAGIA-owned `implementation-notes.md` Execution Log subsections once those tasks start execution
 - never repurpose a previous task's execution history to a different task id
 
 ## Bounded Refinement Tasks

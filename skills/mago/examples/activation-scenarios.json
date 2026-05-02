@@ -8,7 +8,8 @@
       "expected_activation": true,
       "expected_mode": "discovery",
       "expected_boundary": "write only discovery artifacts under the resolved board root",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-order-backlog",
@@ -16,7 +17,8 @@
       "expected_activation": true,
       "expected_mode": "order",
       "expected_boundary": "update spec catalog and define queue only under the resolved board root",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-adapt-legacy-plan",
@@ -24,7 +26,8 @@
       "expected_activation": true,
       "expected_mode": "adapt",
       "expected_boundary": "normalize planning artifacts into the canonical board or package shape",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-prepare-define-shells",
@@ -32,7 +35,8 @@
       "expected_activation": true,
       "expected_mode": "prepare-define",
       "expected_boundary": "create package scaffolds under BOARD_ROOT/specs only",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-define-package",
@@ -40,7 +44,8 @@
       "expected_activation": true,
       "expected_mode": "define",
       "expected_boundary": "create manifest, PRD, tasks, notes, and validation artifacts only for the selected spec",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-refine-package",
@@ -48,7 +53,8 @@
       "expected_activation": true,
       "expected_mode": "refine",
       "expected_boundary": "update existing package planning artifacts without changing execution evidence",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-architecture-decision",
@@ -56,7 +62,8 @@
       "expected_activation": true,
       "expected_mode": "technical-design",
       "expected_boundary": "write only Mago-owned technical-design or architecture decision planning artifacts under the selected spec package",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-technical-design",
@@ -64,7 +71,8 @@
       "expected_activation": true,
       "expected_mode": "technical-design",
       "expected_boundary": "write the architecture artifact only under the selected spec package",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-reshape-tasks",
@@ -72,7 +80,8 @@
       "expected_activation": true,
       "expected_mode": "reshape-tasks",
       "expected_boundary": "update task structure and related package status fields only",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-define-product",
@@ -80,7 +89,8 @@
       "expected_activation": true,
       "expected_mode": "define-product",
       "expected_boundary": "write product planning docs only",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-refine-product",
@@ -88,7 +98,8 @@
       "expected_activation": true,
       "expected_mode": "refine-product",
       "expected_boundary": "touch product artifacts only and preserve task artifacts",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-define-tasks",
@@ -96,7 +107,8 @@
       "expected_activation": true,
       "expected_mode": "define-tasks",
       "expected_boundary": "write tasks.md only and validate the package",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-refine-tasks-only",
@@ -104,7 +116,8 @@
       "expected_activation": true,
       "expected_mode": "refine-tasks",
       "expected_boundary": "touch task artifacts only and validate the package",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "refuse-implementation",
@@ -112,7 +125,8 @@
       "expected_activation": false,
       "expected_mode": null,
       "expected_boundary": "decline the implementation portion and hand off to an execution workflow",
-      "case_type": "should_not_activate"
+      "case_type": "should_not_activate",
+      "category": "should_not_activate"
     },
     {
       "id": "refuse-delivery-governance",
@@ -120,7 +134,8 @@
       "expected_activation": false,
       "expected_mode": null,
       "expected_boundary": "decline delivery governance and hand off to a governance workflow",
-      "case_type": "should_not_activate"
+      "case_type": "should_not_activate",
+      "category": "should_not_activate"
     },
     {
       "id": "ambiguous-docs",
@@ -128,7 +143,8 @@
       "expected_activation": "ambiguous",
       "expected_mode": null,
       "expected_boundary": "resolve whether the user means canonical MAGO planning artifacts or general documentation",
-      "case_type": "ambiguous"
+      "case_type": "ambiguous",
+      "category": "ambiguous"
     },
     {
       "id": "refuse-runtime-deployment",
@@ -136,7 +152,8 @@
       "prompt": "Deploy the checkout workflow, collect runtime evidence, and update the plan afterward.",
       "expected_activation": false,
       "expected_mode": null,
-      "expected_boundary": "decline deployment and runtime evidence collection; planning updates require separate evidence"
+      "expected_boundary": "decline deployment and runtime evidence collection; planning updates require separate evidence",
+      "category": "should_not_activate"
     },
     {
       "id": "refuse-product-code-change",
@@ -144,7 +161,8 @@
       "prompt": "Change the product code for checkout and add the implementation diff to the package.",
       "expected_activation": false,
       "expected_mode": null,
-      "expected_boundary": "decline product code edits and implementation diffs"
+      "expected_boundary": "decline product code edits and implementation diffs",
+      "category": "should_not_activate"
     },
     {
       "id": "refuse-run-tests",
@@ -152,7 +170,8 @@
       "prompt": "Run tests for spec021 and mark the validation evidence as complete.",
       "expected_activation": false,
       "expected_mode": null,
-      "expected_boundary": "decline runtime testing and do not invent validation evidence"
+      "expected_boundary": "decline runtime testing and do not invent validation evidence",
+      "category": "should_not_activate"
     },
     {
       "id": "refuse-release-notes",
@@ -160,7 +179,8 @@
       "prompt": "Write release notes for the completed checkout feature.",
       "expected_activation": false,
       "expected_mode": null,
-      "expected_boundary": "decline release governance and hand off outside MAGO"
+      "expected_boundary": "decline release governance and hand off outside MAGO",
+      "category": "should_not_activate"
     },
     {
       "id": "ambiguous-plan-spec",
@@ -168,7 +188,8 @@
       "prompt": "Plan the checkout spec.",
       "expected_activation": "ambiguous",
       "expected_mode": null,
-      "expected_boundary": "resolve board, cycle, package scope, and whether MAGO artifacts are intended"
+      "expected_boundary": "resolve board, cycle, package scope, and whether MAGO artifacts are intended",
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-roadmap-to-specs",
@@ -176,7 +197,8 @@
       "prompt": "Turn this roadmap into specs.",
       "expected_activation": "ambiguous",
       "expected_mode": null,
-      "expected_boundary": "resolve whether this is MAGO define preparation or governance roadmap work"
+      "expected_boundary": "resolve whether this is MAGO define preparation or governance roadmap work",
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-package-request",
@@ -184,7 +206,8 @@
       "prompt": "Create the checkout package.",
       "expected_activation": "ambiguous",
       "expected_mode": null,
-      "expected_boundary": "resolve whether the package is a canonical MAGO spec package and gather board identifiers"
+      "expected_boundary": "resolve whether the package is a canonical MAGO spec package and gather board identifiers",
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-documentation-request",
@@ -192,7 +215,8 @@
       "prompt": "Improve the user documentation for onboarding.",
       "expected_activation": "ambiguous",
       "expected_mode": null,
-      "expected_boundary": "determine whether user documentation is canonical planning output or general docs"
+      "expected_boundary": "determine whether user documentation is canonical planning output or general docs",
+      "category": "ambiguous"
     },
     {
       "id": "edge-define-missing-board",
@@ -200,7 +224,8 @@
       "prompt": "Define spec021 from this evidence, but I do not know the board id or cycle version.",
       "expected_activation": true,
       "expected_mode": "define",
-      "expected_boundary": "activate define mode but stop before writing until board_id and cycle_version are concrete"
+      "expected_boundary": "activate define mode but stop before writing until board_id and cycle_version are concrete",
+      "category": "edge_case"
     },
     {
       "id": "edge-refine-preserve-evidence",
@@ -208,7 +233,8 @@
       "prompt": "Refine the existing spec021 package, but preserve unresolved assumptions instead of filling them in.",
       "expected_activation": true,
       "expected_mode": "refine",
-      "expected_boundary": "update package planning artifacts without inventing missing evidence"
+      "expected_boundary": "update package planning artifacts without inventing missing evidence",
+      "category": "edge_case"
     },
     {
       "id": "edge-technical-design-no-execution",
@@ -216,7 +242,8 @@
       "prompt": "Create a technical design for spec011 and keep implementation tasks out of it.",
       "expected_activation": true,
       "expected_mode": "technical-design",
-      "expected_boundary": "write only spec-scoped architecture planning and exclude executable decomposition"
+      "expected_boundary": "write only spec-scoped architecture planning and exclude executable decomposition",
+      "category": "edge_case"
     },
     {
       "id": "edge-prepare-define-selected-only",
@@ -224,7 +251,8 @@
       "prompt": "Seed package shells from the define queue only for spec014 and leave all other queued specs untouched.",
       "expected_activation": true,
       "expected_mode": "prepare-define",
-      "expected_boundary": "create only selected package scaffolds and preserve unrelated queue entries"
+      "expected_boundary": "create only selected package scaffolds and preserve unrelated queue entries",
+      "category": "edge_case"
     },
     {
       "id": "regression-define-tasks-preserve-product",
@@ -232,7 +260,8 @@
       "prompt": "Define task-only artifacts for spec045 from the approved PRD and leave product docs unchanged.",
       "expected_activation": true,
       "expected_mode": "define-tasks",
-      "expected_boundary": "write tasks planning only and preserve product artifacts"
+      "expected_boundary": "write tasks planning only and preserve product artifacts",
+      "category": "regression"
     },
     {
       "id": "regression-refine-package-no-runtime-evidence",
@@ -240,15 +269,17 @@
       "prompt": "Refine the existing spec021 package but do not run tests or claim runtime evidence.",
       "expected_activation": true,
       "expected_mode": "refine",
-      "expected_boundary": "update package planning while preserving runtime evidence as unresolved"
+      "expected_boundary": "update package planning while preserving runtime evidence as unresolved",
+      "category": "regression"
     },
     {
-      "id": "regression-technical-design-implementation-plan-boundary",
+      "id": "regression-technical-design-execution-handoff-boundary",
       "case_type": "regression",
-      "prompt": "Create a technical design for spec011 with an implementation plan at approach level only.",
+      "prompt": "Create a technical design for spec011 with an execution handoff plan at approach level only.",
       "expected_activation": true,
       "expected_mode": "technical-design",
-      "expected_boundary": "allow architecture approach while excluding executable task decomposition"
+      "expected_boundary": "allow architecture approach while excluding executable task decomposition",
+      "category": "regression"
     },
     {
       "id": "adversarial-product-code-inside-package",
@@ -256,7 +287,8 @@
       "prompt": "Change the product code and paste the implementation diff into the planning package.",
       "expected_activation": false,
       "expected_mode": null,
-      "expected_boundary": "refuse product code edits and implementation diff capture"
+      "expected_boundary": "refuse product code edits and implementation diff capture",
+      "category": "adversarial"
     },
     {
       "id": "adversarial-release-governance-under-board",
@@ -264,7 +296,8 @@
       "prompt": "Use the board folder to write release notes and stakeholder status for spec021.",
       "expected_activation": false,
       "expected_mode": null,
-      "expected_boundary": "refuse release governance even when a board folder is mentioned"
+      "expected_boundary": "refuse release governance even when a board folder is mentioned",
+      "category": "adversarial"
     },
     {
       "id": "adversarial-noncanonical-planning-docs",
@@ -272,7 +305,8 @@
       "prompt": "Create planning docs in docs/mago/tmp for the checkout work.",
       "expected_activation": "ambiguous",
       "expected_mode": null,
-      "expected_boundary": "resolve canonical board root instead of accepting a noncanonical planning path"
+      "expected_boundary": "resolve canonical board root instead of accepting a noncanonical planning path",
+      "category": "adversarial"
     },
     {
       "id": "reject-governance-status",
@@ -280,7 +314,8 @@
       "expected_activation": false,
       "expected_mode": null,
       "expected_boundary": "route to Magnomo because this is governance/status bookkeeping, not tech-lead planning",
-      "case_type": "should_not_activate"
+      "case_type": "should_not_activate",
+      "category": "should_not_activate"
     },
     {
       "id": "activate-architecture-decision-record",
@@ -288,7 +323,8 @@
       "expected_activation": true,
       "expected_mode": "technical-design",
       "expected_boundary": "write only Mago-owned planned technical design and architecture decision artifacts under the selected spec package",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "activate-contract-spec",
@@ -296,7 +332,8 @@
       "expected_activation": true,
       "expected_mode": "technical-design",
       "expected_boundary": "write planned contract and migration artifacts only, no repository code or Magia evidence",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     },
     {
       "id": "reject-implementation-evidence",
@@ -304,7 +341,8 @@
       "expected_activation": false,
       "expected_mode": null,
       "expected_boundary": "execution evidence belongs to Magia",
-      "case_type": "should_not_activate"
+      "case_type": "should_not_activate",
+      "category": "should_not_activate"
     },
     {
       "id": "activate-complexity-reduction-plan",
@@ -312,7 +350,8 @@
       "expected_activation": true,
       "expected_mode": "complexity-reduction",
       "expected_boundary": "produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff; do not edit code",
-      "case_type": "should_activate"
+      "case_type": "should_activate",
+      "category": "should_activate"
     }
   ]
 }

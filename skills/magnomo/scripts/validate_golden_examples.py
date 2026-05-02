@@ -81,7 +81,7 @@ def specs(skill_root: Path) -> list[CommandSpec]:
                 str(golden / "05-roadmap-large-initiative" / "feature-map.yaml"),
             ],
         ),
-        CommandSpec("golden-05-adr", "validate_artifact", [str(golden / "05-roadmap-large-initiative" / "adr-records.md")]),
+        CommandSpec("golden-05-governance-decision", "validate_artifact", [str(golden / "05-roadmap-large-initiative" / "governance-decisions.md")]),
         CommandSpec(
             "golden-06-roadmap",
             "validate_roadmap",
@@ -137,7 +137,7 @@ def specs(skill_root: Path) -> list[CommandSpec]:
             ],
         ),
         CommandSpec("golden-09-rfc", "validate_artifact", [str(golden / "09-rfc-proposal-roadmap-handoff" / "rfc-proposals.md")]),
-        CommandSpec("golden-10-adr", "validate_artifact", [str(golden / "10-adr-record-roadmap-decision" / "adr-records.md")]),
+        CommandSpec("golden-10-governance-decision", "validate_artifact", [str(golden / "10-governance-decision-roadmap-decision" / "governance-decisions.md")]),
     ]
 
 

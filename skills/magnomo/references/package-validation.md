@@ -1,29 +1,22 @@
 # Package Validation
 
-Use when validating structural edits, running golden examples, or producing `skill.zip`.
+Use for structural edits, golden examples, or `skill.zip` delivery.
 
-## Validation Layers
+## Gates
 
 Run in order:
 
-1. Structural: `scripts/validate_skill_package.py --target <skill-root>`; includes harness scenario coverage in `evals/activation-boundary-scenarios.json`.
-2. Activation: `scripts/validate_activation_scenarios.py <skill-root>/examples/activation-scenarios.json`.
-3. Golden: `scripts/validate_golden_examples.py --skill-root <skill-root>`.
-4. Packaging: `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`.
+1. `scripts/validate_skill_package.py --target <skill-root>`: required files, frontmatter, links, templates, harness scenarios, scaffold hygiene, blocked generated/package artifacts.
+2. `scripts/validate_activation_scenarios.py <skill-root>/examples/activation-scenarios.json`: native scenario schema, category coverage, activation labels, boundary coverage. This is not behavioral measurement.
+3. `scripts/validate_golden_examples.py --skill-root <skill-root>`: golden examples satisfy validators; warnings are allowed only for intentional unknown/missing facts.
+4. `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`: reruns gates 1-3, then writes the archive.
 
-`package_skill.py` reruns the first three gates before writing the zip. Do not share or install a zip from a failed gate.
+Do not share or install a zip from a failed gate.
 
-## Evidence Semantics
+## Packaging Rules
 
-- `validate_skill_package.py`: required files, frontmatter, references, templates, harness scenario schema/category coverage, scaffold-marker hygiene.
-- `validate_activation_scenarios.py`: native scenario schema, category coverage, activation labels, boundary coverage; not measured assistant behavior.
-- `validate_golden_examples.py`: examples satisfy validators; warnings allowed only for intentionally unknown/missing facts.
-- `package_skill.py`: validated `skill.zip` written; excludes caches, bytecode, temp files, `.git`, and nested `skill.zip` files.
+`package_skill.py` excludes `.git`, caches, bytecode, temp/system files, generated evidence/report folders, and nested `.zip` files. Package/golden runners set `PYTHONPATH` to local `scripts/` plus interpreter package paths so validators can run under `python -S`.
 
-## Runtime Notes
+## Readiness Rule
 
-Some validators need PyYAML. Package and golden runners set subprocess `PYTHONPATH` to local `scripts/` plus interpreter package paths, so they can run under `python -S` in isolated environments.
-
-## Final Readiness Rule
-
-Ready only when all structural, activation, golden, and packaging gates pass; `skill.zip` has `SKILL.md` at archive root; no scaffold markers remain outside templates; referenced files exist; harness scenarios include acceptance criteria across activation, non-activation, ambiguous, edge, regression, and adversarial cases; no behavioral metrics are claimed unless prompts were executed and reviewed.
+Ready only when all gates pass, `skill.zip` has `SKILL.md` at archive root, no non-template scaffold markers remain, links resolve, generated evidence/reports/caches/secrets/credentials/old zips are excluded, harness scenarios cover activation/non-activation/ambiguous/edge/regression/adversarial criteria, and behavioral metrics are claimed only after prompt execution and review.

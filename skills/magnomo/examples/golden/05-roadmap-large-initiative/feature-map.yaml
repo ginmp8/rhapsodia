@@ -13,7 +13,7 @@ features:
     mago_inputs:
       - roadmap.yaml
       - roadmap.md
-      - adr-records.md
+      - governance-decisions.md
     notes: Mago should define product scope, acceptance criteria, and validation plan.
   - feature_key: dashboard-role-preview
     ready_for_spec: false

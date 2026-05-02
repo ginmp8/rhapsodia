@@ -30,7 +30,7 @@ REQUIRED_HEADINGS_BY_NAME = {
     "replanning.md": ["# Replanning", "## Entries"],
     "roadmap.md": ["# Roadmap", "## Context", "## Themes", "## Sequencing", "## Dependencies", "## Risks", "## Open Decisions"],
     "rfc-proposals.md": ["# RFC Proposals", "## Entries"],
-    "adr-records.md": ["# ADR Records", "## Entries"],
+    "governance-decisions.md": ["# Governance Decisions", "## Entries"],
     "feature-report.md": [
         "# Feature Report",
         "## Summary",

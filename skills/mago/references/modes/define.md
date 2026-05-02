@@ -9,10 +9,10 @@
 1. Select exactly one spec from the active catalog.
 2. Load only that package, relevant discovery evidence, and directly relevant repository code/tests.
 3. Preserve truthful define-queue.yaml package shape, source mapping, and seeded artifacts unless current evidence proves them wrong.
-4. Open [../specialist-spellbook.md](../specialist-spellbook.md) before writing/correcting task specialist metadata.
+4. Open `references/specialist-spellbook.md` before writing/correcting task specialist metadata.
 5. Create/refine manifest.yaml, prd.md, tasks.md, validation.md, notes.md; create technical-design.md only for material architecture/contract alignment.
 6. Keep package aligned with the active catalog.
-7. Apply [../markdown-writing.md](../markdown-writing.md) to changed Markdown.
+7. Apply `references/markdown-writing.md` to changed Markdown.
 8. Finish with final review.
 
 ## Package Contract
@@ -28,9 +28,9 @@ Use templates only through local scripts for writing, refresh, normalization, or
 - manifest.yaml: required `schema_version`, `spec_id`, `feature_key`, `title`, `type`, `classification`, `status`, `phase`, `cycle_version`, `feature_version`, `source_of_truth`, `traceability`; optional truthful `last_execution`; planning-only usually `status: planned`, `phase: define`; keep `source_of_truth` paths lowercase and discovery traceability when applicable.
 - prd.md: YAML metadata plus `Context`, `Problem Statement`, `Goals`, `Non-Goals`, `Current State`, `Proposed Outcome`, `Functional Requirements`, `Non-Functional Requirements`, `Constraints`, `Risks and Trade-Offs`, `Acceptance Criteria`, `Open Questions`. Be concrete, repository-aware, and testable; do not turn PRD into a task list.
 - technical-design.md: create only when architecture/contract detail improves readiness. Cover context, problem, scope, solution, architecture decisions, security, testing, monitoring, rollback, risks, implementation approach, open questions. Keep contracts/schemas/responsibilities/diagrams high-level; no implementation code, CLI commands, deployment runbooks, task checklists, or claimed execution evidence.
-- tasks.md: follow [../artifacts/templates-and-status.md](../artifacts/templates-and-status.md) for phase structure, fields, enums, task-count guidance, and consistency. Define mode creates/normalizes the full five-phase sequence. Every phase needs at least one bounded truthful task; use `confirmation` for real no-op proof and `refinement` only for bounded docs-only replanning inside the same spec root. Keep tasks small/reviewable; split vague umbrella tasks before raising reasoning. If materially complete work now needs a new slice/correction/evolution, create a new spec instead of reopening phases.
-- validation.md: record only selected-spec proof expectations: compile-time, runtime, integration, regression, edge-case, backward-compatibility, performance, observability, docs consistency.
-- notes.md: keep canonical top-level sections. Include factual assumptions, findings, decisions, risks, trade-offs, open questions, specialist rationale when used, and execution log. In full-package define, keep `Execution Log`; add/preserve per-task subsections only for truthful execution history. Task subsections use `Status`, `Summary`, `Changes`, `Context Docs`, `Decisions`, `Follow-Ups`, `Blockers`. Keep `Context Docs` repository-relative POSIX; use `none` for intentionally empty required fields.
+- tasks.md: follow `references/artifacts/templates-and-status.md` for phase structure, fields, enums, task-count guidance, and consistency. Define mode creates/normalizes the full five-phase sequence. Every phase needs at least one bounded truthful task; use `confirmation` for real no-op proof and `refinement` only for bounded docs-only replanning inside the same spec root. Keep tasks small/reviewable; split vague umbrella tasks before raising reasoning. If materially complete work now needs a new slice/correction/evolution, create a new spec instead of reopening phases.
+- validation.md: record only selected-spec proof expectations: compile-time, runtime, integration, regression, edge-case, backward-compatibility, performance, observability, docs consistency. Do not record executed command results here; MAGIA records those in validation-evidence.md.
+- notes.md: keep canonical top-level planning sections. Include factual assumptions, findings, planning decisions, risks, trade-offs, open questions, and specialist rationale when used. Do not preserve legacy execution history as compatible planning content; MAGIA records current execution history in implementation-notes.md, and legacy execution sections must be adapted before use.
 
 ## Final Review
 

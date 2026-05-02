@@ -6,14 +6,22 @@ Use this reference whenever MAGO creates, adapts, refines, or reshapes artifacts
 
 MAGO owns planning authorship. MAGIA or another execution workflow owns implementation and runtime evidence. A MAGO planning boundary is not an implementation prohibition for downstream execution.
 
+Three-way boundary: Magnomo provides governance inputs and consumes delivery-facing evidence; MAGO converts approved or supplied intent into execution-ready technical plans; MAGIA executes and returns evidence. MAGO does not write stakeholder status or release communication, and it does not transform Magia evidence into MAGO-authored runtime proof.
+
+Shared record boundary: MAGO writes the plan (`tasks.md`, `validation.md`, `notes.md`, `manifest.yaml` planning defaults). MAGIA writes execution reality (`implementation-notes.md`, `validation-evidence.md`, task checkbox completion, `manifest.yaml.last_execution`, and technical execution-state sync). Load `references/shared-artifact-ownership.md` when touching these files.
+
 Do not write statements such as:
 
 - implementation is forbidden merely due to MAGO authorship
 - repository is planning-only
-- implementation is deferred because the task requires code
+- downstream execution is required because the task needs code changes
 - requires product implementation, therefore blocked
 
 Use those ideas only when they are factual repository constraints supplied by evidence, not as consequences of MAGO ownership.
+
+## Template Handoff
+
+MAGO-authored templates create or normalize planning-origin files before execution. MAGIA consumes those generated files and writes execution evidence, but it must not create replacement planning scaffolds for missing `tasks.md`, `validation.md`, `notes.md`, `manifest.yaml`, or `spec-catalog.yaml`. Missing or invalid shared planning structure is a MAGO refinement input, not a MAGIA scaffold task.
 
 ## Handoff Contract
 
@@ -29,9 +37,13 @@ For implementation, integration, validation, hardening, migration, or rollout ta
 
 If a task cannot name an affected boundary or validation path, split, refine, or block the planning output as under-specified. Do not mark implementation itself as the blocker.
 
+## Reverse Handoff
+
+When MAGIA reports `technical-gap-note.md`, implementation ADRs, validation gaps, or contradictions with code/runtime truth, MAGO may refine PRD interpretation, technical design, task definitions, dependencies, validation plans, or execution handoff wording. When MAGIA reports release posture, stakeholder risk, ownership, due date, accepted business risk, or go/no-go impact, route that evidence to Magnomo instead of updating delivery governance from MAGO.
+
 ## Execution-Ready Task Rules
 
-- Implementation-required tasks are valid MAGO planning outputs.
+- Execution-required tasks are valid MAGO planning outputs when implementation is explicitly handed off to Magia.
 - Do not convert implementation work into a documentation-only confirmation unless the PRD and repository evidence prove no code is needed.
 - Do not label a task `blocked` merely because it requires code.
 - If the executor must decide among architecture alternatives, add or update technical-design.md first, then define bounded tasks.
@@ -54,7 +66,7 @@ This is planning-only, so product implementation is blocked.
 
 ## Validation
 
-Before closing a MAGO run that changes tasks.md, technical-design.md, validation.md, or package handoff wording, verify:
+Before closing a MAGO run that changes tasks.md, technical-design.md, validation.md, notes.md, or package handoff wording, verify:
 
 - implementation tasks have concrete `Objective`, `Affected boundary`, `Validation`, and `Expected result` fields;
 - no package text treats MAGO ownership as a prohibition against MAGIA implementation;

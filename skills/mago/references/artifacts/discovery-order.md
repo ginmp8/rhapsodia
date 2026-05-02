@@ -4,7 +4,7 @@ Use this reference when `discovery`, `order`, or `prepare-define` creates or rec
 
 ## Discovery Root Layout
 
-All layouts below derive from `BOARD_ROOT` in [canonical-paths.md](../canonical-paths.md).
+All layouts below derive from `BOARD_ROOT` in `references/canonical-paths.md`.
 
 ```text
 BOARD_ROOT/

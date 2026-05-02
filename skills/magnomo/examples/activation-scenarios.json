@@ -28,7 +28,7 @@
     "category": "should_activate",
     "prompt": "Append a governance decision record that the PO accepted a delivery risk and moved the due date, preserving unknown decision makers as unknown.",
     "expected_activation": true,
-    "expected_behavior": "Select governance-decision mode, use the legacy append_adr_entry.py script only as a governance decision writer, preserve unknown facts, and validate the updated governance decision log.",
+    "expected_behavior": "Select governance-decision mode, use scripts/append_governance_decision_entry.py as the governance decision writer, preserve unknown facts, and validate the updated governance decision log.",
     "notes": "governance decision log, not architecture ADR"
   },
   {
@@ -116,7 +116,7 @@
     "category": "ambiguous",
     "prompt": "Create an architecture record for this feature.",
     "expected_activation": null,
-    "expected_behavior": "Determine whether the requested record is a Magnomo ADR governance record or another architecture-document format.",
+    "expected_behavior": "Determine whether the requested record is a Magnomo governance decision record or another architecture-document format.",
     "notes": "artifact family ambiguity"
   },
   {
@@ -138,7 +138,7 @@
   {
     "id": "E003",
     "category": "edge_case",
-    "prompt": "Update an RFC proposal and an ADR record in one request.",
+    "prompt": "Update an RFC proposal and an governance decision in one request.",
     "expected_activation": true,
     "expected_behavior": "Select one primary mode or stage the work; do not silently mix unrelated modes in one write pass.",
     "notes": "multiple modes"
@@ -302,5 +302,13 @@
     "expected_activation": true,
     "expected_behavior": "Use governance-decision mode and write only a governance decision log entry, not an architecture ADR.",
     "notes": "governance decision log"
+  },
+  {
+    "id": "R007",
+    "category": "regression",
+    "prompt": "Create an implementation plan for this spec and include it in the Magnomo governance package.",
+    "expected_activation": null,
+    "expected_behavior": "Do not create a Magnomo artifact for implementation planning. Clarify that Mago owns execution-handoff-plan.md and technical planning, while Magnomo may only record governance handoff facts or cite existing Mago evidence.",
+    "notes": "guards against legacy implementation-plan.md terminology and routes execution-handoff planning to Mago"
   }
 ]

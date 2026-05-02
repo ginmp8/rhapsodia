@@ -18,5 +18,5 @@ features: []
 #   mago_inputs:
 #     - roadmap.yaml
 #     - roadmap.md
-#     - adr-records.md
+#     - governance-decisions.md
 #   notes: <notes_or_null>

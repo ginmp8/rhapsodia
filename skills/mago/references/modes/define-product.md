@@ -27,6 +27,6 @@
 ## Document Focus
 
 - prd.md: clarify problem, audience, context, goals, non-goals, scope, constraints, risks, hypotheses, and conceptual acceptance criteria as current evidence supports; keep risks and trade-offs synthesized at decision level
-- notes.md: record decisions, assumptions, trade-offs, risks, and open questions without adding execution-log or execution-specialist noise; use it for supporting detail, repository-aware nuance, and rationale behind PRD-level risk/trade-off summaries; omit `Specialist Rationale` and `Execution Log` unless truthful existing sections must be preserved
+- notes.md: record decisions, assumptions, trade-offs, risks, and open questions without adding execution-log or execution-specialist noise; use it for supporting detail, repository-aware nuance, and rationale behind PRD-level risk/trade-off summaries; omit `Specialist Rationale` and `Execution Log`; legacy execution sections require adapt before use as evidence
 - validation.md: use only for product validation questions, hypothesis checks, or conceptual acceptance criteria; not for runtime or implementation test planning
 - when the input is incomplete, prefer a smaller truthful document set over invented structure

@@ -1,12 +1,12 @@
 # Governance Decision Mode
 
-Use `governance-decision` or legacy alias `adr-record` only for Magnomo governance decisions. `adr-records.md` is a legacy filename, not an Architecture Decision Record.
+Use `governance-decision` only for Magnomo governance decisions. `governance-decisions.md` is a governance decision filename, not an Architecture Decision Record.
 
 ## Canonical Rules
 
-Requires `BOARD_ROOT` for repository-facing writes. Use prompt `BOARD_ROOT` after validation; otherwise derive it from [references/canonical-paths.md](../canonical-paths.md). Keep `adr-records.md` directly under `BOARD_ROOT`.
+Requires `BOARD_ROOT` for repository-facing writes. Use prompt `BOARD_ROOT` after validation; otherwise derive it from `references/canonical-paths.md`. Keep `governance-decisions.md` directly under `BOARD_ROOT`.
 
-Create the file with `scripts/write_artifact_scaffold.py <BOARD_ROOT>/adr-records.md` when absent. Append with `scripts/append_adr_entry.py`; do not treat it as an architecture ADR writer. Preserve history; corrections, deprecations, and supersessions are new dated entries. Missing decision makers, links, or alternatives stay `unknown`, `none`, or explicit unknown prose. Validate with `scripts/validate_artifact.py <BOARD_ROOT>/adr-records.md`.
+Create the file with `scripts/write_artifact_scaffold.py <BOARD_ROOT>/governance-decisions.md` when absent. Append with `scripts/append_governance_decision_entry.py`; do not treat it as an Architecture Decision Record writer. Preserve history; corrections, deprecations, and supersessions are new dated entries. Missing decision makers, links, or alternatives stay `unknown`, `none`, or explicit unknown prose. Validate with `scripts/validate_artifact.py <BOARD_ROOT>/governance-decisions.md`.
 
 ## Entry Meaning
 

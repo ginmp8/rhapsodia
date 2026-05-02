@@ -25,13 +25,13 @@ REQUIRED_FILES = [
     "references/modes/delivery.md",
     "references/modes/roadmap.md",
     "references/modes/rfc.md",
-    "references/modes/adr.md",
+    "references/modes/governance-decision.md",
     "references/modes/reporting.md",
     "references/modes/validation.md",
     "references/artifacts/delivery.md",
     "references/artifacts/roadmap.md",
     "references/artifacts/rfc.md",
-    "references/artifacts/adr.md",
+    "references/artifacts/governance-decision.md",
     "references/artifacts/reporting.md",
     "scripts/validate_artifact.py",
     "scripts/validate_board_paths.py",
@@ -56,7 +56,7 @@ REQUIRED_TEMPLATE_NAMES = {
     "roadmap.md.template",
     "feature-map.yaml.template",
     "rfc-proposals.md.template",
-    "adr-records.md.template",
+    "governance-decisions.md.template",
     "release-notes.md.template",
     "internal-notes.md.template",
 }
@@ -73,6 +73,19 @@ SCENARIO_CATEGORY_PREFIXES = {
     "regression": "R",
     "adversarial": "X",
 }
+GENERATED_OR_BLOCKED_DIR_NAMES = {
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "docs/skill-benchmark",
+    "reports",
+    "generated-evidence",
+    "evidence",
+}
+BLOCKED_FILE_SUFFIXES = {".pyc", ".pyo", ".tmp", ".zip"}
+BLOCKED_FILE_NAMES = {".DS_Store"}
 
 
 def read_text(path: Path) -> str:
@@ -320,6 +333,18 @@ def validate_harness_scenarios(root: Path, errors: list[str]) -> None:
         if count < 5:
             errors.append(f"harness scenario category {category} has {count}; expected at least 5")
 
+def validate_package_hygiene(root: Path, errors: list[str]) -> None:
+    for path in sorted(root.rglob("*")):
+        rel = path.relative_to(root).as_posix()
+        if any(rel == name or rel.startswith(name + "/") for name in GENERATED_OR_BLOCKED_DIR_NAMES):
+            errors.append(f"blocked generated/cache path present: {rel}")
+            continue
+        if path.is_file() and path.name in BLOCKED_FILE_NAMES:
+            errors.append(f"blocked generated/system file present: {rel}")
+        if path.is_file() and path.suffix.lower() in BLOCKED_FILE_SUFFIXES:
+            errors.append(f"blocked generated/package file present: {rel}")
+
+
 def validate_package(root: Path) -> list[str]:
     errors: list[str] = []
     if not root.is_dir():
@@ -330,6 +355,7 @@ def validate_package(root: Path) -> list[str]:
     validate_no_markers(root, errors)
     validate_scenarios(root, errors)
     validate_harness_scenarios(root, errors)
+    validate_package_hygiene(root, errors)
     return errors
 
 

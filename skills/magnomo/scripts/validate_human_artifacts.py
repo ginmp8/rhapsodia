@@ -17,11 +17,11 @@ REQUIRED_HEADINGS_BY_NAME = {
     "replanning.md": ["# Replanning", "## Entries"],
     "roadmap.md": ["# Roadmap", "## Context", "## Themes", "## Sequencing", "## Dependencies", "## Risks", "## Open Decisions"],
     "rfc-proposals.md": ["# RFC Proposals", "## Entries"],
-    "adr-records.md": ["# ADR Records", "## Entries"],
+    "governance-decisions.md": ["# Governance Decisions", "## Entries"],
 }
 FIELD_RE = re.compile(r"^- ([^:]+):\s*(.*)$")
-ADR_HEADING_RE = re.compile(r"^### \d{4}-\d{2}-\d{2} - .+")
-ADR_REQUIRED_FIELDS = [
+GOVERNANCE_DECISION_HEADING_RE = re.compile(r"^### \d{4}-\d{2}-\d{2} - .+")
+GOVERNANCE_DECISION_REQUIRED_FIELDS = [
     "Status",
     "Decision",
     "Context",
@@ -32,7 +32,7 @@ ADR_REQUIRED_FIELDS = [
     "Links",
     "Supersedes",
 ]
-ADR_STATUSES = {"accepted", "superseded", "deprecated", "corrected"}
+GOVERNANCE_DECISION_STATUSES = {"accepted", "superseded", "deprecated", "corrected"}
 RFC_HEADING_RE = re.compile(r"^### [a-z0-9]+(?:-[a-z0-9]+)* - .+")
 RFC_REQUIRED_FIELDS = [
     "Status",
@@ -87,7 +87,7 @@ def validate_required_fields(
     return errors
 
 
-def validate_adr_entries(path: Path, text: str) -> list[str]:
+def validate_governance_decision_entries(path: Path, text: str) -> list[str]:
     errors: list[str] = []
     lines = text.splitlines()
     entry_indexes = [index for index, line in enumerate(lines) if line.startswith("### ")]
@@ -97,16 +97,16 @@ def validate_adr_entries(path: Path, text: str) -> list[str]:
     for position, start in enumerate(entry_indexes):
         end = entry_indexes[position + 1] if position + 1 < len(entry_indexes) else len(lines)
         heading = lines[start].strip()
-        if not ADR_HEADING_RE.match(heading):
-            errors.append(f"{path}: ADR entry heading must be `### YYYY-MM-DD - Title`: {heading}")
+        if not GOVERNANCE_DECISION_HEADING_RE.match(heading):
+            errors.append(f"{path}: governance decision entry heading must be `### YYYY-MM-DD - Title`: {heading}")
         if heading.endswith("?"):
-            errors.append(f"{path}: ADR entry title must record the decision, not ask a question: {heading}")
+            errors.append(f"{path}: governance decision entry title must record the decision, not ask a question: {heading}")
 
         fields, field_order = parse_entry_fields(lines[start + 1 : end])
-        errors.extend(validate_required_fields(path, heading, fields, field_order, ADR_REQUIRED_FIELDS))
+        errors.extend(validate_required_fields(path, heading, fields, field_order, GOVERNANCE_DECISION_REQUIRED_FIELDS))
         status = fields.get("Status", "")
-        if status and status not in ADR_STATUSES:
-            errors.append(f"{path}: `{heading}` Status must be one of {sorted(ADR_STATUSES)}")
+        if status and status not in GOVERNANCE_DECISION_STATUSES:
+            errors.append(f"{path}: `{heading}` Status must be one of {sorted(GOVERNANCE_DECISION_STATUSES)}")
 
     return errors
 
@@ -162,8 +162,8 @@ def validate(path: Path) -> list[str]:
     if tokens:
         errors.append(f"{path}: contains unresolved template token(s): {', '.join(tokens)}")
 
-    if path.name == "adr-records.md":
-        errors.extend(validate_adr_entries(path, text))
+    if path.name == "governance-decisions.md":
+        errors.extend(validate_governance_decision_entries(path, text))
     if path.name == "rfc-proposals.md":
         errors.extend(validate_rfc_entries(path, text))
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate cross-artifact execution-state consistency for a MAGIA spec package."""
+"""Validate MAGIA execution-state consistency across planning and execution artifacts."""
 
 from __future__ import annotations
 
@@ -146,14 +146,26 @@ def parse_catalog_status(catalog_path: Path, spec_id: str | None) -> str | None:
 
 def collect_errors(spec_package: Path) -> list[str]:
     tasks_path = spec_package / "tasks.md"
-    notes_path = spec_package / "notes.md"
-    validation_path = spec_package / "validation.md"
+    notes_path = spec_package / "implementation-notes.md"
+    validation_path = spec_package / "validation-evidence.md"
+    legacy_notes = spec_package / "notes.md"
+    legacy_validation = spec_package / "validation.md"
     manifest_path = spec_package / "manifest.yaml"
     catalog_path = spec_package.parent.parent / "spec-catalog.yaml"
 
-    for path in (tasks_path, notes_path, validation_path, manifest_path):
-        if not path.exists():
-            return [f"Missing required file: {path}"]
+    missing = [path for path in (tasks_path, notes_path, validation_path, manifest_path) if not path.exists()]
+    if missing:
+        legacy_markers = []
+        if legacy_notes.exists() and "## Execution Log" in legacy_notes.read_text(encoding="utf-8"):
+            legacy_markers.append(str(legacy_notes))
+        if legacy_validation.exists() and "Execution" in legacy_validation.read_text(encoding="utf-8"):
+            legacy_markers.append(str(legacy_validation))
+        if legacy_markers:
+            return [
+                "Missing current MAGIA execution-state file(s): " + ", ".join(str(path) for path in missing),
+                "Legacy execution content detected in MAGO-owned files; run scripts/adapt_legacy_execution_records.py before validation.",
+            ]
+        return [f"Missing required execution-state file: {path}" for path in missing]
 
     tasks = parse_tasks(tasks_path)
     notes_status = parse_notes(notes_path)
@@ -169,7 +181,7 @@ def collect_errors(spec_package: Path) -> list[str]:
 
     for task_id in notes_status:
         if task_id not in tasks:
-            errors.append(f"notes.md references missing task id `{task_id}`.")
+            errors.append(f"execution log references missing task id `{task_id}`.")
 
     if last_execution_task_id and last_execution_task_id not in tasks:
         errors.append(f"manifest.yaml last_execution references missing task id `{last_execution_task_id}`.")
@@ -177,35 +189,35 @@ def collect_errors(spec_package: Path) -> list[str]:
     if last_execution_task_id:
         if last_execution_task_id not in notes_status:
             errors.append(
-                f"manifest.yaml last_execution points to `{last_execution_task_id}` but notes.md has no Execution Log subsection for that task."
+                f"manifest.yaml last_execution points to `{last_execution_task_id}` but implementation-notes.md has no Execution Log subsection for that task."
             )
         elif notes_status[last_execution_task_id] not in executed_statuses:
             errors.append(
-                f"manifest.yaml last_execution points to `{last_execution_task_id}` but notes.md records status `{notes_status[last_execution_task_id]}`."
+                f"manifest.yaml last_execution points to `{last_execution_task_id}` but implementation-notes.md records status `{notes_status[last_execution_task_id]}`."
             )
         if last_execution_task_id not in validation_runs:
             errors.append(
-                f"manifest.yaml last_execution points to `{last_execution_task_id}` but validation.md has no `Execution Run - {last_execution_task_id}` section."
+                f"manifest.yaml last_execution points to `{last_execution_task_id}` but validation-evidence.md has no `Execution Run - {last_execution_task_id}` section."
             )
 
     executed_tasks = [task_id for task_id, status in notes_status.items() if status in executed_statuses]
     if executed_tasks and not last_execution_task_id:
-        errors.append("notes.md records executed tasks but manifest.yaml omits last_execution.")
+        errors.append("implementation-notes.md records executed tasks but manifest.yaml omits last_execution.")
 
     for task_id, is_checked in tasks.items():
         status = notes_status.get(task_id)
         if is_checked and status != "done":
             errors.append(
-                f"tasks.md marks `{task_id}` done but notes.md status is `{status or 'missing'}` instead of done."
+                f"tasks.md marks `{task_id}` done but implementation-notes.md status is `{status or 'missing'}` instead of done."
             )
         if not is_checked and status == "done":
-            errors.append(f"notes.md marks `{task_id}` done but tasks.md leaves the checkbox unchecked.")
+            errors.append(f"implementation-notes.md marks `{task_id}` done but tasks.md leaves the checkbox unchecked.")
         if is_checked and task_id not in validation_runs:
-            errors.append(f"tasks.md marks `{task_id}` done but validation.md has no `Execution Run - {task_id}` section.")
+            errors.append(f"tasks.md marks `{task_id}` done but validation-evidence.md has no `Execution Run - {task_id}` section.")
 
     for task_id, status in notes_status.items():
         if status in executed_statuses and task_id not in validation_runs:
-            errors.append(f"notes.md records `{task_id}` as `{status}` but validation.md has no `Execution Run - {task_id}` section.")
+            errors.append(f"implementation-notes.md records `{task_id}` as `{status}` but validation-evidence.md has no `Execution Run - {task_id}` section.")
 
     open_tasks = [task_id for task_id, is_checked in tasks.items() if not is_checked]
     if manifest_status == "done" and open_tasks:
@@ -220,7 +232,7 @@ def collect_errors(spec_package: Path) -> list[str]:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate MAGIA execution-state consistency across tasks.md, notes.md, validation.md, manifest.yaml, and spec-catalog.yaml."
+        description="Validate MAGIA execution-state consistency across tasks.md, implementation-notes.md, validation-evidence.md, manifest.yaml, and spec-catalog.yaml."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
     parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")

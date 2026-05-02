@@ -55,7 +55,7 @@ REQUIRED_HEADINGS = (
     "## Monitoring and Observability",
     "## Rollback Plan",
     "## Risks",
-    "## Implementation Plan",
+    "## Execution Handoff Plan",
     "## Open Questions",
 )
 IMPLEMENTATION_CODE_FENCES = {

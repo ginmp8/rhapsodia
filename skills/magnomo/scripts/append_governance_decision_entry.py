@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Append a material Magnomo ADR entry without rewriting history."""
+"""Append a material Magnomo governance decision entry without rewriting history."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ def ensure_scaffold(path: Path) -> None:
     if path.exists():
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("# ADR Records\n\n## Entries\n\nNo ADR records recorded.\n", encoding="utf-8")
+    path.write_text("# Governance Decisions\n\n## Entries\n\nNo governance decisions recorded.\n", encoding="utf-8")
 
 
 def build_entry(args: argparse.Namespace) -> str:
@@ -77,17 +77,17 @@ def append_entry(path: Path, entry: str) -> None:
     ensure_scaffold(path)
     text = path.read_text(encoding="utf-8")
     if "## Entries" not in text.splitlines():
-        raise ValueError("adr-records.md must contain `## Entries`")
+        raise ValueError("governance-decisions.md must contain `## Entries`")
 
-    text = text.replace("\nNo ADR records recorded.\n", "\n")
+    text = text.replace("\nNo governance decisions recorded.\n", "\n")
     rendered = text.rstrip() + "\n\n" + entry
     path.write_text(rendered, encoding="utf-8")
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Append a material Magnomo ADR to adr-records.md.")
-    parser.add_argument("path", help="Path to adr-records.md.")
-    parser.add_argument("--title", required=True, help="ADR title, stated as the chosen outcome.")
+    parser = argparse.ArgumentParser(description="Append a material Magnomo governance decision to governance-decisions.md.")
+    parser.add_argument("path", help="Path to governance-decisions.md.")
+    parser.add_argument("--title", required=True, help="governance decision title, stated as the chosen outcome.")
     parser.add_argument("--decision", required=True, help="What was decided.")
     parser.add_argument("--context", required=True, help="Forces or constraints that made the decision necessary.")
     parser.add_argument("--reason", required=True, help="Why this option was chosen.")
@@ -97,7 +97,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--decision-maker", default="unknown", help="Person, group, role, or unknown.")
     parser.add_argument("--alternative", action="append", help="Alternative considered. May be repeated.")
     parser.add_argument("--link", action="append", help="Related RFC, artifact, ticket, PR, or note. May be repeated.")
-    parser.add_argument("--supersedes", default="none", help="Previous ADR this supersedes, or none.")
+    parser.add_argument("--supersedes", default="none", help="Previous governance decision this supersedes, or none.")
     args = parser.parse_args(argv)
 
     try:
@@ -107,7 +107,7 @@ def main(argv: list[str]) -> int:
         print(f"ERROR: {exc}")
         return 1
 
-    print(f"OK: appended ADR entry to {Path(args.path).resolve()}")
+    print(f"OK: appended governance decision entry to {Path(args.path).resolve()}")
     return 0
 
 

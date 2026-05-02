@@ -6,10 +6,11 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
+import tempfile
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".template"}
 REQUIRED_FRONTMATTER_KEYS = ("name", "description")
@@ -50,10 +51,10 @@ MODE_REFERENCES = (
     "technical-design",
 )
 PLACEHOLDER_PATTERNS = (
-    re.compile(r"\[" + "TODO", re.IGNORECASE),
-    re.compile(r"\bTODO\s*:", re.IGNORECASE),
+    re.compile(r"\[" + "TO" + "DO", re.IGNORECASE),
+    re.compile(r"\b" + "TO" + "DO" + r"\s*:", re.IGNORECASE),
     re.compile("FIX" + "ME", re.IGNORECASE),
-    re.compile(r"replace with actual", re.IGNORECASE),
+    re.compile("replace" + " with actual", re.IGNORECASE),
     re.compile(r"this is a placeholder", re.IGNORECASE),
 )
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -244,13 +245,24 @@ def validate_scenarios(root: Path, result: ValidationResult) -> None:
 
 def validate_activation_metrics(root: Path, result: ValidationResult) -> None:
     script_path = root / "scripts" / "validate_activation_scenarios.py"
-    namespace: dict[str, Any] = {"__name__": "mago_activation_validator"}
-    try:
-        exec(compile(read_text(script_path), str(script_path), "exec"), namespace)
-        report = namespace["validate"](root)
-    except Exception as exc:  # pragma: no cover - defensive package gate
-        result.fail(f"activation scenario validator failed to run: {exc}")
-        return
+    with tempfile.TemporaryDirectory(prefix="mago-activation-") as tmp:
+        report_path = Path(tmp) / "activation-validation.json"
+        completed = subprocess.run(
+            [sys.executable, str(script_path), str(root), "--json-output", str(report_path)],
+            cwd=str(root),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if completed.returncode != 0:
+            detail = (completed.stderr or completed.stdout).strip().splitlines()[-1:]
+            result.fail(f"activation scenario validator failed to run: {detail[0] if detail else completed.returncode}")
+            return
+        try:
+            report = json.loads(read_text(report_path))
+        except Exception as exc:  # pragma: no cover - defensive package gate
+            result.fail(f"activation scenario report could not be read: {exc}")
+            return
     if report.get("status") != "pass":
         for error in report.get("errors", []):
             result.fail(f"activation scenario gate failed: {error}")
@@ -270,6 +282,18 @@ def validate_evidence_controls(root: Path, result: ValidationResult) -> None:
     for term in required_terms:
         if term not in reference_text:
             result.fail(f"references/evidence-contract.md missing required section: {term}")
+
+def validate_planning_template_boundaries(root: Path, result: ValidationResult) -> None:
+    notes_template = root / "assets" / "templates" / "notes.md.template"
+    text = read_text(notes_template)
+    forbidden = (
+        "## Execution Log",
+        "planning or execution",
+        "during planning or execution",
+    )
+    for term in forbidden:
+        if term in text:
+            result.fail(f"notes.md.template must remain planning-only and must not contain `{term}`")
 
 def compile_scripts(root: Path, result: ValidationResult) -> None:
     for path in sorted((root / "scripts").glob("*.py")):
@@ -304,6 +328,7 @@ def run(root: Path) -> ValidationResult:
     validate_scenarios(root, result)
     validate_activation_metrics(root, result)
     validate_evidence_controls(root, result)
+    validate_planning_template_boundaries(root, result)
     compile_scripts(root, result)
     validate_no_caches(root, result)
     return result

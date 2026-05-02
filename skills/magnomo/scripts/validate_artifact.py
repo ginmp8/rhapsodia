@@ -65,7 +65,7 @@ def validate_one(path: Path) -> int:
             ]
         )
 
-    if name in {"status.md", "stakeholder-brief.md", "replanning.md", "roadmap.md", "rfc-proposals.md", "adr-records.md"}:
+    if name in {"status.md", "stakeholder-brief.md", "replanning.md", "roadmap.md", "rfc-proposals.md", "governance-decisions.md"}:
         from validate_human_artifacts import main as validate_human_main
 
         return validate_human_main([str(path)])

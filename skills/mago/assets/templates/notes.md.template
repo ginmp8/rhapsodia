@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Use this file as a structural reference only.
 Replace every <...> token with repository-truth values.
 Follow `references/artifacts/templates-and-status.md` for the canonical notes contract.
@@ -7,13 +7,13 @@ Follow `references/artifacts/templates-and-status.md` for the canonical notes co
 # Notes - <title>
 
 ## Assumptions
-<!-- Working assumptions used for planning or execution. Do not state confirmed requirements here. -->
+<!-- Working assumptions used for planning. Do not state confirmed requirements or execution results here. -->
 
 ## Repository Findings
 <!-- Concrete facts discovered in code, configs, schemas, tests, or existing docs. -->
 
 ## Design Decisions
-<!-- Decisions made during planning or execution and why they were chosen. Include context, rejected alternative, and accepted trade-off when material. -->
+<!-- Planned design or task decisions and why they were chosen. Include context, rejected alternative, and accepted trade-off when material. Do not record runtime or implementation decisions here. -->
 
 ## Risks
 <!-- Real failure modes, uncertainty, or downside exposure that still matters. Use this section for supporting detail and repository-aware nuance behind the PRD summary. -->
@@ -26,17 +26,3 @@ Follow `references/artifacts/templates-and-status.md` for the canonical notes co
 
 ## Specialist Rationale
 <!-- Include when tasks are in scope or when preserving truthful existing specialist-selection history. Omit in product-only notes. -->
-
-## Execution Log
-<!-- Include when tasks are in scope or when preserving truthful existing execution history. Omit in product-only notes. -->
-
-### taskNNN - <short title>
-
-<!-- Use `Status` only from `not_started`, `in_progress`, `blocked`, or `done`. -->
-- Status: <not_started|in_progress|blocked|done>
-- Summary: <what this execution actually did>
-- Changes: <code, docs, config, schema, or behavior changes>
-- Context Docs: <context_doc_paths_or_none>
-- Decisions: <execution_level_decisions_or_none>
-- Follow-Ups: <next_step_implications_or_none>
-- Blockers: <blocker details, or `none`>

@@ -1,4 +1,4 @@
-﻿# Refine Mode
+# Refine Mode
 
 ## Canonical Rules
 
@@ -28,7 +28,7 @@
 
 When refining tasks.md:
 
-- follow the canonical tasks.md contract in [../artifacts/templates-and-status.md](../artifacts/templates-and-status.md)
+- follow the canonical tasks.md contract in `references/artifacts/templates-and-status.md`
 - preserve or restore the canonical minimum phase coverage for every phase
 - preserve the existing five-phase sequence, phase goals, exit criteria, and stable global `taskNNN` ids
 - preserve or create a bounded confirmation task instead of leaving a phase empty
@@ -42,12 +42,11 @@ When refining tasks.md:
 When refining notes.md:
 
 - preserve the canonical notes sections
-- preserve `Execution Log`
-- preserve task subsections in the form `### taskNNN - <short title>`
+- do not preserve legacy `Execution Log` sections as current planning content; run adapt before using them as evidence
 - do not delete truthful prior execution history
-- keep execution-log field labels in canonical order and use `none` when a required field is intentionally empty
-- reconcile stale titles, statuses, follow-ups, and referenced context docs only when repository truth requires it
-- if a task was split, keep prior history under the original task and create new subsections only for the new task ids
+- do not append new execution-log subsections; MAGIA writes new execution history to implementation-notes.md
+- reconcile planning sections only when repository truth requires it
+- if a task was split, keep prior history under the original task and let MAGIA create new execution subsections only when execution occurs
 
 When refining technical-design.md:
 

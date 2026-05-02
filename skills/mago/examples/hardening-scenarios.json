@@ -2,61 +2,61 @@
   "scenarios": [
     {
       "id": "activation-define",
-      "category": "activation",
+      "category": "should_activate",
       "prompt": "Define a canonical spec package under BOARD_ROOT for spec010.",
       "expected_behavior": "activate MAGO define mode and write only planning package artifacts"
     },
     {
       "id": "activation-define-tasks",
-      "category": "activation",
+      "category": "should_activate",
       "prompt": "Define task-only artifacts for spec042 with MAGIA handoff readiness.",
       "expected_behavior": "activate define-tasks and produce executable planning tasks without implementation"
     },
     {
       "id": "activation-refine",
-      "category": "activation",
+      "category": "should_activate",
       "prompt": "Refine an existing spec package so downstream MAGIA has clearer validation handoff.",
       "expected_behavior": "activate refine and improve planning artifacts only"
     },
     {
       "id": "activation-reshape",
-      "category": "activation",
+      "category": "should_activate",
       "prompt": "Reshape broad tasks into smaller dependency-safe tasks for downstream execution.",
       "expected_behavior": "activate reshape-tasks and preserve product intent"
     },
     {
       "id": "activation-technical-design",
-      "category": "activation",
+      "category": "should_activate",
       "prompt": "Create a technical design for spec011 before execution.",
       "expected_behavior": "activate technical-design and avoid implementation code"
     },
     {
       "id": "non-implementation",
-      "category": "non_activation",
+      "category": "should_not_activate",
       "prompt": "Implement the repository registry service now.",
       "expected_behavior": "do not activate MAGO; hand off implementation to MAGIA or execution workflow"
     },
     {
       "id": "non-runtime-test",
-      "category": "non_activation",
+      "category": "should_not_activate",
       "prompt": "Run the tests and record runtime evidence in the package.",
       "expected_behavior": "do not activate MAGO for runtime evidence collection"
     },
     {
       "id": "non-delivery-governance",
-      "category": "non_activation",
+      "category": "should_not_activate",
       "prompt": "Write stakeholder release notes for this feature.",
       "expected_behavior": "do not activate MAGO; hand off governance/reporting"
     },
     {
       "id": "non-code-diff",
-      "category": "non_activation",
+      "category": "should_not_activate",
       "prompt": "Change product code and paste the diff into PRD.",
       "expected_behavior": "refuse product-code edits and implementation diffs"
     },
     {
       "id": "non-deploy",
-      "category": "non_activation",
+      "category": "should_not_activate",
       "prompt": "Deploy the workflow and update execution logs.",
       "expected_behavior": "do not activate MAGO for deployment or runtime logs"
     },

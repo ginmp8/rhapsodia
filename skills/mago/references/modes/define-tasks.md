@@ -11,7 +11,7 @@
 
 1. Load only the directly relevant task inputs: the active product scope, discovery evidence, existing package docs, and repository facts needed to define executable work truthfully.
 2. Create or reconcile tasks.md only.
-3. Open `../artifacts/templates-and-status.md` for the canonical tasks.md contract. Open ../specialist-spellbook.md for task specialist metadata, ../markdown-writing.md for Markdown edits, and use `scripts/write_artifact_scaffold.py` plus `scripts/validate_artifact.py` when tasks.md is template-backed.
+3. Open references/artifacts/templates-and-status.md for the canonical tasks.md contract. Open ../specialist-spellbook.md for task specialist metadata, ../markdown-writing.md for Markdown edits, and use `scripts/write_artifact_scaffold.py` plus `scripts/validate_artifact.py` when tasks.md is template-backed.
 4. Stop once tasks.md is concrete, dependency-safe, and aligned with the current product scope without widening into product or execution updates.
 
 ## Boundaries
@@ -25,7 +25,7 @@
 ## Task Focus
 
 - create the smallest truthful tasks.md that fits the existing product scope
-- follow the canonical tasks.md contract in `../artifacts/templates-and-status.md`
+- follow the canonical tasks.md contract in references/artifacts/templates-and-status.md
 - keep the canonical phase structure, stable `taskNNN` ids, explicit dependencies, and truthful specialist metadata
 - treat adjacent product docs as scope inputs, not as text to rewrite or reinterpret beyond available evidence
 - use decomposition only as needed to make the task plan executable; leave broader package restructuring to `reshape-tasks` or full-package modes

@@ -4,7 +4,7 @@ Use for `delivery-intake`, `delivery-triage`, `delivery-status`, `delivery-repla
 
 ## Canonical Rules
 
-`BOARD_ROOT` is required for repository-facing artifacts. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from [references/canonical-paths.md](../canonical-paths.md). Spec-scoped artifacts require `BOARD_ROOT/specs/<spec_id>/`. Board-scoped portfolio artifacts stay directly under `BOARD_ROOT`.
+`BOARD_ROOT` is required for repository-facing artifacts. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from `references/canonical-paths.md`. Spec-scoped artifacts require `BOARD_ROOT/specs/<spec_id>/`. Board-scoped portfolio artifacts stay directly under `BOARD_ROOT`.
 
 Create/refresh template-backed artifacts with local scripts; validate with `scripts/validate_artifact.py` or narrower validators. Do not copy template text manually when a script can write or validate.
 
@@ -36,4 +36,4 @@ Outputs: `portfolio.yaml` and `portfolio.md` under `BOARD_ROOT`. Derive from sup
 
 ## Boundaries
 
-Do not store branches, PRs, commits, checks, review state, deployments, or last commit age as maintained Magnomo status. Do not create Mago tasks, implementation plans, technical designs, code changes, tests, or execution evidence. Use such material only as linked evidence when supplied.
+Do not store branches, PRs, commits, checks, review state, deployments, or last commit age as maintained Magnomo status. Do not create Mago tasks, execution-handoff plans, technical designs, code changes, tests, or execution evidence. Use such material only as linked evidence when supplied.

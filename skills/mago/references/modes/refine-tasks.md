@@ -12,7 +12,7 @@
 1. Read the current tasks.md first and preserve what is still true.
 2. Load only the adjacent docs and repository facts needed to keep task scope aligned with the current product definition.
 3. Tighten or reconcile tasks.md only.
-4. Open `../artifacts/templates-and-status.md` for the canonical tasks.md contract. Open ../specialist-spellbook.md for task specialist metadata, ../markdown-writing.md for Markdown edits, and use local scripts for template-backed writes, normalization, and validation whenever tasks.md needs template reconciliation.
+4. Open references/artifacts/templates-and-status.md for the canonical tasks.md contract. Open ../specialist-spellbook.md for task specialist metadata, ../markdown-writing.md for Markdown edits, and use local scripts for template-backed writes, normalization, and validation whenever tasks.md needs template reconciliation.
 5. Stop once tasks.md is clearer, internally consistent, and still within the current product scope.
 
 ## Boundaries
@@ -25,7 +25,7 @@
 
 ## Refinement Focus
 
-- follow the canonical tasks.md contract in `../artifacts/templates-and-status.md`
+- follow the canonical tasks.md contract in references/artifacts/templates-and-status.md
 - improve task clarity, dependency safety, phase placement, reasoning proportionality, and specialist metadata
 - preserve stable ids, canonical phase order, truthful completed-task history, and the current initiative boundary
 - preserve visible cross-artifact task-id compatibility when it can be kept from tasks.md alone; do not invent renumbering or fake history to paper over drift in untouched files

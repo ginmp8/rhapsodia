@@ -15,7 +15,11 @@ Before `roadmap-to-specs`, collect or preserve unknowns for: feature key/title, 
 
 ## Magnomo Must Not Do
 
-Do not create Mago spec packages, write PRDs, technical designs, tasks, validation plans, ADRs, implementation plans, architecture decisions, or engineering acceptance criteria. Do not infer technical scope from roadmap intent.
+Do not create Mago spec packages, write PRDs, technical designs, tasks, validation plans, ADRs, execution-handoff plans, architecture decisions, or engineering acceptance criteria. Do not infer technical scope from roadmap intent.
+
+## Downstream Feedback
+
+Mago may return planning blockers, missing evidence, or technical questions. Magia may return execution evidence, technical gap notes, validation gaps, and delivery-impact signals. Magnomo may record these as governance blockers, delivery risks, handoff facts, or reporting evidence, but must not edit the underlying Mago/Magia technical artifacts or treat returned evidence as Magnomo technical validation.
 
 ## Validation
 

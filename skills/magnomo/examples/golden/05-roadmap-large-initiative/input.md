@@ -14,5 +14,5 @@ Generated artifacts:
 
 - `roadmap.yaml`
 - `roadmap.md`
-- `adr-records.md`
+- `governance-decisions.md`
 - `feature-map.yaml`

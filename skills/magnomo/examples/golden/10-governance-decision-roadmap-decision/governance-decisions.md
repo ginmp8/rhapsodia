@@ -1,4 +1,4 @@
-# ADR Records
+# Governance Decisions
 
 ## Entries
 

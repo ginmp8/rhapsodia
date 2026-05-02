@@ -3,11 +3,10 @@
 Conservatively normalize MAGO package structure without inventing content.
 
 Current scope:
-- normalize notes.md execution-log subsections to canonical field labels
-- normalize execution-log `Status` values to the canonical enum when the mapping is obvious
-- fill missing non-status canonical fields with `none`
+- normalize MAGO-owned planning package structure without treating legacy execution logs as compatible content
+- report legacy `notes.md` Execution Log sections as an adapt requirement instead of normalizing them in place
 
-The script intentionally avoids rewriting task plans or inventing manifest values.
+The script intentionally avoids rewriting task plans, inventing manifest values, or converting MAGIA execution evidence. Use MAGIA ADAPT to convert legacy execution records first.
 """
 
 from __future__ import annotations
@@ -196,16 +195,15 @@ def normalize_package(package_path: Path, check_only: bool) -> bool:
         return False
 
     original = notes_path.read_text(encoding="utf-8")
-    normalized, changed = normalize_notes_text(original)
-    if not changed:
-        return False
-
-    if check_only:
-        print(f"ERROR: {notes_path}: would be normalized")
+    if "## Execution Log" in original:
+        print(
+            f"ERROR: {notes_path}: legacy Execution Log is not MAGO-compatible; "
+            "run MAGIA ADAPT to convert it into implementation-notes.md/validation-evidence.md, "
+            "then keep notes.md planning-only"
+        )
         return True
 
-    notes_path.write_text(normalized, encoding="utf-8")
-    return True
+    return False
 
 
 def main(argv: list[str]) -> int:
@@ -237,16 +235,13 @@ def main(argv: list[str]) -> int:
             print(f"ERROR: {package_path}: target does not exist")
             error_count += 1
 
-    if args.check and changed_count:
+    if changed_count or error_count:
         print(f"FAILED: {changed_count + error_count} errors, 0 warnings")
-        return 1
-    if error_count:
-        print(f"FAILED: {error_count} errors, 0 warnings")
         return 1
     if args.check:
         print(f"OK: validated {len(package_paths)} package(s)")
     else:
-        print(f"OK: normalized {changed_count} package(s)")
+        print("OK: normalized 0 package(s); no legacy execution content detected")
     return 0
 
 

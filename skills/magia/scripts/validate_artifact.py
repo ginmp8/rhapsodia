@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-SPEC_ARTIFACTS = {"manifest.yaml", "prd.md", "tasks.md", "validation.md", "notes.md"}
+SPEC_ARTIFACTS = {"manifest.yaml", "prd.md", "tasks.md", "validation.md", "notes.md", "implementation-notes.md", "validation-evidence.md"}
 
 
 def infer_board_context(path: Path) -> tuple[Path, Path, str | None]:

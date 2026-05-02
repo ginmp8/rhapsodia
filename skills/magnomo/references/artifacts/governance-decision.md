@@ -1,6 +1,6 @@
 # Governance Decision Log Artifact
 
-`adr-records.md` is Magnomo's legacy governance decision-log filename, not an Architecture Decision Record.
+`governance-decisions.md` is Magnomo's governance decision-log filename, not an Architecture Decision Record.
 
 ## Ownership
 
@@ -8,9 +8,9 @@ May record delivery, roadmap, owner, stakeholder, due date, accepted risk, relea
 
 ## File
 
-- Board path: `BOARD_ROOT/adr-records.md`
-- Template: [assets/templates/adr-records.md.template](../../assets/templates/adr-records.md.template)
-- Writer: `scripts/append_adr_entry.py` as legacy governance decision writer
+- Board path: `BOARD_ROOT/governance-decisions.md`
+- Template: `assets/templates/governance-decisions.md.template`
+- Writer: `scripts/append_governance_decision_entry.py` as governance decision writer
 - Validator: `scripts/validate_artifact.py`
 
 ## Entry Fields

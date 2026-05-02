@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Populate list fields in MAGIA template-backed artifacts with schema checks."""
+"""Reject generic updates to shared planning artifacts and reserve MAGIA-owned schema updates."""
 
 from __future__ import annotations
 
@@ -53,32 +53,14 @@ VALID_SPEC_STATUS = {"planned", "in_progress", "blocked", "done", "cancelled"}
 VALID_PHASE = {"define", "execute", "done"}
 
 
-RULES: dict[str, dict[str, ListRule]] = {
-    "manifest.yaml": {
-        "traceability.supporting_discovery_files": ListRule("traceability.supporting_discovery_files", "string"),
-    },
-    "spec-catalog.yaml": {
-        "specs": ListRule(
-            "specs",
-            "mapping",
-            required=("order", "spec_id", "feature_key", "title", "type", "classification", "depends_on_features", "depends_on_specs", "status", "feature_version"),
-            regex_fields={"spec_id": SPEC_ID_RE, "feature_key": FEATURE_KEY_RE},
-            enum_fields={"status": VALID_SPEC_STATUS},
-            list_fields={"depends_on_features": "string", "depends_on_specs": "spec_id"},
-            unique_by="spec_id",
-        ),
-    },
-}
+PLANNING_ARTIFACTS = {"manifest.yaml", "spec-catalog.yaml", "tasks.md", "notes.md", "validation.md", "prd.md", "technical-design.md"}
 
-FIELD_RULES: dict[str, dict[str, FieldRule]] = {
-    "manifest.yaml": {
-        "status": FieldRule("status", enum_values=VALID_SPEC_STATUS),
-        "phase": FieldRule("phase", enum_values=VALID_PHASE),
-    },
-    "spec-catalog.yaml": {
-        "board_status": FieldRule("board_status", enum_values=VALID_BOARD_STATUS),
-    },
-}
+# MAGIA intentionally has no generic list/field updater for MAGO-owned planning
+# artifacts. Execution-state updates for manifest.yaml/spec-catalog.yaml must go
+# through sync_execution_state.py, heal_execution_state.py, close_execution_state.py,
+# and validate_execution_state.py, which are narrow, evidence-backed workflows.
+RULES: dict[str, dict[str, ListRule]] = {}
+FIELD_RULES: dict[str, dict[str, FieldRule]] = {}
 
 
 def artifact_name(path: Path) -> str:
@@ -238,6 +220,11 @@ def apply_updates(artifact_path: Path, updates: dict[str, Any]) -> None:
     name = artifact_name(artifact_path)
     list_rules = RULES.get(name, {})
     field_rules = FIELD_RULES.get(name, {})
+    if name in PLANNING_ARTIFACTS:
+        fail(
+            f"`{name}` is MAGO-owned planning structure. MAGIA may update only narrow execution-state fields through "
+            "sync_execution_state.py, heal_execution_state.py, or close_execution_state.py."
+        )
     if not list_rules and not field_rules:
         fail(f"unsupported MAGIA template-backed artifact `{name}`")
     supported_paths = set(list_rules) | set(field_rules)
@@ -275,15 +262,19 @@ def print_schema(name: str | None) -> None:
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Populate MAGIA artifact fields with canonical schema checks.")
+    parser = argparse.ArgumentParser(description="Reject generic planning-artifact updates and show supported MAGIA-owned schema updates.")
     parser.add_argument("artifact", nargs="?", help="Artifact path to update.")
     parser.add_argument("--data", help="YAML payload containing `fields` and/or `lists` mappings.")
     parser.add_argument("--schema", action="store_true", help="Print supported update paths and item shapes.")
-    parser.add_argument("--artifact-name", help="Artifact schema name for --schema, for example spec-catalog.yaml.")
+    parser.add_argument("--artifact-name", help="Artifact schema name for --schema.")
     args = parser.parse_args(argv)
 
     try:
         if args.schema:
+            if args.artifact_name in PLANNING_ARTIFACTS:
+                fail(
+                    f"`{args.artifact_name}` is MAGO-owned planning structure; use MAGIA execution-state scripts for evidence-backed state sync"
+                )
             if args.artifact_name and args.artifact_name not in RULES and args.artifact_name not in FIELD_RULES:
                 fail(f"unsupported MAGIA artifact `{args.artifact_name}`")
             print_schema(args.artifact_name)

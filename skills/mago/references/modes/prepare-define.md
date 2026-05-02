@@ -18,7 +18,7 @@ This mode is the bridge from `order` to ordinary downstream package authoring.
 1. Select exactly one queue entry whose `handoff_status` is `ready_for_prepare_define`.
 2. Load the matching spec-catalog.yaml entry, linked discovery candidate docs, and only the directly relevant repository code or tests needed to preserve truth.
 3. Apply the matching downstream define contract for the queue entry's `downstream_mode`, then seed only the artifacts justified by `seed_artifacts`.
-4. Create or reconcile the selected package path under `BOARD_ROOT/specs/<spec_id>/` from [../canonical-paths.md](../canonical-paths.md) conservatively so the result is compatible with the later downstream mode.
+4. Create or reconcile the selected package path under `BOARD_ROOT/specs/<spec_id>/` from `references/canonical-paths.md` conservatively so the result is compatible with the later downstream mode.
 5. Stop once the package starter is truthful and downstream-ready; leave unsupported artifacts for later ordinary define/refine work.
 
 ## Boundaries

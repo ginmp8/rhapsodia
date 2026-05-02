@@ -1,4 +1,7 @@
-"""Shared helpers for MAGIA scripts."""
+"""Shared helpers for MAGIA scripts.
+
+Import-only by design; no `if __name__ == "__main__"` entrypoint.
+"""
 
 from __future__ import annotations
 

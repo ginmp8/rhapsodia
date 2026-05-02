@@ -2,7 +2,7 @@
 
 ## technical-design.md
 
-Optional spec-scoped MAGO planning artifact. Use it when a selected spec needs explicit architecture alignment before execution: new system boundaries, integrations, migrations, persistence shape, public contracts, security posture, observability, rollback, implementation strategy, meaningful alternatives, or decisions that may require ADRs.
+Optional spec-scoped MAGO planning artifact. Use it when a selected spec needs explicit architecture alignment before execution: new system boundaries, integrations, migrations, persistence shape, public contracts, security posture, observability, rollback, planned execution strategy, meaningful alternatives, or decisions that may require ADRs.
 
 technical-design.md belongs under:
 
@@ -10,7 +10,7 @@ technical-design.md belongs under:
 BOARD_ROOT/specs/<spec_id>/technical-design.md
 ```
 
-It supports prd.md, tasks.md, validation.md, notes.md, and architecture decision records; it does not replace them. Keep product intent in prd.md, detailed executable decomposition in tasks.md, intended validation in validation.md, evolving rationale in notes.md, and durable architecture decisions in `architecture-decisions.md` or `adrs/<adr_id>.md` when the decision deserves a formal ADR.
+It supports prd.md, tasks.md, validation.md, notes.md, and architecture decision records; it does not replace them. Keep product intent in prd.md, detailed executable decomposition in tasks.md, intended validation in validation.md, evolving rationale in notes.md, and durable architecture decisions in architecture-decisions.md or adrs/<adr_id>.md when the decision deserves a formal ADR.
 
 ## Required Structure
 
@@ -27,7 +27,7 @@ Preserve these headings:
 - `## Monitoring and Observability`
 - `## Rollback Plan`
 - `## Risks`
-- `## Implementation Plan`
+- `## Execution Handoff Plan`
 - `## Open Questions`
 
 Preserve YAML front matter fields from the template. `project_size` uses `small`, `medium`, `large`, or `unknown`. `project_types` is a product-agnostic risk-tag list, such as `feature`, `external_integration`, `migration`, `infrastructure_change`, `identity_access`, `sensitive_data`, `regulated_data`, `data_change`, `public_contract`, or `production_change`.
@@ -35,7 +35,7 @@ Preserve YAML front matter fields from the template. `project_size` uses `small`
 ## Writing Rules
 
 - Generate prose in the same language as the user request or surrounding package when that language is already established; keep YAML keys, ids, filenames, and enum-like values in canonical English.
-- Focus on architecture decisions, implementation strategy, and contracts, not implementation code.
+- Focus on architecture decisions, planned execution strategy, and contracts, not implementation code.
 - Include API contracts, data schemas, component responsibilities, sequence or architecture diagrams, dependency assumptions, rollback strategy, and ADR candidates when they materially affect execution.
 - Do not include CLI command recipes, framework-specific decorators, class bodies, migration command lines, deployment runbooks, or claimed execution evidence.
 - If identity/access, sensitive-data, regulated-data, trust-boundary, or production-change risk is in scope, treat `Security Considerations`, `Monitoring and Observability`, and `Rollback Plan` as required content, not optional prose.
@@ -53,7 +53,7 @@ Create or update an architecture decision record when a decision affects one or 
 - observability, operational recovery, rollback, or production support model;
 - meaningful trade-off that future implementers must understand.
 
-Use [../architecture-decisions.md](../architecture-decisions.md) and [../adr-quality.md](../adr-quality.md) for ADR content and quality. Do not create architecture ADRs in Magnomo.
+Use `references/architecture-decisions.md` and `references/adr-quality.md` for ADR content and quality. Do not create architecture ADRs in Magnomo.
 
 ## Evidence and Optional Sections
 
