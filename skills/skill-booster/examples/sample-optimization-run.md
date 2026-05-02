@@ -1,54 +1,40 @@
 # Sample Optimization Run
 
-## User Request
+User: “Optimize `./skills/customer-briefing` completely and return a validated `skill.zip`.”
 
-"Optimize `./skills/customer-briefing` completely and return a validated package."
-
-## Skill Booster Response Shape
-
+Response shape:
 1. Preflight target root and inventory.
-2. Freeze baseline evaluator.
-3. Run specialist ledger in sequence.
-4. Apply bounded patches.
+2. Freeze evaluator/scenarios/fixtures before mutation.
+3. Run the specialist ledger in order.
+4. Apply bounded hypotheses.
 5. Validate after material changes.
-6. Compress tokens near the end.
+6. Compress tokens only after behavior and gates are stable.
 7. Revalidate after compression.
 8. Harden and package.
-9. Benchmark final state.
-10. Return report and `skill.zip` only if validation passed.
+9. Run final benchmark, improver closure, and token-efficiency closure.
+10. Return report and package path only when archive validation passed.
 
-## Example Specialist Ledger
+## Ledger excerpt
 
 | Pass | Status | Evidence | Notes |
 |---|---|---|---|
-| skill-creator-juiced | applied-by-checklist | major redesign escalation check | no split needed |
-| skill-improver | pass | baseline/final comparison | H1 accepted, H2 rejected |
-| skill-benchmark | pass | benchmark report | score 72 to 84 |
-| skill-harness | planned | scenario suite created | not executed in environment |
-| skill-package-architecture-review | pass | architecture decision | unified skill with modes |
-| context-architect | not-applicable | no code dependencies | package is instruction-only |
-| skill-prompt-and-activation-review | pass | description and boundaries refined | non-triggers added |
-| prompt-architect | pass | prompt body simplified | output contract preserved |
-| skill-consistency-repair | pass | references aligned | broken local link fixed |
-| documentation-quality | pass | references rewritten | duplicate guide merged |
-| karpathy-guidelines | not-applicable | no scripts | no technical code to review |
-| security-and-governance-review | pass | package safety review | package exclusions added |
+| skill-creator-juiced | applied-by-checklist | redesign check | no split needed |
+| skill-benchmark | pass | static report | behavioral metrics planned |
+| skill-harness | pass | scenario validator | suite valid; not executed |
 | skill-testing-and-validation | pass | validator command | structure validates |
-| skill-cleanup-and-simplification | pass | file inventory | generated reports excluded |
-| skill-token-efficient | pass | token audit | reduction after behavior stable |
-| skill-hardening | pass | final readiness checks | package prepared |
+| skill-token-efficient | pass | token audit | validation rerun after compression |
+| skill-hardening | pass | readiness checks | package prepared |
 | final skill-benchmark | pass | final report | delta recorded |
 | final skill-improver closure | pass | decision record | package accepted |
+| final skill-token-efficient closure | pass | audit-only check | no mutation required |
 
-## Example Hypothesis
+## Hypothesis shape
 
 ```yaml
 id: H1
-statement: If SKILL.md is reduced to control-plane rules and branch details move to references, context cost should drop while behavior remains stable.
-files:
-  - SKILL.md
-  - references/workflow.md
-expected_effect: lower token count with validation passing
+statement: If SKILL.md remains a compact control plane and branch detail stays in references, context cost should drop while behavior remains stable.
+files: [SKILL.md, references/workflow.md]
+expected_effect: lower token estimate with validation passing
 validation: structure validator plus activation scenario review
 status: accepted
 evidence: token estimate decreased and gates passed

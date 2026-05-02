@@ -1,0 +1,11 @@
+interface:
+  display_name: Skill Creator Juiced
+  short_description: Builds high-quality skills with specialist review, validation,
+    and packaging gates.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

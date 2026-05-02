@@ -11,7 +11,7 @@ Return this shape when the task changes or proposes code:
 3. **Validation evidence**: split executed checks from suggested checks.
 4. **Residual risks**: only material risks that remain after the answer.
 
-Use `assets/templates/implementation-response.md.template` when a reusable skeleton helps, but remove empty sections in the final answer.
+Use `../assets/templates/implementation-response.md.template` when a reusable skeleton helps, but remove empty sections in the final answer.
 
 ## Code review and risk audit
 
@@ -22,7 +22,7 @@ Rank findings by severity and evidence:
 - Medium: maintainability, performance, observability, or reliability concern with plausible impact.
 - Low: style, naming, readability, or small cleanup that should not distract from the main change.
 
-Use `assets/templates/code-review-response.md.template` when a reusable skeleton helps. Do not inflate severity to make a review appear more useful.
+Use `../assets/templates/code-review-response.md.template` when a reusable skeleton helps. Do not inflate severity to make a review appear more useful.
 
 Every finding should include:
 

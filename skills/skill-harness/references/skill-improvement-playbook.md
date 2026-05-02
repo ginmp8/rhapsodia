@@ -10,7 +10,7 @@ Use after the harness map identifies weaknesses.
 
 `scripts/`: add when consistency beats model judgment: inventory/structure checks, schema validation, report generation, template rendering, deterministic transforms, package readiness. Require clear CLI, deterministic output, helpful errors, representative test run.
 
-`assets/templates/`: add/preserve recurring plans, reports, scenario suites, scorecards, decision records. Valid when used by workflow, copied/filled by agent, rendered by script, or checked by validator; script consumption is optional. Obvious bounded placeholders are fine in templates, but delivered targets must not contain unresolved TODO scaffolding.
+`assets/templates/`: add/preserve recurring plans, reports, scenario suites, scorecards, decision records. Valid when used by workflow, copied/filled by agent, rendered by script, or checked by validator; script consumption is optional. Obvious bounded placeholders are fine in templates, but delivered targets must not contain unresolved scaffold markers.
 
 `evals/` scenarios: add when activation/behavior quality matters. Types: `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`, `regression`, `adversarial`. Metrics are measured only after execution.
 

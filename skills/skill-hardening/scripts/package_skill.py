@@ -136,10 +136,22 @@ def should_exclude(rel_path: str) -> tuple[bool, str | None]:
     return False, None
 
 
+def find_symlinks(target: Path) -> list[str]:
+    """Return symlink paths because packages must not read outside target scope."""
+    links: list[str] = []
+    for path in sorted(target.rglob("*")):
+        if path.is_symlink():
+            links.append(path.relative_to(target).as_posix())
+    return links
+
+
 def iter_package_files(target: Path) -> tuple[list[Path], list[dict[str, str]]]:
     files: list[Path] = []
     excluded: list[dict[str, str]] = []
     for path in sorted(target.rglob("*")):
+        if path.is_symlink():
+            excluded.append({"path": path.relative_to(target).as_posix(), "reason": "symlink blocked"})
+            continue
         if not path.is_file():
             continue
         rel = path.relative_to(target).as_posix()
@@ -184,6 +196,9 @@ def validate_folder(target: Path) -> list[str]:
             candidate = target / ref
             if not candidate.exists():
                 errors.append(f"referenced path missing: {ref}")
+    symlinks = find_symlinks(target)
+    if symlinks:
+        errors.extend([f"symlink path is not packageable: {link}" for link in symlinks])
     files, _ = iter_package_files(target)
     if not files:
         errors.append("no packageable files found")

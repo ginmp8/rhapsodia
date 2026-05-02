@@ -1,0 +1,6 @@
+[
+  {"id":"ex-a1","type":"should_activate","category":"should_activate","prompt":"Benchmark this skill package and produce a scorecard.","expected_activation":true},
+  {"id":"ex-n1","type":"should_not_activate","category":"should_not_activate","prompt":"Rewrite this email professionally.","expected_activation":false},
+  {"id":"ex-m1","type":"ambiguous","category":"ambiguous","prompt":"Can you review this skill?","expected_activation":true},
+  {"id":"ex-e1","type":"edge_case","category":"edge_case","prompt":"Benchmark a folder with no SKILL.md.","expected_activation":true}
+]

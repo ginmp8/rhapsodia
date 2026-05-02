@@ -2,45 +2,46 @@
 
 ## Goal
 
-Reduce instruction tokens without losing behavior or human comprehension. Cut in order: filler, duplicates, verbose phrasing, weak structure, long examples.
+Reduce tokens without losing behavior or readable execution. Cut filler, duplicates, inflated phrasing, weak structure, then long examples.
 
 ## Levels
 
-- `readable`: terse professional prose; use for `SKILL.md` and activation.
-- `dense`: fragments/key-value bullets; use for refs, reports, examples.
-- `max-safe`: highest compression after semantic/protected-region checks pass.
+- `readable`: terse prose for `SKILL.md` and activation.
+- `dense`: fragments/key-values for refs, reports, examples.
+- `max-safe`: highest compression only after semantic/protected checks pass.
 
-Do not make durable docs comedic, intentionally broken, or cryptic.
+Do not make durable docs comedic, broken, or cryptic.
 
 ## High-Yield Moves
 
-- Deduplicate repeated warnings, mode text, gates, output sections.
-- Use imperative: `Verify links`, not `You should make sure links are verified`.
-- Use key-value: `Limit: 500 chars`, `Scope: target folder only`.
-- Prefer lists; keep tables only for compact matrices.
-- Move branch detail from `SKILL.md` to `references/` with clear loading triggers.
-- Keep shortest behavior-calibrating examples.
+- Deduplicate warnings, mode text, gates, outputs.
+- Use imperatives and key-values: `Verify links`, `Limit: 500 chars`.
+- Prefer lists; keep compact matrices.
+- Move branch detail from `SKILL.md` to refs with loading triggers.
+- Keep only behavior-calibrating examples.
 - Compress frontmatter last; activation precision beats brevity.
-- If validation fails, patch broken spans only; avoid full churn.
+- If validation fails, patch broken spans only.
 
 ## Word Cuts
 
-Remove pleasantries, hedges, filler, throat-clearing, repeated rationale, and weak transitions: `sure`, `happy to`, `might be worth`, `basically`, `actually`, `in order to`, `the purpose of this section is`, `additionally`.
+Remove pleasantries, hedges, filler, throat-clearing, repeated rationale, and weak transitions such as `sure`, `happy to`, `might be worth`, `basically`, `actually`, `in order to`, `additionally`.
 
 Replace inflated verbs: `utilize -> use`, `implement a solution -> fix`, `perform validation -> validate`.
 
 ## Protected Regions
 
-Preserve exactly unless intentionally changed and reported: code blocks, inline code, commands, URLs, links, paths, CLI flags, env vars, schemas, JSON/YAML keys, config names, proper nouns, dates, versions, numeric limits, required output sections, stop labels.
+Preserve unless intentionally changed and reported: code blocks, inline code, commands, URLs, links, paths, CLI flags, env vars, schemas, JSON/YAML keys, config names, proper nouns, dates, versions, numeric limits, required output sections, stop labels, and paired/slash terms that encode separate duties.
+
+Examples: `evidence/citation`, `audit/validate`, `validate/package`, `source/path`, `file/line`. Keep both sides unless the replacement visibly preserves both duties.
 
 ## Safe Removal
 
-Delete only when text is duplicate, scaffold, generic filler, obsolete, or weaker than another rule and does not define scope, safety, evidence, output, validation, tool use, package behavior, or stop logic.
+Delete only duplicate, scaffold, generic, obsolete, or weaker text that does not define scope, safety, evidence, citation/reference traceability, output, validation, tool use, package behavior, or stop logic.
 
 ## Risky Compression
 
-Avoid vague boundaries, deleted negatives, merged modes with different mutation rights, undefined acronyms, moved rules without loading links, unauditable output contracts, removed evidence/citation rules, or tool requirements hidden only in examples.
+Avoid vague boundaries, deleted negatives, merged modes with different mutation rights, undefined acronyms, moved rules without loading links, unauditable outputs, removed evidence/citation rules, collapsed source/path/line duties, or tool requirements hidden only in examples.
 
 ## Readability Floor
 
-A compressed target must still answer: trigger; non-goals; inputs; order; protected regions; validation; output; stop conditions.
+A compressed target still answers: trigger; non-goals; inputs; order; protected regions; evidence and citation/reference duties; validation; output; stop conditions.

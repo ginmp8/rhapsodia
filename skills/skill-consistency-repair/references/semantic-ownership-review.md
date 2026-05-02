@@ -18,7 +18,7 @@ Ownership follows responsibility, not file name. If a familiar file name implies
 
 ## Role drift patterns
 
-Governance owns technical architecture artifacts; planning claims execution evidence; execution rewrites product intent or stakeholder commitments; benchmark edits the measured target; hardening changes evaluator fixtures to improve score; creator leaves generic TODOs or sample assets in production.
+Governance owns technical architecture artifacts; planning claims execution evidence; execution rewrites product intent or stakeholder commitments; benchmark edits the measured target; hardening changes evaluator fixtures to improve score; creator leaves unfinished scaffold notes or sample assets in production.
 
 ## Handoff contract
 

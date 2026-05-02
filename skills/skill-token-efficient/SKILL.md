@@ -1,90 +1,77 @@
 ---
 name: skill-token-efficient
-description: use when asked to refactor, compress, rewrite, audit, validate, or package a target chatgpt or agent skill so its instructions consume fewer tokens while preserving activation behavior, scope boundaries, workflows, output contracts, validation rules, safety constraints, references, and human readability. especially use for skill.md, frontmatter descriptions, prompt bodies, references, examples, templates, and instruction packages where token economy, context efficiency, semantic deduplication, progressive loading, or concise markdown structure is the primary goal. do not use for ordinary prompt advice, generic code refactoring, benchmark-only scoring, or removing safety/compliance rules to reduce length.
+description: use when asked to audit, refactor, compress, validate, compare, or package target skill instructions for lower token cost while preserving activation, scope, workflow, safety, validation, outputs, evidence/citation traceability, refs, and readability. covers skill.md, descriptions, prompts, refs, examples, templates, and instruction packages. do not use for ordinary writing, generic code refactors, benchmark-only scoring, or deleting safety/validation/evidence/citation rules.
 ---
 
 # Skill Token Efficient
 
 ## Purpose
 
-Refactor target skills for lower token cost without semantic loss. Preserve role, activation, exclusions, mutation authority, workflow, tool rules, safety, validation, packaging, and output contracts while keeping instructions human-readable.
+Reduce skill/instruction tokens without semantic loss. Preserve role, triggers/exclusions, authority, workflow, tool rules, safety, validation, packaging, outputs, readability, and evidence/citation traceability.
 
 ## Inputs
 
-Resolve or infer:
-
+Resolve before edits:
 1. `TARGET`: folder, zip, installed skill, or supplied text.
 2. Mode: `audit`, `plan`, `apply`, `validate`, `package`.
 3. Level: `readable` default, `dense`, `max-safe`.
-4. Writable scope: target skill only.
+4. Scope: target skill only.
 5. Blocked: `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old zips, read-only files, unrelated repos.
-6. Goal: reduce `SKILL.md` plus referenced instruction cost while preserving behavior.
-7. Gates: lower estimated tokens, equivalent semantic map, valid links, preserved protected regions, touched scripts run, package validates when requested.
+6. Goal: lower `SKILL.md` plus referenced-instruction cost without loss.
+7. Gates: fewer estimated tokens; equivalent semantic map; valid links; evidence/citation rules intact; protected regions intact; touched scripts run; package validates when requested.
 
-Proceed with conservative assumptions unless target identity or writable scope is ambiguous.
+Proceed unless target identity, write scope, or semantic authority is unclear.
 
 ## Modes
 
-- `audit`: measure cost, find waste; no edits.
-- `plan`: propose safe compression; no edits.
-- `apply`: refactor allowed target files.
-- `validate`: check refactor; no edits except reports.
+- `audit`: measure cost/waste; no edits.
+- `plan`: propose compression; no edits.
+- `apply`: refactor allowed files.
+- `validate`: verify refactor; no edits except reports.
 - `package`: validate and deliver `skill.zip`.
 
-Broad requests run: inspect -> baseline -> semantic map -> plan -> refactor -> validate -> package.
+Broad runs: inspect -> baseline -> semantic map -> plan -> refactor -> validate -> package.
 
 ## Load When Needed
 
 - `references/compression-playbook.md`: tactics, levels, protected regions, anti-patterns.
-- `references/semantic-preservation.md`: invariants, equivalence, risk, deletion rules.
+- `references/semantic-preservation.md`: invariants, equivalence, deletion rules, evidence/citation guardrails, risk.
 - `references/validation-and-reporting.md`: metrics, gates, commands, report contract.
-- `scripts/token_refactor_audit.py`: counts, compares, protected-region check.
-- `assets/templates/refactor-report.md.template`: durable report.
+- `scripts/refactor_audit.py`: count/compare/link/protected/traceability audit.
+- `scripts/package_skill.py`: deterministic `skill.zip` creation/validation.
+- `assets/templates/refactor-report.md.template`: report skeleton.
 - `examples/refactor-examples.md`: compact transformations.
+- `evals/activation-scenarios.json`: planned activation, negative, ambiguous, edge, regression, output-contract coverage.
 
 ## Workflow
 
-1. **Inspect**: read target `SKILL.md`; confirm one root; inventory `agents/`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, packages.
-2. **Baseline**: run audit:
+1. **Inspect**: read target `SKILL.md`; confirm one root; inventory support dirs, validators, packages.
+2. **Baseline**:
    ```bash
-   python -S /home/oai/skills/skill-token-efficient/scripts/token_refactor_audit.py --target <TARGET> --output <REPORT_DIR>/baseline.json --markdown <REPORT_DIR>/baseline.md
+   python -S /home/oai/skills/skill-token-efficient/scripts/refactor_audit.py --target <TARGET> --output <REPORT_DIR>/baseline.json --markdown <REPORT_DIR>/baseline.md
    ```
-3. **Map semantics**: capture purpose, owner, triggers/non-triggers, inputs/defaults, modes, workflow order, tool/filesystem rules, blocked paths, safety, validation, packaging, output contract, stop conditions, resource loading.
-4. **Pick level**: `readable` for durable docs; `dense` for low-risk refs/examples; `max-safe` only after semantic and readability gates pass. Do not use max-safe for activation descriptions unless requested.
-5. **Compress in order**: remove scaffold/filler/duplicates; consolidate rules; use imperative bullets/key-value lines; replace tables with lists unless matrix value is clear; move branch detail from `SKILL.md` to references; shorten examples; compress frontmatter last.
-6. **Protect exact regions**: code blocks, inline code, commands, URLs, links, paths, env vars, proper nouns, versions/dates/numbers, schemas, JSON/YAML keys, CLI flags, required output sections.
-7. **Patch only broken spans**: if validation fails, fix targeted regions. Do not recompress whole target unless first pass is semantically invalid.
-8. **Validate**: re-run audit, compare before/after when available, check semantic map, links, protected regions, touched scripts, target validators, package validation. Reject changes that weaken safety, boundaries, validation, or output contracts.
-9. **Report**: separate measured facts, judgment, and assumptions. Include reduction %, changed files, preserved/moved invariants, protected-region status, failed gates, rollback, risks, and package path only for a validated `skill.zip`.
+3. **Map semantics**: purpose, owner, triggers/non-triggers, inputs/defaults, modes, order, tool/filesystem rules, blocked paths, safety, validation, packaging, output, stop, resources, and evidence/citation/source/path/line duties as separate invariants.
+4. **Choose level**: `readable` for `SKILL.md`/activation; `dense` for low-risk refs/examples; `max-safe` only after semantic/readability gates pass. Do not max-compress activation or evidence/citation rules unless equivalent.
+5. **Refactor**: remove filler/duplicates; consolidate rules; use imperative bullets/key-values; keep useful matrices; shorten examples; move branch detail to refs; compress frontmatter last.
+6. **Protect exact regions**: code blocks, inline code, commands, URLs, links, paths, env vars, proper nouns, versions/dates/numbers, schemas, JSON/YAML keys, CLI flags, required output sections, and paired terms encoding separate duties such as `evidence/citation`.
+7. **Repair narrowly**: on failure, patch only broken spans. Do not recompress all files unless the first pass is semantically invalid.
+8. **Validate**: rerun audit; compare before/after; check semantics, links, protected regions, evidence/citation traceability, scripts, validators, packaging. Reject weakened safety, boundaries, validation, citations/references, or outputs.
+9. **Package**: only after gates pass; report counts, reduction, changed files, invariants, protected-region/traceability status, commands, failed gates, rollback, risks, package path.
 
-## Compression Rules
+## Preservation Rules
 
-- Default style: concise professional English, not comedic caveman-speak.
-- Prefer imperative verbs and precise nouns.
-- Merge negatives: `Do not edit secrets, fixtures, expected outputs, or .git`.
-- Replace filler with constraints: `Limit: 500 chars`.
-- Drop pleasantries, hedges, throat-clearing, repeated rationale, obvious advice.
-- Define abbreviations once; avoid obscure one-letter labels in durable docs.
-- Keep negatives that prevent false activation, unsafe edits, fabricated validation, or scope drift.
-- Never save tokens by hiding contradictions or deleting safety/compliance/stop rules.
+Use concise professional English. Merge repeated negatives, but keep negatives preventing false activation, unsafe edits, fabricated validation, lost citations/references, or scope drift. Never delete safety, compliance, stop, validation, authority, evidence/citation, or output-contract rules for brevity.
+
+Do not collapse traceability concepts into one generic word. If the source requires `evidence/citation`, `citation`, `source`, `file path`, `line range`, command output, or report reference, preserve the obligation or use an explicitly equivalent phrase.
 
 ## Gates
 
-Pass only when:
+Pass only when estimated tokens decrease unless a stated clarity exception applies; triggers/exclusions remain visible; safety, authority, validation, package, stop, output, and evidence/citation boundaries remain intact; local references resolve; protected regions are preserved or explained; traceability-term losses are justified or reverted; touched scripts run; package validation passes when requested; and the report states counts, changes, assumptions, risks, rollback.
 
-1. estimated tokens decrease, unless a stated clarity exception applies;
-2. activation triggers/exclusions remain visible;
-3. safety, authority, validation, package, and stop boundaries remain intact;
-4. local references resolve;
-5. protected regions are preserved or intentional changes are explained;
-6. touched scripts run;
-7. package validation passes when requested;
-8. report states counts, changes, assumptions, risks, rollback.
+## Stop Conditions
 
-## Stop
+Stop when target root is ambiguous; semantic preservation cannot be assessed; requested edits touch blocked/unrelated paths; reduction requires removing safety, compliance, stop, validation, evidence/citation, or output-contract rules; exact token counts are mandatory but unavailable; validation or packaging fails outside scope.
 
-Stop when target root is ambiguous; semantic preservation cannot be assessed; requested edits touch blocked/unrelated paths; reduction requires removing safety, compliance, stop, validation, or output-contract rules; exact token counts are mandatory but unavailable; validation or packaging fails outside scope.
+## Output Contract
 
-## Output
-
-Include applicable: mode/target; token before/after/delta/%; files inspected/changed; semantic invariants; level/tactics; protected-region validation; commands/status; blocked paths; rollback; risks/next pass; `skill.zip` link/path only when validated.
+Include: mode/target; token before/after/delta/%; files inspected/changed; invariants; level/tactics; protected-region and evidence/citation validation; commands/status; blocked paths; rollback; risks; `skill.zip` only when validated.

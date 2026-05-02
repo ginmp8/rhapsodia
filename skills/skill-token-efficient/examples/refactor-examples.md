@@ -1,6 +1,6 @@
 # Refactor Examples
 
-## Prose to imperative
+## Imperative
 
 Before:
 ```md
@@ -22,24 +22,13 @@ After:
 Do not edit secrets, credentials, `.git`, or benchmark fixtures.
 ```
 
-## Keep detail
+## Keep safety detail
 
 Bad:
 ```md
-Validate everything.
+Validate everything. No unsafe stuff. Pack if ok.
 ```
 Better:
 ```md
-Validate links, protected regions, semantic invariants, touched scripts, and package gates.
-```
-
-## Avoid over-compression
-
-Bad:
-```md
-No unsafe stuff. Pack if ok.
-```
-Better:
-```md
-Do not weaken safety, validation, package, or stop boundaries. Package only after validation passes.
+Validate links, protected regions, semantic invariants, touched scripts, and package gates. Do not weaken safety, validation, package, or stop boundaries. Package only after validation passes.
 ```

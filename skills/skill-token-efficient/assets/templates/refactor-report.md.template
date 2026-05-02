@@ -7,7 +7,6 @@
 
 ## Evidence
 - Files:
-- Sources:
 - Commands:
 
 ## Token Delta
@@ -32,16 +31,10 @@
 - Removed redundancy:
 - Risk:
 
-## Protected Regions
-- Status:
-- Differences:
-
 ## Validation
+- Protected regions:
 - Links:
 - Scripts:
-- Validators:
 - Package:
 
-## Rollback
-
-## Risks / Next Pass
+## Rollback / Risks / Next Pass

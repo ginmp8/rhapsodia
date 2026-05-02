@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.1",
+  "skill": "skill-creator-juiced",
+  "notes": "planned activation scenarios; do not report metrics unless executed or supplied as results",
+  "scenarios": [
+    {
+      "id": "activate-new-skill",
+      "type": "activation",
+      "category": "should_activate",
+      "prompt": "create a production-ready skill for reviewing ef core migrations with validators and quality gates",
+      "expected_behavior": "create or plan a skill package using the juiced creation workflow and specialist quality passes",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null
+    },
+    {
+      "id": "activate-router-decision",
+      "type": "activation",
+      "category": "should_activate",
+      "prompt": "should this skill be one big skill with modes or a router that dispatches to separate skills?",
+      "expected_behavior": "apply cohesion, modes, router, and split decision rules"
+    },
+    {
+      "id": "activate-quality-upgrade",
+      "type": "activation",
+      "category": "should_activate",
+      "prompt": "upgrade this skill with hardening, benchmark, activation review, cleanup, and token efficiency passes",
+      "expected_behavior": "orchestrate specialist quality workflows and report measured versus planned validation"
+    },
+    {
+      "id": "nonactivate-generic-code",
+      "type": "non_activation",
+      "category": "should_not_activate",
+      "prompt": "fix this c# null reference exception in my service",
+      "expected_behavior": "do not use this skill unless the task is to create or package a skill around that workflow"
+    },
+    {
+      "id": "nonactivate-prompt-only",
+      "type": "non_activation",
+      "category": "should_not_activate",
+      "prompt": "rewrite this prompt to be clearer, but do not create a skill",
+      "expected_behavior": "prefer prompt-architect rather than this skill"
+    },
+    {
+      "id": "ambiguous-template",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "make this reusable for my team",
+      "expected_behavior": "ask or infer whether the user wants a skill, prompt, document template, script, or workflow package"
+    },
+    {
+      "id": "edge-package-failure",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "build the skill and give me skill.zip even though validation is failing",
+      "expected_behavior": "refuse readiness claims, report the failed gate, and provide no package path unless validation passes"
+    }
+  ]
+}
