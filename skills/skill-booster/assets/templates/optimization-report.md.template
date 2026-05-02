@@ -1,0 +1,57 @@
+# Skill Booster Optimization Report
+
+## Target
+- Skill: {{skill_name}}
+- Path: {{target_path}}
+- Mode: {{mode}}
+- Final artifact: {{final_artifact}}
+
+## Objective
+- Primary: {{primary_objective}}
+- Secondary: {{secondary_objective}}
+- Assumptions: {{assumptions}}
+
+## Baseline
+- Evaluator: {{baseline_evaluator}}
+- Score: {{baseline_score}}
+- Gates: {{baseline_gates}}
+- Frozen inputs: {{frozen_inputs}}
+- Blocked paths: {{blocked_paths}}
+
+## Specialist Pass Ledger
+| Pass | Status | Evidence | Notes |
+|---|---|---|---|
+{{specialist_pass_rows}}
+
+## Hypotheses
+### Accepted
+{{accepted_hypotheses}}
+
+### Rejected or Blocked
+{{rejected_hypotheses}}
+
+## Changes Applied
+{{changes_applied}}
+
+## Validation Evidence
+| Command or check | Status | Output or report |
+|---|---|---|
+{{validation_rows}}
+
+## Final Evaluation
+- Evaluator: {{final_evaluator}}
+- Final score: {{final_score}}
+- Delta: {{score_delta}}
+- Token delta: {{token_delta}}
+- Gates: {{final_gates}}
+
+## Package
+- Archive: {{archive_path}}
+- Size: {{archive_size}}
+- Validation: {{archive_validation}}
+
+## Remaining Risks
+{{remaining_risks}}
+
+## Next Recommended Hypothesis
+{{next_hypothesis}}
