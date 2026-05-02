@@ -401,7 +401,7 @@
       "acceptance_criteria": [
         "selects MAGIA",
         "creates execution-grounded documentation",
-        "does not rewrite PRD or Magnomo governance"
+        "does not rewrite PRD or Magiarca governance"
       ],
       "notes": "planned"
     },
@@ -423,7 +423,7 @@
       "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "refine the PRD and update the roadmap priority after stakeholder feedback",
-      "expected_behavior": "Do not activate MAGIA; hand off PRD refinement to Mago and roadmap/stakeholder work to Magnomo.",
+      "expected_behavior": "Do not activate MAGIA; hand off PRD refinement to Mago and roadmap/stakeholder work to Magiarca.",
       "acceptance_criteria": [
         "does not select MAGIA for PRD/roadmap work",
         "states correct handoff"

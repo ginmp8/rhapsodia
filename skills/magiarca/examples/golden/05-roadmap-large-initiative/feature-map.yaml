@@ -1,0 +1,41 @@
+schema_version: 1
+roadmap_id: workspace-admin-controls
+features:
+  - feature_key: saved-query-sharing-controls
+    ready_for_spec: true
+    candidate_spec_id: spec022
+    title: Saved-query sharing controls
+    scope_summary: Admin-facing saved-query visibility controls.
+    dependencies: []
+    recommended_mago_mode: define
+    handoff_status: draft
+    source_summary: Roadmap candidate is ready for Mago after product owner confirmation.
+    mago_inputs:
+      - roadmap.yaml
+      - roadmap.md
+      - governance-decisions.md
+    notes: Mago should define product scope, acceptance criteria, and validation plan.
+  - feature_key: dashboard-role-preview
+    ready_for_spec: false
+    candidate_spec_id: null
+    title: Dashboard role preview
+    scope_summary: Preview dashboard role effects after sharing controls are clearer.
+    dependencies:
+      - saved-query-sharing-controls
+    recommended_mago_mode: unknown
+    handoff_status: parked
+    source_summary: Dependency and MVP boundary are still uncertain.
+    mago_inputs: []
+    notes: Keep in Magiarca roadmap until confidence improves.
+  - feature_key: admin-activity-summary
+    ready_for_spec: false
+    candidate_spec_id: null
+    title: Admin activity summary
+    scope_summary: Summarize recent admin changes after core controls exist.
+    dependencies:
+      - saved-query-sharing-controls
+    recommended_mago_mode: unknown
+    handoff_status: parked
+    source_summary: Future idea without enough evidence for Mago.
+    mago_inputs: []
+    notes: Keep as future roadmap context.

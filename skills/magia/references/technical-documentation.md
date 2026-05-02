@@ -30,7 +30,7 @@ Do not create ADRs for trivial style, naming, small refactors, or obvious local 
 
 ## Required ADR Content
 
-Include `Status`, `Context`, `Decision`, `Alternatives Considered`, `Consequences`, `Evidence`, `Validation`, `Scope Guard`, and `Handoff` (`none` or specific Mago/Magnomo handoff).
+Include `Status`, `Context`, `Decision`, `Alternatives Considered`, `Consequences`, `Evidence`, `Validation`, `Scope Guard`, and `Handoff` (`none` or specific Mago/Magiarca handoff).
 
 ## Validation Rules
 

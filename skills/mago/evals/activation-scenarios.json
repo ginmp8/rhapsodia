@@ -57,7 +57,7 @@
       "prompt": "Record an Architecture Decision Record for spec004 explaining why the onboarding workflow will use Temporal instead of chained Kafka consumers.",
       "expected_behavior": "Invoke MAGO architecture-decision or technical-design planning, create only spec-scoped planning ADR artifacts, distinguish planned validation from executed validation, and do not modify code.",
       "acceptance_criteria": [
-        "uses MAGO, not Magnomo",
+        "uses MAGO, not Magiarca",
         "records alternatives, consequences, evidence, and validation expectations",
         "does not claim implementation or test execution",
         "keeps writes under BOARD_ROOT/specs/<spec_id>/"
@@ -356,9 +356,9 @@
       "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "Write the delivery status and stakeholder brief showing who asked, who owns it, and when it must be delivered.",
-      "expected_behavior": "Do not invoke MAGO because delivery governance and stakeholder bookkeeping belong to Magnomo.",
+      "expected_behavior": "Do not invoke MAGO because delivery governance and stakeholder bookkeeping belong to Magiarca.",
       "acceptance_criteria": [
-        "routes to Magnomo or reports out-of-scope",
+        "routes to Magiarca or reports out-of-scope",
         "does not create PRD, tasks, technical design, or ADR artifacts"
       ]
     },

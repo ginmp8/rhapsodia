@@ -4,7 +4,7 @@ Load when MAGO defines/refines planned technical artifacts for a selected spec.
 
 ## Ownership and Evidence
 
-Mago documents intended design; Magia documents implementation reality. MAGO artifacts must be grounded in repository evidence, Magnomo handoff evidence, user constraints, or explicit assumptions. Do not claim code changes, test runs, deployments, or runtime observations unless supplied evidence proves them.
+Mago documents intended design; Magia documents implementation reality. MAGO artifacts must be grounded in repository evidence, Magiarca handoff evidence, user constraints, or explicit assumptions. Do not claim code changes, test runs, deployments, or runtime observations unless supplied evidence proves them.
 
 ## Canonical Technical Artifacts
 

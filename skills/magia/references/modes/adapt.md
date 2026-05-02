@@ -13,7 +13,7 @@ Inputs are legacy `notes.md` Execution Log sections and legacy command-result se
 - Do not mark tasks done, change manifest/spec-catalog status, or set `last_execution` unless current converted evidence is complete enough and the execution-state validators pass.
 - Preserve uncertainty as `unknown`, `not-run`, residual risk, or blocker inside the current MAGIA-owned artifacts.
 - After adaptation, run current validators against `implementation-notes.md` and `validation-evidence.md`; do not continue using legacy files as fallback.
-- If conversion would require interpreting product intent, task definitions, architecture, or delivery status, stop and hand off to MAGO or Magnomo.
+- If conversion would require interpreting product intent, task definitions, architecture, or delivery status, stop and hand off to MAGO or Magiarca.
 
 ## Script
 

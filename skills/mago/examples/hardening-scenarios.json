@@ -82,7 +82,7 @@
       "id": "ambiguous-status",
       "category": "ambiguous",
       "prompt": "Update the status for spec010.",
-      "expected_behavior": "resolve whether MAGO planning status or Magnomo delivery status is intended"
+      "expected_behavior": "resolve whether MAGO planning status or Magiarca delivery status is intended"
     },
     {
       "id": "edge-mago-authorship-not-runtime-prohibition",

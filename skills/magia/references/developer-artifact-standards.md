@@ -38,7 +38,7 @@ For ADHOC without a board package, use existing docs convention; if none, report
 
 ## Quality Bar
 
-Every MAGIA technical artifact includes scope/task/spec link when available, evidence inspected, actual decision or implementation fact, validation status with skipped checks and reasons, residual risks/unknowns, and handoff decision `none`, `mago`, `magnomo`, or `both`.
+Every MAGIA technical artifact includes scope/task/spec link when available, evidence inspected, actual decision or implementation fact, validation status with skipped checks and reasons, residual risks/unknowns, and handoff decision `none`, `mago`, `magiarca`, or `both`.
 
 
 
@@ -55,7 +55,7 @@ Create an execution-grounded ADR when a decision affects architecture, public co
 ## Handoff Rules
 
 - Mago: missing/changed technical intent, architecture, public contract, task structure, validation plan, security posture, or data model beyond selected task.
-- Magnomo: delivery risk, deadline change, stakeholder communication, release-note need, owner change, or accepted business risk.
+- Magiarca: delivery risk, deadline change, stakeholder communication, release-note need, owner change, or accepted business risk.
 - Do not silently update the wrong skill's artifacts.
 
 ## Complexity-Reduction Evidence

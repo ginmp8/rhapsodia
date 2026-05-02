@@ -53,10 +53,10 @@ Create or update an architecture decision record when a decision affects one or 
 - observability, operational recovery, rollback, or production support model;
 - meaningful trade-off that future implementers must understand.
 
-Use `references/architecture-decisions.md` and `references/adr-quality.md` for ADR content and quality. Do not create architecture ADRs in Magnomo.
+Use `references/architecture-decisions.md` and `references/adr-quality.md` for ADR content and quality. Do not create architecture ADRs in Magiarca.
 
 ## Evidence and Optional Sections
 
-Design facts must be traceable to the selected package, repository truth, local docs, supplied Magnomo handoff evidence, or official dependency documentation. When the chain does not establish a fact, use `unknown` prose and add an `Open Questions` item.
+Design facts must be traceable to the selected package, repository truth, local docs, supplied Magiarca handoff evidence, or official dependency documentation. When the chain does not establish a fact, use `unknown` prose and add an `Open Questions` item.
 
 The canonical top-level headings are fixed, but useful subsections may be added when supported by evidence. Diagrams should clarify architecture or sequence, not decorate the document.
