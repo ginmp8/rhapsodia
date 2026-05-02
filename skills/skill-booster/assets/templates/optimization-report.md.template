@@ -43,6 +43,7 @@
 - Final score: {{final_score}}
 - Delta: {{score_delta}}
 - Token delta: {{token_delta}}
+- Final token-efficiency closure: {{final_token_efficiency_closure}}
 - Gates: {{final_gates}}
 
 ## Package

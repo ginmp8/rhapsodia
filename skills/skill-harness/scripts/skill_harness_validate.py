@@ -3,12 +3,13 @@
 import argparse
 import importlib.util
 import json
-import py_compile
 import re
+import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 INVENTORY_PATH = SCRIPT_DIR / "skill_harness_inventory.py"
+sys.dont_write_bytecode = True
 ALLOWED_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
 REQUIRED_SCENARIO_FIELDS = {"id", "type", "prompt", "expected_behavior", "acceptance_criteria"}
 REQUIRED_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
@@ -96,10 +97,11 @@ def validate_scripts(target):
     for script in scripts:
         rel = script.relative_to(target).as_posix()
         try:
-            py_compile.compile(str(script), doraise=True)
-            add_gate(gates, f"python_syntax:{rel}", True, detail="compiled")
-        except py_compile.PyCompileError as exc:
-            add_gate(gates, f"python_syntax:{rel}", False, detail=str(exc))
+            compile(read_text(script), str(script), "exec")
+            add_gate(gates, f"python_syntax:{rel}", True, detail="compiled without bytecode output")
+        except SyntaxError as exc:
+            detail = f"{exc.filename}:{exc.lineno}:{exc.offset}: {exc.msg}"
+            add_gate(gates, f"python_syntax:{rel}", False, detail=detail)
     return gates
 
 

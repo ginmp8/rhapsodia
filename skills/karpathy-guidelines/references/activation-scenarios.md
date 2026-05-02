@@ -1,6 +1,6 @@
 # Activation Scenario Suite
 
-Use these prompts to manually regression-check whether the skill should activate. The canonical machine-checkable planned suite is `evals/activation-boundary-scenarios.json`; this reference is the human-readable review aid.
+Use these prompts to manually regression-check whether the skill should activate. The canonical machine-checkable planned suite is `../evals/activation-boundary-scenarios.json`; this reference is the human-readable review aid.
 
 ## Should activate
 

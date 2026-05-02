@@ -1,8 +1,8 @@
 # Reporting Contract
 
-Use this structure for final reports. Keep measured facts separate from design judgment.
+Use this final report shape. Keep measured facts separate from design judgment.
 
-## Required Sections
+## Required sections
 
 ```markdown
 # Skill Booster Optimization Report
@@ -55,6 +55,7 @@ Use this structure for final reports. Keep measured facts separate from design j
 - Final score:
 - Delta:
 - Token delta:
+- Final token-efficiency closure:
 - Gates:
 
 ## Package
@@ -63,35 +64,17 @@ Use this structure for final reports. Keep measured facts separate from design j
 - Validation:
 
 ## Remaining Risks
-- ...
-
 ## Next Recommended Hypothesis
-- ...
 ```
 
-## Evidence Language
+## Evidence language
 
-Use:
+Use `measured` for executed commands/scenario results/validators/package checks, `observed` for file inspection, `inferred` for reasoned conclusions from files, `planned` for unexecuted checks, and `blocked` for missing tools/permissions/safe scope. Do not say `production-ready`, `secure`, `benchmark improved`, or behavioral precision/recall unless corresponding checks passed.
 
-- `measured` for executed commands, scenario runs, validator outputs, or supplied reports;
-- `observed` for direct file inspection;
-- `inferred` for reasoned conclusions from inspected files;
-- `planned` for scenarios or checks not executed;
-- `blocked` for checks prevented by missing tools, permissions, or unsafe scope.
-
-Do not use:
-
-- `proved` when only static review was done;
-- `production-ready` when package validation failed;
-- `benchmark improved` without before/after results;
-- `secure` when only a light review was performed.
-
-## Pass Ledger Template
+## Pass ledger example
 
 ```markdown
-| skill-creator-juiced | applied-by-checklist | redesign escalation checked | ordinary optimization kept |
-| skill-improver | pass | baseline/final recorded | accepted H1, rejected H2 |
-| skill-benchmark | planned | no executable benchmark available | static gates used |
-| skill-harness | pass | scenarios/evals/activation.json | 12 planned scenarios |
-| skill-token-efficient | pass | token audit delta -18% | validation rerun after compression |
+| skill-harness | pass | validation report | scenarios valid; execution planned |
+| skill-token-efficient | pass | token audit | validation rerun after compression |
+| final skill-token-efficient closure | pass | audit-only token check | no mutation; no validation rerun required |
 ```

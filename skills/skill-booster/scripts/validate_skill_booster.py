@@ -128,14 +128,15 @@ def validate(root: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate skill-booster or preflight a target skill.")
     parser.add_argument("--target", required=True, help="Skill folder to validate")
-    parser.add_argument("--json", help="Optional JSON output path")
+    parser.add_argument("--json", dest="json_output", help="Optional JSON output path")
     args = parser.parse_args()
 
     report = validate(Path(args.target))
     text = json.dumps(report, indent=2, ensure_ascii=False)
     print(text)
-    if args.json:
-        Path(args.json).write_text(text + "\n", encoding="utf-8")
+    json_output = getattr(args, "json_output")
+    if json_output:
+        Path(json_output).write_text(text + "\n", encoding="utf-8")
     return 0 if report["status"] == "pass" else 1
 
 

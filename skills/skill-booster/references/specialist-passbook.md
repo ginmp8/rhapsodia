@@ -1,256 +1,35 @@
 # Specialist Passbook
 
-Every complete optimization run must execute, apply by checklist, or explicitly classify each pass below.
-
-Status values:
-
-- `pass`: the specialist or equivalent check ran and gates passed.
-- `fail`: the specialist or equivalent check ran and gates failed.
-- `blocked`: required evidence or execution is unavailable.
-- `not-run`: intentionally skipped; explain why.
-- `not-applicable`: pass has no relevant artifact; explain evidence.
-- `applied-by-checklist`: specialist could not be directly invoked, but this passbook checklist was applied.
-- `planned`: scenario or metric was designed but not executed.
-
-## Pass Order
-
-### 1. skill-creator-juiced
-
-Purpose: provide production-ready skill-design governance and escalation for major redesign. Use when the target optimization reveals that the skill should be substantially redesigned, converted to modes/router behavior, split, or rebuilt with a stricter package architecture.
-
-Required output:
-
-- architecture escalation decision;
-- specialist sequence confirmation;
-- quality gate expectations;
-- rationale for continuing as optimization versus major redesign.
-
-Checklist:
-
-- preserve the target skill's purpose and language needs;
-- keep `SKILL.md` as control plane;
-- move long branch detail to direct references;
-- do not fabricate benchmark, validation, or readiness claims;
-- require package quality gates before delivery.
-
-### 2. skill-improver
-
-Purpose: coordinate objective, evaluator freeze, hypotheses, accept/reject decisions, and final closure.
-
-Required output:
-
-- objective;
-- metric contract;
-- hypothesis list;
-- accepted/rejected decision records.
-
-Checklist:
-
-- state baseline before mutation;
-- use one bounded hypothesis per patch batch;
-- reject changes that miss delta, fail gates, or alter blocked files;
-- record untested claims as proposals.
-
-### 3. skill-benchmark
-
-Purpose: establish initial and final maturity score or readiness report.
-
-Required output:
-
-- score or gate report;
-- maturity risks;
-- comparison baseline/final when measured.
-
-Checklist:
-
-- separate structural score from behavioral score;
-- do not claim precision, recall, robustness, or maturity without evidence;
-- if score is saturated, add auxiliary signal such as unresolved-risk count, token count, scenario coverage, or gate count.
-
-### 4. skill-harness
-
-Purpose: create or run repeatable scenarios.
-
-Required scenario groups:
-
-- activation;
-- non-activation;
-- ambiguous;
-- edge;
-- regression;
-- output contract.
-
-Checklist:
-
-- freeze scenarios before candidate patch;
-- preserve expected outputs unless benchmark design is explicitly in scope;
-- record planned scenarios separately from executed outcomes.
-
-### 5. skill-package-architecture-review
-
-Purpose: decide package structure.
-
-Checklist:
-
-- determine unified skill, modes, router, split, or stop;
-- verify one coherent operational responsibility;
-- keep `SKILL.md` as control plane;
-- move branch detail to direct references;
-- verify resources have declared use.
-
-### 6. context-architect
-
-Purpose: map dependency and cross-file impact.
-
-Use when the target includes scripts, validators, generated outputs, repo references, or many resource files.
-
-Checklist:
-
-- map affected files;
-- find imports and script consumers;
-- identify ripple effects;
-- define safe implementation sequence;
-- avoid unrelated repository changes.
-
-### 7. skill-prompt-and-activation-review
-
-Purpose: refine activation and boundaries.
-
-Checklist:
-
-- frontmatter description names target artifacts and concrete triggers;
-- adjacent non-triggers are visible;
-- ambiguous requests have ask/proceed/stop rules;
-- output contract is auditable;
-- stop conditions block unsafe or unsupported work.
-
-### 8. prompt-architect
-
-Purpose: refine complex prompt bodies or agent instructions.
-
-Use when the skill contains reusable prompts, long instructions, model-facing templates, or agent prompts.
-
-Checklist:
-
-- preserve user intent;
-- state success criteria;
-- remove vague behavior words;
-- include examples only when they calibrate behavior;
-- avoid executing the target task when the task is to improve the prompt.
-
-### 9. skill-consistency-repair
-
-Purpose: repair contradictions and integration gaps.
-
-Checklist:
-
-- compare `SKILL.md` with references and scripts;
-- ensure local links resolve;
-- remove stale claims;
-- align output contract with examples;
-- mark unsupported claims as assumptions or remove them.
-
-### 10. documentation-quality
-
-Purpose: improve human-facing and model-facing documentation.
-
-Checklist:
-
-- references have clear titles and scoped purpose;
-- examples are short and realistic;
-- script usage is documented when scripts exist;
-- claims are source-backed or framed as design decisions;
-- docs do not duplicate `SKILL.md` unnecessarily.
-
-### 11. karpathy-guidelines
-
-Purpose: keep code and technical artifacts simple and testable.
-
-Checklist:
-
-- scripts do one thing;
-- command-line options are explicit;
-- error messages are useful;
-- no overbuilt framework for simple validation;
-- tests or smoke checks exist for modified scripts.
-
-### 12. security-and-governance-review
-
-Purpose: prevent unsafe or over-authorized behavior.
-
-Checklist:
-
-- no secrets or credentials in package;
-- no broad deletes or unsafe shell execution;
-- no sensitive logging;
-- archive extraction and filesystem writes are scoped;
-- tool authority and user confirmation boundaries are clear;
-- residual risks are recorded.
-
-### 13. skill-testing-and-validation
-
-Purpose: run checks and record outcomes.
-
-Checklist:
-
-- run structure validation;
-- run local link checks;
-- run modified scripts once or syntax-check them;
-- run package validation when packaging;
-- record pass/fail commands exactly.
-
-### 14. skill-cleanup-and-simplification
-
-Purpose: remove excess after integration is understood.
-
-Checklist:
-
-- remove caches, old zips, generated reports, duplicate text, and unused scaffold;
-- classify files before deletion;
-- consolidate repeated rules;
-- keep useful templates and references that the workflow uses.
-
-### 15. skill-token-efficient
-
-Purpose: reduce token cost while preserving semantics.
-
-Checklist:
-
-- run only after behavior and contracts are stable;
-- preserve triggers, exclusions, workflow, safety, validation, and output sections;
-- compress `SKILL.md` conservatively;
-- re-run validation immediately after compression.
-
-### 16. skill-hardening
-
-Purpose: final readiness and package maturity.
-
-Checklist:
-
-- final inventory passes;
-- all support files are integrated;
-- no generated noise remains;
-- validators and package checks pass;
-- package scope is exactly the final target skill.
-
-### 17. final skill-benchmark
-
-Purpose: confirm final state and delta.
-
-Checklist:
-
-- compare against baseline;
-- distinguish measured score from judgment;
-- list residual risks and next improvement hypothesis.
-
-### 18. final skill-improver closure
-
-Purpose: close the optimization run.
-
-Checklist:
-
-- accept/reject hypotheses;
-- record files changed;
-- report final gates;
-- give rollback path when available;
-- provide `skill.zip` only when present and validated.
+Every complete Skill Booster run must execute, apply by checklist, or classify each pass below. Status values: `pass`, `fail`, `blocked`, `not-run`, `not-applicable`, `applied-by-checklist`, `planned`.
+
+## Ordered pass ledger
+
+| # | Pass | Purpose | Minimum evidence/checklist |
+|---:|---|---|---|
+| 1 | `skill-creator-juiced` | design governance and escalation | decide optimization vs redesign/router/split; preserve purpose; require package gates; no fabricated readiness |
+| 2 | `skill-improver` | objective, freeze, hypotheses, decisions | baseline before mutation; one bounded hypothesis; accept/reject with gates; proposals marked untested |
+| 3 | `skill-benchmark` | initial maturity score/report | structural vs behavioral evidence separated; no precision/recall without results; saturated score gets auxiliary metric |
+| 4 | `skill-harness` | repeatable scenarios and gates | activation, non-activation, ambiguous, edge, regression, output-contract coverage; freeze suite; planned vs executed marked |
+| 5 | `skill-package-architecture-review` | package structure decision | unified/modes/router/split/stop decision; `SKILL.md` control plane; resources have declared use |
+| 6 | `context-architect` | cross-file impact map | affected files, imports/consumers, ripple effects, safe sequence, unrelated paths avoided |
+| 7 | `skill-prompt-and-activation-review` | activation and boundaries | specific frontmatter, visible non-triggers, ambiguous rules, auditable output, stop conditions |
+| 8 | `prompt-architect` | complex prompts/instructions | preserve intent; state success criteria; remove vague wording; examples only when calibrating |
+| 9 | `skill-consistency-repair` | contradictions and integration gaps | compare `SKILL.md`, refs, scripts, templates, evals; links resolve; unsupported claims removed/marked |
+| 10 | `documentation-quality` | references, examples, templates, script docs | docs have clear purpose, verified commands/artifacts, minimal duplication, source-backed claims |
+| 11 | `karpathy-guidelines` | scripts and technical artifacts | scripts do one thing; explicit CLI; useful errors; no overbuilt framework; smoke/syntax check modified code |
+| 12 | `security-and-governance-review` | secrets, unsafe commands, authority | no secrets/logging leaks; scoped writes; safe archive handling; tool authority and residual risks recorded |
+| 13 | `skill-testing-and-validation` | validators, lint, smoke, package checks | structure validation, link checks, modified scripts run/syntax-check, package validation recorded |
+| 14 | `skill-cleanup-and-simplification` | hygiene and simplification | classify before deletion; remove only caches, old zips, generated noise, duplicates, scaffold; validate after cleanup |
+| 15 | `skill-token-efficient` | main compression after stability | preserve triggers, exclusions, routing, safety, validation, output, stop; reduce conservatively; revalidate immediately |
+| 16 | `skill-testing-and-validation` | post-compression validation | rerun affected validators/package checks; reject compression that weakens contract or fails gates |
+| 17 | `skill-hardening` | final readiness and package maturity | inventory passes; support files integrated; no generated noise; validators/package checks pass; scope exact |
+| 18 | final `skill-benchmark` | final score and delta | compare against baseline; measured vs judged evidence separated; residual risks and next hypothesis listed |
+| 19 | final `skill-improver` closure | final decisions | accept/reject hypotheses; record files; gates; rollback; package only when validated |
+| 20 | final `skill-token-efficient` closure | no avoidable waste after closure | prefer audit/validate mode; if mutating, rerun affected validation/package checks; preserve activation, safety, validation, output, stop, routing, and evidence duties |
+
+## Pass rules
+
+- Do not skip silently; mark unavailable specialists as `applied-by-checklist` using this passbook.
+- Mark a pass `not-applicable` only with artifact evidence.
+- A failed nonblocking specialist can still be reported, but readiness claims require explicit gate rationale.
+- Never alter fixtures, expected outputs, frozen benchmark baselines, secrets, generated evidence, old zips, or unrelated files to make a pass look successful.

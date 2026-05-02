@@ -8,7 +8,7 @@ Useful 0-100 dimensions: trigger specificity; inputs/assumptions; workflow/modes
 
 ## Required Gates
 
-A target is not ready if any required gate fails: exactly one `SKILL.md`; frontmatter `name` and `description`; specific description with negative boundary; clear inputs/outputs; scope boundaries and stops; no unresolved TODO placeholders; referenced resources and workflow-mentioned `assets/templates/` paths exist; operational assets integrated by workflow/copy/fill/script/validator; intended scripts have commands; validation criteria exist; dynamic facts are not permanent truth; blocked paths and secrets are protected.
+A target is not ready if any required gate fails: exactly one `SKILL.md`; frontmatter `name` and `description`; specific description with negative boundary; clear inputs/outputs; scope boundaries and stops; no unresolved scaffold placeholders; referenced resources and workflow-mentioned `assets/templates/` paths exist; operational assets integrated by workflow/copy/fill/script/validator; intended scripts have commands; validation criteria exist; dynamic facts are not permanent truth; blocked paths and secrets are protected.
 
 ## Supporting Resources
 

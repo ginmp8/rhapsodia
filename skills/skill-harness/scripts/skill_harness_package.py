@@ -3,13 +3,15 @@
 import argparse
 import importlib.util
 import json
+import sys
 import stat
 import zipfile
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 VALIDATOR_PATH = SCRIPT_DIR / "skill_harness_validate.py"
-EXCLUDE_DIRS = {".git", ".hg", ".svn", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules", "dist", "build"}
+sys.dont_write_bytecode = True
+EXCLUDE_DIRS = {".git", ".hg", ".svn", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules", "dist", "build", "reports", ".reports", "artifacts", "scratch", ".scratch", "tmp", "temp", "coverage", ".coverage"}
 EXCLUDE_SUFFIXES = {".pyc", ".pyo", ".zip"}
 EXCLUDE_NAMES = {".DS_Store"}
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)

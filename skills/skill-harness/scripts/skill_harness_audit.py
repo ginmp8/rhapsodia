@@ -3,11 +3,13 @@
 import argparse
 import importlib.util
 import json
+import sys
 import re
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 INVENTORY_PATH = SCRIPT_DIR / "skill_harness_inventory.py"
+sys.dont_write_bytecode = True
 
 
 def load_inventory_module():

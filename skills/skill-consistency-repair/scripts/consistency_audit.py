@@ -74,7 +74,7 @@ def check_broken_links(target: Path, inv: dict[str, Any], findings: list[dict[st
                 f'{source} -> {raw}',
                 'A local markdown link points to a file that does not exist in the target package.',
                 'Fix the link, add the referenced file, or remove the link if the resource is obsolete.',
-                'Re-run consistency_audit.py and verify broken local link count is zero.',
+                'Re-run scripts/consistency_audit.py and verify broken local link count is zero.',
                 'high',
             ))
             n += 1
@@ -88,7 +88,7 @@ def check_frontmatter(inv: dict[str, Any], findings: list[dict[str, str]]) -> No
             f"skill_files={inv.get('skill_files')}",
             'A skill package must resolve to a single root skill entrypoint before safe repair or packaging.',
             'Select or restructure the target so exactly one root SKILL.md is present.',
-            'inventory_skill.py reports skill_file_count == 1.',
+            'scripts/inventory_skill.py reports skill_file_count == 1.',
             'high',
         ))
     for idx, err in enumerate(fm.get('errors', []), start=1):
@@ -212,7 +212,7 @@ def check_resource_integration(target: Path, inv: dict[str, Any], skill_text: st
         findings.append(finding(
             f'P{idx:03}', 'medium', 'resource_integration', 'placeholder or scaffold marker remains',
             f"{hit['path']} contains {hit['term']}",
-            'The package appears to contain scaffold, TODO, placeholder, or example residue.',
+            'The package appears to contain scaffold, unfinished-marker, placeholder, or example residue.',
             'Replace with real target-specific content or remove the placeholder file if unused.',
             'Audit placeholder count is zero except inside template files where placeholders are intentional.',
             'medium',

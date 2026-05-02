@@ -7,105 +7,89 @@ description: use to design, run, audit, validate, package, or apply evidence-bas
 
 ## Purpose
 
-Build a controlled evidence harness around an existing ChatGPT or Agent skill so it can be audited, improved, validated, compared, and packaged without ad hoc rewriting. Owns reusable skill-package work across `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `evals/`, scenarios, validators, reports, and packaging hygiene.
+Build an evidence harness for an existing ChatGPT or Agent skill so it can be audited, improved, validated, compared, and packaged without ad hoc rewriting. Own `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `evals/`, examples, validators, reports, and package hygiene.
 
 ## Activate / Do Not Activate
 
-Use when the user asks to inspect, audit, harden, benchmark, validate, package, or harness an existing skill package; make evidence-backed edits to a skill folder or extracted zip; define activation/non-activation scenarios, edge cases, metrics, gates, evaluators, validators, reports, or packaging checks; or compare baseline/final skill quality after bounded edits.
+Use when asked to inspect, audit, harden, benchmark, validate, package, or harness an existing skill package; edit a skill folder or extracted zip with evidence; define activation, non-activation, ambiguous, edge, regression, adversarial, or output-contract scenarios; create metrics, gates, evaluators, validators, reports, or packaging checks; or compare baseline/final skill quality after bounded edits.
 
-Do not use for generic code review, application refactors, CI work, repository implementation outside a reusable skill, one-off prompt writing/advice without a target skill package, ordinary document/slide/spreadsheet/report generation outside the skill package, creating skills, explaining ChatGPT skills, or unbounded autonomous work without target, scope, blocked paths, and gates. Use skill-creator for net-new skills or skill explanations.
+Do not use for generic code review, application refactors, CI work, implementation outside a reusable skill, one-off prompt writing/advice, ordinary document/slide/spreadsheet/report generation, net-new skill creation, skill explanations, or autonomous work without target, scope, blocked paths, and gates. Use skill-creator for new skills or skill explanations.
 
-## Inputs, Defaults, and Boundaries
+## Inputs, Assumptions, Scope
 
-Before mutating, resolve or infer:
+Resolve before mutation: `TARGET_SKILL_PATH` with exactly one target `SKILL.md`; harness mode `auto|context|full`; mutation mode `audit-only|plan-only|apply|validation-only|package`; writable scope; blocked paths; evidence policy/source list; gates; and final artifact.
 
-- `TARGET_SKILL_PATH`: folder or extracted zip containing exactly one target skill.
-- Harness mode: `auto`, `context`, or `full`.
-- Mutation mode: `audit-only`, `plan-only`, `apply`, `validation-only`, or `package`.
-- Writable scope: target skill folder only unless user changes it.
-- Blocked: secrets, `.git`, evaluator fixtures, expected outputs, generated baseline evidence, benchmark baselines, user-declared read-only paths.
-- Evidence policy: target files, supplied context, approved research, internal sources, or repository truth.
-- Gates: valid structure, no unresolved scaffold markers, references exist, deterministic validators pass, package validation passes when packaging, target-specific tests pass when present.
-- Final expectation: report only, applied edits, validation result, or `skill.zip`.
+Defaults for “improve this skill”: `auto`, `apply`, target-folder-only edits, protected fixtures/secrets, baseline first, one bounded patch batch, validation, and package only when requested or clearly expected.
 
-Default for "improve this skill": `mode=auto`, `mutation=apply`, target-only edits, protected fixtures/secrets, baseline first, one bounded improvement batch, validation, and package only when requested or clearly expected.
+Blocked paths: secrets, credentials, `.git`, evaluator fixtures, expected outputs, generated baseline evidence, benchmark baselines, generated reports, old packages, and user-declared read-only paths. Gates: valid structure, no scaffold markers, references exist, deterministic validators pass, target tests pass when present, and package validation passes before any `skill.zip` claim.
 
 ## Mode Selection and Mutation Rights
 
-Harness modes:
+Harness modes: `auto` inspects first and researches only concrete weaknesses; `context` uses target and supplied context only; `full` combines target evidence, user context, and approved current primary sources. If research is forbidden, use `context` behavior.
 
-- `auto`: inspect target first; research only concrete weaknesses; output harness plan plus bounded improvements.
-- `context`: use only target contents and supplied context; output constrained changes and validation evidence.
-- `full`: combine target evidence, user context, and approved current primary sources; resolve conflicts; output comprehensive harness run and package decision.
-
-If research is forbidden, use `context` behavior.
-
-Mutation modes:
-
-- `audit-only`: inventory, audit score, findings, missing components, prioritized improvements; no edits.
-- `plan-only`: harness map, evidence policy, proposed files, gates, sequence; no edits.
-- `apply`: edits within allowed scope, validation evidence, before/after comparison, risks.
-- `validation-only`: pass/fail gates, commands, evidence paths, blockers, remediation; no edits unless explicitly allowed.
-- `package`: validated `skill.zip`, package evidence, exclusions, rollback notes; edit only as needed to pass gates.
+Mutation modes: `audit-only` reports inventory/audit findings without edits; `plan-only` writes a harness map without edits; `apply` makes target-scope edits and validates; `validation-only` reports pass/fail gates without edits unless allowed; `package` returns a validated `skill.zip` only after package checks pass.
 
 ## Resources and Progressive Loading
 
-Always read target `SKILL.md` first. Load branch resources only as needed:
+Always read target `SKILL.md` first. Load only needed branches:
 
-- `references/harness-principles.md`: decision statements, harness map, components, evidence, scenario coverage.
-- `references/mode-research-policy.md`: source rules, conflicts, research restrictions.
-- `references/skill-improvement-playbook.md`: bounded package changes.
-- `references/evaluation-and-gates.md`: scores, gates, saturated metrics, readiness decisions.
-- `references/scenario-suite-guidelines.md`: activation, ambiguous, edge, regression, adversarial scenarios.
-- `references/report-contract.md`: final/durable reports.
-- `references/cli-and-packaging-contract.md`: command contracts, package exclusions, exits.
-- `assets/templates/harness-plan.md.template`, `assets/templates/harness-report.md.template`, `assets/templates/scenario-suite.json.template`: default plan, report, and planned-suite shapes.
-- `scripts/skill_harness_inventory.py`, `scripts/skill_harness_audit.py`, `scripts/skill_harness_validate.py`, `scripts/skill_harness_package.py`: inventory, audit, validate, package.
-- `examples/harness-hardening-cases.md`: activation/boundary examples for human review.
+- `references/harness-principles.md`: harness map, integration, decisions, evidence.
+- `references/mode-research-policy.md`: source policy and conflicts.
+- `references/skill-improvement-playbook.md`: bounded changes and common fixes.
+- `references/evaluation-and-gates.md`: scores, required gates, saturated metrics, decisions.
+- `references/scenario-suite-guidelines.md`: activation, non-activation, ambiguous, edge, regression, adversarial scenario schema.
+- `references/report-contract.md`: report shape and evidence labels.
+- `references/cli-and-packaging-contract.md`: command contracts, exits, exclusions, package order.
+- `assets/templates/harness-plan.md.template`, `assets/templates/harness-report.md.template`, `assets/templates/scenario-suite.json.template`: copy/fill/render when useful.
+- `scripts/skill_harness_inventory.py`, `scripts/skill_harness_audit.py`, `scripts/skill_harness_validate.py`, `scripts/skill_harness_package.py`: inventory, audit, validation, packaging.
+- `examples/harness-hardening-cases.md`: human-review activation and boundary examples.
 
-Templates are operational when copied, filled, rendered, validated, or declared in workflow. Do not remove useful templates merely because no script reads them. Keep this file as control plane; keep detailed rubrics, schemas, examples, and script contracts in references/examples.
+Templates are operational when copied, filled, rendered, validated, or declared in workflow. Keep this file as control plane; keep rubrics, schemas, examples, and script contracts in references/examples.
 
 ## Harness Map
 
-Define before editing: decision; object under test; writable/read-only/blocked scope; dependencies; activation, non-activation, ambiguous, edge, regression, adversarial scenarios; evidence; runner commands; evaluators; metrics; gates; evidence record for baseline, plan, changes, commands, outputs, final comparison, package path, risks.
+Define before editing: decision; object under test; writable/read-only/blocked scope; dependencies; scenario groups; evidence sources; runner commands; evaluators; metrics; gates; and evidence record for baseline, plan, changes, command outputs, final comparison, package path, risks, and rollback.
 
 ## Workflow
 
-1. Inspect: read target `SKILL.md`; confirm exactly one `SKILL.md`; list `agents/`, `references/`, `scripts/`, `assets/`, `assets/templates/`, `examples/`, `evals/`; run inventory:
+1. **Inspect** target `SKILL.md`, confirm exactly one `SKILL.md`, and inventory support dirs.
 
-```bash
-python /home/oai/skills/skill-harness/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
-```
+   ```bash
+   python /home/oai/skills/skill-harness/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
+   ```
 
-2. Baseline: run static audit before planning:
+2. **Baseline** with static audit before planning. Treat score as structural evidence, not behavior proof. If saturated, add auxiliary metrics before claiming improvement.
 
-```bash
-python /home/oai/skills/skill-harness/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
-```
+   ```bash
+   python /home/oai/skills/skill-harness/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
+   ```
 
-Treat score as structural evidence, not a substitute for domain judgment, scenarios, target tests, or packaging validation. If saturated, define auxiliary metrics before claiming improvement.
+3. **Plan** evidence policy, hypotheses, scenarios, metrics, evaluators, gates, validation, packaging, and risk. Prefer `assets/templates/harness-plan.md.template` for durable plans.
+4. **Apply** bounded edits only inside allowed scope. Preserve target behavior; move long branch rules to references; add scripts only for deterministic work; add scenario suites only when behavior evidence matters; integrate resources by workflow reference, script consumer, validator, or copy/fill instruction; classify before deletion; never invent benchmark, scenario, validation, install, or package evidence.
+5. **Validate and compare** by rerunning inventory/audit, validator, modified-script syntax checks, target tests when present, and baseline/final comparison including auxiliary metrics.
 
-3. Evidence policy: `auto` derives research questions from observed weaknesses; `context` uses target plus supplied context only; `full` combines context with approved research. Record used/excluded sources, conflicts, unknowns.
-4. Plan: use `assets/templates/harness-plan.md.template` unless a lighter inline plan is requested. Cover control plane, references, scripts, templates/assets, scenarios, validation, packaging, evidence, hypotheses, gates.
-5. Apply bounded improvements: preserve target-specific behavior; edit only allowed paths; move long rules to linked references; add scripts only for deterministic heavy tasks; add scenario suites only when behavior evidence matters and user permits files; integrate templates/resources by workflow reference, script consumer, validator, or copy/fill instruction; classify weak resources before deletion; never invent facts, benchmark results, scenario pass rates, validation evidence, install state, or package state.
-6. Validate and compare: re-run inventory/audit, run validator, syntax-check added/modified scripts, run target validators/tests when present, package when requested, and compare baseline/final including auxiliary metrics when scores are saturated.
+   ```bash
+   python /home/oai/skills/skill-harness/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --output <report-dir>/validation.json
+   ```
 
-```bash
-python /home/oai/skills/skill-harness/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --output <report-dir>/validation.json
-```
+6. **Package artifact** only when gates pass; use strict packaging for publish-ready delivery or when major risks should block output.
 
-```bash
-python /home/oai/skills/skill-harness/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json
-```
+   ```bash
+   python /home/oai/skills/skill-harness/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json --strict
+   ```
 
-7. Report/package: use `assets/templates/harness-report.md.template` for durable reports. Include mode, target, decision, sources, baseline score, plan, changes, commands, comparison, gates, risks, package path. Return a package path only when `skill.zip` exists and package report succeeds.
+7. **Report** with `assets/templates/harness-report.md.template` when durable output helps. Return a package path only when the file exists and package report succeeds.
+
+## Output Contract
+
+Final response/report includes mode and target; decision; evidence policy/source list; baseline inventory and audit gates; harness map/plan; hypotheses; scenario status; metrics/evaluators; changes; validation commands/outcomes; before/after comparison; auxiliary metrics for saturated scores; residual risks/assumptions; recommendation; and package artifact path only when valid.
+
+Evidence labels: `measured` for executed commands/tests/validators/package/scenario results; `derived` for file/context inspection; `researched` for cited research; `proposed` for planned checks; `unknown` for unavailable facts. Scenario pass rates, activation precision/recall, and behavioral conformance are measured only after prompts execute and evaluator decisions are captured.
 
 ## Stop Conditions
 
-Stop before editing when target lacks exactly one `SKILL.md`; target is not a ChatGPT/Agent skill package; `context` mode lacks required context; user requests external research under `context`; changes would touch secrets, `.git`, evaluator fixtures, expected outputs, benchmark baselines, generated evidence, or user-blocked paths; improvement requires unsupported domain facts; or validation fails after structural changes and cannot be fixed within scope.
+Stop before editing when the target lacks exactly one `SKILL.md`, is not a skill package, mode lacks required context, requested changes touch blocked paths, validation/evaluator assets would be altered to fake success, package creation would include generated evidence/secrets/caches, needed source truth is unavailable, unsupported domain facts would be invented, or validation fails after structural changes and cannot be fixed within scope.
 
-## Finalization and Output Contracts
+## Finalization Checklist
 
-Before success claims, verify: baseline inventory/audit ran; mode/evidence policy followed; harness map existed before edits; each added resource is referenced, script-consumed, validator-covered, or intentionally retained as an operational asset; scaffold markers absent; modified scripts run or are reported untested; gates evaluated truthfully; measured facts are separate from proposed scenarios/assumptions; blocked paths unchanged; package path is real when package mode is claimed.
-
-Final response/report includes: mode/target, decision, evidence policy/sources, baseline inventory/audit gates, harness plan, changes, validation commands/outcomes, before/after comparison, auxiliary metrics when static score is saturated, risks/assumptions, recommendation, and package/artifact path only when valid.
+Before success claims, verify: baseline inventory/audit ran; mode/evidence policy was followed; harness map existed before edits; every added resource is referenced, script-consumed, validator-covered, or intentionally retained; scaffold markers and generated noise are absent; modified scripts ran or blockers are reported; gates are truthful; measured facts are separate from proposals; blocked paths stayed unchanged; and any returned `skill.zip` exists with passing package validation.
