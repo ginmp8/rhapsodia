@@ -6,7 +6,7 @@ Load when RALPH executes a spec package, PRD, technical design, roadmap/governan
 
 Planning-origin artifacts are execution inputs for MAGIA. Authorship states provenance, not implementation permission. MAGIA may implement code, config, tests, scripts, migrations, local tooling, technical docs, and implementation ADRs when the selected task requires them and repo evidence gives enough scope and validation.
 
-Handoff is bidirectional. Mago plans, Magia executes, and Magnomo interprets delivery implications. MAGIA returns technical gaps to Mago through `technical-gap-note.md`, implementation ADRs, implementation notes, or validation evidence; MAGIA returns delivery-impact evidence to Magnomo only as source evidence, not as stakeholder communication authored by MAGIA.
+Handoff is bidirectional. Mago plans, Magia executes, and Magiarca interprets delivery implications. MAGIA returns technical gaps to Mago through `technical-gap-note.md`, implementation ADRs, implementation notes, or validation evidence; MAGIA returns delivery-impact evidence to Magiarca only as source evidence, not as stakeholder communication authored by MAGIA.
 
 MAGIA may fill safe implementation gaps Mago did not detail when repository evidence, technical design, execution-handoff-plan.md, tasks, validation plan, and acceptance criteria are sufficient. This is technical execution refinement, not PRD refinement.
 
@@ -29,4 +29,4 @@ When file targets are missing, derive the narrowest safe target from: task metad
 - If a concrete blocker prevents implementation, record BLOCKED and leave checkbox unchecked.
 - Do not convert planning provenance into a blocker.
 - Link implementation ADRs from implementation-notes.md and validation-evidence.md, and state Mago handoff need. Treat execution-handoff-plan.md as planned input, not proof of implementation.
-- If execution evidence affects release posture, stakeholder risk, owner, due date, roadmap priority, accepted business risk, or go/no-go decisions, record the evidence and hand off to Magnomo; do not update delivery governance artifacts from MAGIA.
+- If execution evidence affects release posture, stakeholder risk, owner, due date, roadmap priority, accepted business risk, or go/no-go decisions, record the evidence and hand off to Magiarca; do not update delivery governance artifacts from MAGIA.

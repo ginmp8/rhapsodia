@@ -5,7 +5,7 @@ description: use when asked to plan, normalize, audit, define, or refine tech-le
 
 # MAGO
 
-Tech-lead planning skill. Convert Magnomo delivery intake plus repository evidence into canonical board/spec planning artifacts. MAGO plans intended design; it does not implement code, collect runtime evidence, deploy, commit, open PRs, or act as PO governance clerk.
+Tech-lead planning skill. Convert Magiarca delivery intake plus repository evidence into canonical board/spec planning artifacts. MAGO plans intended design; it does not implement code, collect runtime evidence, deploy, commit, open PRs, or act as PO governance clerk.
 
 ## Scope and Ownership
 
@@ -15,9 +15,9 @@ MAGO writes only canonical planning artifacts: discovery state/index/candidate d
 
 MAGO must not write governance/status, stakeholder comms, release notes, roadmap bookkeeping, product-code diffs, runtime proof, execution notes/runbooks, migration execution notes, contract change notes, troubleshooting guides, Magia execution records, tests, commits, PRs, deployments, or noncanonical files. Decision artifacts created by MAGO are planned architecture or planned technical decisions only; execution-handoff artifacts are plans, not implementation evidence.
 
-Routing: Magnomo owns request/governance facts; MAGO owns intended technical planning; Magia handles execution reality and execution-grounded docs. For mixed prompts, keep only the MAGO planning portion and hand off execution to Magia or governance/status work to Magnomo. Record unknowns as assumptions/blockers; never invent repository truth.
+Routing: Magiarca owns request/governance facts; MAGO owns intended technical planning; Magia handles execution reality and execution-grounded docs. For mixed prompts, keep only the MAGO planning portion and hand off execution to Magia or governance/status work to Magiarca. Record unknowns as assumptions/blockers; never invent repository truth.
 
-Governance RFC proposals, delivery status, stakeholder communication, release notes, portfolio reporting, and accepted business risk belong to Magnomo. MAGO may use RFC-style reasoning inside planning artifacts, but it must not create or update Magnomo governance RFC proposal logs or claim governance approval.
+Governance RFC proposals, delivery status, stakeholder communication, release notes, portfolio reporting, and accepted business risk belong to Magiarca. MAGO may use RFC-style reasoning inside planning artifacts, but it must not create or update Magiarca governance RFC proposal logs or claim governance approval.
 
 MAGO consumes Magia-owned execution evidence such as technical gap notes, implementation notes, validation evidence, or implementation ADRs only as read-only input for planning reconciliation. MAGO must not rewrite Magia evidence or turn it into runtime proof authored by MAGO.
 
@@ -27,7 +27,7 @@ For artifacts shared with MAGIA, load [references/shared-artifact-ownership.md](
 
 ## Activation Policy
 
-Activate only for creating, normalizing, auditing, or refining canonical repository planning artifacts. Strong triggers: refine Magnomo intake into a spec package; discover repository candidates; order backlog into define queue; adapt legacy planning docs; prepare define-ready package shells; define/refine a package; write spec-scoped technical design; record planned ADRs; plan complexity reduction, simplification, de-abstraction, or refactoring; reshape tasks; define validation plans; split product-only from task-only planning.
+Activate only for creating, normalizing, auditing, or refining canonical repository planning artifacts. Strong triggers: refine Magiarca intake into a spec package; discover repository candidates; order backlog into define queue; adapt legacy planning docs; prepare define-ready package shells; define/refine a package; write spec-scoped technical design; record planned ADRs; plan complexity reduction, simplification, de-abstraction, or refactoring; reshape tasks; define validation plans; split product-only from task-only planning.
 
 Do not activate for code implementation, code edits, runtime tests, deployments, operational evidence, delivery governance, release notes, stakeholder status, portfolio reporting, or general docs outside `BOARD_ROOT`. If likely MAGO but `BOARD_ROOT`, `board_id`, `cycle_version`, or required `spec_id` is missing, stop before writing and ask for the smallest missing input.
 
@@ -35,7 +35,7 @@ Do not activate for code implementation, code edits, runtime tests, deployments,
 
 Resolve before writes: `BOARD_ROOT`, `board_id`, `cycle_version`, required `spec_id`, evidence source, primary mode, and evidence payload. Derive paths through `references/canonical-paths.md`; never create parallel planning trees.
 
-Truth sources: repository contents, existing planning artifacts, Magnomo/roadmap handoff evidence, user context, and validated package state. Treat missing facts as assumptions/blockers. Load `references/evidence-contract.md` when claims depend on repository truth, execution/validation/dependency state, or traceability.
+Truth sources: repository contents, existing planning artifacts, Magiarca/roadmap handoff evidence, user context, and validated package state. Treat missing facts as assumptions/blockers. Load `references/evidence-contract.md` when claims depend on repository truth, execution/validation/dependency state, or traceability.
 
 ## Modes
 

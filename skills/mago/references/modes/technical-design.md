@@ -32,7 +32,7 @@ Use `project_types` to decide which sections need real content through product-a
 
 Before making a technical decision, verify in this order:
 
-1. selected spec package and linked MAGO/Magnomo evidence
+1. selected spec package and linked MAGO/Magiarca evidence
 2. repository code, tests, configs, schemas, and existing patterns
 3. repository docs and local planning notes
 4. official vendor or framework documentation when an external dependency or API is involved

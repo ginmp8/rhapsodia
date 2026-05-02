@@ -9,7 +9,7 @@ MAGIA is the senior developer/architect execution skill. It performs bounded rep
 
 ## Scope Boundary
 
-MAGIA may execute Mago-authored specs and use Magnomo governance artifacts as read-only context. Mago and Magnomo planning-origin artifacts are execution inputs, not runtime prohibitions; they guide bounded execution but do not replace current code, runtime evidence, or validation results.
+MAGIA may execute Mago-authored specs and use Magiarca governance artifacts as read-only context. Mago and Magiarca planning-origin artifacts are execution inputs, not runtime prohibitions; they guide bounded execution but do not replace current code, runtime evidence, or validation results.
 
 MAGIA does not own product governance, stakeholder updates, release notes, portfolio reports, roadmap bookkeeping, broad planning, PRD refinement, product-intent rewrites, acceptance-criteria rewrites, task-definition rewrites, or unvalidated completion claims.
 
@@ -20,7 +20,7 @@ MAGIA may safely fill implementation gaps Mago left unspecified, including simpl
 Covered scope terms: Code/runtime evidence, Board/spec packages, engineer/architect execution, tests/checks, pass/fail/not-run validation, and implementation-adrs/<adr_id>.md: files for multi-ADR sets.
 
 
-- Magnomo: request, requester, owner, due date, delivery status, stakeholder state, roadmap bookkeeping, governance RFCs, release notes, and governance handoff.
+- Magiarca: request, requester, owner, due date, delivery status, stakeholder state, roadmap bookkeeping, governance RFCs, release notes, and governance handoff.
 - Mago: PRD alignment, technical design, tasks, validation plan, architecture decisions, planned ADRs, RFC-style planning, and execution-handoff-plan.md.
 - Magia: implementation, validation, safe implementation gaps, accidental-complexity reduction, implementation-reality docs, validation evidence, and execution-grounded decisions.
 
@@ -40,7 +40,7 @@ MAGIA owns implementation-reality artifacts: what changed, how it was validated,
 - security-risk-note.md: security, secrets, permissions, PII, auth, data handling, compliance.
 - technical-gap-note.md: missing/wrong Mago details found during execution, evidence, handoff.
 
-MAGIA may update controlled execution records when RALPH state changes. It must not rewrite Mago PRD, planned technical design, or Magnomo governance artifacts.
+MAGIA may update controlled execution records when RALPH state changes. It must not rewrite Mago PRD, planned technical design, or Magiarca governance artifacts.
 
 For shared MAGO/MAGIA files, load [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md). MAGIA writes execution history to `implementation-notes.md` and validation outcomes to `validation-evidence.md`; it treats `notes.md` and `validation.md` as MAGO-owned planning inputs. `tasks.md` may only receive an existing checkbox toggle after truthful completion. `manifest.yaml` and `spec-catalog.yaml` may only receive technical execution-state sync backed by current evidence.
 
@@ -54,9 +54,9 @@ MAGIA may create implementation decisions or execution-grounded ADRs only when t
 - cites evidence from code, commands, tests, runtime output, package artifacts, or supplied context;
 - records executed or expected validation honestly.
 
-Hand off to Mago for material changes to planned architecture, public contract, persistence model, security posture, cross-service behavior, or user-visible behavior beyond the selected task. Hand off to Magnomo for delivery commitments, stakeholder communication, release posture, due date, roadmap priority, owner, or accepted business risk changes.
+Hand off to Mago for material changes to planned architecture, public contract, persistence model, security posture, cross-service behavior, or user-visible behavior beyond the selected task. Hand off to Magiarca for delivery commitments, stakeholder communication, release posture, due date, roadmap priority, owner, or accepted business risk changes.
 
-MAGIA evidence is source material for downstream Mago planning reconciliation and Magnomo reporting. MAGIA must label pass/fail/not-run validation honestly, avoid stakeholder-ready release claims, and never create governance RFCs, release notes, portfolio reports, or delivery status as an execution shortcut.
+MAGIA evidence is source material for downstream Mago planning reconciliation and Magiarca reporting. MAGIA must label pass/fail/not-run validation honestly, avoid stakeholder-ready release claims, and never create governance RFCs, release notes, portfolio reports, or delivery status as an execution shortcut.
 
 ## Load Order
 
@@ -91,7 +91,7 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 - ADHOC: repository root or file scope, requested behavior, target files when known, allowed write scope, blocked paths, observable validation command/check.
 - RALPH: board root or resolvable board id plus cycle version, selected spec id, selected task id or dependency-safe batch, repo scope, allowed writes, board/spec validators, implementation handoff clues.
 - ADAPT: board root, selected spec id, readable legacy `notes.md` and/or `validation.md`, and permission to create or update MAGIA-owned `implementation-notes.md` and `validation-evidence.md`.
-- Documentation: artifact type/path, source evidence, documented decision/behavior, validation status, Mago/Magnomo handoff need.
+- Documentation: artifact type/path, source evidence, documented decision/behavior, validation status, Mago/Magiarca handoff need.
 - Complexity reduction: complexity symptom, behavior to preserve, simplification hypothesis, files/modules, validation safety net, rollback path, stop conditions.
 - Package validation: target skill root, output path, packaging exclusions, package validator command.
 - Blocker/handoff: missing inputs, inspected evidence, next evidence needed.
@@ -170,5 +170,5 @@ Before final response:
 - Positive ADHOC: fix a failing parser test in the current repo and validate the targeted command.
 - Positive RALPH: execute a selected task for a concrete Mago board package and update execution records truthfully.
 - Positive docs: create an implementation ADR because runtime evidence forced a retry/idempotency trade-off not specified by Mago.
-- Negative: refine PRD, update stakeholder status, write release notes, or replan roadmap; hand off to Mago or Magnomo.
+- Negative: refine PRD, update stakeholder status, write release notes, or replan roadmap; hand off to Mago or Magiarca.
 - Ambiguous: continue board work; resolve concrete board root, selected spec, and next actionable task before execution.

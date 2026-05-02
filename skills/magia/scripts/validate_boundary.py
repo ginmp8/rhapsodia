@@ -16,11 +16,11 @@ THIS_FILE = Path(__file__).resolve()
 TEXT_SUFFIXES = {".md", ".py", ".yaml", ".yml", ".template", ".txt"}
 
 HARD_PATTERNS = [
-    ("external skill URI", re.compile(r"skills://magnomo", re.IGNORECASE)),
-    ("external skill path", re.compile(r"\.github[/\\]skills[/\\]magnomo", re.IGNORECASE)),
-    ("relative external skill path", re.compile(r"\.\.[/\\]magnomo", re.IGNORECASE)),
-    ("external script import", re.compile(r"^\s*(?:from|import)\s+.*magnomo", re.IGNORECASE | re.MULTILINE)),
-    ("external script execution", re.compile(r"(?:python|python3|py)\s+.*magnomo[/\\].*\.py", re.IGNORECASE)),
+    ("external skill URI", re.compile(r"skills://magiarca", re.IGNORECASE)),
+    ("external skill path", re.compile(r"\.github[/\\]skills[/\\]magiarca", re.IGNORECASE)),
+    ("relative external skill path", re.compile(r"\.\.[/\\]magiarca", re.IGNORECASE)),
+    ("external script import", re.compile(r"^\s*(?:from|import)\s+.*magiarca", re.IGNORECASE | re.MULTILINE)),
+    ("external script execution", re.compile(r"(?:python|python3|py)\s+.*magiarca[/\\].*\.py", re.IGNORECASE)),
 ]
 
 DOWNSTREAM_ARTIFACTS = [

@@ -1,0 +1,15 @@
+interface:
+  display_name: Magiarca
+  short_description: Product and delivery governance clerk for intake, status, roadmap
+    bookkeeping, and handoff records.
+  default_prompt: Use $magiarca to register, normalize, validate, or report on Magiarca-owned
+    governance artifacts only; route technical design, ADRs, Mago technical planning,
+    and execution to Mago or Magia.
+  allow_implicit_invocation: true
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

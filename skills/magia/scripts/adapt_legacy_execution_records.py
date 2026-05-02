@@ -135,7 +135,7 @@ def write_implementation_notes(path: Path, spec_id: str, records: dict[str, dict
         "## Handoff",
         "",
         "- Mago: review if adapted evidence conflicts with current planning artifacts",
-        "- Magnomo: none",
+        "- Magiarca: none",
     ])
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

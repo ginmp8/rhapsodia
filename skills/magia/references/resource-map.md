@@ -7,7 +7,7 @@ Use to locate MAGIA resources without loading every file.
 - `references/common-execution.md`: shared execution rules.
 - `references/senior-engineering-discipline.md`: small, explicit, verifiable engineering behavior.
 - `references/complexity-reduction-execution.md`: behavior-preserving simplification, de-abstraction, refactor execution.
-- `references/planning-handoff.md`: consume Mago/Magnomo artifacts, including execution-handoff-plan.md, as execution inputs.
+- `references/planning-handoff.md`: consume Mago/Magiarca artifacts, including execution-handoff-plan.md, as execution inputs.
 - `references/developer-artifact-standards.md`: implementation-doc taxonomy/templates.
 - `references/technical-documentation.md`: implementation ADR and doc rules.
 - `references/validation-and-closure.md`: truthful validation/closure.

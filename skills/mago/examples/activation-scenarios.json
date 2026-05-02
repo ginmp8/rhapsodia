@@ -313,7 +313,7 @@
       "prompt": "Update the stakeholder brief with who requested the feature, the promised due date, and the current delivery status for the PO review.",
       "expected_activation": false,
       "expected_mode": null,
-      "expected_boundary": "route to Magnomo because this is governance/status bookkeeping, not tech-lead planning",
+      "expected_boundary": "route to Magiarca because this is governance/status bookkeeping, not tech-lead planning",
       "case_type": "should_not_activate",
       "category": "should_not_activate"
     },
