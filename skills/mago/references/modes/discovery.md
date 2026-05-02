@@ -3,7 +3,7 @@
 ## Canonical Rules
 
 - `BOARD_ROOT` is required for discovery artifacts.
-- Use prompt-provided `BOARD_ROOT` when present; otherwise derive it from `canonical-paths.md`.
+- Use prompt-provided `BOARD_ROOT` when present; otherwise derive it from canonical-paths.md.
 - No spec package path is active in `discovery`.
 - Keep discovery-state.json, discovery-index.yaml, and `candidates/` under `BOARD_ROOT` only.
 
@@ -11,7 +11,7 @@ Use this mode for iterative repository scanning. It is the upstream evidence sta
 
 ## Discovery Workflow
 
-1. Select or create the resolved `BOARD_ROOT` from [../canonical-paths.md](../canonical-paths.md), containing discovery-state.json, discovery-index.yaml, and candidate docs under `candidates/`.
+1. Select or create the resolved `BOARD_ROOT` from `references/canonical-paths.md`, containing discovery-state.json, discovery-index.yaml, and candidate docs under `candidates/`.
 2. Load only the current frontier batch, existing discovery artifacts, and repository facts needed to classify what those files reveal.
 3. Update discovery-state.json with frontier progress, file coverage, and next-frontier decisions.
 4. Update discovery-index.yaml with stable candidate entries and candidate status transitions.

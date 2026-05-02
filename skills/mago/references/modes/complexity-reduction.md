@@ -12,11 +12,11 @@ Use this mode when MAGO must plan simplification, de-abstraction, refactoring st
 
 ## Outputs
 
-Create or update `complexity-reduction-plan.md` and, when useful, align `implementation-plan.md`, `tasks.md`, `validation.md`, `technical-design.md`, or planned ADRs. Do not edit code. Do not claim runtime behavior or implementation results.
+Create or update complexity-reduction-plan.md and, when useful, align execution-handoff-plan.md, tasks.md, validation.md, technical-design.md, or planned ADRs. Do not edit code. Do not claim runtime behavior or implementation results.
 
 ## Workflow
 
-1. Load [../complexity-reduction-planning.md](../complexity-reduction-planning.md).
+1. Load `references/complexity-reduction-planning.md`.
 2. Identify behavior to preserve and non-goals.
 3. Inventory complexity candidates and classify them as accidental, essential, unknown, or out of scope.
 4. Select small simplification hypotheses with evidence, expected benefit, blast radius, validation, and rollback.

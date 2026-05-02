@@ -38,9 +38,9 @@
   {
     "id": "A004",
     "category": "should_activate",
-    "prompt": "Append an ADR record for this documented delivery decision and validate the updated governance record.",
+    "prompt": "Append an governance decision for this documented delivery decision and validate the updated governance record.",
     "expected_activation": true,
-    "expected_behavior": "Activate Magnomo in adr-record mode, use the ADR helper when applicable, preserve missing decision metadata as unknown, and validate the updated ADR artifact.",
+    "expected_behavior": "Activate Magnomo in governance-decision mode, use the governance decision helper when applicable, preserve missing decision metadata as unknown, and validate the updated governance decision artifact.",
     "actual_activation": null,
     "output_conforms": null,
     "quality_score": null,
@@ -218,7 +218,7 @@
   {
     "id": "E004",
     "category": "edge_case",
-    "prompt": "Update status, replanning, release notes, and ADR records in one request.",
+    "prompt": "Update status, replanning, release notes, and governance decisions in one request.",
     "expected_activation": true,
     "expected_behavior": "Activate Magnomo, choose the narrowest single primary mode or split explicitly without overclaiming, and validate each touched Magnomo artifact if multiple outputs are produced.",
     "actual_activation": null,

@@ -15,8 +15,9 @@ from pathlib import Path
 from typing import Any
 
 EXCLUDED_DIR_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
-EXCLUDED_FILE_NAMES = {".DS_Store", "skill.zip"}
-EXCLUDED_SUFFIXES = {".pyc", ".pyo", ".tmp"}
+EXCLUDED_DIR_PATHS = {"docs/skill-benchmark", "reports", "generated-evidence", "evidence"}
+EXCLUDED_FILE_NAMES = {".DS_Store"}
+EXCLUDED_SUFFIXES = {".pyc", ".pyo", ".tmp", ".zip"}
 ZIP_TIMESTAMP = (2026, 1, 1, 0, 0, 0)
 
 
@@ -78,7 +79,10 @@ def run_gate(name: str, command_line: list[str], env: dict[str, str]) -> GateRes
 
 def should_package(path: Path, root: Path) -> bool:
     rel_parts = path.relative_to(root).parts
+    rel = path.relative_to(root).as_posix()
     if any(part in EXCLUDED_DIR_NAMES for part in rel_parts):
+        return False
+    if any(rel == excluded or rel.startswith(excluded + "/") for excluded in EXCLUDED_DIR_PATHS):
         return False
     if path.name in EXCLUDED_FILE_NAMES:
         return False

@@ -1,4 +1,7 @@
-"""Small shared helpers for MAGO validation and normalization scripts."""
+"""Small shared helpers for MAGO validation and normalization scripts.
+
+Import-only module: argparse intentionally absent; consuming scripts expose CLI entrypoints.
+"""
 
 from __future__ import annotations
 

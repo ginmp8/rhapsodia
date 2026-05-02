@@ -15,9 +15,9 @@
 - Treat auxiliary docs under `BOARD_ROOT` as read-only unless the selected task requires updating them.
 - Do not invent product rules, scope, or status.
 
-## Planning-Origin Inputs
+## Planning-Origin Execution Inputs
 
-- Specs/docs from planning or governance are executable inputs for MAGIA.
+- Planning authorship means the artifact was not implemented by its authoring workflow; specs/docs from planning or governance are executable inputs for MAGIA.
 - Implement the smallest safe repo change when the selected task requires implementation and no concrete blocker remains.
 - Never block solely because implementation is required, the package was planned, or the manifest is planned.
 - A valid blocker names the missing target, dependency, credential, validation path, unsafe access, or conflicting source-of-truth evidence.
@@ -30,16 +30,16 @@
 - Preserve truthful supported behavior unless the active contract permits change.
 - Touch only files and abstractions needed; reuse existing abstractions first.
 - Treat original-solution, planning, governance, roadmap, discovery, and source-reference paths as read-only evidence, not runtime bans.
-- In RALPH, prd.md is read-only; tasks.md is read-mostly and may only have an existing task checkbox toggled when truthfully complete.
+- In RALPH, prd.md, technical-design.md, notes.md, and validation.md are read-only planning inputs; tasks.md is read-mostly and may only have an existing task checkbox toggled when truthfully complete.
 - For execution records, load `references/artifacts/execution-records.md` and preserve canonical structure.
 - Use local scripts for template writes, placeholder resolution, execution logs, state sync/heal, artifact validation, and boundary/package validation when available.
 - Use `scripts/write_artifact_scaffold.py` for template-backed writes and `scripts/validate_artifact.py` or a narrower validator before relying on manual review.
 - Keep MAGIA durable docs inside `BOARD_ROOT`.
-- Record meaningful assumptions/trade-offs in notes.md when they affect later work.
-- After each executed task, use `scripts/write_execution_log.py <board_root> --spec-id <specNNN> --task-id <taskNNN> ...`; if truthfully done, check the existing tasks.md box in place.
-- When evidence changes completion truth, reconcile tasks.md, notes.md, validation.md, manifest.yaml, and spec-catalog.yaml in one closure pass.
-- If tasks.md, notes.md, or manifest.yaml disagree about valid taskNNN ids, stop and hand off to planning.
-- For narrow drift limited to unchecked done tasks or stale/missing manifest.yaml last_execution, run `scripts/heal_execution_state.py <board_root> --spec-id <specNNN>` when notes.md plus validation.md prove the repair.
+- Record meaningful execution assumptions/trade-offs in implementation-notes.md when they affect later work; keep notes.md as read-only planning context.
+- After each executed task, use `scripts/write_execution_log.py <board_root> --spec-id <specNNN> --task-id <taskNNN> ...` to update implementation-notes.md; if truthfully done, check the existing tasks.md box in place.
+- When evidence changes completion truth, reconcile tasks.md, implementation-notes.md, validation-evidence.md, manifest.yaml, and spec-catalog.yaml in one closure pass.
+- If tasks.md, implementation-notes.md, or manifest.yaml disagree about valid taskNNN ids, stop and hand off to planning.
+- For narrow drift limited to unchecked done tasks or stale/missing manifest.yaml last_execution, run `scripts/heal_execution_state.py <board_root> --spec-id <specNNN>` only when implementation-notes.md plus validation-evidence.md prove the repair. Legacy notes.md/validation.md are not fallback evidence; run ADAPT mode first if they are the only source.
 - Do not ask for clarification during unattended loops; continue conservatively only when honest and verifiable.
 - Stop instead of improvising when ambiguity would require inventing tasks, correcting metadata, rewriting PRD, resequencing, or doing planning inside execution.
 
@@ -51,7 +51,7 @@
 
 ## Editing Rules
 
-- Avoid unrelated refactors and duplicate notes, validation, or execution summaries outside `BOARD_ROOT`.
+- Avoid unrelated refactors and duplicate planning notes, validation plans, or execution summaries outside `BOARD_ROOT`.
 - Keep comments/docs aligned with behavior changes.
 - Preserve local naming/style unless the task requires change.
 - Update execution records in place; do not rewrite large areas when a focused edit works.

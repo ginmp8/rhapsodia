@@ -26,7 +26,7 @@ flowchart LR
 
 ### 1. Discovery
 
-Goal: scan a bounded repository frontier and extract candidate features, entry points, dependencies, open questions. Artifacts: discovery-state.json, discovery-index.yaml, `candidates/<candidate_id>.md`. Rules: iterative/batch-based; no `spec_id`, ordering, or define package generation.
+Goal: scan a bounded repository frontier and extract candidate features, entry points, dependencies, open questions. Artifacts: discovery-state.json, discovery-index.yaml, candidates/<candidate_id>.md. Rules: iterative/batch-based; no `spec_id`, ordering, or define package generation.
 
 ### 2. Order
 

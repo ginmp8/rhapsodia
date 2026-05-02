@@ -1,6 +1,6 @@
 # Magnomo Golden Examples
 
-These examples demonstrate intended Magnomo patterns without turning governance artifacts into implementation plans.
+These examples demonstrate intended Magnomo patterns without turning governance artifacts into Mago execution-handoff plans or Magia execution evidence.
 
 ## Directory Structure
 
@@ -34,7 +34,7 @@ These examples demonstrate intended Magnomo patterns without turning governance 
 |  |- input.md
 |  |- roadmap.yaml
 |  |- roadmap.md
-|  |- adr-records.md
+|  |- governance-decisions.md
 |  |- feature-map.yaml
 |  |- expectations.md
 |- 06-roadmap-to-spec-handoff-mago/
@@ -57,9 +57,9 @@ These examples demonstrate intended Magnomo patterns without turning governance 
 |  |- input.md
 |  |- rfc-proposals.md
 |  |- expectations.md
-|- 10-adr-record-roadmap-decision/
+|- 10-governance-decision-roadmap-decision/
    |- input.md
-   |- adr-records.md
+   |- governance-decisions.md
    |- expectations.md
 ```
 
@@ -74,7 +74,7 @@ These examples demonstrate intended Magnomo patterns without turning governance 
 7. Feature report after delivery: use supplied execution evidence as input and produce human-readable delivery reporting.
 8. Release notes for stakeholders: communicate user impact and rollout without exposing internal notes or claiming unsupported availability.
 9. RFC proposal for roadmap handoff: capture an undecided governance proposal with RACI, assumptions, criteria, options, recommendation, and pending outcome.
-10. ADR record for roadmap decision: capture an accepted governance decision as append-only history with context, alternatives, impact, links, and supersession state.
+10. governance decision for roadmap decision: capture an accepted governance decision as append-only history with context, alternatives, impact, links, and supersession state.
 
 ## Validation
 
@@ -85,5 +85,5 @@ Use `scripts/validate_golden_examples.py --skill-root <skill-root>` as the canon
 - Unknown facts stay `null`, `unknown`, or explicitly described as not recorded.
 - Branches, pull requests, commits, checks, review status, deployment state, and last commit age are not maintained as Magnomo source-of-truth fields.
 - Mago receives roadmap and feature-map handoff evidence only.
-- RFC proposals remain mutable while under review; accepted material decisions are recorded as ADR records.
+- RFC proposals remain mutable while under review; accepted material decisions are recorded as governance decisions.
 - Execution evidence is consumed as input evidence; Magnomo does not rewrite it.

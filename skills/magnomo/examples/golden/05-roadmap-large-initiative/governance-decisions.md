@@ -1,4 +1,4 @@
-# ADR Records
+# Governance Decisions
 
 ## Entries
 
@@ -16,4 +16,4 @@
 
 
 
-Governance note: this legacy file records delivery governance decisions only, not architecture decisions.
+Governance note: this file records delivery governance decisions only, not architecture decisions.

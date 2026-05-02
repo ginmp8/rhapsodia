@@ -10,7 +10,7 @@ State the code, runtime, dependency, or validation facts that forced this decisi
 
 ## Decision
 
-State the implementation decision directly.
+State the execution-grounded implementation decision directly.
 
 ## Alternatives Considered
 

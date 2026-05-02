@@ -2,7 +2,11 @@
 
 Use when MAGIA produces structured downstream evidence, implementation notes, or execution-grounded technical documentation.
 
-MAGIA evidence records implementation truth: repository changes, files touched, tests, commands, runtime output, blockers, implementation decisions, validation results, and residual risks. Magia does not create roadmap, release, status, stakeholder, portfolio, feature-reporting, or release-communication artifacts; downstream consumers interpret evidence themselves.
+MAGIA evidence records implementation truth: repository changes, files touched, tests, commands, runtime output, blockers, implementation decisions, validation results, and residual risks. Magia does not create roadmap, release, status, stakeholder, portfolio, feature-reporting, governance RFC, or release-communication artifacts; downstream consumers interpret evidence themselves.
+
+Use `implementation-notes.md` for execution history and implementation facts. Use `validation-evidence.md` for command results, failed/not-run checks, residual validation gaps, and blockers. Treat `notes.md` and `validation.md` as MAGO-owned planning inputs; legacy execution content in those files is ignored unless ADAPT mode is explicitly converting it into current MAGIA-owned artifacts.
+
+For downstream consumption, label evidence provenance and closure state explicitly: `passed`, `failed`, `not-run`, `blocked`, `partial`, or `unknown`. Magnomo can summarize these labels in reports, but MAGIA must not write stakeholder-ready release language or governance approval.
 
 ## Evidence Types
 

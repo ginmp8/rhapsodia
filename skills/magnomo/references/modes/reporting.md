@@ -4,11 +4,13 @@ Use for `feature-report` and `release-notes`.
 
 ## Canonical Rules
 
-`BOARD_ROOT` is required for repository-facing reporting. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from [references/canonical-paths.md](../canonical-paths.md). `feature-report` requires a selected spec package under `BOARD_ROOT/specs/<spec_id>/`; `feature-report.md` stays there. `release-notes.md` and `internal-notes.md` stay directly under `BOARD_ROOT`.
+`BOARD_ROOT` is required for repository-facing reporting. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from `references/canonical-paths.md`. `feature-report` requires a selected spec package under `BOARD_ROOT/specs/<spec_id>/`; `feature-report.md` stays there. `release-notes.md` and `internal-notes.md` stay directly under `BOARD_ROOT`.
 
 Create/refresh reports with local scripts whenever available: scaffold with `scripts/write_artifact_scaffold.py`; validate with `scripts/validate_artifact.py` instead of copying template text.
 
 Reporting starts after delivery activity has evidence. It turns Magnomo metadata and supplied delivery evidence into human-ready communication without inventing facts.
+
+Reporting consumes Magia execution evidence and Mago planning evidence as source material. Attribute technical statements to their source and keep Magnomo authority limited to delivery communication, governance status, and stakeholder-readable summaries.
 
 ## feature-report
 
@@ -20,4 +22,4 @@ Create board-scoped `release-notes.md` for delivered specs/features. Audience: s
 
 ## Evidence Rules
 
-Do not claim shipment without explicit release, deployment, or rollout evidence. Mark missing release, rollout, or validation evidence as unknown/draft/pending/not recorded. Do not expose internal-only details in `release-notes.md`; place them in `internal-notes.md`. Never include secrets, credentials, private tokens, or raw sensitive operational data.
+Do not claim shipment without explicit release, deployment, or rollout evidence. Do not claim technical validation, production readiness, or test completion unless the supplied evidence says so; phrase it as sourced evidence, not Magnomo validation. Mark missing release, rollout, or validation evidence as unknown/draft/pending/not recorded. Do not expose internal-only details in `release-notes.md`; place them in `internal-notes.md`. Never include secrets, credentials, private tokens, or raw sensitive operational data.

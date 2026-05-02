@@ -20,7 +20,7 @@ Human roadmap narrative.
 
 Required sections: `# Roadmap`, `## Context`, `## Themes`, `## Goals And Outcomes`, `## MVP Boundary`, `## Sequencing`, `## Dependencies`, `## Risks`, `## Stakeholders`, `## Open Decisions`. Optional: `## Success Measures`, `## Non-Goals`, `## Later Phases`, `## Mago Handoff Candidates`.
 
-Narrative aligns with `roadmap.yaml`. Features marked ready for spec should appear in `feature-map.yaml`. Material undecided roadmap proposals belong in `rfc-proposals.md`; accepted material roadmap changes belong in `adr-records.md`. Material changes include priority, sequencing, confidence, scope, dependency, MVP boundary, `ready_for_spec`, and `candidate_spec_id` changes. For RFC shape use [rfc.md](rfc.md); for ADR append-only decision rules use [adr.md](adr.md).
+Narrative aligns with `roadmap.yaml`. Features marked ready for spec should appear in `feature-map.yaml`. Material undecided roadmap proposals belong in `rfc-proposals.md`; accepted material roadmap changes belong in `governance-decisions.md`. Material changes include priority, sequencing, confidence, scope, dependency, MVP boundary, `ready_for_spec`, and `candidate_spec_id` changes. For RFC shape use [rfc.md](rfc.md); for governance-decision append-only rules use [governance-decision.md](governance-decision.md).
 
 ## feature-map.yaml
 

@@ -1,6 +1,6 @@
 # ADR Quality
 
-Use when `notes.md` design decisions, `technical-design.md` trade-offs, `architecture-decisions.md`, or spec-scoped ADR files are in scope.
+Use when notes.md design decisions, technical-design.md trade-offs, architecture-decisions.md, or spec-scoped ADR files are in scope.
 
 MAGO owns planning-level architecture rationale and planned Architecture Decision Records. It does not own Magnomo governance decision logs and it does not own Magia execution-grounded implementation ADRs.
 

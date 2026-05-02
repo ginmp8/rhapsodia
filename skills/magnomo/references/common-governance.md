@@ -19,13 +19,13 @@ magnomo = human-ready delivery governance, roadmap, status, and reporting
 - Prefer explicit artifact evidence over inference.
 - Preserve uncertainty as `unknown`, `null`, or explicit risk.
 - Do not treat PR merge, branches, commits, checks, review status, deployments, or last commit age as Magnomo source of truth.
-- Treat roadmap artifacts as upstream human intent, not implementation plans.
+- Treat roadmap artifacts as upstream human intent, not Mago execution-handoff plans.
 
 ## Artifact Sources
 
 - `ops.yaml`: structured delivery metadata for one spec.
 - `status.md`: human status for one spec, derived from `ops.yaml` and supplied evidence.
-- Roadmap artifacts: human intent/prioritization, not implementation plans.
+- Roadmap artifacts: human intent/prioritization, not Mago execution-handoff plans.
 - Portfolio and release communication aggregate at board scope.
 - Reporting artifacts communicate delivered scope, evidence, risk, rollout, and follow-up without becoming execution records.
 - Supplied Mago `technical-design.md` may be linked/summarized as evidence for communication or governance decisions, but never edited by Magnomo.

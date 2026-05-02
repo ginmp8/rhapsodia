@@ -5,31 +5,32 @@
 - Spec or task: `unknown`
 - Change under validation: `unknown`
 
-## Executed Checks
+## Execution Run - taskNNN (YYYY-MM-DD)
+
+### Executed Checks
 
 | Check | Command or method | Result | Evidence |
 |---|---|---|---|
 | unknown | unknown | not-run | unknown |
 
-## Failed Checks
+### Failed Checks
 
 - `none`
 
-## Not-Run Checks
+### Not-Run Checks
 
 | Check | Reason not run | Risk |
 |---|---|---|
 | unknown | unknown | unknown |
 
-## Static Evidence
+### Static Evidence
 
 - `unknown`
 
-## Residual Risk
+### Residual Risk
 
 - `unknown`
 
-## Recommended Follow-Up
+### Recommended Follow-Up
 
 - `none`
-

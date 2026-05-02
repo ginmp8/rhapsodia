@@ -13,5 +13,5 @@ features:
     mago_inputs:
       - .github/skills/magnomo/examples/golden/06-roadmap-to-spec-handoff-mago/roadmap.yaml
       - .github/skills/magnomo/examples/golden/05-roadmap-large-initiative/roadmap.md
-      - .github/skills/magnomo/examples/golden/05-roadmap-large-initiative/adr-records.md
+      - .github/skills/magnomo/examples/golden/05-roadmap-large-initiative/governance-decisions.md
     notes: Mago owns the PRD, acceptance criteria, implementation tasks, and validation plan.

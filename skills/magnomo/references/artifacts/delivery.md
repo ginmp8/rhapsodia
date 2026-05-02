@@ -1,6 +1,6 @@
 # Delivery Artifacts
 
-Magnomo delivery artifacts communicate human delivery governance, not implementation plans or execution records.
+Magnomo delivery artifacts communicate human delivery governance, not Mago execution-handoff plans or Magia execution records.
 
 Placement: spec-scoped `ops.yaml`, `status.md`, `stakeholder-brief.md`, `replanning.md` live under `BOARD_ROOT/specs/<spec_id>/`. Board-scoped `portfolio.yaml` and `portfolio.md` live directly under `BOARD_ROOT`.
 

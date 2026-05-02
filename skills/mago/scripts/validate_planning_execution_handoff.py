@@ -19,7 +19,7 @@ REQUIRED_FILES = [
 REQUIRED_PHRASES = {
     "SKILL.md": [
         "planning boundary is an authoring boundary",
-        "implementation-required tasks are valid planning outputs",
+        "execution-required tasks are valid planning outputs",
     ],
     "references/planning-execution-handoff.md": [
         "A MAGO planning boundary is not an implementation prohibition",
@@ -27,10 +27,10 @@ REQUIRED_PHRASES = {
     ],
     "references/artifacts/templates-and-status.md": [
         "Execution Handoff Consistency",
-        "do not mark a task blocked merely because it requires implementation",
+        "do not mark a task blocked merely because it requires downstream Magia implementation",
     ],
     "assets/templates/tasks.md.template": [
-        "Implementation-required tasks are valid planning outputs",
+        "Execution-required tasks are valid planning outputs",
         "repository_relative_module_or_boundary_to_change",
     ],
 }

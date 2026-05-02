@@ -1,6 +1,6 @@
-# ADR Records
+# Governance Decisions
 
-This file uses the legacy name `adr-records.md`, but entries are governance decisions only. Do not use it for Architecture Decision Records.
+This file uses the name `governance-decisions.md`, but entries are governance decisions only. Do not use it for Architecture Decision Records.
 
 ## Decisions
 

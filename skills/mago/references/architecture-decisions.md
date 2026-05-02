@@ -1,10 +1,10 @@
 # Architecture Decisions
 
-Use when MAGO records planned architecture decisions, implementation decisions, or Architecture Decision Records for one selected spec package.
+Use when MAGO records planned architecture decisions, planned technical decisions, or Architecture Decision Records for one selected spec package.
 
 ## Ownership
 
-MAGO owns architecture decisions that are made during planning or spec refinement. These include system boundaries, APIs, data contracts, persistence shape, eventing, workflow orchestration, security posture, observability design, migration approach, rollback strategy, dependency choice, and implementation strategy before execution.
+MAGO owns architecture decisions that are made during planning or spec refinement. These include system boundaries, APIs, data contracts, persistence shape, eventing, workflow orchestration, security posture, observability design, migration approach, rollback strategy, dependency choice, and planned execution strategy before implementation begins.
 
 Do not send architecture ADRs to Magnomo. Magnomo may record governance decisions that depend on technical evidence, but the architecture decision itself stays in MAGO or MAGIA.
 
@@ -26,7 +26,7 @@ BOARD_ROOT/specs/<spec_id>/adrs/<adr_id>.md
 
 Repository-wide ADRs may be created only when the user explicitly selects a repository ADR convention and the write scope allows it. Otherwise keep decisions spec-scoped.
 
-Do not create architecture ADRs under Magnomo's `adr-records.md` governance decision log.
+Do not create architecture ADRs under Magnomo governance decision logs.
 
 ## Required ADR Content
 
@@ -44,7 +44,7 @@ An architecture decision must include:
 
 ## Quality Rules
 
-- Keep product intent in `prd.md`; keep architecture and implementation choices in `technical-design.md` or ADRs.
+- Keep product intent in prd.md; keep planned architecture and planned technical choices in technical-design.md or ADRs.
 - Record unknowns explicitly instead of inventing facts.
 - Prefer one clear decision per ADR.
 - Include rejected alternatives when they influenced the chosen direction.

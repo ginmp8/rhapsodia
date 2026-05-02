@@ -192,8 +192,8 @@ def validate_package(package_path: Path, report: EvidenceReport, repo_root: Path
         tasks = package_path / "tasks.md"
         if not tasks.exists():
             report.error(manifest, "last_execution is present but tasks artifact is missing")
-        if not notes.exists() or "## Execution Log" not in read_text(notes):
-            report.error(manifest, "last_execution is present but notes execution log is missing")
+        if not (package_path / "implementation-notes.md").exists():
+            report.error(manifest, "last_execution is present but current implementation-notes.md execution evidence is missing")
 
     if validation.exists():
         validation_text = read_text(validation)
@@ -203,8 +203,10 @@ def validate_package(package_path: Path, report: EvidenceReport, repo_root: Path
             report.warning(validation, "validation success language appears without command, evidence, source, or not-run context")
     if notes.exists():
         notes_text = read_text(notes)
-        if EXECUTION_CLAIM_RE.search(notes_text) and "## Execution Log" not in notes_text:
-            report.warning(notes, "execution-like language appears outside an execution log")
+        if "## Execution Log" in notes_text:
+            report.warning(notes, "legacy Execution Log in notes.md is not current evidence; run MAGIA ADAPT and keep notes.md planning-only")
+        elif EXECUTION_CLAIM_RE.search(notes_text):
+            report.warning(notes, "execution-like language appears in MAGO planning notes; move execution evidence to implementation-notes.md")
 
 
 def run(target: Path, repo_root: Path | None, spec_ids: Iterable[str], strict_paths: bool) -> EvidenceReport:

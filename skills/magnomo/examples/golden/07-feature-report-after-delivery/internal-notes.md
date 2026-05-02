@@ -11,4 +11,4 @@ Customer-facing communication should avoid implying dashboard role preview is in
 ## Follow-ups
 
 - Prepare support wording for dashboard role-preview requests.
-- Confirm whether a separate ADR record is needed for the next feature candidate.
+- Confirm whether a separate governance decision is needed for the next feature candidate.

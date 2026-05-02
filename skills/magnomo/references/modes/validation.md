@@ -4,7 +4,7 @@ Use for `validate-contracts` and `normalize-human-artifacts`.
 
 ## Canonical Rules
 
-`BOARD_ROOT` is required when validation touches repository-facing Magnomo artifacts. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from [references/canonical-paths.md](../canonical-paths.md). A selected spec path is required only for spec-scoped validation. Keep scope to Magnomo artifacts and boundaries under `BOARD_ROOT` and selected spec packages.
+`BOARD_ROOT` is required when validation touches repository-facing Magnomo artifacts. Prompt `BOARD_ROOT` wins after validation; otherwise derive it from `references/canonical-paths.md`. A selected spec path is required only for spec-scoped validation. Keep scope to Magnomo artifacts and boundaries under `BOARD_ROOT` and selected spec packages.
 
 Magnomo validators check artifacts and ownership boundaries. They do not execute repository code, load Mago/Magia skill files, or infer missing facts.
 

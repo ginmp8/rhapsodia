@@ -38,6 +38,7 @@ NEGATED_EXECUTION_PATTERNS = (
     "do not run tests or claim runtime evidence",
     "keep implementation tasks out",
     "implementation plan at approach level",
+    "execution handoff plan at approach level",
     "do not collect runtime evidence",
     "without product code",
     "do not change product code",

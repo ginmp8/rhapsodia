@@ -20,7 +20,7 @@ MAGNOMO_ARTIFACTS = {
     "roadmap.yaml",
     "roadmap.md",
     "rfc-proposals.md",
-    "adr-records.md",
+    "governance-decisions.md",
     "feature-map.yaml",
     "feature-report.md",
     "release-notes.md",

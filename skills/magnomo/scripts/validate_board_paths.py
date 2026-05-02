@@ -21,7 +21,7 @@ BOARD_SCOPED_ARTIFACTS = {
     "portfolio.yaml",
     "release-notes.md",
     "rfc-proposals.md",
-    "adr-records.md",
+    "governance-decisions.md",
     "roadmap.md",
     "roadmap.yaml",
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Canonical MAGIA writer for notes.md Execution Log entries."""
+"""Canonical MAGIA writer for implementation-notes.md Execution Log entries."""
 
 from __future__ import annotations
 
@@ -143,11 +143,11 @@ def write_execution_log(
     follow_ups: list[str],
     blockers: list[str],
 ) -> Path:
-    notes_path = spec_package / "notes.md"
+    notes_path = spec_package / "implementation-notes.md"
     tasks_path = spec_package / "tasks.md"
 
     if not notes_path.exists():
-        raise FileNotFoundError(f"Missing notes.md: {notes_path}")
+        write_text(notes_path, "# Implementation Notes\n\n## Execution Log\n")
     if not tasks_path.exists():
         raise FileNotFoundError(f"Missing tasks.md: {tasks_path}")
     if not summary.strip():
@@ -194,7 +194,7 @@ def write_execution_log(
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
-        description="Append or refresh one canonical MAGIA notes.md Execution Log subsection at EOF."
+        description="Append or refresh one canonical MAGIA implementation-notes.md Execution Log subsection at EOF."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
     parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
@@ -261,7 +261,7 @@ def main(argv: list[str]) -> int:
         print_errors([str(exc)])
         return 1
 
-    print(f"OK: updated notes for {args.task_id} ({args.status})")
+    print(f"OK: updated implementation-notes for {args.task_id} ({args.status})")
     return 0
 
 

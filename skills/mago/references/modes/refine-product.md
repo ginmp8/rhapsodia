@@ -27,6 +27,6 @@
 ## Refinement Focus
 
 - prd.md: improve clarity of problem framing, audience, goals, non-goals, scope, constraints, hypotheses, risks, and conceptual acceptance criteria while keeping risks and trade-offs synthesized at decision level
-- notes.md: tighten decisions, assumptions, trade-offs, risks, open questions, and supporting context without expanding execution-only sections; use it for supporting detail, repository-aware nuance, and rationale behind PRD-level risk/trade-off summaries; omit `Specialist Rationale` and `Execution Log` unless truthful existing sections must be preserved
+- notes.md: tighten decisions, assumptions, trade-offs, risks, open questions, and supporting context without expanding execution-only sections; use it for supporting detail, repository-aware nuance, and rationale behind PRD-level risk/trade-off summaries; omit `Specialist Rationale` and `Execution Log`; legacy execution sections require adapt before use as evidence
 - validation.md: refine product-learning questions, validation criteria, and conceptual checks; do not turn it into execution validation
 - when the documentation is already coherent, keep the change set minimal

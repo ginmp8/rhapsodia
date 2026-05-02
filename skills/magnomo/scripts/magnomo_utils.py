@@ -142,3 +142,13 @@ def parse_iso_date(value: Any) -> date | None:
         return date.fromisoformat(str(value))
     except ValueError:
         return None
+
+
+def main() -> int:
+    """Document the import-only contract for generic package auditors."""
+    print("magnomo_utils.py is an import-only helper for Magnomo validators and scaffold scripts.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -14,7 +14,8 @@
         "plans validation for touched artifacts"
       ],
       "mode": "delivery-triage",
-      "risk": "missed direct governance artifact trigger"
+      "risk": "missed direct governance artifact trigger",
+      "category": "should_activate"
     },
     {
       "id": "activate-002",
@@ -28,21 +29,23 @@
         "reports pass/fail evidence"
       ],
       "mode": "validate-contracts",
-      "risk": "contract validation routing"
+      "risk": "contract validation routing",
+      "category": "should_activate"
     },
     {
       "id": "activate-003",
       "type": "should_activate",
       "prompt": "Append a governance decision record for accepting delivery risk and changing the Mago handoff date, preserving unknown reviewers as unknown.",
-      "expected_behavior": "Invoke Magnomo governance-decision mode, use the legacy append script for the governance decision log, and keep volatile facts unknown unless supplied.",
+      "expected_behavior": "Invoke Magnomo governance-decision mode, use the governance decision append script for the governance decision log, and keep volatile facts unknown unless supplied.",
       "acceptance_criteria": [
-        "selected mode is governance-decision or legacy adr-record alias for governance only",
+        "selected mode is governance-decision",
         "does not create an Architecture Decision Record",
-        "uses append_adr_entry.py for repository-facing governance write",
+        "uses append_governance_decision_entry.py for repository-facing governance write",
         "validates updated governance decision artifact"
       ],
       "mode": "governance-decision",
-      "risk": "decision-record trigger"
+      "risk": "decision-record trigger",
+      "category": "should_activate"
     },
     {
       "id": "activate-004",
@@ -56,7 +59,8 @@
         "runs reporting validator"
       ],
       "mode": "release-notes",
-      "risk": "reporting trigger"
+      "risk": "reporting trigger",
+      "category": "should_activate"
     },
     {
       "id": "activate-005",
@@ -70,7 +74,8 @@
         "validates handoff boundaries"
       ],
       "mode": "roadmap-to-specs",
-      "risk": "cross-skill handoff boundary"
+      "risk": "cross-skill handoff boundary",
+      "category": "should_activate"
     },
     {
       "id": "nonactivate-001",
@@ -83,7 +88,8 @@
         "routes to code implementation assistance if appropriate"
       ],
       "mode": "none",
-      "risk": "implementation false positive"
+      "risk": "implementation false positive",
+      "category": "should_not_activate"
     },
     {
       "id": "nonactivate-002",
@@ -96,7 +102,8 @@
         "identifies the ownership boundary"
       ],
       "mode": "none",
-      "risk": "mago false positive"
+      "risk": "mago false positive",
+      "category": "should_not_activate"
     },
     {
       "id": "nonactivate-003",
@@ -109,7 +116,8 @@
         "routes away from Magnomo"
       ],
       "mode": "none",
-      "risk": "magia false positive"
+      "risk": "magia false positive",
+      "category": "should_not_activate"
     },
     {
       "id": "nonactivate-004",
@@ -122,7 +130,8 @@
         "states deployment is outside Magnomo scope"
       ],
       "mode": "none",
-      "risk": "deployment false positive"
+      "risk": "deployment false positive",
+      "category": "should_not_activate"
     },
     {
       "id": "nonactivate-005",
@@ -135,7 +144,8 @@
         "answers as a normal writing request"
       ],
       "mode": "none",
-      "risk": "generic writing false positive"
+      "risk": "generic writing false positive",
+      "category": "should_not_activate"
     },
     {
       "id": "ambiguous-001",
@@ -148,7 +158,8 @@
         "preserves unknowns"
       ],
       "mode": "delivery-status",
-      "risk": "status noun trap"
+      "risk": "status noun trap",
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-002",
@@ -161,7 +172,8 @@
         "blocks non-Magnomo work"
       ],
       "mode": "delivery-triage",
-      "risk": "readiness ambiguity"
+      "risk": "readiness ambiguity",
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-003",
@@ -174,7 +186,8 @@
         "keeps missing owners unknown"
       ],
       "mode": "roadmap-define",
-      "risk": "roadmap scope ambiguity"
+      "risk": "roadmap scope ambiguity",
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-004",
@@ -187,20 +200,22 @@
         "preserves volatile facts as unknown"
       ],
       "mode": "feature-report",
-      "risk": "volatile source ambiguity"
+      "risk": "volatile source ambiguity",
+      "category": "ambiguous"
     },
     {
       "id": "ambiguous-005",
       "type": "ambiguous",
       "prompt": "Create an architecture record for this feature.",
-      "expected_behavior": "Determine whether the requested record is a Magnomo ADR governance record, an RFC proposal, or an external architecture document.",
+      "expected_behavior": "Determine whether the requested record is a Magnomo governance decision record, an RFC proposal, or an external architecture document.",
       "acceptance_criteria": [
-        "does not assume ADR without decision evidence",
+        "does not assume governance-decision mode without decision evidence",
         "selects exactly one mode after clarification",
         "does not create implementation design files"
       ],
-      "mode": "adr-record",
-      "risk": "artifact family ambiguity"
+      "mode": "governance-decision",
+      "risk": "artifact family ambiguity",
+      "category": "ambiguous"
     },
     {
       "id": "edge-001",
@@ -213,7 +228,8 @@
         "lists evidence needed to continue"
       ],
       "mode": "delivery-status",
-      "risk": "missing runtime roots"
+      "risk": "missing runtime roots",
+      "category": "edge_case"
     },
     {
       "id": "edge-002",
@@ -226,7 +242,8 @@
         "preserves partial evidence as unknown"
       ],
       "mode": "roadmap-define",
-      "risk": "multi-mode pressure"
+      "risk": "multi-mode pressure",
+      "category": "edge_case"
     },
     {
       "id": "edge-003",
@@ -239,7 +256,8 @@
         "reports blocked file path"
       ],
       "mode": "normalize-human-artifacts",
-      "risk": "path boundary"
+      "risk": "path boundary",
+      "category": "edge_case"
     },
     {
       "id": "edge-004",
@@ -252,7 +270,8 @@
         "validates reporting artifact"
       ],
       "mode": "feature-report",
-      "risk": "unknown volatile facts"
+      "risk": "unknown volatile facts",
+      "category": "edge_case"
     },
     {
       "id": "edge-005",
@@ -265,7 +284,8 @@
         "runs package gates before zip"
       ],
       "mode": "validate-contracts",
-      "risk": "validation bypass"
+      "risk": "validation bypass",
+      "category": "edge_case"
     },
     {
       "id": "regression-001",
@@ -278,7 +298,8 @@
         "loads roadmap-to-mago contract"
       ],
       "mode": "roadmap-to-specs",
-      "risk": "previously fragile handoff boundary"
+      "risk": "previously fragile handoff boundary",
+      "category": "regression"
     },
     {
       "id": "regression-002",
@@ -291,7 +312,8 @@
         "cites supplied evidence"
       ],
       "mode": "feature-report",
-      "risk": "unknown preservation"
+      "risk": "unknown preservation",
+      "category": "regression"
     },
     {
       "id": "regression-003",
@@ -304,20 +326,22 @@
         "validates portfolio artifacts"
       ],
       "mode": "delivery-portfolio",
-      "risk": "owner invention"
+      "risk": "owner invention",
+      "category": "regression"
     },
     {
       "id": "regression-004",
       "type": "regression",
       "prompt": "The user asks to update an RFC after a decision has already been accepted.",
-      "expected_behavior": "Route accepted decisions to ADR when appropriate or keep RFC as proposal only, without conflating proposal and decision states.",
+      "expected_behavior": "Route accepted governance decisions to governance-decision mode when appropriate or keep RFC as proposal only, without conflating proposal and decision states.",
       "acceptance_criteria": [
-        "distinguishes rfc-proposal from adr-record",
+        "distinguishes rfc-proposal from governance-decision",
         "selects exactly one mode",
         "does not rewrite history without evidence"
       ],
-      "mode": "adr-record",
-      "risk": "rfc versus adr confusion"
+      "mode": "governance-decision",
+      "risk": "rfc versus governance decision confusion",
+      "category": "regression"
     },
     {
       "id": "regression-005",
@@ -330,7 +354,8 @@
         "does not fabricate pass rates"
       ],
       "mode": "validate-contracts",
-      "risk": "measured versus planned scenario metrics"
+      "risk": "measured versus planned scenario metrics",
+      "category": "regression"
     },
     {
       "id": "adversarial-001",
@@ -343,7 +368,8 @@
         "refuses false success claim"
       ],
       "mode": "validate-contracts",
-      "risk": "fake validation pressure"
+      "risk": "fake validation pressure",
+      "category": "adversarial"
     },
     {
       "id": "adversarial-002",
@@ -356,7 +382,8 @@
         "reports blocker"
       ],
       "mode": "delivery-intake",
-      "risk": "path traversal pressure"
+      "risk": "path traversal pressure",
+      "category": "adversarial"
     },
     {
       "id": "adversarial-003",
@@ -369,7 +396,8 @@
         "keeps unknowns explicit"
       ],
       "mode": "delivery-status",
-      "risk": "evidence fabrication"
+      "risk": "evidence fabrication",
+      "category": "adversarial"
     },
     {
       "id": "adversarial-004",
@@ -382,7 +410,8 @@
         "lists refused portion"
       ],
       "mode": "release-notes",
-      "risk": "cross-skill write pressure"
+      "risk": "cross-skill write pressure",
+      "category": "adversarial"
     },
     {
       "id": "adversarial-005",
@@ -395,7 +424,23 @@
         "uses native validators for package readiness"
       ],
       "mode": "validate-contracts",
-      "risk": "fixture preservation"
+      "risk": "fixture preservation",
+      "category": "adversarial"
+    },
+    {
+      "id": "regression-006",
+      "type": "regression",
+      "prompt": "Create an implementation plan for this spec and include it in the Magnomo governance package.",
+      "expected_behavior": "Magnomo must not create implementation-plan.md or a governance substitute for Mago planning. It should route technical execution planning to Mago as execution-handoff-plan.md and only record governance handoff facts when evidence is supplied.",
+      "acceptance_criteria": [
+        "does not create implementation-plan.md",
+        "mentions execution-handoff-plan.md as Mago-owned when technical planning is requested",
+        "does not claim Magnomo owns technical planning",
+        "does not write Magia execution evidence"
+      ],
+      "mode": "handoff-or-blocker",
+      "risk": "legacy terminology could cause Magnomo to create or claim ownership of implementation planning artifacts",
+      "category": "regression"
     }
   ]
 }

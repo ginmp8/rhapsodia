@@ -21,9 +21,9 @@ If preserved behavior is unknown and no validation path exists, create/request a
 5. Preserve public behavior, contracts, persistence, retries, idempotency, ordering, security posture, and observability unless the selected task changes them.
 6. Add/update tests when the safety net is weak and the change is not statically obvious.
 7. Run narrow validation and record pass/fail/not-run evidence.
-8. Document before/after evidence in `complexity-reduction-evidence.md` when structure materially changed.
-9. Create `implementation-adr.md` only for durable architecture or extension-policy decisions.
-10. Create `technical-gap-note.md` when repository truth contradicts the Mago plan or safe simplification needs a planned-design change.
+8. Document before/after evidence in complexity-reduction-evidence.md when structure materially changed.
+9. Create implementation-adr.md only for durable architecture or extension-policy decisions.
+10. Create technical-gap-note.md when repository truth contradicts the Mago plan or safe simplification needs a planned-design change.
 
 ## Safe Patterns
 

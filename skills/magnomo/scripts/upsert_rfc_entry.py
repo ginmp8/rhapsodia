@@ -144,7 +144,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--criterion", action="append", help="Decision criterion in priority order. May be repeated.")
     parser.add_argument("--recommendation", default="unknown", help="Recommended option or unknown.")
     parser.add_argument("--outcome", default="pending", help="Decision outcome; keep pending until decided.")
-    parser.add_argument("--link", action="append", help="Related roadmap, spec, ticket, ADR, or note. May be repeated.")
+    parser.add_argument("--link", action="append", help="Related roadmap, spec, ticket, Architecture Decision Record, or note. May be repeated.")
     args = parser.parse_args(argv)
 
     try:

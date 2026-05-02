@@ -12,7 +12,7 @@
         "requires or resolves board_id and cycle_version",
         "does not create spec package artifacts"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
       "id": "activate-order-001",
@@ -24,7 +24,7 @@
         "uses discovery artifacts as ordering evidence",
         "runs board-level validators when artifacts change"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
       "id": "activate-define-001",
@@ -36,7 +36,7 @@
         "writes under BOARD_ROOT/specs/spec003 only",
         "records unresolved assumptions instead of inventing facts"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
       "id": "activate-technical-design-001",
@@ -48,7 +48,7 @@
         "loads technical design reference",
         "does not modify product code"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
       "id": "activate-architecture-decision-001",
@@ -73,7 +73,7 @@
         "does not edit tasks.md",
         "records task-related gaps as handoff or blocker"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
       "id": "activate-define-tasks-001",
@@ -85,7 +85,7 @@
         "uses product baseline as evidence",
         "does not alter prd.md"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
       "id": "negative-implementation-001",
@@ -97,7 +97,7 @@
         "handoffs to an execution or coding workflow",
         "does not edit planning artifacts as a substitute"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
       "id": "negative-runtime-test-001",
@@ -109,7 +109,7 @@
         "does not mark validation as passed without measured output",
         "names the boundary"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
       "id": "negative-release-notes-001",
@@ -121,7 +121,7 @@
         "does not write governance artifacts under BOARD_ROOT",
         "suggests the appropriate governance workflow"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
       "id": "negative-general-docs-001",
@@ -133,7 +133,7 @@
         "does not create parallel planning files",
         "keeps response outside MAGO scope"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
       "id": "negative-ad-hoc-roadmap-001",
@@ -145,7 +145,7 @@
         "does not require board identifiers",
         "does not write artifacts"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
       "id": "negative-deployment-001",
@@ -157,7 +157,7 @@
         "does not treat deployment state as planning truth",
         "does not invent completion evidence"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
       "id": "ambiguous-plan-001",
@@ -369,7 +369,14 @@
       "expected_mode": "complexity-reduction",
       "expected_boundary": "produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff; do not edit code",
       "case_type": "should_activate",
-      "category": "activation"
+      "category": "should_activate",
+      "type": "should_activate",
+      "expected_behavior": "Activate MAGO in complexity-reduction mode and produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff.",
+      "acceptance_criteria": [
+        "selects complexity-reduction as the only primary mode",
+        "keeps changes inside the canonical spec package planning path",
+        "does not edit product code or claim runtime evidence"
+      ]
     }
   ]
 }

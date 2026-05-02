@@ -13,6 +13,7 @@ Cover the canonical minimum obligation of each phase before adding optional extr
 - do not broaden scope beyond the PRD
 - use the recommended reasoning level for each task
 - reassess only the local task context unless a task explicitly calls for broader revalidation
+- Execution-required tasks are valid planning outputs when they name scope, affected boundary, downstream Magia implementation need, validation, and expected result
 
 ## Phase 1 - Foundation
 
@@ -40,7 +41,7 @@ Exit Criteria: <how_to_know_core_behavior_is_built>
 
 - [ ] task002: <short_task_title>
   - Objective: <objective>
-  - Affected boundary: <module_or_boundary>
+  - Affected boundary: <repository_relative_module_or_boundary_to_change>
   - Task type: <implementation|refinement>
   - Reasoning: <reasoning_level>
   - Why this reasoning is sufficient: <why_this_reasoning_is_sufficient>
@@ -78,7 +79,7 @@ Exit Criteria: <how_to_know_validation_and_hardening_are_sufficient>
 
 - [ ] task004: <short_task_title>
   - Objective: <objective>
-  - Affected boundary: <module_or_boundary>
+  - Affected boundary: <repository_relative_module_or_boundary_to_change>
   - Task type: <validation|hardening|confirmation|refinement>
   - Reasoning: <reasoning_level>
   - Why this reasoning is sufficient: <why_this_reasoning_is_sufficient>

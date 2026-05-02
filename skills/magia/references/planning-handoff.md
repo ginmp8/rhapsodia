@@ -4,9 +4,11 @@ Load when RALPH executes a spec package, PRD, technical design, roadmap/governan
 
 ## Contract
 
-Planning-origin artifacts are MAGIA execution inputs. Authorship states provenance, not implementation permission. MAGIA may implement code, config, tests, scripts, migrations, local tooling, technical docs, and implementation ADRs when the selected task requires them and repo evidence gives enough scope and validation.
+Planning-origin artifacts are execution inputs for MAGIA. Authorship states provenance, not implementation permission. MAGIA may implement code, config, tests, scripts, migrations, local tooling, technical docs, and implementation ADRs when the selected task requires them and repo evidence gives enough scope and validation.
 
-MAGIA may fill safe implementation gaps Mago did not detail when repository evidence, technical design, tasks, validation plan, and acceptance criteria are sufficient. This is technical execution refinement, not PRD refinement.
+Handoff is bidirectional. Mago plans, Magia executes, and Magnomo interprets delivery implications. MAGIA returns technical gaps to Mago through `technical-gap-note.md`, implementation ADRs, implementation notes, or validation evidence; MAGIA returns delivery-impact evidence to Magnomo only as source evidence, not as stakeholder communication authored by MAGIA.
+
+MAGIA may fill safe implementation gaps Mago did not detail when repository evidence, technical design, execution-handoff-plan.md, tasks, validation plan, and acceptance criteria are sufficient. This is technical execution refinement, not PRD refinement.
 
 ## Non-Blockers
 
@@ -14,11 +16,11 @@ Do not block merely because the task requires implementation; the package/PRD/ta
 
 ## Real Blockers
 
-Return BLOCKED only after inspecting the selected package and relevant repo evidence. Real blockers: no repo target/module/interface/command/allowed write area; contradiction with PRD, metadata, dependencies, ADRs, or repo truth; required credentials/services/proprietary inputs/unavailable dependencies; no observable or credible fallback validation path; work requires changing product intent, PRD, task definitions, ordering, ownership, or acceptance criteria; safe execution would require secrets or unrelated blocked paths.
+Return BLOCKED only when a concrete execution blocker remains after inspecting the selected package and relevant repo evidence. Real blockers: no repo target/module/interface/command/allowed write area; contradiction with PRD, metadata, dependencies, ADRs, or repo truth; required credentials/services/proprietary inputs/unavailable dependencies; no observable or credible fallback validation path; work requires changing product intent, PRD, task definitions, ordering, ownership, or acceptance criteria; safe execution would require secrets or unrelated blocked paths.
 
 ## Target Derivation
 
-When file targets are missing, derive the narrowest safe target from: task metadata and acceptance criteria; architecture decisions, technical-design.md, and source_of_truth refs; PRD behavior/non-goals; existing repo structure, naming, tests, conventions; validation.md commands or fallbacks. If sufficient, implement the smallest safe change; otherwise record missing evidence as BLOCKED.
+When file targets are missing, derive the narrowest safe target from: task metadata and acceptance criteria; architecture decisions, technical-design.md, execution-handoff-plan.md, and source_of_truth refs; PRD behavior/non-goals; existing repo structure, naming, tests, conventions; validation.md planned commands or fallbacks. If sufficient, implement the smallest safe change; otherwise record missing evidence as BLOCKED.
 
 ## Status and Evidence
 
@@ -26,4 +28,5 @@ When file targets are missing, derive the narrowest safe target from: task metad
 - If implementation starts but validation is incomplete or work remains, record IN_PROGRESS and leave checkbox unchecked unless truthfully complete.
 - If a concrete blocker prevents implementation, record BLOCKED and leave checkbox unchecked.
 - Do not convert planning provenance into a blocker.
-- Link implementation ADRs from execution log/evidence and state Mago handoff need.
+- Link implementation ADRs from implementation-notes.md and validation-evidence.md, and state Mago handoff need. Treat execution-handoff-plan.md as planned input, not proof of implementation.
+- If execution evidence affects release posture, stakeholder risk, owner, due date, roadmap priority, accepted business risk, or go/no-go decisions, record the evidence and hand off to Magnomo; do not update delivery governance artifacts from MAGIA.

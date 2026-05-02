@@ -27,6 +27,18 @@ Describe how the implemented flow works after the change.
 
 - `unknown`
 
+## Execution Log
+
+### taskNNN - short title
+
+- Status: not_started
+- Summary: unknown
+- Changes: none
+- Context Docs: none
+- Decisions: none
+- Follow-Ups: none
+- Blockers: none
+
 ## Validation
 
 - Executed: `unknown`
@@ -41,4 +53,3 @@ Describe how the implemented flow works after the change.
 
 - Mago: `none`
 - Magnomo: `none`
-

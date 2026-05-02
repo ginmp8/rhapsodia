@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Repair narrowly-scoped MAGIA execution-state drift from existing evidence only."""
+"""Repair narrow MAGIA execution-state drift from existing execution evidence only."""
 
 from __future__ import annotations
 
@@ -18,8 +18,8 @@ FIELD_RE = re.compile(r"^-\s+(?P<field>Changes|Context Docs|Decisions|Follow-Ups
 LIST_ITEM_RE = re.compile(r"^\s*-\s+(?P<value>.+?)\s*$")
 VALIDATION_RUN_RE = re.compile(r"^##\s+Execution Run -\s+(?P<task_id>task\d{3})(?:\s+\((?P<date>\d{4}-\d{2}-\d{2})\))?")
 HEALABLE_ERROR_PATTERNS = (
-    re.compile(r"^notes\.md marks `task\d{3}` done but tasks\.md leaves the checkbox unchecked\.$"),
-    re.compile(r"^notes\.md records executed tasks but manifest\.yaml omits last_execution\.$"),
+    re.compile(r"^implementation-notes\.md marks `task\d{3}` done but tasks\.md leaves the checkbox unchecked\.$"),
+    re.compile(r"^implementation-notes\.md records executed tasks but manifest\.yaml omits last_execution\.$"),
 )
 
 
@@ -165,7 +165,7 @@ def print_failed(errors: list[str]) -> None:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
-        description="Repair narrow MAGIA execution-state drift using only existing notes.md and validation.md evidence."
+        description="Repair narrow MAGIA execution-state drift using implementation-notes.md and validation-evidence.md."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
     parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
@@ -179,8 +179,8 @@ def main(argv: list[str]) -> int:
         return 1
 
     tasks_path = spec_package / "tasks.md"
-    notes_path = spec_package / "notes.md"
-    validation_path = spec_package / "validation.md"
+    notes_path = spec_package / "implementation-notes.md"
+    validation_path = spec_package / "validation-evidence.md"
     manifest_path = spec_package / "manifest.yaml"
 
     sync_module = _load_local_module("sync_execution_state.py")
@@ -199,7 +199,7 @@ def main(argv: list[str]) -> int:
     _, _, _, last_execution_task_id = validate_module.parse_manifest(manifest_path)
 
     if any(task_id not in tasks for task_id in notes_records):
-        print_failed(["notes.md references a task missing from tasks.md"])
+        print_failed(["execution log references a task missing from tasks.md"])
         return 1
 
     done_without_validation = [
@@ -210,7 +210,7 @@ def main(argv: list[str]) -> int:
     if done_without_validation:
         print_failed(
             [
-                f"{task_id} is marked done in notes.md but has no validation evidence"
+                f"{task_id} is marked done in implementation-notes.md but has no validation evidence"
                 for task_id in done_without_validation
             ]
         )
