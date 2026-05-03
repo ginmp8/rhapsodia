@@ -12,6 +12,46 @@ When details are omitted, continue conservatively:
 - Blocked: evaluator scripts, expected outputs, scenario fixtures, benchmark reports used as fixtures, lockfiles, `.git`, caches, package artifacts, secrets.
 - Safety: separate working copy and manual review unless the user provides a disposable sandbox or CI runner.
 
+
+## Skill path resolution
+
+When a user supplies an imprecise target, resolve it before mutation:
+1. If the input ends with `SKILL.md`, use the containing directory after confirming the file exists.
+2. If the input is a directory containing `SKILL.md`, use that directory.
+3. Otherwise, search candidate skill roots by skill name or path substring and continue only after exactly one match is found.
+
+For zero matches, report available candidate roots. For multiple matches, ask for selection rather than guessing. Never mutate a path that does not resolve to exactly one root `SKILL.md`.
+
+## Reviewer-severity loop
+
+When a reviewer, benchmark, agent, or static audit produces issues, triage them before patching:
+- Critical: blocks skill loading, package validation, reference resolution, evaluator execution, or runtime safety. Fix immediately or stop.
+- Major: materially weakens activation, output contract, workflow order, validation, or scope boundaries. Fix before polish.
+- Minor: style, formatting, optional clarity, or subjective suggestions. Evaluate each item for functional value and false-positive risk before editing.
+
+Do not batch unrelated critical, major, and minor changes in one candidate patch. A minor-only remainder may be rejected intentionally when the issue is a false positive, adds complexity, or does not improve activation/output behavior.
+
+## Graceful cancellation
+
+Long-running loops should expose a stop-file path. The runner checks the file before starting the next candidate and exits cleanly when present. Accepted changes stay in the target folder; rejected candidates remain reverted; in-flight candidate behavior depends on the active executor and should be reviewed before continuing.
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target /path/to/target-skill \
+  --evaluator command \
+  --eval-command 'python scripts/static_skill_score.py --target .' \
+  --max-iterations 10 \
+  --stop-file .skill-improver/stop
+```
+
+Request cancellation from the repository root or pass the same explicit stop-file path:
+
+```bash
+python scripts/cancel_skill_improver.py --stop-file .skill-improver/stop
+```
+
+Remove the stop file before starting a new loop. Do not report completion solely because cancellation happened; report the last accepted state, skipped iterations, validation status, and remaining risks.
+
 ## Benchmark modes
 
 - `existing-command`: user supplies deterministic evaluator; require JSON score or score regex; lock inputs.

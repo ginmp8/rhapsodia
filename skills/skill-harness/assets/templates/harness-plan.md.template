@@ -35,6 +35,9 @@ After this harness runs, we need to decide whether {{target_name}} can {{decisio
 ### Templates and Assets
 {{template_asset_changes}}
 
+### Target Entry Points and Input Corpus
+{{entry_point_map}}
+
 ### Scenarios
 {{scenario_plan}}
 

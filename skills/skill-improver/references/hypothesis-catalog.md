@@ -26,6 +26,11 @@ Mechanism: explicit modes reduce ambiguity.
 Changes: map user intent to mode, inputs, outputs, validators.
 Evidence: ambiguous prompts choose the expected path more often.
 
+### H012 - Severity-gated review loop
+Mechanism: reviewer findings become safer and more actionable when routed by severity before mutation.
+Changes: classify findings as critical, major, or minor; fix critical and major findings before polish; evaluate minor findings for functional value, false-positive risk, and activation/output impact before editing.
+Evidence: critical and major findings reach zero, minor decisions are explicitly accepted or rejected, and validation confirms no safety, activation, or output gate regressed.
+
 ## Output
 
 ### H020 - Output contract
@@ -74,3 +79,8 @@ Evidence: edge-case prompts improve.
 Mechanism: safer partial-failure behavior.
 Changes: stop conditions, recovery rules, no-fabrication rules.
 Evidence: robustness score improves.
+
+### H052 - Graceful loop cancellation
+Mechanism: long-running loops are safer when cancellation is explicit and preserves accepted target changes.
+Changes: add stop-file checks between iterations, document cancellation commands, and state what happens to accepted, rejected, and in-flight candidates.
+Evidence: cancellation path is documented, helper script compiles, runner accepts the stop-file option, and package validation still passes.

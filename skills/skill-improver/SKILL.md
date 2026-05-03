@@ -39,7 +39,7 @@ Defaults: one bounded manual patch or max three automated iterations; `--min-del
 Load only what the branch needs:
 - `references/evaluation-contract.md`: evaluator schema, freeze rules, acceptance, gates.
 - `references/benchmark-integration.md`: `skill-benchmark`, report parsing, saturated-score handling.
-- `references/hypothesis-catalog.md`: bounded hypotheses and expected evidence.
+- `references/hypothesis-catalog.md`: bounded hypotheses, severity triage, loop-control hypotheses, and expected evidence.
 - `references/autoresearch-adaptation.md`: autonomous loop mechanics mapped to skill packages.
 - `references/execution-runbook.md`: CLI modes, defaults, self-improvement, packaging, rollback.
 - `references/harness-design.md`: scenario metrics and auxiliary evidence.
@@ -56,11 +56,13 @@ Keep templates only when rendered, copied, filled, script-consumed, or validated
 1. **Inspect**: read target `SKILL.md`; inventory agents, references, scripts, assets/templates, examples, evals, validators, reports, package artifacts, and known risks.
 2. **Freeze evaluation**: define evaluator command and metric contract; hash/lock evaluator scripts, scenarios, expected outputs, scoring config, benchmark inputs, and blocked paths. If the primary score is saturated, keep it as a gate and add an auxiliary metric before claiming improvement.
 3. **Measure baseline**: record score, status, gates, command, report path, evaluator hash, timestamp, blocked paths, and unresolved risks.
-4. **Select one hypothesis**: state mechanism, files, expected effect, validation method, accept/reject rule, and rollback plan.
-5. **Apply candidate**: edit only allowed paths; keep branch detail in references; never weaken evaluator, safety, activation, output, or package gates.
-6. **Evaluate and decide**: re-run the frozen evaluator. Reject if the evaluator hash changes, blocked paths change, gates fail, the score misses the threshold, or safety/output behavior regresses. Record rejected hypotheses.
-7. **Validate and package**: run target validators and script smoke checks. Package only after validation passes and exclude caches, generated reports, benchmark outputs, secrets, credentials, old zips, and files outside the final skill folder.
-8. **Report truthfully**: separate measured evidence from planned or checklist-only findings.
+4. **Triage reviewer findings when present**: classify findings as critical, major, or minor; fix critical and major issues before polish; evaluate minor items for functional value and false positives before editing.
+5. **Select one hypothesis**: state mechanism, files, expected effect, validation method, accept/reject rule, and rollback plan.
+6. **Apply candidate**: edit only allowed paths; keep branch detail in references; never weaken evaluator, safety, activation, output, or package gates.
+7. **Evaluate and decide**: re-run the frozen evaluator. Reject if the evaluator hash changes, blocked paths change, gates fail, the score misses the threshold, or safety/output behavior regresses. Record rejected hypotheses.
+8. **Handle loop lifecycle**: for long-running loops, honor configured stop files between iterations; cancellation preserves already accepted target changes and does not fabricate completion.
+9. **Validate and package**: run target validators and script smoke checks. Package only after validation passes and exclude caches, generated reports, benchmark outputs, secrets, credentials, old zips, and files outside the final skill folder.
+10. **Report truthfully**: separate measured evidence from planned or checklist-only findings.
 
 ## Stop conditions
 
