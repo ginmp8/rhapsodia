@@ -84,6 +84,16 @@ HYPOTHESES = [
         ],
     },
     {
+        "id": "H012",
+        "name": "Add severity-gated review loop",
+        "goal": "Improve reviewer-driven patches by classifying findings as critical, major, or minor before mutation.",
+        "constraints": [
+            "Fix critical and major findings before cosmetic polish.",
+            "Evaluate minor findings for functional value and false-positive risk before editing.",
+            "Do not combine unrelated severity classes in one patch unless the fix is inseparable.",
+        ],
+    },
+    {
         "id": "H020",
         "name": "Add output contract",
         "goal": "Improve consistency by defining required final response sections or artifact structure.",
@@ -126,6 +136,16 @@ HYPOTHESES = [
         "constraints": [
             "Preserve unknown facts instead of inventing values.",
             "Add stop conditions when prerequisites are missing.",
+        ],
+    },
+    {
+        "id": "H052",
+        "name": "Add graceful loop cancellation",
+        "goal": "Improve long-running loop control by adding an explicit stop-file path that preserves accepted changes.",
+        "constraints": [
+            "Check cancellation between candidate iterations, not by weakening evaluation gates.",
+            "Document how accepted, rejected, and in-flight candidates are handled.",
+            "Do not delete accepted target changes during cancellation.",
         ],
     },
 ]
@@ -600,6 +620,26 @@ def append_jsonl(path: Path, obj: dict[str, Any]) -> None:
         f.write(json.dumps(obj, ensure_ascii=False, sort_keys=True) + "\n")
 
 
+def resolve_stop_file(raw_stop_file: Optional[Path], state_dir: Path, git_root: Path) -> Path:
+    if raw_stop_file:
+        return raw_stop_file if raw_stop_file.is_absolute() else (git_root / raw_stop_file).resolve()
+    return state_dir / "stop"
+
+
+def stop_requested(stop_file: Path) -> bool:
+    return stop_file.exists()
+
+
+def read_stop_reason(stop_file: Path) -> str:
+    if not stop_file.exists():
+        return ""
+    try:
+        reason = stop_file.read_text(encoding="utf-8", errors="replace").strip()
+    except OSError:
+        return "stop file present"
+    return reason or "stop file present"
+
+
 def revert_changes(git_root: Path) -> None:
     run(["git", "reset", "--hard", "HEAD"], cwd=git_root, check=True)
     run(["git", "clean", "-fd"], cwd=git_root, check=True)
@@ -708,7 +748,7 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "baseline_harness_score": best.score,
             "baseline_verdict": baseline.data.get("verdict", baseline.status) if isinstance(baseline.data, dict) else baseline.status,
             "baseline_blockers": inline_list([name for name, value in baseline.gates.items() if not gate_passes(value)]),
-            "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`.",
+            "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`; stop file `{getattr(args, 'stop_file', 'not configured')}`.",
             "target_package_summary": f"Target was evaluated from `{args.target}`; report path `{best.report_path or 'not captured'}`.",
             "additional_research_summary": "none",
             "decision_supported": "accept, reject, revert, package, or continue bounded improvement based on measured gates.",
@@ -773,6 +813,7 @@ def main() -> int:
     parser.add_argument("--sandbox-acknowledged", action="store_true", help="Required for yolo mode.")
     parser.add_argument("--strategy", choices=["round-robin", "random"], default="round-robin")
     parser.add_argument("--state-dir", type=Path, default=Path(".skill-improver"))
+    parser.add_argument("--stop-file", type=Path, help="File whose presence requests a graceful stop before the next candidate iteration. Defaults to state-dir/stop.")
     parser.add_argument("--extra-allowed-path", action="append", type=Path, default=[])
     parser.add_argument("--commit-accepted", action="store_true", help="Commit accepted patches.")
     parser.add_argument("--report-path", type=Path, help="Optional Markdown run report path. Defaults to state-dir/improvement-report.md.")
@@ -796,6 +837,8 @@ def main() -> int:
     require_clean_git(git_root)
     state_dir = (git_root / args.state_dir).resolve() if not args.state_dir.is_absolute() else args.state_dir
     log_path = state_dir / "runs.jsonl"
+    stop_file = resolve_stop_file(args.stop_file, state_dir, git_root)
+    args.stop_file = stop_file
     report_path = args.report_path or (state_dir / "improvement-report.md")
     report_path = report_path if report_path.is_absolute() else (git_root / report_path).resolve()
 
@@ -812,6 +855,9 @@ def main() -> int:
     results: list[IterationResult] = []
 
     while True:
+        if stop_requested(args.stop_file):
+            print(f"[stop] graceful stop requested by {args.stop_file}: {read_stop_reason(args.stop_file)}", flush=True)
+            break
         iteration += 1
         if args.max_iterations and iteration > args.max_iterations:
             break

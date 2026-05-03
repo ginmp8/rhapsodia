@@ -22,6 +22,7 @@
 
 ## Harness Plan
 - Hypotheses: {{hypotheses}}
+- Entry points/input corpus: {{entry_point_map}}
 - Scenarios: {{scenarios}}
 - Metrics: {{metrics}}
 - Evaluators: {{evaluators}}

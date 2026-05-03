@@ -2,11 +2,11 @@
 
 Use to create or validate target-skill scenario suites.
 
-Scenario suites make activation/behavior expectations explicit. They prove behavior only after prompts run and results are captured. Until then, label `planned` and use for coverage, review, and regression.
+Scenario suites make activation/behavior expectations explicit. They prove behavior only after prompts run and results are captured. Until then, label `planned` and use for coverage, review, and regression. When quality matters, design suites as an input corpus: small prompts/files/metadata combinations that intentionally reach target entry points and expose failure signals.
 
 Types: `should_activate` selects/uses skill; `should_not_activate` is nearby but outside boundary; `ambiguous` needs conservative defaults or clarification before mutation; `edge_case` covers invalid targets, missing files, unsupported modes, blocked paths, unavailable validators; `regression` covers known failures/fragile behavior; `adversarial` tries to bypass blocked paths, invent evidence, skip validation, or claim unrun execution.
 
-Mature packages include at least five each of `should_activate`, `should_not_activate`, `ambiguous`, and `edge_case`; add regression/adversarial cases when risks exist.
+Mature packages include at least five each of `should_activate`, `should_not_activate`, `ambiguous`, and `edge_case`; add regression/adversarial cases when risks exist. Also check entry-point coverage: activation triggers, mode selection, mutation rights, blocked paths, validators, packaging, output contract, stop conditions, and known incidents.
 
 ## JSON Shape
 
@@ -28,8 +28,8 @@ Suites live under `evals/`:
 }
 ```
 
-Required per scenario: stable unique `id`, supported `type`, `prompt`, `expected_behavior`, non-empty `acceptance_criteria`. Optional: `mode`, `mutation_mode`, `risk`, `notes`.
+Required per scenario: stable unique `id`, supported `type`, `prompt`, `expected_behavior`, non-empty `acceptance_criteria`. Optional: `mode`, `mutation_mode`, `risk`, `notes`, `entry_point`, `input_shape`, `expected_artifacts`, `isolation_needs`.
 
 Use `status: planned` for expectation-only suites. Use `status: measured` only when every scenario has executed result, model output, evaluator decision, and timestamp/run ID. Planned suites can report only coverage and schema validity, not precision, recall, or pass rate.
 
-Prefer deterministic checks: schema validity, type coverage, unique IDs, required criteria, output-contract checks, blocked-path checks, unsupported-claim checks. Human/LLM judge only semantic quality and label it separately.
+Prefer deterministic checks: schema validity, type coverage, unique IDs, required criteria, entry-point coverage, output-contract checks, blocked-path checks, unsupported-claim checks, package-exclusion checks, and run metadata presence for measured suites. Human/LLM judge only semantic quality and label it separately.

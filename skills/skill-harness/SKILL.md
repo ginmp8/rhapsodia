@@ -38,6 +38,7 @@ Always read target `SKILL.md` first. Load only needed branches:
 - `references/skill-improvement-playbook.md`: bounded changes and common fixes.
 - `references/evaluation-and-gates.md`: scores, required gates, saturated metrics, decisions.
 - `references/scenario-suite-guidelines.md`: activation, non-activation, ambiguous, edge, regression, adversarial scenario schema.
+- `references/harness-quality-patterns.md`: fuzzing-inspired quality patterns for entry-point coverage, structured inputs, determinism, isolation, throughput, observability, and anti-patterns.
 - `references/report-contract.md`: report shape and evidence labels.
 - `references/cli-and-packaging-contract.md`: command contracts, exits, exclusions, package order.
 - `assets/templates/harness-plan.md.template`, `assets/templates/harness-report.md.template`, `assets/templates/scenario-suite.json.template`: copy/fill/render when useful.
@@ -48,7 +49,7 @@ Templates are operational when copied, filled, rendered, validated, or declared 
 
 ## Harness Map
 
-Define before editing: decision; object under test; writable/read-only/blocked scope; dependencies; scenario groups; evidence sources; runner commands; evaluators; metrics; gates; and evidence record for baseline, plan, changes, command outputs, final comparison, package path, risks, and rollback.
+Define before editing: decision; object under test; writable/read-only/blocked scope; dependencies; target entry points; scenario groups; input corpus/model; evidence sources; runner commands; evaluators; metrics; gates; and evidence record for baseline, plan, changes, command outputs, final comparison, package path, risks, and rollback.
 
 ## Workflow
 
@@ -64,8 +65,8 @@ Define before editing: decision; object under test; writable/read-only/blocked s
    python /home/oai/skills/skill-harness/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
    ```
 
-3. **Plan** evidence policy, hypotheses, scenarios, metrics, evaluators, gates, validation, packaging, and risk. Prefer `assets/templates/harness-plan.md.template` for durable plans.
-4. **Apply** bounded edits only inside allowed scope. Preserve target behavior; move long branch rules to references; add scripts only for deterministic work; add scenario suites only when behavior evidence matters; integrate resources by workflow reference, script consumer, validator, or copy/fill instruction; classify before deletion; never invent benchmark, scenario, validation, install, or package evidence.
+3. **Plan** evidence policy, hypotheses, target entry points, input corpus/model, scenarios, metrics, evaluators, gates, validation, packaging, and risk. Prefer `assets/templates/harness-plan.md.template` for durable plans. For high-risk or saturated-score targets, load `references/harness-quality-patterns.md` and add auxiliary coverage metrics before claiming improvement.
+4. **Apply** bounded edits only inside allowed scope. Preserve target behavior; move long branch rules to references; add scripts only for deterministic work; add scenario suites only when behavior evidence matters; design scenarios to reach target entry points with structured inputs, deterministic isolation, observable failures, and focused corpus slices; integrate resources by workflow reference, script consumer, validator, or copy/fill instruction; classify before deletion; never invent benchmark, scenario, validation, install, or package evidence.
 5. **Validate and compare** by rerunning inventory/audit, validator, modified-script syntax checks, target tests when present, and baseline/final comparison including auxiliary metrics.
 
    ```bash

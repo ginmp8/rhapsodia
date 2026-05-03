@@ -6,7 +6,7 @@ Use to turn the generic harness model into a concrete skill-improvement harness.
 
 A harness is the decision system around a target skill: inputs, scenarios, evaluators, metrics, gates, evidence records, and runner commands. It decides whether the skill is ready, improved, regressed, unsafe, or under-specified.
 
-A good harness is repeatable; uses named scenarios and explicit pass/fail criteria; covers happy path, edge, ambiguity, non-activation, regressions, adversarial prompts; declares dependencies; makes failures observable; uses decision-relevant metrics; records baseline first; automates local/CI checks where practical; and recommends accept, reject, fix, or investigate.
+A good harness is repeatable; uses named scenarios and explicit pass/fail criteria; covers happy path, edge, ambiguity, non-activation, regressions, adversarial prompts; declares dependencies; makes failures observable; uses decision-relevant metrics; records baseline first; isolates mutable state between runs; automates local/CI checks where practical; and recommends accept, reject, fix, or investigate.
 
 ## Skill Components
 
@@ -23,13 +23,15 @@ Weak integration is not proof of disuse. Classify a resource as operational temp
 
 ## Decision and Scenarios
 
+For high-risk or saturated-score targets, pair the decision with a target-entry-point map and input-corpus model from `references/harness-quality-patterns.md` before adding or judging scenarios. This prevents broad prompt-only suites that miss important branches.
+
 Decision pattern:
 
 ```text
 After this harness runs, we need to decide whether <target skill/version> can <advance to next stage> for <users/use case> with acceptable risk.
 ```
 
-Mature scenario set: at least 5 `should_activate`, 5 `should_not_activate`, 5 `ambiguous`, 5 `edge_case`, plus known regressions from feedback/incidents/benchmarks. Mark `measured` only when executed or supplied with results; otherwise `planned`.
+Mature scenario set: at least 5 `should_activate`, 5 `should_not_activate`, 5 `ambiguous`, 5 `edge_case`, plus known regressions from feedback/incidents/benchmarks. For each scenario group, map the branch under test, input shape, expected artifact, failure signal, and isolation needs. Mark `measured` only when executed or supplied with results; otherwise `planned`.
 
 ## Evidence Rules
 

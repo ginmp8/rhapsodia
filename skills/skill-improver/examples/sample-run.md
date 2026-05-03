@@ -56,3 +56,23 @@ python scripts/skill_improver_loop.py \
 ```
 
 Do not run this on a normal developer workstation.
+
+## Graceful cancellation for long-running loops
+
+Start a bounded loop with an explicit stop file:
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target ./skills/magnomo \
+  --evaluator skill-benchmark \
+  --max-iterations 10 \
+  --stop-file .skill-improver/stop
+```
+
+Cancel from the repository root without deleting accepted target changes:
+
+```bash
+python scripts/cancel_skill_improver.py --stop-file .skill-improver/stop
+```
+
+The loop exits before the next candidate. Re-run validation before packaging or reporting final success.
