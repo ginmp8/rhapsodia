@@ -13,16 +13,24 @@ Optimize one existing skill package end to end with evidence: baseline, frozen e
 
 Resolve or infer before mutation:
 
-1. `TARGET_SKILL_PATH`: folder or extracted zip with exactly one root `SKILL.md`.
-2. Mode: `audit-only`, `plan-only`, `apply-optimization`, `validation-only`, or `package`. Full optimization defaults to `apply-optimization`, validation, and packaging when gates pass.
-3. Objective: activation, output quality, architecture, docs, scripts, security, validation, hygiene, token cost, or complete optimization.
-4. Writable scope: target folder only unless narrowed.
-5. Protected paths: `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence/reports, old zips, read-only paths, unrelated repos, and frozen evaluator assets.
-6. Evaluator: target validator/CI, `skill-benchmark`, harness, static validator, or planned evaluator when execution is impossible.
-7. Final artifact: report, patched folder, validated `skill.zip`, or install-ready package.
-8. `skill-hypothesis-discovery`: required after baseline evidence; if no delegate is executable, apply its checklist and record evidence.
-9. `skill-change-gate`: required for candidate acceptance and final regression review; if no delegate is executable, apply its checklist and record evidence.
-10. Explicit specialist sequence: when the user names required specialists, each available specialist must be invoked; checklist-only substitution is valid only for unavailable, blocked, unsafe, or not-applicable specialists and must be recorded separately from execution.
+- `TARGET_SKILL_PATH`: folder or extracted zip with exactly one root `SKILL.md`.
+- Mode: `audit-only`, `plan-only`, `apply-optimization`, `validation-only`, or `package`. Full optimization means `apply-optimization`, validation, then packaging when gates pass.
+- Objective: activation, output quality, architecture, docs, scripts, security, validation, hygiene, token cost, or complete optimization.
+- Writable scope: target folder only unless narrowed.
+- Protected paths: `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence/reports, old zips, read-only paths, unrelated repos, and frozen evaluator assets.
+- Evaluator: target validator/CI, `skill-benchmark`, harness, static validator, or planned evaluator when execution is impossible.
+- Final artifact: report, patched folder, validated `skill.zip`, or install-ready package.
+- `skill-hypothesis-discovery`: required after baseline evidence; if no delegate is executable, apply its checklist and record evidence.
+- `skill-change-gate`: required for candidate acceptance and final regression review; if no delegate is executable, apply its checklist and record evidence.
+- Explicit specialist sequence: when the user names required specialists, invoke each available specialist; classify unavailable, blocked, unsafe, or not-applicable passes separately from checklist-only review.
+
+## Mode selection
+
+- `audit-only`: inspect maturity, risks, and candidate hypotheses; no mutation or package claim.
+- `plan-only`: produce backlog, sequence, and gates before edits.
+- `apply-optimization`: mutate the target with accepted bounded patches, then validate.
+- `validation-only`: check an already changed target; write reports outside the target only.
+- `package`: build `skill.zip` only from a validated target; repair first only when safe and in scope.
 
 ## Resource loading
 
@@ -47,7 +55,7 @@ Load only phase-relevant files:
 2. **Baseline and freeze**: use the strongest available evaluator. Freeze scenarios, expected outputs, scoring config, validator scripts, benchmark inputs, fixtures, generated baseline reports, and blocked paths. Record score, gates, warnings, command, timestamp, and hashes when practical. For compatible activation scenarios, run `python scripts/run_activation_harness.py --scenarios <TARGET_SKILL_PATH>/evals/activation-scenarios.json --json` and label it schema/coverage only.
 3. **Specialist sequence**: run, apply by checklist, block, or mark not-applicable for every pass, in order: `skill-creator-juiced`, `skill-benchmark`, `skill-harness`, `skill-hypothesis-discovery`, `skill-improver`, `skill-change-gate`, `skill-package-architecture-review`, `context-architect`, `skill-prompt-and-activation-review`, `prompt-architect`, `skill-consistency-repair`, `documentation-quality`, `karpathy-guidelines`, `security-and-governance-review`, `skill-testing-and-validation`, `skill-cleanup-and-simplification`, `skill-token-efficient`, post-compression `skill-testing-and-validation`, `skill-hardening`, final `skill-change-gate`, final `skill-benchmark`, final `skill-improver`, and final `skill-token-efficient` closure. When the user supplies a required sequence, create a reconciliation ledger with `required_specialists`, `invoked_specialists`, `checklist_only`, `blocked`, `unavailable`, `not_applicable`, and `not_run`. Run `python scripts/validate_specialist_reconciliation.py --ledger <LEDGER_JSON>` before any completion, readiness, or full-sequence claim.
 4. **Hypotheses and patches**: generate 5-10 evidence-backed hypotheses, dedupe/rank, select top 3-5 and next 1-3 to test. Apply bounded changes, preferably one hypothesis per patch batch. For each meaningful change, record id, changed files, expected effect, validation, gate decision, accept/reject/revert decision, and evidence. Revert rejected hypotheses unless independently required as a blocking repair.
-5. **Validation, compression, hardening**: rerun frozen evaluators and target validators after material edits, cleanup, and compression. Compress only after behavior, architecture, docs, consistency, safety, and validation gates are stable; never weaken activation, safety, validation, output contract, stop conditions, routing, hypothesis rules, or evidence duties.
+5. **Validation, compression, hardening**: rerun frozen evaluators and target validators after edits, cleanup, and compression. Token closure checks total, per-file, and matching Markdown-section deltas; local growth must be compressed, accepted as semantic trade-off, or rejected. Never weaken activation, safety, validation, output, stop, routing, hypothesis, or evidence duties.
 6. **Package and close**: package only when validation passes and required specialist reconciliation allows finalization. Use `python scripts/package_skill.py --target <TARGET_SKILL_PATH> --output <OUTPUT_DIR>/skill.zip --report <REPORT_PATH>`; add `--reconciliation-ledger <LEDGER_JSON>` when the user required an explicit specialist sequence. Archive outside the target, with one top-level folder, no caches/reports/generated evidence/secrets/old zips, and passing validation before sharing.
 
 ## Output contract
@@ -76,7 +84,7 @@ Final reports must include:
 11. before/after benchmark or static score when measured;
 12. skill-change-gate and final skill-change-gate status;
 13. final benchmark result;
-14. token before/after plus final token-efficiency closure status;
+14. total/local token deltas, local trade-offs, and final token-efficiency closure;
 15. package path only when `skill.zip` exists and package validation passed;
 16. remaining risks, assumptions, rollback notes, and next hypothesis or no-mutation recommendation.
 
@@ -94,4 +102,4 @@ Stop before mutation when the target has zero/multiple root `SKILL.md` files; ed
 
 ## Finalization checklist
 
-Before completion, confirm: required specialist sequence reconciliation was validated when a user supplied a sequence; frontmatter is lowercase hyphen-case; activation/non-activation/ambiguous/edge scenarios exist or are planned; local refs resolve; resources are integrated or intentionally retained; no scaffold, caches, old packages, secrets, or generated noise remain; modified scripts ran or blockers are stated; hypothesis discovery precedes improvement claims; material patches have a gate decision; compression was revalidated; final token closure preserves activation, safety, validation, output, stop, routing, and evidence duties; final gate has no blocking regression; final benchmark separates measured from planned checks; and package validation passes before sharing `skill.zip`.
+Before completion, confirm: required specialist reconciliation passed when supplied; frontmatter is lowercase hyphen-case; activation/non-activation/ambiguous/edge scenarios exist or are planned; local refs resolve; resources are integrated or retained; no scaffold, caches, old packages, secrets, or generated noise remain; modified scripts ran or blockers are stated; discovery precedes improvement claims; material patches have gate decisions; compression was revalidated; local token growth is compressed or accepted as semantic trade-off; final token closure preserves activation, safety, validation, output, stop, routing, and evidence duties; final gate has no blocking regression; final benchmark separates measured from planned checks; package validation passes before sharing `skill.zip`.

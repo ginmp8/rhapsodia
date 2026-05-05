@@ -30,7 +30,7 @@ Run or account for the passbook sequence, including `skill-hypothesis-discovery`
 4. `skill-improver` tests selected bounded hypotheses, then `skill-change-gate` reviews candidate acceptance risk before broader conclusions are treated as accepted.
 5. `skill-prompt-and-activation-review` and `prompt-architect` before consistency/doc/code/security passes.
 6. `skill-testing-and-validation` before cleanup or compression.
-7. `skill-token-efficient` only after behavior, safety, architecture, docs, consistency, validation, and candidate gate checks are stable.
+7. `skill-token-efficient` only after behavior, safety, architecture, docs, consistency, validation, and candidate gates are stable; closure checks total, file, and matching-section deltas.
 8. Revalidate after compression, then harden, rerun final `skill-change-gate`, benchmark, close with `skill-improver`, and finish with final token-efficiency audit/validate.
 
 ## Phase 4: Patch discipline
@@ -39,7 +39,7 @@ Apply one bounded hypothesis per patch batch, selected from the discovery backlo
 
 ## Phase 5: Validate, package, and close
 
-After each material change, rerun the frozen evaluator, affected validators, and `skill-change-gate` or its local checklist. Before final report or packaging, build a required specialist reconciliation ledger and run `python scripts/validate_specialist_reconciliation.py --ledger <LEDGER_JSON>` when the user provided a sequence. If discovery found no viable mutation, report no-mutation and preserve the target unless required repairs exist. After cleanup and compression, rerun target validators, script syntax/smoke checks, local-link checks, package checks, final `skill-change-gate`, and final benchmark.
+After each material change, rerun the frozen evaluator, affected validators, and `skill-change-gate` or local checklist. Before final report or packaging, build the required specialist ledger and run `python scripts/validate_specialist_reconciliation.py --ledger <LEDGER_JSON>` when the user provided a sequence. If discovery finds no viable mutation, report no-mutation unless required repairs exist. After cleanup/compression, rerun validators, script syntax/smoke checks, link/package checks, final `skill-change-gate`, final benchmark, and token audit with local-regression review.
 
 Package only when validation passes. `scripts/package_skill.py` must use the booster-owned validator, not require every target skill to carry booster scripts, and must exclude generated evidence, reports, caches, old zips, and control artifacts from the archive.
 
@@ -57,4 +57,4 @@ python scripts/package_skill.py --target <TARGET_SKILL_PATH> --output <OUTPUT_DI
 
 Use an equivalent specialist packager only when the target lacks one. The archive must be named `skill.zip`, written outside the target folder, exclude caches/reports/secrets/old zips, and contain the final skill folder only.
 
-Final closure reports baseline vs final, discovery backlog summary, deltas, accepted/rejected hypotheses, command outcomes, pass ledger, specialist reconciliation counts and finalization decision, candidate and final `skill-change-gate` status, final package path, remaining risks, next hypothesis, and final token-efficiency closure status. If the final token pass mutates files, rerun affected validation and package gates before readiness claims.
+Final closure reports baseline vs final, backlog summary, deltas, accepted/rejected hypotheses, commands, pass ledger, reconciliation counts/finalization decision, candidate/final `skill-change-gate`, package path, risks, next hypothesis, and token closure. If the final token pass mutates files, rerun affected validation/package gates; if local growth remains, document the semantic trade-off or do not close token-efficiency.
