@@ -1,0 +1,24 @@
+{
+  "target": "<skill-name-or-path>",
+  "mode": "backlog-discovery",
+  "evidence_status": "mixed",
+  "recommendation": "test-hypotheses",
+  "hypotheses": [
+    {
+      "id": "H001",
+      "title": "<short title>",
+      "statement": "If we change or check X, Y should improve because Z.",
+      "target_area": "activation",
+      "evidence": "<observed signal or missing evidence>",
+      "expected_effect": "<expected measurable or gate-level effect>",
+      "validation_method": "<command, evaluator, scenario, or gate>",
+      "impact": 4,
+      "confidence": 3,
+      "testability": 4,
+      "risk": 2,
+      "cost": 2,
+      "recommendation": "test-now"
+    }
+  ],
+  "selected_for_testing": ["H001"]
+}

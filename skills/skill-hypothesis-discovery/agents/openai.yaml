@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Hypothesis Discovery
+  short_description: Discovers and ranks testable skill-improvement hypotheses before mutation.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -23,6 +23,14 @@
 |---|---|---|---|
 {{specialist_pass_rows}}
 
+## Hypothesis Discovery
+- Policy: {{hypothesis_discovery_policy}}
+- Status: {{hypothesis_discovery_status}}
+- Generated hypotheses: {{hypothesis_generated_count}}
+- Selected for current cycle: {{hypothesis_selected}}
+- Deferred hypotheses: {{hypothesis_deferred}}
+- No-mutation rationale: {{hypothesis_no_mutation_rationale}}
+
 ## Change Gate
 - Policy: {{change_gate_policy}}
 - Candidate gate status: {{candidate_change_gate_status}}
@@ -50,6 +58,7 @@
 - Evaluator: {{final_evaluator}}
 - Final score: {{final_score}}
 - Delta: {{score_delta}}
+- Hypothesis-discovery status: {{hypothesis_discovery_status}}
 - Change-gate status: {{final_change_gate_status}}
 - Token delta: {{token_delta}}
 - Final token-efficiency closure: {{final_token_efficiency_closure}}

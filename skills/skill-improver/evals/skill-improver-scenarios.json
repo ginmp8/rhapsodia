@@ -198,5 +198,13 @@
     "expected_behavior": "fail packaging gate",
     "evaluator_focus": "packaging regression",
     "status": "planned"
+  },
+  {
+    "id": "SHOULD_ACTIVATE-06",
+    "category": "should_activate",
+    "prompt": "Use skill-improver on this skill, but first use skill-hypothesis-discovery because I do not know which hypothesis to test.",
+    "expected_behavior": "activate and load or request an evidence-backed hypothesis backlog before mutation",
+    "evaluator_focus": "hypothesis discovery fallback and no-random-mutation boundary",
+    "status": "planned"
   }
 ]

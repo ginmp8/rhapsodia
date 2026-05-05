@@ -13,6 +13,8 @@ Use for manual, automated, self-improvement, and package/install runs. Mark evid
 - Auxiliary metric: `<metric and result, or not used>`
 - Delta: `<delta>`
 - Iterations: `<count>`
+- Hypothesis source: `<supplied | discovery-backlog | built-in-catalog | fallback>`
+- Discovery result: `<not-run | candidates/top/deferred | gather-evidence | no-mutation-recommended>`
 - Accepted patches: `<count>`
 - Rejected patches: `<count>`
 - Verdict: `<improved | unchanged | failed | packaged>`
@@ -23,6 +25,13 @@ Use for manual, automated, self-improvement, and package/install runs. Mark evid
 - Required gates: `<gates>`
 - Blocked paths: `<paths>`
 - Safety mode: `<manual review | isolated container | ci | disposable sandbox>`
+
+## Hypothesis discovery
+- Backlog source: `<path/report/not-run>`
+- Candidates generated: `<count>`
+- Top hypotheses selected: `<ids>`
+- Deferred hypotheses: `<ids/reasons>`
+- Selection rationale: `<why this hypothesis was tested first>`
 
 ## Accepted hypotheses
 | Iteration | Hypothesis | Score before | Score after | Files changed | Rationale |

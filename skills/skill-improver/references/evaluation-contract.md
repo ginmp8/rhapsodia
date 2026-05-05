@@ -5,10 +5,10 @@
 Do not start improvement until a benchmark exists and is frozen.
 
 ```text
-prepare benchmark -> run baseline -> freeze evaluator inputs -> test hypotheses
+prepare benchmark -> run baseline -> freeze evaluator inputs -> discover or load hypothesis backlog -> test selected hypotheses
 ```
 
-A benchmark may be created immediately before the loop, but candidate changes must use the same frozen benchmark. Do not alter tests, expected outputs, evaluator scripts, scenario results, scoring weights, or gate definitions during an improvement iteration.
+A benchmark may be created immediately before the loop, but candidate changes must use the same frozen benchmark. Do not alter tests, expected outputs, evaluator scripts, scenario results, scoring weights, or gate definitions during an improvement iteration. Hypothesis discovery may inspect benchmark/harness evidence, but it must not change evaluator inputs or claim measured improvement.
 
 ## Custom evaluator output
 
@@ -54,6 +54,38 @@ With `--evaluator skill-benchmark`, the runner calls the installed report genera
 
 
 
+
+
+## Hypothesis discovery contract
+
+Use a supplied bounded hypothesis first. When none is supplied, when the evaluator score is saturated, or when findings point to multiple possible candidate patches, load a hypothesis backlog from `skill-hypothesis-discovery` or a compatible JSON file before mutation. Discovery is planning evidence, not an accepted improvement.
+
+Preferred JSON backlog shape:
+
+```json
+{
+  "hypotheses": [
+    {
+      "id": "H001",
+      "name": "Improve activation boundaries",
+      "statement": "If negative activation boundaries are added, false positives should decrease without reducing target recall.",
+      "evidence_signal": "ambiguous or adjacent prompts trigger the skill",
+      "target_area": "activation",
+      "files": ["SKILL.md"],
+      "expected_effect": "lower false-positive rate",
+      "validation": "activation and non-activation scenario suite",
+      "constraints": ["do not weaken positive triggers"],
+      "risk": 2,
+      "confidence": 4,
+      "testability": 5,
+      "recommendation": "test-next"
+    }
+  ]
+}
+```
+
+Use only hypotheses with a clear mechanism, evidence signal, bounded file scope, validation method, and rollback/gate expectation. Reject or defer cosmetic, duplicate, random, or low-evidence hypotheses. If discovery returns `no mutation recommended` or `gather evidence`, do not force a patch; report the blocker or create the requested evidence first.
+
 ## Structural change gate
 
 Use a structural change gate as an acceptance check separate from the numeric evaluator. The gate may be performed by `skill-change-gate`, a reviewer, or a compatible command. It evaluates whether a candidate patch introduced blocking regressions in skill loading, activation, scope boundaries, local references, safety and authority, validation, packaging, evidence discipline, or output contracts.
@@ -85,6 +117,7 @@ Accept only when all configured conditions hold:
 ```text
 same benchmark hash
 and no blocked paths changed
+and selected hypothesis has evidence-backed mechanism and validation
 and candidate status/gates pass
 and structural change gate passes when required
 and candidate_score >= best_score + min_delta
@@ -95,12 +128,13 @@ for `higher-is-better`, or:
 ```text
 same benchmark hash
 and no blocked paths changed
+and selected hypothesis has evidence-backed mechanism and validation
 and candidate status/gates pass
 and structural change gate passes when required
 and candidate_score <= best_score - min_delta
 ```
 
-for `lower-is-better`. Any evaluator gate failure, required change-gate failure, evaluator drift, or locked-fixture drift rejects and reverts the candidate even if the number improves.
+for `lower-is-better`. Any evaluator gate failure, missing/invalid hypothesis source, required change-gate failure, evaluator drift, or locked-fixture drift rejects and reverts the candidate even if the number improves.
 
 ## Gate flags
 

@@ -41,6 +41,14 @@ Use these gates before claiming a skill is ready.
 - no validation, benchmark, or production-readiness claim is unsupported.
 
 
+
+## Hypothesis Discovery Gates
+
+- For redesign or quality-upgrade work with multiple possible directions, run `skill-hypothesis-discovery`, apply its checklist, or record why it is not applicable.
+- Discovery output is non-mutating: it may recommend `test-hypotheses`, `gather-evidence`, or `no-mutation-recommended`, but it does not accept patches or claim measured improvement.
+- Hypotheses used by `skill-improver` must be evidence-backed, bounded, testable, reversible, and protected by evaluator and change-gate checks.
+- When discovery says `gather-evidence` or `no-mutation-recommended`, do not force mutation just to satisfy an optimization workflow.
+
 ## Change Acceptance Gates
 
 - For existing-skill updates or redesigns, material changes have a `skill-change-gate` result or an explicitly applied checklist.
@@ -62,6 +70,7 @@ Use these gates before claiming a skill is ready.
 A package can be delivered only when:
 
 - local quality gate passes or remaining warnings are explicitly accepted;
+- required `skill-hypothesis-discovery` review is run, applied by checklist, or marked not-applicable with rationale when redesign or quality-upgrade work needed hypothesis selection;
 - required `skill-change-gate` review passes, is applied by checklist, or is marked advisory/not-applicable with rationale;
 - platform/package validator passes;
 - `skill.zip` exists at the reported path;

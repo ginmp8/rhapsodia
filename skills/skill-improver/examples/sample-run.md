@@ -1,5 +1,22 @@
 # Sample runs
 
+
+## Using a hypothesis-discovery backlog
+
+Generate or supply a backlog before running the loop when no bounded hypothesis is obvious:
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target ./skills/magnomo \
+  --evaluator skill-benchmark \
+  --hypothesis-backlog ./reports/hypothesis-backlog.json \
+  --max-iterations 3 \
+  --min-delta 1.0 \
+  --codex-mode full-auto
+```
+
+The backlog should come from `skill-hypothesis-discovery` or an equivalent evidence-backed planning pass. The runner tests selected hypotheses; it does not treat discovery recommendations as measured improvements.
+
 ## Skill-benchmark evaluator
 
 ```bash

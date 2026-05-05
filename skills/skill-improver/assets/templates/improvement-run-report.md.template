@@ -27,11 +27,19 @@
 - Metrics: {{metrics}}
 - Gates: {{gates}}
 
-## 4. Improvement hypotheses
+## 4. Hypothesis discovery
+
+- Source: {{hypothesis_source}}
+- Candidates generated: {{hypothesis_candidates_generated}}
+- Selected for testing: {{hypothesis_selected}}
+- Deferred or rejected before testing: {{hypothesis_deferred}}
+- Discovery notes: {{hypothesis_discovery_notes}}
+
+## 5. Improvement hypotheses
 
 {{improvement_hypotheses}}
 
-## 5. Applied changes
+## 6. Applied changes
 
 ### SKILL.md
 {{skill_md_changes}}
@@ -54,31 +62,31 @@
 ### Packaging
 {{packaging_changes}}
 
-## 6. Commands executed and results
+## 7. Commands executed and results
 
 {{commands_executed}}
 
-## 7. Structural change gate
+## 8. Structural change gate
 
 - Policy: {{change_gate_policy}}
 - Summary: {{change_gate_summary}}
 
-## 8. Before and after comparison
+## 9. Before and after comparison
 
 {{before_after_comparison}}
 
-## 9. Residual risks
+## 10. Residual risks
 
 {{residual_risks}}
 
-## 10. Final package
+## 11. Final package
 
 - Package path: {{package_path}}
 - Package validator result: {{package_validator_result}}
 - Packaged file count: {{packaged_file_count}}
 - Rollback path: {{rollback_path}}
 
-## 11. Evidence boundary
+## 12. Evidence boundary
 
 - Measured evidence: {{measured_evidence}}
 - Proposed or unmeasured evidence: {{unmeasured_evidence}}

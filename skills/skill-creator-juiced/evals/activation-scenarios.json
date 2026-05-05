@@ -66,6 +66,18 @@
         "The workflow records a skill-change-gate result or applied checklist before final packaging."
       ],
       "category": "should_activate"
+    },
+    {
+      "id": "act-hypothesis-discovery-001",
+      "type": "should_activate",
+      "prompt": "Redesign this existing skill and use hypothesis discovery before choosing what to improve.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Skill Creator Juiced treats the request as redesign or quality-upgrade work.",
+        "The workflow runs skill-hypothesis-discovery or applies its checklist before selecting a measured improvement hypothesis.",
+        "No mutation is claimed from discovery alone."
+      ],
+      "category": "should_activate"
     }
   ]
 }
