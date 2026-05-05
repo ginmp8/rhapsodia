@@ -19,9 +19,24 @@
 - Blocked paths: {{blocked_paths}}
 
 ## Specialist Pass Ledger
-| Pass | Status | Evidence | Notes |
-|---|---|---|---|
+| Pass | Status | Execution type | Evidence | Notes |
+|---|---|---|---|---|
 {{specialist_pass_rows}}
+
+## Required Specialist Sequence Reconciliation
+| # | Required specialist | Available | Actually invoked | Checklist-only | Blocked | Unavailable | Not applicable | Not run | Evidence |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---|
+{{specialist_reconciliation_rows}}
+
+- Required specialists: {{required_specialist_count}}
+- Actually invoked: {{invoked_specialist_count}}
+- Checklist-only: {{checklist_only_specialist_count}}
+- Blocked: {{blocked_specialist_count}}
+- Unavailable: {{unavailable_specialist_count}}
+- Not applicable: {{not_applicable_specialist_count}}
+- Not run: {{not_run_specialist_count}}
+- Reconciliation gate: {{specialist_reconciliation_gate}}
+- Full sequence satisfied: {{full_sequence_satisfied}}
 
 ## Hypothesis Discovery
 - Policy: {{hypothesis_discovery_policy}}

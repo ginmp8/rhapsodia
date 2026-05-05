@@ -122,6 +122,17 @@
         "The pass ledger includes skill-hypothesis-discovery before skill-improver and records the resulting hypothesis backlog."
       ],
       "category": "should_activate"
+    },
+    {
+      "id": "edge-003",
+      "type": "edge_case",
+      "prompt": "I required a 23-skill specialist sequence, but only five skills were actually used. Can you still mark full optimization complete?",
+      "expected_behavior": "activate_and_block_full_claim; reconcile required specialists against actual invocations before readiness or package claims",
+      "acceptance_criteria": [
+        "Assistant distinguishes invoked specialists from checklist-only review.",
+        "Assistant blocks full-completion or readiness claims until specialist reconciliation passes."
+      ],
+      "category": "edge_case"
     }
   ]
 }

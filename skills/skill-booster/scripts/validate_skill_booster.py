@@ -14,7 +14,20 @@ try:
 except Exception:  # pragma: no cover
     yaml = None
 
-FORBIDDEN_PACKAGE_PARTS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache"}
+FORBIDDEN_PACKAGE_PARTS = {
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "build",
+    "dist",
+    "reports",
+    "generated_evidence",
+    "generated-evidence",
+    "benchmark-results",
+    "validation-reports",
+}
 FORBIDDEN_SUFFIXES = {".pyc", ".pyo"}
 SCAFFOLD_MARKERS = ["TO" + "DO", "[" + "TO" + "DO", "replace with" + " actual", "example" + " asset", "api_" + "reference.md"]
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")

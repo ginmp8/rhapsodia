@@ -10,7 +10,20 @@ import sys
 import zipfile
 from pathlib import Path
 
-BLOCKED_PARTS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache"}
+BLOCKED_PARTS = {
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "build",
+    "dist",
+    "reports",
+    "generated_evidence",
+    "generated-evidence",
+    "benchmark-results",
+    "validation-reports",
+}
 BLOCKED_SUFFIXES = {".pyc", ".pyo"}
 BLOCKED_FILENAMES = {"skill.zip"}
 
@@ -27,7 +40,7 @@ def should_exclude(path: Path) -> bool:
 
 
 def validate(target: Path) -> tuple[int, dict]:
-    validator = target / "scripts" / "validate_skill_booster.py"
+    validator = Path(__file__).resolve().with_name("validate_skill_booster.py")
     if not validator.exists():
         return 1, {"status": "fail", "errors": [f"missing validator: {validator}"]}
     proc = subprocess.run(
@@ -43,7 +56,24 @@ def validate(target: Path) -> tuple[int, dict]:
     return proc.returncode, report
 
 
-def package(target: Path, output: Path) -> dict:
+
+def validate_reconciliation(ledger: Path) -> tuple[int, dict]:
+    validator = Path(__file__).resolve().with_name("validate_specialist_reconciliation.py")
+    if not validator.exists():
+        return 1, {"status": "fail", "errors": [f"missing reconciliation validator: {validator}"]}
+    proc = subprocess.run(
+        [sys.executable, str(validator), "--ledger", str(ledger)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    try:
+        report = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        report = {"status": "fail", "errors": ["reconciliation validator did not return JSON"], "stdout": proc.stdout, "stderr": proc.stderr}
+    return proc.returncode, report
+
+def package(target: Path, output: Path, reconciliation_ledger: Path | None = None) -> dict:
     target = target.resolve()
     output = output.resolve()
     if output.name != "skill.zip":
@@ -54,12 +84,21 @@ def package(target: Path, output: Path) -> dict:
     code, validation = validate(target)
     if code != 0 or validation.get("status") != "pass":
         return {"status": "fail", "stage": "validate", "validation": validation}
+    reconciliation = None
+    if reconciliation_ledger is not None:
+        rec_code, reconciliation = validate_reconciliation(reconciliation_ledger)
+        if rec_code != 0 or reconciliation.get("finalization_allowed") is not True:
+            return {"status": "fail", "stage": "specialist_reconciliation", "validation": validation, "specialist_reconciliation": reconciliation}
     files: list[str] = []
+    package_errors: list[str] = []
     root_name = target.name
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for path in sorted(target.rglob("*")):
             rel = path.relative_to(target)
             if should_exclude(rel):
+                continue
+            if path.is_symlink():
+                package_errors.append(f"symlink is not packaged: {rel}")
                 continue
             if path.is_file():
                 archive_name = f"{root_name}/{rel.as_posix()}"
@@ -69,7 +108,6 @@ def package(target: Path, output: Path) -> dict:
         bad = zf.testzip()
         names = zf.namelist()
     top_levels = sorted({name.split("/", 1)[0] for name in names if name})
-    package_errors = []
     if bad:
         package_errors.append(f"corrupt zip member: {bad}")
     if top_levels != [root_name]:
@@ -83,6 +121,7 @@ def package(target: Path, output: Path) -> dict:
         "file_count": len(files),
         "size_bytes": output.stat().st_size if output.exists() else 0,
         "validation": validation,
+        "specialist_reconciliation": reconciliation,
         "package_errors": package_errors,
         "files": files,
     }
@@ -93,9 +132,11 @@ def main() -> int:
     parser.add_argument("--target", required=True, help="Skill folder to package")
     parser.add_argument("--output", required=True, help="Output path; basename must be skill.zip")
     parser.add_argument("--report", help="Optional JSON package report path")
+    parser.add_argument("--reconciliation-ledger", help="Optional specialist reconciliation JSON; packaging fails unless finalization_allowed is true")
     args = parser.parse_args()
     try:
-        report = package(Path(args.target), Path(args.output))
+        ledger = Path(args.reconciliation_ledger) if args.reconciliation_ledger else None
+        report = package(Path(args.target), Path(args.output), ledger)
     except Exception as exc:
         report = {"status": "fail", "errors": [str(exc)]}
     text = json.dumps(report, indent=2, ensure_ascii=False)

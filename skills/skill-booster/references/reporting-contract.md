@@ -87,7 +87,7 @@ Use this final report shape. Keep measured facts separate from design judgment.
 
 ## Evidence language
 
-Use `measured` for executed commands/scenario results/validators/package checks, `observed` for file inspection, `inferred` for reasoned conclusions from files, `planned` for unexecuted checks, and `blocked` for missing tools/permissions/safe scope. Do not say `production-ready`, `secure`, `benchmark improved`, or behavioral precision/recall unless corresponding checks passed.
+Use `measured` for executed commands/scenario results/validators/package checks, `observed` for file inspection, `inferred` for reasoned conclusions from files, `planned` for unexecuted checks, and `blocked` for missing tools/permissions/safe scope. Use `invoked-skill` only when the skill was actually invoked; use `checklist-only` for manual application. Do not say `production-ready`, `secure`, `benchmark improved`, `full specialist sequence executed`, or behavioral precision/recall unless corresponding checks passed.
 
 ## Pass ledger example
 
