@@ -1,6 +1,13 @@
 # Hypothesis Catalog
 
-Use one specific, observed-weakness hypothesis per iteration.
+Use one specific, observed-weakness hypothesis per iteration. Prefer user-supplied hypotheses and `skill-hypothesis-discovery` backlogs over this built-in catalog. Use this catalog only as a fallback or as seed taxonomy for discovery.
+
+
+## Discovery handoff
+
+Before using built-in hypotheses, check whether the user supplied a hypothesis or backlog. If not, and there is benchmark, harness, validation, reviewer, or user-feedback evidence, use `skill-hypothesis-discovery` to generate 5-10 candidates, rank them, and select the next 1-3 testable hypotheses.
+
+Discovery output must be treated as planning evidence until `skill-improver` tests a candidate against the frozen evaluator and `skill-change-gate` accepts the result. Do not generate random mutations. A good discovery outcome may be `no mutation recommended` or `gather evidence` when the target is already strong or evidence is thin.
 
 ## Trigger and activation
 
@@ -31,9 +38,14 @@ Mechanism: reviewer findings become safer and more actionable when routed by sev
 Changes: classify findings as critical, major, or minor; fix critical and major findings before polish; evaluate minor findings for functional value, false-positive risk, and activation/output impact before editing.
 Evidence: critical and major findings reach zero, minor decisions are explicitly accepted or rejected, and validation confirms no safety, activation, or output gate regressed.
 
+### H013 - Evidence-backed hypothesis backlog
+Mechanism: candidate selection improves when hypotheses are derived from benchmark, harness, validation, architecture, activation, security, cleanup, or token-efficiency evidence instead of round-robin or random selection.
+Changes: load a supplied backlog or run/apply `skill-hypothesis-discovery`; select the highest-ranked bounded hypothesis with validation available; record deferred and rejected hypotheses.
+Evidence: every tested candidate has an evidence signal, expected effect, validation method, and rollback/change-gate rule; random or cosmetic candidates are not tested.
+
 ## Output
 
-### H013 - Structural change gate
+### H014 - Structural change gate
 Mechanism: candidate acceptance becomes safer when metric gains are checked against structural regressions before acceptance.
 Changes: add or tighten change-gate policy, record blocking regressions, material concerns, accepted trade-offs, and decision impact.
 Evidence: candidates with metric gains but blocking regressions are rejected; accepted candidates preserve activation, safety, validation, references, packaging, and output contracts.

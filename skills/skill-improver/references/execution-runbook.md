@@ -7,6 +7,7 @@ Use for CLI details, benchmark modes, defaults, self-improvement safeguards, pac
 When details are omitted, continue conservatively:
 - Evaluator: `skill-benchmark` when available; if `100/100`, treat as gate and add non-saturated auxiliary evidence before claiming improvement.
 - Budget: one manual patch or `--max-iterations 3`.
+- Hypothesis source: user-supplied hypothesis/backlog first; `skill-hypothesis-discovery` when no bounded hypothesis exists or metrics are saturated; built-in catalog only as fallback.
 - Minimum delta: `1.0` unless the evaluator has a smaller meaningful unit.
 - Scope: target skill folder only.
 - Blocked: evaluator scripts, expected outputs, scenario fixtures, benchmark reports used as fixtures, lockfiles, `.git`, caches, package artifacts, secrets.
@@ -21,6 +22,29 @@ When a user supplies an imprecise target, resolve it before mutation:
 3. Otherwise, search candidate skill roots by skill name or path substring and continue only after exactly one match is found.
 
 For zero matches, report available candidate roots. For multiple matches, ask for selection rather than guessing. Never mutate a path that does not resolve to exactly one root `SKILL.md`.
+
+
+## Hypothesis discovery
+
+Use discovery before mutation when no bounded hypothesis is supplied, when a saturated evaluator needs auxiliary directions, or when findings span multiple possible patches. Discovery should generate a backlog, not edit the target.
+
+Preferred flow:
+
+```text
+baseline evidence -> skill-hypothesis-discovery -> backlog/top hypotheses -> skill-improver tests one hypothesis -> skill-change-gate accepts/rejects
+```
+
+If a machine-readable backlog is available, pass it to the runner:
+
+```bash
+python scripts/skill_improver_loop.py \
+  --target /path/to/target-skill \
+  --evaluator skill-benchmark \
+  --hypothesis-backlog /path/to/hypothesis-backlog.json \
+  --max-iterations 3
+```
+
+Do not treat discovery recommendations as measured improvements. If discovery recommends `gather-evidence` or `no-mutation-recommended`, stop or collect evidence instead of forcing a patch.
 
 ## Reviewer-severity loop
 
@@ -40,7 +64,7 @@ python scripts/skill_improver_loop.py \
   --target /path/to/target-skill \
   --evaluator command \
   --eval-command 'python scripts/static_skill_score.py --target .' \
-  --max-iterations 10 \
+  --max-iterations 3 \
   --stop-file .skill-improver/stop
 ```
 
@@ -65,7 +89,7 @@ Remove the stop file before starting a new loop. Do not report completion solely
 python scripts/skill_improver_loop.py \
   --target /path/to/target-skill \
   --evaluator skill-benchmark \
-  --max-iterations 10 \
+  --max-iterations 3 \
   --min-delta 1.0 \
   --codex-bin codex \
   --codex-mode full-auto
@@ -82,7 +106,7 @@ python scripts/skill_improver_loop.py \
   --skill-benchmark-results /path/to/frozen-scenario-results.json \
   --benchmark-lock-path /path/to/frozen-scenario-results.json \
   --blocked-path /path/to/evals \
-  --max-iterations 10 \
+  --max-iterations 3 \
   --min-delta 1.0
 ```
 
@@ -97,7 +121,7 @@ python scripts/skill_improver_loop.py \
   --eval-command 'python /path/to/eval_skill.py --target .' \
   --benchmark-lock-path /path/to/eval_skill.py \
   --required-gate packaging \
-  --max-iterations 8 \
+  --max-iterations 3 \
   --min-delta 0.5
 ```
 

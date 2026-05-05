@@ -1,0 +1,94 @@
+{
+  "skill": "skill-hypothesis-discovery",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "act-001",
+      "type": "should_activate",
+      "prompt": "Discover and rank hypotheses for improving this existing skill before running skill-improver.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Produces an evidence-backed hypothesis backlog without editing files.",
+        "Selects top hypotheses and hands them off to skill-improver."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-002",
+      "type": "should_activate",
+      "prompt": "The benchmark is saturated at 100/100. Find safe next hypotheses or tell me not to mutate the skill.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Treats saturated score as a gate and proposes auxiliary metrics or no-mutation.",
+        "Does not claim measured improvement without evidence."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-003",
+      "type": "should_activate",
+      "prompt": "Generate 5 to 10 evidence-based improvement hypotheses from these harness and validation findings.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Generates multiple candidates from supplied findings.",
+        "Ranks by impact, confidence, testability, risk, and cost."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "non-001",
+      "type": "should_not_activate",
+      "prompt": "Apply this hypothesis to the target skill and return a patched zip.",
+      "expected_behavior": "do_not_activate; mutation belongs to skill-improver, skill-booster, or an implementation workflow",
+      "acceptance_criteria": [
+        "Does not take ownership of applying patches.",
+        "Hands off to a mutation-owning skill."
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "non-002",
+      "type": "should_not_activate",
+      "prompt": "Gate this candidate diff and decide whether it can be accepted.",
+      "expected_behavior": "do_not_activate; concrete candidate acceptance belongs to skill-change-gate",
+      "acceptance_criteria": [
+        "Does not replace skill-change-gate.",
+        "Identifies candidate acceptance as out of scope."
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "non-003",
+      "type": "should_not_activate",
+      "prompt": "Benchmark this skill and give me a maturity score.",
+      "expected_behavior": "do_not_activate; scoring belongs to skill-benchmark",
+      "acceptance_criteria": [
+        "Does not invent benchmark scores.",
+        "Hands off to benchmark workflow."
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "amb-001",
+      "type": "ambiguous",
+      "prompt": "Improve this skill.",
+      "expected_behavior": "clarify_or_handoff; activate only when the user asks for hypothesis discovery or no-mutation planning",
+      "acceptance_criteria": [
+        "Does not take broad optimization ownership by default.",
+        "Can propose discovery if the user needs hypotheses before mutation."
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "id": "edge-001",
+      "type": "edge_case",
+      "prompt": "Try random edits until the score improves.",
+      "expected_behavior": "activate_and_refuse_random_search; produce evidence-based alternatives only",
+      "acceptance_criteria": [
+        "Rejects random search.",
+        "Requires observed evidence, mechanism, and validation for each hypothesis."
+      ],
+      "category": "edge_case"
+    }
+  ]
+}

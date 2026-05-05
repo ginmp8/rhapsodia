@@ -10,3 +10,5 @@ Planned examples for `skill-creator-juiced`; do not report metrics unless execut
 - edge case: "package it even though the validator failed" -> do not claim readiness or return `skill.zip` until validation and package checks pass.
 
 - should activate quality gate path: "update this existing skill and make sure the patch does not regress activation or safety" -> use `skill-change-gate` or its checklist before accepting material changes and packaging.
+
+- should activate hypothesis discovery path: "redesign this existing skill, but first identify the safest hypotheses to test" -> use `skill-hypothesis-discovery` or its checklist to produce a non-mutating prioritized backlog before measured improvement.

@@ -23,6 +23,7 @@ Specialists are not decorative. Call or apply a specialist only when it owns a r
 | token efficiency | `skill-token-efficient` | instructions are bloated or repeated after behavior is stable | reduced token cost with preserved semantics |
 | harness | `skill-harness` | repeatable gate, scenario suite, evaluator, package evidence, or audit harness is needed | harness map, scenarios, validators, package gates |
 | benchmark | `skill-benchmark` | user wants scorecard, maturity report, comparison, or publish-readiness | benchmark report, score, measured/planned distinction |
+| hypothesis discovery | `skill-hypothesis-discovery` | redesign, quality-upgrade, saturated evidence, unclear next experiment, or no bounded hypothesis supplied before measured improvement | evidence-backed hypothesis backlog, top 3-5 candidates, next 1-3 tests, no-mutation or gather-evidence recommendation |
 | measured improvement | `skill-improver` | an evaluator is frozen and a bounded hypothesis can be tested | baseline/final metric, accepted/rejected hypothesis |
 | change acceptance | `skill-change-gate` | a material update, redesign, cleanup, hardening, or token-efficiency candidate must be accepted without regression | pass/pass-with-warnings/fail decision, blocking regressions, accepted trade-offs |
 | final hardening | `skill-hardening` | existing generated package needs maturity upgrade, validation, and uploadable delivery | hardening changes, gates, package readiness |
@@ -39,7 +40,8 @@ For ordinary new skills, apply:
 6. `security-and-governance-review` when scripts, tools, connectors, or sensitive data are involved.
 7. `skill-consistency-repair` and `skill-cleanup-and-simplification` before packaging.
 8. `skill-token-efficient` after content stabilizes.
-9. `skill-change-gate` for existing-skill updates or redesigns before final acceptance; use advisory mode for net-new skills without before/after evidence.
+9. `skill-hypothesis-discovery` for redesign or quality-upgrade work when several candidate improvement directions exist; skip routine net-new creation unless the user asks for a post-creation backlog.
+10. `skill-change-gate` for existing-skill updates or redesigns before final acceptance; use advisory mode for net-new skills without before/after evidence.
 
 ## Full Juiced Path
 
@@ -47,13 +49,14 @@ For production-ready, publish-ready, or high-risk skills, add:
 
 1. `skill-harness` to define scenarios, metrics, gates, and evidence capture.
 2. `skill-benchmark` for a maturity score and readiness report.
-3. `skill-improver` for one measured improvement loop when a frozen evaluator exists.
-4. `skill-change-gate` after material candidate changes and again before final delivery when the package was modified from an existing baseline.
-5. `skill-hardening` for final package maturity and delivery validation.
+3. `skill-hypothesis-discovery` to convert benchmark, harness, validation, activation, architecture, consistency, security, cleanup, hardening, or token-efficiency findings into a prioritized backlog.
+4. `skill-improver` for one measured improvement loop when a frozen evaluator exists and a bounded hypothesis is selected.
+5. `skill-change-gate` after material candidate changes and again before final delivery when the package was modified from an existing baseline.
+6. `skill-hardening` for final package maturity and delivery validation.
 
 ## Handoff Rules
 
 - If a specialist is unavailable, apply the local checklist from this skill and mark the specialist pass as not run.
-- If a specialist reports a blocking issue, fix it before proceeding to later gates. Treat `skill-change-gate` `fail` as blocking for existing-skill updates unless the user explicitly narrows the work to advisory review.
+- If a specialist reports a blocking issue, fix it before proceeding to later gates. Treat `skill-hypothesis-discovery` `gather-evidence` or `no-mutation-recommended` as a planning outcome, not a failure. Treat `skill-change-gate` `fail` as blocking for existing-skill updates unless the user explicitly narrows the work to advisory review.
 - If a requested pass would require fabricated metrics, report planned scenarios instead of measured results.
 - Do not let a downstream specialist expand the target skill beyond its original role without evidence and user intent.

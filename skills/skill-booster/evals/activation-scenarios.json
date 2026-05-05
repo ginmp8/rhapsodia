@@ -111,6 +111,17 @@
         "The pass ledger includes candidate and final skill-change-gate status."
       ],
       "category": "should_activate"
+    },
+    {
+      "id": "act-005",
+      "type": "should_activate",
+      "prompt": "Optimize this skill end to end and include skill-hypothesis-discovery before testing improvement hypotheses.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Skill Booster is selected for a complete optimization request.",
+        "The pass ledger includes skill-hypothesis-discovery before skill-improver and records the resulting hypothesis backlog."
+      ],
+      "category": "should_activate"
     }
   ]
 }

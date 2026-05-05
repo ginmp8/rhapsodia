@@ -10,7 +10,9 @@
 
 ## Hypothesis
 
-{{hypothesis_statement}}
+- Source: {{hypothesis_source}}
+- Discovery evidence signal: {{hypothesis_evidence_signal}}
+- Statement: {{hypothesis_statement}}
 
 ## Scope
 

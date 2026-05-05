@@ -1,6 +1,6 @@
 ---
 name: skill-creator-juiced
-description: use this skill to create, redesign, or substantially upgrade chatgpt or agent skills with a quality-heavy workflow. use when the user asks to build a skill, turn a repeatable workflow into a skill, choose skill architecture, package skill assets, or coordinate specialist quality workflows such as hardening, benchmarking, harnessing, consistency repair, activation review, testing, token efficiency, documentation, security, code discipline, context mapping, or prompt architecture. do not use for ordinary code review, product strategy, document writing, or prompt-only rewrites unless the user asks to create or upgrade a skill package.
+description: use this skill to create, redesign, or substantially upgrade chatgpt or agent skills with a quality-heavy workflow. use when the user asks to build a skill, turn a repeatable workflow into a skill, choose skill architecture, package skill assets, or coordinate specialist quality workflows such as hardening, benchmarking, harnessing, hypothesis discovery, consistency repair, activation review, testing, token efficiency, documentation, security, code discipline, context mapping, or prompt architecture. do not use for ordinary code review, product strategy, document writing, or prompt-only rewrites unless the user asks to create or upgrade a skill package.
 ---
 
 # Skill Creator Juiced
@@ -9,7 +9,7 @@ description: use this skill to create, redesign, or substantially upgrade chatgp
 
 Create high-quality reusable skills from real workflows, not generic advice. Treat each skill as an operational package with a clear activation surface, compact control plane, progressive loading, evidence-backed resources, validation gates, and a package-ready delivery path.
 
-Use this skill as an enhanced creator and orchestrator. It owns net-new skill creation, major redesigns, specialist quality orchestration, and change-gate acceptance for skill packages.
+Use this skill as an enhanced creator and orchestrator. It owns net-new skill creation, major redesigns, specialist quality orchestration, hypothesis-discovery routing, and change-gate acceptance for skill packages.
 
 ## Scope
 
@@ -48,6 +48,7 @@ Defaults: proceed with explicit assumptions when missing details do not change s
 - Do not fabricate validation, benchmark scores, package readiness, security status, or script pass rates.
 - Ask follow-up questions only when missing information blocks a safe skill design. Otherwise proceed with explicit assumptions.
 - Before packaging, remove scaffold, placeholders, caches, generated reports, old zips, and unused example files.
+- Use `skill-hypothesis-discovery` in redesign or quality-upgrade work when several improvement directions exist, no bounded hypothesis is supplied, or evidence is saturated. Do not use it for routine net-new creation unless the user asks for a post-creation improvement backlog.
 - For existing-skill updates or redesigns, use `skill-change-gate` or its checklist before accepting material changes. For net-new skills, use it only as an advisory final gate when there is no before/after candidate evidence.
 
 ## Resource Loading
@@ -57,7 +58,7 @@ Load only what the active branch needs:
 - `references/creation-workflow.md` for the ordered creation, redesign, validation, and reporting path.
 - `references/design-principles.md` for cohesion, mode, router, split, and progressive-loading decisions.
 - `references/quality-gates.md` before readiness, validation, packaging, or final delivery claims.
-- `references/specialist-orchestration.md` when choosing or sequencing specialist passes, including `skill-change-gate` for candidate acceptance.
+- `references/specialist-orchestration.md` when choosing or sequencing specialist passes, including `skill-hypothesis-discovery` for evidence-backed hypothesis backlogs and `skill-change-gate` for candidate acceptance.
 - `evals/activation-scenarios.json` for planned activation, non-activation, ambiguous, and edge coverage. Treat it as planned evidence until executed.
 - `examples/creation-scenarios.md` for human-readable calibration examples.
 - `scripts/juiced_quality_gate.py` for local structural validation.
@@ -71,7 +72,7 @@ Follow the workflow in `references/creation-workflow.md`:
 2. Capability boundary and cohesion decision.
 3. Package architecture and progressive loading plan.
 4. Draft `SKILL.md`, references, scripts, assets, examples, and evals.
-5. Specialist quality passes.
+5. Specialist quality passes, including hypothesis discovery when redesign or quality-upgrade work needs a prioritized backlog.
 6. Change-gate review for material updates, validation, cleanup, packaging, and final evidence report.
 
 ## Specialist Orchestration
@@ -92,8 +93,9 @@ Default specialist sequence for a new skill:
 10. `skill-token-efficient` for token reduction after behavior is stable.
 11. `skill-change-gate` for existing-skill updates, redesign candidates, hardening candidates, cleanup candidates, or final acceptance checks; use advisory mode for net-new skills without before/after evidence.
 12. `skill-harness` and `skill-benchmark` when repeatable scenarios, evidence reports, maturity scores, or publish-readiness decisions are requested.
-13. `skill-improver` only after a baseline evaluator exists and a measurable hypothesis can be tested.
-14. `skill-hardening` for final package-level maturity upgrades and delivery readiness.
+13. `skill-hypothesis-discovery` for redesign or quality-upgrade work when evidence must become a prioritized, non-mutating hypothesis backlog before measured improvement.
+14. `skill-improver` only after a baseline evaluator exists and a measurable hypothesis can be tested.
+15. `skill-hardening` for final package-level maturity upgrades and delivery readiness.
 
 ## Design Principles
 
@@ -119,6 +121,7 @@ Before final delivery, apply `references/quality-gates.md`. At minimum, verify:
 - no placeholder scaffold or unfinished marker remains;
 - added or changed scripts were run at least once, or the reason is reported;
 - package validation passes before sharing `skill.zip`;
+- `skill-hypothesis-discovery` has produced a backlog, been applied by checklist, or been marked not-applicable when redesign or quality-upgrade work has multiple possible improvement directions;
 - `skill-change-gate` has passed, been applied by checklist, or been explicitly marked advisory/not-applicable with rationale before final delivery when the work modified an existing skill.
 
 Use `scripts/juiced_quality_gate.py <target-skill-folder>` for a local structural quality pass when filesystem access is available. Use `scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --validate` for deterministic archive creation and validation.
@@ -131,12 +134,13 @@ When creating or updating a skill, final responses include:
 2. what was created or changed;
 3. architecture decision: unified skill, modes, router, or split recommendation;
 4. specialist passes applied and any passes skipped with rationale;
-5. accepted and rejected hypotheses when optimization was requested;
-6. `skill-change-gate` status for material updates or final advisory review;
-7. files created or changed;
-8. validation commands and pass/fail/not-run status;
-9. package result, including `skill.zip` path only when the archive exists and validation passed;
-10. remaining assumptions, risks, and next quality pass.
+5. `skill-hypothesis-discovery` status and top backlog items when redesign, quality-upgrade, or measured optimization was requested;
+6. accepted and rejected hypotheses when optimization was requested;
+7. `skill-change-gate` status for material updates or final advisory review;
+8. files created or changed;
+9. validation commands and pass/fail/not-run status;
+10. package result, including `skill.zip` path only when the archive exists and validation passed;
+11. remaining assumptions, risks, and next quality pass.
 
 ## Stop Conditions
 

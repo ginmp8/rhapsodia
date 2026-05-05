@@ -4,7 +4,7 @@ Hypothesis-driven skill improvement loop.
 
 This runner orchestrates a bounded Codex experiment against a target skill folder:
 1. establish a baseline with a frozen evaluator
-2. choose one falsifiable hypothesis
+2. load or discover a falsifiable hypothesis when a backlog is supplied
 3. ask Codex to apply a minimal patch
 4. re-run the same evaluator
 5. run the structural change gate when configured
@@ -645,6 +645,66 @@ def is_improved(before: float, after: float, direction: str, min_delta: float) -
     raise ValueError(f"invalid direction: {direction}")
 
 
+
+def normalize_hypothesis(raw: dict[str, Any], index: int) -> dict[str, Any]:
+    """Normalize a skill-hypothesis-discovery entry into runner fields."""
+    hid = str(raw.get("id") or raw.get("hypothesis_id") or f"HB{index:03d}")
+    name = str(raw.get("name") or raw.get("title") or raw.get("hypothesis") or raw.get("statement") or hid)
+    statement = str(raw.get("statement") or raw.get("hypothesis") or name)
+    expected = str(raw.get("expected_effect") or raw.get("goal") or raw.get("mechanism") or statement)
+    validation = str(raw.get("validation") or raw.get("validator") or raw.get("evaluator") or "frozen evaluator and required gates")
+    evidence_signal = str(raw.get("evidence_signal") or raw.get("evidence") or raw.get("source_signal") or "supplied hypothesis backlog")
+    constraints_raw = raw.get("constraints") or raw.get("guardrails") or []
+    if isinstance(constraints_raw, str):
+        constraints = [constraints_raw]
+    elif isinstance(constraints_raw, list):
+        constraints = [str(item) for item in constraints_raw]
+    else:
+        constraints = []
+    constraints.extend([
+        f"Evidence signal: {evidence_signal}",
+        f"Validation method: {validation}",
+    ])
+    files = raw.get("files") or raw.get("target_files") or []
+    if files:
+        if isinstance(files, str):
+            constraints.append(f"Likely files: {files}")
+        elif isinstance(files, list):
+            constraints.append("Likely files: " + ", ".join(str(f) for f in files))
+    return {
+        "id": hid,
+        "name": name[:160],
+        "goal": expected,
+        "constraints": constraints,
+        "source": str(raw.get("source") or "hypothesis-backlog"),
+        "statement": statement,
+        "evidence_signal": evidence_signal,
+        "validation": validation,
+    }
+
+
+def load_hypothesis_backlog(path: Path) -> list[dict[str, Any]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(data, dict):
+        if str(data.get("recommendation", "")).lower() in {"no-mutation-recommended", "gather-evidence"}:
+            raise RuntimeError(f"hypothesis backlog recommends {data.get('recommendation')}; do not force mutation")
+        raw_items = data.get("hypotheses") or data.get("backlog") or data.get("top_hypotheses") or []
+    elif isinstance(data, list):
+        raw_items = data
+    else:
+        raise RuntimeError("hypothesis backlog must be a JSON object or list")
+    hypotheses: list[dict[str, Any]] = []
+    for idx, item in enumerate(raw_items, start=1):
+        if not isinstance(item, dict):
+            continue
+        recommendation = str(item.get("recommendation", "")).lower()
+        if recommendation in {"reject", "rejected", "defer", "deferred", "gather-evidence", "no-mutation"}:
+            continue
+        hypotheses.append(normalize_hypothesis(item, idx))
+    if not hypotheses:
+        raise RuntimeError("hypothesis backlog did not contain any testable hypotheses")
+    return hypotheses
+
 def load_rejected_ids(log_path: Path) -> set[str]:
     if not log_path.exists():
         return set()
@@ -659,10 +719,11 @@ def load_rejected_ids(log_path: Path) -> set[str]:
     return rejected
 
 
-def choose_hypothesis(iteration: int, rejected_ids: set[str], strategy: str) -> dict[str, Any]:
-    candidates = [h for h in HYPOTHESES if h["id"] not in rejected_ids]
+def choose_hypothesis(iteration: int, rejected_ids: set[str], strategy: str, hypotheses: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    pool = hypotheses or HYPOTHESES
+    candidates = [h for h in pool if h["id"] not in rejected_ids]
     if not candidates:
-        candidates = HYPOTHESES[:]
+        candidates = pool[:]
     if strategy == "random":
         return random.choice(candidates)
     return candidates[(iteration - 1) % len(candidates)]
@@ -683,6 +744,9 @@ def build_codex_prompt(args: argparse.Namespace, target: Path, baseline: EvalRes
 
         Hypothesis {hypothesis['id']}: {hypothesis['name']}
         Expected mechanism: {hypothesis['goal']}
+        Source: {hypothesis.get('source', 'built-in-catalog')}
+        Evidence signal: {hypothesis.get('evidence_signal', 'not specified')}
+        Validation: {hypothesis.get('validation', 'frozen evaluator')}
 
         Hypothesis constraints:
         {constraints}
@@ -815,6 +879,8 @@ def write_patch_decision_records(
                 "evaluator": args.evaluator,
                 "benchmark_lock": benchmark_lock,
                 "safety_mode": args.codex_mode,
+                "hypothesis_source": getattr(args, "hypothesis_source_label", "built-in-catalog"),
+                "hypothesis_evidence_signal": "see selected hypothesis/backlog evidence in run log",
                 "hypothesis_statement": f"{item.hypothesis_id} - {item.hypothesis_name}",
                 "allowed_paths": inline_list([str(args.target), *[str(p) for p in args.extra_allowed_path]]),
                 "blocked_paths": inline_list([str(p) for p in (args.blocked_path or [])]),
@@ -825,7 +891,12 @@ def write_patch_decision_records(
                 "candidate_score": "not evaluated" if item.after is None else item.after,
                 "candidate_status": "accepted" if item.accepted else "rejected",
                 "candidate_notes": item.reason,
-                "change_gate_policy": args.change_gate_policy,
+                "hypothesis_source": getattr(args, "hypothesis_source_label", "built-in-catalog"),
+            "hypothesis_candidates_generated": getattr(args, "hypothesis_candidates_generated", "not captured"),
+            "hypothesis_selected": inline_list([f"{item.hypothesis_id}: {item.hypothesis_name}" for item in iterations]) if iterations else "none",
+            "hypothesis_deferred": "see backlog or run log; rejected tested hypotheses listed below",
+            "hypothesis_discovery_notes": getattr(args, "hypothesis_discovery_notes", "not run; using built-in catalog"),
+            "change_gate_policy": args.change_gate_policy,
                 "change_gate_status": item.change_gate_status,
                 "change_gate_notes": item.change_gate_notes or "not run",
                 "accepted_or_rejected": "accepted" if item.accepted else "rejected",
@@ -864,12 +935,17 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "baseline_blockers": inline_list([name for name, value in baseline.gates.items() if not gate_passes(value)]),
             "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`; change gate policy `{args.change_gate_policy}`; stop file `{getattr(args, 'stop_file', 'not configured')}`.",
             "target_package_summary": f"Target was evaluated from `{args.target}`; report path `{best.report_path or 'not captured'}`.",
-            "additional_research_summary": "none",
+            "additional_research_summary": "hypothesis discovery/backlog loaded when configured; otherwise built-in catalog fallback",
             "decision_supported": "accept, reject, revert, package, or continue bounded improvement based on measured gates.",
             "behavior_under_test": "baseline-first skill improvement with one hypothesis per iteration and explicit accept/reject evidence.",
             "evaluators": f"primary evaluator: {args.evaluator}; required gates: {inline_list(args.required_gate or [])}",
             "metrics": f"baseline score {baseline.score}; best score {best.score}; delta {best.score - baseline.score}",
             "gates": inline_list([f"{name}={value}" for name, value in best.gates.items()]),
+            "hypothesis_source": getattr(args, "hypothesis_source_label", "built-in-catalog"),
+            "hypothesis_candidates_generated": getattr(args, "hypothesis_candidates_generated", "not captured"),
+            "hypothesis_selected": inline_list([f"{item.hypothesis_id}: {item.hypothesis_name}" for item in iterations]) if iterations else "none",
+            "hypothesis_deferred": "see backlog or run log; rejected tested hypotheses listed below",
+            "hypothesis_discovery_notes": getattr(args, "hypothesis_discovery_notes", "not run; using built-in catalog"),
             "change_gate_policy": args.change_gate_policy,
             "change_gate_summary": inline_list([f"iteration {item.iteration}: {item.change_gate_status} - {item.change_gate_notes or item.reason}" for item in iterations]) if iterations else "not run",
             "improvement_hypotheses": bullet_list(accepted_lines + rejected_lines),
@@ -930,6 +1006,7 @@ def main() -> int:
     parser.add_argument("--codex-mode", choices=["read-only", "full-auto", "yolo"], default="full-auto")
     parser.add_argument("--codex-json", action="store_true")
     parser.add_argument("--sandbox-acknowledged", action="store_true", help="Required for yolo mode.")
+    parser.add_argument("--hypothesis-backlog", type=Path, help="Optional JSON backlog from skill-hypothesis-discovery or compatible source. Tested hypotheses are selected from this backlog before the built-in catalog.")
     parser.add_argument("--strategy", choices=["round-robin", "random"], default="round-robin")
     parser.add_argument("--state-dir", type=Path, default=Path(".skill-improver"))
     parser.add_argument("--stop-file", type=Path, help="File whose presence requests a graceful stop before the next candidate iteration. Defaults to state-dir/stop.")
@@ -953,6 +1030,17 @@ def main() -> int:
         raise SystemExit("--codex-mode yolo requires --sandbox-acknowledged")
     if args.change_gate_policy == "required" and not args.change_gate_command:
         raise SystemExit("--change-gate-policy required requires --change-gate-command")
+
+    hypothesis_pool = None
+    args.hypothesis_source_label = "built-in-catalog"
+    args.hypothesis_candidates_generated = len(HYPOTHESES)
+    args.hypothesis_discovery_notes = "not run; using built-in catalog"
+    if args.hypothesis_backlog:
+        backlog_path = args.hypothesis_backlog.resolve()
+        hypothesis_pool = load_hypothesis_backlog(backlog_path)
+        args.hypothesis_source_label = f"backlog:{backlog_path}"
+        args.hypothesis_candidates_generated = len(hypothesis_pool)
+        args.hypothesis_discovery_notes = "loaded evidence-backed hypothesis backlog; discovery recommendations are not measured improvements until tested"
 
     git_root = find_git_root(target)
     require_clean_git(git_root)
@@ -988,7 +1076,7 @@ def main() -> int:
 
         require_clean_git(git_root, [state_dir])
         rejected_ids = load_rejected_ids(log_path)
-        hypothesis = choose_hypothesis(iteration, rejected_ids, args.strategy)
+        hypothesis = choose_hypothesis(iteration, rejected_ids, args.strategy, hypothesis_pool)
         prompt = build_codex_prompt(args, target, best, hypothesis)
 
         print(f"[iteration {iteration}] hypothesis={hypothesis['id']} {hypothesis['name']}", flush=True)
@@ -1061,6 +1149,8 @@ def main() -> int:
                 "iteration": iteration,
                 "hypothesis_id": hypothesis["id"],
                 "hypothesis_name": hypothesis["name"],
+                    "hypothesis_source": hypothesis.get("source", getattr(args, "hypothesis_source_label", "built-in-catalog")),
+                    "hypothesis_evidence_signal": hypothesis.get("evidence_signal", "not specified"),
                 "baseline_score": baseline.score,
                 "best_score": best.score,
                 "candidate_score": None if after is None else after.score,

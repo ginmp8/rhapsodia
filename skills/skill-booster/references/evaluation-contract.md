@@ -12,6 +12,11 @@ evaluator_status: <executed|planned|blocked>
 score: <number|null>
 gates:
   - {name: <gate>, status: <pass|fail|planned|blocked>}
+hypothesis_discovery:
+  policy: <required|advisory|not-available>
+  status: <pass|pass-with-warnings|no-mutation-recommended|planned|blocked>
+  generated_count: <number|null>
+  selected_for_current_cycle: []
 change_gate:
   policy: <required|advisory|not-available>
   status: <pass|pass-with-warnings|fail|insufficient-evidence|planned|blocked>
@@ -25,7 +30,23 @@ After baseline, do not change scenarios, expected outputs, evaluator scripts, sc
 
 ## Metrics
 
-Prefer multiple signals: structure validity, `skill-change-gate` status, activation coverage, output-contract adherence, local-link integrity, script smoke status, security findings by severity, contradiction count, package status, token estimate, benchmark maturity score. Treat saturated scores as gates and add auxiliary metrics such as unresolved risks, token count, scenario coverage, unreferenced resources, or package gates.
+Prefer multiple signals: structure validity, `skill-hypothesis-discovery` backlog quality, `skill-change-gate` status, activation coverage, output-contract adherence, local-link integrity, script smoke status, security findings by severity, contradiction count, package status, token estimate, benchmark maturity score. Treat saturated scores as gates and add auxiliary metrics such as unresolved risks, token count, scenario coverage, unreferenced resources, or package gates.
+
+## Skill-hypothesis-discovery contract
+
+Use `skill-hypothesis-discovery` after initial benchmark and harness evidence when possible. It must generate evidence-backed hypotheses, not random edits. A normal full-optimization pass should produce 5-10 candidate hypotheses, dedupe and rank them, and recommend the next 1-3 for the current `skill-improver` cycle. If no useful mutation is justified, record `no-mutation-recommended` and avoid experimental patches unless the user supplies a concrete hypothesis or a required repair exists.
+
+Required discovery evidence:
+
+```yaml
+hypothesis_discovery_result:
+  status: <pass|pass-with-warnings|no-mutation-recommended|applied-by-checklist|blocked>
+  generated_count: <number>
+  selected_count: <number>
+  top_hypotheses: []
+  no_mutation_rationale: <string|null>
+  evidence_sources: []
+```
 
 ## Hypothesis record
 
@@ -39,7 +60,7 @@ status: <accepted|rejected|blocked|planned>
 evidence: <score, gates, or rationale>
 ```
 
-Accept only when required gates pass, `skill-change-gate` reports no blocking regression, blocked/frozen paths are protected or explicitly normalized without changing criteria, no activation/safety/output regression appears, and required metrics meet the threshold. Reject or revert when gates fail, `skill-change-gate` fails under a required policy, score worsens without accepted trade-off, compression removes protected duties, or scope expands beyond target.
+Accept only when the hypothesis came from the discovery backlog or was explicitly supplied/justified, required gates pass, `skill-change-gate` reports no blocking regression, blocked/frozen paths are protected or explicitly normalized without changing criteria, no activation/safety/output regression appears, and required metrics meet the threshold. Reject or revert when gates fail, `skill-change-gate` fails under a required policy, score worsens without accepted trade-off, compression removes protected duties, or scope expands beyond target.
 
 ## Skill-change-gate contract
 

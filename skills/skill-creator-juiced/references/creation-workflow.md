@@ -61,7 +61,7 @@ Keep instructions imperative and specific. Remove obvious background.
 
 ## Phase 5: Specialist quality passes
 
-Apply the routing in `../references/specialist-orchestration.md`. Use lighter static review for low-risk skills and full juiced review for high-impact or requested production-ready packages. For existing-skill updates, redesigns, hardening candidates, cleanup candidates, and token-efficiency candidates, run `skill-change-gate` or apply its checklist before accepting the candidate. For net-new skills without before/after evidence, use `skill-change-gate` only as an advisory final gate or mark it not-applicable with rationale.
+Apply the routing in `../references/specialist-orchestration.md`. Use lighter static review for low-risk skills and full juiced review for high-impact or requested production-ready packages. For redesigns or quality-upgrade work with multiple possible improvement directions, no supplied bounded hypothesis, saturated evidence, or unclear next experiment, run `skill-hypothesis-discovery` or apply its checklist to produce a prioritized, non-mutating hypothesis backlog before invoking `skill-improver`. For existing-skill updates, redesigns, hardening candidates, cleanup candidates, and token-efficiency candidates, run `skill-change-gate` or apply its checklist before accepting the candidate. For net-new skills without before/after evidence, use `skill-change-gate` only as an advisory final gate or mark it not-applicable with rationale.
 
 ## Phase 6: Validate and package
 
@@ -72,10 +72,10 @@ python ../scripts/juiced_quality_gate.py <target-skill-folder>
 python ../scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --validate
 ```
 
-Also run platform or package validators when available. If bundling scripts, run at least a representative smoke test. For modified existing skills, include a `skill-change-gate` decision or checklist result in the validation evidence before packaging.
+Also run platform or package validators when available. If bundling scripts, run at least a representative smoke test. For redesign or quality-upgrade work, include the `skill-hypothesis-discovery` result or not-applicable rationale when it influenced the selected improvement path. For modified existing skills, include a `skill-change-gate` decision or checklist result in the validation evidence before packaging.
 
 Package only after validation passes. The final archive should be named `skill.zip`. Exclude caches, generated reports, old packages, secrets, credentials, and blocked paths.
 
 ## Phase 7: Report
 
-Report what is factual from commands separately from design judgment. State assumptions, skipped gates, `skill-change-gate` status when applicable, and next quality pass if any.
+Report what is factual from commands separately from design judgment. State assumptions, skipped gates, `skill-hypothesis-discovery` status when applicable, `skill-change-gate` status when applicable, and next quality pass if any.
