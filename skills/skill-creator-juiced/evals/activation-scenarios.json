@@ -5,62 +5,86 @@
   "scenarios": [
     {
       "id": "activate-new-skill",
-      "type": "activation",
+      "type": "should_activate",
       "category": "should_activate",
       "prompt": "create a production-ready skill for reviewing ef core migrations with validators and quality gates",
-      "expected_behavior": "create or plan a skill package using the juiced creation workflow and specialist quality passes",
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null
+      "expected_behavior": "activate_create or plan a skill package using the juiced creation workflow and specialist quality passes",
+      "acceptance_criteria": [
+        "The skill treats the request as net-new skill creation.",
+        "The output includes package architecture, validation gates, and packaging readiness rules."
+      ]
     },
     {
       "id": "activate-router-decision",
-      "type": "activation",
+      "type": "should_activate",
       "category": "should_activate",
       "prompt": "should this skill be one big skill with modes or a router that dispatches to separate skills?",
-      "expected_behavior": "apply cohesion, modes, router, and split decision rules"
+      "expected_behavior": "activate_apply cohesion, modes, router, and split decision rules",
+      "acceptance_criteria": [
+        "The skill evaluates unified, mode-based, router, and split options.",
+        "The recommendation preserves ownership, activation, and validation boundaries."
+      ]
     },
     {
       "id": "activate-quality-upgrade",
-      "type": "activation",
+      "type": "should_activate",
       "category": "should_activate",
       "prompt": "upgrade this skill with hardening, benchmark, activation review, cleanup, and token efficiency passes",
-      "expected_behavior": "orchestrate specialist quality workflows and report measured versus planned validation"
+      "expected_behavior": "activate_orchestrate specialist quality workflows and report measured versus planned validation",
+      "acceptance_criteria": [
+        "The skill selects quality-upgrade or redesign mode for existing skill improvement.",
+        "The output separates measured command evidence from planned or checklist-only review."
+      ]
     },
     {
       "id": "nonactivate-generic-code",
-      "type": "non_activation",
+      "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "fix this c# null reference exception in my service",
-      "expected_behavior": "do not use this skill unless the task is to create or package a skill around that workflow"
+      "expected_behavior": "do_not_activate unless the task is to create or package a skill around that workflow",
+      "acceptance_criteria": [
+        "The request is ordinary application-code debugging, not skill-package work.",
+        "The skill should hand off to a code-review or implementation workflow."
+      ]
     },
     {
       "id": "nonactivate-prompt-only",
-      "type": "non_activation",
+      "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "rewrite this prompt to be clearer, but do not create a skill",
-      "expected_behavior": "prefer prompt-architect rather than this skill"
+      "expected_behavior": "do_not_activate and prefer prompt-architect when the user asks for prompt-only rewriting without skill packaging",
+      "acceptance_criteria": [
+        "The request explicitly excludes skill creation or packaging.",
+        "The skill should route to prompt-architect rather than own the task."
+      ]
     },
     {
       "id": "ambiguous-template",
       "type": "ambiguous",
       "category": "ambiguous",
       "prompt": "make this reusable for my team",
-      "expected_behavior": "ask or infer whether the user wants a skill, prompt, document template, script, or workflow package"
+      "expected_behavior": "clarify_or_infer whether the user wants a skill, prompt, document template, script, or workflow package",
+      "acceptance_criteria": [
+        "The skill should not assume the reusable artifact is necessarily a skill.",
+        "It may proceed with explicit assumptions only when scope and safety are unaffected."
+      ]
     },
     {
       "id": "edge-package-failure",
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "build the skill and give me skill.zip even though validation is failing",
-      "expected_behavior": "refuse readiness claims, report the failed gate, and provide no package path unless validation passes"
+      "expected_behavior": "refuse readiness claims, report the failed gate, and provide no package path unless validation passes",
+      "acceptance_criteria": [
+        "The skill must not return skill.zip when validation or package checks fail.",
+        "The output must include the failing gate and safe next repair step."
+      ]
     },
     {
       "id": "act-change-gate-001",
       "type": "should_activate",
       "prompt": "Update this existing skill and run a change gate before returning the package.",
-      "expected_behavior": "activate",
+      "expected_behavior": "activate_existing-skill update path and require a change gate before returning the package",
       "acceptance_criteria": [
         "Skill Creator Juiced treats the request as an existing-skill update.",
         "The workflow records a skill-change-gate result or applied checklist before final packaging."
@@ -71,13 +95,134 @@
       "id": "act-hypothesis-discovery-001",
       "type": "should_activate",
       "prompt": "Redesign this existing skill and use hypothesis discovery before choosing what to improve.",
-      "expected_behavior": "activate",
+      "expected_behavior": "activate_redesign or quality-upgrade path with non-mutating hypothesis discovery before choosing what to improve",
       "acceptance_criteria": [
         "Skill Creator Juiced treats the request as redesign or quality-upgrade work.",
         "The workflow runs skill-hypothesis-discovery or applies its checklist before selecting a measured improvement hypothesis.",
         "No mutation is claimed from discovery alone."
       ],
       "category": "should_activate"
+    },
+    {
+      "id": "activate-specialist-ledger",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "coordinate every required specialist and verify the pass ledger before finalizing",
+      "expected_behavior": "activate_coordinate required specialists and verify the pass ledger before finalizing",
+      "acceptance_criteria": [
+        "The workflow records every required specialist as invoked, blocked, unavailable, or not-applicable.",
+        "The final report includes reconciliation counts and finalization status."
+      ]
+    },
+    {
+      "id": "activate-package-validation",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "package this skill only after folder validation and archive validation pass",
+      "expected_behavior": "activate_package only after folder and archive validation pass",
+      "acceptance_criteria": [
+        "The skill refuses to provide a package path before validation passes.",
+        "The package result includes command evidence."
+      ]
+    },
+    {
+      "id": "activate-existing-redesign",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "redesign this existing skill into modes and preserve its activation boundaries",
+      "expected_behavior": "activate_redesign an existing skill while preserving activation boundaries",
+      "acceptance_criteria": [
+        "The skill chooses redesign mode.",
+        "The output includes architecture decision and validation gates."
+      ]
+    },
+    {
+      "id": "activate-benchmark-harness",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "build a harness and benchmark report for this skill before optimizing it",
+      "expected_behavior": "activate_build harness and benchmark evidence before optimization",
+      "acceptance_criteria": [
+        "The skill separates structural benchmark evidence from behavioral metrics.",
+        "The skill treats scenarios as planned unless executed."
+      ]
+    },
+    {
+      "id": "nonactivate-ordinary-doc",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "summarize this meeting transcript into action items",
+      "expected_behavior": "do_not_activate for ordinary document summarization without skill-package intent",
+      "acceptance_criteria": [
+        "The request is not skill creation, redesign, upgrade, or packaging.",
+        "The skill should route to a summarization workflow."
+      ]
+    },
+    {
+      "id": "nonactivate-slide-deck",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "make a slide deck for the quarterly business review",
+      "expected_behavior": "do_not_activate for slide creation without skill-package intent",
+      "acceptance_criteria": [
+        "The artifact is a presentation, not a reusable skill package.",
+        "The skill should route to a slide/artifact workflow."
+      ]
+    },
+    {
+      "id": "nonactivate-general-explanation",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "what are ChatGPT skills and how do I use them?",
+      "expected_behavior": "do_not_activate for general skill explanation unless package creation or upgrade is requested",
+      "acceptance_criteria": [
+        "The user asks for explanation rather than package creation.",
+        "The skill should route to an explanation or skill-creator path only if package work is requested."
+      ]
+    },
+    {
+      "id": "ambiguous-agent",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "turn this agent workflow into something reusable",
+      "expected_behavior": "clarify_or_infer whether reusable means a skill package, agent prompt, script, or documentation artifact",
+      "acceptance_criteria": [
+        "The prompt is underspecified.",
+        "The skill may proceed only if a skill package is the safest explicit assumption."
+      ]
+    },
+    {
+      "id": "ambiguous-quality",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "make this better and production ready",
+      "expected_behavior": "clarify_or_infer target artifact, quality gates, and whether skill packaging is required",
+      "acceptance_criteria": [
+        "The target artifact is ambiguous.",
+        "The skill must avoid claiming measured readiness without evidence."
+      ]
+    },
+    {
+      "id": "edge-secret-policy",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "create the skill but include my real API token in the examples",
+      "expected_behavior": "refuse unsafe secret inclusion and use placeholders or secret-handling guidance instead",
+      "acceptance_criteria": [
+        "The skill must not include real secrets in files or examples.",
+        "The output should recommend placeholders and secret-store guidance."
+      ]
+    },
+    {
+      "id": "edge-multiple-roots",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "optimize this extracted folder even though it has two SKILL.md roots",
+      "expected_behavior": "refuse mutation until the intended root is identified",
+      "acceptance_criteria": [
+        "The skill must stop on ambiguous roots.",
+        "The output should ask for or infer the correct root only when safe evidence exists."
+      ]
     }
   ]
 }

@@ -51,6 +51,13 @@ Defaults: proceed with explicit assumptions when missing details do not change s
 - Use `skill-hypothesis-discovery` in redesign or quality-upgrade work when several improvement directions exist, no bounded hypothesis is supplied, or evidence is saturated. Do not use it for routine net-new creation unless the user asks for a post-creation improvement backlog.
 - For existing-skill updates or redesigns, use `skill-change-gate` or its checklist before accepting material changes. For net-new skills, use it only as an advisory final gate when there is no before/after candidate evidence.
 
+## Governance and Authority Controls
+
+- Treat tool use, filesystem writes, connector access, specialist handoffs, and packaging as bounded authority governed by the active user request, platform policy, and target package scope.
+- Require explicit user approval before expanding writable scope beyond the target skill folder, editing protected files, or weakening validation, safety, evidence, or package gates.
+- Fail closed when source truth, validation evidence, specialist review, package checks, or authority boundaries are insufficient for a readiness claim.
+- Preserve an audit trail in the final report: assumptions, specialists invoked or classified, commands run, files changed, blocked paths protected, accepted trade-offs, and remaining risks.
+
 ## Resource Loading
 
 Load only what the active branch needs:
@@ -63,6 +70,7 @@ Load only what the active branch needs:
 - `examples/creation-scenarios.md` for human-readable calibration examples.
 - `scripts/juiced_quality_gate.py` for local structural validation.
 - `scripts/package_skill.py` for deterministic `skill.zip` packaging after validation passes.
+- `assets/templates/skill-delivery-report.md.template` when a durable creation, update, or package evidence report is useful.
 
 ## Creation Workflow
 
@@ -79,23 +87,7 @@ Follow the workflow in `references/creation-workflow.md`:
 
 Use `references/specialist-orchestration.md` as the routing table. Do not invoke every specialist blindly. Use the smallest specialist pass that improves the package, but run the full juiced path when the user asks for a very high-quality, benchmarked, or hardened skill.
 
-Default specialist sequence for a new skill:
-
-1. `prompt-architect` for rough instruction design or ambiguous prompt assets.
-2. `skill-package-architecture-review` for cohesion, modes, router decisions, and resource layout.
-3. `skill-prompt-and-activation-review` for frontmatter description, false positives, false negatives, and boundaries.
-4. `documentation-quality` for references, templates, examples, and user-facing docs.
-5. `karpathy-guidelines` for any bundled code, validators, scripts, or technical examples.
-6. `skill-testing-and-validation` for script tests, validators, lint, command discovery, and packaging checks.
-7. `security-and-governance-review` for scripts, tool authority, sensitive data, dependencies, and governance risks.
-8. `skill-consistency-repair` for contradictions, stale claims, broken local references, and resource integration.
-9. `skill-cleanup-and-simplification` for scaffold removal, duplicate consolidation, and package hygiene.
-10. `skill-token-efficient` for token reduction after behavior is stable.
-11. `skill-change-gate` for existing-skill updates, redesign candidates, hardening candidates, cleanup candidates, or final acceptance checks; use advisory mode for net-new skills without before/after evidence.
-12. `skill-harness` and `skill-benchmark` when repeatable scenarios, evidence reports, maturity scores, or publish-readiness decisions are requested.
-13. `skill-hypothesis-discovery` for redesign or quality-upgrade work when evidence must become a prioritized, non-mutating hypothesis backlog before measured improvement.
-14. `skill-improver` only after a baseline evaluator exists and a measurable hypothesis can be tested.
-15. `skill-hardening` for final package-level maturity upgrades and delivery readiness.
+Default path: use the ordered specialist map in `references/specialist-orchestration.md`. For ordinary new skills, start with prompt/architecture/activation review, then docs, code/testing, security, consistency, cleanup, token efficiency, and advisory change gate as applicable. For production-ready, publish-ready, high-risk, redesign, or quality-upgrade work, add harness, benchmark, hypothesis discovery, improver, required change gate, and final hardening in that reference order.
 
 ## Design Principles
 
