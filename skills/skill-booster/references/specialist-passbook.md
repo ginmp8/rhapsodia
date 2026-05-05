@@ -32,9 +32,9 @@ Every complete Skill Booster run must execute, apply by checklist, or classify e
 
 ## Pass rules
 
-- Do not skip silently; mark unavailable specialists as `applied-by-checklist` using this passbook.
-- When the user supplies an explicit required specialist sequence, invoke every available listed specialist. Use checklist-only only for unavailable, blocked, unsafe, or not-applicable specialists, and record why.
-- `pass` means the specialist was actually invoked or an equivalent deterministic script/gate ran. Manual checklist review uses `applied-by-checklist` and `execution_type: checklist-only`; it is not specialist execution.
+- Never skip passes silently; classify each one.
+- For an explicit required sequence, invoke every available specialist. Checklist-only is allowed only when unavailable, blocked, unsafe, or not-applicable; it does not satisfy invocation.
+- `pass` requires actual specialist invocation or equivalent deterministic script/gate. Manual review is `applied-by-checklist` with `execution_type: checklist-only`.
 - Mark a pass `not-applicable` only with artifact evidence.
 - `skill-hypothesis-discovery` is not a mutator. If it recommends no mutation, record the rationale and skip measured-improvement patches unless the user supplies a concrete hypothesis.
 - A failed nonblocking specialist can still be reported, but readiness claims require explicit gate rationale. A `skill-change-gate` failure with blocking regression prevents acceptance until repaired, reverted, or explicitly narrowed out of scope with user approval.

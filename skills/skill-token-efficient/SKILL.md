@@ -18,7 +18,7 @@ Resolve before edits:
 4. Scope: target skill only.
 5. Blocked: `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old zips, read-only files, unrelated repos.
 6. Goal: lower `SKILL.md` plus referenced-instruction cost without loss.
-7. Gates: fewer estimated tokens; equivalent semantic map; valid links; evidence/citation rules intact; protected regions intact; touched scripts run; package validates when requested.
+7. Gates: lower total tokens; no unjustified file/section growth; equivalent semantics; links, evidence/citation rules, protected regions, touched scripts, and package validation pass.
 
 Proceed unless target identity, write scope, or semantic authority is unclear.
 
@@ -55,7 +55,7 @@ Broad runs: inspect -> baseline -> semantic map -> plan -> refactor -> validate 
 5. **Refactor**: remove filler/duplicates; consolidate rules; use imperative bullets/key-values; keep useful matrices; shorten examples; move branch detail to refs; compress frontmatter last.
 6. **Protect exact regions**: code blocks, inline code, commands, URLs, links, paths, env vars, proper nouns, versions/dates/numbers, schemas, JSON/YAML keys, CLI flags, required output sections, and paired terms encoding separate duties such as `evidence/citation`.
 7. **Repair narrowly**: on failure, patch only broken spans. Do not recompress all files unless the first pass is semantically invalid.
-8. **Validate**: rerun audit; compare before/after; check semantics, links, protected regions, evidence/citation traceability, scripts, validators, packaging. Reject weakened safety, boundaries, validation, citations/references, or outputs.
+8. **Validate**: rerun audit; compare total, file, and Markdown-section deltas; check semantics, links, protected regions, evidence/citation traceability, scripts, validators, packaging. Reject unjustified local growth or weakened safety, boundaries, validation, citations/references, or outputs.
 9. **Package**: only after gates pass; report counts, reduction, changed files, invariants, protected-region/traceability status, commands, failed gates, rollback, risks, package path.
 
 ## Preservation Rules
@@ -66,7 +66,7 @@ Do not collapse traceability concepts into one generic word. If the source requi
 
 ## Gates
 
-Pass only when estimated tokens decrease unless a stated clarity exception applies; triggers/exclusions remain visible; safety, authority, validation, package, stop, output, and evidence/citation boundaries remain intact; local references resolve; protected regions are preserved or explained; traceability-term losses are justified or reverted; touched scripts run; package validation passes when requested; and the report states counts, changes, assumptions, risks, rollback.
+Pass only when total tokens decrease and changed prose files/sections shrink or have an explicit semantic trade-off. Triggers/exclusions stay visible; safety, authority, validation, package, stop, output, and evidence/citation boundaries remain; refs resolve; protected regions and traceability losses are preserved, explained, or reverted; touched scripts and package validation pass; report counts, local regressions, assumptions, risks, rollback.
 
 ## Stop Conditions
 
@@ -74,4 +74,4 @@ Stop when target root is ambiguous; semantic preservation cannot be assessed; re
 
 ## Output Contract
 
-Include: mode/target; token before/after/delta/%; files inspected/changed; invariants; level/tactics; protected-region and evidence/citation validation; commands/status; blocked paths; rollback; risks; `skill.zip` only when validated.
+Include: mode/target; total/local token deltas; changed files/sections; invariants; level/tactics; protected-region and evidence/citation validation; commands/status; blocked paths; accepted local trade-offs; rollback; risks; `skill.zip` only when validated.

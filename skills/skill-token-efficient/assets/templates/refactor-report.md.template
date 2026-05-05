@@ -14,6 +14,10 @@
 - After:
 - Delta:
 - Reduction:
+- Per-file deltas:
+- Per-section deltas:
+- Local regressions:
+- Accepted local trade-offs:
 
 ## Changes
 - `SKILL.md`:

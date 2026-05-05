@@ -24,7 +24,7 @@
 {{specialist_pass_rows}}
 
 ## Required Specialist Sequence Reconciliation
-| # | Required specialist | Available | Actually invoked | Checklist-only | Blocked | Unavailable | Not applicable | Not run | Evidence |
+| # | Required specialist | Available | Invoked-skill | Checklist-only | Blocked | Unavailable | Not applicable | Not run | Evidence |
 |---:|---|---:|---:|---:|---:|---:|---:|---:|---|
 {{specialist_reconciliation_rows}}
 
@@ -37,6 +37,7 @@
 - Not run: {{not_run_specialist_count}}
 - Reconciliation gate: {{specialist_reconciliation_gate}}
 - Full sequence satisfied: {{full_sequence_satisfied}}
+- Finalization allowed: {{finalization_allowed}}
 
 ## Hypothesis Discovery
 - Policy: {{hypothesis_discovery_policy}}
@@ -75,7 +76,9 @@
 - Delta: {{score_delta}}
 - Hypothesis-discovery status: {{hypothesis_discovery_status}}
 - Change-gate status: {{final_change_gate_status}}
-- Token delta: {{token_delta}}
+- Token delta:
+- Local token regressions:
+- Accepted local token trade-offs: {{token_delta}}
 - Final token-efficiency closure: {{final_token_efficiency_closure}}
 - Gates: {{final_gates}}
 

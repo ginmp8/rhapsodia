@@ -73,6 +73,8 @@ Use this final report shape. Keep measured facts separate from design judgment.
 - Hypothesis-discovery status:
 - Change-gate status:
 - Token delta:
+- Local token regressions:
+- Accepted local token trade-offs:
 - Final token-efficiency closure:
 - Gates:
 

@@ -30,7 +30,7 @@ After baseline, do not change scenarios, expected outputs, evaluator scripts, sc
 
 ## Metrics
 
-Prefer multiple signals: structure validity, `skill-hypothesis-discovery` backlog quality, `skill-change-gate` status, activation coverage, output-contract adherence, local-link integrity, script smoke status, security findings by severity, contradiction count, package status, token estimate, benchmark maturity score. Treat saturated scores as gates and add auxiliary metrics such as unresolved risks, token count, scenario coverage, unreferenced resources, or package gates.
+Prefer multiple signals: structure validity, `skill-hypothesis-discovery` backlog quality, `skill-change-gate` status, activation coverage, output-contract adherence, local-link integrity, script smoke status, security findings, contradiction count, package status, total and local token deltas, benchmark score. Treat saturated scores as gates; add auxiliary metrics such as unresolved risks, local token regressions, scenario coverage, unreferenced resources, or package gates.
 
 ## Skill-hypothesis-discovery contract
 

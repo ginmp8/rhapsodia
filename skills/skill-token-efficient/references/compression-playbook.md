@@ -21,6 +21,7 @@ Do not make durable docs comedic, broken, or cryptic.
 - Keep only behavior-calibrating examples.
 - Compress frontmatter last; activation precision beats brevity.
 - If validation fails, patch broken spans only.
+- Check changed files/sections; never hide local verbosity behind net reduction.
 
 ## Word Cuts
 
@@ -36,7 +37,7 @@ Examples: `evidence/citation`, `audit/validate`, `validate/package`, `source/pat
 
 ## Safe Removal
 
-Delete only duplicate, scaffold, generic, obsolete, or weaker text that does not define scope, safety, evidence, citation/reference traceability, output, validation, tool use, package behavior, or stop logic.
+Delete only duplicate, scaffold, generic, obsolete, or weaker text that does not define scope, safety, evidence, citation/reference traceability, output, validation, tool use, package behavior, or stop logic. If a changed section grows, compress it, justify the semantic gain, or reject it.
 
 ## Risky Compression
 
