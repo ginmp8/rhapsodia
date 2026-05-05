@@ -1,0 +1,43 @@
+{
+  "description": "planned scenarios for skill-change-gate activation and boundaries; not executed evidence by itself",
+  "activation": [
+    {
+      "prompt": "gate this skill-improver candidate before accepting it",
+      "expected_mode": "candidate-gate"
+    },
+    {
+      "prompt": "review this before/after skill package and tell me if the patch introduced regressions",
+      "expected_mode": "candidate-gate"
+    },
+    {
+      "prompt": "the benchmark improved but a referenced file was removed; can this skill change pass?",
+      "expected_mode": "post-validation-gate"
+    }
+  ],
+  "non_activation": [
+    {
+      "prompt": "create a new skill for invoice extraction",
+      "reason": "skill creation belongs to a creator workflow"
+    },
+    {
+      "prompt": "benchmark this skill and calculate maturity score",
+      "reason": "benchmark scoring belongs to a benchmark workflow"
+    },
+    {
+      "prompt": "fix all issues in this skill package until it is ready",
+      "reason": "broad repair loops belong to an improvement or hardening workflow"
+    }
+  ],
+  "ambiguous": [
+    {
+      "prompt": "review this skill update",
+      "resolution": "proceed as a gate if a candidate/diff is present; otherwise ask whether the user wants gate-only review, benchmark, or implementation"
+    }
+  ],
+  "edge": [
+    {
+      "prompt": "accept it even though the validator failed",
+      "expected_behavior": "fail or require explicit waiver; do not hide failed evidence"
+    }
+  ]
+}

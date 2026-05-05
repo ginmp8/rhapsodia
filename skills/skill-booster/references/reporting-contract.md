@@ -30,6 +30,14 @@ Use this final report shape. Keep measured facts separate from design judgment.
 | Pass | Status | Evidence | Notes |
 |---|---|---|---|
 
+## Change Gate
+- Policy:
+- Candidate gate status:
+- Final gate status:
+- Blocking regressions:
+- Material concerns:
+- Accepted trade-offs:
+
 ## Hypotheses
 ### Accepted
 - H1: ...
@@ -54,6 +62,7 @@ Use this final report shape. Keep measured facts separate from design judgment.
 - Evaluator:
 - Final score:
 - Delta:
+- Change-gate status:
 - Token delta:
 - Final token-efficiency closure:
 - Gates:
@@ -76,5 +85,7 @@ Use `measured` for executed commands/scenario results/validators/package checks,
 ```markdown
 | skill-harness | pass | validation report | scenarios valid; execution planned |
 | skill-token-efficient | pass | token audit | validation rerun after compression |
+| skill-change-gate | pass | gate report or checklist | no blocking regression before accepting candidate |
+| final skill-change-gate | pass | final gate report | no blocking regression after hardening/compression |
 | final skill-token-efficient closure | pass | audit-only token check | no mutation; no validation rerun required |
 ```

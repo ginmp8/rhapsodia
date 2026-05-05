@@ -13,24 +13,26 @@ Use every optimization specialist pass available in the Skill Booster workflow. 
 Required specialist sequence:
 1. skill-creator-juiced
 2. skill-improver
-3. skill-benchmark
-4. skill-harness
-5. skill-package-architecture-review
-6. context-architect
-7. skill-prompt-and-activation-review
-8. prompt-architect
-9. skill-consistency-repair
-10. documentation-quality
-11. karpathy-guidelines
-12. security-and-governance-review
-13. skill-testing-and-validation
-14. skill-cleanup-and-simplification
-15. skill-token-efficient
-16. skill-testing-and-validation again after token compression
-17. skill-hardening
-18. final skill-benchmark
-19. final skill-improver closure
-20. final skill-token-efficient closure pass
+3. skill-change-gate
+4. skill-benchmark
+5. skill-harness
+6. skill-package-architecture-review
+7. context-architect
+8. skill-prompt-and-activation-review
+9. prompt-architect
+10. skill-consistency-repair
+11. documentation-quality
+12. karpathy-guidelines
+13. security-and-governance-review
+14. skill-testing-and-validation
+15. skill-cleanup-and-simplification
+16. skill-token-efficient
+17. skill-testing-and-validation
+18. skill-hardening
+19. final skill-change-gate
+20. final skill-benchmark
+21. final skill-improver closure
+22. final skill-token-efficient closure
 
 Important ordering rule:
 Run skill-token-efficient after the skill behavior, architecture, documentation, consistency, safety, and validation gates are stable. Treat step 15 as the main token-compression pass. Treat step 20 as the final token-efficiency closure pass.

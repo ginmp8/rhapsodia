@@ -33,6 +33,11 @@ Evidence: critical and major findings reach zero, minor decisions are explicitly
 
 ## Output
 
+### H013 - Structural change gate
+Mechanism: candidate acceptance becomes safer when metric gains are checked against structural regressions before acceptance.
+Changes: add or tighten change-gate policy, record blocking regressions, material concerns, accepted trade-offs, and decision impact.
+Evidence: candidates with metric gains but blocking regressions are rejected; accepted candidates preserve activation, safety, validation, references, packaging, and output contracts.
+
 ### H020 - Output contract
 Mechanism: mandatory sections reduce incomplete/inconsistent responses.
 Changes: required final structure, artifact naming/path rules, evidence/citation rules when applicable.

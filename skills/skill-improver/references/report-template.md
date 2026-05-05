@@ -42,6 +42,14 @@ Use for manual, automated, self-improvement, and package/install runs. Mark evid
 <important commands and pass/fail outcome>
 ```
 
+## Structural change gate
+- Policy: `<disabled | advisory | required>`
+- Status: `<pass | pass-with-warnings | fail | not-run>`
+- Blocking regressions: `<none or list>`
+- Material concerns: `<none or list>`
+- Accepted trade-offs: `<none or list>`
+- Decision impact: `<accepted | rejected | advisory only>`
+
 ## Validation and package gates
 | Gate | Result | Evidence |
 |---|---|---|

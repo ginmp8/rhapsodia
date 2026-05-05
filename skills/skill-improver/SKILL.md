@@ -7,7 +7,7 @@ description: use for existing chatgpt, claude, copilot, or codex skill packages 
 
 ## Purpose
 
-Improve an existing skill through controlled experiments: inspect, freeze an evaluator, measure baseline, apply one bounded hypothesis, re-run the same evaluator, accept only when the metric improves and gates pass, otherwise revert or report rejection. Keep `SKILL.md` as the compact control plane and load references only for the active branch.
+Improve an existing skill through controlled experiments: inspect, freeze an evaluator, measure baseline, apply one bounded hypothesis, re-run the same evaluator, and accept only when the metric improves, evaluator gates pass, and the structural change gate reports no blocking regression. Otherwise revert or report rejection. Keep `SKILL.md` as the compact control plane and load references only for the active branch.
 
 ## Scope
 
@@ -22,9 +22,10 @@ Resolve before mutation:
 2. Mode: `benchmark-only`, `manual-patch`, `automated-loop`, `package-install`, or `self-improvement`.
 3. Evaluator and metric contract: command, `skill-benchmark`, hybrid/static benchmark, score direction, minimum delta, required gates, locks, blocked paths.
 4. Budget and safety mode: iteration/time budget, sandbox or manual-review posture, allowed mutation scope.
-5. Final artifact: report, patched folder, installed folder, or package zip.
+5. Change gate policy: `disabled`, `advisory`, or `required`; default to `required` for automated-loop and self-improvement when a gate command or `skill-change-gate` review is available.
+6. Final artifact: report, patched folder, installed folder, or package zip.
 
-Defaults: one bounded manual patch or max three automated iterations; `--min-delta 1.0`; target-folder-only mutation; evaluator files, fixtures, reports, generated evidence, packages, caches, `.git`, credentials, and secrets blocked; manual review unless a stronger sandbox is available.
+Defaults: one bounded manual patch or max three automated iterations; `--min-delta 1.0`; target-folder-only mutation; evaluator files, fixtures, reports, generated evidence, packages, caches, `.git`, credentials, and secrets blocked; change gate required for autonomous acceptance when available and advisory for manual patches; manual review unless a stronger sandbox is available.
 
 ## Mode selection
 
@@ -37,16 +38,17 @@ Defaults: one bounded manual patch or max three automated iterations; `--min-del
 ## Resource loading
 
 Load only what the branch needs:
-- `references/evaluation-contract.md`: evaluator schema, freeze rules, acceptance, gates.
+- `references/evaluation-contract.md`: evaluator schema, freeze rules, acceptance, metric gates, and structural change-gate policy.
 - `references/benchmark-integration.md`: `skill-benchmark`, report parsing, saturated-score handling.
-- `references/hypothesis-catalog.md`: bounded hypotheses, severity triage, loop-control hypotheses, and expected evidence.
+- `references/hypothesis-catalog.md`: bounded hypotheses, severity triage, change-gate hypotheses, loop-control hypotheses, and expected evidence.
 - `references/autoresearch-adaptation.md`: autonomous loop mechanics mapped to skill packages.
 - `references/execution-runbook.md`: CLI modes, defaults, self-improvement, packaging, rollback.
 - `references/harness-design.md`: scenario metrics and auxiliary evidence.
-- `references/report-template.md`: final report contract.
+- `references/report-template.md`: final report contract including change-gate evidence.
 - `evals/skill-improver-scenarios.json`: planned activation, negative, ambiguous, edge, and regression suite; do not mutate during candidate optimization unless benchmark design is the task.
 - `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template`: templates consumed by `scripts/skill_improver_loop.py`.
 - `scripts/static_skill_score.py`: deterministic starter evaluator; saturated scores are gates only.
+- `skill-change-gate` or a compatible `--change-gate-command`: optional external gate for candidate structural regressions. Load or run only during candidate acceptance decisions.
 - `scripts/validate_skill_improver_package.py` and `scripts/package_skill.py`: package validation and zip creation.
 
 Keep templates only when rendered, copied, filled, script-consumed, or validated. Integrate useful resources before deleting; remove placeholders, duplicates, obsolete examples, caches, generated reports, old zips, and scaffold only after classification.
@@ -59,14 +61,14 @@ Keep templates only when rendered, copied, filled, script-consumed, or validated
 4. **Triage reviewer findings when present**: classify findings as critical, major, or minor; fix critical and major issues before polish; evaluate minor items for functional value and false positives before editing.
 5. **Select one hypothesis**: state mechanism, files, expected effect, validation method, accept/reject rule, and rollback plan.
 6. **Apply candidate**: edit only allowed paths; keep branch detail in references; never weaken evaluator, safety, activation, output, or package gates.
-7. **Evaluate and decide**: re-run the frozen evaluator. Reject if the evaluator hash changes, blocked paths change, gates fail, the score misses the threshold, or safety/output behavior regresses. Record rejected hypotheses.
+7. **Evaluate and decide**: re-run the frozen evaluator, then apply the structural change gate when policy requires or advises it. Reject if the evaluator hash changes, blocked paths change, evaluator gates fail, the score misses the threshold, or the change gate reports a blocking regression in loading, activation, scope, safety, references, validation, packaging, evidence discipline, or output contract. Record rejected hypotheses and non-blocking trade-offs.
 8. **Handle loop lifecycle**: for long-running loops, honor configured stop files between iterations; cancellation preserves already accepted target changes and does not fabricate completion.
 9. **Validate and package**: run target validators and script smoke checks. Package only after validation passes and exclude caches, generated reports, benchmark outputs, secrets, credentials, old zips, and files outside the final skill folder.
 10. **Report truthfully**: separate measured evidence from planned or checklist-only findings.
 
 ## Stop conditions
 
-Stop, revert, or report a blocker when the target has zero or multiple root `SKILL.md` files; no executable/frozen evaluator exists; requested mutation touches blocked fixtures, expected outputs, generated evidence, secrets, or unrelated paths; evaluator inputs change during a candidate patch; required gates fail; validation/package checks fail; or the user requests unbounded automation without a disposable sandbox and explicit budget.
+Stop, revert, or report a blocker when the target has zero or multiple root `SKILL.md` files; no executable/frozen evaluator exists; requested mutation touches blocked fixtures, expected outputs, generated evidence, secrets, or unrelated paths; evaluator inputs change during a candidate patch; required evaluator gates fail; a required change gate fails or cannot run; validation/package checks fail; or the user requests unbounded automation without a disposable sandbox and explicit budget.
 
 ## Output contract
 
@@ -75,9 +77,10 @@ For improvement or hardening runs include:
 2. baseline and final score, auxiliary metric if used, delta, evaluator mode, frozen inputs, hash/lock status, and report path;
 3. accepted and rejected hypotheses with files changed, expected effect, validation method, decision, and evidence;
 4. commands executed with pass/fail outcomes;
-5. blocked paths protected and rollback notes;
-6. final gates/status, package or install result, remaining risks, and next recommended hypothesis.
+5. structural change gate status: `pass`, `pass-with-warnings`, `fail`, or `not-run`, plus blocking regressions, material concerns, accepted trade-offs, and decision impact;
+6. blocked paths protected and rollback notes;
+7. final evaluator gates/status, package or install result, remaining risks, and next recommended hypothesis.
 
 ## Validation checklist
 
-Before declaring success, verify: the same frozen evaluator produced baseline and final scores; saturated metrics have auxiliary evidence; required gates and target validators passed; blocked paths are unchanged; modified scripts ran or syntax-checked; no placeholder scaffold, cache, generated report, secret, credential, or package artifact was added; package scope is accurate; scenario rates are reported only from captured prompt outputs.
+Before declaring success, verify: the same frozen evaluator produced baseline and final scores; saturated metrics have auxiliary evidence; required evaluator gates and target validators passed; required change gate passed or non-blocking findings are recorded; blocked paths are unchanged; modified scripts ran or syntax-checked; no placeholder scaffold, cache, generated report, secret, credential, or package artifact was added; package scope is accurate; scenario rates are reported only from captured prompt outputs.

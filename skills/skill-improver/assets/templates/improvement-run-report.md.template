@@ -58,22 +58,27 @@
 
 {{commands_executed}}
 
-## 7. Before and after comparison
+## 7. Structural change gate
+
+- Policy: {{change_gate_policy}}
+- Summary: {{change_gate_summary}}
+
+## 8. Before and after comparison
 
 {{before_after_comparison}}
 
-## 8. Residual risks
+## 9. Residual risks
 
 {{residual_risks}}
 
-## 9. Final package
+## 10. Final package
 
 - Package path: {{package_path}}
 - Package validator result: {{package_validator_result}}
 - Packaged file count: {{packaged_file_count}}
 - Rollback path: {{rollback_path}}
 
-## 10. Evidence boundary
+## 11. Evidence boundary
 
 - Measured evidence: {{measured_evidence}}
 - Proposed or unmeasured evidence: {{unmeasured_evidence}}

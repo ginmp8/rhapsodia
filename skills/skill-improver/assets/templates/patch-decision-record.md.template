@@ -25,6 +25,12 @@
 | Baseline | {{baseline_score}} | {{baseline_status}} | {{baseline_notes}} |
 | Candidate | {{candidate_score}} | {{candidate_status}} | {{candidate_notes}} |
 
+## Structural change gate
+
+- Policy: {{change_gate_policy}}
+- Status: {{change_gate_status}}
+- Notes: {{change_gate_notes}}
+
 ## Decision
 
 - Decision: {{accepted_or_rejected}}

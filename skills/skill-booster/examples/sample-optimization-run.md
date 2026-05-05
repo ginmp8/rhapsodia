@@ -7,23 +7,27 @@ Response shape:
 2. Freeze evaluator/scenarios/fixtures before mutation.
 3. Run the specialist ledger in order.
 4. Apply bounded hypotheses.
-5. Validate after material changes.
-6. Compress tokens only after behavior and gates are stable.
-7. Revalidate after compression.
-8. Harden and package.
-9. Run final benchmark, improver closure, and token-efficiency closure.
-10. Return report and package path only when archive validation passed.
+5. Run `skill-change-gate` or its checklist before accepting material candidate changes.
+6. Validate after material changes.
+7. Compress tokens only after behavior, validation, and change-gate checks are stable.
+8. Revalidate after compression.
+9. Harden and package.
+10. Run final `skill-change-gate`, final benchmark, improver closure, and token-efficiency closure.
+11. Return report and package path only when archive validation passed.
 
 ## Ledger excerpt
 
 | Pass | Status | Evidence | Notes |
 |---|---|---|---|
 | skill-creator-juiced | applied-by-checklist | redesign check | no split needed |
+| skill-improver | pass | hypothesis ledger | candidate patch proposed and bounded |
+| skill-change-gate | pass | gate report | no blocking regression before accepting candidate |
 | skill-benchmark | pass | static report | behavioral metrics planned |
 | skill-harness | pass | scenario validator | suite valid; not executed |
 | skill-testing-and-validation | pass | validator command | structure validates |
 | skill-token-efficient | pass | token audit | validation rerun after compression |
 | skill-hardening | pass | readiness checks | package prepared |
+| final skill-change-gate | pass | final gate report | no blocking regression after hardening/compression |
 | final skill-benchmark | pass | final report | delta recorded |
 | final skill-improver closure | pass | decision record | package accepted |
 | final skill-token-efficient closure | pass | audit-only check | no mutation required |

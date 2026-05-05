@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Change Gate
+  short_description: Gates candidate skill changes for regressions before acceptance.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

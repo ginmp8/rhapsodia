@@ -55,6 +55,17 @@
       "category": "edge_case",
       "prompt": "build the skill and give me skill.zip even though validation is failing",
       "expected_behavior": "refuse readiness claims, report the failed gate, and provide no package path unless validation passes"
+    },
+    {
+      "id": "act-change-gate-001",
+      "type": "should_activate",
+      "prompt": "Update this existing skill and run a change gate before returning the package.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Skill Creator Juiced treats the request as an existing-skill update.",
+        "The workflow records a skill-change-gate result or applied checklist before final packaging."
+      ],
+      "category": "should_activate"
     }
   ]
 }

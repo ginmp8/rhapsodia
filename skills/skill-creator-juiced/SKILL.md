@@ -9,7 +9,7 @@ description: use this skill to create, redesign, or substantially upgrade chatgp
 
 Create high-quality reusable skills from real workflows, not generic advice. Treat each skill as an operational package with a clear activation surface, compact control plane, progressive loading, evidence-backed resources, validation gates, and a package-ready delivery path.
 
-Use this skill as an enhanced creator and orchestrator. It owns net-new skill creation, major redesigns, and specialist quality orchestration for skill packages.
+Use this skill as an enhanced creator and orchestrator. It owns net-new skill creation, major redesigns, specialist quality orchestration, and change-gate acceptance for skill packages.
 
 ## Scope
 
@@ -48,6 +48,7 @@ Defaults: proceed with explicit assumptions when missing details do not change s
 - Do not fabricate validation, benchmark scores, package readiness, security status, or script pass rates.
 - Ask follow-up questions only when missing information blocks a safe skill design. Otherwise proceed with explicit assumptions.
 - Before packaging, remove scaffold, placeholders, caches, generated reports, old zips, and unused example files.
+- For existing-skill updates or redesigns, use `skill-change-gate` or its checklist before accepting material changes. For net-new skills, use it only as an advisory final gate when there is no before/after candidate evidence.
 
 ## Resource Loading
 
@@ -56,7 +57,7 @@ Load only what the active branch needs:
 - `references/creation-workflow.md` for the ordered creation, redesign, validation, and reporting path.
 - `references/design-principles.md` for cohesion, mode, router, split, and progressive-loading decisions.
 - `references/quality-gates.md` before readiness, validation, packaging, or final delivery claims.
-- `references/specialist-orchestration.md` when choosing or sequencing specialist passes.
+- `references/specialist-orchestration.md` when choosing or sequencing specialist passes, including `skill-change-gate` for candidate acceptance.
 - `evals/activation-scenarios.json` for planned activation, non-activation, ambiguous, and edge coverage. Treat it as planned evidence until executed.
 - `examples/creation-scenarios.md` for human-readable calibration examples.
 - `scripts/juiced_quality_gate.py` for local structural validation.
@@ -71,7 +72,7 @@ Follow the workflow in `references/creation-workflow.md`:
 3. Package architecture and progressive loading plan.
 4. Draft `SKILL.md`, references, scripts, assets, examples, and evals.
 5. Specialist quality passes.
-6. Validation, cleanup, packaging, and final evidence report.
+6. Change-gate review for material updates, validation, cleanup, packaging, and final evidence report.
 
 ## Specialist Orchestration
 
@@ -89,9 +90,10 @@ Default specialist sequence for a new skill:
 8. `skill-consistency-repair` for contradictions, stale claims, broken local references, and resource integration.
 9. `skill-cleanup-and-simplification` for scaffold removal, duplicate consolidation, and package hygiene.
 10. `skill-token-efficient` for token reduction after behavior is stable.
-11. `skill-harness` and `skill-benchmark` when repeatable scenarios, evidence reports, maturity scores, or publish-readiness decisions are requested.
-12. `skill-improver` only after a baseline evaluator exists and a measurable hypothesis can be tested.
-13. `skill-hardening` for final package-level maturity upgrades and delivery readiness.
+11. `skill-change-gate` for existing-skill updates, redesign candidates, hardening candidates, cleanup candidates, or final acceptance checks; use advisory mode for net-new skills without before/after evidence.
+12. `skill-harness` and `skill-benchmark` when repeatable scenarios, evidence reports, maturity scores, or publish-readiness decisions are requested.
+13. `skill-improver` only after a baseline evaluator exists and a measurable hypothesis can be tested.
+14. `skill-hardening` for final package-level maturity upgrades and delivery readiness.
 
 ## Design Principles
 
@@ -116,7 +118,8 @@ Before final delivery, apply `references/quality-gates.md`. At minimum, verify:
 - every important support file is referenced, script-consumed, template-filled, validated, or intentionally asset-only;
 - no placeholder scaffold or unfinished marker remains;
 - added or changed scripts were run at least once, or the reason is reported;
-- package validation passes before sharing `skill.zip`.
+- package validation passes before sharing `skill.zip`;
+- `skill-change-gate` has passed, been applied by checklist, or been explicitly marked advisory/not-applicable with rationale before final delivery when the work modified an existing skill.
 
 Use `scripts/juiced_quality_gate.py <target-skill-folder>` for a local structural quality pass when filesystem access is available. Use `scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --validate` for deterministic archive creation and validation.
 
@@ -129,10 +132,11 @@ When creating or updating a skill, final responses include:
 3. architecture decision: unified skill, modes, router, or split recommendation;
 4. specialist passes applied and any passes skipped with rationale;
 5. accepted and rejected hypotheses when optimization was requested;
-6. files created or changed;
-7. validation commands and pass/fail/not-run status;
-8. package result, including `skill.zip` path only when the archive exists and validation passed;
-9. remaining assumptions, risks, and next quality pass.
+6. `skill-change-gate` status for material updates or final advisory review;
+7. files created or changed;
+8. validation commands and pass/fail/not-run status;
+9. package result, including `skill.zip` path only when the archive exists and validation passed;
+10. remaining assumptions, risks, and next quality pass.
 
 ## Stop Conditions
 
@@ -143,4 +147,5 @@ Stop or narrow the work when:
 - required source truth, examples, schemas, policies, or repository evidence are absent and the skill would otherwise invent domain facts;
 - requested edits touch secrets, credentials, `.git`, fixtures, expected outputs, generated benchmark baselines, or unrelated files;
 - validation or package checks fail and cannot be safely fixed within scope;
+- required `skill-change-gate` review reports a blocking regression that cannot be safely repaired within scope;
 - the user requests measured benchmark, precision, recall, robustness, or improvement claims without executed or supplied evidence.
