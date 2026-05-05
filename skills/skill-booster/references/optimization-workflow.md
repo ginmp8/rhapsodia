@@ -18,11 +18,11 @@ Inventory `SKILL.md`, `agents/`, `references/`, `scripts/`, `assets/templates/`,
 
 ## Phase 2: Baseline and freeze
 
-Use the strongest available evaluator: target validator/CI, `skill-benchmark`, harness, static validator, then planned evaluator. Freeze scenarios, expected outputs, benchmark inputs, scoring config, validator scripts, fixtures, generated baseline reports, and blocked paths. Record score, gates, warnings, command, timestamp, hashes when practical.
+Use the strongest available evaluator: target validator/CI, `skill-benchmark`, harness, static validator, then planned evaluator. Freeze scenarios, expected outputs, benchmark inputs, scoring config, validator scripts, fixtures, generated baseline reports, and blocked paths. When activation scenarios are present and compatible, run `scripts/run_activation_harness.py` as deterministic schema/coverage evidence, not as live activation precision. Record score, gates, warnings, command, timestamp, hashes when practical.
 
 ## Phase 3: Specialist passes
 
-Run or account for the passbook sequence, including `skill-hypothesis-discovery` for evidence-based hypothesis selection and `skill-change-gate` for candidate acceptance and final regression checks. Key order constraints:
+Run or account for the passbook sequence, including `skill-hypothesis-discovery` for evidence-based hypothesis selection and `skill-change-gate` for candidate acceptance and final regression checks. If the user supplies an explicit required specialist sequence, invocation is mandatory for every available listed specialist; checklist-only is allowed only when the specialist is unavailable, blocked, unsafe, or not-applicable. Key order constraints:
 
 1. `skill-creator-juiced` and architecture decisions before broad text rewrites.
 2. Run `skill-benchmark` and `skill-harness` before `skill-hypothesis-discovery` whenever possible, so discovery uses actual score, scenario, and gate evidence instead of speculation.
@@ -39,14 +39,22 @@ Apply one bounded hypothesis per patch batch, selected from the discovery backlo
 
 ## Phase 5: Validate, package, and close
 
-After each material change, rerun the frozen evaluator, affected validators, and `skill-change-gate` or its local checklist. If discovery found no viable mutation, report no-mutation and preserve the target unless required repairs exist. After cleanup and compression, rerun target validators, script syntax/smoke checks, local-link checks, package checks, final `skill-change-gate`, and final benchmark.
+After each material change, rerun the frozen evaluator, affected validators, and `skill-change-gate` or its local checklist. Before final report or packaging, build a required specialist reconciliation ledger and run `python scripts/validate_specialist_reconciliation.py --ledger <LEDGER_JSON>` when the user provided a sequence. If discovery found no viable mutation, report no-mutation and preserve the target unless required repairs exist. After cleanup and compression, rerun target validators, script syntax/smoke checks, local-link checks, package checks, final `skill-change-gate`, and final benchmark.
 
-Package only when validation passes:
+Package only when validation passes. `scripts/package_skill.py` must use the booster-owned validator, not require every target skill to carry booster scripts, and must exclude generated evidence, reports, caches, old zips, and control artifacts from the archive.
+
+Package command:
 
 ```bash
 python scripts/package_skill.py --target <TARGET_SKILL_PATH> --output <OUTPUT_DIR>/skill.zip --report <REPORT_DIR>/package-validation.json
 ```
 
+When an explicit required sequence was supplied, package with the reconciliation gate:
+
+```bash
+python scripts/package_skill.py --target <TARGET_SKILL_PATH> --output <OUTPUT_DIR>/skill.zip --report <REPORT_DIR>/package-validation.json --reconciliation-ledger <LEDGER_JSON>
+```
+
 Use an equivalent specialist packager only when the target lacks one. The archive must be named `skill.zip`, written outside the target folder, exclude caches/reports/secrets/old zips, and contain the final skill folder only.
 
-Final closure reports baseline vs final, discovery backlog summary, deltas, accepted/rejected hypotheses, command outcomes, pass ledger, candidate and final `skill-change-gate` status, final package path, remaining risks, next hypothesis, and final token-efficiency closure status. If the final token pass mutates files, rerun affected validation and package gates before readiness claims.
+Final closure reports baseline vs final, discovery backlog summary, deltas, accepted/rejected hypotheses, command outcomes, pass ledger, specialist reconciliation counts and finalization decision, candidate and final `skill-change-gate` status, final package path, remaining risks, next hypothesis, and final token-efficiency closure status. If the final token pass mutates files, rerun affected validation and package gates before readiness claims.
