@@ -7,8 +7,9 @@ This runner orchestrates a bounded Codex experiment against a target skill folde
 2. choose one falsifiable hypothesis
 3. ask Codex to apply a minimal patch
 4. re-run the same evaluator
-5. keep the patch only if the metric improves and required gates pass
-6. otherwise revert the patch and record the rejected hypothesis
+5. run the structural change gate when configured
+6. keep the patch only if the metric improves, required gates pass, and the change gate allows acceptance
+7. otherwise revert the patch and record the rejected hypothesis
 
 Use yolo only inside an externally hardened disposable environment.
 """
@@ -172,6 +173,8 @@ class IterationResult:
     accepted: bool
     reason: str
     changed_files: list[str]
+    change_gate_status: str = "not-run"
+    change_gate_notes: str = ""
 
 
 def run(cmd: str | list[str], cwd: Path, timeout: int | None = None, check: bool = False) -> subprocess.CompletedProcess[str]:
@@ -526,6 +529,114 @@ def result_passes_required_gates(args: argparse.Namespace, result: EvalResult, b
     return True, "required gates passed"
 
 
+def normalize_change_gate_status(value: Any) -> str:
+    status = str(value or "unknown").strip().lower()
+    aliases = {
+        "ok": "pass",
+        "passed": "pass",
+        "warn": "pass-with-warnings",
+        "warning": "pass-with-warnings",
+        "warnings": "pass-with-warnings",
+        "failed": "fail",
+        "error": "fail",
+        "blocked": "fail",
+        "reject": "fail",
+    }
+    return aliases.get(status, status)
+
+
+@dataclasses.dataclass
+class ChangeGateResult:
+    status: str = "not-run"
+    raw: str = ""
+    data: dict[str, Any] = dataclasses.field(default_factory=dict)
+    notes: str = ""
+
+
+def jsonable_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return [str(value)]
+
+
+def summarize_change_gate(data: dict[str, Any]) -> str:
+    parts: list[str] = []
+    for key in ["blocking_regressions", "material_concerns", "accepted_tradeoffs", "notes"]:
+        values = jsonable_list(data.get(key))
+        if values:
+            parts.append(f"{key}=" + "; ".join(values))
+    return " | ".join(parts) if parts else "no gate notes"
+
+
+def run_change_gate(args: argparse.Namespace, target: Path, git_root: Path, files: list[str], hypothesis: dict[str, Any], before: EvalResult, after: EvalResult) -> ChangeGateResult:
+    if args.change_gate_policy == "disabled" and not args.change_gate_command:
+        return ChangeGateResult(status="not-run", notes="change gate disabled")
+    if not args.change_gate_command:
+        if args.change_gate_policy == "required":
+            return ChangeGateResult(status="fail", notes="change gate policy is required but --change-gate-command was not provided")
+        return ChangeGateResult(status="not-run", notes="change gate command not provided")
+
+    env = os.environ.copy()
+    env.update(
+        {
+            "TARGET_SKILL_PATH": str(target),
+            "CHANGED_FILES_JSON": json.dumps(files),
+            "HYPOTHESIS_ID": str(hypothesis.get("id", "")),
+            "HYPOTHESIS_NAME": str(hypothesis.get("name", "")),
+            "BEFORE_SCORE": str(before.score),
+            "AFTER_SCORE": str(after.score),
+            "EVALUATOR_STATUS": str(after.status),
+            "EVALUATOR_GATES_JSON": json.dumps(after.gates or {}, sort_keys=True),
+        }
+    )
+    print(f"[change-gate] policy={args.change_gate_policy} cmd={args.change_gate_command}", flush=True)
+    completed = subprocess.run(
+        args.change_gate_command,
+        cwd=str(git_root),
+        shell=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=args.change_gate_timeout,
+        env=env,
+    )
+    raw = completed.stdout or ""
+    if completed.returncode != 0:
+        return ChangeGateResult(status="fail", raw=raw, notes=f"change gate command failed with exit code {completed.returncode}")
+
+    data: dict[str, Any] = {}
+    candidates = [raw.strip()] + extract_json_objects(raw)
+    for candidate in reversed([c for c in candidates if c]):
+        try:
+            parsed = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(parsed, dict):
+            data = parsed
+            break
+    if not data:
+        return ChangeGateResult(status="fail", raw=raw, notes="change gate output did not contain a JSON object")
+
+    status = normalize_change_gate_status(data.get("status"))
+    notes = summarize_change_gate(data)
+    return ChangeGateResult(status=status, raw=raw, data=data, notes=notes)
+
+
+def change_gate_allows_acceptance(args: argparse.Namespace, result: ChangeGateResult) -> tuple[bool, str]:
+    status = normalize_change_gate_status(result.status)
+    if args.change_gate_policy == "disabled":
+        return True, "change gate disabled"
+    if status == "pass":
+        return True, "change gate passed"
+    if status == "pass-with-warnings":
+        return True, "change gate passed with warnings: " + (result.notes or "warnings recorded")
+    if args.change_gate_policy == "advisory":
+        return True, "change gate advisory only: " + (result.notes or status)
+    return False, "change gate failed: " + (result.notes or status)
+
+
 def is_improved(before: float, after: float, direction: str, min_delta: float) -> bool:
     if direction == "higher-is-better":
         return after >= before + min_delta
@@ -714,6 +825,9 @@ def write_patch_decision_records(
                 "candidate_score": "not evaluated" if item.after is None else item.after,
                 "candidate_status": "accepted" if item.accepted else "rejected",
                 "candidate_notes": item.reason,
+                "change_gate_policy": args.change_gate_policy,
+                "change_gate_status": item.change_gate_status,
+                "change_gate_notes": item.change_gate_notes or "not run",
                 "accepted_or_rejected": "accepted" if item.accepted else "rejected",
                 "decision_reason": item.reason,
                 "rollback_action": "kept patch" if item.accepted else "reverted patch or no mutation retained",
@@ -748,7 +862,7 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "baseline_harness_score": best.score,
             "baseline_verdict": baseline.data.get("verdict", baseline.status) if isinstance(baseline.data, dict) else baseline.status,
             "baseline_blockers": inline_list([name for name, value in baseline.gates.items() if not gate_passes(value)]),
-            "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`; stop file `{getattr(args, 'stop_file', 'not configured')}`.",
+            "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`; change gate policy `{args.change_gate_policy}`; stop file `{getattr(args, 'stop_file', 'not configured')}`.",
             "target_package_summary": f"Target was evaluated from `{args.target}`; report path `{best.report_path or 'not captured'}`.",
             "additional_research_summary": "none",
             "decision_supported": "accept, reject, revert, package, or continue bounded improvement based on measured gates.",
@@ -756,6 +870,8 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "evaluators": f"primary evaluator: {args.evaluator}; required gates: {inline_list(args.required_gate or [])}",
             "metrics": f"baseline score {baseline.score}; best score {best.score}; delta {best.score - baseline.score}",
             "gates": inline_list([f"{name}={value}" for name, value in best.gates.items()]),
+            "change_gate_policy": args.change_gate_policy,
+            "change_gate_summary": inline_list([f"iteration {item.iteration}: {item.change_gate_status} - {item.change_gate_notes or item.reason}" for item in iterations]) if iterations else "not run",
             "improvement_hypotheses": bullet_list(accepted_lines + rejected_lines),
             "skill_md_changes": "see changed-files evidence from accepted patch records",
             "reference_changes": "see changed-files evidence from accepted patch records",
@@ -797,6 +913,9 @@ def main() -> int:
     parser.add_argument("--score-regex", help="Regex to extract score when command eval output is not JSON. First group is used.")
     parser.add_argument("--require-status-pass", action="store_true", help="Reject candidate unless evaluator status is exactly pass.")
     parser.add_argument("--required-gate", action="append", default=[], help="Gate name that must be present and pass. Can be repeated.")
+    parser.add_argument("--change-gate-policy", choices=["disabled", "advisory", "required"], default="disabled", help="Structural change gate policy. Use required for autonomous acceptance when --change-gate-command is available.")
+    parser.add_argument("--change-gate-command", help="Optional command run from the git root after candidate evaluation. It should print JSON with status pass, pass-with-warnings, or fail.")
+    parser.add_argument("--change-gate-timeout", type=int, default=300)
     parser.add_argument("--enforce-all-gates", action="store_true", help="Reject candidate when any reported gate fails.")
     parser.add_argument("--enforce-blocker-gates", action="store_true", default=True, help="Reject candidate when benchmark blocker gates fail. Enabled by default.")
     parser.add_argument("--no-enforce-blocker-gates", dest="enforce_blocker_gates", action="store_false")
@@ -832,6 +951,8 @@ def main() -> int:
         raise SystemExit("--max-iterations 0 requires --infinite")
     if args.codex_mode == "yolo" and not args.sandbox_acknowledged:
         raise SystemExit("--codex-mode yolo requires --sandbox-acknowledged")
+    if args.change_gate_policy == "required" and not args.change_gate_command:
+        raise SystemExit("--change-gate-policy required requires --change-gate-command")
 
     git_root = find_git_root(target)
     require_clean_git(git_root)
@@ -877,6 +998,7 @@ def main() -> int:
             accepted = False
             reason = "dry run"
             files = []
+            change_gate = ChangeGateResult(status="not-run", notes="dry run")
         else:
             completed = run(codex_command(args, prompt, git_root), cwd=git_root, timeout=None, check=False)
             if completed.returncode != 0:
@@ -893,17 +1015,22 @@ def main() -> int:
                 else:
                     gate_ok, gate_reason = result_passes_required_gates(args, after, baseline)
                     improved = is_improved(best.score, after.score, args.direction, args.min_delta)
-                    accepted = improved and gate_ok
+                    change_gate = run_change_gate(args, target, git_root, files, hypothesis, best, after)
+                    change_gate_ok, change_gate_reason = change_gate_allows_acceptance(args, change_gate)
+                    accepted = improved and gate_ok and change_gate_ok
                     if accepted:
-                        reason = "improved and required gates passed"
+                        reason = "improved, required evaluator gates passed, and change gate allowed acceptance"
                     elif not improved:
                         reason = "did not improve enough"
-                    else:
+                    elif not gate_ok:
                         reason = gate_reason
+                    else:
+                        reason = change_gate_reason
             except Exception as exc:
                 after = None
                 accepted = False
                 reason = f"evaluation failed: {exc}"
+                change_gate = ChangeGateResult(status="not-run", notes="candidate evaluation failed before change gate")
 
             if accepted and after is not None:
                 maybe_commit(args, git_root, hypothesis, after.score)
@@ -923,6 +1050,8 @@ def main() -> int:
             accepted=accepted,
             reason=reason,
             changed_files=files,
+            change_gate_status=change_gate.status,
+            change_gate_notes=change_gate.notes,
         )
         results.append(result)
         append_jsonl(
@@ -940,6 +1069,8 @@ def main() -> int:
                 "changed_files": files,
                 "candidate_status": None if after is None else after.status,
                 "candidate_gates": None if after is None else after.gates,
+                "change_gate_status": change_gate.status,
+                "change_gate_notes": change_gate.notes,
                 "report_path": None if after is None else after.report_path,
             },
         )

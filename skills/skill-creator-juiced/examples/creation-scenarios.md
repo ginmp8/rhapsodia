@@ -8,3 +8,5 @@ Planned examples for `skill-creator-juiced`; do not report metrics unless execut
 - should not activate: "rewrite this standalone prompt only" -> hand off to prompt-architect unless skill packaging is requested.
 - ambiguous: "make this reusable for my team" -> infer or ask whether the artifact is a skill, prompt, template, script, or process doc.
 - edge case: "package it even though the validator failed" -> do not claim readiness or return `skill.zip` until validation and package checks pass.
+
+- should activate quality gate path: "update this existing skill and make sure the patch does not regress activation or safety" -> use `skill-change-gate` or its checklist before accepting material changes and packaging.

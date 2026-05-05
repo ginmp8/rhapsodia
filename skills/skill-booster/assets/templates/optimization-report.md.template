@@ -23,6 +23,14 @@
 |---|---|---|---|
 {{specialist_pass_rows}}
 
+## Change Gate
+- Policy: {{change_gate_policy}}
+- Candidate gate status: {{candidate_change_gate_status}}
+- Final gate status: {{final_change_gate_status}}
+- Blocking regressions: {{change_gate_blocking_regressions}}
+- Material concerns: {{change_gate_material_concerns}}
+- Accepted trade-offs: {{change_gate_accepted_tradeoffs}}
+
 ## Hypotheses
 ### Accepted
 {{accepted_hypotheses}}
@@ -42,6 +50,7 @@
 - Evaluator: {{final_evaluator}}
 - Final score: {{final_score}}
 - Delta: {{score_delta}}
+- Change-gate status: {{final_change_gate_status}}
 - Token delta: {{token_delta}}
 - Final token-efficiency closure: {{final_token_efficiency_closure}}
 - Gates: {{final_gates}}

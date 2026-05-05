@@ -52,6 +52,32 @@ With `--evaluator skill-benchmark`, the runner calls the installed report genera
 
 `approve` and `approve with reservations` pass; `reject` fails. Blocker gates are enforced by default.
 
+
+
+## Structural change gate
+
+Use a structural change gate as an acceptance check separate from the numeric evaluator. The gate may be performed by `skill-change-gate`, a reviewer, or a compatible command. It evaluates whether a candidate patch introduced blocking regressions in skill loading, activation, scope boundaries, local references, safety and authority, validation, packaging, evidence discipline, or output contracts.
+
+Gate policy:
+
+- `disabled`: do not run a structural change gate.
+- `advisory`: record the gate result, but do not reject solely on gate warnings or failures; use for manual exploration.
+- `required`: reject candidates when the gate fails, cannot run, or reports blocking regressions; use for automated-loop and self-improvement when a gate command or reviewer is available.
+
+A compatible gate command should print JSON with this shape:
+
+```json
+{
+  "status": "pass",
+  "blocking_regressions": [],
+  "material_concerns": [],
+  "accepted_tradeoffs": [],
+  "notes": []
+}
+```
+
+`status` may be `pass`, `pass-with-warnings`, or `fail`. A `fail` status blocks acceptance when policy is `required`. `pass-with-warnings` may be accepted only when warnings are explicitly recorded as non-blocking trade-offs.
+
 ## Acceptance rule
 
 Accept only when all configured conditions hold:
@@ -60,6 +86,7 @@ Accept only when all configured conditions hold:
 same benchmark hash
 and no blocked paths changed
 and candidate status/gates pass
+and structural change gate passes when required
 and candidate_score >= best_score + min_delta
 ```
 
@@ -69,10 +96,11 @@ for `higher-is-better`, or:
 same benchmark hash
 and no blocked paths changed
 and candidate status/gates pass
+and structural change gate passes when required
 and candidate_score <= best_score - min_delta
 ```
 
-for `lower-is-better`. Any gate failure, evaluator drift, or locked-fixture drift rejects and reverts the candidate even if the number improves.
+for `lower-is-better`. Any evaluator gate failure, required change-gate failure, evaluator drift, or locked-fixture drift rejects and reverts the candidate even if the number improves.
 
 ## Gate flags
 

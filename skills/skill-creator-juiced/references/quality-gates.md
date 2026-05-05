@@ -40,6 +40,14 @@ Use these gates before claiming a skill is ready.
 - limitations and assumptions are visible;
 - no validation, benchmark, or production-readiness claim is unsupported.
 
+
+## Change Acceptance Gates
+
+- For existing-skill updates or redesigns, material changes have a `skill-change-gate` result or an explicitly applied checklist.
+- Blocking regressions in activation, boundaries, local references, safety, validation, packaging, output contracts, or evidence discipline are repaired before acceptance.
+- Material concerns are either fixed, explicitly waived by the user, or recorded as accepted trade-offs with decision impact.
+- For net-new skills without before/after evidence, `skill-change-gate` may be advisory or not-applicable, but final delivery still requires local structural and package gates.
+
 ## Code and Script Gates
 
 - added or changed scripts have safe command interfaces;
@@ -54,6 +62,7 @@ Use these gates before claiming a skill is ready.
 A package can be delivered only when:
 
 - local quality gate passes or remaining warnings are explicitly accepted;
+- required `skill-change-gate` review passes, is applied by checklist, or is marked advisory/not-applicable with rationale;
 - platform/package validator passes;
 - `skill.zip` exists at the reported path;
 - archive size is below the upload limit;
