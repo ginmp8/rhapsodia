@@ -1,0 +1,54 @@
+# Testability Research
+
+## Target
+
+- Path:
+- Requested scope:
+- Writable paths:
+- Blocked paths:
+
+## Project overview
+
+- Package role:
+- Languages/runtime:
+- Frameworks/tools:
+- Existing test framework:
+
+## Command candidates
+
+| Type | Command | Source | Confidence | Notes |
+|---|---|---|---|---|
+| build |  |  |  |  |
+| test |  |  |  |  |
+| lint |  |  |  |  |
+
+## Existing tests and validators
+
+| Path | Purpose | Patterns observed |
+|---|---|---|
+
+## Files or behaviors to test
+
+### High priority
+
+| Path | Reason | Testability | Risks |
+|---|---|---|---|
+
+### Medium priority
+
+| Path | Reason | Testability | Risks |
+|---|---|---|---|
+
+### Low priority or skip
+
+| Path | Reason |
+|---|---|
+
+## Gaps and recommendations
+
+- 
+
+## Baseline evidence
+
+| Command | Status | Evidence |
+|---|---|---|

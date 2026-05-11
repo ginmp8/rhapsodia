@@ -1,0 +1,51 @@
+# Test and Validation Plan
+
+## Objective
+
+
+## Scope
+
+- Target path:
+- In scope:
+- Out of scope:
+- Blocked paths:
+
+## Commands
+
+| Gate | Command | Source | Required? |
+|---|---|---|---|
+| build |  |  |  |
+| test |  |  |  |
+| lint |  |  |  |
+
+## Phase summary
+
+| Phase | Priority | Focus | Files | Gates | Risk |
+|---|---|---|---|---|---|
+
+## Phase 1: 
+
+### Goal
+
+### Files to inspect
+
+### Files to create or modify
+
+### Cases
+
+| Case | Expected behavior | Evidence source |
+|---|---|---|
+
+### Acceptance gates
+
+- [ ] 
+
+### Risks and rollback
+
+
+## Final validation
+
+- [ ] Build gate:
+- [ ] Test gate:
+- [ ] Lint gate:
+- [ ] Validator/package gate:

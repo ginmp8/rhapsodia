@@ -1,0 +1,11 @@
+interface:
+  display_name: Prompt Architect
+  short_description: Create, improve, and validate prompts with source-grounded quality
+    checks.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

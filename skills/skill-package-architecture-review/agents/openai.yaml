@@ -1,0 +1,11 @@
+interface:
+  display_name: Skill Package Architecture Review
+  short_description: Reviews skill package architecture, boundaries, resources, and
+    progressive loading.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

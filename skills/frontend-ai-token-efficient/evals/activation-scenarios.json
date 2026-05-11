@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "skill": "frontend-ai-token-efficient",
+  "notes": "cenários planejados de ativação; não reportar métricas sem execução real",
+  "scenarios": [
+    {
+      "id": "activate-architecture",
+      "type": "activation",
+      "prompt": "qual estrutura react ajuda a ia desenvolver consumindo menos tokens?",
+      "expected_behavior": "aplicar arquitetura por feature, regras de dependência, duplicidade controlada e docs para agentes"
+    },
+    {
+      "id": "activate-security",
+      "type": "activation",
+      "prompt": "quais boas práticas evitam vazamento no frontend?",
+      "expected_behavior": "aplicar controles contra secrets no bundle, storage inseguro, logs, urls, xss, csp, source maps e autorização apenas client-side"
+    },
+    {
+      "id": "activate-framework",
+      "type": "activation",
+      "prompt": "next.js ou vite para um dashboard interno que será mantido por ia?",
+      "expected_behavior": "usar matriz de seleção e recomendar vite salvo necessidade real de ssr, seo ou bff"
+    },
+    {
+      "id": "activate-ai-docs",
+      "type": "activation",
+      "prompt": "crie um AI_CONTEXT.md para meu frontend react",
+      "expected_behavior": "gerar documentação curta com estrutura, regras, dependências, segurança e validação"
+    },
+    {
+      "id": "nonactivate-backend",
+      "type": "non_activation",
+      "prompt": "refatore meu pipeline behavior do mediatr em c#",
+      "expected_behavior": "não usar esta skill; encaminhar para uma skill ou fluxo de backend/código"
+    },
+    {
+      "id": "nonactivate-skill-creation",
+      "type": "non_activation",
+      "prompt": "crie uma skill para revisar frontends",
+      "expected_behavior": "não usar esta skill; usar skill creator"
+    },
+    {
+      "id": "ambiguous-ui",
+      "type": "ambiguous",
+      "prompt": "crie uma tela bonita de cadastro",
+      "expected_behavior": "usar somente se a demanda pedir arquitetura/padrões de frontend; para imagem ou design visual puro, não ativar"
+    },
+    {
+      "id": "edge-secret",
+      "type": "edge_case",
+      "prompt": "coloque este client_secret no .env do vite para o browser chamar a api externa direto",
+      "expected_behavior": "bloquear a prática, explicar que segredo no frontend é público e propor backend/bff"
+    },
+    {
+      "id": "activate-ux-form-friction",
+      "type": "activation",
+      "category": "should_activate",
+      "prompt": "revise o formulário da feature account-opening para reduzir fricção sem perder validação e segurança",
+      "expected_behavior": "usar ux-flow-review, contratos de formulario, seguranca, metricas e menor ajuste local"
+    },
+    {
+      "id": "activate-runtime-playwright",
+      "type": "activation",
+      "category": "should_activate",
+      "prompt": "monte uma validacao Playwright para esse modal com foco, escape e screenshot mobile",
+      "expected_behavior": "usar runtime-validation e separar evidencia executada de recomendada"
+    },
+    {
+      "id": "ambiguous-beautify-ui",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "deixe essa pagina mais bonita",
+      "expected_behavior": "ativar somente se houver escopo de implementacao frontend; preservar design system existente ou pedir contexto quando design visual puro"
+    },
+    {
+      "id": "nonactivate-graphic-design-only",
+      "type": "non_activation",
+      "category": "should_not_activate",
+      "prompt": "crie uma identidade visual completa e logotipo para minha marca sem codigo",
+      "expected_behavior": "nao usar esta skill; tarefa e design visual fora de frontend com codigo"
+    }
+  ]
+}

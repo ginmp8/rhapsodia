@@ -1,0 +1,24 @@
+{
+  "suite_name": "[suite-name]",
+  "target_prompt": "[prompt-name-or-path]",
+  "scenarios": [
+    {
+      "id": "activation-001",
+      "type": "activation",
+      "priority": "high",
+      "user_input": "[representative request]",
+      "required_behavior": "[what the prompt must do]",
+      "expected_output_traits": ["[trait]"],
+      "failure_signals": ["[failure signal]"]
+    },
+    {
+      "id": "negative-001",
+      "type": "negative",
+      "priority": "medium",
+      "user_input": "[out-of-scope request]",
+      "required_behavior": "[refuse, redirect, or clarify]",
+      "expected_output_traits": ["[trait]"],
+      "failure_signals": ["[failure signal]"]
+    }
+  ]
+}

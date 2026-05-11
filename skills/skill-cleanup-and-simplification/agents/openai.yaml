@@ -1,0 +1,11 @@
+interface:
+  display_name: Skill Cleanup and Simplification
+  short_description: Safe cleanup, simplification, duplicate consolidation, and technical-debt
+    planning for skill packages.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

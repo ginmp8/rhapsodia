@@ -1,0 +1,8 @@
+interface:
+  display_name: Frontend AI Token Efficient
+  short_description: padrões frontend para ia com baixo contexto
+policy:
+  products:
+  - chatgpt
+  - codex
+  allow_implicit_invocation: true

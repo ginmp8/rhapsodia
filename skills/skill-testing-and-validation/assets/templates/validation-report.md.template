@@ -1,0 +1,46 @@
+# Validation Report
+
+## Mode and target
+
+- Mode:
+- Target path:
+- Scope:
+- Blocked paths protected:
+
+## Baseline before changes
+
+| Command/static check | Status | Evidence |
+|---|---|---|
+
+## Changes made
+
+| File | Change | Rationale |
+|---|---|---|
+
+## Command evidence
+
+| Gate | Command | Working directory | Exit code | Status | Output summary |
+|---|---|---|---:|---|---|
+
+## Failure classification
+
+| Failure | Category | Root-cause hypothesis | Resolution |
+|---|---|---|---|
+
+## Final gates
+
+| Gate | Status | Evidence |
+|---|---|---|
+
+## Not run or blocked
+
+| Gate | Reason | Next step |
+|---|---|---|
+
+## Residual risks
+
+- 
+
+## Next recommended action
+
+- 

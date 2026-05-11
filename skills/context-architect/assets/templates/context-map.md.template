@@ -1,0 +1,37 @@
+## Context Map for: {{TASK}}
+
+### Scope classification
+- Change type: {{CHANGE_TYPE}}
+- Scope confidence: {{CONFIDENCE}} - {{CONFIDENCE_REASON}}
+- Repository evidence inspected: {{EVIDENCE}}
+
+### Primary files
+| File | Why it is primary | Expected change |
+|---|---|---|
+| {{PRIMARY_FILE}} | {{WHY_PRIMARY}} | {{EXPECTED_CHANGE}} |
+
+### Secondary files and dependencies
+| File | Relationship | Action |
+|---|---|---|
+| {{SECONDARY_FILE}} | {{RELATIONSHIP}} | {{ACTION}} |
+
+### Test coverage and validation
+| Test or command | Purpose | Confidence |
+|---|---|---|
+| {{COMMAND_OR_TEST}} | {{PURPOSE}} | {{TEST_CONFIDENCE}} |
+
+### Patterns to follow
+- {{PATTERN_REFERENCE}}
+
+### Ripple effects and risks
+| Risk | Evidence | Mitigation |
+|---|---|---|
+| {{RISK}} | {{RISK_EVIDENCE}} | {{MITIGATION}} |
+
+### Suggested sequence
+1. {{STEP_1}}
+2. {{STEP_2}}
+3. {{STEP_3}}
+
+### Open questions or blockers
+- {{BLOCKER}}

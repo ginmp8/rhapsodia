@@ -1,0 +1,10 @@
+interface:
+  display_name: Sequential Work Packaging
+  short_description: Create and review sequential planning specs
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

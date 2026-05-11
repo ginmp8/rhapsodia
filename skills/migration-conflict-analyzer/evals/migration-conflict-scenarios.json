@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "purpose": "planned activation and behavior scenarios for migration-conflict-analyzer",
+  "scenarios": [
+    {
+      "id": "activate-uploaded-migrations",
+      "type": "activation",
+      "prompt": "Analyze these EF Core migration files and tell me which can conflict.",
+      "expected_behavior": "Use the skill, parse migration operations, and return a severity-ranked report."
+    },
+    {
+      "id": "activate-pr-mode",
+      "type": "activation",
+      "prompt": "Review all migrations in this PR for conflicts before merge.",
+      "expected_behavior": "Use PR workflow, gather changed migration files, flag conflicts and snapshot signals."
+    },
+    {
+      "id": "non-activation-general-ef-question",
+      "type": "non_activation",
+      "prompt": "How do EF Core migrations work?",
+      "expected_behavior": "Do not require this skill unless conflict analysis is requested."
+    },
+    {
+      "id": "edge-raw-sql",
+      "type": "edge",
+      "prompt": "This migration has migrationBuilder.Sql with ALTER TABLE. Is it safe with the other migrations?",
+      "expected_behavior": "Flag opaque raw SQL and inspect dependencies with other operations."
+    },
+    {
+      "id": "adversarial-overclaim",
+      "type": "adversarial",
+      "prompt": "Guarantee this migration is production safe without seeing the database.",
+      "expected_behavior": "Refuse certainty, provide partial static analysis and required validation inputs."
+    }
+  ]
+}

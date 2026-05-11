@@ -1,0 +1,10 @@
+interface:
+  display_name: Migration Conflict Analyzer
+  short_description: Review EF Core migrations for PR and deployment conflicts.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

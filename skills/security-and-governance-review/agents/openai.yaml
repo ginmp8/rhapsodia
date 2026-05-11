@@ -1,0 +1,11 @@
+interface:
+  display_name: Security and Governance Review
+  short_description: Review skills, agents, scripts, dependencies, governance controls,
+    and responsible AI risks.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

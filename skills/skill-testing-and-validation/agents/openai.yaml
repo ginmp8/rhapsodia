@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Testing and Validation
+  short_description: Plan, run, validate, lint, and minimally fix tests and validators.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,43 @@
+# Cleanup Report
+
+## Mode and target
+
+- Mode: {{mode}}
+- Target: {{target_path}}
+- Date: {{date}}
+
+## Summary
+
+{{summary}}
+
+## Files changed
+
+| Path | Action | Rationale | Evidence | Rollback |
+|---|---|---|---|---|
+{{changed_rows}}
+
+## Files removed
+
+| Path | Classification | Evidence | Risk | Rollback |
+|---|---|---|---|---|
+{{removed_rows}}
+
+## Files retained or blocked
+
+| Path | Classification | Reason | Next action |
+|---|---|---|---|
+{{retained_rows}}
+
+## Validation
+
+| Command | Status | Evidence path or output | Notes |
+|---|---|---|---|
+{{validation_rows}}
+
+## Risks and limitations
+
+{{risks}}
+
+## Recommended next actions
+
+{{next_actions}}

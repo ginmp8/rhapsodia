@@ -1,0 +1,38 @@
+# Cleanup and Simplification Plan
+
+## Mode and target
+
+- Mode: {{mode}}
+- Target: {{target_path}}
+- Allowed mutation scope: {{allowed_scope}}
+- Blocked paths: {{blocked_paths}}
+
+## Evidence inspected
+
+{{evidence_summary}}
+
+## Resource classification summary
+
+| Path | Status | Evidence | Proposed decision | Risk | Validation |
+|---|---|---|---|---|---|
+{{classification_rows}}
+
+## Proposed changes
+
+| Change | Files | Rationale | Behavior risk | Rollback | Validation gate |
+|---|---|---|---|---|---|
+{{change_rows}}
+
+## Execution order
+
+1. {{step_1}}
+2. {{step_2}}
+3. {{step_3}}
+
+## Stop conditions
+
+{{stop_conditions}}
+
+## Open questions and blockers
+
+{{open_questions}}

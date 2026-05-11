@@ -83,7 +83,7 @@ Include applicable sections:
 1. Mode and target path.
 2. Baseline evidence: inventory path, audit path, critical findings.
 3. Decision: repair, reject, block, or package.
-4. Changes by `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, packaging.
+4. Changes by `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals`, packaging.
 5. Validation commands with pass/fail/not-run and reasons.
 6. Before/after inconsistency counts when measured.
 7. Protected blocked paths and rollback notes.
