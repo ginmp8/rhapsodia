@@ -6,7 +6,7 @@ Use when MAGO records planned architecture decisions, planned technical decision
 
 MAGO owns architecture decisions that are made during planning or spec refinement. These include system boundaries, APIs, data contracts, persistence shape, eventing, workflow orchestration, security posture, observability design, migration approach, rollback strategy, dependency choice, and planned execution strategy before implementation begins.
 
-Do not send architecture ADRs to Magiarca. Magiarca may record governance decisions that depend on technical evidence, but the architecture decision itself stays in MAGO or MAGIA.
+Do not send architecture ADRs to nomia. nomia may record governance decisions that depend on technical evidence, but the architecture decision itself stays in MAGO or MAGIA.
 
 MAGIA may create implementation ADRs when a decision is discovered during execution and grounded in code/runtime evidence. If that implementation ADR changes product intent, acceptance criteria, public contract, or the planned architecture materially, MAGIA must hand off to MAGO for planning alignment.
 
@@ -26,7 +26,7 @@ BOARD_ROOT/specs/<spec_id>/adrs/<adr_id>.md
 
 Repository-wide ADRs may be created only when the user explicitly selects a repository ADR convention and the write scope allows it. Otherwise keep decisions spec-scoped.
 
-Do not create architecture ADRs under Magiarca governance decision logs.
+Do not create architecture ADRs under nomia governance decision logs.
 
 ## Required ADR Content
 
@@ -37,7 +37,7 @@ An architecture decision must include:
 - `Decision`: the selected technical direction.
 - `Alternatives Considered`: options evaluated and why they were not chosen.
 - `Consequences`: trade-offs, risks, operational impact, migration impact, and future constraints.
-- `Evidence`: repository files, existing docs, Magiarca handoff, external dependency docs, or explicit user input.
+- `Evidence`: repository files, existing docs, nomia handoff, external dependency docs, or explicit user input.
 - `Validation Expectations`: checks Magia should run or evidence needed during execution.
 - `Owner`: person, group, role, or `unknown`.
 - `Links`: PRD, technical design, tasks, validation plan, tickets, or `none`.
