@@ -4,7 +4,7 @@ Use this reference whenever MAGIA executes from a MAGO package or updates contro
 
 ## Ownership Matrix
 
-| Artifact | MAGO/Magiarca ownership | MAGIA authority | Rules |
+| Artifact | MAGO/nomia ownership | MAGIA authority | Rules |
 |---|---|---|---|
 | `prd.md` | MAGO planning / product intent | read-only | Do not rewrite product intent, goals, non-goals, or acceptance criteria. |
 | `technical-design.md` | MAGO intended architecture/design | read-only input | If implementation proves design drift, write `technical-gap-note.md` or an implementation ADR and hand off to MAGO. |
@@ -15,9 +15,9 @@ Use this reference whenever MAGIA executes from a MAGO package or updates contro
 | `notes.md` | MAGO planning notes | read-only planning context | Do not append new execution logs here. Use `implementation-notes.md`. |
 | `implementation-notes.md` | downstream execution evidence | MAGIA-owned | Record execution log, actual implementation facts, deviations, blockers, decisions, and handoffs. |
 | `manifest.yaml` | MAGO package identity and planning defaults | execution-state sync only | Update execution status, phase, and `last_execution` only from current truthful execution evidence. |
-| `spec-catalog.yaml` | MAGO catalog and planning order; Magiarca delivery status is separate | execution-state sync only | Sync only technical execution status. Do not set delivery/governance/release status. |
+| `spec-catalog.yaml` | MAGO catalog and planning order; nomia delivery status is separate | execution-state sync only | Sync only technical execution status. Do not set delivery/governance/release status. |
 
-Downstream evidence boundary: Magiarca may read MAGIA-owned evidence for feature reports, release notes, governance blockers, or delivery risk. MAGIA must keep the evidence factual and source-level; Magiarca owns the stakeholder-facing interpretation.
+Downstream evidence boundary: nomia may read MAGIA-owned evidence for feature reports, release notes, governance blockers, or delivery risk. MAGIA must keep the evidence factual and source-level; nomia owns the stakeholder-facing interpretation.
 
 ## MAGIA Rules
 
@@ -27,8 +27,8 @@ Downstream evidence boundary: Magiarca may read MAGIA-owned evidence for feature
 - Write execution history to `implementation-notes.md`, not `notes.md`.
 - Update `manifest.yaml` and `spec-catalog.yaml` only for technical execution state backed by current evidence.
 - Stop and hand off to MAGO when safe execution requires changing PRD, acceptance criteria, architecture intent, task definitions, ordering, dependencies, or metadata.
-- Hand off to Magiarca for delivery commitments, release posture, stakeholder communications, roadmap status, owner, or accepted business risk.
-- Do not create governance RFCs, release notes, portfolio reports, stakeholder briefs, roadmap updates, or delivery status records; write execution evidence that Magiarca can consume instead.
+- Hand off to nomia for delivery commitments, release posture, stakeholder communications, roadmap status, owner, or accepted business risk.
+- Do not create governance RFCs, release notes, portfolio reports, stakeholder briefs, roadmap updates, or delivery status records; write execution evidence that nomia can consume instead.
 
 ## Template Boundary
 

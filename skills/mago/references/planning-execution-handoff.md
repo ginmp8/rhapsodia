@@ -6,7 +6,7 @@ Use this reference whenever MAGO creates, adapts, refines, or reshapes artifacts
 
 MAGO owns planning authorship. MAGIA or another execution workflow owns implementation and runtime evidence. A MAGO planning boundary is not an implementation prohibition for downstream execution.
 
-Three-way boundary: Magiarca provides governance inputs and consumes delivery-facing evidence; MAGO converts approved or supplied intent into execution-ready technical plans; MAGIA executes and returns evidence. MAGO does not write stakeholder status or release communication, and it does not transform Magia evidence into MAGO-authored runtime proof.
+Three-way boundary: nomia provides governance inputs and consumes delivery-facing evidence; MAGO converts approved or supplied intent into execution-ready technical plans; MAGIA executes and returns evidence. MAGO does not write stakeholder status or release communication, and it does not transform Magia evidence into MAGO-authored runtime proof.
 
 Shared record boundary: MAGO writes the plan (`tasks.md`, `validation.md`, `notes.md`, `manifest.yaml` planning defaults). MAGIA writes execution reality (`implementation-notes.md`, `validation-evidence.md`, task checkbox completion, `manifest.yaml.last_execution`, and technical execution-state sync). Load `references/shared-artifact-ownership.md` when touching these files.
 
@@ -39,7 +39,7 @@ If a task cannot name an affected boundary or validation path, split, refine, or
 
 ## Reverse Handoff
 
-When MAGIA reports `technical-gap-note.md`, implementation ADRs, validation gaps, or contradictions with code/runtime truth, MAGO may refine PRD interpretation, technical design, task definitions, dependencies, validation plans, or execution handoff wording. When MAGIA reports release posture, stakeholder risk, ownership, due date, accepted business risk, or go/no-go impact, route that evidence to Magiarca instead of updating delivery governance from MAGO.
+When MAGIA reports `technical-gap-note.md`, implementation ADRs, validation gaps, or contradictions with code/runtime truth, MAGO may refine PRD interpretation, technical design, task definitions, dependencies, validation plans, or execution handoff wording. When MAGIA reports release posture, stakeholder risk, ownership, due date, accepted business risk, or go/no-go impact, route that evidence to nomia instead of updating delivery governance from MAGO.
 
 ## Execution-Ready Task Rules
 

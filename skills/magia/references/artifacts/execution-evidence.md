@@ -6,7 +6,7 @@ MAGIA evidence records implementation truth: repository changes, files touched, 
 
 Use `implementation-notes.md` for execution history and implementation facts. Use `validation-evidence.md` for command results, failed/not-run checks, residual validation gaps, and blockers. Treat `notes.md` and `validation.md` as MAGO-owned planning inputs; legacy execution content in those files is ignored unless ADAPT mode is explicitly converting it into current MAGIA-owned artifacts.
 
-For downstream consumption, label evidence provenance and closure state explicitly: `passed`, `failed`, `not-run`, `blocked`, `partial`, or `unknown`. Magiarca can summarize these labels in reports, but MAGIA must not write stakeholder-ready release language or governance approval.
+For downstream consumption, label evidence provenance and closure state explicitly: `passed`, `failed`, `not-run`, `blocked`, `partial`, or `unknown`. nomia can summarize these labels in reports, but MAGIA must not write stakeholder-ready release language or governance approval.
 
 ## Evidence Types
 
@@ -14,7 +14,7 @@ Record only inspected, produced, or supplied evidence: files inspected/changed; 
 
 ## Decisions and ADR Links
 
-For each technical decision or implementation ADR, include title, path, evidence source, validation status, scope guard proving product intent was not rewritten, and handoff target when Mago or Magiarca must review.
+For each technical decision or implementation ADR, include title, path, evidence source, validation status, scope guard proving product intent was not rewritten, and handoff target when Mago or nomia must review.
 
 ## Boundaries
 

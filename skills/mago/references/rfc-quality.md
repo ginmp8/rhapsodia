@@ -2,7 +2,7 @@
 
 Use when prd.md assumptions, options, unresolved decisions, or planning criteria are in scope.
 
-Mago may use RFC-style thinking to improve planning documents, compare options, and make planned technical decisions, but it does not own Magiarca RFC proposals or approval workflows. This reference is not authority to create `rfc-proposals.md`.
+Mago may use RFC-style thinking to improve planning documents, compare options, and make planned technical decisions, but it does not own nomia RFC proposals or approval workflows. This reference is not authority to create `rfc-proposals.md`.
 
 ## Planning Quality
 
@@ -12,5 +12,5 @@ Mago may use RFC-style thinking to improve planning documents, compare options, 
 - Include status quo or `do nothing now` when it is a real planning option.
 - Keep unresolved approval or stakeholder alignment questions in `Open Questions`; do not pretend they are decided.
 
-Do not create governance RFCs from Mago. For material roadmap, priority, stakeholder, ownership, budget, accepted business risk, go/no-go, or governance handoff proposals, use Magiarca `rfc-proposal`. For execution-discovered runtime decisions, consume or request Magia implementation ADRs rather than converting them into a Mago RFC.
+Do not create governance RFCs from Mago. For material roadmap, priority, stakeholder, ownership, budget, accepted business risk, go/no-go, or governance handoff proposals, use nomia `rfc-proposal`. For execution-discovered runtime decisions, consume or request Magia implementation ADRs rather than converting them into a Mago RFC.
 

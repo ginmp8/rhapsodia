@@ -15,14 +15,14 @@ from pathlib import Path
 from mago_utils import dedupe_preserve_order, posix_rel, read_text_file
 
 
-MAGIARCA = "magiarca"
+nomia = "nomia"
 
 DIRECT_DEPENDENCY_PATTERNS = [
-    (".github" + "/skills/" + MAGIARCA, "references the sibling skill directory"),
-    (".github" + "\\skills\\" + MAGIARCA, "references the sibling skill directory"),
-    ("skills://" + MAGIARCA, "uses another skill URI"),
-    ("../" + MAGIARCA, "uses a relative path to another skill"),
-    ("..\\" + MAGIARCA, "uses a relative path to another skill"),
+    (".github" + "/skills/" + nomia, "references the sibling skill directory"),
+    (".github" + "\\skills\\" + nomia, "references the sibling skill directory"),
+    ("skills://" + nomia, "uses another skill URI"),
+    ("../" + nomia, "uses a relative path to another skill"),
+    ("..\\" + nomia, "uses a relative path to another skill"),
 ]
 
 FORBIDDEN_MODE_NAMES = [
@@ -40,7 +40,7 @@ FORBIDDEN_MODE_NAMES = [
     "normalize" + "-human-artifacts",
 ]
 
-MAGIARCA_OWNED_ARTIFACTS = [
+nomia_OWNED_ARTIFACTS = [
     "ops" + ".yaml",
     "status" + ".md",
     "stakeholder" + "-brief.md",
@@ -61,7 +61,7 @@ SCRIPT_ACTION_RE = re.compile(
     r"normalize|normalized|normalizing|validate|validated|validating)\b",
     re.IGNORECASE,
 )
-PY_IMPORT_RE = re.compile(r"\b(?:from|import)\s+[.\w]*" + MAGIARCA + r"\b", re.IGNORECASE)
+PY_IMPORT_RE = re.compile(r"\b(?:from|import)\s+[.\w]*" + nomia + r"\b", re.IGNORECASE)
 
 TEXT_SUFFIXES = {
     ".md",
@@ -102,7 +102,7 @@ def validate_direct_dependencies(root: Path, path: Path, text: str) -> list[str]
     if path.suffix == ".py" and PY_IMPORT_RE.search(text):
         for line_number, line in enumerate(text.splitlines(), start=1):
             if PY_IMPORT_RE.search(line):
-                errors.append(f"{posix_rel(path, root)}:{line_number}: imports a module named `{MAGIARCA}`")
+                errors.append(f"{posix_rel(path, root)}:{line_number}: imports a module named `{nomia}`")
 
     return errors
 
@@ -139,7 +139,7 @@ def validate_script_artifact_targets(root: Path) -> list[str]:
             continue
         text = read_text_file(path)
         lower_text = text.lower()
-        for artifact in MAGIARCA_OWNED_ARTIFACTS:
+        for artifact in nomia_OWNED_ARTIFACTS:
             if artifact not in lower_text:
                 continue
             for line_number, line in enumerate(text.splitlines(), start=1):

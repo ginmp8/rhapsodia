@@ -41,4 +41,4 @@ Stop and report blocker/handoff when simplification needs a broad rewrite; behav
 
 ## Evidence
 
-For each simplification record: before shape including files/types/layers/flow; action taken; preserved behavior/compatibility; executed validation and skipped checks; residual complexity; rollback/recovery; handoff decision `none`, `mago`, `magiarca`, or `both`.
+For each simplification record: before shape including files/types/layers/flow; action taken; preserved behavior/compatibility; executed validation and skipped checks; residual complexity; rollback/recovery; handoff decision `none`, `mago`, `nomia`, or `both`.
