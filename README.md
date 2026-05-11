@@ -12,4 +12,4 @@ If this repository includes copied or adapted third-party content, its original 
 
 ## Third-party content
 
-- `skills/skill-creator/` includes content with its original Apache License 2.0 notice preserved in `skills/skill-creator/LICENSE.txt`.
+- `skills/skill-creator/` includes OpenAI `skill-creator` content with its original Apache License 2.0 notice preserved in `skills/skill-creator/LICENSE.txt`.
