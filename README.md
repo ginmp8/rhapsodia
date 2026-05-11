@@ -4,11 +4,13 @@ A curated collection of agent skills, evaluation harnesses, benchmarks, and deli
 
 ## License
 
-Unless otherwise stated, this repository is licensed under the [MIT License](LICENSE).
+Copyright 2026 ginmp8
 
-The MIT License applies to prompts, skills, scripts, examples, templates, and documentation created specifically for this repository.
+Unless otherwise stated, this repository is licensed under the <a>Apache License 2.0</a>.
 
-If this repository includes copied or adapted third-party content, its original license notices are preserved and that content is not relicensed as MIT unless the original license allows it.
+The Apache License 2.0 applies to prompts, skills, scripts, examples, templates, and documentation created specifically for this repository.
+
+If this repository includes copied or adapted third-party content, its original license notices are preserved and that content is not relicensed unless the original license allows it.
 
 ## Third-party content
 
