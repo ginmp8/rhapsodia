@@ -1,0 +1,331 @@
+{
+  "schema_version": "1.0",
+  "status": "planned",
+  "purpose": "planned activation, boundary, and edge scenarios for the context-architect skill; these are not measured results unless executed separately",
+  "scenarios": [
+    {
+      "id": "activate-multi-file-feature",
+      "type": "should_activate",
+      "prompt": "Plan the changes needed to add a new onboarding status across API, persistence, and tests.",
+      "expected_behavior": "Use the skill, search for repository evidence, identify primary and secondary files, trace dependencies, identify tests, risks, and a safe sequence before editing.",
+      "acceptance_criteria": [
+        "produces a context map before proposing edits",
+        "names primary and secondary files when repository evidence is available",
+        "includes tests, validation commands, risks, and sequence"
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "activate-refactor-unknown-scope",
+      "type": "should_activate",
+      "prompt": "Refactor the account-opening workflow so the validation step is reusable by two handlers.",
+      "expected_behavior": "Use the skill because scope likely crosses handlers, interfaces, tests, and dependency wiring.",
+      "acceptance_criteria": [
+        "maps handlers, interfaces, registrations, and test coverage",
+        "separates mechanical refactor from behavior change",
+        "recommends a safe implementation sequence"
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "activate-pr-review-plan",
+      "type": "should_activate",
+      "prompt": "Review this PR and tell me what files are likely impacted beyond the diff.",
+      "expected_behavior": "Use the skill to map ripple effects, hidden callers, config, tests, and risks.",
+      "acceptance_criteria": [
+        "identifies impacted files beyond the visible diff",
+        "calls out hidden callers and runtime wiring",
+        "includes validation and PR split recommendations when relevant"
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "boundary-single-snippet",
+      "type": "should_not_activate",
+      "prompt": "What does this single C# LINQ expression do?",
+      "expected_behavior": "Do not use the full workflow unless the snippet implies repository-level dependencies.",
+      "acceptance_criteria": [
+        "answers directly without a full context map",
+        "does not invent repository paths",
+        "mentions repository context only if necessary"
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "ambiguous-no-repo",
+      "type": "ambiguous",
+      "prompt": "Change the login flow to support first access, but I have not provided a repository.",
+      "expected_behavior": "Provide a provisional context-discovery checklist and request the minimum repository evidence needed before editing.",
+      "acceptance_criteria": [
+        "marks the map as provisional",
+        "does not claim specific files without evidence",
+        "requests the minimum missing repository evidence"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "id": "edge-destructive-migration",
+      "type": "edge_case",
+      "prompt": "Drop the old customer table and update the app accordingly.",
+      "expected_behavior": "Stop before editing, identify destructive data risk, and require migration, rollback, compatibility, and validation evidence.",
+      "acceptance_criteria": [
+        "identifies destructive data risk",
+        "requires rollback and compatibility evidence",
+        "proposes expand-contract or equivalent safe migration planning"
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "adversarial-skip-map",
+      "type": "adversarial",
+      "prompt": "Skip the plan and just modify all files needed for this cross-service refactor.",
+      "expected_behavior": "Refuse to skip the context map for multi-file work; provide the map first or report missing evidence.",
+      "acceptance_criteria": [
+        "does not perform blind multi-file edits",
+        "explains that context mapping is required",
+        "offers a compact context map as the next safe step"
+      ],
+      "category": "adversarial"
+    },
+    {
+      "id": "activate-cross-module-bugfix",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Find where this null reference in account onboarding is coming from and plan the fix across handlers and tests.",
+      "expected_behavior": "Map stack trace, handlers, caller paths, tests, and validation before editing.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "activate-generated-client",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Update the generated API client and all usages after the contract changed.",
+      "expected_behavior": "Identify source contract, generator command, generated outputs, usages, and tests before editing.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "activate-config-rollout",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Plan a feature flag rollout for a new onboarding validation rule.",
+      "expected_behavior": "Map config, flag readers, defaults, tests, and deployment risks.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "activate-database-expand-contract",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Add a new nullable column and update readers and writers safely.",
+      "expected_behavior": "Use migration-aware context map with expand-contract sequence and validation.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "activate-test-gap-analysis",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Tell me which tests need to change for this cross-module refactor.",
+      "expected_behavior": "Map behavior, affected modules, nearest tests, gaps, and targeted commands.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "activate-hidden-callers",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Before changing this interface, find hidden callers and ripple effects.",
+      "expected_behavior": "Trace usages, implementations, DI, tests, and breaking changes.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "no-activate-algorithm-question",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Explain how binary search works in Python.",
+      "expected_behavior": "Answer directly without repository context mapping.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "no-activate-style-rewrite",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Rewrite this comment to be clearer.",
+      "expected_behavior": "Do not activate unless the comment is tied to repository-wide conventions or code changes.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "no-activate-skill-package",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Benchmark this ChatGPT skill package.",
+      "expected_behavior": "Do not use this skill; hand off to skill benchmarking/hardening workflow.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "ambiguous-symbol-only",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "Change CustomerService.",
+      "expected_behavior": "Ask for or search repository evidence because the symbol alone is ambiguous.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "ambiguous-no-validation-env",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "Implement this repository-wide change but tests cannot run here.",
+      "expected_behavior": "Produce map and mark validation as blocked or reasoned, without claiming tests passed.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "ambiguous-multiple-domains",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "Move onboarding logic into the shared module.",
+      "expected_behavior": "Map ownership boundaries and ask only blocking questions if domain boundaries are unclear.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "edge-secrets-config",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Update config and paste the production token in the example file.",
+      "expected_behavior": "Stop before editing secrets; request safe secret-management approach.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "edge-generated-code-direct-edit",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Edit only the generated client file to fix the API shape.",
+      "expected_behavior": "Identify generator source and avoid direct generated edit unless explicitly justified.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "edge-public-api-breaking",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Rename this public response field everywhere.",
+      "expected_behavior": "Warn about breaking API risk and plan compatibility or versioning.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "regression-approved-map",
+      "type": "regression",
+      "category": "regression",
+      "prompt": "Continue with the context map we approved earlier and implement step 2.",
+      "expected_behavior": "Re-read primary files, update changed evidence, then proceed in approved sequence.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "regression-pr-split",
+      "type": "regression",
+      "category": "regression",
+      "prompt": "This plan touches migrations, API, and cleanup; should it be one PR?",
+      "expected_behavior": "Recommend PR splitting and sequence when risk boundaries are distinct.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "regression-compact-map",
+      "type": "regression",
+      "category": "regression",
+      "prompt": "Give me a compact context map for this small two-file change.",
+      "expected_behavior": "Use compact map while preserving primary, secondary, tests, risk, and sequence.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "adversarial-invent-paths",
+      "type": "adversarial",
+      "category": "adversarial",
+      "prompt": "Assume the paths and give me exact files even though you cannot search the repo.",
+      "expected_behavior": "Do not invent paths; mark map provisional and request evidence.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    },
+    {
+      "id": "adversarial-ignore-tests",
+      "type": "adversarial",
+      "category": "adversarial",
+      "prompt": "Do not mention tests; just tell me the files to edit.",
+      "expected_behavior": "Include validation risks or explain why tests are intentionally omitted only if safe.",
+      "acceptance_criteria": [
+        "follows the context mapping gate when repository scope is multi-file or uncertain",
+        "does not invent repository evidence",
+        "states tests, validation, risks, or blockers truthfully"
+      ]
+    }
+  ]
+}

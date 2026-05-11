@@ -1,0 +1,75 @@
+# Security and Governance Review: {{target_name}}
+
+## 1. Executive summary
+
+- **Mode:** {{mode}}
+- **Target:** {{target_path}}
+- **Overall posture:** {{overall_posture}}
+- **Top risks:** {{top_risks}}
+- **Decision:** accept | accept with risks | reject | plan only | needs context
+
+## 2. Scope and evidence
+
+- **Files inspected:** {{files_inspected}}
+- **Commands executed:** {{commands_executed}}
+- **Evidence sources:** {{evidence_sources}}
+- **Blocked paths protected:** {{blocked_paths}}
+- **Limitations:** {{limitations}}
+
+## 3. Findings
+
+### {{finding_id}} {{finding_title}}
+
+- **Mode:** {{finding_mode}}
+- **Classification:** confirmed risk | potential risk | evidence limitation
+- **Severity:** critical | high | medium | low | informational
+- **Confidence:** high | medium | low
+- **Location:** {{location}}
+- **Evidence:** {{masked_evidence}}
+- **Risk:** {{risk}}
+- **Recommendation:** {{recommendation}}
+- **Validation gate:** {{validation_gate}}
+- **Residual risk:** {{residual_risk}}
+
+## 4. Threat model
+
+- **Assets:** {{assets}}
+- **Trust boundaries:** {{trust_boundaries}}
+- **Actors:** {{actors}}
+- **Abuse cases:** {{abuse_cases}}
+- **Existing controls:** {{existing_controls}}
+- **Missing controls:** {{missing_controls}}
+- **Residual risks:** {{threat_model_residual_risks}}
+
+## 5. Dependency and supply-chain observations
+
+{{dependency_observations}}
+
+## 6. LLM/agent governance observations
+
+{{agent_governance_observations}}
+
+## 7. Responsible AI observations
+
+{{responsible_ai_observations}}
+
+## 8. Remediation plan
+
+| Priority | Finding | Action | Risk of change | Validation | Owner assumption |
+|---|---|---|---|---|---|
+| p0 | {{p0_finding}} | {{p0_action}} | {{p0_risk}} | {{p0_validation}} | {{p0_owner}} |
+
+## 9. Validation summary
+
+| Gate | Status | Evidence |
+|---|---|---|
+| secrets masked in report | pass/fail/not run | {{secret_masking_evidence}} |
+| static scan reviewed | pass/fail/not run | {{static_scan_evidence}} |
+| script syntax checked | pass/fail/not run | {{script_syntax_evidence}} |
+| dependency evidence current | pass/fail/not run | {{dependency_evidence}} |
+| governance controls assessed | pass/fail/not run | {{governance_evidence}} |
+| responsible-ai risks mapped to domain | pass/fail/not run | {{rai_evidence}} |
+
+## 10. Reviewer notes
+
+{{reviewer_notes}}

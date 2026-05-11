@@ -1,0 +1,32 @@
+[Concise instruction describing the task. This should be the first line and should not be a heading.]
+
+[Context, role, and assumptions needed for consistent execution.]
+
+# Steps
+
+1. [First required action.]
+2. [Second required action.]
+3. [Continue only as needed.]
+
+# Constraints
+
+- [Required behavior.]
+- [Prohibited behavior.]
+- [Tool or source rule, if applicable.]
+
+# Output Format
+
+[Describe the exact output structure, length, syntax, citation rules, and whether code fences are allowed.]
+
+# Examples
+
+## Example 1
+
+Input: [representative input]
+
+Output: [representative output]
+
+# Notes
+
+- [Edge case or priority rule.]
+- [Stop condition or uncertainty rule.]

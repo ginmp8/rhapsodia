@@ -1,0 +1,10 @@
+name: thinking-token-efficient
+description: compact private reasoning discipline for complex chats, preserving quality,
+  evidence, citations, validation, and safety while avoiding illegible shorthand.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

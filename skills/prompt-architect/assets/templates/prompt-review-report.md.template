@@ -1,0 +1,33 @@
+# Prompt Review Report
+
+## Verdict
+
+[approve | approve with reservations | reject]
+
+## Scorecard
+
+| Dimension | Score | Evidence | Fix |
+|---|---:|---|---|
+| objective | [1-5] | [evidence] | [fix] |
+| context | [1-5] | [evidence] | [fix] |
+| specificity | [1-5] | [evidence] | [fix] |
+| structure | [1-5] | [evidence] | [fix] |
+| reasoning order | [1-5] | [evidence] | [fix] |
+| examples | [1-5] | [evidence] | [fix] |
+| output format | [1-5] | [evidence] | [fix] |
+| source handling | [1-5] | [evidence] | [fix] |
+| tool behavior | [1-5] | [evidence] | [fix] |
+| safety and privacy | [1-5] | [evidence] | [fix] |
+| validation readiness | [1-5] | [evidence] | [fix] |
+
+## Critical Issues
+
+- [issue]
+
+## Recommended Rewrite Strategy
+
+[short strategy]
+
+## Validation Notes
+
+[scenario, result, defects, and residual risks]

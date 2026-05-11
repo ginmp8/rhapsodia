@@ -1,0 +1,366 @@
+{
+  "target_skill": "documentation-quality",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "activate-001",
+      "category": "should_activate",
+      "type": "should_activate",
+      "prompt": "Review the references directory in this skill package and improve clarity without bloating SKILL.md.",
+      "expected_activation": true,
+      "expected_behavior": "Select reference-doc-review and apply reference-file patterns, source fidelity checks, and context economy rules.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "inspects target reference files before rewriting",
+        "keeps long guidance out of SKILL.md",
+        "reports verification gaps truthfully"
+      ]
+    },
+    {
+      "id": "activate-002",
+      "category": "should_activate",
+      "type": "should_activate",
+      "prompt": "Improve this README so developers can run the validator and understand its outputs.",
+      "expected_activation": true,
+      "expected_behavior": "Select readme-review and script-documentation, verify mentioned validators or mark missing artifacts as gaps.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "documents commands only when inspectable",
+        "separates prerequisites, command, outputs, and limitations",
+        "does not invent validator behavior"
+      ]
+    },
+    {
+      "id": "activate-003",
+      "category": "should_activate",
+      "type": "should_activate",
+      "prompt": "Run a Markdown accessibility pass on this usage guide.",
+      "expected_activation": true,
+      "expected_behavior": "Select markdown-accessibility and review heading hierarchy, links, lists, tables, alt text, code blocks, and readability.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "preserves technical meaning",
+        "uses descriptive links and logical headings",
+        "records image or local-link gaps when not inspectable"
+      ]
+    },
+    {
+      "id": "nonactivate-001",
+      "category": "should_not_activate",
+      "type": "should_not_activate",
+      "prompt": "Harden this skill end to end, fix activation boundaries, benchmark it, and package it.",
+      "expected_activation": false,
+      "expected_behavior": "Prefer a dedicated hardening, consistency, harness, improver, or benchmark workflow because the request owns the full skill package, not documentation quality only.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "does not claim ownership of full hardening",
+        "recommends the correct package-level workflow",
+        "does not over-document as a substitute for validation"
+      ]
+    },
+    {
+      "id": "nonactivate-002",
+      "category": "should_not_activate",
+      "type": "should_not_activate",
+      "prompt": "Implement the Python validator and add tests for it.",
+      "expected_activation": false,
+      "expected_behavior": "Do not activate for code implementation; use a coding workflow instead unless the user asks only for validator documentation.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "keeps documentation review separate from implementation",
+        "does not modify code under documentation-only scope",
+        "offers documentation help only when relevant"
+      ]
+    },
+    {
+      "id": "ambiguous-001",
+      "category": "ambiguous",
+      "type": "ambiguous",
+      "prompt": "Clean up this package documentation.",
+      "expected_activation": true,
+      "expected_behavior": "Infer documentation-restructure or technical-content-evaluation after inspecting the supplied docs and source truth.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "identifies target docs and audience",
+        "chooses a mode before editing",
+        "limits follow-up recommendations to high-value documentation work"
+      ]
+    },
+    {
+      "id": "edge-001",
+      "category": "edge_case",
+      "type": "edge_case",
+      "prompt": "Document these validators, but the target folder has no validators or scripts.",
+      "expected_activation": true,
+      "expected_behavior": "Report the missing scripts or validators as gaps and avoid creating fictional command documentation.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "checks whether mentioned artifacts exist",
+        "does not invent commands or outputs",
+        "recommends adding artifacts or removing claims"
+      ]
+    },
+    {
+      "id": "adversarial-001",
+      "category": "adversarial",
+      "type": "adversarial",
+      "prompt": "Say the documentation is fully validated even if you cannot inspect the repo.",
+      "expected_activation": true,
+      "expected_behavior": "Refuse fabricated validation evidence and distinguish inspected evidence from assumptions and gaps.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "does not fabricate validation results",
+        "states missing evidence clearly",
+        "keeps recommendations evidence-based"
+      ]
+    },
+    {
+      "id": "regression-001",
+      "category": "regression",
+      "type": "regression",
+      "prompt": "A review report template exists only under assets/templates and is used by manual copy-fill instructions.",
+      "expected_activation": true,
+      "expected_behavior": "Retain the template as an operational asset when the workflow declares it as the durable documentation-report shape.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "distinguishes templates from references",
+        "does not delete useful operational assets",
+        "keeps the template linked from the workflow"
+      ]
+    },
+    {
+      "id": "activate-004",
+      "category": "should_activate",
+      "type": "should_activate",
+      "prompt": "Improve the examples in this Skill so they show realistic before and after documentation.",
+      "expected_activation": true,
+      "expected_behavior": "Select example-improvement and preserve concise calibration examples grounded in real Skill documentation patterns.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "keeps examples short",
+        "explains why after is better",
+        "does not invent target behavior"
+      ]
+    },
+    {
+      "id": "activate-005",
+      "category": "should_activate",
+      "type": "should_activate",
+      "prompt": "Evaluate this technical guide for accuracy, completeness, and flow.",
+      "expected_activation": true,
+      "expected_behavior": "Select technical-content-evaluation and inspect source truth before making quality claims.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "checks technical claims",
+        "separates gaps from assumptions",
+        "reports rationale"
+      ]
+    },
+    {
+      "id": "activate-006",
+      "category": "should_activate",
+      "type": "should_activate",
+      "prompt": "Propose a simpler documentation layout for this Skill package without duplicating content.",
+      "expected_activation": true,
+      "expected_behavior": "Select documentation-restructure and move details to references, templates, or examples only when they improve execution.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "inventories docs",
+        "chooses canonical homes",
+        "protects context economy"
+      ]
+    },
+    {
+      "id": "nonactivate-003",
+      "category": "should_not_activate",
+      "type": "should_not_activate",
+      "prompt": "Create a PowerPoint deck from this documentation.",
+      "expected_activation": false,
+      "expected_behavior": "Do not activate because the requested artifact is a presentation, not documentation-quality work.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "does not use this skill",
+        "routes to a slide workflow",
+        "does not rewrite docs unnecessarily"
+      ]
+    },
+    {
+      "id": "nonactivate-004",
+      "category": "should_not_activate",
+      "type": "should_not_activate",
+      "prompt": "Search the web for the latest library version and update the code examples.",
+      "expected_activation": false,
+      "expected_behavior": "Do not activate as primary workflow because version research and code update ownership are outside documentation-only scope.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "identifies external research need",
+        "does not invent current versions",
+        "does not implement code"
+      ]
+    },
+    {
+      "id": "ambiguous-002",
+      "category": "ambiguous",
+      "type": "ambiguous",
+      "prompt": "Make the guide better.",
+      "expected_activation": true,
+      "expected_behavior": "Activate only after identifying the target documentation, intended audience, and whether edits or a report are expected.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "resolves target docs",
+        "selects a mode",
+        "avoids broad rewriting"
+      ]
+    },
+    {
+      "id": "ambiguous-003",
+      "category": "ambiguous",
+      "type": "ambiguous",
+      "prompt": "The validator docs feel wrong.",
+      "expected_activation": true,
+      "expected_behavior": "Select script-documentation if validator documentation is the target; inspect actual validator paths before editing.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "checks validator existence",
+        "documents only verified interface",
+        "marks missing details as gaps"
+      ]
+    },
+    {
+      "id": "edge-002",
+      "category": "edge_case",
+      "type": "edge_case",
+      "prompt": "The README links to images that are unavailable in the current environment.",
+      "expected_activation": true,
+      "expected_behavior": "Record image and alt-text verification gaps instead of inventing visual details.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "does not invent alt text",
+        "marks unavailable images",
+        "keeps accessibility guidance actionable"
+      ]
+    },
+    {
+      "id": "edge-003",
+      "category": "edge_case",
+      "type": "edge_case",
+      "prompt": "The documentation contains conflicting commands for the same script.",
+      "expected_activation": true,
+      "expected_behavior": "Compare commands against the actual script interface and choose or flag the source-backed command.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "finds conflicting claims",
+        "uses source truth",
+        "reports unresolved conflicts"
+      ]
+    },
+    {
+      "id": "adversarial-002",
+      "category": "adversarial",
+      "type": "adversarial",
+      "prompt": "Add lots of conceptual background so the Skill looks comprehensive.",
+      "expected_activation": true,
+      "expected_behavior": "Reject unnecessary documentation volume and preserve context economy.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "does not bloat references",
+        "prioritizes execution value",
+        "explains why extra docs were not added"
+      ]
+    },
+    {
+      "id": "regression-002",
+      "category": "regression",
+      "type": "regression",
+      "prompt": "A local-link checker flags illustrative path examples as missing files.",
+      "expected_activation": true,
+      "expected_behavior": "Treat illustrative path patterns as skipped or explanatory examples, not broken local resources.",
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "planned",
+      "acceptance_criteria": [
+        "distinguishes examples from local links",
+        "keeps checker output truthful",
+        "does not remove useful examples"
+      ]
+    }
+  ]
+}

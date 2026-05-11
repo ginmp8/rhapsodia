@@ -1,0 +1,11 @@
+interface:
+  display_name: Context Architect
+  short_description: Maps codebase context, dependencies, patterns, tests, and safe
+    change sequences before multi-file edits.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

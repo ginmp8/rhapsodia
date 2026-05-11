@@ -1,0 +1,73 @@
+# Agent Review Report: {{agent_name}}
+
+## Verdict
+
+{{approve_or_reject}}
+
+## Scope Reviewed
+
+- agent or prompt path: {{agent_path}}
+- operating surface: {{platform}}
+- reviewed materials: {{reviewed_materials}}
+- evidence status: {{evidence_status}}
+
+## Executive Summary
+
+{{summary}}
+
+## Findings
+
+| Severity | Area | Finding | Evidence | Required fix |
+|---|---|---|---|---|
+| {{severity}} | {{area}} | {{finding}} | {{evidence}} | {{required_fix}} |
+
+## Skill vs Agent Fit
+
+{{skill_vs_agent_assessment}}
+
+## Role and Authority Assessment
+
+- mission clarity: {{mission_clarity}}
+- responsibilities: {{responsibilities_assessment}}
+- non-responsibilities: {{non_responsibilities_assessment}}
+- authority boundary: {{authority_assessment}}
+
+## Tool Contract Assessment
+
+| Tool or capability | Assessment | Risk | Recommendation |
+|---|---|---|---|
+| {{tool_name}} | {{tool_assessment}} | {{tool_risk}} | {{tool_recommendation}} |
+
+## Governance and Safety Assessment
+
+- stop conditions: {{stop_condition_assessment}}
+- escalation: {{escalation_assessment}}
+- auditability: {{auditability_assessment}}
+- controlled execution: {{controlled_execution_assessment}}
+- sensitive data or secrets: {{sensitive_data_assessment}}
+
+## Routing and Handoff Assessment
+
+{{routing_and_handoff_assessment}}
+
+## Required Changes
+
+1. {{required_change_1}}
+2. {{required_change_2}}
+3. {{required_change_3}}
+
+## Validation Plan
+
+| Scenario | Category | Expected behavior | Acceptance criteria | Evidence status |
+|---|---|---|---|---|
+| {{scenario_name}} | {{scenario_category}} | {{expected_behavior}} | {{acceptance_criteria}} | {{evidence_status}} |
+
+## Residual Risks
+
+- {{residual_risk_1}}
+- {{residual_risk_2}}
+
+## Next Steps
+
+- {{next_step_1}}
+- {{next_step_2}}

@@ -1,0 +1,60 @@
+# Prompt and Activation Review Report
+
+## Mode Used
+
+- Primary mode: {{mode}}
+- Target surface: {{target_surface}}
+- Review status: {{review_status}}
+
+## Summary Verdict
+
+{{pass_needs_changes_or_blocking}}
+
+## Findings
+
+### Textual Clarity Risk
+
+| id | severity | evidence | issue | proposed change | rationale |
+|---|---|---|---|---|---|
+| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
+
+### Activation Risk
+
+| id | severity | evidence | issue | proposed change | rationale |
+|---|---|---|---|---|---|
+| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
+
+### Ownership Risk
+
+| id | severity | evidence | issue | proposed change | rationale |
+|---|---|---|---|---|---|
+| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
+
+### Output Contract Risk
+
+| id | severity | evidence | issue | proposed change | rationale |
+|---|---|---|---|---|---|
+| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
+
+## Recommended Rewrite
+
+```text
+{{rewritten_text}}
+```
+
+## Activation Scenarios
+
+| id | category | prompt | expected behavior | risk covered | evidence status |
+|---|---|---|---|---|---|
+| {{id}} | {{category}} | {{prompt}} | {{expected_behavior}} | {{risk_covered}} | {{planned_supplied_executed_or_blocked}} |
+
+## Validation Status
+
+- Static review: {{status}}
+- Scenario review: {{status}}
+- Executed validation: {{status}}
+- Handoff required: {{handoff_or_none}}
+
+## Limitations
+
+{{limitations}}

@@ -1,0 +1,75 @@
+# Package Architecture Review: {{target_skill}}
+
+## 1. Mode and scope
+
+- mode: {{mode}}
+- target: {{target_path}}
+- reviewer role: package architecture review
+- mutation scope: review-only unless explicitly stated
+
+## 2. Evidence inspected
+
+| Evidence | Status | Notes |
+|---|---:|---|
+| `SKILL.md` | {{status}} | {{notes}} |
+| `references/` | {{status}} | {{notes}} |
+| `scripts/` | {{status}} | {{notes}} |
+| `assets/` and templates | {{status}} | {{notes}} |
+| `examples/` and `evals/` | {{status}} | {{notes}} |
+| validators or package commands | {{status}} | {{notes}} |
+
+## 3. Mechanical findings
+
+List structural facts: file tree, local links, missing references, script interfaces, template consumers, package size, generated artifacts, and command output. Do not mix these with judgment.
+
+## 4. Architectural findings
+
+### Cohesion and modularization
+
+{{findings}}
+
+### Progressive loading
+
+{{findings}}
+
+### Resource integration
+
+{{findings}}
+
+### Governance boundaries and handoffs
+
+{{findings}}
+
+### Content quality and maintainability
+
+{{findings}}
+
+### Repository/package structure
+
+{{findings}}
+
+## 5. Decision
+
+- recommendation: {{keep_unified | extract_mode | fragment | merge_resource | create_router | handoff | no_change}}
+- rationale: {{evidence_based_rationale}}
+- alternatives rejected: {{alternatives}}
+
+## 6. Recommendations
+
+| Priority | Recommendation | Evidence | Expected benefit | Risk | Validation gate |
+|---|---|---|---|---|---|
+| p0/p1/p2 | {{action}} | {{evidence}} | {{benefit}} | {{risk}} | {{gate}} |
+
+## 7. Measured versus judged claims
+
+- measured claims: {{commands_or_supplied_evidence}}
+- reviewer judgment: {{judgment}}
+- not measured: {{metrics_or_scenarios_not_run}}
+
+## 8. Limitations
+
+{{limitations}}
+
+## 9. Next steps
+
+{{next_steps}}

@@ -1,0 +1,10 @@
+interface:
+  display_name: NuGet Package Updater
+  short_description: Safely update Directory.Packages.props NuGet versions.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,11 @@
+interface:
+  display_name: Skill Prompt and Activation Review
+  short_description: Review Skill prompts, activation descriptions, boundaries, scenarios,
+    and output contracts.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,11 @@
+interface:
+  display_name: Agent Design
+  short_description: Design and review custom agents, routers, governance controls,
+    and handoffs.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

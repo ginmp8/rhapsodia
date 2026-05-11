@@ -1,0 +1,44 @@
+# Documentation review report: {{target_name}}
+
+## Mode
+
+{{selected_modes}}
+
+## Scope
+
+- Target path or files: {{target_paths}}
+- Audience: {{audience}}
+- Requested outcome: {{requested_outcome}}
+
+## Evidence inspected
+
+| Evidence | Status | Notes |
+|---|---|---|
+| {{evidence_item}} | {{inspected_or_gap}} | {{evidence_notes}} |
+
+## Changes made or recommended
+
+| Area | Change | Rationale | Risk |
+|---|---|---|---|
+| Clarity | {{clarity_change}} | {{clarity_rationale}} | {{clarity_risk}} |
+| Structure | {{structure_change}} | {{structure_rationale}} | {{structure_risk}} |
+| Accuracy | {{accuracy_change}} | {{accuracy_rationale}} | {{accuracy_risk}} |
+| Accessibility | {{accessibility_change}} | {{accessibility_rationale}} | {{accessibility_risk}} |
+| Examples | {{examples_change}} | {{examples_rationale}} | {{examples_risk}} |
+| Context economy | {{context_change}} | {{context_rationale}} | {{context_risk}} |
+
+## Verification
+
+- Local links checked: {{local_links_checked}}
+- Referenced files checked: {{referenced_files_checked}}
+- Scripts or validators checked: {{scripts_validators_checked}}
+- Commands run: {{commands_run}}
+- Claims not verified: {{unverified_claims}}
+
+## Remaining gaps
+
+{{remaining_gaps}}
+
+## Recommendation
+
+{{recommendation}}

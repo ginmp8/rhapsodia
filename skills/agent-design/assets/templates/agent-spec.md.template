@@ -1,0 +1,108 @@
+# Agent Spec: {{agent_name}}
+
+## 1. Operating Surface
+
+- platform: {{platform}}
+- file path, if applicable: {{agent_file_path}}
+- intended users: {{intended_users}}
+- related Skills or agents: {{related_skills_or_agents}}
+
+## 2. Mission
+
+{{mission}}
+
+## 3. Inputs and Context
+
+- required inputs:
+  - {{required_input_1}}
+  - {{required_input_2}}
+- optional context:
+  - {{optional_context_1}}
+- unavailable or assumed context:
+  - {{assumption_1}}
+
+## 4. Outputs
+
+{{expected_outputs}}
+
+## 5. Authority Boundary
+
+- may decide:
+  - {{may_decide}}
+- may recommend:
+  - {{may_recommend}}
+- may execute:
+  - {{may_execute}}
+- must not execute:
+  - {{must_not_execute}}
+- must escalate:
+  - {{must_escalate}}
+
+## 6. Tool Contract
+
+| Tool or capability | Required, optional, conditional, or forbidden | Why | Fallback |
+|---|---|---|---|
+| {{tool_name}} | {{tool_status}} | {{tool_reason}} | {{tool_fallback}} |
+
+## 7. Workflow
+
+1. {{workflow_step_1}}
+2. {{workflow_step_2}}
+3. {{workflow_step_3}}
+
+## 8. Handoffs
+
+| Trigger | Target | Payload | Stop or continue |
+|---|---|---|---|
+| {{handoff_trigger}} | {{handoff_target}} | {{handoff_payload}} | {{handoff_action}} |
+
+## 9. Stop Conditions
+
+- {{stop_condition_1}}
+- {{stop_condition_2}}
+- {{stop_condition_3}}
+
+## 10. Prompt or Agent File
+
+```markdown
+---
+description: {{description}}
+name: {{display_name}}
+tools: [{{tools}}]
+---
+
+# {{display_name}}
+
+## Role
+{{role}}
+
+## Responsibilities
+{{responsibilities}}
+
+## Boundaries
+{{boundaries}}
+
+## Workflow
+{{workflow}}
+
+## Output Contract
+{{output_contract}}
+
+## Stop Conditions
+{{stop_conditions}}
+```
+
+## 11. Validation Scenarios
+
+| Scenario | Category | Expected behavior | Acceptance criteria | Evidence status |
+|---|---|---|---|---|
+| {{scenario_name}} | {{scenario_category}} | {{expected_behavior}} | {{acceptance_criteria}} | planned |
+
+## 12. Risks and Trade-offs
+
+- {{risk_or_tradeoff_1}}
+- {{risk_or_tradeoff_2}}
+
+## 13. Open Questions
+
+- {{open_question_1}}

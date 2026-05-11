@@ -1,0 +1,11 @@
+interface:
+  display_name: Documentation Quality
+  short_description: Review and improve technical documentation inside skills and
+    repositories.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
