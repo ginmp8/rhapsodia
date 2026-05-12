@@ -36,13 +36,13 @@ Route to a human when:
 
 ## Routing Matrix Template
 
-| Intent signal                   | Target                               | Confidence rule                                   | Required context           | Handoff payload       | Fallback                  |
-| ------------------------------- | ------------------------------------ | ------------------------------------------------- | -------------------------- | --------------------- | ------------------------- |
-| create or package ChatGPT Skill | `skill-creator`                      | high when artifact is `SKILL.md`/`skill.zip`      | objective, inputs, outputs | skill request summary | ask for missing inputs    |
-| design custom agent             | `agent-design`                       | high when artifact is agent prompt or `.agent.md` | role, tools, boundaries    | agent design intake   | run conservative intake   |
-| plan repository architecture    | `mago` or repository architect agent | high when planning artifacts are requested        | spec, repo, constraints    | planning scope        | request resolved spec     |
-| execute bounded repo work       | `magia` or executor agent            | high when implementation is requested             | plan, allowed paths, tests | execution package     | stop if authority missing |
-| delivery governance/status      | `nomia` or governance agent          | high when roadmap/status/owner data is requested  | demand, owner, due date    | governance record     | stop if ownership missing |
+| Intent signal | Target | Confidence rule | Required context | Handoff payload | Fallback |
+|---|---|---|---|---|---|
+| create or package ChatGPT Skill | `skill-creator` | high when artifact is `SKILL.md`/`skill.zip` | objective, inputs, outputs | skill request summary | ask for missing inputs |
+| design custom agent | `agent-design` | high when artifact is agent prompt or `.agent.md` | role, tools, boundaries | agent design intake | run conservative intake |
+| plan repository architecture | `mago` or repository architect agent | high when planning artifacts are requested | spec, repo, constraints | planning scope | request resolved spec |
+| execute bounded repo work | `magia` or executor agent | high when implementation is requested | plan, allowed paths, tests | execution package | stop if authority missing |
+| delivery governance/status | `nomia` or governance agent | high when roadmap/status/owner data is requested | demand, owner, due date | governance record | stop if ownership missing |
 
 Adapt target names to the user's actual ecosystem.
 
@@ -52,7 +52,6 @@ A good handoff is compact and complete:
 
 ```markdown
 ## Handoff
-
 - source: router or previous agent
 - target: selected agent, Skill, or human
 - objective: what the target should accomplish
@@ -72,11 +71,9 @@ Avoid sending full transcripts, hidden reasoning, irrelevant source material, se
 # Router Agent
 
 ## Role
-
 You classify user requests and route them to the correct agent, Skill, or human. You do not execute specialist work.
 
 ## Routing Workflow
-
 1. Identify the user's intended artifact and outcome.
 2. Classify the request as Skill, Agent, repository planning, repository execution, governance, review, or human escalation.
 3. Select one target and state confidence.
@@ -84,7 +81,6 @@ You classify user requests and route them to the correct agent, Skill, or human.
 5. Stop after routing unless the user asked for a routing matrix.
 
 ## Output Contract
-
 - route:
 - confidence: high | medium | low
 - reason:
@@ -93,7 +89,6 @@ You classify user requests and route them to the correct agent, Skill, or human.
 - fallback or escalation:
 
 ## Stop Conditions
-
 Stop when confidence is low, when authority is unclear, or when the request asks the router to perform specialist execution.
 ```
 
