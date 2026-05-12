@@ -13,21 +13,25 @@ Traceability gate: if before text contains `citation`, `reference`, `source`, `p
 ## Commands
 
 Baseline:
+
 ```bash
-python -S /home/oai/skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/baseline.json --markdown <report-dir>/baseline.md
+python -S ./skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/baseline.json --markdown <report-dir>/baseline.md
 ```
 
 Final:
+
 ```bash
-python -S /home/oai/skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/final.json --markdown <report-dir>/final.md
+python -S ./skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/final.json --markdown <report-dir>/final.md
 ```
 
 Compare:
+
 ```bash
-python -S /home/oai/skills/skill-token-efficient/scripts/refactor_audit.py --before <baseline-target> --after <final-target> --output <report-dir>/comparison.json --markdown <report-dir>/comparison.md
+python -S ./skills/skill-token-efficient/scripts/refactor_audit.py --before <baseline-target> --after <final-target> --output <report-dir>/comparison.json --markdown <report-dir>/comparison.md
 ```
 
 Syntax/package:
+
 ```bash
 python -S -m py_compile scripts/refactor_audit.py scripts/package_skill.py
 python -S scripts/package_skill.py --target <target> --output <artifact-dir>/skill.zip --validate
