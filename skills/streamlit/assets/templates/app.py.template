@@ -1,7 +1,7 @@
-"""Small Streamlit data app skeleton.
+"""Production-aware single-page Streamlit app template.
 
-Replace placeholder data loading with the user's actual source.
-Keep secrets outside this file.
+Replace the data source and render functions with the user workflow. Keep secrets in
+`.streamlit/secrets.toml`, environment variables, or the target platform secret store.
 """
 
 from __future__ import annotations
@@ -15,16 +15,15 @@ import streamlit as st
 
 @dataclass(frozen=True)
 class AppConfig:
-    page_title: str = "Streamlit App"
+    page_title: str = "{{APP_TITLE}}"
     max_rows: int = 500
 
 
-st.set_page_config(page_title="Streamlit App", layout="wide")
+st.set_page_config(page_title="{{APP_TITLE}}", layout="wide")
 
 
 @st.cache_data(ttl="10m", show_spinner="Loading data...")
 def load_data() -> pd.DataFrame:
-    # Replace with a database query, API call, or file read.
     return pd.DataFrame(
         {
             "status": ["Pending", "Approved", "Rejected"],

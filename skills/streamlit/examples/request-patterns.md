@@ -1,91 +1,89 @@
-# Request Patterns
+# Streamlit Request Patterns
 
-Use these examples to calibrate activation and output style.
+Use these examples to calibrate activation and response style.
 
 ## Activate
 
-User: "Create a Streamlit dashboard for onboarding funnel data."
+### Build a dashboard
 
-Expected mode: `new-app`, `ui`, `data-cache`.
+User request: "Create a Streamlit dashboard for onboarding funnel data."
 
-Good response: propose a minimal app structure, include runnable code, use cache for data loading, include filters, metrics, table, download, and validation.
+Expected behavior: propose a minimal app structure, include runnable code, use `st.cache_data` for data loading, include filters, metrics, table, download behavior, and validation.
 
----
+### Fix state behavior
 
-User: "My Streamlit checkbox keeps resetting."
+User request: "My checkbox keeps resetting in Streamlit."
 
-Expected mode: `state-debug`, `troubleshooting`.
+Expected behavior: explain likely rerun, key, or `st.session_state` issue; show the smallest patch with stable keys and state initialization; add verification steps.
 
-Good response: explain likely rerun/key/session-state issue, show smallest patch using stable key and `setdefault`, add verification steps.
+### Add authentication
 
----
+User request: "Add login to my Streamlit app."
 
-User: "Add login to my Streamlit app."
+Expected behavior: identify identity provider and deployment target when needed; provide an auth guard shape; warn that authentication is not the same as row-level authorization.
 
-Expected mode: `deployment`, `security-review`.
+### Build a chat UI
 
-Good response: ask/infer identity provider and deployment target when needed; provide auth guard shape; warn about access-control boundary; do not fake provider configuration.
+User request: "Build a ChatGPT-like UI in Streamlit with streaming."
 
----
+Expected behavior: use `st.chat_message`, `st.chat_input`, message history in session state, a streaming surface, and a model-client boundary; discuss privacy and cost controls.
 
-User: "Build a ChatGPT-like UI in Streamlit with streaming."
+### Review for production
 
-Expected mode: `llm-chat`.
+User request: "Review this Streamlit app before production."
 
-Good response: use `st.chat_message`, `st.chat_input`, session messages, streaming placeholder, and provider abstraction; discuss privacy and cost.
-
----
-
-User: "Review this app before production."
-
-Expected mode: `review`, `security-review`, `deployment`, `testing`.
-
-Good response: severity-ranked findings, data/cache/state/security/deployment gates, measured vs not-run validation.
+Expected behavior: return severity-ranked findings, state/cache/security/deployment gates, and separate executed validation from recommended validation.
 
 ## Do not activate
 
-User: "Write a pandas script to clean this CSV."
+### Pure pandas work
 
-Reason: not Streamlit-specific unless the output is a Streamlit app.
+User request: "Write a pandas script to clean this CSV."
 
----
+Reason: not Streamlit-specific unless the output is a Streamlit app or dashboard.
 
-User: "Build a Flask API."
+### Backend-only service
 
-Reason: backend-only app.
+User request: "Build a Flask API."
 
----
+Reason: Streamlit is not the primary framework.
 
-User: "Create a React dashboard."
+### Non-Streamlit frontend
+
+User request: "Create a React dashboard."
 
 Reason: frontend-only non-Streamlit task.
 
----
+### Plain data analysis
 
-User: "Analyze this dataset and tell me the average." 
+User request: "Analyze this dataset and tell me the average."
 
-Reason: pure data analysis; use Streamlit only if user asks for an app/dashboard.
+Reason: use Streamlit only if the user asks for an app, dashboard, or interactive UI.
 
 ## Ambiguous
 
-User: "Create a dashboard."
+### Dashboard without framework
 
-If user context suggests Python/Streamlit, proceed with a Streamlit assumption and state it. Otherwise ask which framework only if framework choice matters.
+User request: "Create a dashboard."
 
----
+Behavior: if conversation context suggests Python or Streamlit, proceed with a Streamlit assumption and state it. If framework choice materially affects the answer, ask which framework to use.
 
-User: "Deploy my app."
+### Deploy an app
 
-If files show Streamlit or the user says Streamlit, activate. Otherwise ask or inspect project type.
+User request: "Deploy my app."
+
+Behavior: activate only when files, logs, prior context, or user language indicate Streamlit. Otherwise inspect project type or ask for the app framework.
 
 ## Edge cases
 
-User: "Copy this Streamlit skill from another repo into my Apache repo."
+### Copying another skill
 
-Activate for source hygiene and refuse unsafe copying if license is unclear. Offer a clean-room rewrite.
+User request: "Copy this Streamlit skill from another repo into my Apache repo."
 
----
+Behavior: activate for source hygiene, avoid copying a third-party skill with unclear license, and offer a clean-room rewrite from official sources.
 
-User: "Cache each user's private account data globally so it is faster."
+### Unsafe caching
 
-Activate but treat as security risk. Use user/tenant cache keys or avoid shared cache.
+User request: "Cache each user's private account data globally so it is faster."
+
+Behavior: activate but classify as a security risk. Use user/tenant cache keys, session-only state, or avoid shared cache depending on sensitivity.

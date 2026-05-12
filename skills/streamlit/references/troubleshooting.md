@@ -1,201 +1,64 @@
 # Troubleshooting
 
-## Triage flow
+## App reruns too often
 
-1. Identify the symptom: startup failure, blank page, widget/state issue, slow interaction, data error, chart error, deployment failure, auth issue, or upload problem.
-2. Ask for or inspect the smallest evidence: error text, traceback, app snippet, requirements, Streamlit version, deployment target, or reproduction steps.
-3. Classify root cause: Python error, dependency/config, rerun/state, cache, data/schema, network/secrets, deployment, or browser/client issue.
-4. Provide the smallest patch and a validation step.
+Likely causes: widgets outside forms, expensive work at top level, callbacks changing state repeatedly, or missing cache boundaries.
 
-## App does not start
+Fix path: move grouped controls into a form, cache deterministic work, inspect session state, and isolate frequent refresh areas with fragments when appropriate.
 
-Common causes:
+## Widget resets or loses value
 
-- syntax error;
-- missing package;
-- wrong app path;
-- Streamlit not installed in environment;
-- incompatible Python version;
-- import side effect requiring unavailable secrets/network;
-- `st.set_page_config` called too late in older patterns.
+Likely causes: unstable widget key, changing options, conditional rendering, or reinitializing session state after widget creation.
 
-Checks:
+Fix path: set stable keys, initialize state before rendering, preserve selected values when options change, and avoid replacing widget types under the same key.
 
-```bash
-python -m py_compile app.py
-python -c "import streamlit; print(streamlit.__version__)"
-streamlit run app.py
-```
+## Duplicate widget key
 
-## Blank page or no output
+Likely causes: repeated component without unique key or loop using non-unique labels.
 
-Check:
+Fix path: derive keys from stable IDs and component role.
 
-- Did the script stop early with `st.stop()`?
-- Is an exception hidden in logs?
-- Is content behind a condition that is false?
-- Is the app waiting on a slow network call?
-- Is a widget key collision causing failure?
-- Is the app deployed with the wrong entrypoint?
+## Cached data is stale
 
-Add visible checkpoints temporarily:
+Likely causes: TTL absent or too long, missing cache parameter, mutable external data, or expecting cache to know about database changes.
 
-```python
-st.write("Reached data loading")
-```
+Fix path: add TTL, include meaningful parameters, provide refresh button that clears cache, or move freshness logic to database queries.
 
-Remove debug output before finalizing.
+## Cache does not hit
 
-## Widget value resets unexpectedly
+Likely causes: unhashable or changing arguments, function code changes, random/default values, or passing connection objects without underscore exclusion.
 
-Likely causes:
+Fix path: stabilize parameters, exclude unhashable arguments with underscore, and separate resource creation from data computation.
 
-- widget key changes between reruns;
-- widget is conditionally hidden and recreated;
-- session state key is overwritten each run;
-- callback mutates the wrong key;
-- multipage page uses a different key name.
+## File upload fails
 
-Fixes:
+Likely causes: size limit, encoding, parser mismatch, invalid file, or app memory constraints.
 
-- use stable explicit keys;
-- initialize with `setdefault`, not unconditional assignment;
-- keep widgets mounted when possible;
-- separate display label from state key.
+Fix path: validate file size/type, show parser errors, stream/chunk large inputs, and document upload limits.
 
-Bad:
+## Chart is slow
 
-```python
-st.session_state.name = ""
-name = st.text_input("Name", key="name")
-```
+Likely causes: too many points, expensive chart construction, full data rendered instead of aggregate, or chart recomputed on every widget change.
 
-Good:
+Fix path: aggregate, sample, cache, and render only needed views.
 
-```python
-st.session_state.setdefault("name", "")
-name = st.text_input("Name", key="name")
-```
+## App works locally but not deployed
 
-## Infinite rerun or repeated refresh
+Likely causes: missing secrets, dependency mismatch, file path assumptions, unavailable local resources, network restrictions, or platform config differences.
 
-Likely causes:
+Fix path: inspect deployment logs, verify secrets, pin dependencies, remove local-only paths, and add startup diagnostics that do not expose secrets.
 
-- unconditional `st.rerun()`;
-- callback changes state every run;
-- auto-refresh logic without a guard;
-- widget default depends on changing value;
-- cache clear triggered on every render.
+## Authentication surprises
 
-Add guards:
+Likely causes: redirect URI mismatch, missing provider config, cookie/session settings, or displaying private data before login check.
 
-```python
-if st.session_state.get("needs_refresh"):
-    st.session_state.needs_refresh = False
-    st.rerun()
-```
+Fix path: gate private content at the top of the page and verify identity provider settings in deployment.
 
-Use `st.rerun` sparingly.
+## Debugging protocol
 
-## Slow app
-
-Diagnose before optimizing:
-
-- Which line is slow?
-- Does it happen every rerun?
-- Is the data source slow or the rendering slow?
-- Is a large dataframe/chart rendered unnecessarily?
-- Are hidden tabs still computing expensive content?
-
-Common fixes:
-
-- `st.cache_data` for query results and transforms;
-- `st.cache_resource` for clients/models;
-- forms for expensive filters;
-- row limits and aggregation;
-- lazy details behind a button;
-- reduce uploaded-file reparsing.
-
-## Cache seems wrong or stale
-
-Check:
-
-- Missing function arguments in cache key.
-- Mutable cached object modified in place.
-- `ttl` too long.
-- Underscore-prefixed argument excludes something important.
-- User/tenant context omitted.
-- Cache not cleared after write.
-
-Use explicit cache keys and clear controls.
-
-## Uploaded file fails
-
-Check:
-
-- extension and MIME type;
-- file size;
-- encoding;
-- required columns;
-- delimiter;
-- Excel sheet name;
-- malformed rows;
-- privacy constraints.
-
-Display a useful error and sample expected schema.
-
-## Deployment failure
-
-Check:
-
-- app entrypoint;
-- dependencies present;
-- Python version;
-- system packages;
-- secrets configured;
-- network access to data source;
-- file paths relative to app root;
-- case-sensitive filenames;
-- port/address for Docker;
-- logs for first traceback.
-
-## Auth or secrets failure
-
-Check:
-
-- secret name mismatch;
-- local secrets file absent;
-- environment variable not injected;
-- platform secret settings not saved;
-- identity provider redirect URI;
-- relying on untrusted headers;
-- cached auth-dependent data without user key.
-
-Do not print secret values while debugging.
-
-## Error response pattern
-
-When answering troubleshooting requests, use:
-
-```markdown
-## Likely cause
-[one or two likely root causes]
-
-## Fix
-[smallest patch]
-
-## Verify
-[command or interaction]
-
-## If it still fails
-[next diagnostic evidence to collect]
-```
-
-## Common anti-fixes
-
-- Adding `st.rerun()` to every state issue.
-- Removing cache entirely instead of fixing cache keys.
-- Moving everything into session state.
-- Catching all exceptions and hiding them.
-- Adding a new framework or component before isolating the bug.
-- Hardcoding secrets to "test quickly".
+1. Capture the exact symptom and triggering action.
+2. Identify whether it is rerun/state, data, UI, external I/O, deployment, or auth.
+3. Reproduce with minimal code.
+4. Add visible diagnostics temporarily.
+5. Patch the smallest boundary.
+6. Add AppTest or a manual regression check.

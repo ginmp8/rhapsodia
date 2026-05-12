@@ -1,0 +1,50 @@
+"""Function-based multipage Streamlit app template.
+
+Use this when pages are related enough to share one Python entry point. For larger
+apps, split page functions into modules and import them here.
+"""
+
+from __future__ import annotations
+
+import pandas as pd
+import streamlit as st
+
+
+st.set_page_config(page_title="{{APP_TITLE}}", layout="wide")
+
+
+@st.cache_data(ttl="15m")
+def load_data() -> pd.DataFrame:
+    return pd.DataFrame({"category": ["A", "B", "A"], "value": [10, 20, 30]})
+
+
+def overview_page() -> None:
+    st.title("Overview")
+    df = load_data()
+    st.metric("Rows", len(df))
+    st.bar_chart(df.groupby("category")["value"].sum())
+
+
+def detail_page() -> None:
+    st.title("Details")
+    df = load_data()
+    choice = st.selectbox("Category", sorted(df["category"].unique()), key="detail_category")
+    st.dataframe(df[df["category"] == choice], use_container_width=True, hide_index=True)
+
+
+def settings_page() -> None:
+    st.title("Settings")
+    st.toggle("Enable experimental view", key="experimental_view")
+    st.write("Current session settings:", {"experimental_view": st.session_state.experimental_view})
+
+
+pages = {
+    "Overview": overview_page,
+    "Details": detail_page,
+    "Settings": settings_page,
+}
+
+with st.sidebar:
+    selected_page = st.radio("Page", list(pages), key="selected_page")
+
+pages[selected_page]()

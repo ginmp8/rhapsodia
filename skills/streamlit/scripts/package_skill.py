@@ -1,63 +1,41 @@
 #!/usr/bin/env python3
-"""Package the Streamlit skill as skill.zip after validation."""
-
 from __future__ import annotations
-
 import argparse
+import os
 import subprocess
 import sys
 import zipfile
 from pathlib import Path
 
-EXCLUDE_PARTS = {"__pycache__", ".git", ".pytest_cache", ".mypy_cache"}
-EXCLUDE_SUFFIXES = {".pyc", ".pyo", ".zip"}
+EXCLUDE_PARTS = {'__pycache__', '.git', '.pytest_cache', '.mypy_cache'}
+EXCLUDE_SUFFIXES = {'.pyc', '.pyo'}
 
 
-def should_include(path: Path, root: Path) -> bool:
-    rel = path.relative_to(root)
-    if any(part in EXCLUDE_PARTS for part in rel.parts):
+def include(path: Path) -> bool:
+    if any(part in EXCLUDE_PARTS for part in path.parts):
         return False
     if path.suffix in EXCLUDE_SUFFIXES:
         return False
-    return path.is_file()
+    if path.name == 'skill.zip':
+        return False
+    return True
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--target", default=".")
-    parser.add_argument("--output", required=True)
+    parser.add_argument('--target', default='.')
+    parser.add_argument('--output', required=True)
     args = parser.parse_args()
-
     root = Path(args.target).resolve()
     out = Path(args.output).resolve()
+    subprocess.check_call([sys.executable, str(root / 'scripts' / 'validate_streamlit_skill.py'), str(root)])
     out.parent.mkdir(parents=True, exist_ok=True)
-
-    validator = root / "scripts" / "validate_streamlit_skill.py"
-    result = subprocess.run([sys.executable, str(validator), str(root)], text=True)
-    if result.returncode != 0:
-        return result.returncode
-
-    if out.exists():
-        out.unlink()
-
-    with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for path in sorted(root.rglob("*")):
-            if should_include(path, root):
+    with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(root.rglob('*')):
+            if path.is_file() and include(path.relative_to(root)):
                 zf.write(path, Path(root.name) / path.relative_to(root))
-
-    with zipfile.ZipFile(out) as zf:
-        names = zf.namelist()
-        if not any(name == f"{root.name}/SKILL.md" for name in names):
-            print("FAIL: archive missing root SKILL.md")
-            return 1
-        bad = [n for n in names if "__pycache__" in n or n.endswith(".pyc")]
-        if bad:
-            print("FAIL: archive contains generated files: " + ", ".join(bad))
-            return 1
-
-    print(f"PASS: wrote {out}")
+    print(out)
     return 0
 
-
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == '__main__':
+    raise SystemExit(main())

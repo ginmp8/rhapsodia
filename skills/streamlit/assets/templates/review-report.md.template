@@ -1,0 +1,66 @@
+# Streamlit App Review Report
+
+Use this template for release-readiness, maintainability, security, and reliability reviews of existing Streamlit apps. Replace the example row text with inspected evidence. Do not leave a section blank; when a section was not inspected, write `Not inspected` and the reason.
+
+## Verdict
+
+Choose one verdict and justify it with evidence:
+
+- `approve`: critical flows start and run, no release-blocking finding remains, and validation evidence covers the app's main user path.
+- `approve with reservations`: the app can be used, but non-blocking risks or incomplete validation remain.
+- `reject`: a release-blocking issue remains, such as startup failure, unsafe write behavior, secrets exposure, broken authentication, or missing validation for a critical flow.
+
+## Scope reviewed
+
+- Entry points and pages reviewed:
+- Data sources and external services inspected:
+- Secrets, configuration, and deployment target inspected:
+- Commands or checks executed:
+- Files or checks not inspected, with reason:
+
+## Executive summary
+
+State the app purpose, the most important risk, and the smallest path to release readiness.
+
+## Top findings
+
+| Severity | Area | Evidence | Impact | Smallest safe fix |
+|---|---|---|---|---|
+| high | rerun/state | The edit page writes before explicit submit | A filter change can repeat the write operation | Move the write behind `st.form_submit_button` and add an idempotency key |
+
+## Scorecard
+
+Score each dimension from 0 to 5. Use `Not inspected` when no evidence exists.
+
+| Dimension | Score | Evidence |
+|---|---:|---|
+| Workflow clarity | Not inspected | Record labels, empty states, next actions, and main user path evidence |
+| Rerun/state correctness | Not inspected | Record session-state initialization, widget keys, callback order, and rerun behavior evidence |
+| Side-effect safety | Not inspected | Record writes, confirmations, idempotency, authorization, and audit behavior evidence |
+| Performance | Not inspected | Record cache boundaries, TTL, expensive work, pagination, and rendering behavior evidence |
+| Security and secrets | Not inspected | Record secrets handling, auth, upload/download controls, logs, and private data evidence |
+| Testability | Not inspected | Record unit tests, AppTest coverage, smoke checks, and manual validation evidence |
+| Deployment readiness | Not inspected | Record dependencies, config, environment, startup, health checks, and logs evidence |
+| Maintainability | Not inspected | Record file structure, separation of concerns, naming, and extension points evidence |
+
+## Required fixes before release
+
+List only release-blocking changes. For each item include target file, owner assumption, validation gate, and rollback note.
+
+## Suggested improvements
+
+List non-blocking improvements that reduce maintenance cost, improve user experience, or improve future review confidence.
+
+## Validation performed
+
+| Check | Status | Evidence |
+|---|---|---|
+| Startup smoke test | not run | Record command and relevant output when executed |
+| Unit tests | not run | Record command and relevant output when executed |
+| AppTest scenarios | not run | Record scenario names and result summary when executed |
+| Security/static review | not run | Record findings summary when executed |
+| Deployment smoke | not run | Record platform, environment, and result when executed |
+
+## Residual risks
+
+State what remains uncertain after review, why it was accepted or deferred, and what evidence would close the gap.

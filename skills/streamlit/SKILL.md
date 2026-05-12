@@ -1,199 +1,147 @@
 ---
 name: streamlit
-description: use when building, reviewing, debugging, refactoring, testing, or deploying streamlit applications, dashboards, data apps, multipage apps, data editors, file upload/download flows, cached queries, session-state workflows, charts, llm chat interfaces, ai/ml demos, authentication, secrets, docker/community-cloud deployments, or production-readiness reviews. do not use for generic python scripts, non-streamlit dash/flask/frontend apps, backend-only apis, pure data analysis, or license-sensitive copying of third-party skill content.
+description: "build, debug, review, audit, test, deploy, and harden streamlit python apps, dashboards, data tools, machine-learning interfaces, chat/llm apps, multipage apps, widgets, forms, session state, caching, connections, authentication, secrets, apptest tests, deployment, troubleshooting, and production-readiness reviews. use when the user asks for streamlit code, architecture, ui patterns, performance, state/rerun behavior, app testing, deployment, or migration guidance. do not use for unrelated web frameworks unless comparing or migrating to/from streamlit."
 ---
 
-# Streamlit
+# Streamlit Skill
 
 ## Mission
 
-Help create, improve, audit, debug, validate, and deploy Streamlit apps with code and guidance that respects Streamlit's rerun model, state semantics, caching behavior, file-upload risks, deployment constraints, and user privacy.
+Help build and improve Streamlit applications with production-aware Python patterns. Prefer native Streamlit capabilities, predictable rerun behavior, explicit state management, safe secrets handling, testable code, and deployable app structure.
 
-This package is a clean-room Streamlit assistant. It may summarize and point to official Streamlit sources, but it must not reuse copied third-party skill text, scraped documentation blocks, or license-unclear package content.
+This skill is a practical engineering guide, not a verbatim copy of any external skill package. It uses official Streamlit documentation as source material and references it by URL, while providing original operational guidance for ChatGPT-assisted development.
 
-## Core operating rules
+## Source and license policy
 
-1. Treat every Streamlit app as a rerun-driven script unless the user provides evidence otherwise.
-2. Separate UI state, cached data, long-lived resources, persisted data, and secrets.
-3. Prefer minimal working code over broad framework scaffolding.
-4. Provide stable widget keys when state matters.
-5. Use `st.cache_data` for serializable data results and `st.cache_resource` for shared clients, engines, models, and other long-lived resources.
-6. Never hardcode real credentials, tokens, private keys, or user secrets in examples.
-7. Mark version-sensitive API details for official-doc verification when current docs are unavailable.
-8. For production or security claims, require deployment target, auth model, data classification, and validation evidence.
-9. Keep generated apps easy to run locally before optimizing for deployment.
-10. Do not claim tests, benchmark results, or deployment readiness unless a command was executed or evidence was supplied.
+Before making license or provenance claims, consult `references/source-and-license.md`. Treat Streamlit official docs and source repository as Apache-2.0 source references. Do not copy text from third-party skill packages with unclear license. When adding new content, synthesize and rewrite from official sources, current code, and user requirements.
 
-## Request router
+## Workflow router
 
-Classify the request before answering. Use multiple modes when needed.
+1. **Creating a new app**: use `references/app-architecture.md`, then pick UI/data/state/deploy references as needed. Start with a minimal app skeleton and expand only after the workflow is clear.
+2. **Fixing rerun, state, or widget behavior**: use `references/execution-state-and-reruns.md` and `references/widgets-forms-and-callbacks.md`.
+3. **Building dashboards or data tools**: use `references/dataframes-charts-and-editors.md`, `references/caching-connections-and-performance.md`, and `references/files-uploads-downloads-and-media.md`.
+4. **Building chat or LLM apps**: use `references/llm-chat-and-rag-apps.md` plus the security and performance references.
+5. **Adding authentication, secrets, or external systems**: use `references/auth-secrets-and-security.md` and `references/caching-connections-and-performance.md`.
+6. **Testing or reviewing quality**: use `references/testing-and-apptest.md` and `references/production-review-rubric.md`.
+7. **Deployment and operations**: use `references/deployment-and-operations.md` and `references/troubleshooting.md`.
+8. **Looking up a command**: use `references/api-command-guide.md` first, then open official docs URLs listed there when exact parameters matter.
+9. **Needing broader official coverage**: use `references/official-concepts-expanded.md` for expanded concept coverage and `references/official-deployment-expanded.md` for expanded deployment coverage before claiming a topic is unsupported.
 
-| Mode | Use for | Load |
-|---|---|---|
-| `new-app` | create a Streamlit app from a product/data goal | `references/architecture-and-state.md`, `references/ui-data-visualization.md`, `assets/templates/app_skeleton.py` |
-| `feature` | add a widget, chart, form, editor, upload, export, page, or interaction | `references/ui-data-visualization.md`, `references/architecture-and-state.md` |
-| `state-debug` | fix rerun loops, disappearing values, callbacks, keys, multipage state, or reset behavior | `references/architecture-and-state.md`, `references/troubleshooting.md` |
-| `data-cache` | load data, query databases, refresh results, connect to APIs, tune cache or freshness | `references/data-caching-connections.md` |
-| `llm-chat` | build chat UIs, streaming responses, RAG controls, feedback, or AI demo apps | `references/llm-chat-ai.md` |
-| `testing` | create AppTest tests, smoke checks, validators, or review gates | `references/testing-validation.md` |
-| `deployment` | deploy to Community Cloud, Docker, Kubernetes, private hosting, or configure runtime | `references/deployment-security.md`, `references/production-review-rubric.md` |
-| `security-review` | review uploads, secrets, auth, data isolation, logging, or cache privacy | `references/deployment-security.md`, `references/source-hygiene.md` |
-| `api-choice` | decide which Streamlit API or pattern to use | `references/api-decision-guide.md`, `references/api-catalog.md` |
-| `troubleshooting` | diagnose errors, slow apps, install issues, blank UI, or deployment failures | `references/troubleshooting.md` |
-| `recipe` | user asks for a known pattern or example | `references/recipes.md` |
-| `license-source` | user asks about copying, attribution, source hygiene, or repository safety | `references/source-hygiene.md` |
+## Scope boundaries
+
+Use this skill for Streamlit Python apps and closely related artifacts: app scripts, pages, Streamlit-specific tests, deployment configs, secrets/config guidance, UI state bugs, caching, data display, LLM/chat Streamlit interfaces, and production reviews. Do not use it as the primary workflow for generic FastAPI/React apps, non-Streamlit dashboards, ordinary pandas questions without a Streamlit app, infrastructure-only work, PDFs, spreadsheets, slides, or unrelated repository refactors. When a task is only partly Streamlit-related, handle the Streamlit app surface and hand off unrelated implementation details to the appropriate skill or general coding workflow.
 
 ## Required inputs
 
-Infer when safe, but explicitly state assumptions for any missing input that affects correctness.
+Before producing Streamlit code, reviews, or deployment guidance, infer or request only the details that materially affect correctness:
 
-- App purpose and primary users.
-- Current file structure or desired project size.
-- Streamlit version when APIs, deprecations, or tests are version-sensitive.
-- Data source, data sensitivity, update frequency, and expected size.
-- Deployment platform, auth model, and secret store when applicable.
-- Validation expectation: static review, `streamlit run` smoke test, AppTest, CI, or deployment check.
+- target task: create, debug, review, test, deploy, migrate, or optimize;
+- app context: single page, multipage, dashboard, data editor, chat/LLM app, internal tool, or public app;
+- runtime and source: local files, pasted code, repository paths, screenshots, logs, or error messages;
+- data and integrations: files, database/API connections, model clients, uploads, downloads, authentication, and secrets;
+- validation expectation: pytest, `streamlit.testing.v1.AppTest`, startup smoke test, deployment smoke test, or manual review;
+- deployment target: local, Community Cloud, Docker, Kubernetes, Snowflake, or another hosted environment;
+- safety constraints: no real secrets in examples, no unsafe writes on rerun, no unverified production-readiness claims.
 
-Ask a follow-up only when proceeding would be unsafe, misleading, or likely to create the wrong architecture. Otherwise make a practical assumption and continue.
+If these inputs are incomplete, proceed with explicit assumptions for low-risk guidance. Ask a focused question only when a missing detail changes API choice, security posture, deployment instructions, or data-mutation behavior.
 
-## Design checklist for every substantial answer
+## Core principles
 
-- Rerun behavior is accounted for.
-- Expensive operations are cached or intentionally uncached with rationale.
-- Shared cache does not leak user-specific or tenant-specific data.
-- `st.session_state` is initialized before use.
-- Widgets that influence state have stable explicit keys.
-- Forms are used when several inputs should be submitted together.
-- File uploads are constrained by type, size, parsing, validation, and privacy rules when relevant.
-- Secrets are read from environment variables or `st.secrets`, never inline.
-- Charts and tables are chosen for the user's task, not only for visual appeal.
-- Deployment guidance matches the stated target.
-- Testing guidance has executable or clearly manual checks.
+- Treat reruns as the central execution model. Every widget interaction can re-execute the script.
+- Use `st.session_state` for per-session state, not global variables.
+- Use `st.cache_data` for reusable computed data and `st.cache_resource` for shared expensive resources such as clients, engines, or models.
+- Protect side effects. Put writes, submissions, deletes, and external mutations behind explicit buttons, forms, or confirmation dialogs.
+- Prefer forms for grouped input, fragments for isolated expensive refresh areas, and multipage navigation only when one page becomes conceptually overloaded.
+- Prefer native Streamlit widgets/layouts before custom HTML or components.
+- Never place real secrets in source files, examples, logs, generated reports, or committed config.
+- Separate executed validation from suggested validation. Do not claim tests, packaging, deployment, or benchmark results passed unless commands were run or results were supplied.
 
-## Output contracts
+## Default app structure
 
-Use the smallest contract that satisfies the request. Omit empty sections.
+For non-trivial apps, produce code in this shape unless the user requests a different architecture:
 
-### New app or feature
+```python
+import streamlit as st
 
-```markdown
-## Proposed structure
-[files and responsibilities]
+st.set_page_config(page_title="App", layout="wide")
 
-## Implementation
-[code by file or one complete app]
+if "initialized" not in st.session_state:
+    st.session_state.initialized = True
 
-## Why this works in Streamlit
-[rerun, state, cache, widgets, data, UX]
+@st.cache_resource
+def get_client():
+    # Create a database/API/model client here.
+    return None
 
-## Run and validate
-[commands and expected result]
+@st.cache_data(ttl=300)
+def load_data(params):
+    # Load and transform data here.
+    return []
 
-## Risks and assumptions
-[version, data, auth, performance, privacy, deployment]
+with st.sidebar:
+    st.header("Controls")
+    # Collect filters or navigation choices.
+
+st.title("App")
+# Render metrics, charts, tables, and actions.
 ```
 
-### Debug or review
+## Response style
 
-```markdown
-## Findings
-1. [severity] [confirmed issue/risk] - [evidence]
+When helping with Streamlit, include:
 
-## Fix
-[smallest safe patch or replacement]
+1. The recommended approach.
+2. The smallest useful code or patch.
+3. State/rerun implications.
+4. Caching, security, or deployment considerations when relevant.
+5. Validation steps: AppTest, smoke command, or manual checks.
 
-## Validation
-[reproduction and verification]
+For reviews, use severity-ranked findings and identify the smallest safe fix. For troubleshooting, start with the symptom, likely cause, evidence to collect, and minimal repair.
 
-## Remaining risk
-[only material unresolved risks]
-```
+## Output contract
 
-### Deployment or security
-
-```markdown
-## Target and assumptions
-[platform, runtime, users, data sensitivity]
-
-## Required configuration
-[dependencies, config, secrets, env vars, files]
-
-## Security checks
-[auth, secrets, uploads, cache isolation, logs, data access]
-
-## Validation and rollback
-[smoke checks, monitoring, fallback]
-```
-
-### Architecture decision
-
-```markdown
-## Recommendation
-[recommended pattern]
-
-## Options considered
-[option, trade-off, when to use]
-
-## Implementation outline
-[minimal sequence]
-
-## Validation
-[how to prove the decision works]
-```
-
-## Code-generation rules
-
-- Prefer one runnable app.py for small examples.
-- For medium apps, use `src/` modules only when they reduce complexity: data.py, state.py, views.py, charts.py, services.py, settings.py.
-- Put `st.set_page_config()` near the top of the entrypoint before UI output.
-- Use functions for repeated UI sections, but do not over-abstract simple Streamlit code.
-- Avoid global mutable state except cached resources that are safe to share.
-- Keep dataframes out of `st.session_state` unless small and user-specific.
-- Use `pathlib`, typed helper functions, and explicit exception messages for maintainability.
-- Include requirements.txt only when deployment or reproducibility is requested.
-- Include `.streamlit/config.toml` and `.streamlit/secrets.toml.example` only when configuration/secrets are relevant.
-
-## Review severity
-
-- `blocking`: likely data leak, broken app start, unsafe secret handling, wrong auth boundary, or impossible deployment.
-- `high`: severe correctness, performance, state, or data-isolation risk.
-- `medium`: likely user-visible bug, maintainability issue, cache staleness, validation gap, or confusing UX.
-- `low`: small cleanup or clarity issue.
-- `note`: optional improvement with no immediate risk.
-
-## Source and license rules
-
-Use `references/source-hygiene.md` when copying, attribution, license, or third-party package origin matters. For this skill package, prefer original summaries and links over bundled copies of large external docs. Official Streamlit documentation and repositories should be treated as source truth for facts, but do not paste long official-documentation blocks into outputs or this package.
+For implementation help, provide: approach, code or patch, state/rerun notes, cache/security/deployment notes when relevant, and validation steps. For debugging, provide: symptom, likely cause, evidence to collect, minimal fix, and regression check. For reviews, provide: severity-ranked findings, evidence, impact, smallest fix, and validation gaps. For production readiness, provide: verdict, scorecard, blocking risks, recommended fixes, and executed versus suggested validation.
 
 ## Stop conditions
 
-Stop and report the blocker when:
+Stop or narrow the answer when:
 
-- The user asks to expose, print, or hardcode real secrets.
-- The requested app would expose private data without an access-control model.
-- Production-readiness is requested without deployment target, auth model, data classification, and validation evidence.
-- Current version-specific API precision is required but current official docs cannot be checked and no safe fallback exists.
-- The task is not Streamlit-specific and should be handled as ordinary Python, backend, frontend, data-analysis, or deployment work.
-- The user asks to copy a license-unclear third-party skill or documentation package into a public repo.
+- the requested behavior requires credentials, production data, or secrets that are not provided safely;
+- the user asks to bypass authentication, leak secrets, or disable security controls;
+- exact current API details matter and no official source is available in the environment;
+- a deployment claim would require a platform-specific setting that has not been verified;
+- a proposed fix would mutate data on every rerun or create unsafe side effects.
 
 ## Bundled resources
 
-- `references/reference-map.md`: file map and progressive-loading guidance.
-- `references/architecture-and-state.md`: rerun model, session state, callbacks, forms, fragments, dialogs, multipage structure.
-- `references/api-decision-guide.md`: API selection guide and common command families.
-- `references/api-catalog.md`: broad original catalog of Streamlit feature families and usage rules.
-- `references/data-caching-connections.md`: caching, database/API connections, refresh, data privacy, upload/download handling.
-- `references/ui-data-visualization.md`: layout, tables, data editor, charts, metrics, UX and accessibility.
-- `references/llm-chat-ai.md`: chat interfaces, streaming, RAG, feedback, cost and safety guardrails.
-- `references/testing-validation.md`: AppTest, smoke tests, static reviews, deployment gates, review templates.
-- `references/deployment-security.md`: config, secrets, auth, Community Cloud, Docker, production checklist.
-- `references/production-review-rubric.md`: readiness rubric for production, internal, and public app reviews.
-- `references/troubleshooting.md`: common errors and diagnostic flow.
-- `references/recipes.md`: reusable app patterns and code sketches.
-- `references/source-hygiene.md`: source hierarchy, attribution, and copy-risk rules.
-- `examples/request-patterns.md`: calibration examples.
-- `evals/activation-scenarios.json`: planned activation and boundary coverage.
-- `assets/templates/app_skeleton.py`: clean starter app.
-- `assets/templates/review_report.md.template`: review output skeleton.
-- `scripts/validate_streamlit_skill.py`: package validator.
-- `scripts/package_skill.py`: package builder.
+- `references/source-and-license.md`: provenance, license hygiene, and official source links.
+- `references/topic-map.md`: official topic index and quick routing map.
+- `references/api-command-guide.md`: broad API command guide with use cases, pitfalls, and official links.
+- `references/app-architecture.md`: app architecture, file layout, modularity, multipage strategy.
+- `references/execution-state-and-reruns.md`: reruns, session state, callbacks, fragments, dialogs.
+- `references/widgets-forms-and-callbacks.md`: widget design, keys, forms, validation, actions.
+- `references/layout-navigation-and-pages.md`: layout, pages, navigation, theming, UX structure.
+- `references/dataframes-charts-and-editors.md`: tables, data editor, chart selection, geospatial displays.
+- `references/caching-connections-and-performance.md`: cache boundaries, DB/API/model resources, performance strategy.
+- `references/files-uploads-downloads-and-media.md`: upload/download/media handling and safety.
+- `references/llm-chat-and-rag-apps.md`: chat UI, streaming, memory, retrieval, feedback, cost controls.
+- `references/auth-secrets-and-security.md`: secrets, OIDC auth, permissions, safe deployment defaults.
+- `references/testing-and-apptest.md`: AppTest, smoke tests, unit boundaries, regression scenarios.
+- `references/deployment-and-operations.md`: Community Cloud, Docker, Kubernetes, Snowflake, observability.
+- `references/official-concepts-expanded.md`: expanded official concept map transformed into implementation guidance.
+- `references/official-deployment-expanded.md`: expanded official deployment and operations map transformed into deployment guidance.
+- `references/troubleshooting.md`: symptom-oriented debugging guide.
+- `references/recipes.md`: reusable patterns and snippets.
+- `references/anti-patterns.md`: common failures and safer replacements.
+- `references/production-review-rubric.md`: readiness review checklist.
+- `assets/templates/app.py.template`: starter single-page app template.
+- `assets/templates/chat-app.py.template`: starter chat/LLM app template.
+- `assets/templates/multipage-app.py.template`: function-based multipage app template.
+- `assets/templates/apptest-test.py.template`: pytest/AppTest smoke test template.
+- `assets/templates/dockerfile.template`: Docker deployment starter for Streamlit apps.
+- `assets/templates/review-report.md.template`: app review report template.
+- `examples/review-example.md`: completed example of a production review using the rubric.
+- `examples/request-patterns.md`: activation and response calibration examples.
+- `evals/activation-scenarios.json`: planned activation and non-activation cases.
+- `scripts/validate_streamlit_skill.py`: structural validator for this package.
+- `scripts/package_skill.py`: deterministic package builder.
