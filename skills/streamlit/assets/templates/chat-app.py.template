@@ -1,0 +1,50 @@
+"""Streamlit chat/LLM app template with state, streaming surface, and client boundary."""
+
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+import streamlit as st
+
+
+st.set_page_config(page_title="{{APP_TITLE}}", layout="wide")
+
+
+@st.cache_resource
+def get_model_client():
+    """Create the model/API client once per process.
+
+    Read credentials from st.secrets or environment variables. Never hardcode keys
+    in the app file or expose raw prompts/responses in logs without a privacy review.
+    """
+    return None
+
+
+def generate_response(prompt: str) -> Iterable[str]:
+    """Yield response chunks.
+
+    Replace this demo implementation with a provider call that streams tokens or
+    returns one final response. Keep side effects outside cached functions.
+    """
+    yield f"Echo: {prompt}"
+
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+st.title("{{APP_TITLE}}")
+st.caption("Chat history is stored only in this Streamlit session by default.")
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+if prompt := st.chat_input("Ask a question"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        response = st.write_stream(generate_response(prompt))
+
+    st.session_state.messages.append({"role": "assistant", "content": response})

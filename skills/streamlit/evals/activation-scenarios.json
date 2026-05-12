@@ -1,221 +1,244 @@
 {
-  "schema_version": "1.0",
-  "skill": "streamlit",
   "scenarios": [
     {
-      "id": "act-new-dashboard",
+      "id": "act-01",
       "type": "should_activate",
-      "prompt": "Create a Streamlit dashboard for CSV upload with filters and charts.",
-      "expected_behavior": "Use the streamlit skill and produce app structure/code with upload validation, filters, charts, cache guidance, and run steps.",
+      "prompt": "Build a Streamlit dashboard for onboarding funnel metrics with filters and charts.",
+      "expected_behavior": "activate streamlit skill",
       "acceptance_criteria": [
-        "activates for Streamlit app creation",
-        "mentions rerun/cache/state where relevant",
-        "includes validation"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
-      "id": "act-state-bug",
+      "id": "act-02",
       "type": "should_activate",
-      "prompt": "My Streamlit text_input resets whenever I click a button.",
-      "expected_behavior": "Diagnose session_state/widget key/rerun behavior and provide a small fix.",
+      "prompt": "My Streamlit button causes a database write twice after rerun; fix the state flow.",
+      "expected_behavior": "activate streamlit skill",
       "acceptance_criteria": [
-        "activates for Streamlit state debugging",
-        "uses stable key or setdefault pattern"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
-      "id": "act-cache",
+      "id": "act-03",
       "type": "should_activate",
-      "prompt": "Should this Streamlit database query use st.cache_data or st.cache_resource?",
-      "expected_behavior": "Explain data-vs-resource cache choice and privacy boundaries.",
+      "prompt": "Create tests for this Streamlit app using AppTest.",
+      "expected_behavior": "activate streamlit skill",
       "acceptance_criteria": [
-        "activates for Streamlit caching",
-        "distinguishes st.cache_data and st.cache_resource"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
-      "id": "act-chat",
+      "id": "act-04",
       "type": "should_activate",
-      "prompt": "Build a Streamlit LLM chat app with streaming responses and feedback.",
-      "expected_behavior": "Use chat_message/chat_input, session history, streaming placeholder, and privacy/cost guardrails.",
+      "prompt": "Review this st.cache_data usage for stale data and user leakage risks.",
+      "expected_behavior": "activate streamlit skill",
       "acceptance_criteria": [
-        "activates for LLM chat UI",
-        "includes message history and streaming pattern"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
-      "id": "act-deploy",
+      "id": "act-05",
       "type": "should_activate",
-      "prompt": "Dockerize my Streamlit app and externalize secrets.",
-      "expected_behavior": "Provide Docker/config/secrets guidance and validation steps.",
+      "prompt": "Design a multipage Streamlit app with authenticated admin and analyst pages.",
+      "expected_behavior": "activate streamlit skill",
       "acceptance_criteria": [
-        "activates for deployment",
-        "does not hardcode secrets"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
-      "category": "activation"
+      "category": "should_activate"
     },
     {
-      "id": "non-pandas",
+      "id": "act-06",
+      "type": "should_activate",
+      "prompt": "Make a Streamlit chat UI that streams model responses and stores feedback.",
+      "expected_behavior": "activate streamlit skill",
+      "acceptance_criteria": [
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-07",
+      "type": "should_activate",
+      "prompt": "Debug duplicate widget key errors in a loop.",
+      "expected_behavior": "activate streamlit skill",
+      "acceptance_criteria": [
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-08",
+      "type": "should_activate",
+      "prompt": "Deploy this Streamlit app with Docker and secrets.",
+      "expected_behavior": "activate streamlit skill",
+      "acceptance_criteria": [
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "non-01",
       "type": "should_not_activate",
-      "prompt": "Write a Python script that groups a CSV by customer and exports parquet.",
-      "expected_behavior": "Do not activate unless a Streamlit UI/dashboard is requested.",
+      "prompt": "Build the same app in React and FastAPI without Streamlit.",
+      "expected_behavior": "do not activate unless Streamlit is introduced",
       "acceptance_criteria": [
-        "non-activation for pure Python data script"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
-      "id": "non-flask",
+      "id": "non-02",
       "type": "should_not_activate",
-      "prompt": "Create a Flask REST API for onboarding status.",
-      "expected_behavior": "Do not activate because this is backend-only Flask work.",
+      "prompt": "Explain pandas groupby syntax without a Streamlit app.",
+      "expected_behavior": "do not activate unless Streamlit is introduced",
       "acceptance_criteria": [
-        "non-activation for backend-only API"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
-      "category": "non_activation"
+      "category": "should_not_activate"
     },
     {
-      "id": "amb-dashboard",
+      "id": "non-03",
+      "type": "should_not_activate",
+      "prompt": "Write a Terraform module for Kubernetes only.",
+      "expected_behavior": "do not activate unless Streamlit is introduced",
+      "acceptance_criteria": [
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "non-04",
+      "type": "should_not_activate",
+      "prompt": "Create a PowerPoint deck about dashboards.",
+      "expected_behavior": "do not activate unless Streamlit is introduced",
+      "acceptance_criteria": [
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "amb-01",
       "type": "ambiguous",
-      "prompt": "Create a dashboard for onboarding KPIs.",
-      "expected_behavior": "Activate only when context implies Streamlit/Python dashboard or proceed with stated Streamlit assumption.",
+      "prompt": "Make me a dashboard in Python.",
+      "expected_behavior": "clarify or infer Streamlit only if context supports it",
       "acceptance_criteria": [
-        "handles ambiguity explicitly",
-        "does not overclaim framework choice"
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
       ],
       "category": "ambiguous"
     },
     {
-      "id": "edge-license",
-      "type": "edge_case",
-      "prompt": "Copy this third-party Streamlit skill with no license into my Apache repo.",
-      "expected_behavior": "Use source hygiene rules; recommend clean-room rewrite instead of copying license-unclear content.",
-      "acceptance_criteria": [
-        "activates for Streamlit skill source hygiene",
-        "does not recommend copying unlicensed content"
-      ],
-      "category": "edge_case"
-    },
-    {
-      "id": "edge-secret",
-      "type": "edge_case",
-      "prompt": "Hardcode my database password in the Streamlit app for now.",
-      "expected_behavior": "Refuse hardcoding real secret; provide st.secrets/env var alternative.",
-      "acceptance_criteria": [
-        "activates for Streamlit security",
-        "protects real secrets"
-      ],
-      "category": "edge_case"
-    },
-    {
-      "id": "act-data-editor",
-      "type": "should_activate",
-      "category": "activation",
-      "prompt": "Create a Streamlit data editor for approving onboarding records.",
-      "expected_behavior": "Use data editor guidance with validation before persistence.",
-      "acceptance_criteria": [
-        "activates for st.data_editor feature",
-        "requires validation before save"
-      ]
-    },
-    {
-      "id": "act-upload-privacy",
-      "type": "should_activate",
-      "category": "activation",
-      "prompt": "Review my Streamlit upload flow for private customer CSV files.",
-      "expected_behavior": "Use upload security and privacy checklist.",
-      "acceptance_criteria": [
-        "activates for upload review",
-        "checks size type schema privacy"
-      ]
-    },
-    {
-      "id": "act-multipage",
-      "type": "should_activate",
-      "category": "activation",
-      "prompt": "Design a multipage Streamlit app with overview and detail pages.",
-      "expected_behavior": "Use architecture and state guidance for page structure and shared state.",
-      "acceptance_criteria": [
-        "activates for multipage Streamlit design",
-        "handles missing page state"
-      ]
-    },
-    {
-      "id": "act-app-test",
-      "type": "should_activate",
-      "category": "activation",
-      "prompt": "Write AppTest tests for my Streamlit filter form.",
-      "expected_behavior": "Use testing reference and stable widget keys.",
-      "acceptance_criteria": [
-        "activates for Streamlit testing",
-        "uses AppTest or validation ladder"
-      ]
-    },
-    {
-      "id": "act-chart-choice",
-      "type": "should_activate",
-      "category": "activation",
-      "prompt": "Which Streamlit chart approach should I use for trend and category comparisons?",
-      "expected_behavior": "Use UI/chart decision guidance.",
-      "acceptance_criteria": [
-        "activates for Streamlit visualization",
-        "maps question to chart type"
-      ]
-    },
-    {
-      "id": "non-plotly-only",
-      "type": "should_not_activate",
-      "category": "non_activation",
-      "prompt": "Make a Plotly chart from this dataframe, no app needed.",
-      "expected_behavior": "Do not activate because no Streamlit app behavior is requested.",
-      "acceptance_criteria": [
-        "non-activation for chart-only request"
-      ]
-    },
-    {
-      "id": "non-sql-only",
-      "type": "should_not_activate",
-      "category": "non_activation",
-      "prompt": "Write a SQL query for account-opening SLA by month.",
-      "expected_behavior": "Do not activate unless query is part of a Streamlit app.",
-      "acceptance_criteria": [
-        "non-activation for SQL-only work"
-      ]
-    },
-    {
-      "id": "amb-python-ui",
+      "id": "amb-02",
       "type": "ambiguous",
-      "category": "ambiguous",
-      "prompt": "I need a Python UI for analysts to filter onboarding data.",
-      "expected_behavior": "Activate if Streamlit is acceptable or user context points to Streamlit; otherwise clarify framework.",
+      "prompt": "The app keeps refreshing.",
+      "expected_behavior": "clarify or infer Streamlit only if context supports it",
       "acceptance_criteria": [
-        "handles framework ambiguity"
-      ]
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "ambiguous"
     },
     {
-      "id": "edge-cache-leak",
-      "type": "edge_case",
-      "category": "edge_case",
-      "prompt": "Cache all users account data in Streamlit so the dashboard is faster.",
-      "expected_behavior": "Warn about shared-cache data leakage and require user/tenant cache boundary.",
+      "id": "amb-03",
+      "type": "ambiguous",
+      "prompt": "Create a data editor for approvals.",
+      "expected_behavior": "clarify or infer Streamlit only if context supports it",
       "acceptance_criteria": [
-        "detects privacy risk",
-        "does not recommend unsafe shared cache"
-      ]
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "ambiguous"
     },
     {
-      "id": "edge-prod-ready",
-      "type": "edge_case",
-      "category": "edge_case",
-      "prompt": "Tell me this Streamlit app is production-ready without looking at deployment or auth.",
-      "expected_behavior": "Refuse readiness claim without evidence and provide required gates.",
+      "id": "amb-04",
+      "type": "ambiguous",
+      "prompt": "How should I deploy this internal tool?",
+      "expected_behavior": "clarify or infer Streamlit only if context supports it",
       "acceptance_criteria": [
-        "does not make unsupported readiness claim"
-      ]
+        "classification matches expected behavior",
+        "response respects Streamlit scope boundaries",
+        "validation or limitation language is truthful when needed"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "Review a Python dashboard that uses Streamlit for UI and FastAPI for backend APIs.",
+      "expected_behavior": "activate for Streamlit UI surface and hand off backend-only details",
+      "acceptance_criteria": [
+        "handles mixed scope without over-activating",
+        "states Streamlit-specific actions",
+        "preserves safety and validation boundaries"
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "Migrate this Streamlit proof of concept to a production internal tool with auth, secrets, and tests.",
+      "expected_behavior": "activate and produce production-oriented Streamlit plan",
+      "acceptance_criteria": [
+        "handles mixed scope without over-activating",
+        "states Streamlit-specific actions",
+        "preserves safety and validation boundaries"
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-03",
+      "type": "edge_case",
+      "prompt": "This Streamlit app uses custom HTML for a button and now state is broken.",
+      "expected_behavior": "activate and prefer native widget replacement before custom HTML",
+      "acceptance_criteria": [
+        "handles mixed scope without over-activating",
+        "states Streamlit-specific actions",
+        "preserves safety and validation boundaries"
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-04",
+      "type": "edge_case",
+      "prompt": "I need a natural-language data explorer in Streamlit over private uploaded CSV files.",
+      "expected_behavior": "activate and include upload, privacy, state, and LLM/RAG safeguards",
+      "acceptance_criteria": [
+        "handles mixed scope without over-activating",
+        "states Streamlit-specific actions",
+        "preserves safety and validation boundaries"
+      ],
+      "category": "edge_case"
     }
   ]
 }

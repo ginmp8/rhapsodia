@@ -1,0 +1,23 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    STREAMLIT_SERVER_HEADLESS=true \
+    STREAMLIT_SERVER_ADDRESS=0.0.0.0 \
+    STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+
+# Keep requirements small and pinned by the owning project. Include system packages
+# only when the app needs native database, image, or ML dependencies.
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . ./
+
+# Streamlit defaults to 8501. Override with platform env vars when needed.
+EXPOSE 8501
+
+# Health checks vary by platform. For Docker-only smoke checks, run:
+# python -m streamlit run app.py --server.headless=true --server.port=8501
+CMD ["streamlit", "run", "app.py", "--server.port=8501"]

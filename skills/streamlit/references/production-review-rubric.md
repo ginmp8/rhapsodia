@@ -1,164 +1,130 @@
 # Production Review Rubric
 
-Use this rubric when a user asks whether a Streamlit app is ready for team, customer, internal, or public use.
+Use this rubric to evaluate Streamlit apps before sharing them with a wider audience. It is intentionally practical: score only what can be inspected from code, configuration, command output, screenshots, logs, tests, or user-provided evidence. Do not claim production readiness when startup, secrets, critical user flows, or deployment assumptions were not checked.
 
 ## Scoring model
 
-Do not present a numeric score unless you inspected enough evidence. Use qualitative status when evidence is incomplete.
+Score each dimension from 0 to 5.
 
-Statuses:
+- `0`: absent or unsafe.
+- `1`: present but fragile or misleading.
+- `2`: works in a narrow happy path with major gaps.
+- `3`: acceptable for local or limited internal use, with known risk.
+- `4`: strong enough for broader internal use after documented validation.
+- `5`: robust, tested, observable, and safe for the intended audience.
 
-- `ready`: all required gates passed with evidence.
-- `ready with reservations`: no blocking issues, but moderate risks remain.
-- `not ready`: one or more blocking gates fail.
-- `insufficient evidence`: readiness cannot be judged from available files/context.
+A release candidate should normally score at least 4 in safety, state, deployment, and validation before broad rollout. A personal prototype can proceed with lower scores when risks are explicitly accepted.
 
-## Required gates
+## 1. User workflow clarity
 
-### App startup
+Review whether the app tells users what to do, what each control changes, what result was produced, and what action comes next.
 
-Evidence:
+- `0`: the purpose is unclear and outputs lack context.
+- `3`: the main path is usable, but empty states, loading states, or next actions are weak.
+- `5`: purpose, controls, outputs, empty states, validation messages, and next actions are obvious.
 
-- app starts locally or in target runtime;
-- dependencies install;
-- entrypoint is correct;
-- Python and Streamlit versions are compatible.
+Evidence to inspect: title, page layout, labels, help text, empty-state messages, error messages, form grouping, sidebar organization, and screenshots when available.
 
-Blocking failures:
+## 2. Rerun and state correctness
 
-- app cannot start;
-- missing dependency with no install path;
-- import requires unavailable secret at module import time;
-- deployment points to wrong file.
+Review whether Streamlit's top-to-bottom rerun model is handled intentionally.
 
-### Rerun and state
+- `0`: reruns change data, repeat side effects, lose inputs, or corrupt state.
+- `3`: common paths work, but conditional widgets, callbacks, or multipage state can drift.
+- `5`: session state is initialized once, widget keys are stable, callback order is explicit, and critical flows are tested.
 
-Evidence:
+Evidence to inspect: `st.session_state` initialization, widget keys, callbacks, forms, fragments, `st.rerun`, `st.stop`, multipage navigation, and AppTest coverage.
 
-- key workflows survive widget reruns;
-- session keys are initialized;
-- callbacks are simple and bounded;
-- multipage state is validated.
+## 3. Side-effect safety
 
-Blocking failures:
+Review writes, external calls, expensive actions, downloads, uploads, and irreversible operations.
 
-- writes happen repeatedly on rerun;
-- user can reach private data by manipulating state/query params;
-- workflow loses required state without recovery.
+- `0`: writes or external actions can repeat accidentally on rerun.
+- `3`: writes happen behind buttons, but idempotency, confirmation, or auditability is incomplete.
+- `5`: side effects are explicit, authorized, confirmed, idempotent where possible, and auditable.
 
-### Data and cache
+Evidence to inspect: submit buttons, confirmation flows, database writes, API calls, queue publishing, audit logs, retry behavior, and error recovery.
 
-Evidence:
+## 4. Performance and scalability
 
-- expensive reads are cached or intentionally uncached;
-- data freshness is explicit;
-- cache keys include user/tenant/privacy boundaries;
-- writes clear or bypass stale caches.
+Review whether the app avoids recomputing expensive work on every interaction and remains usable as data grows.
 
-Blocking failures:
+- `0`: heavy queries, model loads, or transformations run on every rerun.
+- `3`: major data loads are cached, but refresh behavior or rendering volume is unclear.
+- `5`: data/resource cache boundaries, TTL, invalidation, pagination, sampling, aggregation, and refresh controls are intentional.
 
-- shared cache leaks user or tenant data;
-- query runs unbounded on every interaction;
-- SQL injection risk from user input;
-- private uploads are stored or logged unexpectedly.
+Evidence to inspect: `st.cache_data`, `st.cache_resource`, `ttl`, `max_entries`, connection reuse, query limits, data editor size, chart rendering, and memory use assumptions.
 
-### Security
+## 5. Security, secrets, and privacy
 
-Evidence:
+Review whether sensitive values and private data are protected.
 
-- secrets are externalized;
-- auth model is documented;
-- authorization is applied before data retrieval;
-- uploads are constrained and validated;
-- errors/logs do not expose secrets/private data.
+- `0`: secrets are hardcoded, uploaded files are trusted blindly, or private data is exposed.
+- `3`: secrets are externalized, but authorization, logging, file handling, or download controls need review.
+- `5`: secrets, authentication, authorization, uploads, downloads, logging, error handling, and data minimization are covered.
 
-Blocking failures:
+Evidence to inspect: `st.secrets`, `.streamlit/secrets.toml`, environment variables, OAuth/OIDC configuration, file upload validation, logs, exception display, and data export controls.
 
-- hardcoded real secret;
-- unauthenticated private app;
-- user can access unauthorized records;
-- raw file path input reads arbitrary files;
-- unsafe deserialization of uploaded data.
+## 6. Testability
 
-### Deployment
+Review whether critical behavior can be checked without clicking manually through every path.
 
-Evidence:
+- `0`: no meaningful test or smoke strategy exists.
+- `3`: pure functions are testable, but UI and rerun behavior are not covered.
+- `5`: pure tests, AppTest scenarios, startup smoke checks, and deployment smoke checks cover critical paths.
 
-- target platform is named;
-- configuration and secrets are supplied by platform;
-- network access to data sources is understood;
-- file paths are portable;
-- logs are accessible.
+Evidence to inspect: pytest tests, `streamlit.testing.v1.AppTest`, fixtures, smoke commands, CI configuration, validation scripts, and manual test notes.
 
-Blocking failures:
+## 7. Deployment readiness
 
-- required local-only files are absent from repo/image;
-- secrets missing with no fallback;
-- container does not expose/listen on expected port;
-- platform cannot reach data source.
+Review whether someone else can run, configure, observe, and recover the app.
 
-### Testing and validation
+- `0`: the app works only on the author's machine.
+- `3`: dependencies are listed, but secrets, config, startup, or platform assumptions are incomplete.
+- `5`: dependencies, config, secrets, startup command, health/smoke checks, logs, storage, and rollout/rollback notes are documented.
 
-Evidence:
+Evidence to inspect: `requirements.txt`, lockfiles, Dockerfile, `.streamlit/config.toml`, `packages.txt`, environment variables, platform settings, logs, and smoke-test output.
 
-- static review or AppTest covers main flow;
-- smoke test is documented;
-- upload and empty-state behavior tested;
-- deployment smoke test plan exists.
+## 8. Maintainability
 
-Blocking failures:
+Review whether the app can evolve without fragile edits.
 
-- no validation evidence for a high-risk production claim;
-- critical write or auth path untested;
-- tests require production secrets.
+- `0`: one long script mixes UI, state, data access, security, business logic, and side effects.
+- `3`: helpers exist, but boundaries or naming are unclear.
+- `5`: UI, state, data access, business actions, security checks, and tests have clear boundaries.
 
-### UX and operations
+Evidence to inspect: module structure, naming, shared utilities, pure functions, dependency direction, comments that explain non-obvious choices, and repeated code.
 
-Evidence:
+## Required review output
 
-- clear page purpose;
-- empty/error/loading states;
-- data freshness shown;
-- high-risk actions require confirmation;
-- rollback is known.
+When producing a review, include these sections and do not leave any section empty:
 
-Blocking failures:
+1. `Verdict`: one of `approve`, `approve with reservations`, or `reject`, followed by the reason.
+2. `Scope reviewed`: concrete files, pages, commands, screenshots, or logs inspected.
+3. `Top findings`: severity, evidence, impact, and smallest safe fix.
+4. `Scorecard`: every dimension scored or marked `not inspected` with a reason.
+5. `Required fixes before release`: release blockers only, or `None found from inspected evidence`.
+6. `Suggested improvements`: non-blocking improvements, or `None identified from inspected evidence`.
+7. `Validation performed`: exact executed checks and outcomes, plus checks not run and why.
+8. `Residual risks`: remaining uncertainty and accepted trade-offs.
 
-- app can trigger irreversible writes accidentally;
-- user cannot distinguish stale/empty/error state;
-- no rollback for risky release.
+## Example finding format
 
-## Review output
+| Severity | Evidence | Impact | Smallest safe fix |
+|---|---|---|---|
+| high | The app entry point calls a write API immediately after a selectbox changes | A rerun can repeat the write without user confirmation | Move the write behind `st.form_submit_button`, add confirmation text, and make the server operation idempotent |
+| medium | `load_data()` reads a large CSV without `st.cache_data` | Every widget interaction reloads the file and slows the app | Add `@st.cache_data(ttl="15m")`, expose a refresh button, and document freshness expectations |
 
-Use this structure:
+## Review gates
 
-```markdown
-## Verdict
-[ready | ready with reservations | not ready | insufficient evidence]
+Reject or require repair before release when any of these are true:
 
-## Evidence inspected
-[files, commands, logs, deployment target]
+- startup fails in the target environment;
+- secrets, tokens, credentials, or private data are hardcoded or logged;
+- side effects can repeat unintentionally on rerun;
+- authentication or authorization is required but absent;
+- uploads are accepted without file type, size, or parsing controls;
+- critical paths cannot be validated by test, smoke check, or manual evidence;
+- deployment depends on undocumented local state.
 
-## Blocking findings
-[only blockers]
-
-## Non-blocking findings
-[high/medium/low]
-
-## Required before production
-[ordered fixes]
-
-## Validation plan
-[commands and manual checks]
-```
-
-## Minimum questions when evidence is missing
-
-Ask only the questions that affect readiness:
-
-1. Where will this run?
-2. Who can access it?
-3. What data can it show?
-4. Where are secrets stored?
-5. What is the smoke test?
-6. What is the rollback path?
+Approve with reservations when issues are non-blocking but should be tracked. Approve only when the inspected evidence supports the intended release scope.

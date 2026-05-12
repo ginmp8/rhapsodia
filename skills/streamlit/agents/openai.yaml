@@ -1,6 +1,6 @@
 interface:
   display_name: "Streamlit"
-  short_description: "Build, debug, review, test, and deploy Streamlit apps."
+  short_description: "Build, debug, test, and deploy Streamlit Python apps."
 policy:
   products:
     - "chatgpt"

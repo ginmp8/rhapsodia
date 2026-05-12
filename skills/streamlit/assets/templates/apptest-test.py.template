@@ -1,0 +1,30 @@
+"""pytest/AppTest template for Streamlit apps.
+
+Save near your tests, adjust APP_PATH, then run with `pytest`.
+"""
+
+from __future__ import annotations
+
+from streamlit.testing.v1 import AppTest
+
+
+APP_PATH = "app.py"
+
+
+def test_app_starts_without_exception() -> None:
+    at = AppTest.from_file(APP_PATH).run(timeout=10)
+    assert not at.exception
+
+
+def test_main_heading_is_rendered() -> None:
+    at = AppTest.from_file(APP_PATH).run(timeout=10)
+    assert at.title or at.header or at.markdown
+
+
+def test_sidebar_controls_do_not_crash() -> None:
+    at = AppTest.from_file(APP_PATH).run(timeout=10)
+    if at.selectbox:
+        at.selectbox[0].select(at.selectbox[0].options[0]).run(timeout=10)
+    if at.checkbox:
+        at.checkbox[0].check().run(timeout=10)
+    assert not at.exception
