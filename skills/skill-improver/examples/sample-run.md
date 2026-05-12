@@ -6,7 +6,7 @@ Generate or supply a backlog before running the loop when no bounded hypothesis 
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target <target-skill-root> \
+  --target <target-skill-rnomia
   --evaluator skill-benchmark \
   --hypothesis-backlog ./reports/hypothesis-backlog.json \
   --max-iterations 3 \
@@ -20,7 +20,7 @@ The backlog should come from `skill-hypothesis-discovery` or an equivalent evide
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target <target-skill-root> \
+  --target <target-skill-rnomia
   --evaluator skill-benchmark \
   --max-iterations 10 \
   --min-delta 1.0 \
@@ -33,7 +33,7 @@ This uses the installed `skill-benchmark` generator, writes reports under `.skil
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target <target-skill-root> \
+  --target <target-skill-rnomia
   --evaluator skill-benchmark \
   --skill-benchmark-results /path/to/frozen-scenario-results.json \
   --benchmark-lock-path /path/to/frozen-scenario-results.json \
@@ -64,7 +64,7 @@ The command should print JSON with at least `score`. Include `status` and `gates
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target <target-skill-root> \
+  --target <target-skill-rnomia
   --evaluator skill-benchmark \
   --max-iterations 50 \
   --codex-mode yolo \
@@ -79,7 +79,7 @@ Start a bounded loop with an explicit stop file:
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target <target-skill-root> \
+  --target <target-skill-rnomia
   --evaluator skill-benchmark \
   --max-iterations 10 \
   --stop-file .skill-improver/stop
