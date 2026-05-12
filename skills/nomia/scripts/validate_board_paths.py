@@ -13,7 +13,7 @@ from nomia_utils import BOARD_ROOT_TEMPLATE, normalize_path, read_normalized_lin
 CANONICAL_PARTS = ("docs", "boards")
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 SPEC_ID_RE = re.compile(r"^spec\d{3}$")
-SKILL_PACKAGE_PREFIXES = (".github/skills/nomia/", "nomia/")
+SKILL_PACKAGE_PREFIXES = (".github/skills/nomia/", "skills/nomia/", "nomia/")
 BOARD_SCOPED_ARTIFACTS = {
     "feature-map.yaml",
     "internal-notes.md",
