@@ -8,6 +8,10 @@ Use for `validate-contracts` and `normalize-human-artifacts`.
 
 nomia validators check artifacts and ownership boundaries. They do not execute repository code, load Mago/Magia skill files, or infer missing facts.
 
+## Skill Root Convention
+
+Use `<skill-root>` for the root folder of this skill package. In this repository that is usually `skills/nomia`; when installed under GitHub/Copilot conventions it may be `.github/skills/nomia`; when extracted from a package it may be `nomia`.
+
 ## Scripts
 
 - `scripts/write_artifact_scaffold.py`: create nomia artifact scaffold.
@@ -34,17 +38,17 @@ Print clear errors/warnings. Exit non-zero on errors. Use scaffold writers and v
 ## Commands
 
 ```bash
-python .github/skills/nomia/scripts/write_artifact_scaffold.py path/to/status.md
-python .github/skills/nomia/scripts/validate_artifact.py path/to/status.md
-python .github/skills/nomia/scripts/validate_ops.py path/to/ops.yaml
-python .github/skills/nomia/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec001
-python .github/skills/nomia/scripts/validate_roadmap.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml
-python .github/skills/nomia/scripts/validate_reporting.py --feature-report path/to/feature-report.md --release-notes path/to/release-notes.md --internal-notes path/to/internal-notes.md
-python .github/skills/nomia/scripts/validate_portfolio.py --portfolio-yaml path/to/portfolio.yaml --portfolio-md path/to/portfolio.md
-python .github/skills/nomia/scripts/validate_contracts.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml --execution-evidence path/to/execution-evidence.yaml
-python .github/skills/nomia/scripts/validate_contracts.py --actor magia --changed-files path/to/changed-files.txt
-python .github/skills/nomia/scripts/validate_board_paths.py --changed-files path/to/changed-files.txt
-python .github/skills/nomia/scripts/normalize_human_artifacts.py path/to/ops.yaml path/to/feature-report.md
+python <skill-root>/scripts/write_artifact_scaffold.py path/to/status.md
+python <skill-root>/scripts/validate_artifact.py path/to/status.md
+python <skill-root>/scripts/validate_ops.py path/to/ops.yaml
+python <skill-root>/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec001
+python <skill-root>/scripts/validate_roadmap.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml
+python <skill-root>/scripts/validate_reporting.py --feature-report path/to/feature-report.md --release-notes path/to/release-notes.md --internal-notes path/to/internal-notes.md
+python <skill-root>/scripts/validate_portfolio.py --portfolio-yaml path/to/portfolio.yaml --portfolio-md path/to/portfolio.md
+python <skill-root>/scripts/validate_contracts.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml --execution-evidence path/to/execution-evidence.yaml
+python <skill-root>/scripts/validate_contracts.py --actor magia --changed-files path/to/changed-files.txt
+python <skill-root>/scripts/validate_board_paths.py --changed-files path/to/changed-files.txt
+python <skill-root>/scripts/normalize_human_artifacts.py path/to/ops.yaml path/to/feature-report.md
 ```
 
 ## Validator Coverage
