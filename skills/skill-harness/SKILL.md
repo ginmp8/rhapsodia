@@ -29,6 +29,10 @@ Harness modes: `auto` inspects first and researches only concrete weaknesses; `c
 
 Mutation modes: `audit-only` reports inventory/audit findings without edits; `plan-only` writes a harness map without edits; `apply` makes target-scope edits and validates; `validation-only` reports pass/fail gates without edits unless allowed; `package` returns a validated `skill.zip` only after package checks pass.
 
+## Skill Root Convention
+
+Use `<skill-root>` for the root folder of this skill package. In this repository that is usually `skills/skill-harness`; when installed under GitHub/Copilot conventions it may be `.github/skills/skill-harness`; when extracted from a package it may be `skill-harness`.
+
 ## Resources and Progressive Loading
 
 Always read target `SKILL.md` first. Load only needed branches:
@@ -56,13 +60,13 @@ Define before editing: decision; object under test; writable/read-only/blocked s
 1. **Inspect** target `SKILL.md`, confirm exactly one `SKILL.md`, and inventory support dirs.
 
    ```bash
-   python .github/skills/skill-harness/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
+   python <skill-root>/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
    ```
 
 2. **Baseline** with static audit before planning. Treat score as structural evidence, not behavior proof. If saturated, add auxiliary metrics before claiming improvement.
 
    ```bash
-   python .github/skills/skill-harness/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
+   python <skill-root>/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
    ```
 
 3. **Plan** evidence policy, hypotheses, target entry points, input corpus/model, scenarios, metrics, evaluators, gates, validation, packaging, and risk. Prefer `assets/templates/harness-plan.md.template` for durable plans. For high-risk or saturated-score targets, load `references/harness-quality-patterns.md` and add auxiliary coverage metrics before claiming improvement.
@@ -70,13 +74,13 @@ Define before editing: decision; object under test; writable/read-only/blocked s
 5. **Validate and compare** by rerunning inventory/audit, validator, modified-script syntax checks, target tests when present, and baseline/final comparison including auxiliary metrics.
 
    ```bash
-   python .github/skills/skill-harness/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --output <report-dir>/validation.json
+   python <skill-root>/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --output <report-dir>/validation.json
    ```
 
 6. **Package artifact** only when gates pass; use strict packaging for publish-ready delivery or when major risks should block output.
 
    ```bash
-   python .github/skills/skill-harness/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json --strict
+   python <skill-root>/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json --strict
    ```
 
 7. **Report** with `assets/templates/harness-report.md.template` when durable output helps. Return a package path only when the file exists and package report succeeds.
