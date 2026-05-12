@@ -24,16 +24,16 @@ This skill does not depend on MCP or any external tool being available. If a use
 
 Use the smallest mode that satisfies the request. Combine modes only when the user asks for an end-to-end design package.
 
-| User intent | Mode | Primary output |
-|---|---|---|
-| Understand a proposed agent | `agent-intake` | objective, inputs, outputs, tools, risks, assumptions |
-| Define an agent role | `agent-role-design` | mission, authority, responsibilities, non-responsibilities |
-| Write an agent prompt | `agent-prompt-design` | complete agent instructions or `.agent.md` content |
-| Coordinate agents and Skills | `agent-routing-design` | routing matrix, handoff payloads, fallback rules |
-| Review safety and controls | `agent-governance-review` | governance findings, stop conditions, auditability review |
-| Review repository structure | `repo-agent-structure-review` | structure report for agents, prompts, instructions, Skills |
-| Define validation evidence | `agent-validation-plan` | scenarios, expected behavior, acceptance criteria |
-| Summarize a design package | `agent-design-report` | proposal, trade-offs, risks, next steps |
+| User intent                  | Mode                          | Primary output                                             |
+| ---------------------------- | ----------------------------- | ---------------------------------------------------------- |
+| Understand a proposed agent  | `agent-intake`                | objective, inputs, outputs, tools, risks, assumptions      |
+| Define an agent role         | `agent-role-design`           | mission, authority, responsibilities, non-responsibilities |
+| Write an agent prompt        | `agent-prompt-design`         | complete agent instructions or `.agent.md` content         |
+| Coordinate agents and Skills | `agent-routing-design`        | routing matrix, handoff payloads, fallback rules           |
+| Review safety and controls   | `agent-governance-review`     | governance findings, stop conditions, auditability review  |
+| Review repository structure  | `repo-agent-structure-review` | structure report for agents, prompts, instructions, Skills |
+| Define validation evidence   | `agent-validation-plan`       | scenarios, expected behavior, acceptance criteria          |
+| Summarize a design package   | `agent-design-report`         | proposal, trade-offs, risks, next steps                    |
 
 ## Required Intake
 
@@ -56,7 +56,7 @@ Load only the resource needed for the active mode:
 
 - `references/agent-design-rubric.md`: use for role quality, prompt quality, tool contract, autonomy, and validation scoring.
 - `references/agent-governance-patterns.md`: use for authority limits, safety boundaries, audit trails, stop conditions, escalation, and controlled execution.
-- `references/routing-and-handoff-patterns.md`: use for router agents, Skill-vs-Agent dispatch, handoff payloads, Magnomo/Mago/Magia integration, and lightweight orchestration.
+- `references/routing-and-handoff-patterns.md`: use for router agents, Skill-vs-Agent dispatch, handoff payloads, nomia/Mago/Magia integration, and lightweight orchestration.
 - `references/agent-validation-scenarios.md`: use when defining planned tests, expected behavior, adversarial cases, regression checks, or acceptance criteria.
 - `assets/templates/agent-spec.md.template`: copy and fill when the user wants a reusable agent specification.
 - `assets/templates/agent-review-report.md.template`: copy and fill when the user wants a structured governance or quality review.
@@ -87,21 +87,27 @@ tools: [read_file, search, semantic_search]
 # Agent Name
 
 ## Role
+
 ...
 
 ## Responsibilities
+
 ...
 
 ## Boundaries
+
 ...
 
 ## Workflow
+
 ...
 
 ## Output Contract
+
 ...
 
 ## Stop Conditions
+
 ...
 ```
 
