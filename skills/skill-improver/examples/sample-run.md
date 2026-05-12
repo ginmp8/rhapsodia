@@ -2,11 +2,11 @@
 
 ## Using a hypothesis-discovery backlog
 
-Generate or supply a backlog before running the loop when no bounded hypothesis is obvious:
+Generate or supply a backlog before running the loop when no bounded hypothesis is obvious. Replace `<target-skill-root>` with the target skill package root, for example `skills/magnomo`, `.github/skills/magnomo`, or an extracted `magnomo` directory.
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target .github/skills/magnomo \
+  --target <target-skill-root> \
   --evaluator skill-benchmark \
   --hypothesis-backlog ./reports/hypothesis-backlog.json \
   --max-iterations 3 \
@@ -20,7 +20,7 @@ The backlog should come from `skill-hypothesis-discovery` or an equivalent evide
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target .github/skills/magnomo \
+  --target <target-skill-root> \
   --evaluator skill-benchmark \
   --max-iterations 10 \
   --min-delta 1.0 \
@@ -33,7 +33,7 @@ This uses the installed `skill-benchmark` generator, writes reports under `.skil
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target .github/skills/magnomo \
+  --target <target-skill-root> \
   --evaluator skill-benchmark \
   --skill-benchmark-results /path/to/frozen-scenario-results.json \
   --benchmark-lock-path /path/to/frozen-scenario-results.json \
@@ -49,7 +49,7 @@ Use this when activation and output behavior matter. The scenario result file is
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target .github/skills/customer-research \
+  --target <target-skill-root> \
   --evaluator command \
   --eval-command 'python ../../evals/customer_research_eval.py --target .' \
   --benchmark-lock-path ./evals/customer_research_eval.py \
@@ -64,7 +64,7 @@ The command should print JSON with at least `score`. Include `status` and `gates
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target .github/skills/magnomo \
+  --target <target-skill-root> \
   --evaluator skill-benchmark \
   --max-iterations 50 \
   --codex-mode yolo \
@@ -79,7 +79,7 @@ Start a bounded loop with an explicit stop file:
 
 ```bash
 python scripts/skill_improver_loop.py \
-  --target .github/skills/magnomo \
+  --target <target-skill-root> \
   --evaluator skill-benchmark \
   --max-iterations 10 \
   --stop-file .skill-improver/stop
