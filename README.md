@@ -60,6 +60,9 @@ Known third-party or adapted content:
 
 - `skills/skill-creator/` includes OpenAI `skill-creator` content with its original Apache License 2.0 notice preserved in `skills/skill-creator/LICENSE.txt`.
 - `skills/streamlit/` is an original RhapsodIA skill built from and cross-referencing the official Streamlit documentation and Streamlit project sources. The official upstream repositories `streamlit/docs` and `streamlit/streamlit` are licensed under Apache License 2.0; see `skills/streamlit/references/source-and-license.md` for source and attribution notes.
+- `skills/context-architect/` is inspired by GitHub's `awesome-copilot` Context Architect agent. The upstream source is licensed under the MIT License, Copyright GitHub, Inc.; see `skills/context-architect/references/upstream-source.md` for source and adaptation notes.
+- `skills/skill-creator-juiced/` is an original RhapsodIA orchestration skill conceptually related to `skills/skill-creator/`; see `skills/skill-creator-juiced/references/source-and-license.md` for attribution and update rules.
+- `skills/karpathy-guidelines/` is an original RhapsodIA skill inspired by public software-engineering guidance; see `skills/karpathy-guidelines/references/source-and-license.md` for source and update rules.
 - Some skills may include upstream or adaptation notes in their own `references/` files.
 
 Third-party content is not relicensed by this repository unless its original license allows it.
