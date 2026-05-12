@@ -9,7 +9,7 @@ Use for deterministic skill-harness commands, exits, and packaging.
 Creates deterministic structural inventory.
 
 ```bash
-python ./skills/skill-harness/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
+python .github/skills/skill-harness/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
 ```
 
 Output: JSON with target path, `SKILL.md` count, frontmatter, top-level dirs, file metadata, referenced/missing paths, unresolved scaffold hits. Nonzero only for Python/read failure. Written JSON is measured inventory evidence.
@@ -19,7 +19,7 @@ Output: JSON with target path, `SKILL.md` count, frontmatter, top-level dirs, fi
 Scores structural harness readiness.
 
 ```bash
-python ./skills/skill-harness/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
+python .github/skills/skill-harness/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
 ```
 
 Output: Markdown/JSON score, dimensions, gates, findings, verdict. Zero means report produced. High score does not prove behavioral readiness without executed scenarios or validators.
@@ -29,7 +29,7 @@ Output: Markdown/JSON score, dimensions, gates, findings, verdict. Zero means re
 Validates structure, scenario schema, Python syntax, references, scaffold markers.
 
 ```bash
-python ./skills/skill-harness/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --output <report-dir>/validation.json
+python .github/skills/skill-harness/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --output <report-dir>/validation.json
 ```
 
 Output: JSON verdict, gates, scenario details, inventory summary. Exit zero for `accept`/`accept with risks`, nonzero for `reject`.
@@ -39,7 +39,7 @@ Output: JSON verdict, gates, scenario details, inventory summary. Exit zero for 
 Validates and writes an installable zip.
 
 ```bash
-python ./skills/skill-harness/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json
+python .github/skills/skill-harness/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json
 ```
 
 Output: JSON with `packaged`, output path, archive entries, exclusions, embedded validation. Exit zero only when zip is written. Use `--strict` when major risks should block packaging.

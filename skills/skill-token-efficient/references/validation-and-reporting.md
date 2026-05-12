@@ -15,19 +15,19 @@ Traceability gate: if before text contains `citation`, `reference`, `source`, `p
 Baseline:
 
 ```bash
-python -S ./skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/baseline.json --markdown <report-dir>/baseline.md
+python -S .github/skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/baseline.json --markdown <report-dir>/baseline.md
 ```
 
 Final:
 
 ```bash
-python -S ./skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/final.json --markdown <report-dir>/final.md
+python -S .github/skills/skill-token-efficient/scripts/refactor_audit.py --target <target> --output <report-dir>/final.json --markdown <report-dir>/final.md
 ```
 
 Compare:
 
 ```bash
-python -S ./skills/skill-token-efficient/scripts/refactor_audit.py --before <baseline-target> --after <final-target> --output <report-dir>/comparison.json --markdown <report-dir>/comparison.md
+python -S .github/skills/skill-token-efficient/scripts/refactor_audit.py --before <baseline-target> --after <final-target> --output <report-dir>/comparison.json --markdown <report-dir>/comparison.md
 ```
 
 Syntax/package:
