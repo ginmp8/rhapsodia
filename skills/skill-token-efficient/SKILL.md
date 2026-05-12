@@ -33,6 +33,10 @@ Proceed unless target identity, write scope, or semantic authority is unclear.
 
 Broad runs: inspect -> baseline -> semantic map -> plan -> refactor -> validate -> package.
 
+## Skill Root Convention
+
+Use `<skill-root>` for the root folder of this skill package. In this repository that is usually `skills/skill-token-efficient`; when installed under GitHub/Copilot conventions it may be `.github/skills/skill-token-efficient`; when extracted from a package it may be `skill-token-efficient`.
+
 ## Load When Needed
 
 - `references/compression-playbook.md`: tactics, levels, protected regions, anti-patterns.
@@ -49,7 +53,7 @@ Broad runs: inspect -> baseline -> semantic map -> plan -> refactor -> validate 
 1. **Inspect**: read target `SKILL.md`; confirm one root; inventory support dirs, validators, packages.
 2. **Baseline**:
    ```bash
-   python -S .github/skills/skill-token-efficient/scripts/refactor_audit.py --target <TARGET> --output <REPORT_DIR>/baseline.json --markdown <REPORT_DIR>/baseline.md
+   python -S <skill-root>/scripts/refactor_audit.py --target <TARGET> --output <REPORT_DIR>/baseline.json --markdown <REPORT_DIR>/baseline.md
    ```
 3. **Map semantics**: purpose, owner, triggers/non-triggers, inputs/defaults, modes, order, tool/filesystem rules, blocked paths, safety, validation, packaging, output, stop, resources, and evidence/citation/source/path/line duties as separate invariants.
 4. **Choose level**: `readable` for `SKILL.md`/activation; `dense` for low-risk refs/examples; `max-safe` only after semantic/readability gates pass. Do not max-compress activation or evidence/citation rules unless equivalent.
