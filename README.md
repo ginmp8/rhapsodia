@@ -54,11 +54,12 @@ Do not assume that one validation command applies to every skill package.
 
 ## Third-party and adapted content
 
-Some packages may include copied, adapted, or inspired third-party material. When present, original license notices and attribution notes must be preserved in the relevant files or directories.
+Some packages may include copied, adapted, derived, or inspired third-party material. When present, original license notices and attribution notes must be preserved in the relevant files or directories.
 
 Known third-party or adapted content:
 
 - `skills/skill-creator/` includes OpenAI `skill-creator` content with its original Apache License 2.0 notice preserved in `skills/skill-creator/LICENSE.txt`.
+- `skills/streamlit/` is an original RhapsodIA skill built from and cross-referencing the official Streamlit documentation and Streamlit project sources. The official upstream repositories `streamlit/docs` and `streamlit/streamlit` are licensed under Apache License 2.0; see `skills/streamlit/references/source-and-license.md` for source and attribution notes.
 - Some skills may include upstream or adaptation notes in their own `references/` files.
 
 Third-party content is not relicensed by this repository unless its original license allows it.
