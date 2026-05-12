@@ -6,6 +6,12 @@ TARGET: @SKILL_TARGET
 MODE: package
 LEVEL: dense
 
+Path context:
+- Treat `TARGET` as the resolved path to the target skill package root.
+- In Markdown documentation and reusable command examples, use `<target-skill-root>` as the placeholder for `TARGET`.
+- Use `<skill-root>` only as a Markdown documentation placeholder for the current skill package root.
+- Do not write `<skill-root>` or `<target-skill-root>` into YAML, JSON, scripts, configs, fixtures, or runtime artifacts. Use relative paths or resolved paths instead.
+
 Goal:
 - reduce token usage in `SKILL.md` and instruction/reference files
 - keep the target skill semantically equivalent
