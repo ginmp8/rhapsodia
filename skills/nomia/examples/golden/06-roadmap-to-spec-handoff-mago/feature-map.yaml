@@ -11,7 +11,7 @@ features:
     handoff_status: ready
     source_summary: nomia roadmap identifies problem, outcome, MVP boundary, non-goals, stakeholders, and uncertainty.
     mago_inputs:
-      - .github/skills/nomia/examples/golden/06-roadmap-to-spec-handoff-mago/roadmap.yaml
-      - .github/skills/nomia/examples/golden/05-roadmap-large-initiative/roadmap.md
-      - .github/skills/nomia/examples/golden/05-roadmap-large-initiative/governance-decisions.md
+      - <skill-root>/examples/golden/06-roadmap-to-spec-handoff-mago/roadmap.yaml
+      - <skill-root>/examples/golden/05-roadmap-large-initiative/roadmap.md
+      - <skill-root>/examples/golden/05-roadmap-large-initiative/governance-decisions.md
     notes: Mago owns the PRD, acceptance criteria, implementation tasks, and validation plan.
