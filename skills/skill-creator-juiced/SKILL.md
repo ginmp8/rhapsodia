@@ -35,7 +35,7 @@ Defaults: proceed with explicit assumptions when missing details do not change s
 | `redesign` | existing skill needs architecture change | decision and bounded patch plan |
 | `quality-upgrade` | hardening, benchmark, validation, cleanup, or token-efficiency ask | specialist pass ledger and evidence |
 | `package` | final archive ask | validated `skill.zip` only after gates pass |
-| `explain-or-route` | prompt, doc, or product request rather than skill work | clarify or hand off |
+| `explain-or-route` | prompt, doc, code, or product request rather than skill work | clarify or hand off |
 
 ## Core Rules
 
