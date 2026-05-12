@@ -36,7 +36,6 @@ CYCLE_VERSION_RE = re.compile(r"^\d{2}\.\d{2}\.\d{2}$")
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 CONTROLLED_RALPH_FILES = {"manifest.yaml", "tasks.md", "notes.md", "validation.md"}
 MAGIA_PLANNING_INTENT_FILES = {"prd.md"}
-nomia_ALLOWED_CODE_DIR = ".github/skills/nomia/scripts/"
 CONTRACT_YAML_REQUIREMENT = "PyYAML is required to validate nomia contract YAML artifacts."
 CODE_SUFFIXES = {
     ".py",
@@ -61,14 +60,26 @@ CODE_SUFFIXES = {
 }
 
 
+def normalize_repo_path(path: str) -> str:
+    return path.replace("\\", "/").lstrip("./")
+
 
 def is_under_skill(path: str, skill: str) -> bool:
-    return f".github/skills/{skill}/" in path
+    normalized = normalize_repo_path(path)
+    return any(
+        normalized.startswith(prefix)
+        for prefix in (
+            f".github/skills/{skill}/",
+            f"skills/{skill}/",
+            f"{skill}/",
+        )
+    )
 
 
 def is_nomia_owned(path: str) -> bool:
+    normalized = normalize_repo_path(path)
     name = Path(path).name
-    return is_under_skill(path, "nomia") or name in nomia_ARTIFACTS or "/nomia/" in path
+    return is_under_skill(normalized, "nomia") or name in nomia_ARTIFACTS or "/nomia/" in normalized
 
 
 def is_mago_owned(path: str) -> bool:
@@ -77,12 +88,13 @@ def is_mago_owned(path: str) -> bool:
 
 
 def is_magia_owned(path: str) -> bool:
+    normalized = normalize_repo_path(path)
     name = Path(path).name
     return (
-        is_under_skill(path, "magia")
+        is_under_skill(normalized, "magia")
         or name in MAGIA_EVIDENCE_MARKERS
-        or "/execution/" in path
-        or ".omni_loops/runs/" in path
+        or "/execution/" in normalized
+        or ".omni_loops/runs/" in normalized
     )
 
 
@@ -91,9 +103,10 @@ def is_spec_package_file(path: str) -> bool:
 
 
 def is_repository_code(path: str) -> bool:
-    if path.startswith(nomia_ALLOWED_CODE_DIR) or is_under_skill(path, "nomia"):
+    normalized = normalize_repo_path(path)
+    if is_under_skill(normalized, "nomia"):
         return False
-    return Path(path).suffix.lower() in CODE_SUFFIXES or path.startswith(
+    return Path(path).suffix.lower() in CODE_SUFFIXES or normalized.startswith(
         ("tests/", "omni_loops/", "current-solution/", "client/", "server/", "redash/", "scripts/")
     )
 
@@ -263,7 +276,6 @@ def validate_contract_files(roadmap: Path | None, feature_map: Path | None, exec
                     f"{execution_evidence}: spec_id `{evidence_spec}` maps to feature_key `{mapped_feature}`, not `{evidence_feature}`"
                 )
     return errors
-
 
 
 def main(argv: list[str]) -> int:
