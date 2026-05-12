@@ -1,5 +1,6 @@
 interface:
-  display_name: "streamlit"
+  display_name: "Streamlit"
+  short_description: "Build, review, test, and deploy Streamlit apps."
 policy:
   products:
     - "chatgpt"
