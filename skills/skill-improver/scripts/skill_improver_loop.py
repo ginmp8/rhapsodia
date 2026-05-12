@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 
-DEFAULT_SKILL_BENCHMARK_SCRIPT = Path(".github/skills/skill-benchmark/scripts/generate_benchmark_report.js")
+DEFAULT_SKILL_BENCHMARK_SCRIPT = Path("skill-benchmark/scripts/generate_benchmark_report.js")
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = SKILL_ROOT / "assets" / "templates"
 RUN_REPORT_TEMPLATE = "improvement-run-report.md.template"
@@ -251,6 +251,25 @@ def resolve_under(root: Path, value: Path) -> Path:
     return value if value.is_absolute() else (root / value).resolve()
 
 
+def resolve_skill_benchmark_script(raw_script: Path | None, git_root: Path) -> Path:
+    script = raw_script or DEFAULT_SKILL_BENCHMARK_SCRIPT
+    if script.is_absolute():
+        return script.resolve()
+
+    candidates = [
+        git_root / script,
+        git_root / "skills" / script,
+        git_root / ".github" / "skills" / script,
+        SKILL_ROOT.parent / script,
+    ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate.resolve()
+
+    return (git_root / script).resolve()
+
+
 def assert_changed_files_in_scope(files: list[str], git_root: Path, target: Path, extra_allowed: list[Path]) -> None:
     target = target.resolve()
     allowed = [target] + [resolve_under(git_root, p) for p in extra_allowed]
@@ -302,7 +321,7 @@ def hash_evaluator_state(args: argparse.Namespace, git_root: Path) -> str:
     if args.evaluator == "command":
         hasher.update(f"eval_command={args.eval_command}\n".encode())
     else:
-        script = args.skill_benchmark_script or DEFAULT_SKILL_BENCHMARK_SCRIPT
+        script = resolve_skill_benchmark_script(args.skill_benchmark_script, git_root)
         paths.append(script)
         hasher.update(f"skill_benchmark_script={script}\n".encode())
         hasher.update(f"skill_benchmark_out={args.skill_benchmark_out}\n".encode())
@@ -436,8 +455,7 @@ def parse_gates_from_report(text: str) -> dict[str, str]:
 
 
 def evaluate_with_skill_benchmark(args: argparse.Namespace, target: Path, git_root: Path) -> EvalResult:
-    script = args.skill_benchmark_script or DEFAULT_SKILL_BENCHMARK_SCRIPT
-    script = script if script.is_absolute() else (git_root / script).resolve()
+    script = resolve_skill_benchmark_script(args.skill_benchmark_script, git_root)
     if not script.exists():
         raise RuntimeError(f"skill-benchmark script not found: {script}")
 
