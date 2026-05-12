@@ -12,6 +12,7 @@ Reduce skill/instruction tokens without semantic loss. Preserve role, triggers/e
 ## Inputs
 
 Resolve before edits:
+
 1. `TARGET`: folder, zip, installed skill, or supplied text.
 2. Mode: `audit`, `plan`, `apply`, `validate`, `package`.
 3. Level: `readable` default, `dense`, `max-safe`.
@@ -48,7 +49,7 @@ Broad runs: inspect -> baseline -> semantic map -> plan -> refactor -> validate 
 1. **Inspect**: read target `SKILL.md`; confirm one root; inventory support dirs, validators, packages.
 2. **Baseline**:
    ```bash
-   python -S /home/oai/skills/skill-token-efficient/scripts/refactor_audit.py --target <TARGET> --output <REPORT_DIR>/baseline.json --markdown <REPORT_DIR>/baseline.md
+   python -S ./skills/skill-token-efficient/scripts/refactor_audit.py --target <TARGET> --output <REPORT_DIR>/baseline.json --markdown <REPORT_DIR>/baseline.md
    ```
 3. **Map semantics**: purpose, owner, triggers/non-triggers, inputs/defaults, modes, order, tool/filesystem rules, blocked paths, safety, validation, packaging, output, stop, resources, and evidence/citation/source/path/line duties as separate invariants.
 4. **Choose level**: `readable` for `SKILL.md`/activation; `dense` for low-risk refs/examples; `max-safe` only after semantic/readability gates pass. Do not max-compress activation or evidence/citation rules unless equivalent.
