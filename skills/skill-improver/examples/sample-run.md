@@ -2,7 +2,7 @@
 
 ## Using a hypothesis-discovery backlog
 
-Generate or supply a backlog before running the loop when no bounded hypothesis is obvious. Replace `<target-skill-root>` with the target skill package root, for example `skills/magnomo`, `.github/skills/magnomo`, or an extracted `magnomo` directory.
+Generate or supply a backlog before running the loop when no bounded hypothesis is obvious. Replace `<target-skill-root>` with the target skill package root, for example `skills/nomia`, `.github/skills/nomia`, or an extracted `nomia` directory.
 
 ```bash
 python scripts/skill_improver_loop.py \
