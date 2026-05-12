@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 
-DEFAULT_SKILL_BENCHMARK_SCRIPT = Path("./skills/skill-benchmark/scripts/generate_benchmark_report.js")
+DEFAULT_SKILL_BENCHMARK_SCRIPT = Path(".github/skills/skill-benchmark/scripts/generate_benchmark_report.js")
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = SKILL_ROOT / "assets" / "templates"
 RUN_REPORT_TEMPLATE = "improvement-run-report.md.template"

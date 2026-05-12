@@ -16,7 +16,7 @@
     {
       "id": "act-002",
       "type": "should_activate",
-      "prompt": "Run the full workflow with benchmark, hardening, token reduction, and final report for ./skills/my-target.",
+      "prompt": "Run the full workflow with benchmark, hardening, token reduction, and final report for .github/skills/my-target.",
       "expected_behavior": "activate",
       "acceptance_criteria": [
         "Skill Booster is selected for an existing skill optimization request.",

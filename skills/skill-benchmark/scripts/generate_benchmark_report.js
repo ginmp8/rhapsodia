@@ -13,7 +13,7 @@ function usage() {
 
 Examples:
   node scripts/generate_benchmark_report.js --target skills/prd-banking-flows
-  node scripts/generate_benchmark_report.js --target .claude/skills/my-skill --results docs/skill-benchmark/my-skill/test-results.json
+  node scripts/generate_benchmark_report.js --target .github/skills/my-skill --results docs/skill-benchmark/my-skill/test-results.json
 `);
 }
 
