@@ -1,65 +1,63 @@
 #!/usr/bin/env python3
+"""Package the Streamlit skill as skill.zip after validation."""
+
 from __future__ import annotations
 
 import argparse
-import os
+import subprocess
+import sys
 import zipfile
 from pathlib import Path
 
-EXCLUDE_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "reports"}
+EXCLUDE_PARTS = {"__pycache__", ".git", ".pytest_cache", ".mypy_cache"}
 EXCLUDE_SUFFIXES = {".pyc", ".pyo", ".zip"}
 
 
 def should_include(path: Path, root: Path) -> bool:
     rel = path.relative_to(root)
-    if any(part in EXCLUDE_DIRS for part in rel.parts):
+    if any(part in EXCLUDE_PARTS for part in rel.parts):
         return False
     if path.suffix in EXCLUDE_SUFFIXES:
-        return False
-    if path.name.startswith(".") and path.name not in {".streamlit"}:
         return False
     return path.is_file()
 
 
-def validate(root: Path) -> None:
-    required = ["SKILL.md", "agents/openai.yaml", "scripts/validate_streamlit_skill.py"]
-    for rel in required:
-        if not (root / rel).exists():
-            raise SystemExit(f"missing required file: {rel}")
-    import subprocess
-    result = subprocess.run(
-        [os.environ.get("PYTHON", "python"), str(root / "scripts" / "validate_streamlit_skill.py"), str(root)],
-        check=False,
-        text=True,
-        capture_output=True,
-    )
-    if result.returncode != 0:
-        raise SystemExit(result.stdout + result.stderr)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Package the Streamlit skill as skill.zip")
-    parser.add_argument("--target", required=True)
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--target", default=".")
     parser.add_argument("--output", required=True)
-    parser.add_argument("--validate", action="store_true")
     args = parser.parse_args()
 
     root = Path(args.target).resolve()
-    output = Path(args.output).resolve()
-    if output.suffix != ".zip":
-        output = output / "skill.zip"
-    output.parent.mkdir(parents=True, exist_ok=True)
+    out = Path(args.output).resolve()
+    out.parent.mkdir(parents=True, exist_ok=True)
 
-    if args.validate:
-        validate(root)
+    validator = root / "scripts" / "validate_streamlit_skill.py"
+    result = subprocess.run([sys.executable, str(validator), str(root)], text=True)
+    if result.returncode != 0:
+        return result.returncode
 
-    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as zf:
-        for file in sorted(root.rglob("*")):
-            if should_include(file, root):
-                zf.write(file, Path(root.name) / file.relative_to(root))
+    if out.exists():
+        out.unlink()
 
-    print(f"wrote {output}")
+    with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(root.rglob("*")):
+            if should_include(path, root):
+                zf.write(path, Path(root.name) / path.relative_to(root))
+
+    with zipfile.ZipFile(out) as zf:
+        names = zf.namelist()
+        if not any(name == f"{root.name}/SKILL.md" for name in names):
+            print("FAIL: archive missing root SKILL.md")
+            return 1
+        bad = [n for n in names if "__pycache__" in n or n.endswith(".pyc")]
+        if bad:
+            print("FAIL: archive contains generated files: " + ", ".join(bad))
+            return 1
+
+    print(f"PASS: wrote {out}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

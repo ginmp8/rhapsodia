@@ -1,30 +1,73 @@
+"""Small Streamlit data app skeleton.
+
+Replace placeholder data loading with the user's actual source.
+Keep secrets outside this file.
+"""
+
 from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
 
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Data App", layout="wide")
+
+@dataclass(frozen=True)
+class AppConfig:
+    page_title: str = "Streamlit App"
+    max_rows: int = 500
+
+
+st.set_page_config(page_title="Streamlit App", layout="wide")
 
 
 @st.cache_data(ttl="10m", show_spinner="Loading data...")
-def load_data(source: str) -> pd.DataFrame:
-    return pd.read_csv(source)
+def load_data() -> pd.DataFrame:
+    # Replace with a database query, API call, or file read.
+    return pd.DataFrame(
+        {
+            "status": ["Pending", "Approved", "Rejected"],
+            "amount": [10, 20, 5],
+            "created_at": pd.to_datetime(["2026-01-01", "2026-01-02", "2026-01-03"]),
+        }
+    )
 
 
-def init_state() -> None:
-    st.session_state.setdefault("filters", {})
+def render_filters(df: pd.DataFrame) -> list[str]:
+    with st.sidebar:
+        st.header("Filters")
+        statuses = sorted(df["status"].dropna().unique())
+        return st.multiselect("Status", statuses, default=statuses, key="status_filter")
 
 
-init_state()
-st.title("Data App")
+def main() -> None:
+    cfg = AppConfig()
+    st.title(cfg.page_title)
 
-with st.sidebar.form("filters"):
-    source = st.text_input("CSV path", value="data.csv")
-    submitted = st.form_submit_button("Load")
+    df = load_data()
+    selected_statuses = render_filters(df)
+    filtered = df[df["status"].isin(selected_statuses)] if selected_statuses else df.iloc[0:0]
 
-if submitted:
-    st.session_state["filters"] = {"source": source}
+    st.caption(f"Last rendered: {datetime.now(timezone.utc).isoformat(timespec='seconds')}")
 
-active_source = st.session_state["filters"].get("source", "data.csv")
-data = load_data(active_source)
-st.dataframe(data, use_container_width=True)
+    c1, c2 = st.columns(2)
+    c1.metric("Rows", len(filtered))
+    c2.metric("Total amount", f"{filtered['amount'].sum():,.0f}")
+
+    if filtered.empty:
+        st.info("No records match the selected filters.")
+        return
+
+    st.dataframe(filtered.head(cfg.max_rows), use_container_width=True, hide_index=True)
+
+    st.download_button(
+        "Download CSV",
+        data=filtered.to_csv(index=False).encode("utf-8"),
+        file_name="filtered.csv",
+        mime="text/csv",
+    )
+
+
+if __name__ == "__main__":
+    main()
