@@ -13,7 +13,7 @@ items:
     impact: high
     risk: medium
     confidence: medium
-    source: .github/skills/nomia/examples/golden/03-replanned-demand-preserved-history/ops.yaml
+    source: <skill-root>/examples/golden/03-replanned-demand-preserved-history/ops.yaml
     candidate_impacted_repos: []
   - spec_id: spec022
     feature_key: saved-query-sharing-controls
