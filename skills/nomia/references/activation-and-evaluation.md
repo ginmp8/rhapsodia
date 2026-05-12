@@ -10,6 +10,10 @@ Do not activate for implementation work, code, tests, runners, deployments, PRs,
 
 Ambiguous requests are decided by requested outcome. If owner or artifact family is unresolved, ask for scope or report a blocker before repository-facing writes.
 
+## Skill Root Convention
+
+Use `<skill-root>` for the root folder of this skill package. In this repository that is usually `skills/nomia`; when installed under GitHub/Copilot conventions it may be `.github/skills/nomia`; when extracted from a package it may be `nomia`.
+
 ## Routing Ladder
 
 1. Identify the requested outcome, not just the nouns.
@@ -47,9 +51,9 @@ When activation behavior or examples change: update the smallest scenario set; k
 ## Packaging Gate
 
 ```bash
-python .github/skills/nomia/scripts/validate_activation_scenarios.py .github/skills/nomia/examples/activation-scenarios.json
-python .github/skills/nomia/scripts/validate_skill_package.py --target .github/skills/nomia
-python .github/skills/nomia/scripts/validate_golden_examples.py --skill-root .github/skills/nomia
+python <skill-root>/scripts/validate_activation_scenarios.py <skill-root>/examples/activation-scenarios.json
+python <skill-root>/scripts/validate_skill_package.py --target <skill-root>
+python <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root>
 ```
 
-Prefer `scripts/package_skill.py --target .github/skills/nomia --output <output-dir>/skill.zip`; it reruns structural, activation, and golden gates before writing.
+Prefer `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it reruns structural, activation, and golden gates before writing.
