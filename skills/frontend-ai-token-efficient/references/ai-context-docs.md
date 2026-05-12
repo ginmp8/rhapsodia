@@ -1,8 +1,8 @@
-# Documentação curta para agentes de ia
+# Short documentation for AI agents
 
-Use esta referência para criar ou revisar arquivos que orientam agentes no repositório. Mantenha guias curtos, objetivos e próximos das decisões reais do projeto.
+Use this reference to create or review repository files that guide AI agents. Keep guides short, practical, and tied to real project decisions.
 
-## Arquivos recomendados
+## Recommended files
 
 ```txt
 AI_CONTEXT.md
@@ -15,167 +15,239 @@ UI_GUIDE.md
 SECURITY_FRONTEND.md
 UX_GUIDE.md
 RUNTIME_VALIDATION.md
-AGENTS.md ou .github/copilot-instructions.md quando a ferramenta do time suportar
-*.agent.md quando houver agentes especializados versionados no repo
+AGENTS.md or .github/copilot-instructions.md when the team's tool supports them
+*.agent.md when specialized agents are versioned in the repo
 ```
 
-Crie apenas os arquivos que terão conteúdo útil. Um guia curto e lido vale mais que uma documentação longa e ignorada. Para ferramentas que suportam instruções/agentes por arquivo, mantenha esses arquivos versionados, pequenos e alinhados aos mesmos contratos da skill.
+Create only files that will contain useful guidance. A short guide that agents actually read is better than long documentation that gets ignored. For tools that support file-level instructions or agents, keep those files versioned, small, and aligned with the same contracts as this skill.
 
-## Modelo de AI_CONTEXT.md
+## `AI_CONTEXT.md` template
 
 ```md
 # AI Context
 
-## objetivo
-este projeto prioriza alterações locais, baixo acoplamento e legibilidade.
+## Goal
+This project prioritizes local changes, low coupling, and readability.
 
-## estrutura
-- app/: bootstrap, providers e rotas
-- features/: fluxos de negócio
-- entities/: entidades reutilizáveis
-- shared/: código genérico sem regra de negócio
+## Structure
+- app/: bootstrap, providers, and routes
+- features/: business flows
+- entities/: reusable domain entities
+- shared/: generic code with no business rules
 
-## regras para alterações
-1. antes de alterar uma feature, leia o readme dela.
-2. não crie abstrações globais sem necessidade.
-3. não mova código para shared se houver regra de negócio.
-4. não chame api diretamente em componentes.
-5. não use any sem justificativa local.
-6. altere o menor número possível de arquivos.
-7. adicione ou ajuste testes quando houver regra de negócio.
+## Rules for changes
+1. Before changing a feature, read that feature's README.
+2. Do not create global abstractions without at least two stable use cases.
+3. Do not place business rules in shared/.
+4. Do not call HTTP directly from components.
+5. Update tests and validation notes with the change.
+
+## Security
+- Do not add secrets to public environment variables.
+- Do not store sensitive tokens in localStorage or sessionStorage.
+- Do not log payloads with personal, financial, or authentication data.
+
+## Validation
+- Run typecheck and affected tests.
+- Use browser validation for flows with focus, modal, form, responsive, or visual behavior.
 ```
 
-## Modelo de DEPENDENCY_RULES.md
+## `ARCHITECTURE.md` template
 
 ```md
-# Dependency Rules
+# Frontend Architecture
 
-permitido:
-- app -> pages/features/entities/shared
-- pages -> features/entities/shared
+## Principles
+- Feature-first organization.
+- Explicit contracts at boundaries.
+- Small local duplication is acceptable.
+- Shared code must be generic and domain-neutral.
+
+## Dependency rules
+Allowed:
+- app -> pages/routes -> features -> entities -> shared
 - features -> entities/shared
 - entities -> shared
-- shared -> bibliotecas externas
+- shared -> no feature imports
 
-proibido:
-- shared -> features
-- entities -> features
-- feature a -> feature b
+Avoid:
+- feature -> feature imports
+- components calling APIs directly
+- global stores that hide feature ownership
+
+## Folder shape
+```txt
+src/
+  app/
+  features/
+    account-opening/
+      api/
+      components/
+      hooks/
+      model/
+      schemas/
+      tests/
+      README.md
+  entities/
+  shared/
+    api/
+    ui/
+    lib/
+```
 ```
 
-## Modelo de SECURITY_FRONTEND.md
-
-```md
-# Frontend Security Rules
-
-## segredos
-- nunca colocar secrets no frontend.
-- variáveis vite_* e next_public_* são públicas quando entram no bundle.
-- integrações com segredo devem passar pelo backend ou bff.
-
-## tokens
-- não armazenar access token ou refresh token em localStorage.
-- preferir cookie httponly + secure + samesite quando aplicável.
-- não logar authorization header.
-
-## dados sensíveis
-- não colocar pii em url.
-- não logar payload completo.
-- não enviar pii para analytics sem aprovação.
-- mascarar documento, telefone e e-mail quando possível.
-
-## xss
-- não usar dangerouslySetInnerHTML sem sanitização aprovada.
-- validar urls externas.
-- não usar eval ou new Function.
-- não renderizar html vindo de usuário ou backend sem sanitizer.
-
-## apis
-- componentes não chamam fetch ou axios diretamente.
-- usar camada api central.
-- backend sempre revalida autorização.
-
-## observabilidade
-- eventos devem passar por sanitizeForTelemetry.
-- erros enviados para observabilidade não devem conter payload sensível.
-```
-
-## Modelo de CONVENTIONS.md
+## `CONVENTIONS.md` template
 
 ```md
 # Conventions
 
-## nomenclatura
-- componentes react: pascalcase
-- hooks: useNomeDaCoisa
-- arquivos de api: *.api.ts
-- tipos: *.types.ts
-- schemas: *.schema.ts
-- mappers: *.mappers.ts
+## Naming
+- Feature folders use kebab-case.
+- Components use PascalCase.
+- Hooks start with use.
+- API files end with .api.ts.
+- Mappers end with .mapper.ts.
 
-## componentes
-- componentes não conhecem detalhes http.
-- componentes de feature não são importados por outras features.
-- componentes em shared/ui não contêm regra de negócio.
+## Components
+- Components render UI and receive already-shaped props.
+- They do not fetch data directly.
+- They do not own cross-feature business rules.
 
-## estado
-- server state: tanstack query
-- estado local de ui: useState/useReducer
-- estado global: apenas quando compartilhado entre áreas independentes
+## Forms
+- Schema and mapper stay close to the feature.
+- Field errors are specific and close to the field.
+- Submit preserves user input and focuses the first error.
+
+## Comments
+Prefer comments for non-obvious decisions, constraints, or compliance rules. Do not comment obvious code.
 ```
 
-## Critério de qualidade
-
-Cada arquivo deve responder a uma pergunta prática de desenvolvimento. Se um guia não muda decisões de implementação ou revisão, remova ou reduza.
-
-
-## Modelo de UX_GUIDE.md
+## `DEPENDENCY_RULES.md` template
 
 ```md
-# UX Guide
+# Dependency Rules
 
-## princípios
-- preservar design system existente antes de criar variações.
-- formularios devem reduzir fricção e manter labels visíveis.
-- empty states devem explicar valor e oferecer próxima ação.
-- onboarding deve reduzir time-to-value e focar um objetivo por sessão.
+## Allowed dependencies
+| from | may import |
+|---|---|
+| app | pages, features, entities, shared |
+| pages/routes | features, entities, shared |
+| features | entities, shared |
+| entities | shared |
+| shared | shared only |
 
-## formulários
-- validar inline sem punir enquanto digita.
-- focar primeiro erro no submit inválido.
-- preservar dados após erro.
-- medir start, completion, drop-off e error rate quando otimização for objetivo.
+## Forbidden dependencies
+- shared importing from features.
+- entities importing from features.
+- feature-to-feature imports unless routed through a deliberate composition point.
+- UI components importing API clients directly.
+
+## When in doubt
+Keep logic local until reuse is stable, explicit, and domain-neutral.
 ```
 
-## Modelo de RUNTIME_VALIDATION.md
+## `TESTING_GUIDE.md` template
+
+```md
+# Testing Guide
+
+## Default checks
+- Typecheck.
+- Unit tests for pure logic, schemas, mappers, and hooks.
+- Component tests for conditional rendering and interaction.
+- Playwright for real flows, routing, modals, focus, forms, accessibility smoke checks, and responsiveness.
+
+## Evidence
+Each change should state:
+- commands executed;
+- relevant results;
+- tests not run and why;
+- remaining manual validation.
+```
+
+## `API_GUIDE.md` template
+
+```md
+# API Guide
+
+## Rules
+- Do not invent payloads or response shapes.
+- Keep transport types near api/.
+- Map transport data into UI/domain-friendly shapes before rendering.
+- Handle loading, error, empty, permission, and retry states explicitly.
+
+## File pattern
+```txt
+features/<feature>/api/<operation>.api.ts
+features/<feature>/api/<operation>.types.ts
+features/<feature>/api/<operation>.mapper.ts
+```
+```
+
+## `UI_GUIDE.md` template
+
+```md
+# UI Guide
+
+## Existing project
+- Reuse the design system, component library, tokens, layout rules, and accessibility patterns.
+- Do not introduce new fonts, color palettes, animation libraries, or component systems without a product and technical reason.
+
+## New UI without design system
+- Define tokens for color, spacing, typography, radius, elevation, and motion.
+- Choose a clear visual direction based on the product context.
+- Keep hierarchy, responsiveness, and accessibility measurable.
+```
+
+## `SECURITY_FRONTEND.md` template
+
+```md
+# Frontend Security
+
+## Never do this
+- Put secrets, private keys, client secrets, service tokens, or passwords in frontend code or public environment variables.
+- Store sensitive tokens in localStorage or sessionStorage.
+- Rely on frontend checks as real authorization.
+- Send sensitive payloads to logs, analytics, URLs, or third-party tools.
+
+## Required checks
+- Public environment variable review.
+- Storage review.
+- Logging and analytics review.
+- XSS and HTML rendering review.
+- CSP and source map posture review for production.
+```
+
+## `RUNTIME_VALIDATION.md` template
 
 ```md
 # Runtime Validation
 
-## quando rodar browser/playwright
-- mudança em formulário, modal, dropdown, popover, rota, loading/error/empty ou responsividade.
-- alteração de foco, teclado ou acessibilidade.
-- claim de performance ou layout.
+Use browser validation when static review is insufficient.
 
-## evidência mínima
-- comando executado.
-- rota/viewport testado.
-- console errors e failed requests.
-- fluxo feliz e principal erro.
-- screenshots quando layout for parte da aceitação.
+## Validate with Playwright when changing
+- forms and validation;
+- modals, focus, escape, and keyboard navigation;
+- responsive layout;
+- protected or permission states;
+- visual states such as loading, empty, error, success, and disabled;
+- routing and redirects.
+
+## Evidence to capture
+- command;
+- browser and viewport;
+- screenshots when useful;
+- console and network errors;
+- accessibility notes;
+- known gaps.
 ```
 
-## Modelo de AGENTS.md
+## Writing rules for AI-facing docs
 
-```md
-# Agents
-
-## papéis
-- frontend: implementa mudança local seguindo features, contracts e design system.
-- qa/browser: valida fluxo real, screenshots, console e failed requests.
-- accessibility: revisa teclado, foco, labels, contraste e erros.
-- performance: investiga core web vitals, layout shift, long tasks e bundle quando medido.
-
-## regra
-agentes não devem alterar escopo, criar abstrações globais ou alegar validação sem evidência.
-```
+- Start with the decision, then the reason.
+- Prefer tables and short rules over long prose.
+- Keep examples realistic and project-specific.
+- Mark assumptions explicitly.
+- Avoid generic framework tutorials.
+- Keep one source of truth for dependency rules and reference it from other docs.
+- Update docs only when they change future behavior.

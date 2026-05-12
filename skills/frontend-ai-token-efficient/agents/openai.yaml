@@ -1,6 +1,6 @@
 interface:
   display_name: Frontend AI Token Efficient
-  short_description: padrões frontend para ia com baixo contexto
+  short_description: low-context frontend standards for AI-assisted coding
 policy:
   products:
   - chatgpt

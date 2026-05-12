@@ -1,149 +1,136 @@
-# Segurança frontend e prevenção de vazamento
+# Frontend leak prevention and browser-side security
 
-Use esta referência quando a demanda envolver secrets, tokens, storage, logs, analytics, urls, xss, csp, headers, source maps, permissões ou dados sensíveis.
+Use this reference for frontend security reviews focused on data exposure, browser storage, logs, analytics, XSS risk, CSP posture, source maps, cache behavior, and authorization boundaries.
 
-## Princípio central
+## Security boundary
 
-Não existe segredo seguro no frontend. Tudo que chega ao browser pode ser inspecionado: bundle, variáveis públicas, source maps, storage, requests, headers, payloads e logs.
+The frontend is not a trusted security boundary. It can improve user experience and reduce accidental exposure, but real authorization and sensitive operations must be enforced by backend or trusted server-side systems.
 
-## Secrets e variáveis públicas
+## Never allow
 
-Nunca coloque no frontend:
+- Secrets, client secrets, service tokens, private keys, passwords, or signing keys in frontend code.
+- Secret-like values in public environment variables such as `VITE_*` or `NEXT_PUBLIC_*`.
+- Sensitive auth/session/refresh tokens in `localStorage` or `sessionStorage`.
+- Raw personal, financial, authentication, or document payloads in console logs, analytics, error trackers, URLs, or third-party scripts.
+- Frontend-only authorization checks for protected operations.
+- Unsafe HTML rendering without sanitizer and explicit approval.
 
-```txt
-client_secret
-api key privada
-senha
-connection string
-token de serviço
-chave de assinatura
-credencial de backend
-segredo de oauth
-chave privada
-```
+## Environment variables
 
-Variáveis como `vite_*` e `next_public_*` são públicas quando entram no bundle. Integrações com segredo devem passar por backend ou bff.
+Public frontend environment variables are bundled or exposed to the browser. Treat them as public configuration.
 
-Arquitetura correta:
+Allowed examples:
 
 ```txt
-frontend -> backend/bff -> serviço externo com segredo
+VITE_APP_ENV=production
+VITE_PUBLIC_API_BASE_URL=https://api.example.com
+NEXT_PUBLIC_ANALYTICS_WRITE_KEY=<public client key if approved>
 ```
 
-## Tokens e storage
-
-Evite armazenar access token, refresh token ou dados sensíveis em:
+Blocked examples:
 
 ```txt
-localStorage
-sessionStorage
-indexedDB
-cookies acessíveis por javascript
-window.__INITIAL_STATE__
+VITE_CLIENT_SECRET=...
+NEXT_PUBLIC_SERVICE_TOKEN=...
+VITE_PRIVATE_KEY=...
+NEXT_PUBLIC_PASSWORD=...
 ```
 
-Quando aplicável para sessão web, prefira cookie `HttpOnly`, `Secure` e `SameSite`, emitido pelo backend.
+If a browser needs to call a third-party service that requires a secret, route the request through a backend or BFF.
 
-## XSS
+## Token and storage rules
 
-Trate xss como principal risco de vazamento. Evite:
+Prefer secure, httpOnly, sameSite cookies for sensitive session material when the architecture supports it. If tokens must be held in browser memory, keep lifetime short and document the trade-off.
 
-```tsx
-<div dangerouslySetInnerHTML={{ __html: htmlFromApi }} />
-```
+Avoid:
 
-Se renderizar html externo for inevitável, sanitize com biblioteca aprovada e mantenha exceção documentada. Valide urls vindas de usuário ou backend e bloqueie protocolos como `javascript:` e `data:` quando não forem explicitamente permitidos.
+- refresh tokens in web storage;
+- long-lived access tokens in web storage;
+- storing raw identity documents, financial data, or sensitive onboarding payloads client-side;
+- persisting drafts with sensitive fields without product/security approval.
 
-## Content security policy
+## Logs, analytics, and error tracking
 
-Use csp como defesa em profundidade. Base inicial para spa sensível:
+Use allowlists, not blocklists, for analytics payloads.
 
-```http
-Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https:; connect-src 'self' https://api.suaempresa.com
-```
+Do not send:
 
-Quando houver ssr/bff capaz de emitir nonce por resposta, preferir csp com nonce e sem `unsafe-inline` para scripts.
+- passwords, tokens, session IDs, cookies, authorization headers;
+- raw documents or images;
+- personal identifiers unless explicitly approved;
+- full API request or response bodies;
+- form values from sensitive flows;
+- stack traces containing sensitive route/query data.
 
-## Logs, analytics e observabilidade
-
-Não envie para console, analytics ou rum:
+Recommended wrapper pattern:
 
 ```txt
-token
-authorization header
-payload completo
-cpf/cnpj completo
-e-mail pessoal
-telefone
-nome completo quando não necessário
-dados bancários
-documentos
-dados cadastrais completos
-motivo sensível de reprovação
+shared/observability/analytics.ts
+shared/observability/logger.ts
+shared/observability/redaction.ts
 ```
 
-Eventos devem passar por sanitização central. Use códigos e etapas em vez de payloads.
+Centralize event names and payload schemas so sensitive fields can be rejected before shipping.
 
-## Urls
+## URL and cache exposure
 
-Não colocar dados sensíveis em query string, hash ou path params:
+Review whether sensitive values appear in:
 
-```txt
-ruim: /onboarding?documentNumber=12345678000199&email=user@email.com
-bom:  /onboarding/:requestId
-```
+- query strings;
+- route params;
+- redirect URLs;
+- browser history;
+- referrer headers;
+- cache keys;
+- screenshots or downloadable reports.
 
-URLs aparecem em histórico, logs, analytics, referer, prints e proxies.
+Prefer opaque IDs or server-side state for sensitive flows. Configure cache behavior deliberately for pages that display sensitive data.
 
-## Source maps
+## XSS and unsafe HTML
 
-Em produção sensível, não publicar `.map` publicamente. Envie source maps apenas para observabilidade autorizada, se necessário.
+High-risk patterns:
 
-## Autorização
+- `dangerouslySetInnerHTML`;
+- rendering markdown or rich text from untrusted sources;
+- manually concatenating HTML strings;
+- unsafe URL schemes such as `javascript:`;
+- third-party widgets with broad script access.
 
-Frontend pode melhorar ux escondendo ações. Segurança real exige validação no backend:
+Required controls:
 
-- autenticação;
-- autorização;
-- ownership;
-- escopo;
-- regra transacional.
+- sanitizer with documented configuration;
+- content source allowlist;
+- CSP review;
+- tests or runtime validation for known malicious samples when feasible.
 
-Nunca aceitar solução cuja única proteção é botão escondido, rota escondida ou role check no cliente.
+## CSP, third-party scripts, and source maps
 
-## Headers recomendados
+Check production posture:
 
-Use quando compatível com a aplicação:
+- CSP exists and avoids unnecessary `unsafe-inline` or broad wildcard sources;
+- third-party scripts are justified and reviewed;
+- source maps do not expose sensitive code comments, internal routes, or secrets;
+- error reporting does not include sensitive payloads;
+- dependency additions are justified by feature value.
 
-```http
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-X-Content-Type-Options: nosniff
-Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: camera=(), microphone=(), geolocation=()
-Content-Security-Policy: frame-ancestors 'none'
-```
+## Authorization and permission UX
 
-## CORS
+Frontend permission checks are useful for hiding controls, explaining access, and reducing dead ends. They are not real enforcement.
 
-Restrinja origens, mas não trate cors como autenticação. A api ainda deve validar sessão, token, permissão e escopo.
+A safe answer should state:
 
-## Dependências
+- backend must enforce authorization;
+- frontend can mirror permissions only for UX;
+- protected API calls must fail safely if the frontend is bypassed;
+- permission-denied states should be explicit and accessible.
 
-Antes de adicionar dependência:
+## Security review output
 
-- verificar se código local simples resolve;
-- evitar pacotes minúsculos para funções triviais;
-- manter lockfile;
-- revisar scripts de instalação;
-- usar audit, dependabot ou renovate quando disponível;
-- remover dependências não usadas.
+Report:
 
-## Cache
-
-Para dados sensíveis, respostas autenticadas e páginas com dados pessoais, considerar:
-
-```http
-Cache-Control: no-store
-```
-
-Não persistir cache de tanstack query em storage web para dados sensíveis sem decisão de segurança.
+1. reviewed scope and data sensitivity;
+2. findings by severity;
+3. smallest safe fix;
+4. required backend or policy dependency;
+5. validation executed and recommended;
+6. unverified risks.

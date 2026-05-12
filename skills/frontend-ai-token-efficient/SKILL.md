@@ -1,129 +1,127 @@
 ---
 name: frontend-ai-token-efficient
-description: use quando o usuário pedir arquitetura, revisão, implementação, refatoração, checklist, padrões, scaffolding, ux/cro, validação runtime ou segurança de frontend react/typescript para que ia ou agentes codem com baixo consumo de tokens e manutenção humana. cobre vite, next.js, react router, estrutura por feature, contratos, forms, onboarding, estado, api, design system, testes, acessibilidade, observabilidade e prevenção de vazamentos. não use para backend puro, mobile nativo, design visual isolado sem código, ou criação de skills.
+description: use when the user asks for react/typescript frontend architecture, implementation guidance, refactoring, review, scaffolding, checklists, runtime validation, ux/cro tied to code, or frontend leak-prevention so ai agents can modify the project with low context and humans can maintain it safely. covers vite, next.js, react router, feature-based structure, contracts, forms, onboarding, state, api boundaries, design-system usage, tests, accessibility, observability, and browser-side security. do not use for pure backend, native mobile, visual-only design, brand identity, or skill creation.
 ---
 
 # Frontend AI Token Efficient
 
-## Missão
+## Mission
 
-Ajudar a projetar, revisar e orientar frontends react/typescript que sejam fáceis para agentes de ia modificarem com baixo contexto e seguros para manutenção humana. Priorizar estruturas locais, contratos explícitos, regras de dependência, validação verificável e prevenção de vazamentos.
+Help design, review, and guide React/TypeScript frontends that are easy for AI agents to modify with limited context and safe for humans to maintain. Prioritize local structure, explicit contracts, dependency rules, verifiable validation, and leak prevention.
 
-## Escopo
+This skill is not a visual-design-first generator. It may review UX, CRO, and visual quality only when they are connected to frontend implementation, existing design-system constraints, accessibility, runtime validation, or maintainable code changes.
 
-Use para:
+## Scope
 
-- escolher stack ou framework frontend com foco em manutenção por ia;
-- propor estrutura de projeto react/typescript, vite, next.js ou react router;
-- revisar arquitetura, pastas, dependências, componentes, formulários, estado, api, testes e documentação para ia;
-- revisar qualidade de ux quando ligada a implementação: formulários, onboarding, empty states, ctas, fricção, responsividade e coerência com design system;
-- orientar validação runtime com browser/playwright quando a tarefa envolver interação real, foco, modal, erro de formulário, responsividade ou regressão visual;
-- gerar guias como AI_CONTEXT.md, ARCHITECTURE.md, CONVENTIONS.md, DEPENDENCY_RULES.md, TESTING_GUIDE.md, API_GUIDE.md, UI_GUIDE.md e SECURITY_FRONTEND.md;
-- revisar riscos de vazamento no frontend: secrets, tokens, logs, analytics, storage, urls, source maps, xss, csp e cache;
-- orientar implementação ou refatoração mantendo o menor conjunto de arquivos necessário.
+Use this skill to:
 
-Não use para backend puro, mobile nativo, design visual sem código, skill creation, auditoria de segurança de infraestrutura, ou implementação em repositório sem escopo frontend claro.
+- choose a frontend stack or framework with AI-maintainability as a decision factor;
+- propose project structures for React, TypeScript, Vite, Next.js, React Router, or similar stacks;
+- review architecture, folders, dependencies, components, forms, state, API access, tests, and repo documentation for AI-assisted maintenance;
+- review UX quality when tied to implementation: forms, onboarding, empty states, CTAs, friction, responsiveness, and design-system consistency;
+- plan browser or Playwright validation when the task involves real interaction, focus behavior, modals, form errors, responsiveness, or visual regression;
+- generate concise guides such as `AI_CONTEXT.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `DEPENDENCY_RULES.md`, `TESTING_GUIDE.md`, `API_GUIDE.md`, `UI_GUIDE.md`, and `SECURITY_FRONTEND.md`;
+- review frontend leak risks: secrets, tokens, logs, analytics, storage, URLs, source maps, XSS, CSP, and cache behavior;
+- guide implementation or refactoring while keeping the touched file set as small as possible.
 
-## Regras centrais
+Do not use this skill for pure backend work, native mobile, visual-only design without code, skill creation, infrastructure security audits, or repository implementation without a clear frontend scope.
 
-- Reduza contexto antes de reduzir linhas: uma mudança deve exigir ler poucos arquivos da feature e contratos compartilhados.
-- Organize por feature e domínio; use pastas técnicas apenas dentro de uma feature ou em camadas realmente compartilhadas.
-- Prefira duplicidade local pequena a abstração global prematura.
-- Não coloque regra de negócio em `shared`.
-- Não permita chamada http direta em componentes; use camada `api/`, hooks de orquestração e mappers.
-- Nunca invente contrato de api; peça, leia ou marque como suposição explícita.
-- Nunca trate frontend como fronteira de segurança. Autorizações reais pertencem ao backend.
-- Nunca sugerir segredo no bundle, token sensível em storage web ou payload sensível em logs/analytics.
-- Em projeto existente, preserve linguagem visual, biblioteca de ui, tokens, padrões de css e componentes antes de propor estética nova.
-- Em interface nova sem design system, escolha direção visual intencional e tokens explícitos; evite aparência genérica gerada por ia.
-- Separe validação executada, validação recomendada e raciocínio estático.
+## Core rules
 
-## Entradas esperadas
+- Reduce required context before reducing lines of code: a change should require reading a small set of feature files and shared contracts.
+- Organize by feature and domain; use technical folders only inside a feature or in truly shared layers.
+- Prefer small local duplication over premature global abstraction.
+- Do not place business rules in `shared`.
+- Do not allow direct HTTP calls from components; use an `api/` layer, orchestration hooks, and mappers.
+- Never invent an API contract; request it, read it, or mark it as an explicit assumption.
+- Never treat the frontend as the security boundary. Real authorization belongs on the backend.
+- Never suggest secrets in the bundle, sensitive tokens in web storage, or sensitive payloads in logs or analytics.
+- In existing projects, preserve the visual language, UI library, tokens, CSS patterns, and component conventions before suggesting a new aesthetic.
+- In a new interface without a design system, define intentional visual direction and explicit tokens; avoid generic generated UI patterns.
+- Separate executed validation, recommended validation, and static reasoning.
 
-Inferir e seguir com suposições quando possível:
+## Expected inputs
 
-1. tipo de projeto: spa interna, backoffice, dashboard, produto público, site de conteúdo ou app full-stack;
-2. stack atual ou pretendida: react, vite, next.js, react router, tanstack, astro;
-3. artefato alvo: estrutura de pastas, feature, componente, diff, pr, guia, checklist ou política de segurança;
-4. restrições: design system, autenticação, compliance, dados sensíveis, padrões do time, ferramenta de ia, testes e deploy;
-5. saída esperada: recomendação, plano, checklist, arquivos markdown, revisão, patch conceitual ou comandos de validação.
+Infer and proceed with explicit assumptions when possible:
 
-## Modos
+1. project type: internal SPA, backoffice, dashboard, public product, content site, or full-stack app;
+2. current or intended stack: React, Vite, Next.js, React Router, TanStack, Astro, or similar;
+3. target artifact: folder structure, feature, component, diff, PR, guide, checklist, or security policy;
+4. constraints: design system, authentication, compliance, sensitive data, team conventions, AI tool, tests, and deployment;
+5. expected output: recommendation, plan, checklist, markdown files, review, conceptual patch, or validation commands.
 
-Escolha um modo principal:
+## Modes
 
-| modo | use quando | saída principal |
+Choose one primary mode:
+
+| mode | use when | main output |
 |---|---|---|
-| `framework-selection` | escolher vite, next.js, react router, tanstack start, astro ou stack auxiliar | matriz de decisão e recomendação |
-| `architecture-plan` | desenhar estrutura, dependências, features, shared, entities, docs para ia | proposta de arquitetura e regras |
-| `implementation-guidance` | orientar alteração frontend específica sem editar repo diretamente | passos mínimos, arquivos prováveis, validação |
-| `code-review` | revisar estrutura, componente, hook, feature, diff ou pr frontend | achados por severidade e menor correção |
-| `ux-flow-review` | revisar formulários, onboarding, empty states, ctas, acessibilidade visual e fricção | achados de ux, hipótese e menor ajuste |
-| `runtime-validation` | planejar ou interpretar testes browser/playwright, screenshots, logs e fluxos reais | plano de validação e evidência esperada |
-| `security-review` | revisar risco de vazamento frontend | achados, controles, checklist e gates |
-| `ai-context-docs` | criar ou revisar guias para agentes de ia no repo | arquivos markdown sugeridos ou conteúdo pronto |
-| `repo-scan` | há um repositório local e vale executar checagem leve | relatório do script e leitura crítica |
+| `framework-selection` | choosing Vite, Next.js, React Router, TanStack Start, Astro, or supporting stack pieces | decision matrix and recommendation |
+| `architecture-plan` | designing structure, dependencies, features, shared layers, entities, and AI docs | architecture proposal and rules |
+| `implementation-guidance` | guiding a specific frontend change without editing the repo directly | minimal steps, likely files, validation |
+| `code-review` | reviewing a frontend structure, component, hook, feature, diff, or PR | findings by severity and smallest fix |
+| `ux-flow-review` | reviewing forms, onboarding, empty states, CTAs, visual accessibility, and friction | UX findings, hypothesis, and smallest adjustment |
+| `runtime-validation` | planning or interpreting browser, Playwright, screenshot, log, or real-flow tests | validation plan and expected evidence |
+| `security-review` | reviewing frontend leak and browser-side security risk | findings, controls, checklist, and gates |
+| `ai-context-docs` | creating or reviewing repository guidance for AI agents | suggested markdown files or ready content |
+| `repo-scan` | a local repository is available and a lightweight scan is useful | scanner report plus critical reading |
 
-## Carregamento progressivo
+## Progressive loading
 
-Leia somente o necessário:
+Read only what the task needs:
 
-- `references/framework-selection.md`: escolha de framework e stack.
-- `references/architecture.md`: estrutura por feature, duplicidade, imports e documentação de contexto.
-- `references/implementation-patterns.md`: formulários, estado, api, mappers, design system, testes, acessibilidade, performance e observabilidade.
-- `references/ux-quality.md`: design adaptado ao projeto, qualidade visual, cro de formulários, onboarding, empty states, métricas e experimentos.
-- `references/runtime-validation.md`: validação browser/playwright, evidência visual, logs, acessibilidade runtime, performance e agentes especializados.
-- `references/security.md`: prevenção de vazamento e controles defensivos frontend.
-- `references/review-checklists.md`: checklists de arquitetura, pr, segurança e manutenção por ia.
-- `references/ai-context-docs.md`: modelos de arquivos markdown para orientar agentes.
-- `references/output-contracts.md`: formatos de resposta para recomendações, revisão, segurança e documentação.
-- `examples/activation-scenarios.md`: calibração de ativação e fronteiras.
-- `evals/activation-scenarios.json`: cenários planejados, não métricas executadas.
-- `scripts/check_frontend_ai_package.py`: inspeção local opcional de estrutura e riscos comuns.
+- `references/framework-selection.md`: framework and stack selection.
+- `references/architecture.md`: feature-based structure, duplication, imports, and context documentation.
+- `references/implementation-patterns.md`: forms, state, API, mappers, design system, tests, accessibility, performance, and observability.
+- `references/ux-quality.md`: project-adapted design, visual quality, form CRO, onboarding, empty states, metrics, and experiments.
+- `references/runtime-validation.md`: browser and Playwright validation, visual evidence, logs, runtime accessibility, performance, and specialist agents.
+- `references/security.md`: frontend leak prevention and defensive controls.
+- `references/review-checklists.md`: architecture, PR, security, and AI-maintainability checklists.
+- `references/ai-context-docs.md`: markdown templates for guiding agents.
+- `references/output-contracts.md`: response formats for recommendations, reviews, security, and documentation.
+- `examples/activation-scenarios.md`: activation and boundary calibration.
+- `evals/activation-scenarios.json`: planned scenarios, not executed metrics.
+- `scripts/check_frontend_ai_package.py`: optional local scan for common structure and leak signals.
 
 ## Workflow
 
-1. Classifique a demanda e escolha o modo.
-2. Declare suposições que afetam a resposta, especialmente tipo de app, sensibilidade dos dados e framework.
-3. Se houver arquivos, diff ou repo, inspecione antes de concluir; não generalize sem evidência.
-4. Defina o menor contexto útil: feature, entity, shared/api, shared/ui, docs, testes e, quando houver ui real, screenshots ou validação browser.
-5. Em projeto existente, analise padrões visuais e componentes antes de criar novos.
-6. Aplique a referência do modo escolhido.
-7. Produza a resposta no contrato apropriado.
-8. Inclua validação: comandos executados, checagens estáticas, testes recomendados e riscos não verificados.
+1. Classify the request and choose the mode.
+2. State assumptions that affect the answer, especially app type, data sensitivity, and framework.
+3. If files, a diff, or a repository are available, inspect them before concluding; do not generalize without evidence.
+4. Define the smallest useful context: feature, entity, `shared/api`, `shared/ui`, docs, tests, and, when real UI behavior matters, screenshots or browser validation.
+5. In an existing project, inspect visual patterns and components before creating new ones.
+6. Apply the reference for the selected mode.
+7. Produce the response using the appropriate output contract.
+8. Include validation: executed commands, static checks, recommended tests, and unverified risks.
 
-## Uso do script opcional
+## Optional scanner
 
-Quando houver acesso ao repositório local e o usuário pedir auditoria rápida, rode:
+When a local repository is available and the user requests a quick audit, run:
 
 ```bash
 python scripts/check_frontend_ai_package.py --target <frontend-root> --format markdown --output <report.md>
 ```
 
-Use o resultado como triagem. O script não substitui revisão humana: confirme falsos positivos, leia arquivos relevantes e explique limitações.
+Use the result as triage only. The scanner does not replace human review: confirm false positives, read relevant files, and explain limitations.
 
 ## Output contract
 
-Este é o contrato de saída principal da skill.
+Use `references/output-contracts.md` for specific formats. By default include:
 
-## Saída esperada
-
-Use `references/output-contracts.md` para formatos. Por padrão inclua:
-
-1. suposições;
-2. recomendação ou achados;
-3. estrutura, arquivos ou mudanças mínimas;
-4. validação executada e recomendada;
-5. riscos, dependências e próximo passo de maior valor.
+1. assumptions;
+2. recommendation or findings;
+3. structure, files, or minimal changes;
+4. executed and recommended validation;
+5. risks, dependencies, and the next highest-value step.
 
 ## Stop conditions
 
-Pare, reduza o escopo ou sinalize bloqueio quando:
+Stop, narrow scope, or report a blocker when:
 
-- a mudança exige contrato de api inexistente e seria necessário inventar payload;
-- o usuário pede para colocar segredo, client secret, token de serviço, chave privada ou senha no frontend;
-- a resposta dependeria de política interna, compliance ou autorização que não foi fornecida;
-- o repositório ou diff não está disponível e a pergunta exige evidência sobre arquivos reais;
-- a alteração proposta criaria abstração global sem caso de uso repetido e estável;
-- a solução dependeria de segurança apenas no frontend;
-- validação, benchmark ou readiness seriam alegados sem execução ou evidência.
+- the change requires a missing API contract and answering would invent a payload;
+- the user asks to put a secret, client secret, service token, private key, or password in the frontend;
+- the answer depends on internal policy, compliance, or authorization that was not provided;
+- the repository or diff is unavailable and the question requires evidence about real files;
+- the proposed change would create a global abstraction without a repeated and stable use case;
+- the solution would rely on frontend-only security;
+- validation, benchmark, or readiness would be claimed without execution or evidence.

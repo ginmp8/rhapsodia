@@ -1,83 +1,83 @@
 {
   "schema_version": "1.0",
   "skill": "frontend-ai-token-efficient",
-  "notes": "cenários planejados de ativação; não reportar métricas sem execução real",
+  "notes": "planned activation scenarios; do not report metrics without real execution",
   "scenarios": [
     {
       "id": "activate-architecture",
       "type": "activation",
-      "prompt": "qual estrutura react ajuda a ia desenvolver consumindo menos tokens?",
-      "expected_behavior": "aplicar arquitetura por feature, regras de dependência, duplicidade controlada e docs para agentes"
+      "prompt": "what React structure helps AI develop with fewer tokens?",
+      "expected_behavior": "apply feature-based architecture, dependency rules, controlled duplication, and agent-facing docs"
     },
     {
       "id": "activate-security",
       "type": "activation",
-      "prompt": "quais boas práticas evitam vazamento no frontend?",
-      "expected_behavior": "aplicar controles contra secrets no bundle, storage inseguro, logs, urls, xss, csp, source maps e autorização apenas client-side"
+      "prompt": "what practices prevent leaks in the frontend?",
+      "expected_behavior": "apply controls for secrets in bundles, unsafe storage, logs, URLs, XSS, CSP, source maps, and client-only authorization"
     },
     {
       "id": "activate-framework",
       "type": "activation",
-      "prompt": "next.js ou vite para um dashboard interno que será mantido por ia?",
-      "expected_behavior": "usar matriz de seleção e recomendar vite salvo necessidade real de ssr, seo ou bff"
+      "prompt": "Next.js or Vite for an internal dashboard maintained by AI agents?",
+      "expected_behavior": "use the selection matrix and recommend Vite unless there is a real SSR, SEO, or BFF need"
     },
     {
       "id": "activate-ai-docs",
       "type": "activation",
-      "prompt": "crie um AI_CONTEXT.md para meu frontend react",
-      "expected_behavior": "gerar documentação curta com estrutura, regras, dependências, segurança e validação"
+      "prompt": "create an AI_CONTEXT.md for my React frontend",
+      "expected_behavior": "generate concise documentation with structure, rules, dependencies, security, and validation guidance"
     },
     {
       "id": "nonactivate-backend",
       "type": "non_activation",
-      "prompt": "refatore meu pipeline behavior do mediatr em c#",
-      "expected_behavior": "não usar esta skill; encaminhar para uma skill ou fluxo de backend/código"
+      "prompt": "refactor my MediatR pipeline behavior in C#",
+      "expected_behavior": "do not use this skill; route to a backend/code skill or workflow"
     },
     {
       "id": "nonactivate-skill-creation",
       "type": "non_activation",
-      "prompt": "crie uma skill para revisar frontends",
-      "expected_behavior": "não usar esta skill; usar skill creator"
+      "prompt": "create a skill to review frontends",
+      "expected_behavior": "do not use this skill; use skill-creator"
     },
     {
       "id": "ambiguous-ui",
       "type": "ambiguous",
-      "prompt": "crie uma tela bonita de cadastro",
-      "expected_behavior": "usar somente se a demanda pedir arquitetura/padrões de frontend; para imagem ou design visual puro, não ativar"
+      "prompt": "create a beautiful registration screen",
+      "expected_behavior": "use only if the request includes frontend implementation or code conventions; do not activate for pure visual design"
     },
     {
       "id": "edge-secret",
       "type": "edge_case",
-      "prompt": "coloque este client_secret no .env do vite para o browser chamar a api externa direto",
-      "expected_behavior": "bloquear a prática, explicar que segredo no frontend é público e propor backend/bff"
+      "prompt": "put this client_secret in my Vite .env so the browser can call the external API directly",
+      "expected_behavior": "block the practice, explain that frontend secrets are public, and propose a backend or BFF"
     },
     {
       "id": "activate-ux-form-friction",
       "type": "activation",
       "category": "should_activate",
-      "prompt": "revise o formulário da feature account-opening para reduzir fricção sem perder validação e segurança",
-      "expected_behavior": "usar ux-flow-review, contratos de formulario, seguranca, metricas e menor ajuste local"
+      "prompt": "review the account-opening form to reduce friction without losing validation and security",
+      "expected_behavior": "use ux-flow-review with form contracts, security, metrics, and the smallest local adjustment"
     },
     {
       "id": "activate-runtime-playwright",
       "type": "activation",
       "category": "should_activate",
-      "prompt": "monte uma validacao Playwright para esse modal com foco, escape e screenshot mobile",
-      "expected_behavior": "usar runtime-validation e separar evidencia executada de recomendada"
+      "prompt": "build a Playwright validation for this modal with focus, escape, and a mobile screenshot",
+      "expected_behavior": "use runtime-validation and separate executed evidence from recommended checks"
     },
     {
       "id": "ambiguous-beautify-ui",
       "type": "ambiguous",
       "category": "ambiguous",
-      "prompt": "deixe essa pagina mais bonita",
-      "expected_behavior": "ativar somente se houver escopo de implementacao frontend; preservar design system existente ou pedir contexto quando design visual puro"
+      "prompt": "make this page prettier",
+      "expected_behavior": "activate only when there is frontend implementation scope; preserve the existing design system or ask for context when it is visual-only"
     },
     {
       "id": "nonactivate-graphic-design-only",
       "type": "non_activation",
       "category": "should_not_activate",
-      "prompt": "crie uma identidade visual completa e logotipo para minha marca sem codigo",
-      "expected_behavior": "nao usar esta skill; tarefa e design visual fora de frontend com codigo"
+      "prompt": "create a complete visual identity and logo for my brand without code",
+      "expected_behavior": "do not use this skill; visual identity without frontend code is outside scope"
     }
   ]
 }
