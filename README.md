@@ -65,6 +65,8 @@ Known third-party or adapted content:
 - `skills/karpathy-guidelines/` is an original RhapsodIA skill inspired by public software-engineering guidance; see `skills/karpathy-guidelines/references/source-and-license.md` for source and update rules.
 - Some skills may include upstream or adaptation notes in their own `references/` files.
 
+See `docs/public-source-attribution-audit.md` for the public-source similarity and attribution review that supports the current attribution list.
+
 Third-party content is not relicensed by this repository unless its original license allows it.
 
 ## License
