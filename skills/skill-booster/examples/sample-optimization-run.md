@@ -1,6 +1,6 @@
 # Sample Optimization Run
 
-User: “Optimize `.github/skills/customer-briefing` completely and return a validated `skill.zip`.”
+User: “Optimize `<target-skill-root>` completely and return a validated `skill.zip`.”
 
 Response shape:
 
