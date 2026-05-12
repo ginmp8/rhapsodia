@@ -37,6 +37,8 @@ FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 CONTROLLED_RALPH_FILES = {"manifest.yaml", "tasks.md", "notes.md", "validation.md"}
 MAGIA_PLANNING_INTENT_FILES = {"prd.md"}
 CONTRACT_YAML_REQUIREMENT = "PyYAML is required to validate nomia contract YAML artifacts."
+SKILL_PACKAGE_DIRS = {"agents", "assets", "evals", "examples", "references", "scripts"}
+SKILL_PACKAGE_FILES = {"SKILL.md", "skill.md"}
 CODE_SUFFIXES = {
     ".py",
     ".js",
@@ -64,22 +66,31 @@ def normalize_repo_path(path: str) -> str:
     return path.replace("\\", "/").lstrip("./")
 
 
+def path_parts(path: str) -> list[str]:
+    return [part for part in normalize_repo_path(path).strip("/").split("/") if part]
+
+
+def has_skill_package_anchor(path: str, skill: str) -> bool:
+    parts = path_parts(path)
+    for index, part in enumerate(parts):
+        if part != skill:
+            continue
+        remainder = parts[index + 1 :]
+        if not remainder:
+            return True
+        if remainder[0] in SKILL_PACKAGE_DIRS or remainder[0] in SKILL_PACKAGE_FILES:
+            return True
+    return False
+
+
 def is_under_skill(path: str, skill: str) -> bool:
-    normalized = normalize_repo_path(path)
-    return any(
-        normalized.startswith(prefix)
-        for prefix in (
-            f".github/skills/{skill}/",
-            f"skills/{skill}/",
-            f"{skill}/",
-        )
-    )
+    return has_skill_package_anchor(path, skill)
 
 
 def is_nomia_owned(path: str) -> bool:
     normalized = normalize_repo_path(path)
     name = Path(path).name
-    return is_under_skill(normalized, "nomia") or name in nomia_ARTIFACTS or "/nomia/" in normalized
+    return is_under_skill(normalized, "nomia") or name in nomia_ARTIFACTS or "/nomia/" in f"/{normalized}/"
 
 
 def is_mago_owned(path: str) -> bool:
@@ -93,7 +104,7 @@ def is_magia_owned(path: str) -> bool:
     return (
         is_under_skill(normalized, "magia")
         or name in MAGIA_EVIDENCE_MARKERS
-        or "/execution/" in normalized
+        or "/execution/" in f"/{normalized}/"
         or ".omni_loops/runs/" in normalized
     )
 
