@@ -13,7 +13,8 @@ from nomia_utils import BOARD_ROOT_TEMPLATE, normalize_path, read_normalized_lin
 CANONICAL_PARTS = ("docs", "boards")
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 SPEC_ID_RE = re.compile(r"^spec\d{3}$")
-SKILL_PACKAGE_PREFIXES = (".github/skills/nomia/", "skills/nomia/", "nomia/")
+SKILL_PACKAGE_DIRS = {"agents", "assets", "evals", "examples", "references", "scripts"}
+SKILL_PACKAGE_FILES = {"SKILL.md", "skill.md"}
 BOARD_SCOPED_ARTIFACTS = {
     "feature-map.yaml",
     "internal-notes.md",
@@ -35,9 +36,24 @@ SPEC_SCOPED_ARTIFACTS = {
 nomia_ARTIFACTS = BOARD_SCOPED_ARTIFACTS | SPEC_SCOPED_ARTIFACTS
 
 
+def path_parts(path: str) -> list[str]:
+    return [part for part in normalize_path(path).strip("/").lstrip("./").split("/") if part]
+
+
+def has_skill_package_anchor(parts: list[str], skill_name: str) -> bool:
+    for index, part in enumerate(parts):
+        if part != skill_name:
+            continue
+        remainder = parts[index + 1 :]
+        if not remainder:
+            return True
+        if remainder[0] in SKILL_PACKAGE_DIRS or remainder[0] in SKILL_PACKAGE_FILES:
+            return True
+    return False
+
+
 def is_skill_package_path(path: str) -> bool:
-    normalized = normalize_path(path).lstrip("./")
-    return any(normalized.startswith(prefix) for prefix in SKILL_PACKAGE_PREFIXES)
+    return has_skill_package_anchor(path_parts(path), "nomia")
 
 
 def is_nomia_artifact(path: str) -> bool:
@@ -65,7 +81,7 @@ def validate_path(path: str, expected_board_id: str | None, expected_cycle_versi
     if is_skill_package_path(path):
         return []
 
-    parts = [part for part in normalize_path(path).lstrip("./").split("/") if part]
+    parts = path_parts(path)
     under_root = is_under_canonical_root(parts)
 
     if not under_root and is_nomia_artifact(path):
