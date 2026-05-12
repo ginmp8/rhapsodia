@@ -4,8 +4,10 @@ These examples demonstrate intended nomia patterns without turning governance ar
 
 ## Directory Structure
 
+`<skill-root>` means the root folder of this skill package, for example `skills/nomia`, `.github/skills/nomia`, or an extracted `nomia` package directory.
+
 ```text
-.github/skills/nomia/examples/golden/
+<skill-root>/examples/golden/
 |- index.md
 |- validation-commands.md
 |- 01-delivery-intake-github-issue/
