@@ -66,7 +66,6 @@ Load only what the active branch needs:
 - `references/design-principles.md` for cohesion, mode, router, split, and progressive-loading decisions.
 - `references/quality-gates.md` before readiness, validation, packaging, or final delivery claims.
 - `references/specialist-orchestration.md` when choosing or sequencing specialist passes, including `skill-hypothesis-discovery` for evidence-backed hypothesis backlogs and `skill-change-gate` for candidate acceptance.
-- `references/source-and-license.md` for source, attribution, and update rules when documenting, auditing, packaging, or updating this package's relationship to `skills/skill-creator/`.
 - `evals/activation-scenarios.json` for planned activation, non-activation, ambiguous, and edge coverage. Treat it as planned evidence until executed.
 - `examples/creation-scenarios.md` for human-readable calibration examples.
 - `scripts/juiced_quality_gate.py` for local structural validation.
