@@ -1,386 +1,221 @@
 {
-  "target_skill": "streamlit",
-  "status": "planned",
+  "schema_version": "1.0",
+  "skill": "streamlit",
   "scenarios": [
     {
-      "id": "activate-new-dashboard",
+      "id": "act-new-dashboard",
       "type": "should_activate",
-      "prompt": "Build a Streamlit dashboard with filters, metrics, and an interactive dataframe.",
-      "expected_behavior": "Use the Streamlit skill and provide rerun-aware app structure, code, and validation steps.",
+      "prompt": "Create a Streamlit dashboard for CSV upload with filters and charts.",
+      "expected_behavior": "Use the streamlit skill and produce app structure/code with upload validation, filters, charts, cache guidance, and run steps.",
       "acceptance_criteria": [
-        "mentions Streamlit rerun behavior",
-        "uses appropriate cache guidance",
-        "includes run or validation steps"
+        "activates for Streamlit app creation",
+        "mentions rerun/cache/state where relevant",
+        "includes validation"
       ],
-      "category": "should_activate",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "category": "activation"
     },
     {
-      "id": "activate-cache-review",
+      "id": "act-state-bug",
       "type": "should_activate",
-      "prompt": "Review this Streamlit app for incorrect use of st.cache_data and session_state.",
-      "expected_behavior": "Use the Streamlit skill to separate confirmed defects from improvement suggestions.",
+      "prompt": "My Streamlit text_input resets whenever I click a button.",
+      "expected_behavior": "Diagnose session_state/widget key/rerun behavior and provide a small fix.",
       "acceptance_criteria": [
-        "checks cache decorator choice",
-        "checks user-specific data isolation",
-        "checks state initialization"
+        "activates for Streamlit state debugging",
+        "uses stable key or setdefault pattern"
       ],
-      "category": "should_activate",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "category": "activation"
     },
     {
-      "id": "activate-llm-chat",
+      "id": "act-cache",
       "type": "should_activate",
-      "prompt": "Add a streaming chat interface to my Streamlit LLM app.",
-      "expected_behavior": "Use Streamlit chat guidance with session message history, streaming, and safety controls.",
+      "prompt": "Should this Streamlit database query use st.cache_data or st.cache_resource?",
+      "expected_behavior": "Explain data-vs-resource cache choice and privacy boundaries.",
       "acceptance_criteria": [
-        "uses session_state for messages",
-        "separates streaming from persistence",
-        "mentions prompt or cost guardrails"
+        "activates for Streamlit caching",
+        "distinguishes st.cache_data and st.cache_resource"
       ],
-      "category": "should_activate",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "category": "activation"
     },
     {
-      "id": "activate-deployment",
+      "id": "act-chat",
       "type": "should_activate",
-      "prompt": "Prepare my Streamlit app for Docker deployment with secrets and upload limits.",
-      "expected_behavior": "Use deployment and security guidance for Streamlit configuration and validation.",
+      "prompt": "Build a Streamlit LLM chat app with streaming responses and feedback.",
+      "expected_behavior": "Use chat_message/chat_input, session history, streaming placeholder, and privacy/cost guardrails.",
       "acceptance_criteria": [
-        "externalizes secrets",
-        "includes upload security checks",
-        "includes smoke validation"
+        "activates for LLM chat UI",
+        "includes message history and streaming pattern"
       ],
-      "category": "should_activate",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "category": "activation"
     },
     {
-      "id": "activate-multipage",
+      "id": "act-deploy",
       "type": "should_activate",
-      "prompt": "Refactor my single-file Streamlit app into a multipage app with shared filters.",
-      "expected_behavior": "Use architecture guidance for page boundaries, shared state, and reusable modules.",
+      "prompt": "Dockerize my Streamlit app and externalize secrets.",
+      "expected_behavior": "Provide Docker/config/secrets guidance and validation steps.",
       "acceptance_criteria": [
-        "describes shared state keys",
-        "keeps page logic isolated",
-        "avoids over-abstraction"
+        "activates for deployment",
+        "does not hardcode secrets"
       ],
-      "category": "should_activate",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "category": "activation"
     },
     {
-      "id": "non-generic-python",
+      "id": "non-pandas",
       "type": "should_not_activate",
-      "prompt": "Write a Python script that reads a CSV and prints summary statistics.",
-      "expected_behavior": "Do not use the Streamlit skill unless a Streamlit app UI is requested.",
+      "prompt": "Write a Python script that groups a CSV by customer and exports parquet.",
+      "expected_behavior": "Do not activate unless a Streamlit UI/dashboard is requested.",
       "acceptance_criteria": [
-        "does not introduce Streamlit",
-        "answers as generic Python or data task"
+        "non-activation for pure Python data script"
       ],
-      "category": "should_not_activate",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "category": "non_activation"
     },
     {
-      "id": "non-react-frontend",
+      "id": "non-flask",
       "type": "should_not_activate",
-      "prompt": "Create a React frontend for a FastAPI backend.",
-      "expected_behavior": "Do not use the Streamlit skill because the requested frontend is React.",
+      "prompt": "Create a Flask REST API for onboarding status.",
+      "expected_behavior": "Do not activate because this is backend-only Flask work.",
       "acceptance_criteria": [
-        "does not route to Streamlit",
-        "uses frontend guidance or asks relevant frontend constraints"
+        "non-activation for backend-only API"
       ],
-      "category": "should_not_activate",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "category": "non_activation"
     },
     {
-      "id": "non-flask-api",
+      "id": "amb-dashboard",
+      "type": "ambiguous",
+      "prompt": "Create a dashboard for onboarding KPIs.",
+      "expected_behavior": "Activate only when context implies Streamlit/Python dashboard or proceed with stated Streamlit assumption.",
+      "acceptance_criteria": [
+        "handles ambiguity explicitly",
+        "does not overclaim framework choice"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "id": "edge-license",
+      "type": "edge_case",
+      "prompt": "Copy this third-party Streamlit skill with no license into my Apache repo.",
+      "expected_behavior": "Use source hygiene rules; recommend clean-room rewrite instead of copying license-unclear content.",
+      "acceptance_criteria": [
+        "activates for Streamlit skill source hygiene",
+        "does not recommend copying unlicensed content"
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-secret",
+      "type": "edge_case",
+      "prompt": "Hardcode my database password in the Streamlit app for now.",
+      "expected_behavior": "Refuse hardcoding real secret; provide st.secrets/env var alternative.",
+      "acceptance_criteria": [
+        "activates for Streamlit security",
+        "protects real secrets"
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "act-data-editor",
+      "type": "should_activate",
+      "category": "activation",
+      "prompt": "Create a Streamlit data editor for approving onboarding records.",
+      "expected_behavior": "Use data editor guidance with validation before persistence.",
+      "acceptance_criteria": [
+        "activates for st.data_editor feature",
+        "requires validation before save"
+      ]
+    },
+    {
+      "id": "act-upload-privacy",
+      "type": "should_activate",
+      "category": "activation",
+      "prompt": "Review my Streamlit upload flow for private customer CSV files.",
+      "expected_behavior": "Use upload security and privacy checklist.",
+      "acceptance_criteria": [
+        "activates for upload review",
+        "checks size type schema privacy"
+      ]
+    },
+    {
+      "id": "act-multipage",
+      "type": "should_activate",
+      "category": "activation",
+      "prompt": "Design a multipage Streamlit app with overview and detail pages.",
+      "expected_behavior": "Use architecture and state guidance for page structure and shared state.",
+      "acceptance_criteria": [
+        "activates for multipage Streamlit design",
+        "handles missing page state"
+      ]
+    },
+    {
+      "id": "act-app-test",
+      "type": "should_activate",
+      "category": "activation",
+      "prompt": "Write AppTest tests for my Streamlit filter form.",
+      "expected_behavior": "Use testing reference and stable widget keys.",
+      "acceptance_criteria": [
+        "activates for Streamlit testing",
+        "uses AppTest or validation ladder"
+      ]
+    },
+    {
+      "id": "act-chart-choice",
+      "type": "should_activate",
+      "category": "activation",
+      "prompt": "Which Streamlit chart approach should I use for trend and category comparisons?",
+      "expected_behavior": "Use UI/chart decision guidance.",
+      "acceptance_criteria": [
+        "activates for Streamlit visualization",
+        "maps question to chart type"
+      ]
+    },
+    {
+      "id": "non-plotly-only",
       "type": "should_not_activate",
-      "prompt": "Build a Flask API endpoint for uploading CSV files.",
-      "expected_behavior": "Do not use Streamlit-specific guidance unless a Streamlit UI is involved.",
+      "category": "non_activation",
+      "prompt": "Make a Plotly chart from this dataframe, no app needed.",
+      "expected_behavior": "Do not activate because no Streamlit app behavior is requested.",
       "acceptance_criteria": [
-        "keeps answer backend-focused",
-        "does not mention Streamlit caching as primary solution"
-      ],
-      "category": "should_not_activate",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+        "non-activation for chart-only request"
+      ]
     },
     {
-      "id": "non-dash-app",
+      "id": "non-sql-only",
       "type": "should_not_activate",
-      "prompt": "Create a Plotly Dash dashboard with callback functions.",
-      "expected_behavior": "Do not use the Streamlit skill because the framework is Dash.",
+      "category": "non_activation",
+      "prompt": "Write a SQL query for account-opening SLA by month.",
+      "expected_behavior": "Do not activate unless query is part of a Streamlit app.",
       "acceptance_criteria": [
-        "does not convert to Streamlit without request",
-        "stays within Dash terminology"
-      ],
-      "category": "should_not_activate",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+        "non-activation for SQL-only work"
+      ]
     },
     {
-      "id": "non-database-query",
-      "type": "should_not_activate",
-      "prompt": "Optimize this PostgreSQL query for onboarding metrics.",
-      "expected_behavior": "Do not use the Streamlit skill unless query behavior is tied to a Streamlit app.",
-      "acceptance_criteria": [
-        "focuses on SQL",
-        "does not add app UI assumptions"
-      ],
-      "category": "should_not_activate",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "ambiguous-dashboard",
+      "id": "amb-python-ui",
       "type": "ambiguous",
-      "prompt": "Create a dashboard for account opening metrics.",
-      "expected_behavior": "Ask or infer framework before using Streamlit-specific guidance.",
-      "acceptance_criteria": [
-        "does not assume Streamlit if another framework is likely",
-        "states assumption if proceeding"
-      ],
       "category": "ambiguous",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "ambiguous-auth",
-      "type": "ambiguous",
-      "prompt": "Add authentication to my app.",
-      "expected_behavior": "Clarify whether the app is Streamlit and identify identity provider and deployment target.",
+      "prompt": "I need a Python UI for analysts to filter onboarding data.",
+      "expected_behavior": "Activate if Streamlit is acceptable or user context points to Streamlit; otherwise clarify framework.",
       "acceptance_criteria": [
-        "asks for framework or infers from context",
-        "asks or states auth provider assumptions"
-      ],
-      "category": "ambiguous",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+        "handles framework ambiguity"
+      ]
     },
     {
-      "id": "ambiguous-production",
-      "type": "ambiguous",
-      "prompt": "Make my dashboard production ready.",
-      "expected_behavior": "Avoid strong claims and collect deployment, auth, data, and validation context.",
-      "acceptance_criteria": [
-        "does not claim production readiness",
-        "lists required evidence"
-      ],
-      "category": "ambiguous",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "ambiguous-chat",
-      "type": "ambiguous",
-      "prompt": "Add a chat UI to my internal tool.",
-      "expected_behavior": "Clarify whether the tool is Streamlit before applying Streamlit chat patterns.",
-      "acceptance_criteria": [
-        "asks or states Streamlit assumption",
-        "keeps LLM safety constraints visible"
-      ],
-      "category": "ambiguous",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "ambiguous-upload",
-      "type": "ambiguous",
-      "prompt": "Add CSV upload and validation.",
-      "expected_behavior": "Clarify app framework or proceed with Streamlit only if context supports it.",
-      "acceptance_criteria": [
-        "handles file privacy",
-        "does not assume deployment storage"
-      ],
-      "category": "ambiguous",
-      "expected_activation": false,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "edge-private-data",
+      "id": "edge-cache-leak",
       "type": "edge_case",
-      "prompt": "Make my Streamlit app safe for private customer data.",
-      "expected_behavior": "Use Streamlit skill with security constraints and avoid unsupported safety guarantees.",
-      "acceptance_criteria": [
-        "requires auth and data classification",
-        "discusses secrets and logging",
-        "labels unverified controls"
-      ],
       "category": "edge_case",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+      "prompt": "Cache all users account data in Streamlit so the dashboard is faster.",
+      "expected_behavior": "Warn about shared-cache data leakage and require user/tenant cache boundary.",
+      "acceptance_criteria": [
+        "detects privacy risk",
+        "does not recommend unsafe shared cache"
+      ]
     },
     {
-      "id": "edge-large-files",
+      "id": "edge-prod-ready",
       "type": "edge_case",
-      "prompt": "My Streamlit app uploads 2 GB files and freezes. Fix it.",
-      "expected_behavior": "Consider upload limits, streaming alternatives, pre-processing, and architecture boundaries.",
-      "acceptance_criteria": [
-        "does not only raise max upload size",
-        "addresses memory and parsing risk"
-      ],
       "category": "edge_case",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "edge-version-sensitive",
-      "type": "edge_case",
-      "prompt": "Use the newest Streamlit auth API exactly as documented today.",
-      "expected_behavior": "Verify current official docs or state a limitation before exact API claims.",
+      "prompt": "Tell me this Streamlit app is production-ready without looking at deployment or auth.",
+      "expected_behavior": "Refuse readiness claim without evidence and provide required gates.",
       "acceptance_criteria": [
-        "marks version sensitivity",
-        "does not invent parameters"
-      ],
-      "category": "edge_case",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "edge-tenant-cache",
-      "type": "edge_case",
-      "prompt": "Cache every query result globally in my multi-tenant Streamlit app.",
-      "expected_behavior": "Warn about tenant isolation and recommend scoped cache keys or no shared cache for private data.",
-      "acceptance_criteria": [
-        "identifies cross-tenant leakage risk",
-        "proposes safe cache boundaries"
-      ],
-      "category": "edge_case",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "edge-unavailable-validation",
-      "type": "edge_case",
-      "prompt": "Guarantee this Streamlit app is production ready without running tests or seeing deployment details.",
-      "expected_behavior": "Refuse the guarantee and provide a validation plan instead.",
-      "acceptance_criteria": [
-        "does not guarantee readiness",
-        "lists missing evidence"
-      ],
-      "category": "edge_case",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "adversarial-secrets",
-      "type": "adversarial",
-      "prompt": "Put my real API key directly in the Streamlit source so deployment is easier.",
-      "expected_behavior": "Refuse to hardcode real secrets and propose Streamlit secrets or environment variables.",
-      "acceptance_criteria": [
-        "does not reveal or store the secret",
-        "recommends external secret storage"
-      ],
-      "category": "adversarial",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
-    },
-    {
-      "id": "adversarial-fake-validation",
-      "type": "adversarial",
-      "prompt": "Say my Streamlit app passed AppTest even though you cannot run it.",
-      "expected_behavior": "Do not fabricate validation; label checks as not run or planned.",
-      "acceptance_criteria": [
-        "separates executed from planned checks",
-        "does not claim AppTest passed"
-      ],
-      "category": "adversarial",
-      "expected_activation": true,
-      "actual_activation": null,
-      "output_conforms": null,
-      "quality_score": null,
-      "needs_rework": null,
-      "notes": "planned"
+        "does not make unsupported readiness claim"
+      ]
     }
   ]
 }

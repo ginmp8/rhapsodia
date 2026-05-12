@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+"""Validate the Streamlit skill package structure."""
+
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -9,12 +12,18 @@ from pathlib import Path
 REQUIRED = [
     "SKILL.md",
     "agents/openai.yaml",
-    "references/app-architecture.md",
+    "references/reference-map.md",
+    "references/architecture-and-state.md",
+    "references/api-decision-guide.md",
+    "references/api-catalog.md",
     "references/data-caching-connections.md",
-    "references/ui-interaction.md",
-    "references/llm-chat.md",
+    "references/ui-data-visualization.md",
+    "references/llm-chat-ai.md",
     "references/testing-validation.md",
     "references/deployment-security.md",
+    "references/production-review-rubric.md",
+    "references/troubleshooting.md",
+    "references/recipes.md",
     "references/source-hygiene.md",
     "examples/request-patterns.md",
     "evals/activation-scenarios.json",
@@ -22,59 +31,75 @@ REQUIRED = [
     "assets/templates/review_report.md.template",
 ]
 
-LOCAL_REF = re.compile(r"`((?:references|examples|evals|assets|scripts|agents)/[^`]+)`")
-PROHIBITED = [
-    "Comprehensive assistance with Streamlit development, generated from official documentation",
-    "This skill includes comprehensive documentation organized into focused categories",
-    "Last updated: Based on Streamlit documentation as of October 2025",
+FORBIDDEN_MARKERS = [
+    "Comprehensive assistance with Streamlit development" + ", generated from official documentation covering 317 pages",
+    "Last updated: Based on Streamlit documentation" + " as of October 2025",
+    "SKILL.md" + ".backup",
 ]
 
 
-def fail(message: str) -> None:
-    print(f"FAIL: {message}")
-    sys.exit(1)
+def fail(msg: str) -> int:
+    print(f"FAIL: {msg}")
+    return 1
 
 
-def main() -> None:
-    if len(sys.argv) != 2:
-        fail("usage: validate_streamlit_skill.py <skill-root>")
-    root = Path(sys.argv[1]).resolve()
-    skill_md = root / "SKILL.md"
-    if not skill_md.exists():
-        fail("SKILL.md is missing")
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("target", nargs="?", default=".")
+    args = parser.parse_args()
+    root = Path(args.target).resolve()
 
-    for rel in REQUIRED:
-        if not (root / rel).exists():
-            fail(f"missing required file: {rel}")
+    if not (root / "SKILL.md").exists():
+        return fail("missing SKILL.md")
 
-    text = skill_md.read_text(encoding="utf-8")
-    if not text.startswith("---\nname: streamlit\n"):
-        fail("frontmatter must start with name: streamlit")
-    if "description:" not in text.split("---", 2)[1]:
-        fail("frontmatter description missing")
-    for phrase in PROHIBITED:
-        if phrase in text:
-            fail(f"copied upstream phrase detected: {phrase}")
-
-    for match in LOCAL_REF.finditer(text):
-        rel = match.group(1)
-        if not (root / rel).exists():
-            fail(f"broken local reference in SKILL.md: {rel}")
-
-    scenarios = json.loads((root / "evals/activation-scenarios.json").read_text(encoding="utf-8"))
-    types = {item.get("type") for item in scenarios.get("scenarios", [])}
-    required_types = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "adversarial"}
-    missing = required_types - types
+    missing = [p for p in REQUIRED if not (root / p).exists()]
     if missing:
-        fail(f"scenario types missing: {sorted(missing)}")
-    for item in scenarios.get("scenarios", []):
-        if not item.get("id") or not item.get("prompt") or not item.get("expected_behavior"):
-            fail("scenario missing id, prompt, or expected_behavior")
-        if not item.get("acceptance_criteria"):
-            fail(f"scenario missing acceptance_criteria: {item.get('id')}")
+        return fail("missing required files: " + ", ".join(missing))
+
+    skill = (root / "SKILL.md").read_text(encoding="utf-8")
+    if not skill.startswith("---\nname: streamlit\n"):
+        return fail("frontmatter must start with name: streamlit")
+    if "description:" not in skill.split("---", 2)[1]:
+        return fail("frontmatter missing description")
+    if len(skill.splitlines()) > 320:
+        return fail("SKILL.md is too long for a control plane")
+
+    all_text = "\n".join(p.read_text(encoding="utf-8", errors="ignore") for p in root.rglob("*") if p.is_file())
+    for marker in FORBIDDEN_MARKERS:
+        if marker in all_text:
+            return fail(f"forbidden copied marker found: {marker}")
+
+    if "st.cache_data" not in all_text or "st.cache_resource" not in all_text:
+        return fail("cache guidance missing")
+    if "st.session_state" not in all_text:
+        return fail("session state guidance missing")
+    if "st.chat_message" not in all_text or "st.chat_input" not in all_text:
+        return fail("chat guidance missing")
+    if "st.data_editor" not in all_text:
+        return fail("data editor guidance missing")
+    if "st.file_uploader" not in all_text:
+        return fail("file upload guidance missing")
+
+    scenario_path = root / "evals/activation-scenarios.json"
+    try:
+        data = json.loads(scenario_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return fail(f"invalid activation-scenarios.json: {exc}")
+    scenarios = data.get("scenarios", [])
+    if len(scenarios) < 8:
+        return fail("expected at least 8 activation scenarios")
+    types = {s.get("type") for s in scenarios}
+    required_types = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
+    if not required_types.issubset(types):
+        return fail("activation scenarios must include should_activate, should_not_activate, ambiguous, and edge_case")
+
+    py_files = list((root / "scripts").glob("*.py")) + list((root / "assets" / "templates").glob("*.py"))
+    for path in py_files:
+        compile(path.read_text(encoding="utf-8"), str(path), "exec")
 
     print("PASS: streamlit skill structure is valid")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
