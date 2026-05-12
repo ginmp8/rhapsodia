@@ -82,7 +82,6 @@ Load only the support file needed by the branch:
 - `references/context-and-evidence-policy.md`: repo context, external docs, command output, citations, context budget, secrets, or unsupported claims.
 - `references/response-contracts.md`: implementation, refactor, review, plan, test-design, or risk-audit response shape.
 - `references/validation-and-stop-conditions.md`: incomplete verification, unsafe scope, missing inputs, broad changes, or unverifiable requests.
-- `references/source-and-license.md`: source and attribution notes when documenting, auditing, packaging, or updating this package's public engineering-guidance inspiration.
 - `references/activation-scenarios.md`: manual regression review of activation boundaries.
 - `evals/activation-boundary-scenarios.json`: canonical planned scenario suite for activation, ambiguous, edge, regression, adversarial, and non-activation coverage; metrics remain unmeasured until executed.
 - `examples/hardening-scenarios.json`: legacy planned hardening scenario set for package-maintenance compatibility.
@@ -177,6 +176,5 @@ When editing this skill package itself:
 - `references/context-and-evidence-policy.md`: context selection, evidence labels, command output, external docs, and secrets.
 - `references/response-contracts.md`: response shapes and severity rules by mode.
 - `references/validation-and-stop-conditions.md`: validation ladder, blockers, and honest closure rules.
-- `references/source-and-license.md`: source and attribution notes for the public engineering-guidance inspiration behind this package.
 - `references/activation-scenarios.md`: activation, non-activation, ambiguous, and edge-case prompts for regression review.
 - `evals/activation-boundary-scenarios.json`: canonical planned scenario suite used by the package validator.
