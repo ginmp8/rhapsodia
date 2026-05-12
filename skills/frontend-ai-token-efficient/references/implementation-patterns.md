@@ -1,210 +1,184 @@
-# Padrões de implementação frontend
+# Implementation patterns
 
-Use esta referência para orientar mudanças em formulários, estado, api, design system, testes, acessibilidade, performance e observabilidade.
+Use this reference for concrete frontend implementation guidance: components, forms, state, APIs, mappers, tests, accessibility, performance, and observability.
 
-## Contratos de api
+## Minimal-change process
 
-A ia não deve inventar payload. Prefira contrato explícito:
+1. Identify the feature owner and existing pattern.
+2. List likely files to read before changing code.
+3. Confirm API contracts or mark assumptions explicitly.
+4. Keep new code close to the feature until reuse is proven.
+5. Add or update tests near the changed behavior.
+6. Add browser validation when runtime behavior matters.
 
-- openapi ou tipos gerados;
-- tipos request/response versionados;
-- fixtures canônicas;
-- mappers entre backend e frontend;
-- schemas de validação quando resposta for crítica.
+## Component rules
 
-Padrão de feature:
+Components should focus on rendering and interaction details.
+
+Prefer:
+
+- typed props shaped for display;
+- callbacks for actions;
+- local UI state for toggles, focus, drafts, and disclosure;
+- composition with existing design-system primitives;
+- clear loading, empty, error, disabled, success, and permission states.
+
+Avoid:
+
+- direct API calls inside components;
+- business rules hidden inside generic UI components;
+- components importing unrelated feature modules;
+- one component handling fetch, transform, validation, layout, analytics, and permission logic at once.
+
+## Hook rules
+
+Hooks can orchestrate data, form state, and UI behavior, but ownership must stay visible.
+
+Good hook responsibilities:
+
+- combine API calls, mapper output, and view state for one feature;
+- expose small command functions to components;
+- isolate browser concerns such as focus restoration or media query state;
+- keep retry, error, and loading handling consistent.
+
+Bad hook responsibilities:
+
+- becoming a generic dumping ground;
+- hiding cross-feature business rules;
+- calling unrelated features;
+- returning very large objects that force broad rerenders and broad context reads.
+
+## Forms
+
+Form structure should make validation, UX, and API mapping explicit.
+
+Recommended files:
 
 ```txt
-api/account-opening.api.ts
-model/account-opening.types.ts
-model/account-opening.schema.ts
-model/account-opening.mappers.ts
-tests/account-opening.fixtures.ts
+features/<feature>/schemas/<form>.schema.ts
+features/<feature>/model/<form>.defaults.ts
+features/<feature>/api/<operation>.mapper.ts
+features/<feature>/hooks/use<form>.ts
+features/<feature>/components/<Form>.tsx
 ```
 
-Componentes não chamam `fetch` ou `axios` diretamente. Eles chamam hooks de fluxo ou handlers recebidos por props.
+Guidelines:
 
-## Formulários
+- Use schema validation for user input and runtime boundaries.
+- Keep transport payload mapping separate from form rendering.
+- Keep labels visible; placeholders are examples, not labels.
+- Show errors close to fields and preserve input on submit failure.
+- Focus the first invalid field after submit.
+- Split long forms into steps only when it reduces cognitive load or supports saved progress.
+- Do not collect a field just because it might be useful later; tie it to value, compliance, or backend requirement.
 
-Padrão preferido:
+## API layer
+
+Use an API layer for transport and contract handling.
 
 ```txt
-react hook form + zod
-schema em model/*.schema.ts
-mapper para request em model/*.mappers.ts
-api em api/*.api.ts
-estado visual no componente
+api/create-application.api.ts      # HTTP call
+api/create-application.types.ts    # DTOs or generated types
+api/create-application.mapper.ts   # feature model <-> API payload
+api/create-application.errors.ts   # optional error mapping
 ```
 
-Fluxo:
+Rules:
 
-```txt
-ui do formulário -> schema validation -> mapper -> api request -> tratamento padronizado de erro
-```
+- Components do not call HTTP clients directly.
+- Mappers own transformation between UI/domain models and transport DTOs.
+- Do not invent unknown fields. Use TODO or assumption notes when contract is unavailable.
+- Normalize API errors into UI-friendly states.
+- Do not leak raw backend errors to users or logs when they may contain sensitive data.
 
-Evite montar payload manualmente no `onSubmit` dentro do componente quando houver regra de transformação.
+## State selection
 
-## Estado
-
-Classifique antes de escolher ferramenta:
-
-| tipo | ferramenta preferida |
+| need | preferred state |
 |---|---|
-| estado local de ui | `useState` ou `useReducer` |
-| estado de formulário | react hook form |
-| estado de servidor | tanstack query |
-| estado global transversal | store/context com parcimônia |
-| estado derivado | calcular, não armazenar |
+| local input, toggle, open/closed state | component state |
+| feature workflow state | feature hook or reducer |
+| server cache, refetch, stale data | server-state library |
+| shareable filters, tabs, pagination | URL state |
+| authenticated user shell, theme, stable app-wide preferences | global store/provider |
 
-Não coloque tudo em store global. Estado global deve cobrir sessão, usuário autenticado, permissões, tema, flags ou preferências realmente transversais.
+Do not introduce global state to avoid prop passing for one feature. Global state increases the number of files an agent must inspect.
 
-## Permissões
+## Design-system usage
 
-Frontend pode esconder ações e rotas, mas backend deve revalidar tudo. Prefira funções nomeadas:
+In existing products:
 
-```ts
-canCreateAccountOpening(user)
-canApproveCompanyUpdate(user)
-canViewPartnerDetails(user)
-```
+- reuse current UI library and tokens;
+- inspect similar screens before creating new components;
+- preserve spacing, typography, colors, radius, elevation, motion, and interaction conventions;
+- create wrappers only when the team already uses that pattern or when repeated design-system usage is error-prone.
 
-Evite espalhar strings mágicas de roles em componentes.
+When no design system exists:
 
-## Design system
+- define a small token set first;
+- choose one layout strategy;
+- define accessible focus, disabled, error, loading, and empty states;
+- avoid one-off styles that cannot be reused.
 
-Em projeto existente, use primeiro os componentes e tokens já adotados. Antes de criar componente visual novo, procure equivalente no design system ou em features próximas. Só crie variação nova quando houver lacuna real e documente o motivo.
+## Accessibility defaults
 
-Tenha um conjunto limitado de blocos reutilizáveis:
+Check at least:
 
-```txt
-shared/ui/Button
-shared/ui/Input
-shared/ui/Select
-shared/ui/Modal
-shared/ui/DataTable
-shared/ui/Alert
-shared/ui/FormField
-shared/ui/EmptyState
-shared/ui/ErrorState
-shared/ui/LoadingState
-```
+- semantic HTML before ARIA;
+- visible focus;
+- keyboard navigation;
+- labels and descriptions for inputs;
+- modal focus trap, escape behavior, and return focus;
+- screen reader announcements for dynamic errors and success states;
+- contrast and touch target size;
+- reduced motion where animation may distract or harm.
 
-A ia deve montar telas com blocos existentes antes de criar variações novas.
+## Performance defaults
 
-## Qualidade visual sem design solto
+Prioritize simple performance wins before advanced tuning:
 
-Para novas interfaces sem design system claro, defina direção visual, tokens e hierarquia antes de implementar. Para sistemas internos, prefira precisão, legibilidade, contraste, densidade controlada e feedback explícito a estética chamativa. Para produto público, a identidade pode ser mais expressiva, mas precisa preservar acessibilidade, performance e responsividade.
+- keep route and feature boundaries clear;
+- avoid unnecessary global renders;
+- lazy-load heavy routes or charts when useful;
+- memoize only after evidence of rerender cost;
+- avoid shipping unused component libraries or icon packs;
+- track bundle impact when adding major dependencies.
 
-Evite padrões genéricos de IA: cards repetitivos sem hierarquia, roxo-gradiente por padrão, animações decorativas demais, fontes/paletas aleatórias e layouts sem relação com o domínio.
+## Observability and analytics
 
-## Loading, empty, error e success
+Frontend observability should help diagnose user-impacting behavior without leaking data.
 
-Toda tela de dados deve considerar:
+Recommended events:
 
-```txt
-loading
-empty
-error
-success
-permission denied
-partial data
-retry
-```
+- flow started/completed/abandoned;
+- field-level error counts without raw field values;
+- API failure category, not sensitive payload;
+- retry and timeout counts;
+- browser/runtime error boundaries;
+- performance markers for important flows.
 
-Padrão:
+Rules:
 
-```tsx
-if (isLoading) return <LoadingState />;
-if (error) return <ErrorState error={error} onRetry={refetch} />;
-if (!data.length) return <EmptyState title="nenhum registro encontrado" />;
-```
+- Never log secrets, tokens, documents, raw personal data, financial data, or full API payloads.
+- Redact or hash identifiers only when approved by policy.
+- Keep event names stable and documented.
+- Put analytics behind a small wrapper so sensitive fields can be blocked centrally.
 
-## Formulários de alta qualidade
+## Testing pattern
 
-Além de schema e mapper, revisar UX do formulário:
+Use the lowest-cost test that catches the risk:
 
-- remover ou adiar campos sem uso comprovado;
-- labels sempre visíveis; placeholder apenas como exemplo;
-- campos fáceis antes de campos sensíveis;
-- uma coluna por padrão, especialmente mobile;
-- teclado mobile correto;
-- inline validation sem punir enquanto digita;
-- erro específico, próximo ao campo e sem limpar input;
-- no submit inválido, focar primeiro erro;
-- CTA deve comunicar ação e resultado quando fizer sentido;
-- medir form start, completion, field drop-off e error rate quando otimização for objetivo.
+- pure functions, mappers, reducers, and schemas: unit tests;
+- components with conditional states: component tests;
+- forms, modals, routing, permissions, responsiveness, and browser APIs: Playwright or equivalent browser validation;
+- accessibility and keyboard behavior: automated smoke plus manual review where needed.
 
-## Onboarding e empty states
+## Implementation guidance output
 
-Para primeiro uso, onboarding ou ativação:
+When guiding implementation, provide:
 
-- identifique o evento de ativação ou `aha moment`;
-- reduza passos até primeiro valor;
-- uma meta principal por sessão;
-- empty state deve explicar valor, mostrar exemplo/preview e oferecer ação primária;
-- checklist deve ter poucos itens, quick wins e opção de dismiss;
-- tours devem ser curtos, contextuais e não repetitivos;
-- medir activation rate, time-to-activation e feature adoption.
-
-## Testes
-
-Priorize testes de comportamento:
-
-- schemas;
-- mappers;
-- regras de permissão;
-- hooks de fluxo;
-- componentes com regra relevante;
-- fluxos críticos;
-- regressões de bug.
-
-Evite testes frágeis de classe css ou estrutura visual sem comportamento.
-
-Fixtures devem ser nomeadas por intenção:
-
-```ts
-validAccountOpeningRequest
-companyWithoutRequiredPartner
-userWithoutApprovalPermission
-```
-
-## Acessibilidade
-
-Regras mínimas:
-
-- cada input tem label;
-- botão é `button`, não `div` clicável;
-- erros são associados aos campos;
-- modal gerencia foco;
-- não depender apenas de cor;
-- estados loading/error são anunciáveis quando relevante;
-- links e botões têm nomes acessíveis.
-
-## Validação browser
-
-Quando comportamento depende do navegador, complemente testes unitários com Playwright ou ferramenta equivalente. Priorize fluxos reais: formulário, modal, foco, teclado, responsividade, console errors, failed requests, loading/error/empty states e screenshots quando layout importar.
-
-## Performance
-
-Priorize clareza. Otimize após sinal concreto.
-
-Boas práticas:
-
-- paginação para listas grandes;
-- virtualização para tabelas muito grandes;
-- code splitting por rota quando útil;
-- evitar estado global que re-renderiza tudo;
-- não adicionar `useMemo`, `useCallback` e `React.memo` por reflexo;
-- medir antes de declarar ganho de performance.
-
-## Observabilidade
-
-Crie wrapper central:
-
-```txt
-shared/observability/track-event.ts
-shared/observability/report-error.ts
-shared/observability/sanitize-event.ts
-```
-
-Não logue payload completo, headers ou dados pessoais. Eventos devem usar códigos, etapas e metadados mínimos.
+1. assumptions;
+2. minimal file set to inspect or change;
+3. step-by-step implementation plan;
+4. contract assumptions and data boundaries;
+5. validation commands and browser checks;
+6. risks and rollback notes.

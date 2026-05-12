@@ -1,59 +1,47 @@
-# Seleção de framework e stack
+# Framework and stack selection
 
-Use esta referência quando a demanda envolver escolha de framework, stack base ou trade-off entre simplicidade, seo, ssr, full-stack e manutenção por ia.
+Use this reference when the user asks which React/TypeScript frontend stack to use, especially when AI-maintainability, repository simplicity, or long-term ownership are decision factors.
 
-## Recomendação padrão
+## Default bias
 
-Para spa corporativa, backoffice, dashboard, onboarding, cadastro, primeiro acesso, fluxos autenticados e sistemas internos, prefira:
+Prefer the simplest stack that satisfies real requirements. Do not choose a full-stack or server-rendering framework only because it is popular.
 
-```txt
-react + typescript + vite
-```
+## Decision matrix
 
-Stack auxiliar recomendada:
+| option | strong fit | weak fit | AI-maintainability notes |
+|---|---|---|---|
+| Vite + React | internal SPAs, dashboards, backoffice tools, authenticated apps, static hosting | SEO-heavy public pages, complex server rendering, edge/server actions needed | small surface area, clear client-only model, fast local feedback, fewer framework conventions for agents to learn |
+| Next.js | SEO, public pages, server rendering, hybrid server/client work, BFF needs, image/routing platform needs | simple internal app with no SSR/SEO/BFF requirement | powerful but increases context cost through server/client boundaries, caching, routing, and deployment rules |
+| React Router framework/data routers | SPAs with strong routing, loaders/actions, nested flows, app-like navigation | teams unfamiliar with route data conventions | good when route ownership is clear; document loader/action contracts carefully |
+| TanStack Start | teams already committed to TanStack ecosystem and comfortable with newer full-stack patterns | conservative enterprise apps or teams needing mature conventions | evaluate maturity, deployment constraints, and agent familiarity before adopting |
+| Astro | content-heavy sites, marketing pages, docs, partial islands | complex authenticated app workflows | excellent for content boundaries; less direct fit for interactive business apps |
 
-```txt
-react router ou tanstack router
-tanstack query
-zod
-react hook form
-vitest
-testing library
-eslint
-prettier
-msw quando mocks de api forem relevantes
-```
+## Recommendation defaults
 
-Motivo: menos convenção implícita, bootstrap enxuto, estrutura explícita e menor contexto obrigatório para ia.
+- For internal backoffice or dashboard apps, recommend Vite + React unless SSR, SEO, or server-side composition is required.
+- For public marketing/product pages, evaluate Astro or Next.js depending on interactivity and server needs.
+- For authenticated workflow apps, prefer explicit API boundaries over framework magic.
+- For teams using AI agents heavily, prefer stacks with fewer hidden lifecycle and deployment rules.
 
-## Matriz de escolha
+## Questions to resolve
 
-| contexto | escolha preferida | motivo |
-|---|---|---|
-| spa interna consumindo api | react + vite + typescript | simplicidade e baixo contexto |
-| backoffice, dashboard, onboarding, cadastro | react + vite + typescript | foco em fluxo e formulários |
-| produto público com seo | next.js app router | ssr, ssg, rotas públicas |
-| app full-stack react com loaders/actions | react router framework mode | boa separação sem a carga completa do next |
-| time maduro em tanstack e aceita tecnologia mais nova | tanstack start | type safety forte e ecossistema tanstack |
-| docs, site institucional, blog, landing page | astro + react | html estático com ilhas interativas |
+Ask or infer:
 
-## Quando escolher next.js
+1. Is SEO or public page performance a primary requirement?
+2. Is server rendering required, or only client-side rendering?
+3. Does the frontend need a BFF, server actions, or secure server-side calls?
+4. What deployment platform is mandated?
+5. Is the app mostly forms, dashboards, content, or interactive product flows?
+6. Which libraries and conventions does the team already know?
+7. What validation is expected: unit, component, Playwright, visual regression, accessibility, performance?
 
-Escolha next.js quando pelo menos um ponto for real:
+## Output format
 
-- seo ou indexação importa;
-- ssr ou ssg melhora o produto;
-- existem páginas públicas relevantes;
-- autenticação server-side é necessária;
-- bff ou route handlers no mesmo projeto reduzem acoplamento;
-- o time domina app router e server/client components.
+For framework selection, respond with:
 
-Em sistemas internos sem seo e com backend separado, next.js pode aumentar contexto e risco de uso incorreto de server/client boundaries.
-
-## Quando escolher astro
-
-Use astro quando a maior parte do produto é conteúdo estático, documentação, landing pages ou portal institucional. Evite como padrão para backoffice denso, formulários interdependentes e fluxos com muito estado autenticado.
-
-## Critério final
-
-Escolha o framework que minimiza a quantidade de regras implícitas que a ia precisa conhecer para alterar uma feature. Framework poderoso é vantagem apenas quando a necessidade dele é real.
+1. assumptions;
+2. decision matrix comparing 2-4 viable options;
+3. recommendation;
+4. conditions that would change the recommendation;
+5. minimal project structure;
+6. validation and migration notes.

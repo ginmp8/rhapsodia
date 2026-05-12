@@ -1,116 +1,118 @@
-# Qualidade de UX, design e conversão sem perder manutenibilidade
+# UX quality tied to frontend implementation
 
-Use esta referência quando a mudança frontend envolve aparência, fluxo, formulário, onboarding, empty state, CTA, fricção, responsividade, ativação ou conversão. O objetivo não é transformar a skill em design visual puro; é garantir que a IA implemente interfaces úteis, coerentes e verificáveis.
+Use this reference when UX, CRO, visual quality, onboarding, forms, empty states, or friction are connected to frontend code, design-system usage, accessibility, analytics, or runtime validation.
 
-## Projeto existente: adaptar primeiro
+This reference should not turn the skill into a pure creative design generator. In existing products, project consistency and user task clarity matter more than novelty.
 
-Antes de criar UI nova em um projeto existente, inspecione:
+## Existing project: preserve the product language
 
-- design system e biblioteca de componentes;
-- tokens de cor, espaçamento, tipografia, radius, sombra e motion;
-- padrões de layout, grid, breakpoints e responsividade;
-- componentes semelhantes já usados em outra feature;
-- estados existentes de loading, empty, error, disabled, success e permission denied.
+Before proposing UI changes, inspect or ask for:
 
-Preserve a linguagem visual estabelecida. Não introduza fonte, paleta, animação ou biblioteca nova apenas para parecer diferente.
+- the design system and component library;
+- color, spacing, typography, radius, shadow, and motion tokens;
+- layout, grid, breakpoint, and responsive patterns;
+- similar components already used by another feature;
+- existing loading, empty, error, disabled, success, and permission-denied states.
 
-## Interface nova: direção visual explícita
+Preserve the established visual language. Do not introduce a new font, palette, animation style, or library just to make a screen look different.
 
-Quando não houver design system ou a tarefa for criar uma interface nova, defina antes de codar:
+## New interface without a design system
 
-1. propósito: problema, usuário e tarefa principal;
-2. tom: utilitário, editorial, institucional, premium, minimalista, denso, técnico, etc.;
-3. restrições: framework, acessibilidade, performance, responsividade, dados sensíveis;
-4. elemento memorável: o que torna a tela reconhecível sem prejudicar uso.
+When there is no design system or the task is a new interface, define before coding:
 
-Use tokens explícitos para cores, spacing, radius, tipografia e motion. Evite aparência genérica de IA: layouts previsíveis sem contexto, roxo-gradiente por padrão, excesso de cards idênticos, microcopy vaga e animações decorativas sem função.
+1. purpose: problem, user, and primary task;
+2. tone: utilitarian, editorial, institutional, premium, minimal, dense, technical, playful, or another product-fit direction;
+3. constraints: framework, accessibility, performance, responsiveness, and sensitive data;
+4. signature element: what makes the screen recognizable without hurting usability.
 
-## Intensidade visual por contexto
+Use explicit tokens for color, spacing, radius, typography, and motion. Avoid generic generated UI patterns: context-free card grids, default gradient hero sections, vague microcopy, unmotivated decorative animation, and visual choices unrelated to the product task.
 
-| contexto | intensidade preferida |
+## Visual intensity by context
+
+| context | preferred intensity |
 |---|---|
-| backoffice, dashboard, fluxo regulatório, cadastro | precisão refinada, hierarquia clara, baixa distração |
-| landing page ou produto público | identidade visual mais expressiva, sem sacrificar performance e acessibilidade |
-| onboarding ou primeiro uso | orientação clara, progressão e quick wins |
-| tela crítica com dado sensível | sobriedade, confiança, feedback explícito e mínimo ruído |
+| backoffice, dashboard, regulatory flow, registration | refined precision, clear hierarchy, low distraction |
+| landing page or public product | more expressive identity without sacrificing performance or accessibility |
+| onboarding or first use | guidance, progression, and quick wins |
+| critical screen with sensitive data | sobriety, trust, explicit feedback, and minimal noise |
 
-## Formulários e fricção
+## Forms and friction
 
-Para cada campo, perguntar:
+For each field, ask:
 
-- é obrigatório antes de entregar valor?
-- pode ser inferido, enriquecido ou pedido depois?
-- há exigência legal/compliance para coletar agora?
-- a informação é realmente usada no follow-up ou fluxo backend?
+- Is it required before the user receives value?
+- Can it be inferred, enriched, or requested later?
+- Is there a legal, compliance, or risk requirement to collect it now?
+- Is the information actually used by the follow-up flow or backend process?
 
-Boas práticas:
+Good practices:
 
-- um assunto por campo;
-- labels sempre visíveis, placeholder como exemplo, não como label;
-- campos fáceis primeiro; campos sensíveis ou difíceis depois;
-- phone, documento, moeda e data com máscara/normalização clara;
-- teclado mobile apropriado (`email`, `tel`, `numeric`);
-- layout de uma coluna como default; múltiplas colunas só para campos curtos e relacionados;
-- multi-step quando houver muitas seções, com progresso, back navigation e preservação dos dados;
-- erros específicos, próximos ao campo, sem limpar input;
-- no submit, focar primeiro erro e preservar dados;
-- CTA com ação e resultado, não apenas `Enviar` quando houver benefício claro;
-- microcopy de confiança perto de dados sensíveis, sem prometer privacidade que o produto não garante.
+- one topic per field;
+- visible labels, with placeholders used as examples only;
+- easier fields first; sensitive or difficult fields later;
+- clear masks and normalization for phone, document, currency, and date fields;
+- correct mobile keyboard type: `email`, `tel`, `numeric`, and related input hints;
+- one-column layout by default; multiple columns only for short, related fields;
+- multi-step flow when there are many sections, with progress, back navigation, and preserved data;
+- specific errors close to the field, without clearing user input;
+- on submit, focus the first error and preserve data;
+- CTA copy that states the action or outcome, not only `Submit` when the result is meaningful;
+- trust microcopy near sensitive fields without promising privacy the product cannot guarantee.
 
-## Onboarding, ativação e primeiro uso
+## Onboarding, activation, and first use
 
-Antes de desenhar onboarding, identifique:
+Before designing onboarding, identify:
 
-- qual é o `aha moment` ou evento de ativação;
-- menor caminho até primeiro valor;
-- onde usuários abandonam hoje;
-- se o usuário precisa configurar algo antes de ver valor;
-- quais passos são obrigatórios, opcionais ou adiáveis.
+- the `aha moment` or activation event;
+- the shortest path to first value;
+- where users abandon today;
+- whether setup is required before value is visible;
+- which steps are required, optional, or deferrable.
 
-Princípios:
+Principles:
 
-- reduzir time-to-value;
-- uma meta principal por sessão;
-- fazer o usuário executar a tarefa real em vez de apenas assistir tutorial;
-- empty state deve explicar valor, mostrar exemplo ou preview e oferecer ação primária;
-- checklists devem ter 3-7 itens, começar com quick wins, mostrar progresso e permitir dismiss;
-- tours devem ser curtos, apontar para UI real, ser dispensáveis e não repetir para retornantes;
-- progresso não deve bloquear valor principal sem motivo forte.
+- reduce time to value;
+- one main goal per session;
+- let the user perform the real task instead of only watching a tutorial;
+- empty states should explain value, show an example or preview, and offer one primary action;
+- checklists should have 3-7 items, start with quick wins, show progress, and allow dismissal;
+- tours should be short, point to real UI, be dismissible, and not repeat for returning users;
+- progress indicators should not block core value without a strong reason.
 
-## Métricas e experimentos
+## Metrics and experiments
 
-Quando a decisão envolver conversão, ativação ou fricção, proponha hipótese testável, não certeza.
+When the decision involves conversion, activation, or friction, propose a testable hypothesis rather than certainty.
 
-Métricas úteis:
+Useful metrics:
 
-- form start rate, completion rate, field drop-off, error rate e time-to-complete;
-- activation rate, time-to-activation, onboarding completion e feature adoption;
-- CTA click-through, dismiss rate, retry rate, task success, mobile vs desktop.
+- form start rate, completion rate, field drop-off, error rate, and time-to-complete;
+- activation rate, time-to-activation, onboarding completion, and feature adoption;
+- CTA click-through, dismiss rate, retry rate, task success, mobile versus desktop.
 
-Formato de hipótese:
+Hypothesis format:
 
 ```txt
-se reduzirmos [fricção] para [segmento], esperamos [métrica] melhorar porque [mecanismo]. validar por [teste/evidência].
+if we reduce [friction] for [segment], we expect [metric] to improve because [mechanism]. validate with [test/evidence].
 ```
 
-## Acessibilidade visual e interação
+## Visual accessibility and interaction
 
-Não trate estética como substituta de acessibilidade:
+Do not treat aesthetics as a substitute for accessibility:
 
-- contraste suficiente;
-- foco visível;
-- targets de toque adequados;
-- navegação por teclado;
-- leitura por screen reader em modais, erros e estados dinâmicos;
-- animações com opção de redução quando aplicável;
-- informação importante não depende apenas de cor.
+- sufficient contrast;
+- visible focus;
+- adequate touch targets;
+- keyboard navigation;
+- screen reader behavior for modals, errors, and dynamic states;
+- reduced-motion behavior when relevant;
+- important information not communicated by color alone.
 
-## Saída para revisão UX
+## UX review output
 
-Para revisão, responder com:
+For a UX review, respond with:
 
-1. objetivo do fluxo;
-2. achados por impacto;
-3. menor ajuste recomendado;
-4. hipótese ou métrica associada;
-5. validação necessária: teste de usuário, analytics, playwright, screenshot ou revisão manual.
+1. flow objective;
+2. findings by impact;
+3. smallest recommended adjustment;
+4. associated hypothesis or metric;
+5. required validation: user test, analytics, Playwright, screenshot, or manual review.

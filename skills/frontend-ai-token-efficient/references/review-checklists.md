@@ -1,87 +1,85 @@
-# Checklists de revisão frontend para ia
+# Review checklists
 
-Use estes checklists em revisões de pr, arquitetura, segurança e manutenibilidade.
+Use these checklists for frontend architecture, PR, security, UX, runtime validation, and AI-maintainability reviews. Do not treat checklist completion as proof of correctness; it is triage plus reasoning.
 
-## Checklist de arquitetura
+## Architecture checklist
 
-- a alteração ficou restrita à feature correta?
-- a demanda pode ser entendida lendo poucos arquivos?
-- alguma regra de negócio foi colocada em `shared`?
-- feature está importando outra feature diretamente?
-- `shared` ou `entities` importam `features`?
-- nomes de arquivos e funções explicam o domínio?
-- há abstração global criada antes de uso repetido e estável?
-- duplicidade local foi mantida quando a extração pioraria clareza?
-- arquivos com mais de 300 linhas foram justificados ou quebrados?
-- o README da feature precisa ser atualizado?
+- [ ] The feature owner is clear.
+- [ ] The change can be understood by reading a small, local file set.
+- [ ] Business rules are not placed in `shared`.
+- [ ] `shared` does not import features.
+- [ ] Feature-to-feature imports are avoided or explicitly justified.
+- [ ] API transport, mappers, schemas, and UI rendering are separated.
+- [ ] Global state is justified by stable cross-cutting use.
+- [ ] New abstractions have repeated, stable use cases.
+- [ ] Documentation explains non-obvious constraints.
 
-## Checklist de implementação
+## PR review checklist
 
-- componentes chamam hooks ou handlers, não `fetch`/`axios` direto?
-- tipos, schemas, mappers e fixtures foram atualizados juntos?
-- contrato de api foi lido ou marcado como suposição?
-- loading, empty, error, success e permission denied foram considerados?
-- estado de servidor usa cache apropriado em vez de store manual?
-- estado derivado foi calculado em vez de armazenado?
-- testes cobrem comportamento relevante?
-- acessibilidade básica foi preservada?
+- [ ] The PR states the user-facing or developer-facing outcome.
+- [ ] The touched file set is minimal for the change.
+- [ ] Existing design-system and architecture conventions are preserved.
+- [ ] Loading, empty, error, disabled, success, and permission states are handled when relevant.
+- [ ] Forms preserve input on error and focus the first invalid field.
+- [ ] API contracts are confirmed or assumptions are explicit.
+- [ ] Sensitive data is not logged, stored, exposed in URLs, or sent to analytics.
+- [ ] Tests match the risk level.
+- [ ] Runtime/browser validation is included for interactive behavior.
+- [ ] Validation evidence separates executed commands from recommended checks.
 
-## Checklist de UX, forms e onboarding
+## AI-maintainability checklist
 
-- o componente respeita design system, tokens e padrões visuais existentes?
-- há direção visual clara quando a UI é nova?
-- a hierarquia visual deixa a ação principal evidente?
-- o formulário pede apenas campos necessários agora?
-- labels continuam visíveis e placeholders não substituem labels?
-- erros são específicos, próximos ao campo e preservam input?
-- mobile usa teclado e touch targets adequados?
-- empty state explica valor e oferece próxima ação?
-- onboarding reduz time-to-value e foca uma meta por sessão?
-- checklist/tour pode ser dispensado e não bloqueia valor principal sem motivo?
-- métricas de fricção, ativação ou conversão foram consideradas quando relevantes?
+- [ ] A future agent can identify where to make the next related change.
+- [ ] File and folder names reflect ownership and purpose.
+- [ ] Broad barrels do not hide dependencies.
+- [ ] Types and schemas are close to the boundary they protect.
+- [ ] Mappers avoid leaking transport shapes into UI components.
+- [ ] Comments explain constraints, not obvious code.
+- [ ] AI-facing docs are short and current.
+- [ ] There is no generated-looking over-abstraction.
 
-## Checklist de validação runtime
+## UX and CRO checklist tied to implementation
 
-- fluxo principal foi validado no browser ou há justificativa para não executar?
-- console errors e failed requests foram verificados?
-- modal/popover/dropdown tratam foco, Escape e retorno de foco?
-- submit inválido foca primeiro erro?
-- mobile e desktop foram considerados?
-- screenshot ou teste visual foi usado quando layout era parte do risco?
-- performance foi medida antes de qualquer claim?
-- validação executada foi separada de recomendada?
+- [ ] The primary user task is clear.
+- [ ] The first screen tells the user what to do next.
+- [ ] Required fields are justified by value, compliance, or backend need.
+- [ ] Labels stay visible; placeholders are examples only.
+- [ ] CTAs describe the action or result.
+- [ ] Error messages are specific and close to the problem.
+- [ ] The flow reduces time to first value.
+- [ ] Empty states explain value and offer a next action.
+- [ ] Mobile layout and input types are appropriate.
+- [ ] Accessibility is not sacrificed for visual polish.
 
-## Checklist de segurança
+## Runtime validation checklist
 
-- alguma variável pública contém segredo?
-- algum token foi salvo em localStorage, sessionStorage ou indexedDB?
-- algum dado sensível foi colocado em url?
-- algum payload completo foi logado?
-- algum dado sensível foi enviado para analytics ou observabilidade?
-- foi usado `dangerouslySetInnerHTML`?
-- urls externas foram validadas?
-- permissões são revalidadas no backend?
-- csp e headers continuam compatíveis?
-- source maps estão controlados em produção?
-- cache local não persiste dados sensíveis?
-- nova dependência é realmente necessária?
+- [ ] Browser and viewport are specified.
+- [ ] Main path and failure path are covered.
+- [ ] Form error focus is checked.
+- [ ] Modal focus trap, Escape behavior, and return focus are checked.
+- [ ] Keyboard-only navigation is checked.
+- [ ] Console errors are reviewed.
+- [ ] Network failures or API error states are simulated when relevant.
+- [ ] Screenshots, traces, or videos are captured when useful.
+- [ ] Known gaps are documented.
 
-## Checklist para pr feito por ia
+## Frontend security checklist
 
-- a ia declarou suposições relevantes?
-- a ia listou arquivos alterados e por quê?
-- a ia evitou alterações fora do escopo?
-- a ia separou validação executada de validação sugerida?
-- a ia não alegou performance, segurança ou readiness sem evidência?
-- a ia não adicionou abstração global por conveniência?
-- a ia atualizou documentação curta quando o comportamento da feature mudou?
+- [ ] No secrets or secret-like names in public environment variables.
+- [ ] No service token, client secret, private key, or password in frontend code.
+- [ ] Sensitive auth/session tokens are not stored in localStorage or sessionStorage.
+- [ ] Logs and analytics avoid payloads, raw personal data, financial data, and tokens.
+- [ ] Sensitive data is not exposed in URL paths or query strings.
+- [ ] `dangerouslySetInnerHTML` or HTML injection has sanitizer and explicit approval.
+- [ ] CSP, source map, cache, and third-party script posture are considered.
+- [ ] Frontend permission checks are treated as UX only; backend authorization is required.
 
-## Severidade em revisão
+## Documentation checklist
 
-| severidade | critério |
-|---|---|
-| crítica | vazamento de segredo, bypass de autorização, xss provável, perda de dados sensíveis |
-| alta | acoplamento estrutural grave, token em storage, payload sensível em logs, contrato inventado |
-| média | abstração prematura, teste ausente em regra crítica, duplicidade técnica clara, estado global indevido |
-| baixa | nome ruim, docs desatualizadas, pequenas inconsistências de organização |
-| nota | melhoria opcional sem impacto direto |
+- [ ] `AI_CONTEXT.md` explains the project structure and change rules.
+- [ ] `ARCHITECTURE.md` explains dependency direction and ownership.
+- [ ] `DEPENDENCY_RULES.md` is consistent with actual imports.
+- [ ] `TESTING_GUIDE.md` maps risks to test types.
+- [ ] `API_GUIDE.md` explains contracts, mappers, and error handling.
+- [ ] `SECURITY_FRONTEND.md` blocks common leak paths.
+- [ ] Docs avoid stale framework tutorials and focus on project decisions.

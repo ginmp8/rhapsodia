@@ -1,170 +1,177 @@
-# Arquitetura frontend para baixo consumo de contexto
+# Architecture for low-context AI maintenance
 
-Use esta referência para estrutura de projeto, regras de dependência, duplicidade, nomes e documentação de feature.
+Use this reference when planning or reviewing frontend structure, dependencies, feature boundaries, or repository guidance for AI-assisted coding.
 
-## Estrutura base
+## Decision principles
+
+1. **Locality first**: changing a feature should require reading that feature plus a small set of shared contracts.
+2. **Domain ownership**: business flows live in `features/`; reusable domain concepts live in `entities/`; generic utilities live in `shared/`.
+3. **Explicit boundaries**: imports, API access, schema ownership, and mappers must make ownership visible.
+4. **Stable reuse only**: promote code to shared layers only after repeated, stable, domain-neutral use.
+5. **Validation as part of architecture**: structure should make typecheck, tests, and runtime validation easy to run locally.
+
+## Recommended shape
 
 ```txt
 src/
   app/
-    main.tsx
-    router.tsx
-    providers.tsx
-    query-client.ts
-    env.ts
-
+    providers/
+    routes/
+    config/
   features/
     account-opening/
-      README.md
-      routes/
+      api/
       components/
       hooks/
-      api/
       model/
+      schemas/
       tests/
-      index.ts
-
+      README.md
   entities/
-    company/
-      components/
-      api/
+    account/
       model/
-
+      ui/
+      lib/
   shared/
-    ui/
     api/
+    ui/
     lib/
-    types/
-
-  pages/
-  assets/
-  test/
+    config/
+    testing/
 ```
 
-Adapte nomes de domínio ao projeto. A regra é que uma demanda comum caiba mentalmente dentro de uma feature mais contratos compartilhados pequenos.
+Use this as a starting point, not a rigid framework. Existing project conventions win unless they create high coupling, unsafe data flow, or excessive context requirements.
 
-## Responsabilidade por pasta
+## Dependency rules
 
-| pasta | responsabilidade |
-|---|---|
-| `app/` | bootstrap, providers, rotas, configuração global |
-| `pages/` | composição de rotas quando o framework separar pages de features |
-| `features/` | fluxos de negócio e casos de uso |
-| `entities/` | entidades reutilizáveis de domínio sem fluxo específico |
-| `shared/` | código genérico sem regra de negócio |
-| `test/` | setup global e helpers de teste |
+| layer | may import | must not import |
+|---|---|---|
+| `app` | routes, features, entities, shared | feature internals unrelated to composition |
+| routes/pages | features, entities, shared | transport details unless route-owned |
+| `features` | own feature files, entities, shared | other features by default |
+| `entities` | own entity files, shared | features, app, routes |
+| `shared` | shared only | features, entities with business semantics |
 
-## Regras de dependência
+Prefer explicit imports from stable entrypoints. Avoid broad `export *` barrels that hide dependencies or encourage cross-feature coupling.
+
+## Feature folders
+
+A feature folder should answer: what business flow does this implement, what contracts does it depend on, and how do I validate it?
+
+Recommended contents:
 
 ```txt
-app      -> pages, features, entities, shared
-pages    -> features, entities, shared
-features -> entities, shared
-entities -> shared
-shared   -> bibliotecas externas
+features/<feature>/
+  README.md              # scope, owner, dependencies, validation
+  api/                   # feature-owned transport calls and types
+  components/            # UI pieces local to the feature
+  hooks/                 # orchestration hooks, not generic utilities by default
+  model/                 # state, reducers, selectors, local domain logic
+  schemas/               # form/runtime validation schemas
+  tests/                 # unit/component/flow tests close to feature
 ```
 
-Proibido:
+Do not force every folder to exist. Create folders when the feature has real content for them.
+
+## `shared` rules
+
+`shared` is for code that is generic, stable, and domain-neutral.
+
+Good candidates:
+
+- base UI primitives already aligned with the design system;
+- HTTP client shell with no endpoint-specific business logic;
+- date, number, string, and formatting utilities that are not tied to one domain;
+- testing helpers with no feature assumptions;
+- config readers that do not expose secrets.
+
+Poor candidates:
+
+- onboarding rules;
+- account-opening step decisions;
+- permission logic that mirrors backend authorization;
+- one-off hooks used by a single feature;
+- mappers that encode API details for a specific domain.
+
+## Duplication policy
+
+Small local duplication is often cheaper than a global abstraction. Keep duplication when:
+
+- the repeated code is short and clear;
+- each feature may evolve differently;
+- the shared abstraction would require reading many files to understand a small change;
+- reuse is not yet stable.
+
+Extract only when:
+
+- at least two or three call sites are stable;
+- the abstraction has one clear reason to change;
+- the new location has an obvious owner;
+- tests can verify behavior independent of feature details.
+
+## API and contract boundaries
+
+- Do not call `fetch`, `axios`, GraphQL clients, or SDK clients directly from components.
+- Keep transport DTOs close to the API module.
+- Map transport data into UI/domain types before rendering.
+- Put runtime validation near the boundary when server data cannot be trusted.
+- Treat missing API contracts as assumptions, not facts.
+
+Preferred pattern:
 
 ```txt
-shared -> features
-entities -> features
-feature a -> feature b diretamente
+api/get-customer.api.ts       # request and transport call
+api/get-customer.types.ts     # DTOs or generated types
+api/get-customer.mapper.ts    # DTO -> feature model
+hooks/useCustomerForm.ts      # orchestration and view state
+components/CustomerForm.tsx   # rendering only
 ```
 
-Se duas features precisam compartilhar algo, extraia para `entities` ou `shared` somente quando a regra for estável e sem dependência do fluxo.
+## State ownership
 
-## Duplicidade controlada
+Choose the smallest state scope that works:
 
-Aceite duplicidade local quando ela preserva isolamento de contexto.
+1. local component state for UI-only state;
+2. feature hook or reducer for feature orchestration;
+3. URL state for shareable filters, pagination, or navigation state;
+4. server-state library for cached remote data;
+5. global store only for cross-cutting, stable state.
 
-Regra prática:
+Avoid global stores as a default. They hide ownership and force agents to inspect more files.
 
-```txt
-1ª ocorrência: manter local
-2ª ocorrência: observar diferenças
-3ª ocorrência: avaliar extração
-```
+## Documentation that reduces context
 
-Extraia para `shared/ui` apenas componentes visuais sem regra de negócio, como botão, input, modal, tabela, empty state e loading state.
-
-Extraia para `entities` quando o componente representa uma entidade de domínio reutilizável, como `CompanyCard`, `UserAvatar` ou `CompanyDocumentBadge`.
-
-Evite extrair formulários de negócio cedo demais. Dois formulários parecidos podem ter regras diferentes de criação, atualização, auditoria, elegibilidade, permissões e payload.
-
-## README por feature
-
-Cada feature relevante deve ter `README.md` curto com:
-
-- responsabilidade;
-- entradas e saídas;
-- arquivos principais;
-- regras do fluxo;
-- dependências externas;
-- testes importantes;
-- decisões não óbvias.
-
-Exemplo:
+Each substantial feature should include a short README:
 
 ```md
-# account-opening
+# <Feature>
 
-fluxo responsável pela abertura de conta pj.
+## Scope
+What this feature owns.
 
-## responsabilidades
-- coletar dados da empresa
-- validar sócios e representantes
-- enviar solicitação de abertura
-- exibir status inicial
+## Dependencies
+APIs, entities, shared components, feature flags, permissions.
 
-## arquivos principais
-- routes/AccountOpeningPage.tsx: tela principal
-- components/CompanyForm.tsx: formulário de empresa
-- model/account-opening.schema.ts: validações
-- api/account-opening.api.ts: chamadas http
+## Flow
+Main user path and important states.
 
-## regras
-- componentes não chamam api diretamente
-- validação fica em model/*.schema.ts
-- conversão backend/frontend fica em mappers
+## Contracts
+Important request/response, form, and validation assumptions.
+
+## Validation
+Commands, tests, and manual/browser checks.
+
+## Do not change without checking
+Compliance rules, tracking events, permission behavior, backend contract, or design-system constraints.
 ```
 
-## Nomes que economizam contexto
+## Architecture review output
 
-Prefira nomes específicos:
+When reviewing architecture, report:
 
-```txt
-AccountOpeningPage.tsx
-CompanyForm.tsx
-PartnerList.tsx
-account-opening.api.ts
-account-opening.schema.ts
-account-opening.mappers.ts
-useCreateAccountOpening.ts
-```
-
-Evite nomes que exigem abrir o arquivo para entender:
-
-```txt
-Page.tsx
-Form.tsx
-List.tsx
-api.ts
-helpers.ts
-useData.ts
-manager.ts
-processor.ts
-```
-
-## Tamanho de arquivos
-
-Use como alerta, não como dogma:
-
-```txt
-até 150 linhas: saudável
-150-300: aceitável
-300-500: atenção
-500+: quebrar ou justificar
-```
-
-Quando crescer, extraia subcomponentes, hooks específicos, schemas, mappers, funções puras ou testes.
+1. current observed structure;
+2. context cost: files an agent must read for a typical change;
+3. boundary violations or unclear ownership;
+4. smallest restructuring that improves locality;
+5. validation needed after the change;
+6. risks and trade-offs.
