@@ -16,6 +16,19 @@
       ]
     },
     {
+      "id": "act-pr-emoji-severity-review",
+      "type": "should_activate",
+      "prompt": "Review this pull request as a senior reviewer and use emoji severities for blockers, major issues, minors, nits, and questions.",
+      "expected_behavior": "activate in pr-risk-review mode and produce an evidence-based PR review with visual severity labels, security confidence, merge verdict, expected treatment, and suggested comments.",
+      "acceptance_criteria": [
+        "mode is pr-risk-review",
+        "uses severity labels 🔴 BLOCKER, 🟠 MAJOR, 🟡 MINOR, 🔵 NIT, and 🟣 QUESTION where applicable",
+        "includes security confidence for security findings",
+        "includes merge verdict, blocks-merge status, expected treatment, and suggested PR comments",
+        "does not invent findings without evidence"
+      ]
+    },
+    {
       "id": "act-async-flow",
       "type": "should_activate",
       "prompt": "Stress this SNS/SQS/Kafka chain to find loops, duplicated retries, and DLQ leakage.",

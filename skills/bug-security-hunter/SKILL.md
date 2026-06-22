@@ -1,6 +1,6 @@
 ---
 name: bug-security-hunter
-description: Use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, PRs, repositories, event-driven flows, integrations, and technical process chains. Do not use for implementation, generic tutorials, product planning, or non-technical writing.
+description: Use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, PRs, repositories, event-driven flows, integrations, and technical process chains, including PR reviews that need visual severity labels, merge verdicts, or comments. Do not use for implementation, generic tutorials, product planning, or non-technical writing.
 ---
 
 # Bug Security Hunter
@@ -14,6 +14,8 @@ Find correctness bugs, negative side effects, regressions, reliability hazards, 
 - Prefer evidence over speculation: cite file paths, snippets, diffs, logs, configs, traces, event names, command output, or explicit assumptions for every material finding.
 - For PRs, focus first on introduced or changed risk; inspect nearby pre-existing hazards only when they affect the change.
 - For PRs, separate severity, merge verdict, expected treatment, and future follow-up. A future issue does not reduce severity or unblock a high-risk change by itself.
+- For PRs and finding lists, show severity with the required emoji and label: 🔴 `BLOCKER`, 🟠 `MAJOR`, 🟡 `MINOR`, 🔵 `NIT`, or 🟣 `QUESTION`; include merge-blocking status and expected treatment for every material PR finding.
+- Optimize for finding real problems aggressively: inspect all supplied changed surfaces, hunt for high-impact failure modes first, challenge optimistic assumptions, and do not approve by default; never fabricate findings, weaken evidence requirements, expose secrets, or exceed authorized scope.
 - Review high-impact dimensions before style: security, functional correctness, data integrity, contracts, migrations, reliability, performance, observability, and operational rollback.
 - When a flow is named, review the causal path: entry point, validation, authorization, state changes, events/messages, consumers, retries, side effects, logs, DLQs, reprocessing, and final state.
 - For C#/.NET, apply the .NET hotspot checklist by default; otherwise use language-neutral invariants and observable contracts.
@@ -82,11 +84,15 @@ Load only references needed for the selected mode:
 
 ## Severity model
 
-- **Critical**: likely unauthorized access, tenant/data isolation break, real secret exposure, financial/legal duplication, destructive data loss, RCE, privilege escalation, event storm, or unrecoverable corruption.
-- **High**: plausible security bypass, material idempotency failure, replay/ordering bug, message loss, unsafe retry, sensitive-data leak, broken authz on changed path, or production-impacting reliability defect.
-- **Medium**: bounded correctness bug, missing validation, incomplete observability, weak error handling, brittle schema evolution, or risky operational gap.
-- **Low**: maintainability, clarity, minor edge case, or non-blocking test/telemetry gap.
-- **Needs verification**: suspicious signal requiring more evidence before it becomes a finding.
+Use the visual severity label in user-facing findings. Treat the classic risk level as the underlying reason for the label.
+
+| Display severity | Underlying risk | Merge meaning |
+|---|---|---|
+| 🔴 `BLOCKER` | Critical or unresolved High risk | Blocks merge. Real or likely severe security issue, data loss, broken contract, production failure, destructive migration, unrecoverable corruption, duplicate financial/legal side effect, RCE, privilege escalation, tenant/data isolation break, event storm, or credible real secret exposure. |
+| 🟠 `MAJOR` | High or merge-relevant Medium risk | Should be fixed before merge unless the team explicitly accepts the risk. Includes plausible security bypass, material idempotency/replay/ordering bug, message loss, unsafe retry, sensitive-data leak, broken authz on changed path, risky operational gap, or important missing validation. |
+| 🟡 `MINOR` | Bounded Medium or Low risk | Recommended improvement that usually does not block merge by itself. Includes bounded correctness edge cases, observability gaps, weak error handling, brittle schema evolution, or non-critical tests. |
+| 🔵 `NIT` | Low cosmetic/consistency issue | Small readability, style, naming, formatting, or local consistency detail. Do not use for security, data integrity, or operational risk. |
+| 🟣 `QUESTION` | Needs verification | Evidence is missing or ambiguous and the answer can change approval. Use for suspicious but unconfirmed secrets, unclear authz assumptions, missing context, or unknown contract/operational impact. |
 
 ## Output contract
 
@@ -97,7 +103,7 @@ For reviews, use `references/output-contracts.md`. Every substantive answer must
 3. validation gaps and uninspected surfaces;
 4. recommended next step or merge/release verdict when requested.
 
-For PR reviews, also include an executive summary, security summary, merge verdict, merge-blocking status per material finding, expected treatment, questions that affect approval, and concise comments to post when useful.
+For PR reviews, also include an executive summary, security summary, merge verdict using ✅ `APPROVED`, 🟡 `APPROVED_WITH_COMMENTS`, 🔴 `CHANGES_REQUESTED`, or 🟣 `NEEDS_MORE_CONTEXT`, merge-blocking status per material finding, expected treatment, questions that affect approval, and concise comments to post when useful. Use the severity emoji in every finding and suggested PR comment.
 
 For flow or harness work, also include causal map, invariants, stress matrix, and closure criteria.
 

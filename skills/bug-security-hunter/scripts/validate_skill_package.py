@@ -30,6 +30,7 @@ BANNED_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache"}
 BANNED_MARKERS = ["TO" + "DO", "FIX" + "ME", "INS" + "ERT ", "T" + "BD", "Lorem" + " ipsum"]
 BANNED_SUFFIXES = {".pyc", ".pyo", ".zip"}
 TEXT_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".py", ".template", ".txt"}
+ALLOWED_NON_ASCII = set("🔴🟠🟡🔵🟣✅")
 PORTUGUESE_MARKERS = [
     "Re" + "vise ", "Que" + "ro ", "Fa" + "ca", "Mon" + "te ", "Imple" + "mente",
     "Cr" + "ie ", "Es" + "se ", "Ol" + "he ", "Ga" + "ranta ", "segu" + "ranca",
@@ -91,9 +92,9 @@ def main() -> int:
         for marker in BANNED_MARKERS:
             if marker in text and not path.name.endswith(".template"):
                 fail(f"unfinished marker {marker!r} found in {rel}")
-        non_ascii = sorted({ch for ch in text if ord(ch) > 127})
+        non_ascii = sorted({ch for ch in text if ord(ch) > 127 and ch not in ALLOWED_NON_ASCII})
         if non_ascii:
-            fail(f"non-ASCII text found in {rel}: {''.join(non_ascii[:20])}")
+            fail(f"disallowed non-ASCII text found in {rel}: {''.join(non_ascii[:20])}")
         found_markers = sorted({marker for marker in PORTUGUESE_MARKERS if marker in text})
         if found_markers:
             fail(f"non-English marker found in {rel}: {', '.join(found_markers[:10])}")
