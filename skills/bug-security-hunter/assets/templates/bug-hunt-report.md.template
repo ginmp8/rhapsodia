@@ -1,0 +1,42 @@
+# Bug and Security Hunt Report
+
+## Scope
+
+- Target:
+- Mode:
+- Reviewed artifacts:
+- Assumptions:
+- Out of scope:
+
+## Executive summary
+
+- Overall verdict:
+- Critical/high blockers:
+- Residual risk:
+
+## Causal or hotspot map
+
+| Area/step | Artifact | Side effect | Risk | Evidence |
+|---|---|---|---|---|
+
+## Findings
+
+| Severity | Issue | Evidence | Impact | Smallest fix | Validation |
+|---|---|---|---|---|---|
+
+## Stress and security matrix
+
+| Scenario | Hypothesis | Input/fault | Expected result | Status | Evidence |
+|---|---|---|---|---|---|
+
+## Validation evidence
+
+- Executed:
+- Suggested:
+- Not run:
+
+## Closure decision
+
+- Merge/release verdict:
+- Required next action:
+- Accepted residual risks:

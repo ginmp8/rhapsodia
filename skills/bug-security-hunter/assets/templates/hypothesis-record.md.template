@@ -1,0 +1,28 @@
+# Investigation Hypothesis Record
+
+## Hypothesis
+
+- ID:
+- Severity:
+- Statement:
+- Target artifact/flow:
+
+## Mechanism
+
+- Trigger:
+- Expected failure:
+- Side effect/security impact:
+
+## Experiment
+
+- Input:
+- Fault injection:
+- Required evidence:
+- Safety constraints:
+
+## Decision
+
+- Status: planned | confirmed | rejected | needs verification
+- Evidence:
+- Smallest fix:
+- Regression gate:

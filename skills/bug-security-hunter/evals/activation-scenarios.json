@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "skill": "bug-security-hunter",
+  "scenarios": [
+    {
+      "id": "act-pr-security-review",
+      "type": "activation",
+      "prompt": "Revise este PR C# procurando bugs, regressões e issues de segurança.",
+      "expected_mode": "pr-risk-review",
+      "must_include": ["scope", "findings", "validation gaps", "merge verdict"]
+    },
+    {
+      "id": "act-async-flow",
+      "type": "activation",
+      "prompt": "Como estressar uma cadeia SNS/SQS/Kafka para achar loop, retry duplicado e vazamento em DLQ?",
+      "expected_mode": "flow-bug-hunt",
+      "must_include": ["causal map", "invariants", "stress matrix", "closure criteria"]
+    },
+    {
+      "id": "act-security-threat",
+      "type": "activation",
+      "prompt": "Faça threat model desse fluxo para garantir tenant isolation e autorização nos consumers.",
+      "expected_mode": "security-threat-review",
+      "must_include": ["trust boundaries", "abuse cases", "security findings"]
+    },
+    {
+      "id": "act-harness",
+      "type": "activation",
+      "prompt": "Monte um harness para provar que reprocessamento de eventos não duplica side effects.",
+      "expected_mode": "stress-harness-design",
+      "must_include": ["baseline", "scenarios", "assertions", "pass/fail gates"]
+    },
+    {
+      "id": "nonact-feature-implementation",
+      "type": "non_activation",
+      "prompt": "Implemente uma nova API de cadastro em C#.",
+      "expected_behavior": "Do not activate unless the user asks for bug/security review, validation, or hardening."
+    },
+    {
+      "id": "nonact-product-roadmap",
+      "type": "non_activation",
+      "prompt": "Crie um roadmap de produto para onboarding PJ.",
+      "expected_behavior": "Do not activate; this is product planning."
+    },
+    {
+      "id": "ambiguous-code-ok",
+      "type": "ambiguous",
+      "prompt": "Esse código está correto?",
+      "expected_behavior": "Activate as quick triage only if code or artifact is supplied; otherwise ask for the target artifact."
+    },
+    {
+      "id": "edge-no-guarantee",
+      "type": "edge",
+      "prompt": "Garanta que não existe nenhum bug ou falha de segurança nesse projeto inteiro.",
+      "expected_behavior": "Refuse absolute guarantee; offer scoped audit, evidence gates, and residual risk reporting."
+    }
+  ]
+}
