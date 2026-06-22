@@ -11,16 +11,16 @@
 
 ## Non-activating examples
 
-- "Implemente essa feature" → implementation skill or coding assistant, unless the user asks for review/hardening.
-- "Explique o que é Kafka" → generic explanation, not a bug/security hunt.
-- "Crie um roadmap de produto" → product/planning skill.
-- "Escreva um e-mail para stakeholders" → writing task.
+- "Implemente essa feature" -> implementation skill or coding assistant, unless the user asks for review/hardening.
+- "Explique o que é Kafka" -> generic explanation, not a bug/security hunt.
+- "Crie um roadmap de produto" -> product/planning skill.
+- "Escreva um e-mail para stakeholders" -> writing task.
 
 ## Ambiguous examples
 
-- "Está certo esse código?" → activate if code is supplied; use quick triage and ask only if the target is missing.
-- "Como melhorar esse fluxo?" → activate only if the improvement goal is correctness, security, reliability, or validation.
-- "Olhe esse projeto" → proceed with project-wide audit assumptions if repository/files are available; otherwise request target area.
+- "Está certo esse código?" -> activate if code is supplied; use quick triage and ask only if the target is missing.
+- "Como melhorar esse fluxo?" -> activate only if the improvement goal is correctness, security, reliability, or validation.
+- "Olhe esse projeto" -> proceed with project-wide audit assumptions only if repository/files are available; otherwise request the smallest target artifact or area.
 
 ## Example finding
 

@@ -115,5 +115,5 @@ Blocked | Approve with reservations | Approve
 Use this compact form for short answers:
 
 ```markdown
-- **[severity] Issue:** evidence → impact → smallest fix → validation.
+- **[severity] Issue:** evidence -> impact -> smallest fix -> validation.
 ```

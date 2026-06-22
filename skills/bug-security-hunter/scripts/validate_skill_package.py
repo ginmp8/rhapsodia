@@ -22,15 +22,24 @@ REQUIRED = [
     "references/csharp-dotnet-hotspots.md",
     "references/stress-harness.md",
     "references/output-contracts.md",
+    "scripts/validate_skill_package.py",
+    "scripts/package_skill.py",
 ]
 
 BANNED_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache"}
 BANNED_MARKERS = ["TO" + "DO", "FIX" + "ME", "INS" + "ERT ", "T" + "BD", "Lorem" + " ipsum"]
+BANNED_SUFFIXES = {".pyc", ".pyo", ".zip"}
 
 
 def fail(message: str) -> None:
     print(f"FAIL: {message}")
     raise SystemExit(1)
+
+
+def text_files(root: Path):
+    for path in root.rglob("*"):
+        if path.is_file() and path.suffix not in {".svg"}:
+            yield path
 
 
 def main() -> int:
@@ -41,6 +50,15 @@ def main() -> int:
     skill_files = list(root.glob("SKILL.md"))
     if len(skill_files) != 1:
         fail("package must contain exactly one root SKILL.md")
+
+    for path in root.rglob("*"):
+        rel = path.relative_to(root)
+        if path.is_symlink():
+            fail(f"symlink is not allowed in package: {rel}")
+        if any(part in BANNED_NAMES for part in rel.parts):
+            fail(f"banned generated/cache path included: {rel}")
+        if path.is_file() and path.suffix in BANNED_SUFFIXES:
+            fail(f"banned generated/package file included: {rel}")
 
     missing = [p for p in REQUIRED if not (root / p).exists()]
     if missing:
@@ -53,19 +71,15 @@ def main() -> int:
     fm = frontmatter.group(1)
     if "name: bug-security-hunter" not in fm:
         fail("frontmatter name must be bug-security-hunter")
-    if "description:" not in fm or len(re.search(r"description:\s*(.*)", fm).group(1)) < 80:
+    description = re.search(r"description:\s*(.*)", fm)
+    if not description or len(description.group(1).strip()) < 80:
         fail("frontmatter description is missing or too short")
 
     for marker in BANNED_MARKERS:
-        for path in root.rglob("*"):
-            if path.is_file() and path.suffix not in {".svg"}:
-                text = path.read_text(encoding="utf-8", errors="ignore")
-                if marker in text and not path.name.endswith(".template"):
-                    fail(f"unfinished marker {marker!r} found in {path.relative_to(root)}")
-
-    for path in root.rglob("*"):
-        if any(part in BANNED_NAMES for part in path.parts):
-            fail(f"banned generated/cache path included: {path.relative_to(root)}")
+        for path in text_files(root):
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            if marker in text and not path.name.endswith(".template"):
+                fail(f"unfinished marker {marker!r} found in {path.relative_to(root)}")
 
     data = json.loads((root / "evals/activation-scenarios.json").read_text(encoding="utf-8"))
     scenarios = data.get("scenarios", [])
