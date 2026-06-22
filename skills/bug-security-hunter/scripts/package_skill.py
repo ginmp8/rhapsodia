@@ -10,6 +10,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 SKILL_NAME = "bug-security-hunter"
+EXPECTED_TOP_LEVEL = "bug-security-hunter/"
 EXCLUDE_PARTS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache"}
 EXCLUDE_SUFFIXES = {".pyc", ".pyo", ".DS_Store", ".zip"}
 REQUIRED_ARCHIVE_FILES = {
@@ -39,7 +40,7 @@ def validate_archive(output: Path) -> None:
         raise SystemExit("FAIL: archive is empty")
     top_levels = {PurePosixPath(name).parts[0] for name in names if PurePosixPath(name).parts}
     if top_levels != {SKILL_NAME}:
-        raise SystemExit(f"FAIL: archive must contain one top-level {SKILL_NAME}/ folder, got {sorted(top_levels)}")
+        raise SystemExit(f"FAIL: archive needs one top-level {EXPECTED_TOP_LEVEL} folder, got {sorted(top_levels)}")
     for name in names:
         pp = PurePosixPath(name)
         if name.startswith("/") or ".." in pp.parts:

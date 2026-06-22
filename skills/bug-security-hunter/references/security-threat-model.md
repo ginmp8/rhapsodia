@@ -35,7 +35,7 @@ Test or reason about:
 - replay: old valid event is resent after state changed;
 - stale terminal violation: event arrives after completed/cancelled/rejected state;
 - injection: SQL, command, path, template, deserialization, log, and HTML/script injection payloads;
-- data exfiltration: event, DLQ, log, trace, or notification contains sensitive data;
+- data exfiltration: event, DLQ, log, trace, or notification carries sensitive data;
 - subscriber confusion: unintended consumer receives sensitive or privileged event;
 - operational bypass: manual redrive/replay bypasses normal controls.
 
