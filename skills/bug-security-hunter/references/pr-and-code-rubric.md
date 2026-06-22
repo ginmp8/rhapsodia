@@ -1,5 +1,34 @@
 # PR and Code Rubric
 
+## Aggressive PR review posture
+
+Review for high recall on real defects. Assume the PR can fail in production until the supplied evidence shows otherwise, but keep false positives under control with evidence labels.
+
+Mandatory sweep for PRs when artifacts are supplied:
+
+1. changed production code and nearby call sites;
+2. tests, fixtures, examples, and mocked boundaries that could hide behavior;
+3. configuration, `.env.example`, Docker, compose, manifests, IaC, CI/CD, scripts, and docs;
+4. APIs, contracts, events, queues, jobs, migrations, backfills, and replay/reprocessing paths;
+5. logs, traces, metrics, error responses, and sample payloads for sensitive data;
+6. authn/authz, tenant/resource ownership, input validation, injection, SSRF, path traversal, deserialization, dependency, and supply-chain risk;
+7. rollback, progressive deploy compatibility, idempotency, retries, timeouts, and partial-failure behavior.
+
+Do not reward the PR for compiling or having tests if the tests do not prove the risky behavior. Do not approve automatically when no findings are obvious; first state the inspected surfaces and remaining uninspected surfaces.
+
+## Visual severity and treatment
+
+Use these exact user-facing labels in every PR finding and suggested comment:
+
+- 🔴 `BLOCKER`: blocks merge; critical/high risk such as likely production failure, real/probable secret exposure, authz bypass, tenant/data isolation break, data loss, broken contract, destructive migration without safe plan, duplicate financial/legal side effect, or irreversible rollback risk.
+- 🟠 `MAJOR`: should be fixed before merge unless explicitly accepted; relevant correctness, security, reliability, performance, contract, migration, observability, or validation risk.
+- 🟡 `MINOR`: recommended improvement that is usually not merge-blocking by itself.
+- 🔵 `NIT`: small style, naming, formatting, or consistency detail only.
+- 🟣 `QUESTION`: approval-relevant missing context or suspicious but unconfirmed signal.
+
+For each PR finding include: file/line, security confidence when applicable, evidence, problem, impact, smallest fix, validation, blocks merge, expected treatment, and future issue when applicable.
+
+
 Use this reference for PRs, diffs, snippets, and repository areas. Review objectively, proportionally to risk, and from inspected evidence. Do not create findings from personal style preference alone.
 
 ## PR review sequence
@@ -96,10 +125,10 @@ A future issue does not lower severity. A blocker remains a blocker unless an ex
 
 ## PR verdict guide
 
-- **Blocked** when critical/high findings remain, tests fail, authorization/data integrity is unproven on changed critical paths, secrets appear real, destructive migrations lack a safe plan, contracts break without compatibility, or rollback is unclear for irreversible effects.
-- **Needs more context** when essential diff, changed files, validation, migration details, security context, or operational evidence is missing and prevents a safe decision.
-- **Approve with reservations** when only medium/low findings remain and mitigation, ownership, or follow-up is explicit.
-- **Approve** only when no blocking issues are found in the inspected scope and validation is adequate for the risk.
+- **🔴 `CHANGES_REQUESTED`** when any 🔴 `BLOCKER` remains, or when critical/high findings remain, tests fail, authorization/data integrity is unproven on changed critical paths, secrets appear real, destructive migrations lack a safe plan, contracts break without compatibility, or rollback is unclear for irreversible effects.
+- **🟣 `NEEDS_MORE_CONTEXT`** when essential diff, changed files, validation, migration details, security context, or operational evidence is missing and prevents a safe decision.
+- **🟡 `APPROVED_WITH_COMMENTS`** when only 🟡 `MINOR`, 🔵 `NIT`, or accepted non-blocking medium/low findings remain and mitigation, ownership, or follow-up is explicit.
+- **✅ `APPROVED`** only when no blocking issues are found in the inspected scope and validation is adequate for the risk.
 
 ## Suggested PR comment guidance
 

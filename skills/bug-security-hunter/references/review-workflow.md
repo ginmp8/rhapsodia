@@ -9,8 +9,8 @@ Use this reference for every substantive bug/security hunt.
 3. **Trust boundaries**: identify where input, identity, tenant, permissions, secrets, data, or execution context crosses a boundary.
 4. **Invariants**: define properties that must remain true after retries, concurrency, failures, and malicious inputs.
 5. **Hypotheses**: generate bounded claims such as "duplicate event can create duplicate side effect" or "consumer trusts tenantId from payload".
-6. **Evidence pass**: inspect the smallest relevant code/config/logs first. Do not jump to broad rewrites.
-7. **Stress pass**: test or propose stress around the highest-risk hypothesis.
+6. **Aggressive evidence pass**: inspect the smallest relevant code/config/logs first, but do not stop at the happy path. For PRs, deliberately check changed files, nearby callers/callees, tests, configs, migrations, CI/CD, Docker/manifests, scripts, sample payloads, logs, and docs when supplied. Do not jump to broad rewrites.
+7. **Stress pass**: test or propose stress around the highest-risk hypothesis. Prefer hypotheses that can reveal security bypass, data exposure, data loss, duplicate side effects, broken contracts, replay/retry bugs, production instability, or irreversible rollback risk.
 8. **Decision**: confirm, reject, or mark each hypothesis as needing verification.
 9. **Fix plan**: propose the smallest safe fix and exact validation.
 10. **Residual risk**: state what remains uninspected.
@@ -32,6 +32,18 @@ A finding is strong only when it includes:
 - impact: concrete failure or abuse path;
 - smallest fix: local change, control, or test;
 - validation: how to prove the fix works.
+
+## Severity display
+
+Use the visual label on every user-facing finding and PR comment:
+
+- 🔴 `BLOCKER`: merge-blocking critical/high risk or unresolved severe failure mode.
+- 🟠 `MAJOR`: should be fixed before merge unless the team explicitly accepts the risk.
+- 🟡 `MINOR`: recommended non-blocking improvement or bounded risk.
+- 🔵 `NIT`: small readability, style, naming, or consistency issue only.
+- 🟣 `QUESTION`: approval-relevant uncertainty or suspicious signal that needs verification.
+
+Do not downgrade severity because a future issue exists. Do not upgrade a weak hypothesis to a finding without evidence; keep it as 🟣 `QUESTION` or a validation gap.
 
 ## Review order
 

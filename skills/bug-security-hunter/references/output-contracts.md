@@ -4,57 +4,119 @@ Use these shapes unless the user requests a different format. Keep answers in En
 
 ## PR risk review
 
+Use this contract for pull requests, diffs, merge checklists, approval requests, and suggested PR comments. Keep answers in English unless the user explicitly asks for another language.
+
+### Severity legend
+
+Use the emoji and label together in every finding and suggested PR comment:
+
+- 🔴 `BLOCKER`: blocks merge; critical/high risk, probable production failure, real/probable secret exposure, authz bypass, tenant/data isolation break, data loss, broken contract, unsafe destructive migration, duplicate financial/legal side effect, or irreversible rollback risk.
+- 🟠 `MAJOR`: should be fixed before merge unless explicitly accepted by the team; relevant technical/security/operational risk.
+- 🟡 `MINOR`: recommended non-blocking improvement or bounded risk.
+- 🔵 `NIT`: small readability, style, naming, formatting, or consistency issue only.
+- 🟣 `QUESTION`: approval-relevant missing context or suspicious but unconfirmed signal.
+
+Security confidence values: `Confirmed`, `Likely`, `Needs verification`, `Not applicable`.
+
+Expected treatment values: `Fix in this PR`, `Already fixed by the author in this PR`, `Accepted by the team without change`, `Future issue opened for follow-up`, `Not applicable`.
+
+### Required format
+
 ```markdown
-# Pull Request Risk Review
+# Pull Request Review
 
 ## Executive summary
-- Reviewed: PR/diff/files inspected
-- Apparent objective: ...
-- Verdict: Approved | Approved with reservations | Blocked | Needs more context
+- PR reviewed:
+- Apparent objective:
+- Verdict: ✅ `APPROVED` | 🟡 `APPROVED_WITH_COMMENTS` | 🔴 `CHANGES_REQUESTED` | 🟣 `NEEDS_MORE_CONTEXT`
 - Overall risk: Critical | High | Medium | Low | Unknown
 - Security posture: no issue found in inspected diff | issues found | not enough evidence
-- Finding counts: critical/high/medium/low/needs verification
-- Treatment summary: fix in this PR | already fixed | accepted risk | future issue | pending
+- Finding counts:
+  - 🔴 Blockers:
+  - 🟠 Major:
+  - 🟡 Minor:
+  - 🔵 Nit:
+  - 🟣 Questions:
+- Treatment summary:
+  - Fix in this PR:
+  - Already fixed by the author:
+  - Accepted by the team:
+  - Future issue opened:
+  - Pending without decision:
+
+## Verdict
+Choose exactly one: ✅ `APPROVED`, 🟡 `APPROVED_WITH_COMMENTS`, 🔴 `CHANGES_REQUESTED`, or 🟣 `NEEDS_MORE_CONTEXT`.
+Explain the reason in up to five lines.
 
 ## Scope and assumptions
-- Reviewed: ...
-- Assumptions: ...
-- Out of scope: ...
+- Reviewed:
+- Assumptions:
+- Out of scope / uninspected:
 
 ## Main risks
-- ...
+List the highest-impact risks first.
 
 ## Security summary
-State whether the inspected change shows exposed secrets, sensitive logs, authn/authz risk, injection risk, CI/CD or infrastructure risk, or need for rotation/revocation/audit. Mask sensitive evidence.
+State whether the inspected change shows exposed secrets or credentials, sensitive logs, authn/authz risks, injection risks, CI/CD/infrastructure/configuration risks, or changes requiring rotation, revocation, repository-history audit, build-artifact audit, or log audit. Mask sensitive evidence.
 
 ## Findings
-1. [severity] Title
-   - File/line: `path/to/file.ext:Lx-Ly` when available
-   - Evidence label: confirmed | likely | needs verification | planned | out of scope
-   - Evidence: file/path/function/diff/config/log signal
-   - Impact: concrete bug/security/reliability outcome
-   - Smallest fix: minimal change or mitigation
-   - Validation: test/check to prove the fix
-   - Blocks merge: yes | no | unknown until verified
-   - Expected treatment: fix in this PR | already fixed | accepted risk | future issue | not applicable
-   - Future issue, if applicable: id/link or none
+
+### 1. 🔴 `BLOCKER` - Objective title
+
+**File/line:** `path/to/file.ext:Lx-Ly`
+
+**Security confidence:** Confirmed/Likely/Needs verification/Not applicable
+
+**Evidence:**
+Describe the observed code/config/diff/log behavior. Do not copy full secrets or sensitive values; use masked evidence such as `Bearer sk_***`, `Password=***`, or `-----BEGIN PRIVATE KEY-----`.
+
+**Problem:**
+Explain the incorrect, fragile, unsafe, or risky behavior.
+
+**Impact:**
+Explain the concrete functional, technical, operational, data, contract, or security impact.
+
+**Suggestion:**
+State the smallest sufficient fix or mitigation.
+
+**Validation:**
+State the test, check, scan, replay, migration validation, or manual evidence needed to prove the fix.
+
+**Blocks merge:** Yes/No/Unknown until verified
+
+**Expected treatment:**
+- [ ] Fix in this PR
+- [ ] Already fixed by the author in this PR
+- [ ] Accepted by the team without change
+- [ ] Future issue opened for follow-up
+- [ ] Not applicable
+
+**Future issue, if applicable:** `link/id or none`
+
+**Treatment note:**
+Briefly explain why the item must be resolved now, may be deferred, or was accepted as risk.
+
+---
 
 ## Test and validation gaps
-- unit, integration, contract, authorization, invalid input, regression, migration, performance, secret scanning, dependency scanning, SAST, or sensitive-log validation gaps
+List missing or unevidenced unit, integration, contract, authorization, invalid-input, regression, migration, performance, secret scanning, dependency scanning, SAST, or sensitive-log validations.
 
 ## Questions for the author
-- Only questions that change the approval decision.
+List only questions that can change the approval decision.
 
 ## Suggested PR comments
-- `path/to/file.ext`: [severity] concise comment ready to post
+Group concise ready-to-post comments by file. Use the same severity emoji and label. Do not include full secrets or sensitive values.
+
+### `path/to/file.ext`
+```md
+🔴 `BLOCKER` - The value appears to include a real credential. Remove it, rotate/revoke it, audit logs/history/build artifacts, and replace it with a secret manager or managed identity.
+```
 
 ## Security remediation
-- Immediate response: ...
-- Code/config cleanup: ...
-- Prevention: ...
+If there are security findings, organize remediation under immediate response, code/configuration fix, and prevention. If there are no security findings, write: `No specific security remediation identified from the inspected diff.`
 
 ## Positive signals
-- ...
+List good decisions found in the PR, if any.
 
 ## Final checklist
 - [ ] Scope understood
@@ -72,6 +134,15 @@ State whether the inspected change shows exposed secrets, sensitive logs, authn/
 - [ ] Contracts/APIs reviewed when applicable
 - [ ] Database/migrations reviewed when applicable
 ```
+
+### Verdict rules
+
+- ✅ `APPROVED`: no relevant findings and validation is adequate for the inspected risk.
+- 🟡 `APPROVED_WITH_COMMENTS`: only 🟡 `MINOR`, 🔵 `NIT`, or explicitly accepted non-blocking items remain.
+- 🔴 `CHANGES_REQUESTED`: at least one 🔴 `BLOCKER` or unresolved 🟠 `MAJOR` must be fixed before merge.
+- 🟣 `NEEDS_MORE_CONTEXT`: essential context is missing for security, correctness, contract, database, or operational impact.
+
+Never use ✅ `APPROVED` when there is a 🔴 `BLOCKER`, probable or confirmed real secret exposure, relevant data loss risk, untreated breaking contract, essential missing context, or high security risk without mitigation.
 
 ## Flow bug/security hunt
 
@@ -162,5 +233,5 @@ State whether the inspected change shows exposed secrets, sensitive logs, authn/
 Use this compact form for short answers:
 
 ```markdown
-- **[severity] Issue:** evidence -> impact -> smallest fix -> validation.
+- **🔴 `BLOCKER`/🟠 `MAJOR`/🟡 `MINOR`/🔵 `NIT`/🟣 `QUESTION` - Issue:** evidence -> impact -> smallest fix -> validation.
 ```
