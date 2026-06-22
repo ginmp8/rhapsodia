@@ -11,6 +11,18 @@ Use this reference to design reproducible validation for bugs, side effects, reg
 5. **Assertions**: validate invariants across database, broker, DLQ, logs, external mocks, and audit records.
 6. **Regression gate**: rerun baseline and high-risk negative cases after fixes.
 
+
+## Hypothesis stress loop
+
+Use one bounded hypothesis per validation cycle when the user asks to prove, replay, fuzz, load, or harden a flow. Do not bundle unrelated risks into a single pass/fail result.
+
+1. State the hypothesis as a falsifiable claim: trigger, invariant, expected failure, affected state or side effect, and evidence source.
+2. Freeze the baseline inputs, correlation id strategy, mocks, clock behavior, broker settings, retry policy, and expected terminal state before injecting faults.
+3. Run the smallest stress scenario that can disprove or confirm the hypothesis: duplicate, reorder, delay, crash point, dependency fault, tenant mismatch, poison message, or replay.
+4. Stabilize on terminal state, queue/topic quiet window, retry exhaustion, or timeout. Mark timeout as incomplete evidence unless the timeout itself is the defect.
+5. Decide the hypothesis: confirmed, rejected, needs verification, or unsafe to execute. Record observed evidence and residual gaps.
+6. After a fix, rerun the baseline and the failing stress case as a regression gate before moving to the next hypothesis.
+
 ## Scenario catalog
 
 - boundary values: null, empty, whitespace, max/min, huge payload, malformed schema;

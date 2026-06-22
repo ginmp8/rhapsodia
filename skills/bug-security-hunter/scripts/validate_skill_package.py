@@ -102,8 +102,40 @@ def main() -> int:
     scenarios = data.get("scenarios", [])
     if len(scenarios) < 8:
         fail("activation scenario suite must include at least eight scenarios")
-    types = {s.get("type") for s in scenarios}
-    for required_type in {"activation", "non_activation", "ambiguous", "edge"}:
+    if not isinstance(scenarios, list):
+        fail("activation scenarios must be a list")
+    scenario_types = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
+    expected_prefixes = {
+        "should_activate": ("activate",),
+        "should_not_activate": ("do_not_activate",),
+        "ambiguous": ("clarify_or_", "activate only"),
+        "edge_case": ("activate_and_refuse", "refuse", "activate"),
+    }
+    seen_ids = set()
+    types = set()
+    for index, scenario in enumerate(scenarios):
+        if not isinstance(scenario, dict):
+            fail(f"activation scenario at index {index} must be an object")
+        sid = scenario.get("id")
+        if not isinstance(sid, str) or not sid.strip():
+            fail(f"activation scenario at index {index} is missing id")
+        if sid in seen_ids:
+            fail(f"duplicate activation scenario id: {sid}")
+        seen_ids.add(sid)
+        stype = scenario.get("type")
+        if stype not in scenario_types:
+            fail(f"activation scenario {sid} has unsupported type: {stype}")
+        types.add(stype)
+        prompt = scenario.get("prompt")
+        if not isinstance(prompt, str) or len(prompt.strip()) < 12:
+            fail(f"activation scenario {sid} prompt is missing or too short")
+        expected_behavior = scenario.get("expected_behavior")
+        if not isinstance(expected_behavior, str) or not expected_behavior.strip().startswith(expected_prefixes[stype]):
+            fail(f"activation scenario {sid} expected_behavior is inconsistent with type {stype}")
+        criteria = scenario.get("acceptance_criteria")
+        if not isinstance(criteria, list) or not criteria or not all(isinstance(item, str) and item.strip() for item in criteria):
+            fail(f"activation scenario {sid} acceptance_criteria must be non-empty strings")
+    for required_type in scenario_types:
         if required_type not in types:
             fail(f"scenario type missing: {required_type}")
 

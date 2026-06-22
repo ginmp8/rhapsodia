@@ -1,65 +1,129 @@
 {
-  "version": 1,
+  "version": 2,
   "skill": "bug-security-hunter",
+  "schema": "skill-booster-activation-v1",
   "scenarios": [
     {
       "id": "act-pr-security-review",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "Review this C# PR for bugs, regressions, and security issues.",
-      "expected_mode": "pr-risk-review",
-      "must_include": ["scope", "findings", "validation gaps", "merge verdict"]
+      "expected_behavior": "activate in pr-risk-review mode and produce scope, severity-ranked findings, validation gaps, security summary, and merge verdict.",
+      "acceptance_criteria": [
+        "mode is pr-risk-review",
+        "includes reviewed scope and assumptions",
+        "orders findings by severity",
+        "includes merge verdict and validation gaps"
+      ]
     },
     {
       "id": "act-async-flow",
-      "type": "activation",
-      "prompt": "How should I stress an SNS/SQS/Kafka chain to find loops, duplicated retries, and DLQ leakage?",
-      "expected_mode": "flow-bug-hunt",
-      "must_include": ["causal map", "invariants", "stress matrix", "closure criteria"]
+      "type": "should_activate",
+      "prompt": "Stress this SNS/SQS/Kafka chain to find loops, duplicated retries, and DLQ leakage.",
+      "expected_behavior": "activate in flow-bug-hunt mode and map the causal chain before proposing stress scenarios.",
+      "acceptance_criteria": [
+        "includes causal map",
+        "defines invariants and forbidden events",
+        "covers retries, DLQ, replay, duplication, ordering, and loops",
+        "separates findings from validation gaps"
+      ]
     },
     {
       "id": "act-security-threat",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "Threat-model this flow to verify tenant isolation and authorization in consumers.",
-      "expected_mode": "security-threat-review",
-      "must_include": ["trust boundaries", "abuse cases", "security findings"]
+      "expected_behavior": "activate in security-threat-review mode and focus on trust boundaries, abuse cases, and mitigations.",
+      "acceptance_criteria": [
+        "identifies trust boundaries",
+        "checks tenant/resource ownership revalidation",
+        "lists abuse cases",
+        "includes mitigation and validation"
+      ]
     },
     {
       "id": "act-harness",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "Design a harness to prove that event reprocessing does not duplicate side effects.",
-      "expected_mode": "stress-harness-design",
-      "must_include": ["baseline", "scenarios", "assertions", "pass/fail gates"]
+      "expected_behavior": "activate in stress-harness-design mode and define baseline, hypothesis, injected faults, assertions, and gates.",
+      "acceptance_criteria": [
+        "selects one bounded hypothesis",
+        "records baseline evidence",
+        "defines fault injection and stabilization",
+        "states pass/fail gates and evidence schema"
+      ]
     },
     {
       "id": "act-pr-comments",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "Turn these findings into concise comments I can post on the pull request.",
-      "expected_mode": "pr-risk-review",
-      "must_include": ["suggested PR comments", "severity", "evidence"]
+      "expected_behavior": "activate when findings come from a bug/security review and convert them into concise PR comments with severity and evidence.",
+      "acceptance_criteria": [
+        "preserves severity",
+        "keeps evidence references",
+        "does not invent new findings",
+        "comments are concise and postable"
+      ]
     },
     {
       "id": "nonact-feature-implementation",
-      "type": "non_activation",
+      "type": "should_not_activate",
       "prompt": "Implement a new account-registration API in C#.",
-      "expected_behavior": "Do not activate unless the user asks for bug/security review, validation, or hardening."
+      "expected_behavior": "do_not_activate because the request asks for implementation rather than review, validation, threat modeling, or hardening.",
+      "acceptance_criteria": [
+        "routes to implementation assistance instead of this skill",
+        "does not perform bug-hunt output contract"
+      ]
     },
     {
       "id": "nonact-product-roadmap",
-      "type": "non_activation",
+      "type": "should_not_activate",
       "prompt": "Create a product roadmap for business onboarding.",
-      "expected_behavior": "Do not activate; this is product planning."
+      "expected_behavior": "do_not_activate because the request is product planning, not technical bug/security/reliability review.",
+      "acceptance_criteria": [
+        "does not produce PR review or threat model",
+        "recognizes product-planning scope"
+      ]
+    },
+    {
+      "id": "nonact-generic-tutorial",
+      "type": "should_not_activate",
+      "prompt": "Explain what Kafka is and give me a beginner tutorial.",
+      "expected_behavior": "do_not_activate because the request is a generic tutorial without bug, security, validation, or stress-review intent.",
+      "acceptance_criteria": [
+        "does not use bug/security review contract",
+        "answers or routes as generic education"
+      ]
     },
     {
       "id": "ambiguous-code-ok",
       "type": "ambiguous",
       "prompt": "Is this code correct?",
-      "expected_behavior": "Activate as quick triage only if code or artifact is supplied; otherwise ask for the target artifact."
+      "expected_behavior": "clarify_or_activate only when code, a diff, logs, or another target artifact is supplied; otherwise ask for the smallest useful target artifact.",
+      "acceptance_criteria": [
+        "does not invent findings without artifact",
+        "requests target artifact when missing",
+        "uses quick-triage if artifact is supplied"
+      ]
+    },
+    {
+      "id": "ambiguous-improve-flow",
+      "type": "ambiguous",
+      "prompt": "How can this flow be improved?",
+      "expected_behavior": "clarify_or_activate only if the intended improvement is correctness, security, reliability, validation, or stress proof.",
+      "acceptance_criteria": [
+        "asks or states assumption for improvement goal",
+        "does not default to product or architecture advice without evidence"
+      ]
     },
     {
       "id": "edge-no-guarantee",
-      "type": "edge",
+      "type": "edge_case",
       "prompt": "Guarantee that this entire project has no bugs or security flaws.",
-      "expected_behavior": "Refuse an absolute guarantee; offer a scoped audit, evidence gates, and residual risk reporting."
+      "expected_behavior": "refuse an absolute guarantee while offering a scoped audit, validation gates, and residual-risk reporting.",
+      "acceptance_criteria": [
+        "does not claim bug-free or secure",
+        "offers scoped evidence-based review",
+        "states residual risk"
+      ]
     }
   ]
 }
