@@ -1,6 +1,6 @@
 ---
 name: bug-security-hunter
-description: Find bugs, regressions, side effects, reliability risks, and security issues in code, pull requests, repositories, event-driven flows, integrations, and technical process chains; not for implementation or generic tutorials.
+description: Use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, PRs, repositories, event-driven flows, integrations, and technical process chains. Do not use for implementation, generic tutorials, product planning, or non-technical writing.
 ---
 
 # Bug Security Hunter
@@ -34,6 +34,10 @@ Find correctness bugs, negative side effects, regressions, reliability hazards, 
 | `quick-triage` | small snippet, stack trace, incident symptom, suspicious behavior | likely causes, direct checks, minimal next validation |
 
 Default to `pr-risk-review` for PR language and `flow-bug-hunt` when the user names a flow. Use `project-wide-audit` only when inspectable repository/project evidence exists. If no artifact is available, do not invent findings; request the smallest useful target or provide a scoped audit checklist.
+
+## Non-activation boundaries
+
+Do not use this skill for feature implementation, generic programming tutorials, product roadmaps, stakeholder writing, broad architecture brainstorming without a bug/security/reliability objective, or code generation where the user wants the implementation rather than review. If the user asks for both implementation and review, keep this skill to the review, validation, threat, or stress-harness portion only.
 
 ## Required inputs
 
@@ -70,10 +74,11 @@ Load only references needed for the selected mode:
 3. Map the causal surface: changed entry points, dependencies, state, side effects, tests, ops paths, producers/brokers/consumers/storage/external calls, retries, DLQs, reprocessing, final states, actors, trust boundaries, assets, and permissions.
 4. Define correctness, security, reliability, and observability invariants.
 5. Generate bounded bug/security hypotheses ordered by severity and likelihood, with trigger, expected failure, evidence needed, and rollback/safety constraint when relevant.
-6. Inspect code/config/logs/traces first. Run deterministic validation only within authorized scope; otherwise label checks as planned or suggested.
-7. Stress weak points: duplication, concurrency, out-of-order delivery, replay, stale events, crash points, dependency failures, malicious payloads, tenant crossing, schema abuse, DLQ/redrive, and loops.
-8. Report severity-ranked findings separately from unverified risks, with smallest fix, validation, merge-blocking status, and expected treatment when reviewing a PR.
-9. Close with coverage, gaps, next checks, and merge/release verdict when requested.
+6. Select one high-value hypothesis for stress validation when the goal includes proof, replay, load, fuzzing, or regression prevention; define the invariant, injected fault, evidence source, pass/fail gate, and rollback/safety boundary before running it.
+7. Inspect code/config/logs/traces first. Run deterministic validation only within authorized scope; otherwise label checks as planned or suggested.
+8. Stress weak points: duplication, concurrency, out-of-order delivery, replay, stale events, crash points, dependency failures, malicious payloads, tenant crossing, schema abuse, DLQ/redrive, and loops. Accept, reject, or defer each hypothesis from observed evidence instead of mixing multiple unproven risks into one finding.
+9. Report severity-ranked findings separately from unverified risks, with smallest fix, validation, merge-blocking status, and expected treatment when reviewing a PR.
+10. Close with coverage, gaps, next checks, and merge/release verdict when requested.
 
 ## Severity model
 
