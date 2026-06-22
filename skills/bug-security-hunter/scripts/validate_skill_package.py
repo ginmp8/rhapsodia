@@ -15,6 +15,7 @@ REQUIRED = [
     "assets/templates/hypothesis-record.md.template",
     "examples/review-scenarios.md",
     "evals/activation-scenarios.json",
+    "evals/behavioral-scenarios.json",
     "references/review-workflow.md",
     "references/pr-and-code-rubric.md",
     "references/async-flow-analysis.md",
@@ -139,6 +140,47 @@ def main() -> int:
     for required_type in scenario_types:
         if required_type not in types:
             fail(f"scenario type missing: {required_type}")
+
+
+    behavioral = json.loads((root / "evals/behavioral-scenarios.json").read_text(encoding="utf-8"))
+    if behavioral.get("schema") != "bug-security-hunter-behavioral-v1":
+        fail("behavioral scenarios schema is invalid")
+    behavior_scenarios = behavioral.get("scenarios", [])
+    if not isinstance(behavior_scenarios, list) or len(behavior_scenarios) < 8:
+        fail("behavioral scenario suite must include at least eight scenarios")
+    required_categories = {
+        "cross_language_pr_review",
+        "security_review",
+        "stress_hypothesis",
+        "quick_triage",
+        "non_activation",
+    }
+    seen_behavior_ids = set()
+    seen_categories = set()
+    for index, scenario in enumerate(behavior_scenarios):
+        if not isinstance(scenario, dict):
+            fail(f"behavioral scenario at index {index} must be an object")
+        sid = scenario.get("id")
+        if not isinstance(sid, str) or not sid.strip():
+            fail(f"behavioral scenario at index {index} is missing id")
+        if sid in seen_behavior_ids:
+            fail(f"duplicate behavioral scenario id: {sid}")
+        seen_behavior_ids.add(sid)
+        category = scenario.get("category")
+        if not isinstance(category, str) or not category.strip():
+            fail(f"behavioral scenario {sid} missing category")
+        seen_categories.add(category)
+        for field in ("mode", "language_or_stack", "prompt", "artifact"):
+            value = scenario.get(field)
+            if not isinstance(value, str) or len(value.strip()) < 3:
+                fail(f"behavioral scenario {sid} missing {field}")
+        for field in ("expected_obligations", "forbidden_behavior", "scoring_gates"):
+            values = scenario.get(field)
+            if not isinstance(values, list) or not values or not all(isinstance(item, str) and item.strip() for item in values):
+                fail(f"behavioral scenario {sid} {field} must be non-empty strings")
+    missing_categories = sorted(required_categories - seen_categories)
+    if missing_categories:
+        fail("behavioral scenario category missing: " + ", ".join(missing_categories))
 
     referenced = set(re.findall(r"`([^`]+\.(?:md|json|template|py|yaml|svg))`", skill_text))
     for ref in referenced:

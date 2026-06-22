@@ -5,6 +5,9 @@
 - "Review this PR for bugs and security issues. Use severity emojis for BLOCKER, MAJOR, MINOR, NIT, and QUESTION."
 - "Stress this SNS/SQS flow to find loops, duplicated retries, and side effects."
 - "Analyze this C# consumer and check whether retry can duplicate the operation."
+- "Review this Python/FastAPI authorization middleware for tenant isolation bugs."
+- "Do a quick triage of this TypeScript diff and only show the top findings."
+- "Audit this Terraform IAM change for least-privilege and secret exposure risks."
 - "Threat-model this account-opening flow."
 - "Design a harness to reprocess Kafka events and validate idempotency."
 - "Look for general bugs in this project, starting with authentication, events, and database access."
@@ -14,6 +17,7 @@
 ## Non-activating examples
 
 - "Implement this feature" -> implementation skill or coding assistant, unless the user asks for review, validation, or hardening.
+- "Write a Go worker from scratch" -> implementation request, not this skill unless review or validation is requested.
 - "Explain what Kafka is" -> generic explanation, not a bug/security hunt.
 - "Create a product roadmap for onboarding" -> product planning.
 - "Write an email to stakeholders" -> writing task.
