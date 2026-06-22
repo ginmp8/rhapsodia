@@ -1,8 +1,8 @@
 interface:
   display_name: Bug Security Hunter
   short_description: find bugs, regressions, side effects, reliability risks, and
-    security issues in code, PRs, repositories, async/event-driven flows, integrations,
-    and technical process chains.
+    security issues in any-language code, PRs, repositories, async/event-driven
+    flows, integrations, infrastructure, and technical process chains.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

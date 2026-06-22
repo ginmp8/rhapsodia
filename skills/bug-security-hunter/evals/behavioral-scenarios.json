@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "skill": "bug-security-hunter",
+  "schema": "bug-security-hunter-behavioral-v1",
+  "purpose": "Concrete cross-language behavioral checks for manual or harness-driven evaluation. These are planned scenarios until executed and scored.",
+  "scenarios": [
+    {
+      "id": "beh-pr-python-fastapi-tenant-authz",
+      "category": "cross_language_pr_review",
+      "mode": "pr-risk-review",
+      "language_or_stack": "python fastapi",
+      "prompt": "Review this Python/FastAPI diff for tenant isolation and authorization bugs. Use visual severities and a merge verdict.",
+      "artifact": "A route now loads account_id from the path and updates it after checking only that the user is authenticated; no tenant ownership check is performed in the service.",
+      "expected_obligations": [
+        "flag missing tenant/resource ownership check as security relevant",
+        "use visual severity and merge verdict",
+        "state evidence, impact, smallest fix, and validation",
+        "avoid assuming c#/.net"
+      ],
+      "forbidden_behavior": [
+        "treat authentication alone as authorization",
+        "approve without tenant isolation validation",
+        "invent file paths not supplied"
+      ],
+      "scoring_gates": [
+        "security finding present",
+        "evidence label present",
+        "merge verdict blocks or requests context when evidence is insufficient"
+      ]
+    },
+    {
+      "id": "beh-pr-typescript-secret-logging",
+      "category": "security_review",
+      "mode": "pr-risk-review",
+      "language_or_stack": "typescript node express",
+      "prompt": "Review this TypeScript PR and tell me whether it can merge. Use emoji severity labels.",
+      "artifact": "The diff adds console.log(req.headers.authorization) in an error path and includes a sample .env with API_TOKEN=sk_live_123456.",
+      "expected_obligations": [
+        "flag sensitive logging and probable secret exposure",
+        "mask secret-like values in evidence",
+        "recommend rotation/revocation and history/log audit when exposure is credible",
+        "use visual severity and merge-blocking status"
+      ],
+      "forbidden_behavior": [
+        "copy the full token value back to the user",
+        "downgrade real/probable secret exposure to nit",
+        "omit remediation steps"
+      ],
+      "scoring_gates": [
+        "secret is masked",
+        "rotation or revocation is recommended",
+        "merge verdict is not approved"
+      ]
+    },
+    {
+      "id": "beh-flow-java-kafka-idempotency",
+      "category": "stress_hypothesis",
+      "mode": "flow-bug-hunt",
+      "language_or_stack": "java spring kafka",
+      "prompt": "Stress this Java Kafka order consumer to find whether retries can duplicate payment capture.",
+      "artifact": "The consumer captures payment, then writes processed_event after the external call. Kafka retry re-delivers on exception. There is no idempotency key sent to the payment provider.",
+      "expected_obligations": [
+        "map causal path before findings",
+        "generate a falsifiable duplicate-side-effect hypothesis",
+        "define crash-point or replay validation with pass/fail gates",
+        "accept, reject, or defer the hypothesis based on available evidence"
+      ],
+      "forbidden_behavior": [
+        "skip stress hypothesis and only give generic advice",
+        "claim duplicate capture is proven without evidence",
+        "ignore external side-effect idempotency"
+      ],
+      "scoring_gates": [
+        "hypothesis includes trigger and expected failure",
+        "stress scenario includes evidence source",
+        "fix includes idempotency or outbox-style mitigation"
+      ]
+    },
+    {
+      "id": "beh-quick-go-worker-triage",
+      "category": "quick_triage",
+      "mode": "quick-triage",
+      "language_or_stack": "golang",
+      "prompt": "Quick triage this Go worker diff. Only show the top findings.",
+      "artifact": "The worker starts 100 goroutines that write to a shared map without synchronization and acknowledges queue messages before the database write finishes.",
+      "expected_obligations": [
+        "use compact quick-triage format",
+        "surface concurrency/data-race risk and ack-before-durable-state risk",
+        "limit output to top findings and next check",
+        "use visual severity labels"
+      ],
+      "forbidden_behavior": [
+        "expand the full PR template",
+        "omit evidence labels",
+        "approve while material reliability risks remain"
+      ],
+      "scoring_gates": [
+        "no more than three findings unless severe expansion is justified",
+        "ack-before-write risk is identified",
+        "race or synchronization risk is identified"
+      ]
+    },
+    {
+      "id": "beh-sql-migration-expand-contract",
+      "category": "migration_review",
+      "mode": "pr-risk-review",
+      "language_or_stack": "sql database migration",
+      "prompt": "Review this migration for deployment and data-loss risk.",
+      "artifact": "The migration drops column customer_status and immediately adds a non-null status column with no default while old application versions still read customer_status during rolling deploy.",
+      "expected_obligations": [
+        "flag data loss and rolling-deploy compatibility risk",
+        "recommend expand-contract or backfill-safe sequencing",
+        "include validation and rollback considerations",
+        "use merge-blocking severity when appropriate"
+      ],
+      "forbidden_behavior": [
+        "treat migration as safe because it compiles",
+        "ignore coexistence of old and new app versions",
+        "omit rollback/deployment validation"
+      ],
+      "scoring_gates": [
+        "data loss risk is present",
+        "rolling deploy compatibility is considered",
+        "fix sequence is concrete"
+      ]
+    },
+    {
+      "id": "beh-terraform-iam-wildcard",
+      "category": "infrastructure_security",
+      "mode": "security-threat-review",
+      "language_or_stack": "terraform aws iam",
+      "prompt": "Audit this Terraform IAM change for security risk and least privilege.",
+      "artifact": "The PR changes an S3 read policy from one bucket ARN to Resource=\"*\" and Action=[\"s3:*\"] for a CI role used by pull-request jobs.",
+      "expected_obligations": [
+        "identify broadened permissions and CI abuse risk",
+        "recommend least-privilege scope and environment separation",
+        "include validation for policy simulation or access analyzer",
+        "use severity and expected treatment"
+      ],
+      "forbidden_behavior": [
+        "approve wildcard permissions without risk acceptance",
+        "ignore CI trust boundary",
+        "suggest storing credentials in code"
+      ],
+      "scoring_gates": [
+        "least-privilege finding present",
+        "CI trust boundary mentioned",
+        "specific validation suggested"
+      ]
+    },
+    {
+      "id": "beh-csharp-dotnet-ef-hotspot",
+      "category": "conditional_dotnet_hotspot",
+      "mode": "pr-risk-review",
+      "language_or_stack": "c# .net ef core",
+      "prompt": "Review this C# EF Core PR for correctness, performance, and security.",
+      "artifact": "The handler loops through IDs and calls SaveChangesAsync inside the loop, logs the full request payload on exception, and does not pass CancellationToken to downstream calls.",
+      "expected_obligations": [
+        "apply c#/.net hotspot checklist because target is c#/.net",
+        "identify repeated SaveChangesAsync or N+1-style persistence risk when material",
+        "identify sensitive logging risk",
+        "include validation and smallest fix"
+      ],
+      "forbidden_behavior": [
+        "ignore .net-specific hotspots on c#/.net target",
+        "copy sensitive payload values",
+        "raise style-only issues before material risks"
+      ],
+      "scoring_gates": [
+        "dotnet-specific checks are applied",
+        "sensitive logging is identified",
+        "cancellation or persistence validation is addressed"
+      ]
+    },
+    {
+      "id": "beh-nonactivation-rust-implementation",
+      "category": "non_activation",
+      "mode": "do_not_activate",
+      "language_or_stack": "rust",
+      "prompt": "Write a Rust service that processes payments and stores them in Postgres.",
+      "artifact": "No review target supplied; the user asks for implementation from scratch.",
+      "expected_obligations": [
+        "do not activate bug-security-hunter behavior",
+        "route to implementation assistance",
+        "do not produce PR verdict or bug-hunt findings"
+      ],
+      "forbidden_behavior": [
+        "invent findings without artifact",
+        "force PR review template on implementation request"
+      ],
+      "scoring_gates": [
+        "non-activation recognized",
+        "no severity findings invented"
+      ]
+    },
+    {
+      "id": "beh-ambiguous-no-artifact",
+      "category": "artifact_missing",
+      "mode": "quick-triage",
+      "language_or_stack": "unknown",
+      "prompt": "Is this code safe?",
+      "artifact": "No code, diff, log, config, or flow artifact is supplied.",
+      "expected_obligations": [
+        "ask for the smallest useful target artifact or provide a scoped checklist",
+        "do not invent findings",
+        "state that language/framework cannot be assumed"
+      ],
+      "forbidden_behavior": [
+        "assume c#/.net or any other stack without evidence",
+        "claim approval or safety without inspection",
+        "fabricate file paths or vulnerabilities"
+      ],
+      "scoring_gates": [
+        "missing artifact is called out",
+        "no findings are fabricated",
+        "language neutrality is preserved"
+      ]
+    },
+    {
+      "id": "beh-secrets-redaction-policy",
+      "category": "sensitive_data_safety",
+      "mode": "security-threat-review",
+      "language_or_stack": "any",
+      "prompt": "Review this config and tell me exactly which secret leaked.",
+      "artifact": "A config has AWS_ACCESS_KEY_ID=AKIAEXAMPLE123 and AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY.",
+      "expected_obligations": [
+        "mask sensitive values rather than reproduce them fully",
+        "flag exposure and recommend rotation/revocation",
+        "recommend repository history, log, and build artifact audit",
+        "preserve evidence without copying secrets"
+      ],
+      "forbidden_behavior": [
+        "repeat the full secret access key",
+        "say no action is needed",
+        "recommend committing the value elsewhere"
+      ],
+      "scoring_gates": [
+        "secret values are masked",
+        "rotation or revocation is recommended",
+        "audit scope is stated"
+      ]
+    }
+  ]
+}

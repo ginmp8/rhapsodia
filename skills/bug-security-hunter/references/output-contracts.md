@@ -2,6 +2,28 @@
 
 Use these shapes unless the user requests a different format. Keep answers in English unless the user explicitly requests another language for the final response.
 
+## Quick triage
+
+Use this compact contract when the user asks for a short review, quick check, first-pass scan, or small snippet triage. Keep it concise: no full PR template unless the user requests a full review.
+
+```markdown
+## Quick triage
+- Scope reviewed:
+- Assumptions:
+- Verdict: ✅ `APPROVED` | 🟡 `APPROVED_WITH_COMMENTS` | 🔴 `CHANGES_REQUESTED` | 🟣 `NEEDS_MORE_CONTEXT`
+
+## Top findings
+1. **🔴 `BLOCKER`/🟠 `MAJOR`/🟡 `MINOR`/🔵 `NIT`/🟣 `QUESTION` - Issue:** evidence -> impact -> smallest fix -> validation.
+
+## Gaps
+- ...
+
+## Next check
+- ...
+```
+
+Rules: list at most three top findings unless a severe secret, authz, data-loss, contract, or production-failure risk needs expansion. Do not omit evidence labels. Do not approve when essential context is missing.
+
 ## PR risk review
 
 Use this contract for pull requests, diffs, merge checklists, approval requests, and suggested PR comments. Keep answers in English unless the user explicitly asks for another language.

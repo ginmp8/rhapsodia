@@ -1,6 +1,6 @@
 ---
 name: bug-security-hunter
-description: Use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, PRs, repositories, event-driven flows, integrations, and technical process chains, including PR reviews that need visual severity labels, merge verdicts, or comments. Do not use for implementation, generic tutorials, product planning, or non-technical writing.
+description: use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, pull requests, repositories, infrastructure, configs, event-driven flows, integrations, or technical process chains across any programming language. use for cross-language code review and language-neutral bug/security analysis; apply c#/.net hotspots only when the target is c#/.net. include visual severity labels, merge verdicts, and pr comments when reviewing pull requests. do not use for implementation, generic tutorials, product planning, or non-technical writing.
 ---
 
 # Bug Security Hunter
@@ -18,7 +18,7 @@ Find correctness bugs, negative side effects, regressions, reliability hazards, 
 - Optimize for finding real problems aggressively: inspect all supplied changed surfaces, hunt for high-impact failure modes first, challenge optimistic assumptions, and do not approve by default; never fabricate findings, weaken evidence requirements, expose secrets, or exceed authorized scope.
 - Review high-impact dimensions before style: security, functional correctness, data integrity, contracts, migrations, reliability, performance, observability, and operational rollback.
 - When a flow is named, review the causal path: entry point, validation, authorization, state changes, events/messages, consumers, retries, side effects, logs, DLQs, reprocessing, and final state.
-- For C#/.NET, apply the .NET hotspot checklist by default; otherwise use language-neutral invariants and observable contracts.
+- Stay language-neutral by default. Identify the target stack from the artifact; use language-neutral invariants for any language, and apply `references/csharp-dotnet-hotspots.md` only when the target is C#/.NET. Do not assume .NET when the language or framework is unknown.
 - Separate confirmed findings, likely risks, validation gaps, and test ideas. Label evidence as confirmed, likely, needs verification, planned, or out of scope whenever uncertainty matters.
 - Recommend the smallest safe fix, mitigation, or test. Avoid unrelated rewrites, new frameworks, speculative abstractions, and preference-only comments.
 - Never reproduce secrets, private keys, tokens, session IDs, full connection strings, certificates, cookies, JWTs, or sensitive personal data. Mask evidence, flag exposure, and recommend rotation, revocation, log cleanup, audit, and least privilege.
@@ -35,7 +35,7 @@ Find correctness bugs, negative side effects, regressions, reliability hazards, 
 | `stress-harness-design` | prove, stress, replay, fuzz, load, or validate a flow | reproducible harness plan, scenarios, gates, evidence schema |
 | `quick-triage` | small snippet, stack trace, incident symptom, suspicious behavior | likely causes, direct checks, minimal next validation |
 
-Default to `pr-risk-review` for PR language and `flow-bug-hunt` when the user names a flow. Use `project-wide-audit` only when inspectable repository/project evidence exists. If no artifact is available, do not invent findings; request the smallest useful target or provide a scoped audit checklist.
+Default to `pr-risk-review` for PR language and `flow-bug-hunt` when the user names a flow. Use `project-wide-audit` only when inspectable repository/project evidence exists. Use compact `quick-triage` when the user asks for a short review, quick check, or first-pass scan. If no artifact is available, do not invent findings; request the smallest useful target or provide a scoped audit checklist.
 
 ## Non-activation boundaries
 
@@ -64,6 +64,7 @@ Load only references needed for the selected mode:
 - `references/output-contracts.md`: response formats for PR, flow, project audit, threat review, and harness design.
 - `examples/review-scenarios.md`: calibration examples.
 - `evals/activation-scenarios.json`: planned activation/non-activation/ambiguous/edge coverage; not measured unless executed.
+- `evals/behavioral-scenarios.json`: concrete cross-language behavioral scenarios for manual or harness-driven evaluation; not measured unless executed.
 - `assets/templates/bug-hunt-report.md.template`: formal report skeleton.
 - `assets/templates/hypothesis-record.md.template`: iterative hypothesis/test record.
 - `scripts/validate_skill_package.py`: structural validation.
@@ -96,7 +97,7 @@ Use the visual severity label in user-facing findings. Treat the classic risk le
 
 ## Output contract
 
-For reviews, use `references/output-contracts.md`. Every substantive answer must include:
+For reviews, use `references/output-contracts.md`. For short review, quick check, or first-pass scan requests, use the compact quick-triage contract from `references/output-contracts.md` instead of expanding the full PR template. Every substantive answer must include:
 
 1. scope reviewed and assumptions;
 2. findings ordered by severity, each with evidence, impact, smallest fix, validation, and confidence/evidence label;

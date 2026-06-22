@@ -6,13 +6,14 @@
     {
       "id": "act-pr-security-review",
       "type": "should_activate",
-      "prompt": "Review this C# PR for bugs, regressions, and security issues.",
+      "prompt": "Review this pull request for bugs, regressions, and security issues regardless of programming language.",
       "expected_behavior": "activate in pr-risk-review mode and produce scope, severity-ranked findings, validation gaps, security summary, and merge verdict.",
       "acceptance_criteria": [
         "mode is pr-risk-review",
         "includes reviewed scope and assumptions",
         "orders findings by severity",
-        "includes merge verdict and validation gaps"
+        "includes merge verdict and validation gaps",
+        "does not assume c#/.net when the target language is not c#/.net"
       ]
     },
     {
@@ -136,6 +137,40 @@
         "does not claim bug-free or secure",
         "offers scoped evidence-based review",
         "states residual risk"
+      ]
+    },
+    {
+      "id": "act-cross-language-python-authz",
+      "type": "should_activate",
+      "prompt": "Review this Python/FastAPI authorization middleware for tenant isolation and security bugs.",
+      "expected_behavior": "activate in pr-risk-review or security-threat-review mode and apply language-neutral security invariants without assuming c#/.net.",
+      "acceptance_criteria": [
+        "does not assume c#/.net",
+        "checks tenant/resource ownership",
+        "includes severity labels and validation gaps",
+        "keeps evidence separate from assumptions"
+      ]
+    },
+    {
+      "id": "act-quick-triage-typescript",
+      "type": "should_activate",
+      "prompt": "Do a quick triage of this TypeScript diff and only show the top findings.",
+      "expected_behavior": "activate in quick-triage mode and produce compact scope, top findings, gaps, and next check.",
+      "acceptance_criteria": [
+        "uses quick-triage output instead of full PR template",
+        "lists at most three top findings unless severe risk requires expansion",
+        "uses visual severity labels",
+        "does not approve when essential context is missing"
+      ]
+    },
+    {
+      "id": "nonact-language-implementation",
+      "type": "should_not_activate",
+      "prompt": "Write a Go worker from scratch that consumes Kafka messages.",
+      "expected_behavior": "do_not_activate because the request asks for implementation rather than review, validation, threat modeling, or hardening.",
+      "acceptance_criteria": [
+        "routes to implementation assistance instead of this skill",
+        "does not perform bug-hunt output contract"
       ]
     }
   ]

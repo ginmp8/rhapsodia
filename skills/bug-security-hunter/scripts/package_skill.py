@@ -17,6 +17,7 @@ REQUIRED_ARCHIVE_FILES = {
     f"{SKILL_NAME}/SKILL.md",
     f"{SKILL_NAME}/agents/openai.yaml",
     f"{SKILL_NAME}/evals/activation-scenarios.json",
+    f"{SKILL_NAME}/evals/behavioral-scenarios.json",
     f"{SKILL_NAME}/scripts/validate_skill_package.py",
     f"{SKILL_NAME}/scripts/package_skill.py",
 }
