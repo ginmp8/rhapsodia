@@ -2,32 +2,38 @@
 
 ## Activating examples
 
-- "Revise esse PR para encontrar bugs e problemas de segurança."
-- "Quero estressar esse fluxo SNS/SQS para achar loops e efeitos colaterais."
-- "Analise esse consumer C# e veja se retry pode duplicar operação."
-- "Faça threat model desse fluxo de abertura de conta."
-- "Monte um harness para reprocessar eventos Kafka e validar idempotência."
-- "Procure bugs gerais no projeto, começando por autenticação, eventos e banco."
+- "Review this PR for bugs and security issues."
+- "Stress this SNS/SQS flow to find loops, duplicated retries, and side effects."
+- "Analyze this C# consumer and check whether retry can duplicate the operation."
+- "Threat-model this account-opening flow."
+- "Design a harness to reprocess Kafka events and validate idempotency."
+- "Look for general bugs in this project, starting with authentication, events, and database access."
+- "Give me concise comments that I can post on this PR."
+- "Can this migration merge safely with the current deployment strategy?"
 
 ## Non-activating examples
 
-- "Implemente essa feature" -> implementation skill or coding assistant, unless the user asks for review/hardening.
-- "Explique o que é Kafka" -> generic explanation, not a bug/security hunt.
-- "Crie um roadmap de produto" -> product/planning skill.
-- "Escreva um e-mail para stakeholders" -> writing task.
+- "Implement this feature" -> implementation skill or coding assistant, unless the user asks for review, validation, or hardening.
+- "Explain what Kafka is" -> generic explanation, not a bug/security hunt.
+- "Create a product roadmap for onboarding" -> product planning.
+- "Write an email to stakeholders" -> writing task.
 
 ## Ambiguous examples
 
-- "Está certo esse código?" -> activate if code is supplied; use quick triage and ask only if the target is missing.
-- "Como melhorar esse fluxo?" -> activate only if the improvement goal is correctness, security, reliability, or validation.
-- "Olhe esse projeto" -> proceed with project-wide audit assumptions only if repository/files are available; otherwise request the smallest target artifact or area.
+- "Is this code correct?" -> activate as quick triage only if code or another artifact is supplied; otherwise ask for the target artifact.
+- "How can this flow be improved?" -> activate only if the improvement goal is correctness, security, reliability, or validation.
+- "Look at this project" -> proceed with project-wide audit assumptions only if repository/files are available; otherwise request the smallest useful target area.
 
 ## Example finding
 
 ```markdown
 1. [high] Retry can duplicate external notification
+   - File/line: `src/Notifications/SendNotificationHandler.cs:L42-L58`
+   - Evidence label: confirmed
    - Evidence: `SendNotificationAsync` runs before message acknowledgement, and no idempotency key is passed to the provider.
    - Impact: a crash after provider success can resend the notification on retry.
    - Smallest fix: persist/send an idempotency key based on business operation before calling the provider, or use an outbox-backed notification command.
    - Validation: crash-point test after provider success and before ack; assert exactly one provider call for the business key.
+   - Blocks merge: yes
+   - Expected treatment: fix in this PR
 ```

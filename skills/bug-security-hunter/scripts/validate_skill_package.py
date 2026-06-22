@@ -29,6 +29,16 @@ REQUIRED = [
 BANNED_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache"}
 BANNED_MARKERS = ["TO" + "DO", "FIX" + "ME", "INS" + "ERT ", "T" + "BD", "Lorem" + " ipsum"]
 BANNED_SUFFIXES = {".pyc", ".pyo", ".zip"}
+TEXT_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".py", ".template", ".txt"}
+PORTUGUESE_MARKERS = [
+    "Re" + "vise ", "Que" + "ro ", "Fa" + "ca", "Mon" + "te ", "Imple" + "mente",
+    "Cr" + "ie ", "Es" + "se ", "Ol" + "he ", "Ga" + "ranta ", "segu" + "ranca",
+    "regres" + "soes", "corre" + "cao", "opera" + "cao", "autenti" + "cacao",
+    "autoriza" + "cao", "mensa" + "geria", "ban" + "co", "cada" + "stro",
+    "con" + "ta", "produ" + "to", "co" + "digo", "na" + "o ", "veredi" + "to",
+    "lac" + "unas", "pergun" + "tas", "trata" + "mento", "resu" + "mo",
+    "se" + "nha", "cha" + "ve", "inje" + "cao",
+]
 
 
 def fail(message: str) -> None:
@@ -38,7 +48,7 @@ def fail(message: str) -> None:
 
 def text_files(root: Path):
     for path in root.rglob("*"):
-        if path.is_file() and path.suffix not in {".svg"}:
+        if path.is_file() and (path.suffix in TEXT_SUFFIXES or path.name.endswith(".template")):
             yield path
 
 
@@ -49,7 +59,7 @@ def main() -> int:
 
     skill_files = list(root.glob("SKILL.md"))
     if len(skill_files) != 1:
-        fail("package must contain exactly one root SKILL.md")
+        fail("package must include exactly one root SKILL.md")
 
     for path in root.rglob("*"):
         rel = path.relative_to(root)
@@ -75,16 +85,23 @@ def main() -> int:
     if not description or len(description.group(1).strip()) < 80:
         fail("frontmatter description is missing or too short")
 
-    for marker in BANNED_MARKERS:
-        for path in text_files(root):
-            text = path.read_text(encoding="utf-8", errors="ignore")
+    for path in text_files(root):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        rel = path.relative_to(root)
+        for marker in BANNED_MARKERS:
             if marker in text and not path.name.endswith(".template"):
-                fail(f"unfinished marker {marker!r} found in {path.relative_to(root)}")
+                fail(f"unfinished marker {marker!r} found in {rel}")
+        non_ascii = sorted({ch for ch in text if ord(ch) > 127})
+        if non_ascii:
+            fail(f"non-ASCII text found in {rel}: {''.join(non_ascii[:20])}")
+        found_markers = sorted({marker for marker in PORTUGUESE_MARKERS if marker in text})
+        if found_markers:
+            fail(f"non-English marker found in {rel}: {', '.join(found_markers[:10])}")
 
     data = json.loads((root / "evals/activation-scenarios.json").read_text(encoding="utf-8"))
     scenarios = data.get("scenarios", [])
-    if len(scenarios) < 6:
-        fail("activation scenario suite must include at least six scenarios")
+    if len(scenarios) < 8:
+        fail("activation scenario suite must include at least eight scenarios")
     types = {s.get("type") for s in scenarios}
     for required_type in {"activation", "non_activation", "ambiguous", "edge"}:
         if required_type not in types:
