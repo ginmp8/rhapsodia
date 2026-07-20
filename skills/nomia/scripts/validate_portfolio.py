@@ -18,6 +18,7 @@ from nomia_utils import (
     parse_iso_date,
     scan_unresolved_template_tokens,
     unique,
+    validate_id_provenance,
     validate_spec_id_format,
 )
 
@@ -130,6 +131,11 @@ def validate_yaml(path: Path) -> tuple[list[str], list[str]]:
         current_key = item_key(item, index)
         spec_id = item.get("spec_id")
         validate_spec_id(f"items[{index}].spec_id", spec_id, errors)
+        provenance_error = validate_id_provenance(
+            item.get("source"), id_value=spec_id, field_name=f"items[{index}].source"
+        )
+        if provenance_error:
+            errors.append(f"{path}: `{provenance_error}`")
         if spec_id not in (None, ""):
             if str(spec_id) in seen_specs:
                 warnings.append(f"{path}: duplicate portfolio item for `{spec_id}`")

@@ -20,6 +20,8 @@ TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".template", ".txt", ".
 RETIRED_CYCLE_FIELD = "cycle" + "_version"
 RETIRED_SPEC_PROSE = "spec" + "NNN"
 LEGACY_PATTERNS = {
+    "former ULID cycle id": re.compile(r"(?<![a-z0-9-])(?:cycle-)?\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*--[0-9a-hjkmnp-tv-z]{26}(?![a-z0-9])"),
+    "former ULID spec id": re.compile(r"\bspec-\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*--[0-9a-hjkmnp-tv-z]{26}\b"),
     "retired cycle identity field": re.compile(rf"\b{re.escape(RETIRED_CYCLE_FIELD)}\b"),
     "sequential spec id prose": re.compile(rf"\b{re.escape(RETIRED_SPEC_PROSE)}\b"),
     "sequential spec id literal": re.compile(r"\bspec\d{3}\b"),
@@ -29,7 +31,12 @@ LEGACY_PATTERNS = {
 EXCLUDED_LEGACY_SCAN = {
     "tests/original-contract.json",
     "tests/test_identity_model.py",
+    "examples/activation-scenarios.json",
+    "examples/hardening-scenarios.json",
+    "evals/activation-boundary-scenarios.json",
+    "scripts/nomia_utils.py",
     "scripts/validate_identity_contract.py",
+    "references/canonical-paths.md",
 }
 EXTERNAL_SKILL_PATTERNS = [
     re.compile(r"/home/oai/skills/(?:mago|magia)(?:/|\b)"),
@@ -68,9 +75,12 @@ def validate(root: Path) -> list[str]:
     canonical_text = (root / "references" / "canonical-paths.md").read_text(encoding="utf-8")
     required_phrases = [
         EXPECTED_BOARD_ROOT,
-        "spec-YYYY-MM-DD-feature-key--ULID",
+        "cycle-YYYY-MM-DD-cycle-key",
+        "spec-YYYY-MM-DD-feature-key",
+        "candidate_spec_id_provenance",
         "does not require Mago or Magia skill files",
         "must not mint planning identities",
+        "never create or modify them",
     ]
     combined = skill_text + "\n" + canonical_text + "\n" + (root / "references" / "common-governance.md").read_text(encoding="utf-8")
     for phrase in required_phrases:

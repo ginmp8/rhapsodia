@@ -17,6 +17,7 @@ from nomia_utils import (
     read_normalized_lines,
     unique,
     validate_cycle_id_format,
+    validate_id_provenance,
     validate_spec_id_format,
 )
 
@@ -230,6 +231,13 @@ def roadmap_contract_index(path: Path) -> tuple[list[str], dict[str, dict[str, A
         candidate = feature.get("candidate_spec_id")
         validate_feature_key(f"{path}: features[{index}].feature_key", feature_key, errors)
         validate_spec_id(f"{path}: features[{index}].candidate_spec_id", candidate, errors)
+        provenance_error = validate_id_provenance(
+            feature.get("candidate_spec_id_provenance"),
+            id_value=candidate,
+            field_name=f"features[{index}].candidate_spec_id_provenance",
+        )
+        if provenance_error:
+            errors.append(f"{path}: {provenance_error}")
         if candidate and feature_key:
             try:
                 parsed = parse_spec_id(str(candidate))
@@ -262,6 +270,13 @@ def feature_map_contract_index(path: Path) -> tuple[list[str], dict[str, dict[st
         candidate = feature.get("candidate_spec_id")
         validate_feature_key(f"{path}: features[{index}].feature_key", feature_key, errors)
         validate_spec_id(f"{path}: features[{index}].candidate_spec_id", candidate, errors)
+        provenance_error = validate_id_provenance(
+            feature.get("candidate_spec_id_provenance"),
+            id_value=candidate,
+            field_name=f"features[{index}].candidate_spec_id_provenance",
+        )
+        if provenance_error:
+            errors.append(f"{path}: {provenance_error}")
         if candidate and feature_key:
             try:
                 parsed = parse_spec_id(str(candidate))
@@ -286,12 +301,17 @@ def execution_evidence_identity(path: Path) -> tuple[list[str], dict[str, Any]]:
         return [f"{path}: {exc}"], identity
 
     source = data.get("identity") if isinstance(data.get("identity"), dict) else data
-    for key in ("board_id", "year", "cycle_id", "spec_id", "feature_key", "candidate_spec_id"):
+    for key in ("board_id", "year", "cycle_id", "spec_id", "feature_key", "candidate_spec_id", "spec_id_provenance", "candidate_spec_id_provenance"):
         if key in source:
             identity[key] = source.get(key)
 
     validate_spec_id(f"{path}: spec_id", identity.get("spec_id"), errors)
     validate_spec_id(f"{path}: candidate_spec_id", identity.get("candidate_spec_id"), errors)
+    evidence_spec = identity.get("spec_id") or identity.get("candidate_spec_id")
+    provenance = identity.get("spec_id_provenance") or identity.get("candidate_spec_id_provenance")
+    provenance_error = validate_id_provenance(provenance, id_value=evidence_spec, field_name="spec_id_provenance")
+    if provenance_error:
+        errors.append(f"{path}: {provenance_error}")
     validate_feature_key(f"{path}: feature_key", identity.get("feature_key"), errors)
     validate_cycle_id(f"{path}: cycle_id", identity.get("cycle_id"), errors)
     validate_year(f"{path}: year", identity.get("year"), errors)
@@ -305,7 +325,6 @@ def execution_evidence_identity(path: Path) -> tuple[list[str], dict[str, Any]]:
                 errors.append(f"{path}: year must match cycle_id creation year `{parsed_year}`")
     if identity.get("candidate_spec_id") and identity.get("spec_id") and identity["candidate_spec_id"] != identity["spec_id"]:
         errors.append(f"{path}: candidate_spec_id must match spec_id when both are present")
-    evidence_spec = identity.get("spec_id") or identity.get("candidate_spec_id")
     if evidence_spec and identity.get("feature_key"):
         try:
             parsed = parse_spec_id(str(evidence_spec))

@@ -83,7 +83,7 @@ def validate_slug(label: str, value: str, errors: list[str]) -> None:
 
 def validate_spec_id(value: str, errors: list[str], path: str) -> None:
     if not SPEC_ID_RE.fullmatch(value):
-        errors.append(f"{path}: spec_id `{value}` must use spec-YYYY-MM-DD-feature-key--ULID format")
+        errors.append(f"{path}: spec_id `{value}` must use spec-YYYY-MM-DD-feature-key format")
 
 
 def validate_path(

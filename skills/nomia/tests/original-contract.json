@@ -1,5 +1,5 @@
 {
-  "baseline": "nomia installed package before canonical identity update",
+  "baseline": "nomia installed package immediately before ULID dependency removal",
   "required_files": [
     "SKILL.md",
     "agents/openai.yaml",
@@ -93,16 +93,20 @@
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_artifact.py",
     "scripts/validate_board_paths.py",
+    "scripts/validate_contract_preservation.py",
     "scripts/validate_contracts.py",
     "scripts/validate_golden_examples.py",
     "scripts/validate_human_artifacts.py",
+    "scripts/validate_identity_contract.py",
     "scripts/validate_ops.py",
     "scripts/validate_portfolio.py",
     "scripts/validate_reporting.py",
     "scripts/validate_roadmap.py",
     "scripts/validate_skill_package.py",
     "scripts/write_artifact_scaffold.py",
-    "scripts/write_ops_scaffold.py"
+    "scripts/write_ops_scaffold.py",
+    "tests/original-contract.json",
+    "tests/test_identity_model.py"
   ],
   "required_headings": {
     "SKILL.md": [
@@ -448,8 +452,14 @@
       "load_yaml_mapping",
       "normalize_path",
       "resolve_runtime_path",
+      "parse_cycle_id",
+      "parse_spec_id",
+      "validate_spec_id_format",
+      "validate_cycle_id_format",
+      "infer_year_from_cycle_id",
       "board_root",
       "resolve_board_root",
+      "parse_canonical_board_root",
       "read_normalized_lines",
       "unique",
       "find_unresolved_template_tokens_in_text",
@@ -527,12 +537,19 @@
       "validate_path",
       "main"
     ],
+    "scripts/validate_contract_preservation.py": [
+      "public_symbols",
+      "load_contract",
+      "validate",
+      "main"
+    ],
     "scripts/validate_contracts.py": [
       "normalize_repo_path",
       "path_parts",
       "has_skill_package_anchor",
       "is_under_skill",
       "is_nomia_owned",
+      "is_registry_file",
       "is_mago_owned",
       "is_magia_owned",
       "is_spec_package_file",
@@ -540,7 +557,8 @@
       "validate_actor",
       "validate_spec_id",
       "validate_feature_key",
-      "validate_cycle_version",
+      "validate_cycle_id",
+      "validate_year",
       "roadmap_contract_index",
       "feature_map_contract_index",
       "execution_evidence_identity",
@@ -563,6 +581,11 @@
       "validate_required_fields",
       "validate_governance_decision_entries",
       "validate_rfc_entries",
+      "validate",
+      "main"
+    ],
+    "scripts/validate_identity_contract.py": [
+      "scan_text_files",
       "validate",
       "main"
     ],
@@ -641,6 +664,9 @@
     "scripts/write_ops_scaffold.py": [
       "render",
       "main"
+    ],
+    "tests/test_identity_model.py": [
+      "IdentityModelTests"
     ]
   },
   "allowed_symbol_replacements": {
@@ -648,8 +674,12 @@
       "validate_cycle_version": "validate_cycle_id"
     }
   },
+  "protected_files": {
+    "assets/icon.svg": "af4bd96dcf0396622229a5c3194011ec4d5633550d2a004f6055c4867e6ea2f4",
+    "agents/openai.yaml": "192d64f29d3095b05660761e23217f5e89501e092de99780cd15760fcc2d0e3b"
+  },
   "icon": {
     "path": "assets/icon.svg",
-    "sha256": "e9301497fa98ef56aaca7ede0857b9a18dc06c34040f0679c609a6bf49b1d38b"
+    "sha256": "af4bd96dcf0396622229a5c3194011ec4d5633550d2a004f6055c4867e6ea2f4"
   }
 }

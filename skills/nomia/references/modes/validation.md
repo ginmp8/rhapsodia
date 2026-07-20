@@ -41,7 +41,7 @@ Print clear errors/warnings. Exit non-zero on errors. Use scaffold writers and v
 python <skill-root>/scripts/write_artifact_scaffold.py path/to/status.md
 python <skill-root>/scripts/validate_artifact.py path/to/status.md
 python <skill-root>/scripts/validate_ops.py path/to/ops.yaml
-python <skill-root>/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec-2026-04-20-sample-feature--01jt1e2f3g4h5j6kmnpqrstvw0
+python <skill-root>/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec-2026-04-20-sample-feature --spec-id-provenance user-supplied
 python <skill-root>/scripts/validate_roadmap.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml
 python <skill-root>/scripts/validate_reporting.py --feature-report path/to/feature-report.md --release-notes path/to/release-notes.md --internal-notes path/to/internal-notes.md
 python <skill-root>/scripts/validate_portfolio.py --portfolio-yaml path/to/portfolio.yaml --portfolio-md path/to/portfolio.md

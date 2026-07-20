@@ -16,6 +16,7 @@ from nomia_utils import (
     parse_spec_id,
     scan_unresolved_template_tokens,
     unique,
+    validate_id_provenance,
     validate_spec_id_format,
 )
 
@@ -47,13 +48,11 @@ FEATURE_REQUIRED_KEYS = (
     "confidence",
     "dependencies",
     "ready_for_spec",
-    "candidate_spec_id",
 )
 FEATURE_MAP_REQUIRED_KEYS = ("schema_version", "roadmap_id", "features")
 HANDOFF_REQUIRED_KEYS = (
     "feature_key",
     "ready_for_spec",
-    "candidate_spec_id",
 )
 
 
@@ -181,6 +180,13 @@ def validate_roadmap(path: Path) -> tuple[list[str], list[str], dict[str, dict[s
 
         candidate = feature.get("candidate_spec_id")
         validate_spec_id(f"{path}: `{key_label}.candidate_spec_id`", candidate, errors)
+        provenance_error = validate_id_provenance(
+            feature.get("candidate_spec_id_provenance"),
+            id_value=candidate,
+            field_name=f"{key_label}.candidate_spec_id_provenance",
+        )
+        if provenance_error:
+            errors.append(f"{path}: `{provenance_error}`")
         if candidate and key:
             try:
                 parsed_candidate = parse_spec_id(str(candidate))
@@ -272,6 +278,13 @@ def validate_feature_map(
 
         candidate = feature.get("candidate_spec_id")
         validate_spec_id(f"{path}: `{key_label}.candidate_spec_id`", candidate, errors)
+        provenance_error = validate_id_provenance(
+            feature.get("candidate_spec_id_provenance"),
+            id_value=candidate,
+            field_name=f"{key_label}.candidate_spec_id_provenance",
+        )
+        if provenance_error:
+            errors.append(f"{path}: `{provenance_error}`")
         if candidate and key:
             try:
                 parsed_candidate = parse_spec_id(str(candidate))
@@ -306,10 +319,13 @@ def validate_feature_map(
         if roadmap_feature is not None:
             roadmap_ready = roadmap_feature.get("ready_for_spec")
             roadmap_candidate = roadmap_feature.get("candidate_spec_id")
+            roadmap_provenance = roadmap_feature.get("candidate_spec_id_provenance")
             if feature.get("ready_for_spec") != roadmap_ready:
                 errors.append(f"{path}: `{key}` ready_for_spec must match roadmap.yaml")
             if (candidate or None) != (roadmap_candidate or None):
                 errors.append(f"{path}: `{key}` candidate_spec_id must match roadmap.yaml")
+            if candidate and feature.get("candidate_spec_id_provenance") != roadmap_provenance:
+                errors.append(f"{path}: `{key}` candidate_spec_id_provenance must match roadmap.yaml")
 
     missing_ready_keys = roadmap_ready_keys - map_ready_keys
     for key in sorted(missing_ready_keys):

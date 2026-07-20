@@ -15,6 +15,7 @@ from nomia_utils import (
     load_yaml_mapping,
     scan_unresolved_template_tokens,
     unique,
+    validate_id_provenance,
     validate_spec_id_format,
 )
 
@@ -291,7 +292,12 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
     spec_id = data.get("spec_id")
     spec_id_error = validate_spec_id_format(spec_id)
     if spec_id_error:
-        errors.append(f"`spec_id` must be null for an off-repository draft or use spec-YYYY-MM-DD-feature-key--ULID format")
+        errors.append("`spec_id` must be null for an off-repository draft or use spec-YYYY-MM-DD-feature-key format")
+    provenance_error = validate_id_provenance(
+        data.get("spec_id_provenance"), id_value=spec_id, field_name="spec_id_provenance"
+    )
+    if provenance_error:
+        errors.append(f"`{provenance_error}`")
 
     request = as_map(data, "request", errors)
     ownership = as_map(data, "ownership", errors)

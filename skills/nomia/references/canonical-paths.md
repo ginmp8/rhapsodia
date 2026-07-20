@@ -11,16 +11,16 @@ Single source for nomia path defaults and runtime root resolution.
 A canonical cycle identity is immutable and uses:
 
 ```text
-<yyyy-mm-dd>-<cycle-key>--<ulid>
+cycle-<yyyy-mm-dd>-<cycle-key>
 ```
 
 A canonical spec identity is immutable and uses:
 
 ```text
-spec-<yyyy-mm-dd>-<feature-key>--<ulid>
+spec-<yyyy-mm-dd>-<feature-key>
 ```
 
-The `<year>` directory must match the creation year encoded in `cycle_id`. A non-null `candidate_spec_id` must already be supplied or evidenced by an existing planning registry; nomia does not mint planning identities.
+The `<year>` directory must match the date year encoded in `cycle_id`. Canonical ids are supplied by the user, received through handoff, or evidenced by an existing repository artifact. A non-null candidate uses `candidate_spec_id_provenance`. nomia records provenance, must not mint planning identities, and does not create, choose, correct, rename, register, or replace ids.
 
 ## Resolution
 
@@ -30,7 +30,7 @@ The `<year>` directory must match the creation year encoded in `cycle_id`. A non
 - Board-scoped artifacts derive from `BOARD_ROOT`.
 - Spec-scoped artifacts derive from `BOARD_ROOT/specs/<spec_id>/`.
 - Do not invent alternate governance roots, aliases, missing packages, parallel docs roots, registry entries, or aggregate catalog files.
-- Old layouts are read-only input for `governance-adapt`; they are never active write roots.
+- Old layouts and ids ending in `--<ulid>` are read-only migration input for `governance-adapt`; they are never active write roots, are never converted automatically, and must not appear in canonical outputs.
 
 ## Dynamic Inputs
 

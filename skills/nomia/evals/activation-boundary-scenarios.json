@@ -94,7 +94,7 @@
     {
       "id": "nonactivate-002",
       "type": "should_not_activate",
-      "prompt": "Use Mago to write prd.md, tasks.md, and validation.md for spec-2026-04-20-sample-feature--01jt1e2f3g4h5j6kmnpqrstvw0.",
+      "prompt": "Use Mago to write prd.md, tasks.md, and validation.md for spec-2026-04-20-sample-feature.",
       "expected_behavior": "Do not invoke nomia because the requested artifacts are Mago-owned planning and implementation task decomposition.",
       "acceptance_criteria": [
         "does not create Mago artifacts",
@@ -440,6 +440,21 @@
       ],
       "mode": "handoff-or-blocker",
       "risk": "legacy terminology could cause nomia to create or claim ownership of implementation planning artifacts",
+      "category": "regression"
+    },
+    {
+      "id": "regression-007",
+      "type": "regression",
+      "prompt": "Create delivery status using cycle 2026-04-20-q2-delivery--01jt1b2c3d4e5f6g7h8j9kmnpq and spec spec-2026-04-20-csv-export--01jt1b2c3d4e5f6g7h8j9kmnpq.",
+      "expected_behavior": "Reject the former ULID ids as operational identities. governance-adapt may read them as migration evidence, but nomia must require externally supplied current ids, record provenance, and must not generate or register replacements.",
+      "acceptance_criteria": [
+        "rejects former ULID ids for canonical paths",
+        "allows read-only governance-adapt evidence",
+        "does not generate or rename ids",
+        "does not write registry records"
+      ],
+      "mode": "governance-adapt",
+      "risk": "legacy identifiers could remain operational or be silently rewritten",
       "category": "regression"
     }
   ]

@@ -238,5 +238,17 @@
     "quality_score": null,
     "needs_rework": null,
     "notes": "planned structural scenario for evidence-only cross-skill material"
+  },
+  {
+    "id": "E006",
+    "category": "edge_case",
+    "prompt": "Adapt governance notes from the previous ULID layout, but do not create replacement ids or registry entries.",
+    "expected_activation": true,
+    "expected_behavior": "Use governance-adapt with the old ids as read-only evidence only, preserve unknowns, require externally supplied canonical cycle_id and spec_id before canonical writes, record provenance, and leave registry and technical packages untouched.",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned structural scenario for read-only legacy identity adaptation"
   }
 ]

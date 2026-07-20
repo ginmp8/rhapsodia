@@ -64,15 +64,18 @@ def validate(root: Path, contract_path: Path) -> list[str]:
                 continue
             errors.append(f"original public symbol is missing from {rel}: {symbol}")
 
+    protected_files = dict(contract.get("protected_files") or {})
     icon = contract.get("icon") or {}
-    icon_path = root / str(icon.get("path", ""))
-    if not icon_path.is_file():
-        errors.append(f"icon is missing: {icon_path.relative_to(root) if icon_path != root else icon_path}")
-    else:
-        actual = hashlib.sha256(icon_path.read_bytes()).hexdigest()
-        expected = str(icon.get("sha256", ""))
-        if actual != expected:
-            errors.append(f"icon hash changed: expected {expected}, got {actual}")
+    if icon:
+        protected_files.setdefault(str(icon.get("path", "")), str(icon.get("sha256", "")))
+    for rel, expected in protected_files.items():
+        protected_path = root / str(rel)
+        if not protected_path.is_file():
+            errors.append(f"protected file is missing: {rel}")
+            continue
+        actual = hashlib.sha256(protected_path.read_bytes()).hexdigest()
+        if actual != str(expected):
+            errors.append(f"protected file hash changed for {rel}: expected {expected}, got {actual}")
 
     return errors
 
@@ -95,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"ERROR: {error}")
         print(f"FAILED: {len(errors)} preservation errors")
         return 1
-    print("OK: original nomia functional surface and icon are preserved")
+    print("OK: original nomia functional surface and protected files are preserved")
     return 0
 
 

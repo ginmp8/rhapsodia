@@ -26,7 +26,7 @@ Validate with `scripts/validate_contracts.py --actor <actor> --changed-files <fi
 
 ## Output Directories
 
-Use `BOARD_ROOT` from [canonical-paths.md](canonical-paths.md). Require `<board_id>`, `<year>`, and canonical `<cycle_id>` before writing. Use dynamic repository-truth values, not literal tokens. Board-scoped artifacts go directly under `BOARD_ROOT`; spec-scoped artifacts only under `BOARD_ROOT/specs/<spec_id>/`. A repository-facing `spec_id` must use `spec-YYYY-MM-DD-feature-key--ULID` and refer to an existing package/registry identity. Run `scripts/validate_board_paths.py` when path compliance matters.
+Use `BOARD_ROOT` from [canonical-paths.md](canonical-paths.md). Require `<board_id>`, `<year>`, and canonical `<cycle_id>` before writing. Use dynamic repository-truth values, not literal tokens. Board-scoped artifacts go directly under `BOARD_ROOT`; spec-scoped artifacts only under `BOARD_ROOT/specs/<spec_id>/`. A repository-facing `spec_id` must use `spec-YYYY-MM-DD-feature-key`, be supplied by the user, received through a handoff, or evidenced by an existing repository artifact, and retain that provenance. nomia does not create or modify package or registry identities. Run `scripts/validate_board_paths.py` when path compliance matters.
 
 ## nomia-Owned Artifacts
 

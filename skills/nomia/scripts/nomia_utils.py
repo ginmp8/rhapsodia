@@ -22,11 +22,18 @@ SPEC_PACKAGE_TEMPLATE = CANONICAL_SPEC_PACKAGE_TEMPLATE
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$")
 YEAR_RE = re.compile(r"^\d{4}$")
-ULID_RE = re.compile(r"^[0-9a-hjkmnp-tv-z]{26}$")
 CYCLE_ID_RE = re.compile(
-    r"^(?P<date>\d{4}-\d{2}-\d{2})-(?P<cycle_key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+    r"^cycle-(?P<date>\d{4}-\d{2}-\d{2})-(?P<cycle_key>[a-z0-9]+(?:-[a-z0-9]+)*)$"
 )
 SPEC_ID_RE = re.compile(
+    r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature_key>[a-z0-9]+(?:-[a-z0-9]+)*)$"
+)
+# Read-only recognition for governance-adapt input. These patterns are never
+# accepted by canonical writers, path validators, or normal operational modes.
+LEGACY_CYCLE_ID_RE = re.compile(
+    r"^(?:cycle-)?(?P<date>\d{4}-\d{2}-\d{2})-(?P<cycle_key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+)
+LEGACY_SPEC_ID_RE = re.compile(
     r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature_key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
 )
 
@@ -88,7 +95,7 @@ def validate_spec_id_format(value: Any) -> str | None:
     try:
         parse_spec_id(str(value))
     except ValueError:
-        return "spec_id must use spec-YYYY-MM-DD-feature-key--ULID"
+        return "spec_id must use spec-YYYY-MM-DD-feature-key"
     return None
 
 
@@ -98,7 +105,28 @@ def validate_cycle_id_format(value: Any) -> str | None:
     try:
         parse_cycle_id(str(value))
     except ValueError:
-        return "cycle_id must use YYYY-MM-DD-cycle-key--ULID"
+        return "cycle_id must use cycle-YYYY-MM-DD-cycle-key"
+    return None
+
+
+def is_legacy_cycle_id(value: Any) -> bool:
+    """Return whether value matches the former ULID cycle id for read-only adaptation."""
+    return isinstance(value, str) and LEGACY_CYCLE_ID_RE.fullmatch(value) is not None
+
+
+def is_legacy_spec_id(value: Any) -> bool:
+    """Return whether value matches the former ULID spec id for read-only adaptation."""
+    return isinstance(value, str) and LEGACY_SPEC_ID_RE.fullmatch(value) is not None
+
+
+def validate_id_provenance(value: Any, *, id_value: Any, field_name: str) -> str | None:
+    """Require explicit evidence provenance whenever an externally supplied id is present."""
+    if id_value in (None, "") or has_unresolved_template_token(id_value):
+        return None
+    if has_unresolved_template_token(value):
+        return None
+    if not isinstance(value, str) or not value.strip() or value.strip() == "unknown":
+        return f"{field_name} must be a non-empty evidence reference when the id is provided"
     return None
 
 
