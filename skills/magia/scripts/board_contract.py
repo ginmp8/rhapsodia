@@ -87,8 +87,6 @@ def load_registry(board_root: Path) -> tuple[dict[str, dict[str, Any]], list[str
             continue
         if path.name != f"{spec_id}.yaml":
             errors.append(f"{path.name}: filename must match spec_id")
-        if data.get("spec_uid") != parsed["ulid"]:
-            errors.append(f"{path.name}: spec_uid must match the ULID encoded in spec_id")
         if data.get("feature_key") != parsed["feature"]:
             errors.append(f"{path.name}: feature_key must match the feature encoded in spec_id")
         if data.get("status") not in VALID_SPEC_STATUSES:
@@ -159,7 +157,7 @@ def manifest_errors(board_root: Path, records: dict[str, dict[str, Any]]) -> lis
         record = records[spec_id]
         if manifest.get("kind") != MANIFEST_KIND:
             errors.append(f"{spec_id}: manifest kind must be `{MANIFEST_KIND}`")
-        for key in ("spec_id", "spec_uid", "cycle_id", "feature_key"):
+        for key in ("spec_id", "cycle_id", "feature_key"):
             if manifest.get(key) != record.get(key):
                 errors.append(f"{spec_id}: manifest `{key}` must match registry")
         if manifest.get("phase") not in VALID_MANIFEST_PHASES:

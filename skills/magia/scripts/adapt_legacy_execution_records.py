@@ -193,7 +193,7 @@ def write_validation_evidence(path: Path, spec_id: str, records: dict[str, dict[
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Adapt legacy notes.md/validation.md execution content into current MAGIA-owned artifacts.")
     parser.add_argument("board_root", help=f"Canonical board root under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Canonical spec ID in spec-YYYY-MM-DD-feature-key--ULID form.")
+    parser.add_argument("--spec-id", required=True, help="Canonical active spec ID in spec-YYYY-MM-DD-feature-key form.")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing current MAGIA-owned artifacts.")
     args = parser.parse_args(argv)
 

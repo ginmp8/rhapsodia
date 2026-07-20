@@ -20,11 +20,11 @@ docs/boards/<board_id>/<year>/cycles/<cycle_id>/
 Identifiers are immutable:
 
 ```text
-cycle_id = <yyyy-mm-dd>-<cycle-key>--<lowercase-ulid>
-spec_id  = spec-<yyyy-mm-dd>-<feature-key>--<lowercase-ulid>
+cycle_id = cycle-<yyyy-mm-dd>-<cycle-key>
+spec_id  = spec-<yyyy-mm-dd>-<feature-key>
 ```
 
-The year directory must match the year encoded in `cycle_id`. The registry filename must equal `<spec_id>.yaml`; the package directory and manifest `spec_id` must match it.
+The year directory must match the year encoded in `cycle_id`. The registry filename must equal `<spec_id>.yaml`; the package directory and manifest `spec_id` must match it. ULID-bearing identifiers are rejected for active execution; ADAPT may read legacy content that mentions them without resolving them as active identities.
 
 ## Source of Truth
 
@@ -34,11 +34,11 @@ The year directory must match the year encoded in `cycle_id`. The registry filen
 - planning documents: intended behavior and validation plan.
 - MAGIA execution artifacts: implementation and validation evidence.
 
-`registry/<spec_id>.yaml` and `define-queue.yaml` are generated projections, not active board files and never MAGIA write targets.
+`spec-catalog.yaml` and `define-queue.yaml` are generated projections, not active board files and never MAGIA write targets.
 
 ## Registry Contract
 
-A registry entry uses `kind: mago-spec` and includes `spec_id`, `spec_uid`, `cycle_id`, `feature_key`, `feature_version`, title, type, classification, created timestamp, status, priority, optional order hint, dependencies, supersession and handoff data.
+A registry entry uses `kind: mago-spec` and includes `spec_id`, `cycle_id`, `feature_key`, `feature_version`, title, type, classification, created timestamp, status, priority, optional order hint, dependencies, supersession and handoff data.
 
 Spec statuses: `planned`, `in_progress`, `blocked`, `done`, `cancelled`, `superseded`.
 

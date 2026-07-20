@@ -17,7 +17,7 @@ except Exception:  # pragma: no cover
 
 
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-SPEC_ID_RE = re.compile(r"^spec-\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*--[0-9a-hjkmnp-tv-z]{26}$")
+SPEC_ID_RE = re.compile(r"^spec-\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
 TASK_ID_RE = re.compile(r"^task\d{3}$")
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
 
@@ -141,7 +141,7 @@ def validate_scalar(label: str, value: Any, item_type: str) -> None:
         return
     if item_type == "spec_id":
         if not isinstance(value, str) or not SPEC_ID_RE.fullmatch(value):
-            fail(f"{label} must use canonical spec-YYYY-MM-DD-feature-key--ULID format")
+            fail(f"{label} must use canonical spec-YYYY-MM-DD-feature-key format")
         return
     if item_type == "task_id":
         if not isinstance(value, str) or not TASK_ID_RE.fullmatch(value):

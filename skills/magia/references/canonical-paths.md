@@ -10,8 +10,8 @@ Single source for canonical path definitions and override resolution. This contr
 
 Canonical identities:
 
-- `cycle_id = <yyyy-mm-dd>-<cycle-key>--<lowercase-ulid>`
-- `spec_id = spec-<yyyy-mm-dd>-<feature-key>--<lowercase-ulid>`
+- `cycle_id = cycle-<yyyy-mm-dd>-<cycle-key>`
+- `spec_id = spec-<yyyy-mm-dd>-<feature-key>`
 
 The `<year>` path segment must match the creation year encoded in `cycle_id`.
 
@@ -23,7 +23,7 @@ The `<year>` path segment must match the creation year encoded in `cycle_id`.
 - For spec-scoped work, derive the selected package from `BOARD_ROOT/specs/<spec_id>/`.
 - Derive the registry entry from `BOARD_ROOT/registry/<spec_id>.yaml`.
 - Treat catalog and queue files, when rendered externally, as generated inspection views rather than active board records or write targets.
-- Treat old directory layouts only as read-only ADAPT input; never resolve them as the active `BOARD_ROOT`.
+- Treat old directory layouts and legacy ULID-bearing identifiers only as read-only ADAPT content; never resolve them as the active `BOARD_ROOT` or selected spec package.
 
 ## Required Inputs
 

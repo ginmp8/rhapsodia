@@ -8,7 +8,7 @@ SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 from magia_utils import load_yaml  # noqa: E402
-from test_board_contract import build_board  # noqa: E402
+from test_board_contract import CYCLE, build_board  # noqa: E402
 
 
 def load_script(name: str):
@@ -43,6 +43,21 @@ def test_first_done_task_keeps_spec_in_progress(tmp_path: Path):
     assert manifest["phase"] == "execute"
 
 
+def test_blocked_execution_preserves_open_checkbox_and_syncs_blocked_state(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "blocked")
+    sync = load_script("sync_execution_state.py")
+    validate = load_script("validate_execution_state.py")
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "blocked"]) == 0
+    assert "- [ ] task001:" in (package / "tasks.md").read_text(encoding="utf-8")
+    assert load_yaml(root / "registry" / f"{spec_id}.yaml")["status"] == "blocked"
+    manifest = load_yaml(package / "manifest.yaml")
+    assert manifest["status"] == "blocked"
+    assert manifest["phase"] == "execute"
+    assert validate.main([str(root), "--spec-id", spec_id]) == 0
+
+
 def test_all_done_tasks_close_spec(tmp_path: Path):
     root, spec_id = build_board(tmp_path)
     package = root / "specs" / spec_id
@@ -68,10 +83,10 @@ def test_state_validator_requires_matching_evidence(tmp_path: Path):
 
 def test_readiness_blocks_unfinished_spec_dependency(tmp_path: Path):
     root, spec_id = build_board(tmp_path)
-    dependency = "spec-2026-07-18-foundation--01k0x000000000000000000000"
+    dependency = "spec-2026-04-19-foundation"
     registry = root / "registry"
     (registry / f"{dependency}.yaml").write_text(
-        f"kind: mago-spec\nspec_id: {dependency}\nspec_uid: 01k0x000000000000000000000\ncycle_id: 2026-07-19-sprint-15--01k0yq8e2dmm6f5qg3a7x9c4tb\nfeature_key: foundation\nfeature_version: 0.1.0\ntitle: Foundation\ntype: feature\nclassification: internal\ncreated_at: 2026-07-18T00:00:00Z\nstatus: in_progress\npriority: normal\norder_hint: null\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
+        f"kind: mago-spec\nspec_id: {dependency}\ncycle_id: {CYCLE}\nfeature_key: foundation\nfeature_version: 0.1.0\ntitle: Foundation\ntype: feature\nclassification: internal\ncreated_at: 2026-04-19T00:00:00Z\nstatus: in_progress\npriority: normal\norder_hint: null\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
         encoding="utf-8",
     )
     selected = registry / f"{spec_id}.yaml"
@@ -84,7 +99,7 @@ def test_adapt_legacy_records_inside_canonical_package(tmp_path: Path):
     root, spec_id = build_board(tmp_path)
     package = root / "specs" / spec_id
     (package / "notes.md").write_text(
-        "# Notes\n\n## Execution Log\n\n### task001 - legacy\n- Status: done\n- Summary: legacy completion\n",
+        "# Notes\n\nLegacy source identity: spec-2026-04-20-csv-export--01jt1b2c3d4e5f6g7h8j9kmnpq\n\n## Execution Log\n\n### task001 - legacy\n- Status: done\n- Summary: legacy completion\n",
         encoding="utf-8",
     )
     (package / "validation.md").write_text("# Validation\n\n## Legacy task001 result\n", encoding="utf-8")
@@ -92,6 +107,17 @@ def test_adapt_legacy_records_inside_canonical_package(tmp_path: Path):
     assert adapt.main([str(root), "--spec-id", spec_id]) == 0
     assert (package / "implementation-notes.md").is_file()
     assert (package / "validation-evidence.md").is_file()
+    assert "--01jt1b2c3d4e5f6g7h8j9kmnpq" in (package / "notes.md").read_text(encoding="utf-8")
+
+
+def test_adapt_rejects_legacy_ulid_as_active_spec_id(tmp_path: Path):
+    root, _ = build_board(tmp_path)
+    adapt = load_script("adapt_legacy_execution_records.py")
+    assert adapt.main([
+        str(root),
+        "--spec-id",
+        "spec-2026-04-20-csv-export--01jt1b2c3d4e5f6g7h8j9kmnpq",
+    ]) == 1
 
 
 def test_heal_repairs_checkbox_last_execution_and_registry(tmp_path: Path):

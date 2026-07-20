@@ -16,12 +16,11 @@ BOARD_ROOT_TEMPLATE = CANONICAL_BOARD_ROOT_TEMPLATE
 SPEC_PACKAGE_TEMPLATE = CANONICAL_SPEC_PACKAGE_TEMPLATE
 SPEC_REGISTRY_TEMPLATE = CANONICAL_SPEC_REGISTRY_TEMPLATE
 
-ULID_RE = re.compile(r"^[0-9a-hjkmnp-tv-z]{26}$")
 CYCLE_ID_RE = re.compile(
-    r"^(?P<date>\d{4}-\d{2}-\d{2})-(?P<key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+    r"^cycle-(?P<date>\d{4}-\d{2}-\d{2})-(?P<key>[a-z0-9]+(?:-[a-z0-9]+)*)$"
 )
 SPEC_ID_RE = re.compile(
-    r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+    r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature>[a-z0-9]+(?:-[a-z0-9]+)*)$"
 )
 TASK_ID_RE = re.compile(r"^task\d{3}$")
 PLACEHOLDER_SEGMENTS = {
@@ -90,14 +89,14 @@ def validate_concrete_segment(label: str, value: str | None) -> str | None:
 def parse_cycle_id(value: str) -> dict[str, str]:
     match = CYCLE_ID_RE.fullmatch(value)
     if not match:
-        raise ValueError(f"cycle_id must use YYYY-MM-DD-cycle-key--ULID, got `{value}`")
+        raise ValueError(f"cycle_id must use cycle-YYYY-MM-DD-cycle-key, got `{value}`")
     return match.groupdict()
 
 
 def parse_spec_id(value: str) -> dict[str, str]:
     match = SPEC_ID_RE.fullmatch(value)
     if not match:
-        raise ValueError(f"spec_id must use spec-YYYY-MM-DD-feature-key--ULID, got `{value}`")
+        raise ValueError(f"spec_id must use spec-YYYY-MM-DD-feature-key, got `{value}`")
     return match.groupdict()
 
 

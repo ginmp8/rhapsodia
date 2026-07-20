@@ -112,7 +112,7 @@ def update_registry_file(registry_path: Path, spec_status: str) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Synchronize canonical MAGIA execution state from truthful task evidence.")
     parser.add_argument("board_root", help=f"Canonical board root under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Canonical spec ID: spec-YYYY-MM-DD-feature-key--ULID.")
+    parser.add_argument("--spec-id", required=True, help="Canonical spec ID: spec-YYYY-MM-DD-feature-key.")
     parser.add_argument("--task-id", required=True, help="Executed task ID in taskNNN form.")
     parser.add_argument("--status", required=True, choices=sorted(VALID_SYNC_STATUSES))
     parser.add_argument("--date", default=date.today().isoformat())
@@ -146,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise FileNotFoundError(f"missing required execution-state input: {path}")
         manifest = load_yaml(manifest_path)
         registry = registry_for(board_root, args.spec_id)
-        for key in ("spec_id", "spec_uid", "cycle_id", "feature_key"):
+        for key in ("spec_id", "cycle_id", "feature_key"):
             if manifest.get(key) != registry.get(key):
                 raise ValueError(f"manifest `{key}` must match registry before execution-state sync")
         task_states = update_tasks_file(tasks_path, args.task_id, args.status)

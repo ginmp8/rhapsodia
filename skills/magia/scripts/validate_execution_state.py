@@ -113,7 +113,7 @@ def collect_errors(spec_package: Path) -> list[str]:
     if not tasks:
         errors.append("No task ids were found in tasks.md.")
 
-    for key in ("spec_id", "spec_uid", "cycle_id", "feature_key"):
+    for key in ("spec_id", "cycle_id", "feature_key"):
         if manifest.get(key) != registry.get(key):
             errors.append(f"manifest.yaml `{key}` must match registry/<spec_id>.yaml.")
     if manifest.get("spec_id") != spec_id:

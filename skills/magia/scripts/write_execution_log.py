@@ -197,7 +197,7 @@ def main(argv: list[str]) -> int:
         description="Append or refresh one canonical MAGIA implementation-notes.md Execution Log subsection at EOF."
     )
     parser.add_argument("board_root", help=f"Canonical board root under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Canonical spec ID in spec-YYYY-MM-DD-feature-key--ULID form.")
+    parser.add_argument("--spec-id", required=True, help="Canonical spec ID in spec-YYYY-MM-DD-feature-key form.")
     parser.add_argument("--task-id", required=True, help="Executed task id in the form taskNNN.")
     parser.add_argument(
         "--status",
