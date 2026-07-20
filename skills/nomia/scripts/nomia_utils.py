@@ -146,25 +146,8 @@ def resolve_board_root(
     year: str | int | None = None,
     cycle_id: str | None = None,
 ) -> Path:
-    repository = repo_root.resolve()
     if board_root_override is not None:
-        resolved = resolve_runtime_path(repository, board_root_override)
-        try:
-            relative = resolved.relative_to(repository)
-        except ValueError as exc:
-            raise ValueError("BOARD_ROOT override must stay inside the repository root") from exc
-
-        parsed = parse_canonical_board_root(relative)
-        supplied = {
-            "board_id": board_id,
-            "year": str(year) if year is not None else None,
-            "cycle_id": cycle_id,
-        }
-        for field, value in supplied.items():
-            if value is not None and value != parsed[field]:
-                raise ValueError(f"{field} `{value}` conflicts with BOARD_ROOT `{parsed[field]}`")
-        return resolved
-
+        return resolve_runtime_path(repo_root, board_root_override)
     if not board_id or not cycle_id:
         raise ValueError("board_id and cycle_id are required when BOARD_ROOT is not provided.")
     if not SLUG_RE.fullmatch(board_id):
@@ -175,7 +158,7 @@ def resolve_board_root(
         raise ValueError(f"year `{resolved_year}` must use YYYY format")
     if resolved_year != parsed_year:
         raise ValueError(f"year `{resolved_year}` conflicts with cycle_id creation year `{parsed_year}`")
-    return board_root(repository, board_id, resolved_year, cycle_id)
+    return board_root(repo_root, board_id, resolved_year, cycle_id)
 
 
 def parse_canonical_board_root(path: str | Path) -> dict[str, str]:
@@ -184,8 +167,6 @@ def parse_canonical_board_root(path: str | Path) -> dict[str, str]:
         if parts[index:index + 2] != ["docs", "boards"]:
             continue
         if index + 5 >= len(parts) or parts[index + 4] != "cycles":
-            continue
-        if index + 6 != len(parts):
             continue
         board_id, year, cycle_id = parts[index + 2], parts[index + 3], parts[index + 5]
         if not SLUG_RE.fullmatch(board_id):

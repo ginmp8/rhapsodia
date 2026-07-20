@@ -15,6 +15,7 @@ from typing import Any
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
 from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
+from validate_execution_scenarios import validate_suite as validate_execution_suite
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with " + "actual|this is a " + "placeholder)", re.IGNORECASE)
@@ -208,6 +209,10 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/board-contract.md",
         "references/common-execution.md",
         "references/resource-map.md",
+        "references/execution-profiles.md",
+        "references/run-state-and-recovery.md",
+        "references/convergence-and-validation.md",
+        "references/public-artifact-adapters.md",
         "references/package-delivery.md",
         "references/modes/adhoc.md",
         "references/modes/ralph.md",
@@ -215,14 +220,21 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/artifacts/execution-evidence.md",
         "references/validation-and-closure.md",
         "assets/templates/implementation-notes.md.template",
+        "assets/templates/run-state.json.template",
         "assets/templates/validation-evidence.md.template",
         "assets/templates/technical-gap-note.md.template",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "evals/execution-scenarios.json",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
+        "scripts/validate_run_state.py",
+        "scripts/select_validation_profile.py",
+        "scripts/validate_convergence.py",
+        "scripts/normalize_public_artifacts.py",
+        "scripts/validate_execution_scenarios.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]
@@ -281,6 +293,13 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(validate_eval_scenarios(target / "evals" / "activation-scenarios.json"))
     checks.append("eval scenarios")
 
+    try:
+        execution_payload = json.loads(read_text(target / "evals" / "execution-scenarios.json"))
+        errors.extend(validate_execution_suite(execution_payload))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"execution scenario suite is invalid JSON: {exc}")
+    checks.append("execution scenarios")
+
     errors.extend(validate_shared_artifact_boundaries(target))
     checks.append("shared artifact boundaries")
 
@@ -301,13 +320,23 @@ def zip_required_resources() -> list[str]:
         "SKILL.md",
         "agents/openai.yaml",
         "references/resource-map.md",
+        "references/execution-profiles.md",
+        "references/run-state-and-recovery.md",
+        "references/convergence-and-validation.md",
+        "references/public-artifact-adapters.md",
         "references/package-delivery.md",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "evals/execution-scenarios.json",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
+        "scripts/validate_run_state.py",
+        "scripts/select_validation_profile.py",
+        "scripts/validate_convergence.py",
+        "scripts/normalize_public_artifacts.py",
+        "scripts/validate_execution_scenarios.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]

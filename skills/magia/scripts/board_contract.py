@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any
 
 from magia_utils import (
+    SPEC_ID_RE,
     board_root_path_error,
-    iso_datetime_date,
     load_yaml,
     parse_cycle_id,
     parse_spec_id,
@@ -60,14 +60,6 @@ def _cycle_errors(board_root: Path) -> tuple[dict[str, Any], list[str]]:
         errors.append("cycle.yaml year must match the year directory")
     if parsed and parsed["date"][:4] != str(cycle.get("year", "")):
         errors.append("cycle_id creation year must match cycle.yaml year")
-    if parsed:
-        try:
-            created_date = iso_datetime_date(cycle.get("created_at"), label="cycle.yaml created_at")
-        except ValueError as exc:
-            errors.append(str(exc))
-        else:
-            if created_date != parsed["date"]:
-                errors.append("cycle.yaml created_at date must match the date encoded in cycle_id")
     if cycle.get("status") not in VALID_CYCLE_STATUSES:
         errors.append(f"cycle.yaml status must be one of {sorted(VALID_CYCLE_STATUSES)}")
     return cycle, errors
@@ -97,22 +89,10 @@ def load_registry(board_root: Path) -> tuple[dict[str, dict[str, Any]], list[str
             errors.append(f"{path.name}: filename must match spec_id")
         if data.get("feature_key") != parsed["feature"]:
             errors.append(f"{path.name}: feature_key must match the feature encoded in spec_id")
-        try:
-            created_date = iso_datetime_date(data.get("created_at"), label=f"{path.name}.created_at")
-        except ValueError as exc:
-            errors.append(str(exc))
-        else:
-            if created_date != parsed["date"]:
-                errors.append(f"{path.name}: created_at date must match the date encoded in spec_id")
         if data.get("status") not in VALID_SPEC_STATUSES:
             errors.append(f"{path.name}: invalid status `{data.get('status')}`")
         for dependency in _as_list(data.get("depends_on_specs"), f"{path.name}.depends_on_specs", errors):
-            if not isinstance(dependency, str):
-                errors.append(f"{path.name}: invalid depends_on_specs entry `{dependency}`")
-                continue
-            try:
-                parse_spec_id(dependency)
-            except ValueError:
+            if not isinstance(dependency, str) or not SPEC_ID_RE.fullmatch(dependency):
                 errors.append(f"{path.name}: invalid depends_on_specs entry `{dependency}`")
         records[spec_id] = data
     return records, errors
@@ -177,20 +157,9 @@ def manifest_errors(board_root: Path, records: dict[str, dict[str, Any]]) -> lis
         record = records[spec_id]
         if manifest.get("kind") != MANIFEST_KIND:
             errors.append(f"{spec_id}: manifest kind must be `{MANIFEST_KIND}`")
-        for key in ("spec_id", "cycle_id", "feature_key", "created_at"):
+        for key in ("spec_id", "cycle_id", "feature_key"):
             if manifest.get(key) != record.get(key):
                 errors.append(f"{spec_id}: manifest `{key}` must match registry")
-        try:
-            parsed_spec = parse_spec_id(spec_id)
-            manifest_created_date = iso_datetime_date(
-                manifest.get("created_at"),
-                label=f"{spec_id}: manifest created_at",
-            )
-        except ValueError as exc:
-            errors.append(str(exc))
-        else:
-            if manifest_created_date != parsed_spec["date"]:
-                errors.append(f"{spec_id}: manifest created_at date must match the date encoded in spec_id")
         if manifest.get("phase") not in VALID_MANIFEST_PHASES:
             errors.append(f"{spec_id}: invalid manifest phase `{manifest.get('phase')}`")
     return errors

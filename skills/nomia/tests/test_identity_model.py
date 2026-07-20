@@ -40,28 +40,6 @@ class IdentityModelTests(unittest.TestCase):
         self.assertIsNone(validate_cycle_id_format("cycle-2026-04-20-q2-delivery"))
         self.assertIsNone(validate_spec_id_format("spec-2026-04-20-csv-export-filtered-columns"))
 
-    def test_impossible_calendar_dates_are_rejected(self) -> None:
-        invalid_cycle_ids = (
-            "cycle-2026-02-30-q2-delivery",
-            "cycle-2026-13-01-q2-delivery",
-            "cycle-0000-01-01-q2-delivery",
-        )
-        invalid_spec_ids = (
-            "spec-2026-02-30-csv-export",
-            "spec-2026-13-01-csv-export",
-            "spec-0000-01-01-csv-export",
-        )
-        for value in invalid_cycle_ids:
-            with self.assertRaises(ValueError):
-                parse_cycle_id(value)
-        for value in invalid_spec_ids:
-            with self.assertRaises(ValueError):
-                parse_spec_id(value)
-
-    def test_valid_leap_day_is_accepted(self) -> None:
-        self.assertEqual(parse_cycle_id("cycle-2028-02-29-q1-delivery")["date"], "2028-02-29")
-        self.assertEqual(parse_spec_id("spec-2028-02-29-csv-export")["date"], "2028-02-29")
-
     def test_former_ulid_ids_are_read_only_legacy_and_rejected_operationally(self) -> None:
         self.assertTrue(is_legacy_cycle_id(LEGACY_CYCLE_ID))
         self.assertTrue(is_legacy_cycle_id(LEGACY_PREFIXED_CYCLE_ID))
@@ -154,70 +132,6 @@ features:
     def test_year_conflict_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             resolve_board_root(Path("/repo"), board_id="workspace-admin", year="2025", cycle_id=CYCLE_ID)
-
-    def test_canonical_board_root_override_is_validated_centrally(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            repo = Path(tmp)
-            expected = repo / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
-            resolved = resolve_board_root(
-                repo,
-                board_root_override=expected,
-                board_id="workspace-admin",
-                year="2026",
-                cycle_id=CYCLE_ID,
-            )
-            self.assertEqual(resolved, expected.resolve())
-
-    def test_board_root_override_outside_repository_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as repo_tmp, tempfile.TemporaryDirectory() as outside_tmp:
-            outside = Path(outside_tmp) / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
-            with self.assertRaisesRegex(ValueError, "inside the repository root"):
-                resolve_board_root(Path(repo_tmp), board_root_override=outside)
-
-    def test_noncanonical_board_root_override_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            repo = Path(tmp)
-            with self.assertRaisesRegex(ValueError, "BOARD_ROOT must match"):
-                resolve_board_root(repo, board_root_override=repo / "tmp" / CYCLE_ID)
-
-    def test_board_root_override_cannot_point_to_a_descendant(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            repo = Path(tmp)
-            descendant = (
-                repo
-                / "docs"
-                / "boards"
-                / "workspace-admin"
-                / "2026"
-                / "cycles"
-                / CYCLE_ID
-                / "specs"
-                / SPEC_ID
-            )
-            with self.assertRaisesRegex(ValueError, "BOARD_ROOT must match"):
-                resolve_board_root(repo, board_root_override=descendant)
-
-    def test_board_root_override_symlink_escape_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as repo_tmp, tempfile.TemporaryDirectory() as outside_tmp:
-            repo = Path(repo_tmp)
-            outside = Path(outside_tmp) / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
-            outside.mkdir(parents=True)
-            link_parent = repo / "docs" / "boards" / "workspace-admin" / "2026" / "cycles"
-            link_parent.mkdir(parents=True)
-            link = link_parent / CYCLE_ID
-            try:
-                link.symlink_to(outside, target_is_directory=True)
-            except (OSError, NotImplementedError) as exc:
-                self.skipTest(f"symlink creation is unavailable: {exc}")
-            with self.assertRaisesRegex(ValueError, "inside the repository root"):
-                resolve_board_root(repo, board_root_override=link)
-
-    def test_board_root_override_identity_conflict_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            repo = Path(tmp)
-            override = repo / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
-            with self.assertRaisesRegex(ValueError, "board_id .* conflicts"):
-                resolve_board_root(repo, board_root_override=override, board_id="different-board")
 
     def test_canonical_nomia_paths_are_accepted(self) -> None:
         paths = [

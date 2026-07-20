@@ -38,7 +38,6 @@ Resource anchors: `assets/templates/` contains MAGIA-owned execution/doc templat
 - For implementation-notes.md Execution Log, use `scripts/write_execution_log.py <board_root> --spec-id <spec_id> --task-id <taskNNN> ...`; it keeps `## Execution Log` last, removes stale same-task copy, and appends the refreshed subsection.
 - Never overwrite truthful dynamic values with placeholders or example literals.
 - When completion state or records changed, use `scripts/close_execution_state.py` so sync, narrow self-healing, and validation happen together.
-- `scripts/sync_execution_state.py` requires matching implementation-notes.md and validation-evidence.md records before mutation. It serializes one spec with an advisory lock, stages tasks/manifest/registry changes, validates the committed set, and rolls all files back when a write or validation step fails.
 - Fall back to `scripts/sync_execution_state.py <board_root> --spec-id <spec_id> ...` plus `scripts/validate_execution_state.py <board_root> --spec-id <spec_id>` only when close wrapper is unavailable.
 - Use `scripts/heal_execution_state.py <board_root> --spec-id <spec_id>` only for narrow mechanical reconciliation already proven by implementation-notes.md and validation-evidence.md; never invent validation, rewrite tasks, or repair task ids.
 - Validate touched artifacts with `scripts/validate_artifact.py <artifact-path>` before closure.

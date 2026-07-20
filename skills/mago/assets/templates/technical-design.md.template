@@ -53,6 +53,12 @@ depends_on_specs: []
 
 ## Architecture Decisions
 
+### DECISION-001 - <decision_title>
+
+- Requirements: REQ-001
+- Status: <proposed|accepted|superseded>
+- Rationale: <evidence_backed_rationale>
+
 ### Alternatives Considered
 
 ### Decision Criteria

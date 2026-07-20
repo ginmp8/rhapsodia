@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "run-local-change",
+  "profile": "standard",
+  "mode": "adhoc",
+  "status": "pending",
+  "checkpoint": "inspect",
+  "pending_step": "inspect selected scope",
+  "scope": {
+    "repo_root": ".",
+    "task": null,
+    "spec_id": null
+  },
+  "inspected_files": [],
+  "dependency_fingerprint": null,
+  "planned_writes": [],
+  "completed_writes": [],
+  "commands": [],
+  "validation_status": "not_run",
+  "convergence_status": "unverified",
+  "retry": {
+    "count": 0,
+    "max": 1,
+    "last_reason": null
+  },
+  "cancellation": {
+    "requested": false,
+    "reason": null
+  },
+  "rollback_evidence": [],
+  "handoff": {
+    "target": "none",
+    "reason": null
+  },
+  "atomicity": "single_repository",
+  "repositories": [
+    {
+      "id": "primary",
+      "path": ".",
+      "dependency_order": 0,
+      "status": "pending",
+      "checkpoint": "inspect",
+      "compatibility_window": null,
+      "rollback_status": "not_required"
+    }
+  ]
+}

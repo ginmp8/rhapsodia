@@ -16,7 +16,7 @@ Default validator: `scripts/validate_artifact.py`; it dispatches by path/name. U
 - `scripts/validate_evidence_contract.py`: evidence/traceability checks for repository truth, execution state, validation state, dependency state, or source-of-truth paths.
 - `scripts/validate_planning_execution_handoff.py`: task/handoff language and planning-to-execution boundary.
 - `scripts/validate_skill_package.py`: MAGO package integrity before packaging; also gates activation metrics, concurrency tests, generated-view contract, and evidence controls.
-- `scripts/package_skill.py`: build `skill.zip` after structural folder validation and validate the produced archive. It must never execute scripts from the target package.
+- `scripts/package_skill.py`: build `skill.zip` after folder validation and validate the produced archive.
 
 ## Validation Gates
 
@@ -25,10 +25,6 @@ A MAGO run is incomplete until relevant gates are known: canonical board root re
 ## Generated View Validation
 
 Render with `scripts/render_registry_views.py <board_root> --output <external-dir>`. Re-running unchanged input must produce byte-identical output and the same registry digest. Run `scripts/validate_generated_view_contract.py <skill-root>` whenever renderer logic or projection templates change. Generated views must not be placed under `BOARD_ROOT` or used as authoritative state.
-
-## Trust Boundary
-
-Treat the target skill folder as untrusted input during packaging. Run `scripts/validate_skill_package.py` and other executable gates explicitly in an isolated environment without secrets, network credentials, or write access outside the workspace. `scripts/package_skill.py --validate` performs structural folder and archive checks only; it must not import, execute, or delegate to validators contained in the target package. A privileged CI job must use a validator supplied from a trusted base revision or external toolchain, not code from the pull request being packaged.
 
 ## Package-Level Hardening Gates
 

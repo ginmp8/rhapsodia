@@ -33,6 +33,10 @@ depends_on_specs: []
 
 ## Functional Requirements
 
+### REQ-001 - <requirement_title>
+
+WHEN <trigger>, the <system> MUST <observable_response>.
+
 ## Non-Functional Requirements
 
 ## Constraints
@@ -41,5 +45,16 @@ depends_on_specs: []
 <!-- Keep this section concise and decision-level. Put supporting repository detail, evolving nuance, and working analysis in notes.md. -->
 
 ## Acceptance Criteria
+
+### AC-001 - <acceptance_title>
+
+- Requirements: REQ-001
+
+```gherkin
+Scenario: AC-001 <acceptance_title>
+  Given <evidenced_precondition>
+  When <observable_trigger>
+  Then <observable_outcome>
+```
 
 ## Open Questions

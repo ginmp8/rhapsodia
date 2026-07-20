@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Use this file as a structural reference only.
 Replace every <...> token with repository-truth values.
 Test case count and checklist items are examples, not mandatory fixed content.
@@ -10,13 +10,21 @@ Test case count and checklist items are examples, not mandatory fixed content.
 
 ## Validation Scope
 
-## Test Case 1 - <test_case_title>
+### VAL-001 - <validation_title>
+
+- Requirements: REQ-001
+- Acceptance: AC-001
+- Tasks: task001
 
 Expected:
 
 - <observable_outcome>
 
-## Test Case 2 - <test_case_title>
+### VAL-002 - <validation_title>
+
+- Requirements: <REQ_ids>
+- Acceptance: <AC_ids>
+- Tasks: <task_ids>
 
 Expected:
 

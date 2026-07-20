@@ -56,4 +56,4 @@ python <skill-root>/scripts/validate_skill_package.py --target <skill-root>
 python <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root>
 ```
 
-After the gates pass in an isolated runner, record their exact outputs and the target-tree digest in external JSON evidence. Invoke a trusted protected copy of `scripts/package_skill.py --target <skill-root> --validation-evidence <evidence.json> --output <output-dir>/skill.zip`; the packager verifies the digest and never executes target validators.
+Prefer `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it reruns structural, activation, and golden gates before writing.

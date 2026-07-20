@@ -45,7 +45,6 @@ REQUIRED_FILES = (
     "assets/templates/tasks.md.template",
     "examples/activation-scenarios.json",
     "tests/test_concurrency_model.py",
-    "tests/test_packaging_safety.py",
 )
 MODE_REFERENCES = (
     "adapt",

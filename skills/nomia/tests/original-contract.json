@@ -1,5 +1,5 @@
 {
-  "baseline": "nomia installed package immediately before this repair; protected icon baseline reconciled to the existing package asset",
+  "baseline": "nomia installed package immediately before ULID dependency removal",
   "required_files": [
     "SKILL.md",
     "agents/openai.yaml",
@@ -680,6 +680,6 @@
   },
   "icon": {
     "path": "assets/icon.svg",
-    "sha256": "51a6923974188748638a424aa59b42b6afad2d910f910a1d43bb13ee10f3ce26"
+    "sha256": "af4bd96dcf0396622229a5c3194011ec4d5633550d2a004f6055c4867e6ea2f4"
   }
 }

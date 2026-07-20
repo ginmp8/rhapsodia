@@ -2,6 +2,8 @@
 
 ## Validation Policy
 
+Select `quick`, `standard`, or `governed` using `references/execution-profiles.md` and, when change facts are machine-readable, `scripts/select_validation_profile.py`. Escalation is one-way: governed risk signals cannot be bypassed by a requested lighter profile.
+
 Run the smallest validation set that proves selected work: targeted unit/integration tests, build/compile, schema/parser checks, lint/format only when changed files participate or policy requires. If behavior changed and coverage tooling exists, run targeted coverage when available; otherwise record the gap in validation-evidence.md.
 
 ## Execution Records Sync
@@ -44,7 +46,9 @@ Stop broadening scope; classify a concrete execution blocker; record it in imple
 
 ## Final Closure Pass
 
-Verify: changed code matches selected work; the matching registry entry and manifest.yaml match actual state and were reconciled together if changed; manifest phase is execute for active work or done only for full completion; tasks.md checkbox and implementation-notes.md Execution Log match completion; last_execution is omitted or points to an existing truthful taskNNN; validation-evidence.md records real evidence and checked items are satisfied; implementation-notes.md reflects blockers/decisions; every executed task has a truthful log and no log references a missing task; canonical sections/fields/checklists survived; no MAGIA durable docs exist outside `BOARD_ROOT`. Run `scripts/close_execution_state.py ...` when state changed; otherwise run validation/state scripts as applicable, including `scripts/validate_repo_board.py <repo_root> --board-root <board_root>` when local files exist.
+Before closure, validate active run state with `scripts/validate_run_state.py` when a run-state record exists. A resumed run must verify repository drift before execution continues. Validate requirement/task/file/check/evidence alignment with `scripts/validate_convergence.py`; completion is ineligible while any required item is unsatisfied, partially satisfied, unverified, or requires a planning change.
+
+Verify: changed code matches selected work; the matching registry entry and manifest.yaml match actual state and were reconciled together if changed; manifest phase is execute for active work or done only for full completion; tasks.md checkbox and implementation-notes.md Execution Log match completion; last_execution is omitted or points to an existing truthful taskNNN; validation-evidence.md records real evidence and checked items are satisfied; implementation-notes.md reflects blockers/decisions; every executed task has a truthful log and no log references a missing task; canonical sections/fields/checklists survived; no MAGIA durable docs exist outside `BOARD_ROOT`. Run `scripts/close_execution_state.py ...` when board execution state changed; otherwise run validation/state scripts as applicable, including `scripts/validate_repo_board.py <repo_root> --board-root <board_root>` when local files exist.
 
 ## Final Response
 

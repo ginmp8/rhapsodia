@@ -1,0 +1,1 @@
+{"kind":"magia-evidence-envelope","authoritative_for_runtime":true,"provenance":["validation-evidence.md#VAL-001"],"requirements":[{"id":"REQ-001","status":"implemented","behavior":"preserve selected column order"}],"acceptance":[{"id":"AC-001","status":"pass"}],"tasks":[{"id":"task001","status":"done"}],"newly_discovered_work":[],"required_planning_revision":[]}
