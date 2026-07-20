@@ -31,7 +31,11 @@ MAGO owns templates and structural normalization for planning-origin files. MAGI
 - Keep notes planning-only; route old execution sections through MAGIA ADAPT before using them as evidence.
 - Keep registry/package identity consistent without treating generated views as state.
 
-## Drift Resolution Precedence
+## Drift Handling
+
+Use the following precedence for drift resolution.
+
+### Drift Resolution Precedence
 
 Resolve conflicts in this order:
 

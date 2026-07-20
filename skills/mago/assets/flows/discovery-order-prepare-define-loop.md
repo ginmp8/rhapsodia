@@ -40,7 +40,7 @@ Goal: read one registry record plus linked candidates and seed the smallest trut
 
 Goal: complete one seeded package using ordinary define rules. Preserve registry intent and discovery traceability. Produce executable planning tasks where justified, but do not claim implementation or runtime evidence.
 
-## Worker Model
+## Python Worker Model
 
 Prefer separate bounded workers, not one monolithic prompt loop.
 
@@ -79,7 +79,7 @@ Artifacts must answer:
 
 Without this state the loop is not resumable or auditable.
 
-## Traceability and Failure Policy
+## Reference Handling and Failure Policy
 
 Downstream packages keep traceability to source files: list them in notes/traceability, derive behavior statements from evidence, distinguish observed from inferred, and record blockers when behavior cannot be confirmed.
 

@@ -55,6 +55,9 @@ VALID_CONFIDENCE = {"low", "medium", "high"}
 VALID_FRONTIER_STATUS = {"updated", "blocked", "completed"}
 
 
+GENERATED_VIEW_NAMES = {"spec-catalog.yaml", "define-queue.yaml"}
+
+
 RULES: dict[str, dict[str, ListRule]] = {
     "spec-registry-entry.yaml": {
         "depends_on_features": ListRule("depends_on_features", "string"),
@@ -117,7 +120,7 @@ RULES: dict[str, dict[str, ListRule]] = {
         "specs": ListRule(
             "specs",
             "mapping",
-            required=("order", "spec_id", "feature_key", "title", "type", "classification", "depends_on_features", "depends_on_specs", "status", "feature_version"),
+            required=("order", "order_hint", "spec_id", "feature_key", "title", "type", "classification", "depends_on_features", "depends_on_specs", "status", "feature_version"),
             regex_fields={"spec_id": SPEC_ID_RE, "feature_key": FEATURE_KEY_RE},
             enum_fields={"status": VALID_SPEC_STATUS},
             list_fields={"depends_on_features": "string", "depends_on_specs": "spec_id"},
@@ -301,6 +304,8 @@ def validate_list(rule: ListRule, value: Any) -> None:
 
 def apply_updates(artifact_path: Path, updates: dict[str, Any]) -> None:
     name = artifact_name(artifact_path)
+    if name in GENERATED_VIEW_NAMES:
+        fail(f"`{name}` is a generated projection; use render_registry_views.py instead of mutating it")
     rules = RULES.get(name)
     if not rules:
         fail(f"unsupported MAGO template-backed artifact `{name}`")

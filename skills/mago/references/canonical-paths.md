@@ -2,6 +2,8 @@
 
 This file is the single source of truth for board-root and package-path resolution.
 
+## Canonical Defaults
+
 ```text
 CANONICAL_BOARD_ROOT = docs/boards/<board_id>/<year>/cycles/<cycle_id>/
 CANONICAL_SPEC_PACKAGE = {BOARD_ROOT}specs/<spec_id>/

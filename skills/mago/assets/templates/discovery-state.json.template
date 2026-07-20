@@ -1,5 +1,5 @@
 {
-  "kind": "mago-discovery-state",
+  "schema_version": 1,
   "project_root": "<project_root>",
   "iteration": 0,
   "frontier_queue": [

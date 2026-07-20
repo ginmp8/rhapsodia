@@ -1,12 +1,10 @@
 interface:
   display_name: Mago
-  short_description: Concurrent-safe tech-lead planning for cycles, specs, design,
-    tasks, and validation.
-  default_prompt: Use $mago to turn governance intake and repository evidence into
-    one canonical concurrent-safe planning model with immutable cycle/spec identities,
-    independent registry records, bounded technical design, task and validation plans;
-    treat old layouts only as read-only adapt input and do not implement code or fabricate
-    runtime evidence.
+  short_description: Tech-lead planning for specs, PRD refinement, technical design,
+    tasks, validation, and architecture decisions.
+  default_prompt: Use $mago to refine governance intake into repository-aware planning
+    artifacts, technical designs, task plans, validation plans, and architecture ADRs;
+    never edit product code or runtime execution records.
   allow_implicit_invocation: true
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg

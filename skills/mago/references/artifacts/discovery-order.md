@@ -1,54 +1,102 @@
 # Discovery and Order Artifacts
 
-## Discovery State
+Use this reference when `discovery`, `order`, or `prepare-define` creates or reconciles upstream artifacts.
 
-Discovery artifacts live under the canonical cycle root:
+## Discovery Root Layout
 
-```text
-discovery-state.json
-discovery-index.yaml
-candidates/<candidate_id>.md
-```
-
-They capture repository frontier, processed paths, candidate evidence, confidence, traceability, blockers, and open questions. They do not own cycle/spec IDs, feature versions, dependencies, order, handoff readiness, or execution status.
-
-Discovery must preserve source paths, distinguish observed facts from inference, and continue in bounded batches. Weak or contradictory evidence remains blocked rather than being promoted into registration.
-
-## Order Source of Truth
-
-Each ordered item is an independent file:
+All layouts below derive from `BOARD_ROOT` in `references/canonical-paths.md`.
 
 ```text
-registry/<spec_id>.yaml
+BOARD_ROOT/
+  cycle.yaml
+  discovery-state.json
+  discovery-index.yaml
+  candidates/
+    <candidate_id>.md
 ```
 
-Create new identities atomically through `scripts/create_planning_identity.py spec`. Reconcile an existing record only when immutable identity remains unchanged and evidence supports the update.
+## discovery-state.json
 
-Required registry areas:
+- purpose: machine-readable loop state for iterative frontier scanning
+- required keys: `schema_version`, `project_root`, `iteration`, `frontier_queue`, `completed_frontiers`, `blocked_frontiers`, `frontier_history`, `file_inventory`
+- keep it factual and operational; do not store speculative product scope here
+- each `frontier_history` entry should record the bounded batch processed in one iteration and the truthful next frontier decision
 
-- immutable spec/cycle identity and creation metadata;
-- feature key/version, title, type, classification;
-- lifecycle status, priority, optional `order_hint`;
-- feature and spec dependencies;
-- supersession links;
-- handoff status, downstream mode, package shape, source candidates, seed artifacts, blockers;
-- optional import traceability.
+## discovery-index.yaml
 
-Every source candidate resolves under the active cycle root. Every spec dependency resolves to another registry record. Active duplicate feature keys and dependency cycles are invalid.
+- required keys: `schema_version`, `discovery_root`, `project_root`, `last_iteration`, `candidates`
+- set `discovery_root` to the repository-relative `BOARD_ROOT`
+- each candidate entry needs `candidate_id`, `title`, `status`, `candidate_doc`, `frontier`, `core_files`, `triage_confidence`, `boundary_risk`, and `suggested_next_step`
+- populate `candidates` with `scripts/update_template_lists.py <discovery-index.yaml> --data <payload.yaml>`; do not hand-shape candidate entries
+- optional fields: `provisional_feature_key`, `supporting_files`, `duplicate_of`
+- use `status` only from `new`, `updated`, `provisional`, `ready_for_order`, `blocked`, `duplicate`
+- use `suggested_next_step` only from `continue_discovery`, `order`, or `drop`
 
-## Ordering and Deduplication
+## candidates/<candidate_id>.md
 
-- Deduplicate by capability boundary and stable `feature_key` before creating an identity.
-- Dependencies constrain execution; `order_hint` is only presentation metadata and may collide.
-- Preserve existing registry identity and dependencies unless stronger evidence proves correction is necessary.
-- Broader enabling work may precede dependent slices, but do not force weak evidence into the registry.
-- `handoff.status: ready_for_prepare_define` requires enough evidence to justify downstream mode and package shape.
+- create a new candidate doc with scripts/write_artifact_scaffold.py <path> --template discovery-candidate.md.template; use the template directly only as a read-only reference when no script can perform the needed check
+- keep front matter factual and stable for the candidate boundary
+- preserve these sections in order: `Scope Summary`, `Observed Behavior`, `Entry Points`, `Core Files`, `Supporting Files`, `Dependencies and Integrations`, `Open Questions`, `Promotion Decision`
+- use repository-relative POSIX paths
+- keep evidence concise; detailed excerpts belong in supporting docs only when they materially improve later ordering
+
+## Order Outputs
+
+Canonical order output is one independent registry record per spec. Aggregate catalog and queue files are generated projections only.
+
+### Order Source of Truth
+
+```text
+BOARD_ROOT/
+  registry/
+    <spec_id>.yaml
+```
+
+Each registry file owns one ordered spec. Create new identities atomically through `scripts/create_planning_identity.py spec`; do not coordinate through a shared counter or central mutable list.
+
+## registry/<spec_id>.yaml
+
+- purpose: canonical registration and define handoff for one planning item
+- required identity fields: `kind`, `spec_id`, `spec_uid`, `cycle_id`, `feature_key`, `created_at`
+- required planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `priority`, `order_hint`
+- required dependency fields: `depends_on_features`, `depends_on_specs`
+- required lifecycle fields: `supersedes`, `superseded_by`
+- required handoff mapping: `status`, `downstream_mode`, `package_shape`, `source_candidates`, `seed_artifacts`, `blockers`
+- optional import traceability: `imported_from`
+- source candidates must resolve under the active `BOARD_ROOT/candidates/`
+- package target is derived as `BOARD_ROOT/specs/<spec_id>/`; do not store a second mutable identity
+- use handoff `status` only from `ready_for_prepare_define`, `blocked`, or `needs_discovery`
+- use `downstream_mode` only from `define`, `define-product`, or `define-tasks`
+- use `package_shape` only from `full`, `product_only`, or `tasks_only`
+- use `seed_artifacts` only from canonical package files: manifest.yaml, prd.md, technical-design.md, tasks.md, notes.md, validation.md
+
+## define-queue.yaml
+
+`define-queue.yaml` is a generated read-only view of registry handoff fields, not a writable queue source.
 
 ## Generated Views
 
-`scripts/render_registry_views.py` emits external inspection/CI projections:
+`scripts/render_registry_views.py` creates external inspection/CI projections:
 
-- `spec-catalog.yaml`;
-- `define-queue.yaml`.
+```text
+<output>/spec-catalog.yaml
+<output>/define-queue.yaml
+```
 
-The templates document their complete output schemas. The renderer output includes a registry digest and must be deterministic. Generated views never become canonical board files, hand-edit targets, or execution-state synchronization surfaces.
+- templates document the complete generated schemas
+- generated views include `cycle_id` and a registry digest
+- ordering is deterministic from dependency topology, priority, order hint, creation timestamp, and spec id
+- never write generated views under `BOARD_ROOT`
+- never hand-edit generated views or synchronize their values back into registry/package state
+
+## Cross-Stage Invariants
+
+- every `candidate_id` in discovery-index.yaml must be unique
+- every `candidate_doc` listed in discovery-index.yaml must exist under `BOARD_ROOT`
+- every registry `source_candidates` path must exist and point to a discovery candidate doc under `BOARD_ROOT`
+- every registry filename, `spec_id`, and `spec_uid` must agree with canonical identity format
+- every package directory must have a matching registry record and matching manifest identity
+- active `feature_key` values must be unique unless supersession is explicit
+- every `depends_on_specs` value must resolve to a registry record and the dependency graph must be acyclic
+- never let a registry handoff claim a downstream mode or seed artifact set that linked discovery evidence cannot justify
+- generated catalog/queue views must reproduce registry state deterministically but remain noncanonical

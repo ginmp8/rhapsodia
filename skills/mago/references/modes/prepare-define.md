@@ -1,43 +1,42 @@
-# Prepare-Define Mode
+# Prepare Define Mode
 
-## Purpose
+## Canonical Rules
 
-Seed the smallest truthful package for exactly one already registered spec. Preparation converts registry handoff intent into a structurally valid package shell; it does not complete unsupported planning content.
+- `BOARD_ROOT` is required to read one registry handoff and its linked discovery artifacts.
+- The selected registry record is always `BOARD_ROOT/registry/<spec_id>.yaml`.
+- The selected package path is always under `BOARD_ROOT/specs/<spec_id>/`.
+- Prompt-provided `BOARD_ROOT` takes precedence after validation; derive the selected registry/package paths from the canonical pattern.
+- Seed only the selected package under `BOARD_ROOT/specs/<spec_id>/`.
 
-## Inputs
+## When to Use It
 
-- resolved canonical `BOARD_ROOT` and `cycle.yaml`;
-- exactly one `registry/<spec_id>.yaml` record;
-- linked discovery, governance, repository, and imported-source evidence;
-- downstream mode, package shape, seed artifacts, and blockers from the registry handoff.
+Use this mode after `order` when one registry handoff is `ready_for_prepare_define` and you want to seed define-compatible package artifacts from that ordered handoff instead of starting `define` from a blank package.
 
-Old layouts must be adapted before package creation.
+This mode is the bridge from `order` to ordinary downstream package authoring. Generated define-queue views may be used for inspection, but the registry record remains authoritative.
 
-## Workflow
+## Preparation Workflow
 
-1. Validate cycle, registry, dependencies, and selected handoff.
-2. Confirm the target `specs/<spec_id>/` is absent or belongs to the same immutable identity.
-3. Load linked candidate docs and referenced source files as read-only evidence.
-4. Create only artifacts listed by `handoff.seed_artifacts` and justified by package shape/evidence.
-5. Use `scripts/write_artifact_scaffold.py`; populate immutable fields from cycle/registry metadata and never regenerate IDs.
-6. Preserve source paths and evidence classes in manifest/notes/traceability.
-7. Replace placeholders only where evidence supports values; keep unresolved assumptions/blockers explicit.
-8. Validate package, planning/execution handoff, evidence contract, and board.
-9. Update only the selected registry handoff/status when the new package state is truthfully established.
+1. Select exactly one registry record whose `handoff.status` is `ready_for_prepare_define`.
+2. Load the selected registry record, linked discovery candidate docs, and only the directly relevant repository code or tests needed to preserve truth.
+3. Apply the matching downstream define contract for the handoff's `downstream_mode`, then seed only the artifacts justified by `seed_artifacts`.
+4. Create or reconcile the selected package path under `BOARD_ROOT/specs/<spec_id>/` from `references/canonical-paths.md` conservatively so the result is compatible with the later downstream mode.
+5. Ensure manifest identity matches cycle.yaml and the registry record.
+6. Stop once the package starter is truthful and downstream-ready; leave unsupported artifacts for later ordinary define/refine work.
 
-## Package Shapes
+## Boundaries
 
-- `full`: manifest, PRD, tasks, notes, validation; technical design only when material;
-- `product_only`: PRD, notes, optional product validation;
-- `tasks_only`: tasks only when product scope already exists and is sufficient.
+- do not invent scope, tasks, ordering, execution history, or completion claims just to complete a package skeleton
+- never create artifacts outside `BOARD_ROOT`
+- inside `BOARD_ROOT`, do not create artifacts outside the registry handoff's declared `seed_artifacts` set unless current repository truth now justifies the smaller ordinary downstream mode directly
+- do not widen the selected spec beyond the registry record and linked discovery evidence
+- if the registry handoff is stale or contradicted by current evidence, block and record the conflict in the registry/package instead of silently rewriting unrelated planning state
+- do not hand-edit generated spec-catalog.yaml or define-queue.yaml projections
 
-Do not seed files outside the declared shape merely to make a package look complete.
+## Seeding Rules
 
-## Rules and Stop Conditions
-
-- do not create/edit shared aggregate files;
-- do not invent scope, tasks, dependencies, validation results, execution history, completion, or approval;
-- package, registry, and cycle identities must agree;
-- preserve original-solution references as read-only evidence;
-- stop on ambiguous identity, contradictory evidence, unresolved dependencies, unsupported seed artifacts, or existing package conflict;
-- truthful partial preparation with recorded blockers is preferable to unsupported completeness.
+- always keep the seeded package aligned with cycle.yaml, the selected registry record, and linked discovery candidate docs
+- create every seeded template-backed artifact through scripts/write_artifact_scaffold.py <artifact-path> or a narrower local script when one exists
+- seed manifest.yaml when identity, classification, and traceability are already justified
+- seed notes.md when discovery findings, blockers, open questions, or source mapping need to survive into downstream define work
+- seed prd.md, validation.md, or tasks.md only when the registry handoff explicitly includes them and current evidence already supports them honestly
+- after this mode finishes, continue with the registry handoff's `downstream_mode` for ordinary package authoring

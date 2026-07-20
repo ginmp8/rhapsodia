@@ -3,7 +3,7 @@
 # Replace every <...> token with repository-truth values.
 # Keep candidate ids stable across iterations.
 
-kind: mago-discovery-index
+schema_version: 1
 discovery_root: "{BOARD_ROOT}"
 project_root: "<project_root>"
 last_iteration: 0
