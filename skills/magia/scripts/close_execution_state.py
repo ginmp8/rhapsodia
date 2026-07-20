@@ -9,7 +9,7 @@ import io
 import sys
 from pathlib import Path
 
-from magia_utils import BOARD_ROOT_TEMPLATE, load_local_module, print_errors, spec_package_path, spec_package_path_error
+from magia_utils import BOARD_ROOT_TEMPLATE, load_local_module, parse_spec_id, print_errors, spec_package_path, spec_package_path_error
 
 
 
@@ -21,12 +21,12 @@ def _run_module_main(module, argv: list[str]) -> tuple[int, list[str]]:
 
 
 
-def main(argv: list[str]) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Synchronize MAGIA task state and validate cross-artifact execution records in one closure step."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
+    parser.add_argument("--spec-id", required=True, help="Selected canonical spec id.")
     parser.add_argument("--task-id", required=True, help="Executed task id in the form taskNNN.")
     parser.add_argument(
         "--status",
@@ -44,11 +44,18 @@ def main(argv: list[str]) -> int:
     )
     args = parser.parse_args(argv)
 
+    errors: list[str] = []
+    try:
+        parse_spec_id(args.spec_id)
+    except ValueError as exc:
+        errors.append(str(exc))
     board_root = Path(args.board_root).resolve()
     spec_package = spec_package_path(board_root, args.spec_id)
     canonical_error = spec_package_path_error(spec_package)
     if canonical_error:
-        print_errors([canonical_error])
+        errors.append(canonical_error)
+    if errors:
+        print_errors(errors)
         return 1
 
     sync_module = load_local_module(__file__, "sync_execution_state.py")

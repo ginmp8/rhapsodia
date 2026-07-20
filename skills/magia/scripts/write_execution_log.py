@@ -8,7 +8,7 @@ import re
 import sys
 from pathlib import Path
 
-from magia_utils import BOARD_ROOT_TEMPLATE, print_errors, read_lines, spec_package_path, spec_package_path_error, write_text
+from magia_utils import BOARD_ROOT_TEMPLATE, parse_spec_id, print_errors, read_lines, spec_package_path, spec_package_path_error, write_text
 
 
 TASK_LINE_RE = re.compile(r"^\s*-\s*\[[ xX]\]\s+(?P<task_id>task\d{3}):\s+(?P<title>.+?)\s*$")
@@ -196,8 +196,8 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         description="Append or refresh one canonical MAGIA implementation-notes.md Execution Log subsection at EOF."
     )
-    parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
+    parser.add_argument("board_root", help=f"Canonical board root under {BOARD_ROOT_TEMPLATE}.")
+    parser.add_argument("--spec-id", required=True, help="Canonical spec ID in spec-YYYY-MM-DD-feature-key--ULID form.")
     parser.add_argument("--task-id", required=True, help="Executed task id in the form taskNNN.")
     parser.add_argument(
         "--status",
@@ -237,6 +237,12 @@ def main(argv: list[str]) -> int:
         help="Repeat for each Blockers list item. Omit to write none.",
     )
     args = parser.parse_args(argv)
+
+    try:
+        parse_spec_id(args.spec_id)
+    except ValueError as exc:
+        print_errors([str(exc)])
+        return 1
 
     board_root = Path(args.board_root).resolve()
     spec_package = spec_package_path(board_root, args.spec_id)

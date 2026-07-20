@@ -17,7 +17,7 @@ except Exception:  # pragma: no cover
 
 
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
+SPEC_ID_RE = re.compile(r"^spec-\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*--[0-9a-hjkmnp-tv-z]{26}$")
 TASK_ID_RE = re.compile(r"^task\d{3}$")
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
 
@@ -53,10 +53,10 @@ VALID_SPEC_STATUS = {"planned", "in_progress", "blocked", "done", "cancelled"}
 VALID_PHASE = {"define", "execute", "done"}
 
 
-PLANNING_ARTIFACTS = {"manifest.yaml", "spec-catalog.yaml", "tasks.md", "notes.md", "validation.md", "prd.md", "technical-design.md"}
+PLANNING_ARTIFACTS = {"manifest.yaml", "tasks.md", "notes.md", "validation.md", "prd.md", "technical-design.md"}
 
 # MAGIA intentionally has no generic list/field updater for MAGO-owned planning
-# artifacts. Execution-state updates for manifest.yaml/spec-catalog.yaml must go
+# artifacts. Execution-state updates for manifest.yaml/registry entry must go
 # through sync_execution_state.py, heal_execution_state.py, close_execution_state.py,
 # and validate_execution_state.py, which are narrow, evidence-backed workflows.
 RULES: dict[str, dict[str, ListRule]] = {}
@@ -141,7 +141,7 @@ def validate_scalar(label: str, value: Any, item_type: str) -> None:
         return
     if item_type == "spec_id":
         if not isinstance(value, str) or not SPEC_ID_RE.fullmatch(value):
-            fail(f"{label} must use specNNN format")
+            fail(f"{label} must use canonical spec-YYYY-MM-DD-feature-key--ULID format")
         return
     if item_type == "task_id":
         if not isinstance(value, str) or not TASK_ID_RE.fullmatch(value):

@@ -6,6 +6,8 @@ interface:
     synchronize execution from current code and Mago specs without rewriting PRDs
     or governance artifacts.
   allow_implicit_invocation: true
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

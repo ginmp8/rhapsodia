@@ -9,7 +9,7 @@
 
 ## Use When
 
-Use ADHOC for direct repository work not driven by active spec-catalog.yaml plus selected spec package: direct fixes, small implementation tasks without a planning package, targeted validation, or hardening outside RALPH.
+Use ADHOC for direct repository work not driven by active the selected registry entry plus spec package: direct fixes, small implementation tasks without a planning package, targeted validation, or hardening outside RALPH.
 
 ## Workflow
 
