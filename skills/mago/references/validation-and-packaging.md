@@ -1,38 +1,28 @@
-# MAGO Validation and Packaging
+# Validation and Packaging
 
-Load during MAGO hardening, package validation, or artifact edits needing mechanical validation.
+## Board Validation
 
-## Artifact Validation Routing
+Use `scripts/validate_repo_board.py` as the canonical board entrypoint. It validates cycle path/metadata consistency, identity/ULID rules, registry consistency, duplicate active features, dependencies/DAG, package identity, technical design, prohibited aggregate placement, and sibling-cycle conflicts.
 
-Default validator: `scripts/validate_artifact.py`; it dispatches by path/name. Use narrower validators when target is known:
+Use `scripts/validate_concurrent_board.py` for a single resolved cycle root. Old layouts are read-only `adapt` inputs and are never accepted as active board roots.
 
-- `scripts/validate_package.py`: package under active board root.
-- `scripts/validate_repo_board.py`: board placement, placeholders, cross-package quality.
-- `scripts/validate_technical_design.py`: spec architecture artifacts.
-- `scripts/validate_boundary.py`: package edits that may blur planning/governance/execution.
-- `scripts/validate_activation_scenarios.py`: hardening/package validation for activation, ambiguity, refusal, regression, adversarial routing.
-- `scripts/validate_evidence_contract.py`: evidence/traceability checks for repository truth, execution state, validation state, dependency state, or source-of-truth paths.
-- `scripts/validate_skill_package.py`: MAGO package integrity before packaging; also gates activation metrics and evidence controls.
-- `scripts/package_skill.py`: build `skill.zip` after folder validation and validate produced archive.
+## Generated Views
 
-## Validation Gates
+Run `scripts/render_registry_views.py <board_root> --output <external-dir>`. Re-running unchanged input must produce byte-identical output and the same registry digest. Run `scripts/validate_generated_view_contract.py <skill-root>` whenever renderer or projection templates change.
 
-A MAGO run is incomplete until relevant gates are known: canonical board root resolved; touched artifacts remain inside it; template-backed artifacts have no unresolved dynamic placeholders unless explicitly scaffolded; package ids, task ids, dependencies, status fields, and specialist metadata are consistent; repository-board validation passes when board artifacts changed; failures are blockers, not success.
+## Package-Level Gates
 
-## Package-Level Hardening Gates
+Before packaging MAGO, run all of these:
 
-Before distributing MAGO:
+1. `python scripts/validate_skill_package.py <skill-root>`;
+2. `python scripts/validate_planning_execution_handoff.py <skill-root>`;
+3. `python scripts/validate_generated_view_contract.py <skill-root>`;
+4. `python scripts/validate_boundary.py <skill-root>`;
+5. `python scripts/validate_activation_scenarios.py <skill-root>`;
+6. `python -B -m unittest discover -s tests -p 'test_*.py'`;
+7. compile every script without creating caches;
+8. run a canonical create/register/render/validate fixture;
+9. package as `skill.zip` with one top-level `mago/` directory;
+10. extract the ZIP and repeat skill, handoff, generated-view, boundary, activation, and test gates.
 
-1. Run static hardening audit if available.
-2. Run `scripts/validate_activation_scenarios.py` against skill root with `examples/activation-scenarios.json` as deterministic oracle.
-3. Run the skill-harness validator so `evals/activation-scenarios.json` stays schema-valid planned prompt-review coverage.
-4. Run `scripts/validate_skill_package.py` against skill root.
-5. Run `scripts/validate_boundary.py` from skill root.
-6. Run or smoke-test `scripts/validate_evidence_contract.py` against a representative local package fixture when evidence controls changed.
-7. Compile/smoke-test Python scripts without external services.
-8. Run `python3 -S scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate`.
-9. Verify archive has exactly one top-level skill directory containing `SKILL.md`, excludes transient reports/caches, and passes archive validator.
-
-## Packaging Exclusions
-
-Exclude transient reports, caches, virtual environments, bytecode caches, benchmark outputs, secrets, local credentials, and test-result files. The zip must contain one top-level skill directory with `SKILL.md`; do not package loose files at archive root.
+The packager must exclude caches, reports, generated views, old ZIPs, secrets, credentials, and temporary fixtures. Do not claim readiness when any required gate fails.

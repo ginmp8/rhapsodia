@@ -1,14 +1,14 @@
 # MAGO Orchestration Flow
 
-Operator/automation reference stored under `assets/`; not default prompt surface.
+Operator/automation reference stored under `assets/`; load only for explicit multi-stage loops.
 
 ## Purpose
 
-Deterministic loop: scan existing solution in bounded batches, extract candidate capability/behavior evidence, order candidates into a spec queue, prepare downstream MAGO packages, and keep the original solution read-only.
+Run a deterministic sequence that scans an existing solution in bounded batches, extracts evidence, registers concurrent-safe specs, prepares truthful packages, and keeps the original solution read-only.
 
 ## Core Principle
 
-Original solution = behavior/structure truth source, never implementation target. Read it, document findings, link MAGO artifacts back to it, but never create tasks that develop inside it or treat its files as writable planning targets.
+The original solution is a behavior/structure truth source, never a planning write target. Read it, document findings, and link planning artifacts back to it; do not modify it or create tasks that implement inside the source solution unless the user explicitly selected that repository as the execution target for downstream MAGIA.
 
 ## Stage Pipeline
 
@@ -16,42 +16,42 @@ Original solution = behavior/structure truth source, never implementation target
 
 ```mermaid
 flowchart LR
-    A["Discovery\nbounded repository scanning"] --> B["Order\ncatalog and handoff decisions"]
-    B --> C["Prepare Define\nseed truthful downstream package"]
+    A["Discovery\nbounded repository scanning"] --> B["Order\nindependent registry records"]
+    B --> C["Prepare Define\nseed truthful package"]
     C --> D["Define\ncomplete planning package"]
-    R["Original solution\nread-only reference"] -. evidence .-> A
+    R["Original solution\nread-only evidence"] -. evidence .-> A
     R -. evidence .-> C
     R -. evidence .-> D
 ```
 
 ### 1. Discovery
 
-Goal: scan a bounded repository frontier and extract candidate features, entry points, dependencies, open questions. Artifacts: discovery-state.json, discovery-index.yaml, candidates/<candidate_id>.md. Rules: iterative/batch-based; no `spec_id`, ordering, or define package generation.
+Goal: scan one bounded frontier and extract candidate features, entry points, dependencies, evidence, and questions. Artifacts: `discovery-state.json`, `discovery-index.yaml`, `candidates/<candidate_id>.md`. Do not create `spec_id`, registry entries, or package files.
 
 ### 2. Order
 
-Goal: turn stable discovery candidates into ordered planning items. Artifacts: spec-catalog.yaml, define-queue.yaml. Rules: deduplicate by capability boundary, assign stable planning identity, select downstream mode/package shape conservatively, and do not create spec folders or package files.
+Goal: turn stable candidates into independent registered planning items. Artifact: one atomically created `registry/<spec_id>.yaml` per genuinely distinct capability. Deduplicate by capability/feature key, select handoff/package shape conservatively, and do not create package folders or edit shared aggregates.
 
 ### 3. Prepare Define
 
-Goal: read one ordered queue entry and seed the smallest truthful define-compatible package. Inputs: one define-queue.yaml entry, matching spec-catalog.yaml entry, linked discovery candidates, referenced original-solution files. Outputs: only package artifacts justified by queue/current evidence. Rules: preserve original-solution references, mark them reference-only, and do not invent unsupported tasks/scope/completion.
+Goal: read one registry record plus linked candidates and seed the smallest truthful package under `specs/<spec_id>/`. Preserve original-solution paths as read-only evidence. Do not invent unsupported tasks, scope, dependencies, validation success, or completion.
 
 ### 4. Define
 
-Goal: complete/refine the seed into an ordinary MAGO planning package. Artifacts may include manifest.yaml, prd.md, notes.md, validation.md, tasks.md. Rules: preserve queue intent and discovery evidence, keep implementation out of scope, and document original solution as reference-only.
+Goal: complete one seeded package using ordinary define rules. Preserve registry intent and discovery traceability. Produce executable planning tasks where justified, but do not claim implementation or runtime evidence.
 
-## Python Worker Model
+## Worker Model
 
-Prefer separate worker commands per stage, not one monolithic prompt loop.
+Prefer separate bounded workers, not one monolithic prompt loop.
 
-- Discovery worker: read next frontier batch from discovery-state.json, inspect only that batch, update discovery artifacts, stop after one truthful iteration. Success: frontier advanced, candidate evidence updated, or blockers recorded.
-- Order worker: select candidates with enough evidence, reconcile spec-catalog.yaml and define-queue.yaml, stop after one bounded pass. Success: at least one candidate ordered or a blocker recorded.
-- Prepare Define worker: select one queue entry with `handoff_status: ready_for_prepare_define`, generate justified seed package, preserve original-solution references, stop after one entry. Success: one downstream-ready seed exists or a blocking conflict was recorded.
-- Define worker: select one seeded package, run ordinary define logic, complete only evidence-supported artifacts. Success: one package advances without execution claims or development work.
+- Discovery worker: inspect one frontier batch; success means frontier advanced, evidence/candidates updated, or blockers recorded.
+- Order worker: register one or more independent evidence-ready candidates; success means at least one registry record created/reconciled or a blocker recorded.
+- Prepare-Define worker: process exactly one registry entry whose handoff is ready; success means one identity-consistent seed package or a recorded conflict.
+- Define worker: process exactly one seeded package; success means evidence-supported planning progress without execution claims.
 
 ## Loop Contract
 
-Continue only while progress is possible: pending frontier items, candidates ready for ordering, define-queue entries ready for prepare-define, or seeded packages needing define work. Stop when a full pass produces no state change.
+Continue only while progress is possible: pending frontier items, candidates ready for registration, registry entries ready for preparation, or seeded packages needing definition. Stop after a full pass with no state change.
 
 ```mermaid
 flowchart TD
@@ -60,7 +60,7 @@ flowchart TD
     O1 --> P1["Run prepare-define worker"]
     P1 --> F1["Run define worker"]
     F1 --> C1{"Any state changed?"}
-    C1 -- Yes --> P2{"Any pending frontier,\nready candidate,\nready queue entry,\nor define work left?"}
+    C1 -- Yes --> P2{"Pending frontier, ready candidate,\nready registry entry, or define work?"}
     P2 -- Yes --> S
     P2 -- No --> E["Stop: pipeline complete"]
     C1 -- No --> N["Stop: no progress"]
@@ -68,10 +68,19 @@ flowchart TD
 
 ## Minimal State Expectations
 
-Artifacts must answer: next frontier, already scanned files, candidates ready for order, ordered specs, blocked queue entries, and package currently being prepared/defined. Without this state the loop is fragile.
+Artifacts must answer:
 
-## Reference Handling and Failure Policy
+- next frontier and already-scanned files;
+- candidates ready for registration;
+- registry records and dependencies;
+- blocked handoffs;
+- package currently being prepared or defined;
+- evidence paths and whether claims are observed or inferred.
 
-Downstream packages keep traceability to original solution: list original files in notes.md, describe behavior in prd.md from evidence, distinguish inferred vs observed, and record blockers when behavior cannot be confirmed. Recommended wording: "Original solution reference", "Read-only source reference", "Do not implement in the original solution".
+Without this state the loop is not resumable or auditable.
 
-When evidence is weak/contradictory: block the item, record why, preserve confirmed findings, and do not force order or package completeness. Truthful partial progress beats unstable output.
+## Traceability and Failure Policy
+
+Downstream packages keep traceability to source files: list them in notes/traceability, derive behavior statements from evidence, distinguish observed from inferred, and record blockers when behavior cannot be confirmed.
+
+When evidence is weak or contradictory, block the candidate/handoff, preserve confirmed findings, and do not force registration or package completeness. Truthful partial progress is preferable to unstable output.

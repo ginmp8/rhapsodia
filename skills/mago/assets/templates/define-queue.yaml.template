@@ -1,10 +1,12 @@
-# Use this file as a structural reference when creating or reconciling
-# {BOARD_ROOT}/define-queue.yaml.
-# Replace every <...> token with repository-truth values.
-# Never claim a downstream mode or seed artifact set that the linked discovery evidence does not support.
+# Generated projection derived from registry/<spec_id>.yaml files.
+# This file documents the complete renderer output contract.
+# It is not source of truth and must not be edited manually.
+# Never infer readiness, downstream mode, package shape, or blockers without evidence.
 
-schema_version: 1
-cycle_version: "<cycle_version>"
+kind: mago-define-queue
+generated: true
+cycle_id: "<cycle_id>"
+registry_digest: "<registry_digest>"
 entries:
   - spec_id: "<spec_id>"
     feature_key: "<feature_key>"
@@ -16,5 +18,5 @@ entries:
     seed_artifacts:
       - manifest.yaml
       - notes.md
-    define_target: "{BOARD_ROOT}/specs/<spec_id>"
+    define_target: "specs/<spec_id>/"
     blockers: []

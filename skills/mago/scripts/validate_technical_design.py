@@ -19,14 +19,12 @@ except Exception:  # pragma: no cover
 
 REQUIRED_FRONTMATTER = (
     "spec_id",
-    "order",
     "feature_key",
     "title",
     "type",
     "classification",
     "status",
     "phase",
-    "cycle_version",
     "feature_version",
     "project_size",
     "project_types",
@@ -151,6 +149,9 @@ def validate(path: Path) -> list[str]:
     for key in REQUIRED_FRONTMATTER:
         if key not in frontmatter:
             errors.append(f"{path}: missing front matter key `{key}`")
+
+    if "cycle_id" not in frontmatter:
+        errors.append(f"{path}: front matter needs canonical `cycle_id`")
 
     project_size = strip_quotes(str(frontmatter.get("project_size"))) if frontmatter.get("project_size") is not None else None
     if project_size and project_size not in VALID_PROJECT_SIZES:

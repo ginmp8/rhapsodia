@@ -1,30 +1,28 @@
-# Complexity Reduction Mode
+# Complexity-Reduction Mode
 
-Use this mode when MAGO must plan simplification, de-abstraction, refactoring strategy, or reduction of accidental complexity for one selected spec package.
+## Purpose
 
-## Required Inputs
+Produce one evidence-backed simplification, de-abstraction, refactoring, or complexity-reduction plan for a registered spec.
 
-- `BOARD_ROOT`, `board_id`, `cycle_version`, and `spec_id`.
-- Repository evidence or explicitly marked assumptions about the complex area.
-- Behavior, contracts, or invariants that must be preserved.
-- Complexity symptoms: unnecessary abstraction, layer explosion, genericity, configuration surface, leaky abstraction, false DRY, or validation gap.
-- Risk tolerance and validation expectations.
+## Required Context
 
-## Outputs
-
-Create or update complexity-reduction-plan.md and, when useful, align execution-handoff-plan.md, tasks.md, validation.md, technical-design.md, or planned ADRs. Do not edit code. Do not claim runtime behavior or implementation results.
+- resolved canonical `BOARD_ROOT`, `cycle_id`, and `spec_id`;
+- current package and repository evidence;
+- concrete complexity signal, impact, and downstream validation path.
 
 ## Workflow
 
-1. Load `references/complexity-reduction-planning.md`.
-2. Identify behavior to preserve and non-goals.
-3. Inventory complexity candidates and classify them as accidental, essential, unknown, or out of scope.
-4. Select small simplification hypotheses with evidence, expected benefit, blast radius, validation, and rollback.
-5. Slice tasks so Magia can execute one reversible simplification at a time.
-6. Define validation gates before execution.
-7. Add ADRs only for material architecture or extension-policy decisions.
-8. Record assumptions and blockers rather than inventing repository truth.
+1. Confirm package/registry identity.
+2. Diagnose complexity from code, contracts, dependencies, tests, operations, or maintenance evidence.
+3. State simplification hypotheses, constraints, trade-offs, migration/rollback expectations, and measurable validation.
+4. Create/update the canonical complexity-reduction plan and bounded task slices.
+5. Record material planned decisions as ADRs when needed.
+6. Validate touched artifacts and package consistency.
 
-## Stop Conditions
+## Rules
 
-Stop when the request is purely taste-based, lacks evidence and cannot be framed as an assumption, requires broad code rewriting, or requires current runtime evidence that only Magia can produce.
+- planning only; implementation belongs to MAGIA;
+- do not recommend broad rewrites without evidence and staged validation;
+- preserve behavior, contracts, data, security, and operational constraints explicitly;
+- prefer deletion/consolidation over new abstraction when evidence supports it;
+- record unknowns and blockers rather than assuming runtime truth.

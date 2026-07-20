@@ -1,33 +1,29 @@
-# Use this file as a structural reference when creating or reconciling
-# {BOARD_ROOT}/specs/<spec_id>/manifest.yaml.
-# Replace every <...> token with repository-truth values.
-# Never copy placeholder or example values blindly into generated files.
-# Keep all keys lowercase and preserve field order.
-
-schema_version: 1
+kind: mago-spec-manifest
 spec_id: "<spec_id>"
+spec_uid: "<spec_uid>"
+cycle_id: "<cycle_id>"
 feature_key: "<feature_key>"
 title: "<title>"
 type: "<type>"
 classification: "<classification>"
 status: "<status>"
-phase: "<phase>"
-cycle_version: "<cycle_version>"
+phase: define
 feature_version: "<feature_version>"
+created_at: "<created_at>"
 source_of_truth:
+  registry: "../../registry/<spec_id>.yaml"
   prd: prd.md
   tasks: tasks.md
   validation: validation.md
   notes: notes.md
 traceability:
-  primary_discovery_file: "<primary_discovery_file_or_empty>"
+  primary_discovery_file: ""
   supporting_discovery_files: []
-  discovery_frontier: "<discovery_frontier_or_empty>"
+  discovery_frontier: ""
 
-# Omit `last_execution` until a task has truthfully executed.
-# Canonical shape:
+# Omit last_execution until a task has truthfully executed.
 # last_execution:
 #   task_id: "<taskNNN>"
 #   date: "<YYYY-MM-DD>"
-#   summary: "<short truthful execution summary>"
+#   summary: "<truthful summary>"
 #   files_changed: []

@@ -1,46 +1,40 @@
-﻿# Adapt Mode
+# Adapt Mode
+
+## Purpose
+
+Translate old-layout or drifted planning into the smallest truthful canonical shape. Adapt is a one-way normalization flow; old layouts remain read-only source evidence, not an alternative active model.
 
 ## Canonical Rules
 
-- `BOARD_ROOT` is required for any adapted planning package.
-- When adaptation targets one selected spec package, use the package path under `BOARD_ROOT/specs/<spec_id>/`.
-- Prompt-provided `BOARD_ROOT` takes precedence after validation; derive the selected package path from the canonical pattern when one selected spec package is in scope.
-- Do not adapt artifacts outside the resolved operational roots.
-
-## When to Use It
-
-Use this mode when planning docs already exist but are outside the MAGO structure or have drifted enough that the first task is normalization, not ordinary refinement.
-
-After adaptation, continue later work with the smallest ordinary mode that matches the result: `refine`, `refine-product`, or `refine-tasks`.
+- Resolve or create exactly one canonical cycle and, when package work is needed, one registry-backed spec identity.
+- Keep all writes inside the canonical cycle/package roots.
+- Preserve source identifiers and paths as import metadata or traceability, never as active canonical IDs.
 
 ## Adaptation Workflow
 
-1. Load only the existing docs, discovery artifacts, and repository facts needed to reconstruct current planning truth.
-2. Classify the smallest truthful target shape:
-   - full package: manifest.yaml, prd.md, optional technical-design.md, tasks.md, notes.md, validation.md
-   - product-only: prd.md, notes.md, and optional validation.md
-   - tasks-only: tasks.md
-   - blocked partial adaptation when current evidence is still too contradictory or incomplete
-3. Open references/artifacts/templates-and-status.md for canonical structure. Open ../markdown-writing.md for changed Markdown artifacts, ../specialist-spellbook.md only when tasks are in scope, and use local scripts for template-backed writes, normalization, and validation whenever they exist.
-4. Normalize the existing material into the chosen target shape conservatively.
-5. Stop once the package is MAGO-compatible enough for later normal modes without inventing unsupported structure.
+1. Load only source documents, discovery artifacts, execution evidence, and repository facts needed to reconstruct current planning truth.
+2. Classify the smallest truthful target shape: full package; product-only; tasks-only; or blocked partial adaptation.
+3. Create cycle/spec identity atomically only when the target identity does not already exist.
+4. Preserve meaning first and normalize structure second.
+5. Use canonical templates, task contracts, ownership rules, and validators.
+6. Reconcile package identity without rewriting MAGIA-owned evidence.
+7. Stop when the canonical target is sufficient for later `refine`, `refine-product`, or `refine-tasks` without inventing unsupported structure.
 
 ## Boundaries
 
-- do not invent new scope, dependencies, ordering, execution progress, or completion claims
-- do not create tasks.md unless the existing docs and repository truth already support an executable task plan
-- do not create completed tasks only to fill a template or preserve chronology; keep unsupported history in non-task notes or auxiliary docs instead
-- do not discard useful non-canonical docs when they still carry truthful context; keep them as auxiliary docs or fold only their supported facts into canonical artifacts
-- do not widen the initiative boundary just because the legacy docs are messy
+- do not invent scope, dependencies, priority, handoff readiness, execution progress, or completion;
+- do not create tasks unless existing evidence supports an executable task plan;
+- do not create completed tasks to fill templates or preserve chronology;
+- do not discard useful noncanonical context; retain it as read-only auxiliary evidence or fold only supported facts into canonical artifacts;
+- do not import multiple cycles/specs in one pass unless explicitly bounded;
+- if identity mapping or source precedence is ambiguous, record the contradiction and stop.
 
 ## Adaptation Rules
 
-- preserve meaning first; normalize structure second
-- prefer the smallest truthful target shape instead of forcing a full package
-- if the material only supports product framing, adapt to product-only and omit tasks.md
-- if the material includes architecture design, contracts, migration shape, or production-readiness concerns, adapt those facts into technical-design.md only when they are specific enough to remain truthful
-- if the material supports executable tasks and the package boundary is already justified, adapt or create tasks.md using the canonical task contract
-- if the package already contains canonical MAGO files with drift, reconcile them instead of rebuilding from scratch
-- when tasks are in scope, use stable `taskNNN` ids and do not backfill completed tasks without explicit documentary or repository evidence
-- create or reconcile YAML only when identity and state values are already justified by the current docs or repository truth
-- if contradictory sources cannot be reconciled honestly, block and record the conflict explicitly in notes.md when it is in scope; otherwise keep it explicit in the touched artifact
+- prefer the smallest truthful target instead of forcing a full package;
+- product-only evidence produces product-only artifacts;
+- specific architecture/contracts/migration/operability evidence may populate technical design;
+- task IDs remain stable and completed history requires documentary/runtime evidence;
+- existing canonical files are reconciled rather than rebuilt;
+- old execution sections route to MAGIA ADAPT and are not rewritten as MAGO-authored proof;
+- canonical drift repair is limited to invalid paths, missing registry/package linkage, stale handoff fields, inconsistent immutable IDs, or misplaced generated aggregates.

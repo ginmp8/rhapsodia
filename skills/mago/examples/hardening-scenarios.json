@@ -3,13 +3,13 @@
     {
       "id": "activation-define",
       "category": "should_activate",
-      "prompt": "Define a canonical spec package under BOARD_ROOT for spec010.",
+      "prompt": "Define a canonical spec package under BOARD_ROOT for <spec_id>.",
       "expected_behavior": "activate MAGO define mode and write only planning package artifacts"
     },
     {
       "id": "activation-define-tasks",
       "category": "should_activate",
-      "prompt": "Define task-only artifacts for spec042 with MAGIA handoff readiness.",
+      "prompt": "Define task-only artifacts for <spec_id> with MAGIA handoff readiness.",
       "expected_behavior": "activate define-tasks and produce executable planning tasks without implementation"
     },
     {
@@ -27,7 +27,7 @@
     {
       "id": "activation-technical-design",
       "category": "should_activate",
-      "prompt": "Create a technical design for spec011 before execution.",
+      "prompt": "Create a technical design for <spec_id> before execution.",
       "expected_behavior": "activate technical-design and avoid implementation code"
     },
     {
@@ -81,7 +81,7 @@
     {
       "id": "ambiguous-status",
       "category": "ambiguous",
-      "prompt": "Update the status for spec010.",
+      "prompt": "Update the status for <spec_id>.",
       "expected_behavior": "resolve whether MAGO planning status or nomia delivery status is intended"
     },
     {

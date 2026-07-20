@@ -1,95 +1,151 @@
 ---
 name: mago
-description: use when asked to plan, normalize, audit, define, or refine tech-lead owned repository planning artifacts for a resolved board/spec package, including prd refinement from governance intake, technical design, complexity-reduction strategy, refactoring plans, architecture decisions, planned-decision records, execution handoff plans, tasks, validation plans, contract specs, migrations, observability, operations, security/risk notes, discovery, ordering, and define/refine workflows. do not use for execution work, delivery governance/status reporting, stakeholder communication, runtime testing, deployments, commits, pull requests, or magia execution records.
+description: use when asked to plan, normalize, audit, define, or refine tech-lead owned repository planning artifacts for a resolved board and cycle, including concurrent-safe spec registration, prd refinement, technical design, complexity reduction, architecture decisions, tasks, validation, migrations, observability, security, discovery, ordering, and define or refine workflows. do not use for implementation, delivery governance, status reporting, runtime testing, deployments, commits, pull requests, or magia execution records.
 ---
 
 # MAGO
 
-Tech-lead planning skill. Convert nomia delivery intake plus repository evidence into canonical board/spec planning artifacts. MAGO plans intended design; it does not implement code, collect runtime evidence, deploy, commit, open PRs, or act as PO governance clerk.
+Tech-lead planning skill. Convert governance intake plus repository evidence into one canonical planning model. MAGO owns intended design and planning contracts; it does not implement code, collect runtime proof, deploy, commit, open pull requests, or maintain delivery governance.
+
+## Canonical Model
+
+```text
+docs/boards/<board_id>/<year>/cycles/<cycle_id>/
+  cycle.yaml
+  discovery-state.json
+  discovery-index.yaml
+  candidates/<candidate_id>.md
+  registry/<spec_id>.yaml
+  specs/<spec_id>/
+```
+
+`cycle_id` and `spec_id` are immutable, date-readable ULID identities. Each spec has an independent registry file so unrelated workers do not edit a shared catalog. Semantic feature or delivery versions are metadata only and never define filesystem identity. Catalog and queue views are generated outside the canonical tree and are never hand-edited source of truth.
+
+Old planning layouts are not an alternative MAGO model. When they must be retained, treat them only as read-only migration input to `adapt`, then write the canonical model.
+
+Load [references/canonical-paths.md](references/canonical-paths.md), [references/concurrent-planning.md](references/concurrent-planning.md), and [references/common-planning.md](references/common-planning.md) before writes.
 
 ## Scope and Ownership
 
-Use only when output belongs under a resolved `BOARD_ROOT` for concrete `board_id` and `cycle_version`; package-scoped work also needs `spec_id` under `BOARD_ROOT/specs/<spec_id>/`.
+MAGO writes only canonical planning artifacts: cycle metadata, discovery state/index/candidates, per-spec registry records, manifest, PRD, tasks, notes, validation, technical design, complexity-reduction plans, planned architecture decisions/ADRs, execution handoff plans, contract specs, migration strategies, observability designs, operational requirements, security/risk considerations, and open questions.
 
-MAGO writes only canonical planning artifacts: discovery state/index/candidate docs, spec catalog, define queue, manifest, PRD, tasks, notes, validation, technical design, complexity-reduction plan, architecture decisions/ADRs, execution handoff plan, contract spec, migration strategy, observability design, operational requirements, security/risk considerations, and open questions. Legacy planning artifacts are normalized through `adapt`; legacy execution logs are not preserved in MAGO planning files and must be converted to current MAGIA-owned artifacts by MAGIA ADAPT before use as execution evidence.
+Routing boundaries:
 
-MAGO must not write governance/status, stakeholder comms, release notes, roadmap bookkeeping, product-code diffs, runtime proof, execution notes/runbooks, migration execution notes, contract change notes, troubleshooting guides, Magia execution records, tests, commits, PRs, deployments, or noncanonical files. Decision artifacts created by MAGO are planned architecture or planned technical decisions only; execution-handoff artifacts are plans, not implementation evidence.
+- nomia owns intake, governance, delivery status, stakeholder communication, roadmap bookkeeping, release notes, and accepted business risk;
+- MAGO owns intended technical planning and planned decisions;
+- MAGIA owns implementation, runtime validation, execution records, task completion evidence, commits, pull requests, and deployments.
 
-Routing: nomia owns request/governance facts; MAGO owns intended technical planning; Magia handles execution reality and execution-grounded docs. For mixed prompts, keep only the MAGO planning portion and hand off execution to Magia or governance/status work to nomia. Record unknowns as assumptions/blockers; never invent repository truth.
-
-Governance RFC proposals, delivery status, stakeholder communication, release notes, portfolio reporting, and accepted business risk belong to nomia. MAGO may use RFC-style reasoning inside planning artifacts, but it must not create or update nomia governance RFC proposal logs or claim governance approval.
-
-MAGO consumes Magia-owned execution evidence such as technical gap notes, implementation notes, validation evidence, or implementation ADRs only as read-only input for planning reconciliation. MAGO must not rewrite Magia evidence or turn it into runtime proof authored by MAGO.
-
-A MAGO planning boundary is an authoring boundary, not an execution prohibition; execution-required tasks are valid planning outputs when they are bounded, evidence-backed, and explicitly require downstream Magia implementation plus a credible validation path.
-
-For artifacts shared with MAGIA, load [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md). MAGO owns planning definitions, validation plans, package intent, and canonical planning templates; MAGIA-created records cover execution evidence, implementation notes, task checkbox completion, and technical execution-state sync on generated artifacts. MAGO must preserve truthful MAGIA evidence and must not fabricate runtime results or completion state.
+MAGO may consume repository truth, governance intake, and MAGIA evidence as read-only input. It must preserve truthful history and never fabricate repository, execution, validation, approval, or completion facts. A MAGO planning boundary is an authoring boundary, not an implementation prohibition: execution-required tasks are valid planning outputs when they are bounded, evidence-backed, explicitly handed to MAGIA, and paired with a credible validation path.
 
 ## Activation Policy
 
-Activate only for creating, normalizing, auditing, or refining canonical repository planning artifacts. Strong triggers: refine nomia intake into a spec package; discover repository candidates; order backlog into define queue; adapt legacy planning docs; prepare define-ready package shells; define/refine a package; write spec-scoped technical design; record planned ADRs; plan complexity reduction, simplification, de-abstraction, or refactoring; reshape tasks; define validation plans; split product-only from task-only planning.
+Activate for creating, normalizing, auditing, or refining canonical repository planning artifacts. Strong triggers include discovery, concurrent-safe registration, ordering, prepare-define, define/refine, PRD refinement, technical design, architecture decisions, complexity reduction, task reshaping, validation planning, and migration of old planning input into the canonical model.
 
-Do not activate for code implementation, code edits, runtime tests, deployments, operational evidence, delivery governance, release notes, stakeholder status, portfolio reporting, or general docs outside `BOARD_ROOT`. If likely MAGO but `BOARD_ROOT`, `board_id`, `cycle_version`, or required `spec_id` is missing, stop before writing and ask for the smallest missing input.
+Do not activate for code implementation, runtime tests, deployment, operational evidence, governance/status work, release notes, stakeholder communication, or general documentation outside a planning board.
 
-## Required Inputs and Evidence
+Before writes, resolve:
 
-Resolve before writes: `BOARD_ROOT`, `board_id`, `cycle_version`, required `spec_id`, evidence source, primary mode, and evidence payload. Derive paths through `references/canonical-paths.md`; never create parallel planning trees.
+- `BOARD_ROOT` or enough identifiers to derive it;
+- `board_id`, `year`, and `cycle_id`;
+- `spec_id` for package-scoped work;
+- evidence source and payload;
+- exactly one primary mode.
 
-Truth sources: repository contents, existing planning artifacts, nomia/roadmap handoff evidence, user context, and validated package state. Treat missing facts as assumptions/blockers. Load `references/evidence-contract.md` when claims depend on repository truth, execution/validation/dependency state, or traceability.
+If required identity or repository truth is missing, stop before writing and request only the smallest missing input.
 
 ## Modes
 
-Select exactly one primary mode before loading mode detail.
+Select exactly one primary mode.
 
 | Mode | Owns | Key validation |
 |---|---|---|
-| `discovery` | repository candidates and discovery state/index/candidate docs | `scripts/validate_artifact.py`, then `scripts/validate_repo_board.py` |
-| `order` | spec catalog and define queue from discovery/governance evidence | `scripts/validate_artifact.py`, then `scripts/validate_repo_board.py` |
-| `adapt` | normalize drifted/legacy board/package artifacts | `scripts/validate_artifact.py` plus package/repo validators as applicable |
-| `prepare-define` | seed define-ready package shells | `scripts/validate_package.py`, `scripts/validate_repo_board.py` |
-| `define` | full package: manifest, PRD, tasks, notes, validation, technical planning | `scripts/validate_package.py` |
-| `refine` | update a full package without crossing mode boundaries | optional `scripts/normalize_package.py`, then `scripts/validate_package.py` |
-| `technical-design` | architecture/contracts/ADRs/technical planning for one spec | `scripts/validate_technical_design.py` or `scripts/validate_artifact.py` |
-| `complexity-reduction` | evidence-backed simplification/refactoring plan, task slices, validation expectations, ADRs for material trade-offs | `scripts/validate_artifact.py`, `scripts/validate_package.py`, static simplification-evidence review |
-| `architecture-decision` | planned architecture decision/ADR | `scripts/validate_artifact.py` or static ADR review |
-| `reshape-tasks` | task-plan reshaping/status alignment | `scripts/validate_artifact.py`, `scripts/validate_package.py` |
-| `define-product` / `refine-product` | product docs only | `scripts/validate_artifact.py`, `scripts/validate_package.py` |
-| `define-tasks` / `refine-tasks` | task plan only | `scripts/validate_artifact.py`; refine also runs normalization when useful, then package validation |
+| `discovery` | discovery state/index/candidate docs | artifact validator, then board validator |
+| `order` | one or more independent registry entries | board validator |
+| `adapt` | old-layout intake or canonical drift normalization | artifact/package/board validators |
+| `prepare-define` | seed one registered package | package and board validators |
+| `define` | one full package | package validator |
+| `refine` | bounded update to one package | normalization when useful, then package validator |
+| `technical-design` | one spec technical design | technical-design validator |
+| `complexity-reduction` | evidence-backed simplification/refactoring plan | artifact and package validators |
+| `architecture-decision` | planned architecture decision/ADR | artifact validator or static ADR review |
+| `reshape-tasks` | task-plan reshaping | artifact and package validators |
+| `define-product` / `refine-product` | product planning files only | artifact and package validators |
+| `define-tasks` / `refine-tasks` | task plan only | artifact validator; refine may normalize first |
 
-## Workflow and Progressive Loading
+Do not mix primary modes in one pass. A multi-stage request must execute bounded stages sequentially, each with its own validator outcome.
 
-1. Select one primary mode; refuse primary-mode mixing.
-2. Open `references/canonical-paths.md` and resolve `BOARD_ROOT` before writes.
-3. Open `references/common-planning.md`.
-4. Open `references/technical-artifact-standards.md` for technical planning artifacts.
-5. Open `references/complexity-reduction-planning.md` for simplification, de-abstraction, complexity reduction, or refactoring.
-6. Open `references/architecture-decisions.md` and `references/adr-quality.md` for ADRs, planned decisions, or trade-offs.
-7. Open exactly one primary mode file: `references/modes/discovery.md`, `references/modes/order.md`, `references/modes/adapt.md`, `references/modes/prepare-define.md`, `references/modes/define.md`, `references/modes/refine.md`, `references/modes/technical-design.md`, `references/modes/complexity-reduction.md`; architecture-decision uses `references/architecture-decisions.md`, `references/modes/reshape-tasks.md`, `references/modes/define-product.md`, `references/modes/refine-product.md`, `references/modes/define-tasks.md`, or `references/modes/refine-tasks.md`.
-8. Open conditional refs only when triggered: `references/artifacts/discovery-order.md`, `references/artifacts/templates-and-status.md`, `references/artifacts/technical-design.md`, `references/markdown-writing.md`, `references/rfc-quality.md`, `references/specialist-spellbook.md`, `references/roadmap-evidence-input.md`, `references/operating-rules.md`, `references/activation-routing.md`, `references/planning-execution-handoff.md`, `references/shared-artifact-ownership.md`, `references/evidence-contract.md`, and `references/validation-and-packaging.md`.
-9. Use scripts for scaffolding, list updates, normalization, validation, boundary checks, and package-level skill validation.
-10. Use `assets/flows/discovery-order-prepare-define-loop.md` only for explicit multi-step discovery/order/prepare-define loops.
-11. Review `examples/activation-scenarios.json` for activation/refusal evidence and `examples/hardening-scenarios.json` for package hardening boundary regression when needed.
+## Workflow
 
-## Template and Script Contract
+1. Select one primary mode.
+2. Resolve `BOARD_ROOT` through [references/canonical-paths.md](references/canonical-paths.md).
+3. Load [references/concurrent-planning.md](references/concurrent-planning.md) for identity, registry, dependency, and generated-view rules.
+4. Load [references/common-planning.md](references/common-planning.md).
+5. Load exactly one primary mode reference under `references/modes/`.
+6. Load conditional references only when triggered: `references/artifacts/templates-and-status.md` for canonical artifact/task contracts; technical artifact standards; architecture decisions; complexity reduction; shared ownership; evidence contract; activation routing; planning/execution handoff; operating rules; and validation/packaging.
+7. Use scripts for identity creation, scaffolding, rendering, normalization, and validation. Do not manually invent IDs or shared aggregate files.
+8. Run the validator for every touched artifact family.
 
-Create/normalize template-backed artifacts through scripts. Prefer `scripts/write_artifact_scaffold.py`; inspect `scripts/update_template_lists.py` with `--schema` before using it for supported list fields. Use these templates through scripts when their artifact is in scope: `assets/templates/manifest.yaml.template`, `assets/templates/prd.md.template`, `assets/templates/tasks.md.template`, `assets/templates/notes.md.template`, `assets/templates/validation.md.template`, `assets/templates/technical-design.md.template`, `assets/templates/complexity-reduction-plan.md.template`, `assets/templates/adr.md.template`, `assets/templates/contract-spec.md.template`, `assets/templates/migration-strategy.md.template`, `assets/templates/observability-design.md.template`, `assets/templates/operational-requirements.md.template`, `assets/templates/security-and-risk-considerations.md.template`, `assets/templates/open-questions.md.template`, `assets/templates/discovery-state.json.template`, `assets/templates/discovery-index.yaml.template`, `assets/templates/discovery-candidate.md.template`, `assets/templates/spec-catalog.yaml.template`, `assets/templates/execution-handoff-plan.md.template`, and `assets/templates/define-queue.yaml.template`.
+## Script and Template Contract
 
-Package MAGO with `scripts/package_skill.py` after package gates pass. Script routing: artifact validation `scripts/validate_artifact.py`; package validation `scripts/validate_package.py`; board validation `scripts/validate_repo_board.py`; technical design validation `scripts/validate_technical_design.py`; legacy normalization `scripts/normalize_package.py`; planning/execution handoff validation `scripts/validate_planning_execution_handoff.py`; source-truth claims `scripts/validate_evidence_contract.py`; blurred boundaries `scripts/validate_boundary.py`; activation routing `scripts/validate_activation_scenarios.py`; MAGO integrity `scripts/validate_skill_package.py`. Shared helpers are import-only in `scripts/mago_utils.py`; consuming validators provide CLI entrypoints and syntax checks cover helper changes.
+Use:
 
-Do not leave placeholders in completed artifacts unless creating a scaffold; replace dynamic fields with evidence-backed values or record assumptions, blockers, or open questions.
+- `scripts/create_planning_identity.py` to atomically create cycle and spec identities;
+- `scripts/write_artifact_scaffold.py` for template-backed artifacts;
+- `scripts/render_registry_views.py` for deterministic, noncanonical catalog/queue views;
+- `scripts/validate_concurrent_board.py` for identity, registry, dependency, duplicate-feature, package, and DAG checks;
+- `scripts/validate_repo_board.py` as the board validation entrypoint;
+- `scripts/validate_package.py`, `scripts/validate_technical_design.py`, and `scripts/validate_evidence_contract.py` for package-level checks;
+- `scripts/normalize_package.py` for bounded package normalization and old execution-section detection;
+- `scripts/validate_skill_package.py` and `scripts/package_skill.py` before distribution.
+
+Templates are structural inputs. Create cycles from `assets/templates/cycle.yaml.template` and registry entries from `assets/templates/spec-registry-entry.yaml.template`. Replace dynamic tokens with evidence-backed values or explicit assumptions/blockers. Never create or hand-edit generated catalog and define-queue views as source of truth.
 
 ## Validation Gates
 
-A run is incomplete until every touched artifact family has a validator outcome. Required gates: one primary mode; resolved `BOARD_ROOT`, `board_id`, `cycle_version`; `spec_id` for package work; writes stay under board/package path; supported templates are handled by scripts; planning facts are evidence-backed or unresolved; source-truth/traceability checks run when claims depend on repository truth; activation and boundary behavior are covered by examples during hardening/packaging. If a validator fails and cannot be fixed within MAGO planning scope, stop and report the blocker.
+A run is incomplete until all touched families have validator outcomes. Required gates:
+
+- exactly one mode;
+- resolved canonical root;
+- IDs generated or validated, not manually sequenced;
+- writes contained under the resolved root/package;
+- no duplicate active `feature_key` within a cycle;
+- all spec dependencies resolve and the dependency graph is acyclic;
+- registry and package manifests agree on immutable identities;
+- generated views reproduce deterministically when requested;
+- planning claims are evidence-backed or explicitly unresolved;
+- no MAGIA execution evidence is fabricated or rewritten;
+- `scripts/validate_planning_execution_handoff.py` passes when package or handoff contracts change;
+- `scripts/validate_generated_view_contract.py` passes when renderer or generated-view templates change.
+
+When validation fails outside MAGO planning authority, stop and report the blocker.
 
 ## Output Contract
 
-Final responses include: selected mode and why it was the only primary mode; resolved `BOARD_ROOT`, `board_id`, `cycle_version`, and package `spec_id` when applicable; touched artifacts grouped by canonical board/package path; scaffold/normalization/update/validator commands with pass/fail; relevant complexity diagnosis, simplification hypotheses, planned decisions, ADRs, assumptions, trade-offs, unresolved questions; inputs/blockers recorded rather than invented; and handoff notes for requested execution/governance outside MAGO scope. Do not include product-code diffs, runtime proof, or noncanonical planning files.
+Final responses state:
+
+- selected mode and why it was the only mode;
+- resolved `BOARD_ROOT`;
+- `board_id`, `year`, `cycle_id`, and `spec_id` when applicable;
+- touched artifacts grouped by canonical path;
+- identity/scaffold/render/normalization/validation commands and outcomes;
+- decisions, assumptions, trade-offs, risks, duplicate/dependency findings, and unresolved questions;
+- downstream handoff for execution or governance work outside MAGO scope.
+
+Do not claim runtime proof, implementation completion, governance approval, or package readiness without corresponding evidence.
 
 ## Stop Conditions
 
-Stop before editing when mode selection requires mixing primary modes; required path identifiers are missing and cannot be derived; requested path is outside `BOARD_ROOT` or would duplicate a board tree; the user asks for code implementation, task execution, runtime evidence, delivery governance, stakeholder comms, or release notes; simplification lacks repository evidence or explicit assumptions; technical decisions require current code/runtime evidence only Magia can produce; required template script/validator is unavailable and freehand structure would be needed; or validation fails and cannot be fixed in planning scope.
+Stop before editing when:
+
+- primary modes would be mixed;
+- the canonical root or required IDs cannot be resolved;
+- a requested write targets an old layout instead of adapting it into the canonical tree;
+- a requested path duplicates or bypasses the registry model;
+- the user requests implementation, runtime evidence, governance/status work, or release communication;
+- a technical decision requires current runtime evidence only MAGIA can produce;
+- template or validator support is unavailable and freehand structure would be required;
+- validation reports an unresolvable identity collision, dependency cycle, duplicate active feature, or boundary violation.
 
 ## Finalization Checklist
 
-Before claiming completion: writes are under `BOARD_ROOT` or selected package path; dynamic ids/status/dependencies/design/order decisions are evidence-backed or unresolved; template-backed artifacts used scripts when supported; validators passed or blockers are reported; final response states commands, touched files, assumptions, decisions, and handoff boundaries.
+Before completion, verify: all writes are contained; IDs are immutable and valid; registry files are the source of truth; no shared aggregate was hand-edited; package identity matches registry identity; dependencies are valid and acyclic; templates/scripts were used; validators passed or blockers were reported; no generated noise, caches, secrets, or old packages were added; and final reporting separates observed, inferred, planned, and measured evidence.

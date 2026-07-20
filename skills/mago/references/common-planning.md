@@ -2,23 +2,23 @@
 
 ## Canonical Model
 
-- `board_id`: required repository board segment under `docs/boards/`.
-- `cycle_version`: required cycle segment used in path and metadata.
-- `spec_id`: stable sequential id, `specNNN`; preserve once assigned unless repository truth requires correction.
-- `feature_key`: stable lowercase kebab-case functional identity; never use it as `spec_id`.
-- `feature_version`: semantic capability/fix version; never use semantic versioning for roadmap order.
+- `board_id`: stable board segment;
+- `year`: creation-year path segment;
+- `cycle_id`: immutable date + cycle key + ULID identity;
+- `spec_id`: immutable date + feature key + ULID identity;
+- `feature_key`: stable lowercase kebab-case functional identity;
+- `feature_version`: semantic capability/fix version;
+- `proposed_version` / `accepted_version`: optional delivery metadata, never path identity.
 
-## Operational Roots and Layout
-
-Load defaults from `references/canonical-paths.md`. `BOARD_ROOT` is the active boundary; use prompt-provided root when valid, otherwise derive it from concrete `board_id` and `cycle_version`. Package paths derive from `BOARD_ROOT/specs/<spec_id>/`. Do not create parallel aliases.
+## Layout
 
 ```text
 BOARD_ROOT/
+  cycle.yaml
   discovery-state.json
   discovery-index.yaml
   candidates/<candidate_id>.md
-  spec-catalog.yaml
-  define-queue.yaml
+  registry/<spec_id>.yaml
   specs/<spec_id>/
     manifest.yaml
     prd.md
@@ -26,54 +26,63 @@ BOARD_ROOT/
     tasks.md
     notes.md
     validation.md
-    implementation-notes.md        # MAGIA-owned execution record, when execution exists
-    validation-evidence.md         # MAGIA-owned validation evidence, when execution exists
+    implementation-notes.md       # MAGIA-owned when execution exists
+    validation-evidence.md        # MAGIA-owned when validation exists
 ```
 
-Block if required root segments cannot be proven. All modes write under `BOARD_ROOT`. Full packages normally use the package layout; technical-design.md is optional and used only for material architecture/contract alignment. Spec-local auxiliary docs may clarify downstream execution but must not replace canonical files. Product-only modes touch prd.md, notes.md, optional validation.md. Task-only modes touch tasks.md only. Discovery uses discovery-state.json, discovery-index.yaml, and `candidates/`. Root cycle folders, ad hoc `docs/mago/`, and docs outside `BOARD_ROOT` are noncanonical.
+Generated views belong outside `BOARD_ROOT`, for example `<output>/spec-catalog.yaml` and `<output>/define-queue.yaml`.
 
 ## Source of Truth
 
-- `BOARD_ROOT`: mandatory location boundary.
-- spec-catalog.yaml: `order`, `spec_id`, `feature_key`, dependencies, status, `feature_version`, `cycle_status`.
-- define-queue.yaml: order-to-define handoff, downstream mode, package shape, discovery sources, seedable artifacts, blockers.
-- manifest.yaml: identity, classification, planning `status`/`phase`, `source_of_truth`, traceability, optional truthful `last_execution` preserved from MAGIA evidence.
-- prd.md, technical-design.md, notes.md, validation.md, tasks.md when present: detailed planning meaning. `implementation-notes.md` and `validation-evidence.md` are MAGIA-owned execution evidence when present.
-- technical-design.md: optional selected-spec architecture/data-flow/contract/security/monitoring/rollback/implementation-approach alignment.
-- tasks.md plus execution-labeled fields: downstream execution contract, not MAGO execution authority.
+- `cycle.yaml`: cycle identity, status, proposed/accepted version, planning revision;
+- `registry/<spec_id>.yaml`: spec registration, dependencies, status, priority, order hint, and define handoff;
+- `manifest.yaml`: package identity, classification, planning phase, source-of-truth and traceability maps;
+- detailed package documents: planning meaning;
+- MAGIA-owned execution artifacts: runtime/execution evidence only.
 
 ## Dependencies and Status
 
-- Dependencies: `depends_on_features` = `feature_key` list; `depends_on_specs` = `spec_id` list; task `Dependencies` = task-local prerequisites.
-- Catalog `status` and `cycle_status`: `planned`, `in_progress`, `done`, `cancelled`.
-- Manifest `phase`: `define`, `execute`, `review`, `done`.
+- `depends_on_features`: stable feature keys;
+- `depends_on_specs`: immutable spec IDs;
+- task `Dependencies`: task-local `taskNNN` prerequisites;
+- cycle status: `proposed`, `planned`, `in_progress`, `done`, `cancelled`;
+- spec status: `planned`, `in_progress`, `blocked`, `done`, `cancelled`, `superseded`;
+- manifest phase: `define`, `execute`, `review`, `done`.
+
+`order_hint` is not unique and never determines identity. Dependency topology is authoritative for executable ordering.
 
 ## Mode Boundaries
 
-- Product-only: `define-product` / `refine-product` touch only prd.md, notes.md, optional validation.md; do not alter tasks.md, catalog order, or execution state. Product-only notes omit execution records. If legacy execution sections are present, run the appropriate adapt flow before treating them as current evidence.
-- Task-only: `define-tasks` / `refine-tasks` touch only tasks.md after product scope/package boundary is justified; do not alter prd.md, notes.md, validation.md, manifest.yaml, spec-catalog.yaml, or execution state.
-- Technical-design: touch technical-design.md only, except bounded consistency fixes to notes.md or validation.md justified by the same planning evidence. Use for architecture, contracts, migration, observability, security, rollback, or option alignment. Do not create task decomposition, repo changes, execution steps, implementation notes, or validation evidence. If evidence is thin, write a small design with unknowns/open questions. Size: `small`, `medium`, `large`, or `unknown`. Verify facts through package evidence, repository code/tests/config/docs, or official dependency docs; unresolved claims go to `Open Questions`.
-- Adapt: normalize pre-existing non-MAGO/drifted docs into the smallest truthful MAGO shape: full-package, product-only, tasks-only, or blocked partial. Then continue with `refine`, `refine-product`, or `refine-tasks`.
-- Prepare-define: read define-queue.yaml, spec-catalog.yaml, and linked discovery evidence; seed only justified downstream artifacts; next mode is the queue entry's `define`, `define-product`, or `define-tasks`.
+- `order`: create or reconcile independent registry records; do not create package folders.
+- `prepare-define`: read one registry record and seed only justified package artifacts.
+- `define` / `refine`: work on exactly one package unless explicitly bounded otherwise.
+- product-only modes do not alter tasks or execution state.
+- task-only modes do not alter product docs, registry identity, or execution state.
+- technical-design mode touches technical design and only bounded consistency corrections justified by the same evidence.
+- `adapt`: translate old-layout planning input into the canonical model or repair demonstrable canonical drift; preserve source traceability without keeping a parallel active model.
 
-## Planning Boundary and Rules
+## Planning Boundary
 
-MAGO plans/refines/documents; it does not implement product code or run execution workflows. Execution headings such as `Execution Rules`, task `Validation`, or `phase: execute` are artifact schema. New execution history belongs to MAGIA-owned `implementation-notes.md`; validation outcomes belong to `validation-evidence.md`. Reflect execution progress only when MAGIA evidence or repository truth supports it. If a request crosses into implementation, stop at planning.
+MAGO plans and documents. It does not implement product code or claim runtime evidence. Execution-required tasks are valid planning outputs when bounded, evidence-backed, and explicitly handed to MAGIA with a credible validation path.
 
-Rules: preserve truthful history and discovery traceability; prefer bounded updates over rewrites; derive the smallest coherent artifact set current evidence supports; every changed artifact traces to repository truth, discovery evidence, or a necessary downstream clarification; record assumptions/risks/open questions in notes.md when in scope, otherwise in the touched artifact; do not ask for clarification during unattended loops; continue conservatively only when honest and downstream-enabling; block instead of inventing boundaries, dependencies, order, or status.
+Preserve truthful history; prefer bounded changes; record assumptions, risks, and open questions; block rather than invent boundaries, dependencies, status, or evidence.
 
 ## Template Rules
 
-Templates are structural references and script inputs first. Use `scripts/write_artifact_scaffold.py <artifact-path>` or narrower scripts for template-backed creation/refresh/normalization. After editing template-backed artifacts, run `scripts/validate_artifact.py <artifact-path>` or narrower validator. Replace placeholders/examples before completion. Preserve established values from catalog, package, discovery, or repository truth. Never blindly copy dynamic `cycle_version`, `order`, `spec_id`, `feature_key`, `feature_version`, `type`, `classification`, `status`, or `phase` from templates.
+Use `scripts/create_planning_identity.py` for cycle/spec identity and registry creation. Use `scripts/write_artifact_scaffold.py` for template-backed package artifacts. Replace all dynamic values with repository truth or explicit unresolved values allowed by the artifact contract. Never copy example IDs, dates, versions, statuses, or dependencies into completed artifacts.
 
 ## Cross-Artifact Consistency
 
-- Bootstrap a missing catalog with `cycle_version: 01.00.00` and `cycle_status: planned` unless repository truth says otherwise.
-- Any `taskNNN` referenced by task `Dependencies`, `implementation-notes.md` execution-log subsections, or `manifest.yaml.last_execution.task_id` must exist in tasks.md.
-- `implementation-notes.md` execution-log statuses: `not_started`, `in_progress`, `blocked`, `done`. Legacy notes.md execution logs are ignored until converted by MAGIA ADAPT.
-- `manifest.yaml.last_execution`: required `task_id`; optional `date`, `summary`, `files_changed`; retain only current evidence-backed fields and do not invent noncanonical keys; omit when no task has truthfully executed.
-- If task ids split or new ids appear, preserve old truthful history under old ids and let MAGIA add new execution-log subsections only for new ids during execution.
+- `cycle.yaml.cycle_id` must match the cycle directory;
+- registry filename and `spec_id` must match;
+- registry `cycle_id` must match `cycle.yaml`;
+- package directory, registry `spec_id`, and manifest `spec_id` must match;
+- manifest `cycle_id` must match the active cycle;
+- active `feature_key` values must be unique within a cycle unless supersession is explicit;
+- all spec dependencies must resolve and form an acyclic graph;
+- any task referenced by dependencies or execution evidence must exist in tasks.md;
+- execution status/completion changes require MAGIA or repository evidence.
 
 ## Naming Rules
 
-Directory names, file names, ids, YAML keys, and enums are lowercase. `board_id` and `cycle_version` must be safe POSIX path segments: no slashes, backslashes, empty segments, `.`, or `..` traversal.
+Directory names, filenames, IDs, YAML keys, and enums are lowercase. Slugs use lowercase kebab-case. Dynamic path segments must not contain slashes, backslashes, traversal, whitespace padding, or unresolved tokens.

@@ -1,23 +1,42 @@
 # Canonical Paths
 
-Use this file as the single source of truth for canonical path definitions and override resolution.
+This file is the single source of truth for board-root and package-path resolution.
 
-## Canonical Defaults
+```text
+CANONICAL_BOARD_ROOT = docs/boards/<board_id>/<year>/cycles/<cycle_id>/
+CANONICAL_SPEC_PACKAGE = {BOARD_ROOT}specs/<spec_id>/
+CANONICAL_SPEC_REGISTRY = {BOARD_ROOT}registry/<spec_id>.yaml
+```
 
-- `CANONICAL_BOARD_ROOT = docs/boards/<board_id>/<cycle_version>/`
-- spec packages always live under `{CANONICAL_BOARD_ROOT}specs/<spec_id>/`
+A canonical root contains `cycle.yaml`. `cycle_id` is immutable and includes a creation date, readable cycle key, and ULID:
+
+```text
+<yyyy-mm-dd>-<cycle-key>--<ulid>
+```
+
+A spec identity is:
+
+```text
+spec-<yyyy-mm-dd>-<feature-key>--<ulid>
+```
+
+The `<year>` segment must match the creation year encoded in `cycle_id` and `cycle.yaml.created_at`.
 
 ## Operational Resolution
 
-- `BOARD_ROOT` is the active board root for the run.
-- If the prompt provides `BOARD_ROOT`, use it after validating that it matches repository truth.
-- Otherwise derive `BOARD_ROOT` from `CANONICAL_BOARD_ROOT` with concrete `board_id` and `cycle_version`.
-- For spec-scoped planning, derive the selected spec package path from `BOARD_ROOT/specs/<spec_id>/`.
-- Treat every other canonical file or directory path as derived from `BOARD_ROOT`.
+- `BOARD_ROOT` is the active write boundary.
+- Prefer an explicit `BOARD_ROOT` after validating it against repository truth.
+- Otherwise derive it from concrete `board_id`, `year`, and `cycle_id`.
+- Derive package work from `BOARD_ROOT/specs/<spec_id>/`.
+- Derive registry work from `BOARD_ROOT/registry/<spec_id>.yaml`.
+- Never create aliases, duplicate trees, or a second source of truth.
+- Old directory layouts are read-only source material for `adapt`; they are never resolved as an active `BOARD_ROOT`.
 
 ## Required Dynamic Inputs
 
-- `board_id` and `cycle_version` are required to derive canonical `BOARD_ROOT`.
-- `spec_id` is required when the selected mode targets one spec package.
-- `candidate_id` is required only when a discovery candidate document path is needed.
-- If explicit `BOARD_ROOT` conflicts with supplied dynamic ids or repository truth, stop instead of guessing.
+- `board_id`;
+- `year` or a year inferable from `cycle_id`;
+- `cycle_id`;
+- `spec_id` for spec/package work.
+
+If an explicit root conflicts with supplied IDs, metadata, or repository truth, stop instead of guessing.

@@ -1,31 +1,29 @@
-﻿# Define Tasks Mode
+# Define Tasks Mode
 
 ## Canonical Rules
 
-- `BOARD_ROOT` is required for package traceability.
-- The selected tasks-only package slice is always under `BOARD_ROOT/specs/<spec_id>/`.
-- Prompt-provided `BOARD_ROOT` takes precedence after validation; derive the selected package path from the canonical pattern for the selected package slice.
-- Keep task-only authoring inside `BOARD_ROOT/specs/<spec_id>/`.
+- Resolve one canonical registry-backed package under `BOARD_ROOT/specs/<spec_id>/`.
+- Create or reconcile `tasks.md` only.
+- Product docs, manifest, registry identity/dependencies/handoff, generated views, and execution state are read-only.
 
 ## Task Definition Workflow
 
-1. Load only the directly relevant task inputs: the active product scope, discovery evidence, existing package docs, and repository facts needed to define executable work truthfully.
-2. Create or reconcile tasks.md only.
-3. Open references/artifacts/templates-and-status.md for the canonical tasks.md contract. Open ../specialist-spellbook.md for task specialist metadata, ../markdown-writing.md for Markdown edits, and use `scripts/write_artifact_scaffold.py` plus `scripts/validate_artifact.py` when tasks.md is template-backed.
-4. Stop once tasks.md is concrete, dependency-safe, and aligned with the current product scope without widening into product or execution updates.
+1. Load directly relevant product scope, discovery evidence, technical design, validation plan, package docs, and repository facts.
+2. Confirm enough product/technical context exists to define executable work.
+3. Create `tasks.md` through the template/scaffold when absent; otherwise reconcile it conservatively.
+4. Follow `references/artifacts/templates-and-status.md`, `references/planning-execution-handoff.md`, and `references/specialist-spellbook.md`.
+5. Validate the artifact/package and stop once tasks are concrete, dependency-safe, and aligned with current scope.
 
 ## Boundaries
 
-- do not create or alter prd.md, notes.md, validation.md, manifest.yaml, or spec-catalog.yaml
-- do not infer execution progress, completion, blockers, rollout state, or execution history
-- do not redefine product scope, rewrite product decisions, or switch into product-only refinement
-- if visible contradictions between tasks.md and adjacent docs cannot be resolved truthfully from tasks.md alone, stop or switch to `define`, `refine`, `define-product`, or `refine-product`
-- if current docs lack enough product scope to define tasks truthfully, stop or switch to `define`, `refine`, `define-product`, or `refine-product`
+- do not create or alter PRD, notes, validation, manifest, registry, generated views, or execution evidence;
+- do not infer execution progress, completion, rollout state, or runtime blockers;
+- do not redefine product intent or architecture to make task definition easier;
+- if product scope or design is insufficient, stop or switch to the matching product/full-package mode.
 
 ## Task Focus
 
-- create the smallest truthful tasks.md that fits the existing product scope
-- follow the canonical tasks.md contract in references/artifacts/templates-and-status.md
-- keep the canonical phase structure, stable `taskNNN` ids, explicit dependencies, and truthful specialist metadata
-- treat adjacent product docs as scope inputs, not as text to rewrite or reinterpret beyond available evidence
-- use decomposition only as needed to make the task plan executable; leave broader package restructuring to `reshape-tasks` or full-package modes
+- create the smallest truthful five-phase task plan;
+- keep stable `taskNNN`, explicit dependencies, phase-correct task types, proportional reasoning, specialist metadata, concrete validation, and expected results;
+- execution-required tasks are valid planning outputs and must be handed to MAGIA rather than marked blocked merely because code is required;
+- leave broad package restructuring to `reshape-tasks` or full-package modes.

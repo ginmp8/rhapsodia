@@ -1,51 +1,42 @@
 # MAGO Operating Rules
 
-Use this reference when a request is close to MAGO scope but has ambiguous ownership, mixed planning/execution intent, or unclear artifact boundaries.
+Use this reference for ambiguous ownership, mixed planning/execution intent, or unclear artifact boundaries.
 
-## Ownership Rules
+## Ownership
 
-MAGO owns planning records that live under the resolved board root. It does not own implementation code, runtime execution evidence, delivery-governance reports, release notes, portfolio artifacts, or informal documentation outside the canonical board tree.
-
-When a request contains both planning and execution, complete only the planning-safe portion. The final response must explicitly hand off execution work rather than silently continuing past the boundary.
+MAGO owns planning records under the resolved canonical cycle root. It does not own implementation code, runtime evidence, delivery governance, stakeholder reporting, release notes, portfolio artifacts, or unrelated documentation. For mixed requests, complete only the planning-safe portion and hand execution/governance to the owning workflow.
 
 ## Canonical Write Rules
 
-- Resolve the board root before the first write.
-- Do not create a second board tree when a canonical one already exists.
-- Do not write planning artifacts into root-level docs, temporary folders, or ad hoc paths.
-- Preserve existing stable ids unless repository truth requires a change.
-- Prefer updating an existing canonical artifact over creating a duplicate.
-- Record missing facts as blockers, assumptions, or open questions inside the relevant planning artifact.
+- resolve the canonical model and `BOARD_ROOT` before the first write;
+- create cycle/spec identities only through the atomic identity script;
+- write one independent registry record per spec;
+- never create a duplicate board tree or shared editable catalog/queue;
+- preserve immutable IDs, truthful history, MAGIA evidence, and source traceability;
+- prefer bounded updates to existing registry/package artifacts over duplicates;
+- keep all generated views outside the canonical root;
+- record missing facts as blockers, assumptions, or open questions in the relevant artifact.
 
 ## Mode Discipline
 
-Select one primary mode. A run can read supporting artifacts from adjacent phases, but it must not produce outputs from another primary mode unless the selected mode explicitly owns that transition.
+Select exactly one primary mode. Reading adjacent evidence is allowed; writing another mode's artifacts is not unless a multi-stage request executes that mode as a separate bounded stage with its own validation outcome.
 
-Examples:
-
-- discovery can produce discovery candidates, but not full spec packages.
-- order can update spec catalog and define queue, but not write package PRDs.
-- prepare-define can seed package scaffolds, but not fill unsupported product or task content.
-- define-product must not modify task plans.
-- define-tasks must not modify product docs.
+- discovery creates evidence/candidates, not registry/package files;
+- order creates/reconciles registry records, not package PRDs;
+- prepare-define seeds one registered package without unsupported content;
+- product-only modes do not modify tasks;
+- task-only modes do not modify product intent;
+- technical-design does not become implementation/runbook output;
+- execution evidence remains MAGIA-owned.
 
 ## Evidence Standard
 
-Planning claims must trace to at least one of these sources:
+Planning claims trace to repository inspection, current canonical artifacts, user/governance evidence, source-attributed MAGIA evidence, explicit assumptions, or validator output. Distinguish observed, inferred, planned, and measured claims. Do not convert guesses into identity, status, priority, dependencies, handoff readiness, completion, approval, specialist assignments, or runtime behavior.
 
-- repository inspection;
-- existing canonical planning artifacts;
-- user-provided roadmap or product evidence;
-- accepted assumptions explicitly recorded in the artifact;
-- validator output for structural claims.
+## Planning/Execution Boundary
 
-Do not transform guesses into status, priority, dependency, completion, or specialist assignments.
+Planning authority is not an implementation prohibition. Define executable downstream tasks when scope and validation are credible. Do not mark work blocked solely because code/config/tests are required; hand it to MAGIA and reserve blockers for missing scope, files, dependencies, credentials, evidence, or validation paths.
 
-## Handoff Language
+## Handoff Reporting
 
-When stopping at the planning boundary, include:
-
-- the selected MAGO mode completed;
-- what was intentionally not done;
-- which execution, governance, or code workflow should take over;
-- any blocker that must be resolved before that handoff.
+When stopping at the planning boundary, state the selected mode, resolved identity/path, artifacts changed, validators run, what was intentionally not performed, downstream owner, and unresolved blockers. Never imply implementation or validation occurred when it did not.

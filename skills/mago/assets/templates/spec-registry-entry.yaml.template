@@ -1,0 +1,31 @@
+# Canonical spec registration. Create through scripts/create_planning_identity.py.
+kind: mago-spec
+spec_id: "<spec_id>"
+spec_uid: "<spec_uid>"
+cycle_id: "<cycle_id>"
+feature_key: "<feature_key>"
+feature_version: "0.1.0"
+title: "<title>"
+type: feature
+classification: internal
+created_at: "<created_at>"
+status: planned
+priority: normal
+order_hint: null
+depends_on_features: []
+depends_on_specs: []
+supersedes: []
+superseded_by: null
+handoff:
+  status: needs_discovery
+  downstream_mode: define
+  package_shape: full
+  source_candidates: []
+  seed_artifacts:
+    - manifest.yaml
+    - prd.md
+    - tasks.md
+    - notes.md
+    - validation.md
+  blockers: []
+imported_from: null

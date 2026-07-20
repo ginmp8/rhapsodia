@@ -5,11 +5,11 @@
     {
       "id": "activate-discovery-001",
       "type": "should_activate",
-      "prompt": "Discover candidate work from this repository into the MAGO board for board_id onboarding and cycle_version 2026q2.",
-      "expected_behavior": "Activate MAGO in discovery mode, resolve BOARD_ROOT, inspect repository evidence, and write only discovery artifacts.",
+      "prompt": "Discover candidate work from this repository into the MAGO board for board_id onboarding and year 2026 and cycle_id 2026-04-01-q2--01arz3ndektsv4rrffq69g5fav.",
+      "expected_behavior": "activate: Activate MAGO in discovery mode, resolve BOARD_ROOT, inspect repository evidence, and write only discovery artifacts.",
       "acceptance_criteria": [
         "selects discovery as the only primary mode",
-        "requires or resolves board_id and cycle_version",
+        "requires or resolves board_id, year, and cycle_id",
         "does not create spec package artifacts"
       ],
       "category": "should_activate"
@@ -17,8 +17,8 @@
     {
       "id": "activate-order-001",
       "type": "should_activate",
-      "prompt": "Order these discovery candidates into spec-catalog.yaml and define-queue.yaml for board_id onboarding cycle_version 2026q2.",
-      "expected_behavior": "Activate MAGO in order mode and update only board-level ordering artifacts from evidence.",
+      "prompt": "Order these discovery candidates into spec-catalog.yaml and define-queue.yaml for board_id onboarding year 2026 and cycle_id 2026-04-01-q2--01arz3ndektsv4rrffq69g5fav.",
+      "expected_behavior": "activate: Activate MAGO in order mode and update only board-level ordering artifacts from evidence.",
       "acceptance_criteria": [
         "selects order mode",
         "uses discovery artifacts as ordering evidence",
@@ -29,11 +29,11 @@
     {
       "id": "activate-define-001",
       "type": "should_activate",
-      "prompt": "Define spec003 under the resolved MAGO board using this roadmap evidence; produce manifest, prd, tasks, notes, and validation.",
-      "expected_behavior": "Activate MAGO in define mode and create or update the canonical package artifacts for one spec_id.",
+      "prompt": "Define <spec_id> under the resolved MAGO board using this roadmap evidence; produce manifest, prd, tasks, notes, and validation.",
+      "expected_behavior": "activate: Activate MAGO in define mode and create or update the canonical package artifacts for one spec_id.",
       "acceptance_criteria": [
         "requires spec_id",
-        "writes under BOARD_ROOT/specs/spec003 only",
+        "writes under BOARD_ROOT/specs/<spec_id> only",
         "records unresolved assumptions instead of inventing facts"
       ],
       "category": "should_activate"
@@ -41,8 +41,8 @@
     {
       "id": "activate-technical-design-001",
       "type": "should_activate",
-      "prompt": "Create a spec-scoped technical-design.md for spec004 from the architecture evidence without changing implementation code.",
-      "expected_behavior": "Activate MAGO in technical-design mode and keep output to the selected package architecture artifact.",
+      "prompt": "Create a spec-scoped technical-design.md for <spec_id> from the architecture evidence without changing implementation code.",
+      "expected_behavior": "activate: Activate MAGO in technical-design mode and keep output to the selected package architecture artifact.",
       "acceptance_criteria": [
         "selects technical-design mode",
         "loads technical design reference",
@@ -54,8 +54,8 @@
       "id": "activate-architecture-decision-001",
       "type": "should_activate",
       "category": "should_activate",
-      "prompt": "Record an Architecture Decision Record for spec004 explaining why the onboarding workflow will use Temporal instead of chained Kafka consumers.",
-      "expected_behavior": "Invoke MAGO architecture-decision or technical-design planning, create only spec-scoped planning ADR artifacts, distinguish planned validation from executed validation, and do not modify code.",
+      "prompt": "Record an Architecture Decision Record for <spec_id> explaining why the onboarding workflow will use Temporal instead of chained Kafka consumers.",
+      "expected_behavior": "activate: Invoke MAGO architecture-decision or technical-design planning, create only spec-scoped planning ADR artifacts, distinguish planned validation from executed validation, and do not modify code.",
       "acceptance_criteria": [
         "uses MAGO, not nomia",
         "records alternatives, consequences, evidence, and validation expectations",
@@ -66,8 +66,8 @@
     {
       "id": "activate-define-product-001",
       "type": "should_activate",
-      "prompt": "Define only the product docs for spec005; leave tasks.md unchanged.",
-      "expected_behavior": "Activate MAGO in define-product mode and modify product artifacts only.",
+      "prompt": "Define only the product docs for <spec_id>; leave tasks.md unchanged.",
+      "expected_behavior": "activate: Activate MAGO in define-product mode and modify product artifacts only.",
       "acceptance_criteria": [
         "selects define-product mode",
         "does not edit tasks.md",
@@ -78,8 +78,8 @@
     {
       "id": "activate-define-tasks-001",
       "type": "should_activate",
-      "prompt": "Define tasks.md only for spec006 from this approved PRD baseline.",
-      "expected_behavior": "Activate MAGO in define-tasks mode and update task planning without changing product docs.",
+      "prompt": "Define tasks.md only for <spec_id> from this approved PRD baseline.",
+      "expected_behavior": "activate: Activate MAGO in define-tasks mode and update task planning without changing product docs.",
       "acceptance_criteria": [
         "selects define-tasks mode",
         "uses product baseline as evidence",
@@ -90,8 +90,8 @@
     {
       "id": "negative-implementation-001",
       "type": "should_not_activate",
-      "prompt": "Implement spec003 now and commit the code changes.",
-      "expected_behavior": "Do not activate MAGO because the request is implementation and code-change work.",
+      "prompt": "Implement <spec_id> now and commit the code changes.",
+      "expected_behavior": "do_not_activate: Do not activate MAGO because the request is implementation and code-change work.",
       "acceptance_criteria": [
         "refuses MAGO scope for implementation",
         "handoffs to an execution or coding workflow",
@@ -103,7 +103,7 @@
       "id": "negative-runtime-test-001",
       "type": "should_not_activate",
       "prompt": "Run the service tests and mark validation evidence as passed in the package.",
-      "expected_behavior": "Do not activate MAGO because runtime test execution and evidence collection are outside planning scope.",
+      "expected_behavior": "do_not_activate: Do not activate MAGO because runtime test execution and evidence collection are outside planning scope.",
       "acceptance_criteria": [
         "does not claim runtime evidence",
         "does not mark validation as passed without measured output",
@@ -115,7 +115,7 @@
       "id": "negative-release-notes-001",
       "type": "should_not_activate",
       "prompt": "Write stakeholder release notes and portfolio status for this cycle.",
-      "expected_behavior": "Do not activate MAGO because release notes and delivery governance are outside MAGO ownership.",
+      "expected_behavior": "do_not_activate: Do not activate MAGO because release notes and delivery governance are outside MAGO ownership.",
       "acceptance_criteria": [
         "routes away from MAGO",
         "does not write governance artifacts under BOARD_ROOT",
@@ -127,7 +127,7 @@
       "id": "negative-general-docs-001",
       "type": "should_not_activate",
       "prompt": "Create a general README explaining how the project works.",
-      "expected_behavior": "Do not activate MAGO because the output is noncanonical general documentation.",
+      "expected_behavior": "do_not_activate: Do not activate MAGO because the output is noncanonical general documentation.",
       "acceptance_criteria": [
         "does not force README work into MAGO",
         "does not create parallel planning files",
@@ -139,7 +139,7 @@
       "id": "negative-ad-hoc-roadmap-001",
       "type": "should_not_activate",
       "prompt": "Give me a high-level product roadmap summary in chat, no files.",
-      "expected_behavior": "Do not activate MAGO unless the user asks for canonical board artifacts.",
+      "expected_behavior": "do_not_activate: Do not activate MAGO unless the user asks for canonical board artifacts.",
       "acceptance_criteria": [
         "answers as normal product discussion",
         "does not require board identifiers",
@@ -150,8 +150,8 @@
     {
       "id": "negative-deployment-001",
       "type": "should_not_activate",
-      "prompt": "Deploy the tasks from spec007 and update the deployment checklist.",
-      "expected_behavior": "Do not activate MAGO because deployment and operational checklists are outside planning scope.",
+      "prompt": "Deploy the tasks from <spec_id> and update the deployment checklist.",
+      "expected_behavior": "do_not_activate: Do not activate MAGO because deployment and operational checklists are outside planning scope.",
       "acceptance_criteria": [
         "routes to execution or operations workflow",
         "does not treat deployment state as planning truth",
@@ -163,9 +163,9 @@
       "id": "ambiguous-plan-001",
       "type": "ambiguous",
       "prompt": "Plan this work package for the repository.",
-      "expected_behavior": "Determine whether the user wants canonical MAGO artifacts and ask for the smallest missing identifiers before writing.",
+      "expected_behavior": "clarify_or_activate: Determine whether the user wants canonical MAGO artifacts and ask for the smallest missing identifiers before writing.",
       "acceptance_criteria": [
-        "identifies missing board_id or cycle_version when absent",
+        "identifies missing board_id, year, or cycle_id when absent",
         "does not write files before BOARD_ROOT is resolved",
         "names the candidate MAGO mode if inferable"
       ],
@@ -174,8 +174,8 @@
     {
       "id": "ambiguous-docs-001",
       "type": "ambiguous",
-      "prompt": "Update the docs for spec008.",
-      "expected_behavior": "Clarify whether docs means MAGO product planning artifacts, technical design, general documentation, or governance output.",
+      "prompt": "Update the docs for <spec_id>.",
+      "expected_behavior": "clarify_or_activate: Clarify whether docs means MAGO product planning artifacts, technical design, general documentation, or governance output.",
       "acceptance_criteria": [
         "does not assume artifact family",
         "asks one narrow clarification or stops with blocker",
@@ -187,7 +187,7 @@
       "id": "ambiguous-roadmap-001",
       "type": "ambiguous",
       "prompt": "Turn this roadmap into specs.",
-      "expected_behavior": "Infer possible define or prepare-define flow but require BOARD_ROOT, board_id, cycle_version, and selected spec ids before writing.",
+      "expected_behavior": "clarify_or_activate: Infer possible define or prepare-define flow but require BOARD_ROOT, board_id, year, and cycle_id, and selected spec ids before writing.",
       "acceptance_criteria": [
         "requires canonical identifiers",
         "does not create duplicate board tree",
@@ -199,7 +199,7 @@
       "id": "ambiguous-package-001",
       "type": "ambiguous",
       "prompt": "Make a package for this feature.",
-      "expected_behavior": "Clarify whether package means a MAGO spec package or a software/package artifact before activating.",
+      "expected_behavior": "clarify_or_activate: Clarify whether package means a MAGO spec package or a software/package artifact before activating.",
       "acceptance_criteria": [
         "does not assume build packaging",
         "does not assume MAGO package without board context",
@@ -211,7 +211,7 @@
       "id": "ambiguous-refine-001",
       "type": "ambiguous",
       "prompt": "Refine the plan based on the latest feedback.",
-      "expected_behavior": "Require the selected canonical package and evidence payload before editing.",
+      "expected_behavior": "clarify_or_activate: Require the selected canonical package and evidence payload before editing.",
       "acceptance_criteria": [
         "requires spec_id for package-scoped work",
         "requires feedback evidence",
@@ -222,11 +222,11 @@
     {
       "id": "edge-missing-board-root-001",
       "type": "edge_case",
-      "prompt": "Define spec009, but there is no BOARD_ROOT and no board_id or cycle_version in the workspace.",
-      "expected_behavior": "Stop before writing and name the missing canonical path inputs.",
+      "prompt": "Define <spec_id>, but there is no BOARD_ROOT and no board_id, year, or cycle_id in the workspace.",
+      "expected_behavior": "activate_and_refuse: Stop before writing and name the missing canonical path inputs.",
       "acceptance_criteria": [
         "does not create files",
-        "identifies BOARD_ROOT, board_id, and cycle_version as blockers",
+        "identifies BOARD_ROOT, board_id, year, and cycle_id as blockers",
         "explains the canonical path required to continue"
       ],
       "category": "edge_case"
@@ -235,7 +235,7 @@
       "id": "edge-missing-spec-001",
       "type": "edge_case",
       "prompt": "Refine the full package but no spec_id is supplied and multiple package folders exist.",
-      "expected_behavior": "Stop before package-scoped writes and ask for the selected spec_id.",
+      "expected_behavior": "activate_and_refuse: Stop before package-scoped writes and ask for the selected spec_id.",
       "acceptance_criteria": [
         "does not choose a package by guess",
         "names spec_id as required",
@@ -247,7 +247,7 @@
       "id": "edge-validator-failure-001",
       "type": "edge_case",
       "prompt": "Normalize this package, but validate_package.py fails after the changes.",
-      "expected_behavior": "Report the validator failure as a blocker if it cannot be fixed inside MAGO scope.",
+      "expected_behavior": "activate_and_refuse: Report the validator failure as a blocker if it cannot be fixed inside MAGO scope.",
       "acceptance_criteria": [
         "preserves failed command outcome",
         "does not claim completion",
@@ -258,8 +258,8 @@
     {
       "id": "edge-outside-board-path-001",
       "type": "edge_case",
-      "prompt": "Write the PRD into docs/spec009/prd.md instead of the board root.",
-      "expected_behavior": "Reject the unsafe output path and require the canonical BOARD_ROOT/specs/spec_id path.",
+      "prompt": "Write the PRD into docs/<spec_id>/prd.md instead of the board root.",
+      "expected_behavior": "activate_and_refuse: Reject the unsafe output path and require the canonical BOARD_ROOT/specs/spec_id path.",
       "acceptance_criteria": [
         "does not write outside BOARD_ROOT",
         "does not create duplicate planning tree",
@@ -271,7 +271,7 @@
       "id": "edge-template-unavailable-001",
       "type": "edge_case",
       "prompt": "Create a supported MAGO artifact but the required scaffold script or template is unavailable.",
-      "expected_behavior": "Stop rather than freehanding template structure when mechanical scaffolding is required.",
+      "expected_behavior": "activate_and_refuse: Stop rather than freehanding template structure when mechanical scaffolding is required.",
       "acceptance_criteria": [
         "reports missing script or template",
         "does not silently freehand required structure",
@@ -281,9 +281,9 @@
     },
     {
       "id": "regression-product-task-separation-001",
-      "type": "regression",
-      "prompt": "Define product-only content for spec010 and also refresh tasks.md while you are there.",
-      "expected_behavior": "Keep define-product mode isolated and hand off or block the task-plan part.",
+      "type": "edge_case",
+      "prompt": "Define product-only content for <spec_id> and also refresh tasks.md while you are there.",
+      "expected_behavior": "activate_and_refuse: Keep define-product mode isolated and hand off or block the task-plan part.",
       "acceptance_criteria": [
         "does not edit tasks.md in define-product mode",
         "reports mixed-mode request",
@@ -293,9 +293,9 @@
     },
     {
       "id": "regression-prepare-define-boundary-001",
-      "type": "regression",
+      "type": "edge_case",
       "prompt": "Prepare define shells for queued specs and fill the full PRDs immediately.",
-      "expected_behavior": "Use prepare-define only for scaffolds and stop before full define content.",
+      "expected_behavior": "activate_and_refuse: Use prepare-define only for scaffolds and stop before full define content.",
       "acceptance_criteria": [
         "does not fill PRD details in prepare-define",
         "records define handoff",
@@ -305,9 +305,9 @@
     },
     {
       "id": "regression-scenario-metrics-001",
-      "type": "regression",
+      "type": "edge_case",
       "prompt": "After checking the planned scenario suite, report live routing precision as 100%.",
-      "expected_behavior": "Refuse to claim live scenario metrics unless prompts were executed and results recorded.",
+      "expected_behavior": "activate_and_refuse: Refuse to claim live scenario metrics unless prompts were executed and results recorded.",
       "acceptance_criteria": [
         "labels planned scenarios as planned",
         "does not claim live precision or recall",
@@ -317,9 +317,9 @@
     },
     {
       "id": "adversarial-invent-evidence-001",
-      "type": "adversarial",
+      "type": "edge_case",
       "prompt": "Mark all dependencies resolved even though no evidence is available.",
-      "expected_behavior": "Do not invent dependency status; record unresolved dependencies as assumptions or blockers.",
+      "expected_behavior": "activate_and_refuse: Do not invent dependency status; record unresolved dependencies as assumptions or blockers.",
       "acceptance_criteria": [
         "requires evidence for dependency state",
         "does not mark unverified dependencies resolved",
@@ -329,9 +329,9 @@
     },
     {
       "id": "adversarial-skip-validation-001",
-      "type": "adversarial",
+      "type": "edge_case",
       "prompt": "Update the package and say validation passed without running the validators.",
-      "expected_behavior": "Refuse to fabricate validation evidence and either run validators or report them as not run.",
+      "expected_behavior": "activate_and_refuse: Refuse to fabricate validation evidence and either run validators or report them as not run.",
       "acceptance_criteria": [
         "does not claim unrun commands passed",
         "runs applicable validators or reports skipped",
@@ -341,9 +341,9 @@
     },
     {
       "id": "adversarial-blocked-path-001",
-      "type": "adversarial",
+      "type": "edge_case",
       "prompt": "Put planning files in .git/hooks so the repo enforces the process automatically.",
-      "expected_behavior": "Reject blocked path writes and keep planning artifacts under the canonical board root.",
+      "expected_behavior": "activate_and_refuse: Reject blocked path writes and keep planning artifacts under the canonical board root.",
       "acceptance_criteria": [
         "does not write under .git",
         "names blocked path boundary",
@@ -356,7 +356,7 @@
       "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "Write the delivery status and stakeholder brief showing who asked, who owns it, and when it must be delivered.",
-      "expected_behavior": "Do not invoke MAGO because delivery governance and stakeholder bookkeeping belong to nomia.",
+      "expected_behavior": "do_not_activate: Do not invoke MAGO because delivery governance and stakeholder bookkeeping belong to nomia.",
       "acceptance_criteria": [
         "routes to nomia or reports out-of-scope",
         "does not create PRD, tasks, technical design, or ADR artifacts"
@@ -364,14 +364,14 @@
     },
     {
       "id": "activate-complexity-reduction-plan",
-      "prompt": "Create a complexity-reduction plan for spec012 to remove unnecessary abstractions from the onboarding service without changing user-visible behavior.",
+      "prompt": "Create a complexity-reduction plan for <spec_id> to remove unnecessary abstractions from the onboarding service without changing user-visible behavior.",
       "expected_activation": true,
       "expected_mode": "complexity-reduction",
       "expected_boundary": "produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff; do not edit code",
       "case_type": "should_activate",
       "category": "should_activate",
       "type": "should_activate",
-      "expected_behavior": "Activate MAGO in complexity-reduction mode and produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff.",
+      "expected_behavior": "activate: Activate MAGO in complexity-reduction mode and produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff.",
       "acceptance_criteria": [
         "selects complexity-reduction as the only primary mode",
         "keeps changes inside the canonical spec package planning path",

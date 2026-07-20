@@ -1,65 +1,47 @@
 # Order Mode
 
+## Purpose
+
+Register bounded planning work without sequence counters or a shared mutable catalog. Each genuinely distinct capability receives one independent registry record.
+
 ## Canonical Rules
 
-- `BOARD_ROOT` is required for catalog and queue reconciliation.
-- Use prompt-provided `BOARD_ROOT` when present; otherwise derive it from canonical-paths.md.
-- No separate spec root is active in `order`; queued spec targets are derived package paths under `BOARD_ROOT/specs/<spec_id>/`.
-- Keep spec-catalog.yaml and define-queue.yaml under `BOARD_ROOT` only.
+- Resolve one canonical `BOARD_ROOT` and valid `cycle.yaml`.
+- No package path is writable in `order`.
+- Write only `registry/<spec_id>.yaml` records.
+- Generated catalog/queue files are external projections and never source of truth.
 
 ## Discovery Input Rules
 
-- treat discovery artifacts as upstream evidence and traceability, not as sequencing truth
-- never import `spec_id`, `order`, `cycle_version`, or `feature_version` from discovery artifacts
+Treat discovery artifacts as upstream evidence and traceability, not identity, version, dependency, status, or ordering truth. Never reuse a candidate ID as a spec ID.
 
-## Ordering Workflow
+## Workflow
 
-1. Work only inside the resolved `BOARD_ROOT` from `references/canonical-paths.md`.
-2. Locate the highest open catalog in that resolved `BOARD_ROOT` whose `cycle_status` is `planned` or `in_progress`.
-3. If no open catalog exists in that resolved `BOARD_ROOT`, create the bootstrap initial catalog there: `cycle_version: 01.00.00`, `cycle_status: planned`.
-4. Load discovery-index.yaml and the candidate docs referenced by the candidates you are ordering.
-5. Load the current spec-catalog.yaml and define-queue.yaml when they exist.
-6. Deduplicate discovery candidates by capability boundary and stable `feature_key`.
-7. Preserve existing `spec_id`, `order`, dependency relationships, and define handoff truth unless evidence proves they are wrong.
-8. Create new specs only when the work is materially distinct or a new package is genuinely needed.
-9. Assign the next available `specNNN`.
-10. Assign `order` conservatively and keep insertion gaps when useful.
-11. Keep `depends_on_features` and `depends_on_specs` distinct.
-12. Create or reconcile a define-queue.yaml entry for every ordered spec so downstream define preparation is explicit.
+1. Validate the cycle root.
+2. Load `discovery-index.yaml`, selected candidate docs, relevant governance evidence, and existing registry records.
+3. Deduplicate candidates by capability boundary and stable `feature_key`.
+4. Preserve existing identity, dependencies, handoff, status, and supersession unless stronger evidence proves correction is necessary.
+5. Create a new spec only for materially distinct work, using `scripts/create_planning_identity.py spec` for atomic identity/file creation.
+6. Populate feature metadata, priority, optional `order_hint`, feature/spec dependencies, supersession, handoff status/mode/package shape, source candidates, seed artifacts, and blockers.
+7. Use `type: fix` only for correction work; otherwise use the evidence-supported type/classification.
+8. Validate duplicate active features, dependency existence/DAG, registry consistency, and cycle boundaries.
+9. Render external catalog/queue views only when requested.
 
-## Catalog Shape
+## Handoff Contract
 
-- catalog keys: `schema_version`, `cycle_version`, `cycle_status`, `specs`
-- each spec entry needs `order`, `spec_id`, `feature_key`, `title`, `type`, `classification`, `depends_on_features`, `depends_on_specs`, `status`, `feature_version`
-- use `type: fix` only for bugfix-style work; otherwise default to `type: feature`
+- `handoff.status`: `ready_for_prepare_define`, `blocked`, or `needs_discovery`;
+- `downstream_mode`: `define`, `define-product`, or `define-tasks`;
+- `package_shape`: `full`, `product_only`, or `tasks_only`;
+- source candidates resolve under the active cycle;
+- seed artifacts match the selected package shape;
+- blockers describe missing evidence/prerequisites, not merely the need for implementation.
 
-## Define Handoff Shape
+Set `ready_for_prepare_define` only when evidence supports a stable package boundary and downstream shape. If evidence remains weak, keep `needs_discovery` or `blocked` rather than inventing readiness.
 
-- define-queue.yaml keys: `schema_version`, `cycle_version`, `entries`
-- each queue entry needs `spec_id`, `feature_key`, `title`, `handoff_status`, `downstream_mode`, `package_shape`, `source_candidates`, `seed_artifacts`, `define_target`, and `blockers`
-- `define_target` must be the repository-relative package path under `BOARD_ROOT/specs/<spec_id>/`
-- use `downstream_mode` only from `define`, `define-product`, or `define-tasks`
-- use `package_shape` only from `full`, `product_only`, or `tasks_only`
-- use `handoff_status` only from `ready_for_prepare_define`, `blocked`, or `needs_discovery`
+## Ordering and Conflict Rules
 
-## Catalog Authoring Rules
+Dependencies constrain execution. `order_hint` is optional presentation metadata, may collide, and never defines identity. Broader enabling work may precede dependent slices. Duplicate active feature work is a semantic conflict resolved through reconciliation, supersession, or explicit dependency—not renumbering.
 
-- when creating a missing catalog or queue, use scripts/write_artifact_scaffold.py <artifact-path> first; use template text directly only as a read-only reference when no script can perform the needed operation
-- keep existing truthful values when the catalog already established them
-- replace placeholders and examples with real values derived from discovery evidence and repository truth
-- use the bootstrap initial cycle only when no cycle exists yet
-- do not copy template literals for `cycle_version`, `order`, `spec_id`, `status`, or `feature_version` blindly
+## Output
 
-## Ordering Heuristics
-
-- broader enabling work may come before dependent slices
-- stronger evidence and clearer entrypoints win ties
-- preserve existing order when it is still coherent
-- do not force weak discovery evidence into the catalog
-- set `handoff_status: ready_for_prepare_define` only when the ordered discovery artifacts already justify a stable downstream package shape
-- if the boundary is too ambiguous, stop and keep ordering blocked rather than inventing structure
-
-## Output Rules
-
-- ordering touches only spec-catalog.yaml and define-queue.yaml inside the resolved `BOARD_ROOT`; it does not create spec folders or implementation output
-- if the catalog and define queue are already coherent, keep them stable and make only justified bounded corrections
+Order mode touches independent registry records only. It does not create package folders, implementation output, or source-controlled aggregate views. If existing records are already coherent, make only bounded evidence-backed corrections.

@@ -1,14 +1,17 @@
-# Use this file as a structural reference when creating or reconciling
-# {BOARD_ROOT}/spec-catalog.yaml.
-# Replace every <...> token with repository-truth values.
-# Never copy placeholder or example values blindly into generated files.
+# Generated projection derived from registry/<spec_id>.yaml files.
+# This file documents the complete renderer output contract.
+# It is not source of truth and must not be edited manually.
+# Replace every <...> token only in fixtures/examples, never in canonical board state.
 # Keep all keys lowercase and preserve field order.
 
-schema_version: 1
-cycle_version: "<cycle_version>"
+kind: mago-spec-catalog
+generated: true
+cycle_id: "<cycle_id>"
 cycle_status: "<cycle_status>"
+registry_digest: "<registry_digest>"
 specs:
-  - order: "<order>"
+  - order: "<derived_order>"
+    order_hint: "<order_hint_or_null>"
     spec_id: "<spec_id>"
     feature_key: "<feature_key>"
     title: "<title>"

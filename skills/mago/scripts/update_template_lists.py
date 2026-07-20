@@ -18,7 +18,8 @@ except Exception:  # pragma: no cover
 
 
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
+from mago_utils import SPEC_ID_RE
+
 TASK_ID_RE = re.compile(r"^task\d{3}$")
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
 
@@ -42,7 +43,7 @@ class ListRule:
 
 
 VALID_CYCLE_STATUS = {"planned", "in_progress", "done", "cancelled"}
-VALID_SPEC_STATUS = {"planned", "in_progress", "blocked", "done", "cancelled"}
+VALID_SPEC_STATUS = {"planned", "in_progress", "blocked", "done", "cancelled", "superseded"}
 VALID_PHASE = {"define", "execute", "done"}
 VALID_HANDOFF_STATUS = {"ready_for_prepare_define", "blocked", "needs_discovery"}
 VALID_DOWNSTREAM_MODE = {"define", "define-product", "define-tasks"}
@@ -55,6 +56,14 @@ VALID_FRONTIER_STATUS = {"updated", "blocked", "completed"}
 
 
 RULES: dict[str, dict[str, ListRule]] = {
+    "spec-registry-entry.yaml": {
+        "depends_on_features": ListRule("depends_on_features", "string"),
+        "depends_on_specs": ListRule("depends_on_specs", "spec_id"),
+        "supersedes": ListRule("supersedes", "spec_id"),
+        "handoff.source_candidates": ListRule("handoff.source_candidates", "string"),
+        "handoff.seed_artifacts": ListRule("handoff.seed_artifacts", "seed_artifact"),
+        "handoff.blockers": ListRule("handoff.blockers", "string"),
+    },
     "define-queue.yaml": {
         "entries": ListRule(
             "entries",
@@ -120,6 +129,8 @@ RULES: dict[str, dict[str, ListRule]] = {
 
 def artifact_name(path: Path) -> str:
     name = path.name
+    if path.parent.name == "registry" and name.endswith(".yaml"):
+        return "spec-registry-entry.yaml"
     return name[:-9] if name.endswith(".template") else name
 
 
@@ -221,7 +232,7 @@ def validate_scalar(label: str, value: Any, item_type: str) -> None:
         return
     if item_type == "spec_id":
         if not isinstance(value, str) or not SPEC_ID_RE.fullmatch(value):
-            fail(f"{label} must use specNNN format")
+            fail(f"{label} must use canonical spec-YYYY-MM-DD-feature-key--ULID format")
         return
     if item_type == "task_id":
         if not isinstance(value, str) or not TASK_ID_RE.fullmatch(value):

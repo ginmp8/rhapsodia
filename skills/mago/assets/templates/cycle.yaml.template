@@ -1,0 +1,14 @@
+# Canonical cycle metadata. Create through scripts/create_planning_identity.py.
+kind: mago-cycle
+cycle_id: "<cycle_id>"
+cycle_uid: "<cycle_uid>"
+cycle_key: "<cycle_key>"
+board_id: "<board_id>"
+year: <year>
+created_at: "<created_at>"
+created_by: "<created_by>"
+status: proposed
+proposed_version: null
+accepted_version: null
+planning_revision: 1
+imported_from: null
