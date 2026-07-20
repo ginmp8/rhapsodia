@@ -13,7 +13,7 @@ Canonical identities:
 - `cycle_id = cycle-<yyyy-mm-dd>-<cycle-key>`
 - `spec_id = spec-<yyyy-mm-dd>-<feature-key>`
 
-The `<year>` path segment must match the creation year encoded in `cycle_id`.
+The encoded date must be a real calendar date. The `<year>` path segment must match the creation year encoded in `cycle_id`, and each canonical `created_at` date must match the date encoded in its cycle or spec identity.
 
 ## Resolution
 

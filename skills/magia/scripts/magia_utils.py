@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import re
+from datetime import date, datetime
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -86,18 +87,47 @@ def validate_concrete_segment(label: str, value: str | None) -> str | None:
     return None
 
 
+def validate_iso_date(value: str, *, label: str = "date") -> str:
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a real ISO date, got `{value}`") from exc
+    if parsed.isoformat() != value:
+        raise ValueError(f"{label} must use YYYY-MM-DD, got `{value}`")
+    return value
+
+
+def iso_datetime_date(value: object, *, label: str = "datetime") -> str:
+    if isinstance(value, datetime):
+        return value.date().isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{label} must be a non-empty ISO datetime")
+    normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a real ISO datetime, got `{value}`") from exc
+    return parsed.date().isoformat()
+
+
 def parse_cycle_id(value: str) -> dict[str, str]:
     match = CYCLE_ID_RE.fullmatch(value)
     if not match:
         raise ValueError(f"cycle_id must use cycle-YYYY-MM-DD-cycle-key, got `{value}`")
-    return match.groupdict()
+    parsed = match.groupdict()
+    validate_iso_date(parsed["date"], label="cycle_id date")
+    return parsed
 
 
 def parse_spec_id(value: str) -> dict[str, str]:
     match = SPEC_ID_RE.fullmatch(value)
     if not match:
         raise ValueError(f"spec_id must use spec-YYYY-MM-DD-feature-key, got `{value}`")
-    return match.groupdict()
+    parsed = match.groupdict()
+    validate_iso_date(parsed["date"], label="spec_id date")
+    return parsed
 
 
 def infer_year_from_cycle_id(cycle_id: str) -> str:
@@ -124,7 +154,13 @@ def resolve_board_root(
     cycle_id: str | None = None,
 ) -> Path:
     if board_root_override is not None:
-        return resolve_runtime_path(repo_root, board_root_override)
+        resolved = resolve_runtime_path(repo_root, board_root_override)
+        if not is_relative_to(resolved, repo_root):
+            raise ValueError("board_root_override must resolve inside the repository root")
+        path_error = board_root_path_error(resolved)
+        if path_error:
+            raise ValueError(path_error)
+        return resolved
 
     board_error = validate_concrete_segment("board_id", board_id)
     if board_error:

@@ -15,6 +15,7 @@ from nomia_utils import (
     is_legacy_cycle_id,
     is_legacy_spec_id,
     parse_cycle_id,
+    parse_canonical_board_root,
     parse_spec_id,
     resolve_board_root,
     validate_cycle_id_format,
@@ -122,6 +123,26 @@ features:
         parsed = parse_spec_id(SPEC_ID)
         self.assertEqual(parsed["feature_key"], "saved-query-sharing-controls")
 
+    def test_impossible_dates_are_rejected(self) -> None:
+        for cycle_id in (
+            "cycle-2026-02-30-invalid-date",
+            "cycle-2026-13-01-invalid-month",
+            "cycle-0000-01-01-invalid-year",
+        ):
+            with self.subTest(cycle_id=cycle_id), self.assertRaises(ValueError):
+                parse_cycle_id(cycle_id)
+        for spec_id in (
+            "spec-2026-02-30-invalid-date",
+            "spec-2026-13-01-invalid-month",
+            "spec-0000-01-01-invalid-year",
+        ):
+            with self.subTest(spec_id=spec_id), self.assertRaises(ValueError):
+                parse_spec_id(spec_id)
+
+    def test_valid_leap_day_is_accepted(self) -> None:
+        self.assertEqual(parse_cycle_id("cycle-2028-02-29-leap-cycle")["date"], "2028-02-29")
+        self.assertEqual(parse_spec_id("spec-2028-02-29-leap-feature")["date"], "2028-02-29")
+
     def test_board_root_uses_year_cycles_and_cycle_id(self) -> None:
         root = resolve_board_root(Path("/repo"), board_id="workspace-admin", year="2026", cycle_id=CYCLE_ID)
         self.assertEqual(
@@ -132,6 +153,38 @@ features:
     def test_year_conflict_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             resolve_board_root(Path("/repo"), board_id="workspace-admin", year="2025", cycle_id=CYCLE_ID)
+
+    def test_board_root_override_is_confined_and_exact(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo_root = Path(tmp) / "repo"
+            canonical = repo_root / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
+            resolved = resolve_board_root(
+                repo_root,
+                board_root_override=canonical,
+                board_id="workspace-admin",
+                year="2026",
+                cycle_id=CYCLE_ID,
+            )
+            self.assertEqual(resolved, canonical.resolve())
+
+            with self.assertRaisesRegex(ValueError, "inside the repository root"):
+                resolve_board_root(repo_root, board_root_override=Path(tmp) / "outside")
+
+            with self.assertRaisesRegex(ValueError, "must match"):
+                resolve_board_root(repo_root, board_root_override=canonical / "specs")
+
+            with self.assertRaisesRegex(ValueError, "board_id.*conflicts"):
+                resolve_board_root(
+                    repo_root,
+                    board_root_override=canonical,
+                    board_id="different-board",
+                )
+
+    def test_canonical_board_root_parser_rejects_nested_paths(self) -> None:
+        canonical = f"/repo/docs/boards/workspace-admin/2026/cycles/{CYCLE_ID}"
+        self.assertEqual(parse_canonical_board_root(canonical)["cycle_id"], CYCLE_ID)
+        with self.assertRaises(ValueError):
+            parse_canonical_board_root(f"{canonical}/specs")
 
     def test_canonical_nomia_paths_are_accepted(self) -> None:
         paths = [
@@ -150,6 +203,16 @@ features:
                 "2026",
             )
             self.assertTrue(any("spec-YYYY-MM-DD-feature-key" in error for error in errors))
+
+    def test_impossible_spec_date_in_path_is_rejected(self) -> None:
+        invalid_spec_id = "spec-2026-02-30-impossible-date"
+        errors = validate_path(
+            f"docs/boards/workspace-admin/2026/cycles/{CYCLE_ID}/specs/{invalid_spec_id}/ops.yaml",
+            "workspace-admin",
+            CYCLE_ID,
+            "2026",
+        )
+        self.assertTrue(any("real calendar date" in error for error in errors))
 
     def test_nomia_cannot_write_planning_registry(self) -> None:
         errors = validate_actor(

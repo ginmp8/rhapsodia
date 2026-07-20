@@ -11,8 +11,9 @@ from pathlib import Path
 from board_contract import validate_board
 from magia_utils import (
     BOARD_ROOT_TEMPLATE,
-    SPEC_ID_RE,
     dedupe_preserve_order,
+    parse_cycle_id,
+    parse_spec_id,
     is_relative_to,
     posix_rel,
     print_errors,
@@ -46,6 +47,14 @@ def validate_canonical_segments(board_id: str, year: str, cycle_id: str) -> list
         error = validate_concrete_segment(label, value)
         if error:
             errors.append(error)
+    if not errors:
+        try:
+            parsed = parse_cycle_id(cycle_id)
+        except ValueError as exc:
+            errors.append(str(exc))
+        else:
+            if year != parsed["date"][:4]:
+                errors.append(f"year `{year}` conflicts with cycle_id creation year `{parsed['date'][:4]}`")
     return errors
 
 
@@ -85,7 +94,9 @@ def collect_package_shape_errors(repo_root: Path, canonical_root: Path) -> list[
         for child in sorted(specs_root.iterdir()):
             if not child.is_dir():
                 continue
-            if not SPEC_ID_RE.fullmatch(child.name):
+            try:
+                parse_spec_id(child.name)
+            except ValueError:
                 errors.append(f"invalid spec directory name: {posix_rel(child, repo_root)}")
                 continue
             present = {path.name for path in child.iterdir() if path.is_file()}

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
@@ -20,15 +22,40 @@ def load_script(name: str):
     return module
 
 
-def write_execution_evidence(package: Path, task_id: str, status: str):
-    (package / "implementation-notes.md").write_text(
-        f"# Implementation Notes\n\n## Execution Log\n\n### {task_id} - Executed task\n\n- Status: {status}\n- Summary: test execution\n- Changes: none\n- Context Docs: none\n- Decisions: none\n- Follow-Ups: none\n- Blockers: none\n",
-        encoding="utf-8",
-    )
-    (package / "validation-evidence.md").write_text(
-        f"# Validation Evidence\n\n## Execution Run - {task_id}\n\n### Executed Checks\n\n- test: passed\n",
-        encoding="utf-8",
-    )
+def write_execution_records(package: Path, records: list[tuple[str, str]]) -> None:
+    notes = ["# Implementation Notes", "", "## Execution Log", ""]
+    validation = ["# Validation Evidence", ""]
+    for task_id, status in records:
+        notes.extend(
+            [
+                f"### {task_id} - Executed task",
+                "",
+                f"- Status: {status}",
+                "- Summary: test execution",
+                "- Changes: none",
+                "- Context Docs: none",
+                "- Decisions: none",
+                "- Follow-Ups: none",
+                "- Blockers: none",
+                "",
+            ]
+        )
+        validation.extend(
+            [
+                f"## Execution Run - {task_id}",
+                "",
+                "### Executed Checks",
+                "",
+                "- test: passed",
+                "",
+            ]
+        )
+    (package / "implementation-notes.md").write_text("\n".join(notes), encoding="utf-8")
+    (package / "validation-evidence.md").write_text("\n".join(validation), encoding="utf-8")
+
+
+def write_execution_evidence(package: Path, task_id: str, status: str) -> None:
+    write_execution_records(package, [(task_id, status)])
 
 
 def test_first_done_task_keeps_spec_in_progress(tmp_path: Path):
@@ -62,7 +89,7 @@ def test_all_done_tasks_close_spec(tmp_path: Path):
     root, spec_id = build_board(tmp_path)
     package = root / "specs" / spec_id
     (package / "tasks.md").write_text("# Tasks\n\n- [x] task001: First task\n- [ ] task002: Second task\n", encoding="utf-8")
-    write_execution_evidence(package, "task002", "done")
+    write_execution_records(package, [("task001", "done"), ("task002", "done")])
     sync = load_script("sync_execution_state.py")
     assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task002", "--status", "done"]) == 0
     assert load_yaml(root / "registry" / f"{spec_id}.yaml")["status"] == "done"
@@ -79,6 +106,109 @@ def test_state_validator_requires_matching_evidence(tmp_path: Path):
     validate = load_script("validate_execution_state.py")
     assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 0
     assert validate.main([str(root), "--spec-id", spec_id]) == 0
+
+
+def test_done_without_execution_evidence_fails_without_mutation(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    tracked = [
+        package / "tasks.md",
+        package / "manifest.yaml",
+        root / "registry" / f"{spec_id}.yaml",
+    ]
+    before = {path: path.read_bytes() for path in tracked}
+    sync = load_script("sync_execution_state.py")
+
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 1
+    assert {path: path.read_bytes() for path in tracked} == before
+
+
+def test_done_without_validation_run_fails_without_mutation(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    (package / "validation-evidence.md").unlink()
+    tracked = [
+        package / "tasks.md",
+        package / "manifest.yaml",
+        root / "registry" / f"{spec_id}.yaml",
+    ]
+    before = {path: path.read_bytes() for path in tracked}
+    sync = load_script("sync_execution_state.py")
+
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 1
+    assert {path: path.read_bytes() for path in tracked} == before
+
+
+def test_sync_rolls_back_all_files_when_registry_replace_fails(tmp_path: Path, monkeypatch):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    tracked = [
+        package / "tasks.md",
+        package / "manifest.yaml",
+        root / "registry" / f"{spec_id}.yaml",
+    ]
+    before = {path: path.read_bytes() for path in tracked}
+    sync = load_script("sync_execution_state.py")
+    real_replace = sync.REPLACE_FILE
+    failed = False
+
+    def fail_registry_once(source, destination):
+        nonlocal failed
+        if Path(destination) == tracked[2] and not failed:
+            failed = True
+            raise OSError("injected registry replace failure")
+        real_replace(source, destination)
+
+    monkeypatch.setattr(sync, "REPLACE_FILE", fail_registry_once)
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 1
+    assert failed is True
+    assert {path: path.read_bytes() for path in tracked} == before
+
+
+def test_concurrent_same_task_sync_is_serialized_and_deterministic(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    command = [
+        sys.executable,
+        str(SCRIPTS / "sync_execution_state.py"),
+        str(root),
+        "--spec-id",
+        spec_id,
+        "--task-id",
+        "task001",
+        "--status",
+        "done",
+    ]
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        results = list(executor.map(lambda _: subprocess.run(command, capture_output=True, text=True), range(2)))
+
+    assert [result.returncode for result in results] == [0, 0]
+    validate = load_script("validate_execution_state.py")
+    assert validate.main([str(root), "--spec-id", spec_id]) == 0
+    assert "- [x] task001:" in (package / "tasks.md").read_text(encoding="utf-8")
+
+
+def test_sync_rejects_impossible_execution_date_without_mutation(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    tracked = [
+        package / "tasks.md",
+        package / "manifest.yaml",
+        root / "registry" / f"{spec_id}.yaml",
+    ]
+    before = {path: path.read_bytes() for path in tracked}
+    sync = load_script("sync_execution_state.py")
+
+    assert sync.main([
+        str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done",
+        "--date", "2026-02-30",
+    ]) == 1
+    assert {path: path.read_bytes() for path in tracked} == before
 
 
 def test_readiness_blocks_unfinished_spec_dependency(tmp_path: Path):

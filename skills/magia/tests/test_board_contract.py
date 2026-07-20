@@ -70,6 +70,25 @@ def test_legacy_or_shorthand_identifiers_are_rejected(parser, value: str):
         parser(value)
 
 
+@pytest.mark.parametrize(
+    ("parser", "value"),
+    [
+        (parse_cycle_id, "cycle-2026-02-30-impossible"),
+        (parse_cycle_id, "cycle-0000-01-01-impossible"),
+        (parse_spec_id, "spec-2026-13-01-impossible"),
+        (parse_spec_id, "spec-2025-02-29-not-a-leap-day"),
+    ],
+)
+def test_identifiers_reject_impossible_calendar_dates(parser, value: str):
+    with pytest.raises(ValueError, match="real ISO date"):
+        parser(value)
+
+
+def test_identifiers_accept_valid_leap_day():
+    assert parse_cycle_id("cycle-2024-02-29-leap-cycle")["date"] == "2024-02-29"
+    assert parse_spec_id("spec-2024-02-29-leap-feature")["date"] == "2024-02-29"
+
+
 def test_board_registry_and_package_paths_resolve_from_suffix_free_ids(tmp_path: Path):
     repo_root = tmp_path
     resolved = resolve_board_root(
@@ -83,6 +102,20 @@ def test_board_registry_and_package_paths_resolve_from_suffix_free_ids(tmp_path:
     assert spec_package_path_error(resolved / "specs" / SPEC) is None
 
 
+def test_board_root_override_must_be_canonical_and_inside_repository(tmp_path: Path):
+    repo_root = tmp_path / "repo"
+    canonical = repo_root / "docs" / "boards" / "onboarding" / "2026" / "cycles" / CYCLE
+    assert resolve_board_root(repo_root, board_root_override=canonical) == canonical.resolve()
+
+    outside = tmp_path / "outside" / "docs" / "boards" / "onboarding" / "2026" / "cycles" / CYCLE
+    with pytest.raises(ValueError, match="inside the repository root"):
+        resolve_board_root(repo_root, board_root_override=outside)
+
+    noncanonical = repo_root / "docs" / "boards" / "onboarding" / "2026" / CYCLE
+    with pytest.raises(ValueError, match="board root must match"):
+        resolve_board_root(repo_root, board_root_override=noncanonical)
+
+
 def test_canonical_path_shape(tmp_path: Path):
     root, spec = build_board(tmp_path)
     assert board_root_path_error(root) is None
@@ -94,6 +127,38 @@ def test_canonical_path_shape(tmp_path: Path):
 def test_board_contract_is_valid(tmp_path: Path):
     root, _ = build_board(tmp_path)
     assert validate_board(root) == []
+
+
+def test_board_contract_rejects_created_at_dates_that_disagree_with_ids(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    cycle_path = root / "cycle.yaml"
+    cycle_path.write_text(
+        cycle_path.read_text(encoding="utf-8").replace("2026-04-20T00:00:00Z", "2026-04-21T00:00:00Z"),
+        encoding="utf-8",
+    )
+    registry_path = root / "registry" / f"{spec_id}.yaml"
+    registry_path.write_text(
+        registry_path.read_text(encoding="utf-8").replace("2026-04-20T00:00:00Z", "2026-04-22T00:00:00Z"),
+        encoding="utf-8",
+    )
+
+    errors = validate_board(root)
+    assert "cycle.yaml created_at date must match the date encoded in cycle_id" in errors
+    assert any("created_at date must match the date encoded in spec_id" in error for error in errors)
+
+
+def test_board_contract_rejects_dependency_with_impossible_date(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    registry_path = root / "registry" / f"{spec_id}.yaml"
+    registry_path.write_text(
+        registry_path.read_text(encoding="utf-8").replace(
+            "depends_on_specs: []",
+            "depends_on_specs:\n  - spec-2026-02-30-impossible-dependency",
+        ),
+        encoding="utf-8",
+    )
+
+    assert any("invalid depends_on_specs entry" in error for error in validate_board(root))
 
 
 def test_generated_aggregate_is_rejected(tmp_path: Path):

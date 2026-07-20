@@ -19,6 +19,17 @@ EXCLUDED_DIR_PATHS = {"docs/skill-benchmark", "reports", "generated-evidence", "
 EXCLUDED_FILE_NAMES = {".DS_Store"}
 EXCLUDED_SUFFIXES = {".pyc", ".pyo", ".tmp", ".zip"}
 ZIP_TIMESTAMP = (2026, 1, 1, 0, 0, 0)
+SAFE_INHERITED_ENV_KEYS = {
+    "LANG",
+    "LC_ALL",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "TMPDIR",
+    "WINDIR",
+}
 
 
 @dataclass
@@ -44,8 +55,10 @@ class PackageResult:
 
 
 def python_env(skill_root: Path) -> dict[str, str]:
-    env = dict(os.environ)
+    env = {key: value for key, value in os.environ.items() if key in SAFE_INHERITED_ENV_KEYS}
     env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONHASHSEED"] = "0"
+    env["PYTHONIOENCODING"] = "utf-8"
     python_paths: list[str] = [str(skill_root / "scripts")]
     version = f"python{sys.version_info.major}.{sys.version_info.minor}"
     venv_site = Path(sys.executable).resolve().parents[1] / "lib" / version / "site-packages"
@@ -60,6 +73,22 @@ def python_env(skill_root: Path) -> dict[str, str]:
             deduped.append(value)
     env["PYTHONPATH"] = os.pathsep.join(deduped)
     return env
+
+
+def trusted_skill_root() -> Path:
+    """Return the skill root that owns this packaging script."""
+    return Path(__file__).resolve().parents[1]
+
+
+def validate_target(skill_root: Path) -> Path:
+    """Reject packaging a different target with validators controlled by that target."""
+    root = skill_root.resolve()
+    trusted_root = trusted_skill_root()
+    if root != trusted_root:
+        raise ValueError(
+            f"refusing external target `{root}`; run the package script bundled with that skill root"
+        )
+    return root
 
 
 def command(skill_root: Path, script_name: str, *args: str) -> list[str]:
@@ -116,7 +145,7 @@ def zip_skill(skill_root: Path, output: Path) -> int:
 
 
 def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
-    root = skill_root.resolve()
+    root = validate_target(skill_root)
     env = python_env(root)
     gates = [
         run_gate("package-structure", command(root, "validate_skill_package.py", "--target", str(root)), env),
@@ -157,7 +186,11 @@ def main(argv: list[str] | None = None) -> int:
         print("ERROR: output file name must be exactly skill.zip", file=sys.stderr)
         return 2
 
-    result = validate_and_package(Path(args.target), Path(args.output))
+    try:
+        result = validate_and_package(Path(args.target), Path(args.output))
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     payload = to_jsonable(result)
     if args.json_output:
         output = Path(args.json_output)

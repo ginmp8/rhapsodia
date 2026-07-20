@@ -18,7 +18,9 @@ Do not share or install a zip from a failed gate.
 
 ## Packaging Rules
 
-`package_skill.py` excludes `.git`, caches, bytecode, temp/system files, generated evidence/report folders, and nested `.zip` files. Package/golden runners set `PYTHONPATH` to local `scripts/` plus interpreter package paths so validators can run under `python -S` without writing bytecode.
+`package_skill.py` excludes `.git`, caches, bytecode, temp/system files, generated evidence/report folders, and nested `.zip` files. It packages only the skill root that owns the running script, rejects an external `--target`, and invokes validators with a minimal allowlisted environment so credentials and unrelated process variables are not inherited. Package/golden runners set `PYTHONPATH` to local `scripts/` plus interpreter package paths so validators can run under `python -S` without writing bytecode.
+
+This is defense in depth, not a process sandbox: release CI must still run packaging without secrets, unnecessary write permissions, or privileged network credentials.
 
 The archive must be named exactly `skill.zip` and contain one top-level `nomia/` directory. `assets/icon.svg` and `agents/openai.yaml` are protected byte-for-byte: packaging, identity changes, metadata updates, and formatting tools must not alter, normalize, reserialize, or regenerate either file. Validate SHA-256 for both before and after mutation and again after ZIP extraction.
 
