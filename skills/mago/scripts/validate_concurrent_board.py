@@ -54,7 +54,6 @@ def validate_manifest_identity(package: Path, cycle_id: str, registry: dict[str,
         return
     expected = {
         "spec_id": registry.get("spec_id"),
-        "spec_uid": registry.get("spec_uid"),
         "cycle_id": cycle_id,
         "feature_key": registry.get("feature_key"),
     }
@@ -95,7 +94,7 @@ def validate(board_root: Path) -> Report:
         for package in sorted(path for path in specs_root.iterdir() if path.is_dir()):
             report.packages += 1
             if not SPEC_ID_RE.fullmatch(package.name):
-                report.error(f"{package}: package directory must use canonical date-feature-ULID spec_id")
+                report.error(f"{package}: package directory must use canonical spec-YYYY-MM-DD-feature-key spec_id")
                 continue
             record = by_id.get(package.name)
             if record is None:

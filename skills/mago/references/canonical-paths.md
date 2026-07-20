@@ -10,17 +10,19 @@ CANONICAL_SPEC_PACKAGE = {BOARD_ROOT}specs/<spec_id>/
 CANONICAL_SPEC_REGISTRY = {BOARD_ROOT}registry/<spec_id>.yaml
 ```
 
-A canonical root contains `cycle.yaml`. `cycle_id` is immutable and includes a creation date, readable cycle key, and ULID:
+A canonical root contains `cycle.yaml`. `cycle_id` is immutable and includes a creation date and readable cycle key:
 
 ```text
-<yyyy-mm-dd>-<cycle-key>--<ulid>
+cycle-<yyyy-mm-dd>-<cycle-key>
 ```
 
 A spec identity is:
 
 ```text
-spec-<yyyy-mm-dd>-<feature-key>--<ulid>
+spec-<yyyy-mm-dd>-<feature-key>
 ```
+
+Canonical examples are `cycle-2026-04-20-q2-delivery` and `spec-2026-04-20-csv-export-filtered-columns`. Do not append a ULID, hash, UUID, counter, sequence, or any other generated suffix.
 
 The `<year>` segment must match the creation year encoded in `cycle_id` and `cycle.yaml.created_at`.
 

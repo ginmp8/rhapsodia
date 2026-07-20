@@ -39,14 +39,32 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+def write_or_reuse_identical(path: Path, payload: dict[str, Any]) -> None:
+    text = dump_yaml(payload)
+    try:
+        atomic_write_text(path, text)
+        return
+    except FileExistsError:
+        if yaml is None:
+            raise RuntimeError("PyYAML is required")
+        try:
+            existing = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        except Exception as exc:
+            raise FileExistsError(f"{path}: identity path exists but cannot be verified: {exc}") from exc
+        if existing == payload:
+            print(f"REUSED: identical identity already exists: {path}", file=sys.stderr)
+            return
+        raise FileExistsError(f"{path}: identity path already exists with a different record")
+
+
 def create_cycle(args: argparse.Namespace) -> Path:
     repo_root = Path(args.repo_root).resolve()
     board_id = slugify(args.board_id)
     cycle_key = slugify(args.cycle_key)
     created_at = normalize_utc_timestamp(args.created_at or utc_now())
     created_date = created_at[:10]
-    cycle_id = make_cycle_id(cycle_key, created_date, args.ulid)
-    parsed = parse_cycle_id(cycle_id)
+    cycle_id = make_cycle_id(cycle_key, created_date)
+    parse_cycle_id(cycle_id)
     board_root = canonical_board_root(repo_root, board_id, created_date[:4], cycle_id)
     cycle_path = board_root / "cycle.yaml"
     if args.proposed_version and not SEMVER_RE.fullmatch(args.proposed_version):
@@ -54,7 +72,6 @@ def create_cycle(args: argparse.Namespace) -> Path:
     payload = {
         "kind": CANONICAL_CYCLE_KIND,
         "cycle_id": cycle_id,
-        "cycle_uid": parsed["ulid"],
         "cycle_key": cycle_key,
         "board_id": board_id,
         "year": int(created_date[:4]),
@@ -67,7 +84,7 @@ def create_cycle(args: argparse.Namespace) -> Path:
         "imported_from": None,
     }
     board_root.mkdir(parents=True, exist_ok=True)
-    atomic_write_text(cycle_path, dump_yaml(payload))
+    write_or_reuse_identical(cycle_path, payload)
     (board_root / "registry").mkdir(exist_ok=True)
     (board_root / "specs").mkdir(exist_ok=True)
     (board_root / "candidates").mkdir(exist_ok=True)
@@ -96,13 +113,12 @@ def create_spec(args: argparse.Namespace) -> Path:
     created_at = normalize_utc_timestamp(args.created_at or utc_now())
     if not SEMVER_RE.fullmatch(args.feature_version):
         raise ValueError("feature_version must use semantic versioning")
-    spec_id = make_spec_id(feature_key, created_at[:10], args.ulid)
-    parsed = parse_spec_id(spec_id)
+    spec_id = make_spec_id(feature_key, created_at[:10])
+    parse_spec_id(spec_id)
     registry_path = board_root / "registry" / f"{spec_id}.yaml"
     payload = {
         "kind": CANONICAL_SPEC_KIND,
         "spec_id": spec_id,
-        "spec_uid": parsed["ulid"],
         "cycle_id": cycle["cycle_id"],
         "feature_key": feature_key,
         "feature_version": args.feature_version,
@@ -127,7 +143,7 @@ def create_spec(args: argparse.Namespace) -> Path:
         },
         "imported_from": None,
     }
-    atomic_write_text(registry_path, dump_yaml(payload))
+    write_or_reuse_identical(registry_path, payload)
     return registry_path
 
 
@@ -142,7 +158,6 @@ def main(argv: list[str] | None = None) -> int:
     cycle.add_argument("--created-by", default="mago")
     cycle.add_argument("--created-at", help="ISO-8601 UTC timestamp; defaults to now")
     cycle.add_argument("--proposed-version")
-    cycle.add_argument("--ulid", help="Explicit ULID for deterministic import/testing only")
 
     spec = subparsers.add_parser("spec", help="Create one independent registry entry atomically.")
     spec.add_argument("--board-root", required=True)
@@ -157,13 +172,12 @@ def main(argv: list[str] | None = None) -> int:
     spec.add_argument("--downstream-mode", choices=("define", "define-product", "define-tasks"), default="define")
     spec.add_argument("--package-shape", choices=("full", "product_only", "tasks_only"), default="full")
     spec.add_argument("--created-at", help="ISO-8601 UTC timestamp; defaults to now")
-    spec.add_argument("--ulid", help="Explicit ULID for deterministic import/testing only")
 
     args = parser.parse_args(argv)
     try:
         path = create_cycle(args) if args.command == "cycle" else create_spec(args)
     except FileExistsError as exc:
-        print(f"ERROR: identity already exists; retry generation or resolve duplicate work: {exc}")
+        print(f"ERROR: identity collision; no suffix or counter was generated: {exc}")
         return 2
     except Exception as exc:
         print(f"ERROR: {exc}")

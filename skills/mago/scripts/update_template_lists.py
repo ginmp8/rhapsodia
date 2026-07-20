@@ -235,7 +235,7 @@ def validate_scalar(label: str, value: Any, item_type: str) -> None:
         return
     if item_type == "spec_id":
         if not isinstance(value, str) or not SPEC_ID_RE.fullmatch(value):
-            fail(f"{label} must use canonical spec-YYYY-MM-DD-feature-key--ULID format")
+            fail(f"{label} must use canonical spec-YYYY-MM-DD-feature-key format")
         return
     if item_type == "task_id":
         if not isinstance(value, str) or not TASK_ID_RE.fullmatch(value):

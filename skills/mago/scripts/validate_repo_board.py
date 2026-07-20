@@ -119,7 +119,7 @@ def validate_root_artifact_location(path: Path, repo_root: Path, board_root: Pat
         expected_spec_id = path.stem
         if not SPEC_ID_RE.fullmatch(expected_spec_id):
             errors.append(
-                f"{posix_rel(path, repo_root)}: registry filename must use the canonical date-feature-ULID spec_id"
+                f"{posix_rel(path, repo_root)}: registry filename must use canonical spec-YYYY-MM-DD-feature-key"
             )
     return errors
 
@@ -269,7 +269,7 @@ def validate_spec_packages(board_root: Path, repo_root: Path) -> tuple[list[str]
     for spec_package_path in sorted(path for path in specs_root.iterdir() if path.is_dir()):
         if not SPEC_ID_RE.fullmatch(spec_package_path.name):
             errors.append(
-                f"{posix_rel(spec_package_path, repo_root)}: spec directory must use a canonical date-feature-ULID spec_id"
+                f"{posix_rel(spec_package_path, repo_root)}: spec directory must use canonical spec-YYYY-MM-DD-feature-key"
             )
             continue
         technical_design_path = spec_package_path / "technical-design.md"
@@ -304,9 +304,7 @@ def validate_repository_uniqueness(repo_root: Path, board_root: Path) -> list[st
     except (ValueError, IndexError):
         return [f"{board_root}: cannot derive canonical board/year scope for uniqueness validation"]
 
-    cycle_uids: dict[str, list[Path]] = {}
     active_cycle_keys: dict[str, list[Path]] = {}
-    spec_uids: dict[str, list[Path]] = {}
 
     for cycle_dir in sorted(path for path in cycles_root.iterdir() if path.is_dir()):
         cycle_path = cycle_dir / "cycle.yaml"
@@ -321,9 +319,6 @@ def validate_repository_uniqueness(repo_root: Path, board_root: Path) -> list[st
             errors.append(f"{posix_rel(cycle_path, repo_root)}: invalid canonical cycle metadata")
             continue
 
-        cycle_uid = str(cycle.get("cycle_uid", "")).strip()
-        if cycle_uid:
-            cycle_uids.setdefault(cycle_uid, []).append(cycle_path)
         cycle_key = str(cycle.get("cycle_key", "")).strip()
         if cycle_key and cycle.get("status") in ACTIVE_CYCLE_STATUSES:
             active_cycle_keys.setdefault(cycle_key, []).append(cycle_path)
@@ -340,9 +335,6 @@ def validate_repository_uniqueness(repo_root: Path, board_root: Path) -> list[st
             if not isinstance(record, dict) or record.get("kind") != CANONICAL_SPEC_KIND:
                 errors.append(f"{posix_rel(registry_path, repo_root)}: invalid canonical registry metadata")
                 continue
-            spec_uid = str(record.get("spec_uid", "")).strip()
-            if spec_uid:
-                spec_uids.setdefault(spec_uid, []).append(registry_path)
 
     def report_duplicates(label: str, values: dict[str, list[Path]]) -> None:
         for value, paths in sorted(values.items()):
@@ -351,9 +343,7 @@ def validate_repository_uniqueness(repo_root: Path, board_root: Path) -> list[st
             rendered = ", ".join(posix_rel(path, repo_root) for path in paths)
             errors.append(f"duplicate {label} `{value}` across sibling cycles: {rendered}")
 
-    report_duplicates("cycle_uid", cycle_uids)
     report_duplicates("active cycle_key", active_cycle_keys)
-    report_duplicates("spec_uid", spec_uids)
     return errors
 
 

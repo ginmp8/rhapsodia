@@ -21,16 +21,16 @@ Never use semantic versioning, counters, or list position as a filesystem identi
 
 ## Atomic Identity Creation
 
-Create identities only with `scripts/create_planning_identity.py`. It uses a date-readable slug plus a lowercase ULID and atomic exclusive file creation. Manual IDs are allowed only when importing proven repository truth during `adapt` and must still validate.
+Create identities only with `scripts/create_planning_identity.py`. It uses the canonical date-readable cycle/spec format and atomic exclusive file creation. Manual canonical IDs are allowed only when importing proven repository truth during `adapt` and must still validate.
 
 Two workers creating unrelated specs write different files:
 
 ```text
-registry/spec-2026-07-19-audit-trail--<ulid-a>.yaml
-registry/spec-2026-07-19-compliance-events--<ulid-b>.yaml
+registry/spec-2026-07-19-audit-trail.yaml
+registry/spec-2026-07-19-compliance-events.yaml
 ```
 
-They do not modify a central list.
+They do not modify a central list. Distinct specs require distinct `feature_key` values. If a canonical ID or path already exists, do not overwrite it, add a suffix, or increment shared state. Reuse is allowed only after the existing record is proven identical; otherwise report an identity collision.
 
 ## Source of Truth
 
@@ -46,10 +46,10 @@ Do not create source-controlled `spec-catalog.yaml` or `define-queue.yaml` under
 
 The validator must reject:
 
-- duplicate cycle or spec ULIDs across sibling cycles in the same board/year;
 - multiple active cycles with the same `cycle_key` in the same board/year;
-- an ID whose date/feature/ULID does not match metadata;
-- multiple active specs with the same `feature_key` in one cycle unless supersession is explicit;
+- an ID whose date, cycle key, or feature key does not match metadata;
+- a canonical ID/path collision that represents a different record;
+- multiple specs with the same `feature_key` in one cycle;
 - missing dependencies or dependency cycles;
 - package directories with no registry entry;
 - registry/package manifest identity mismatches;
@@ -71,4 +71,4 @@ The renderer includes a registry digest and must produce byte-identical output f
 
 ## Old Planning Input
 
-Old layouts may be read during `adapt`, but they never become an alternative active model. The result of adaptation is always the canonical structure described above.
+Old layouts and IDs with ULID suffixes may be read only during `adapt`, but they never become valid canonical identities or an alternative active model. Preserve a legacy ID only as read-only traceability metadata. The result of adaptation is always the canonical structure described above.

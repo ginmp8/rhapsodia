@@ -101,8 +101,6 @@ def validate_cycle(board_root: Path, cycle: dict[str, Any]) -> list[str]:
         return errors
     if board_root.name != cycle_id:
         errors.append(f"{path}: cycle_id must match cycle directory `{board_root.name}`")
-    if str(cycle.get("cycle_uid", "")) != parsed["ulid"]:
-        errors.append(f"{path}: cycle_uid must match cycle_id ULID")
     if str(cycle.get("cycle_key", "")) != parsed["key"]:
         errors.append(f"{path}: cycle_key must match cycle_id key")
     year = str(cycle.get("year", ""))
@@ -147,8 +145,6 @@ def validate_record(board_root: Path, cycle: dict[str, Any], record: RegistryRec
         return errors
     if path.name != f"{spec_id}.yaml":
         errors.append(f"{path}: filename must match spec_id")
-    if str(data.get("spec_uid", "")) != parsed["ulid"]:
-        errors.append(f"{path}: spec_uid must match spec_id ULID")
     if str(data.get("feature_key", "")) != parsed["feature"]:
         errors.append(f"{path}: feature_key must match spec_id feature segment")
     if str(data.get("cycle_id", "")) != str(cycle.get("cycle_id", "")):
@@ -204,24 +200,17 @@ def validate_record(board_root: Path, cycle: dict[str, Any], record: RegistryRec
 def dependency_errors(records: list[RegistryRecord]) -> list[str]:
     errors: list[str] = []
     by_id = {record.spec_id: record for record in records}
-    active_by_feature: dict[str, list[str]] = {}
-    seen_uids: dict[str, str] = {}
+    by_feature: dict[str, list[str]] = {}
     for record in records:
-        uid = str(record.data.get("spec_uid", ""))
-        if uid in seen_uids:
-            errors.append(f"duplicate spec_uid `{uid}` in `{seen_uids[uid]}` and `{record.spec_id}`")
-        else:
-            seen_uids[uid] = record.spec_id
-        if record.status in ACTIVE_SPEC_STATUSES:
-            active_by_feature.setdefault(record.feature_key, []).append(record.spec_id)
+        by_feature.setdefault(record.feature_key, []).append(record.spec_id)
         for dependency in record.dependencies:
             if dependency == record.spec_id:
                 errors.append(f"{record.path}: spec cannot depend on itself")
             elif dependency not in by_id:
                 errors.append(f"{record.path}: missing dependency `{dependency}`")
-    for feature_key, ids in sorted(active_by_feature.items()):
+    for feature_key, ids in sorted(by_feature.items()):
         if len(ids) > 1:
-            errors.append(f"duplicate active feature_key `{feature_key}`: {', '.join(sorted(ids))}")
+            errors.append(f"duplicate feature_key `{feature_key}`: {', '.join(sorted(ids))}")
 
     state: dict[str, int] = {}
     stack: list[str] = []

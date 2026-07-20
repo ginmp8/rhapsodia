@@ -5,7 +5,7 @@
     {
       "id": "activate-discovery-001",
       "type": "should_activate",
-      "prompt": "Discover candidate work from this repository into the MAGO board for board_id onboarding and year 2026 and cycle_id 2026-04-01-q2--01arz3ndektsv4rrffq69g5fav.",
+      "prompt": "Discover candidate work from this repository into the MAGO board for board_id onboarding and year 2026 and cycle_id cycle-2026-04-01-q2-delivery.",
       "expected_behavior": "activate: Activate MAGO in discovery mode, resolve BOARD_ROOT, inspect repository evidence, and write only discovery artifacts.",
       "acceptance_criteria": [
         "selects discovery as the only primary mode",
@@ -17,7 +17,7 @@
     {
       "id": "activate-order-001",
       "type": "should_activate",
-      "prompt": "Order these discovery candidates into spec-catalog.yaml and define-queue.yaml for board_id onboarding year 2026 and cycle_id 2026-04-01-q2--01arz3ndektsv4rrffq69g5fav.",
+      "prompt": "Order these discovery candidates into spec-catalog.yaml and define-queue.yaml for board_id onboarding year 2026 and cycle_id cycle-2026-04-01-q2-delivery.",
       "expected_behavior": "activate: Activate MAGO in order mode and update only board-level ordering artifacts from evidence.",
       "acceptance_criteria": [
         "selects order mode",

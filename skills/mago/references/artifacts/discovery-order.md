@@ -57,7 +57,7 @@ Each registry file owns one ordered spec. Create new identities atomically throu
 ## registry/<spec_id>.yaml
 
 - purpose: canonical registration and define handoff for one planning item
-- required identity fields: `kind`, `spec_id`, `spec_uid`, `cycle_id`, `feature_key`, `created_at`
+- required identity fields: `kind`, `spec_id`, `cycle_id`, `feature_key`, `created_at`
 - required planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `priority`, `order_hint`
 - required dependency fields: `depends_on_features`, `depends_on_specs`
 - required lifecycle fields: `supersedes`, `superseded_by`
@@ -94,9 +94,9 @@ Each registry file owns one ordered spec. Create new identities atomically throu
 - every `candidate_id` in discovery-index.yaml must be unique
 - every `candidate_doc` listed in discovery-index.yaml must exist under `BOARD_ROOT`
 - every registry `source_candidates` path must exist and point to a discovery candidate doc under `BOARD_ROOT`
-- every registry filename, `spec_id`, and `spec_uid` must agree with canonical identity format
+- every registry filename and `spec_id` must agree with canonical identity format, and `feature_key` must agree with the ID feature segment
 - every package directory must have a matching registry record and matching manifest identity
-- active `feature_key` values must be unique unless supersession is explicit
+- every `feature_key` must be unique; distinct specs require distinct feature keys
 - every `depends_on_specs` value must resolve to a registry record and the dependency graph must be acyclic
 - never let a registry handoff claim a downstream mode or seed artifact set that linked discovery evidence cannot justify
 - generated catalog/queue views must reproduce registry state deterministically but remain noncanonical

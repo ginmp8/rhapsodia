@@ -4,8 +4,8 @@
 
 - `board_id`: required stable repository board segment under `docs/boards/`.
 - `year`: creation-year path segment; it must match the date encoded in `cycle_id`.
-- `cycle_id`: immutable physical cycle identity in `<yyyy-mm-dd>-<cycle-key>--<ulid>` format.
-- `spec_id`: immutable physical spec identity in `spec-<yyyy-mm-dd>-<feature-key>--<ulid>` format; preserve once assigned unless repository truth proves identity corruption.
+- `cycle_id`: immutable physical cycle identity in `cycle-<yyyy-mm-dd>-<cycle-key>` format.
+- `spec_id`: immutable physical spec identity in `spec-<yyyy-mm-dd>-<feature-key>` format; preserve once assigned unless repository truth proves identity corruption.
 - `feature_key`: stable lowercase kebab-case functional identity; it remains separate from physical `spec_id`.
 - `feature_version`: semantic capability/fix version; never use semantic versioning for filesystem identity or roadmap order.
 - `proposed_version` / `accepted_version`: optional delivery metadata; they do not define directories or IDs.
@@ -82,7 +82,7 @@ Templates are structural references and script inputs first. Use `scripts/create
 - registry filename, registry `spec_id`, and package directory must match.
 - registry `cycle_id` must match cycle.yaml.
 - manifest identity fields must match registry identity and the active cycle.
-- active `feature_key` values must be unique within a cycle unless explicit supersession makes the relationship unambiguous.
+- every `feature_key` must be unique within a cycle; distinct specs require distinct feature keys.
 - all `depends_on_specs` must resolve and form an acyclic graph; feature dependencies must be consistent with registered capabilities when resolvable.
 - any `taskNNN` referenced by task `Dependencies`, implementation-notes.md execution-log subsections, or `manifest.yaml.last_execution.task_id` must exist in tasks.md.
 - `implementation-notes.md` execution-log statuses: `not_started`, `in_progress`, `blocked`, `done`. Legacy notes.md execution logs are ignored until converted by MAGIA ADAPT.

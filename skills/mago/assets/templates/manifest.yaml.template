@@ -6,7 +6,6 @@
 
 kind: mago-spec-manifest
 spec_id: "<spec_id>"
-spec_uid: "<spec_uid>"
 cycle_id: "<cycle_id>"
 feature_key: "<feature_key>"
 title: "<title>"

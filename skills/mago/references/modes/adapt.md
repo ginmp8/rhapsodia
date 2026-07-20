@@ -47,4 +47,5 @@ After adaptation, continue later work with the smallest ordinary mode that match
 - when tasks are in scope, use stable `taskNNN` ids and do not backfill completed tasks without explicit documentary or repository evidence
 - create or reconcile cycle/registry/package YAML only when identity and state values are justified by source docs or repository truth
 - create new cycle/spec IDs atomically; preserve source IDs only as traceability metadata
+- legacy cycle/spec IDs with ULID suffixes are accepted only as read-only source input; canonical output must use the suffix-free formats and must not overwrite an existing identity
 - if contradictory sources cannot be reconciled honestly, block and record the conflict explicitly in notes.md when it is in scope; otherwise keep it explicit in the touched artifact

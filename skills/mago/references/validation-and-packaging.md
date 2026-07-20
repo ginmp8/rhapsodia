@@ -20,7 +20,7 @@ Default validator: `scripts/validate_artifact.py`; it dispatches by path/name. U
 
 ## Validation Gates
 
-A MAGO run is incomplete until relevant gates are known: canonical board root resolved; cycle/spec IDs and year/path agree; touched artifacts remain inside the board/registry/package boundaries; template-backed artifacts have no unresolved dynamic placeholders unless explicitly scaffolded; package IDs, task IDs, dependencies, status fields, handoff fields, and specialist metadata are consistent; duplicate active features and dependency cycles are absent; generated views are deterministic and external; repository-board validation passes when board artifacts changed; failures are blockers, not success.
+A MAGO run is incomplete until relevant gates are known: canonical board root resolved; cycle/spec IDs and year/path agree; touched artifacts remain inside the board/registry/package boundaries; template-backed artifacts have no unresolved dynamic placeholders unless explicitly scaffolded; package IDs, task IDs, dependencies, status fields, handoff fields, and specialist metadata are consistent; duplicate features and dependency cycles are absent; generated views are deterministic and external; repository-board validation passes when board artifacts changed; failures are blockers, not success.
 
 ## Generated View Validation
 

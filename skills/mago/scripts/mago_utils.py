@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
-import time
+import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -25,9 +25,15 @@ ULID_RE = re.compile(r"^[0-9a-hjkmnp-tv-z]{26}$")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 CYCLE_ID_RE = re.compile(
-    r"^(?P<date>\d{4}-\d{2}-\d{2})-(?P<key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+    r"^cycle-(?P<date>\d{4}-\d{2}-\d{2})-(?P<key>[a-z0-9]+(?:-[a-z0-9]+)*)$"
 )
 SPEC_ID_RE = re.compile(
+    r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature>[a-z0-9]+(?:-[a-z0-9]+)*)$"
+)
+LEGACY_CYCLE_ID_RE = re.compile(
+    r"^(?:cycle-)?(?P<date>\d{4}-\d{2}-\d{2})-(?P<key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+)
+LEGACY_SPEC_ID_RE = re.compile(
     r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
 )
 SEMVER_RE = re.compile(r"^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9a-z.-]+)?(?:\+[0-9a-z.-]+)?$")
@@ -45,24 +51,10 @@ def slugify(value: str) -> str:
     return text
 
 
-def _encode_base32(value: int, length: int) -> str:
-    chars = ["0"] * length
-    for index in range(length - 1, -1, -1):
-        chars[index] = ULID_ALPHABET[value & 31]
-        value >>= 5
-    return "".join(chars)
-
-
 def new_ulid(timestamp_ms: int | None = None, entropy: bytes | None = None) -> str:
-    """Create a lowercase Crockford ULID; injectable inputs support deterministic tests."""
-    timestamp = int(time.time() * 1000) if timestamp_ms is None else timestamp_ms
-    if timestamp < 0 or timestamp >= 2**48:
-        raise ValueError("timestamp_ms must fit in 48 bits")
-    random_bytes = os.urandom(10) if entropy is None else entropy
-    if len(random_bytes) != 10:
-        raise ValueError("entropy must contain exactly 10 bytes")
-    value = (timestamp << 80) | int.from_bytes(random_bytes, "big")
-    return _encode_base32(value, 26)
+    """Reject retired ULID generation while preserving the former public helper symbol."""
+    del timestamp_ms, entropy
+    raise ValueError("ULID generation is retired; canonical MAGO identities have no automatic suffix")
 
 
 def validate_iso_date(value: str) -> date:
@@ -91,19 +83,17 @@ def normalize_utc_timestamp(value: str) -> str:
 def make_cycle_id(cycle_key: str, created_date: str | None = None, ulid: str | None = None) -> str:
     day = validate_iso_date(created_date or datetime.now(timezone.utc).date().isoformat()).isoformat()
     key = slugify(cycle_key)
-    identity = ulid or new_ulid()
-    if not ULID_RE.fullmatch(identity):
-        raise ValueError(f"invalid ULID: {identity!r}")
-    return f"{day}-{key}--{identity}"
+    if ulid is not None:
+        raise ValueError("ULID suffixes are not valid in canonical cycle_id values")
+    return f"cycle-{day}-{key}"
 
 
 def make_spec_id(feature_key: str, created_date: str | None = None, ulid: str | None = None) -> str:
     day = validate_iso_date(created_date or datetime.now(timezone.utc).date().isoformat()).isoformat()
     feature = slugify(feature_key)
-    identity = ulid or new_ulid()
-    if not ULID_RE.fullmatch(identity):
-        raise ValueError(f"invalid ULID: {identity!r}")
-    return f"spec-{day}-{feature}--{identity}"
+    if ulid is not None:
+        raise ValueError("ULID suffixes are not valid in canonical spec_id values")
+    return f"spec-{day}-{feature}"
 
 
 def parse_cycle_id(value: str) -> dict[str, str]:
@@ -122,12 +112,28 @@ def parse_spec_id(value: str) -> dict[str, str]:
     return match.groupdict()
 
 
+def parse_legacy_cycle_id(value: str) -> dict[str, str]:
+    match = LEGACY_CYCLE_ID_RE.fullmatch(value)
+    if not match:
+        raise ValueError(f"legacy cycle_id has invalid read-only adapt format: {value!r}")
+    validate_iso_date(match.group("date"))
+    return match.groupdict()
+
+
+def parse_legacy_spec_id(value: str) -> dict[str, str]:
+    match = LEGACY_SPEC_ID_RE.fullmatch(value)
+    if not match:
+        raise ValueError(f"legacy spec_id has invalid read-only adapt format: {value!r}")
+    validate_iso_date(match.group("date"))
+    return match.groupdict()
+
+
 def validate_spec_id(value: str) -> str | None:
     try:
         parse_spec_id(value)
         return None
     except ValueError:
-        return f"spec_id must use spec-YYYY-MM-DD-feature-key--ULID, got `{value}`"
+        return f"spec_id must use spec-YYYY-MM-DD-feature-key, got `{value}`"
 
 
 def board_root(repo_root: Path, board_id: str, year: str | int, cycle_id: str) -> Path:
@@ -204,16 +210,22 @@ def resolve_spec_package_path(
 
 def atomic_write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    temporary_path = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
             stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary_path, 0o644)
+        os.link(temporary_path, path)
     except Exception:
+        raise
+    finally:
         try:
-            path.unlink()
+            temporary_path.unlink()
         except FileNotFoundError:
             pass
-        raise
 
 
 def canonical_yaml_digest(paths: Iterable[Path]) -> str:

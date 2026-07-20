@@ -11,7 +11,7 @@
 ## Discovery Input Rules
 
 - treat discovery artifacts as upstream evidence and traceability, not as identity or sequencing truth
-- never import `spec_id`, immutable ULID identity, priority, dependency order, or `feature_version` from discovery artifacts without independent planning evidence
+- never import `spec_id`, immutable identity, priority, dependency order, or `feature_version` from discovery artifacts without independent planning evidence
 - reuse a stable provisional `feature_key` only when the capability boundary remains supported
 
 ## Ordering Workflow
@@ -26,7 +26,7 @@
 8. Assign priority and optional `order_hint` conservatively; dependency topology remains authoritative.
 9. Keep `depends_on_features` and `depends_on_specs` distinct.
 10. Reconcile the registry handoff for every ordered spec so downstream define preparation is explicit.
-11. Validate duplicate active features, missing dependencies, cycles, and registry/package drift with `scripts/validate_repo_board.py`.
+11. Validate duplicate features, missing dependencies, cycles, and registry/package drift with `scripts/validate_repo_board.py`.
 12. Render external catalog/queue projections only for inspection or CI with `scripts/render_registry_views.py`.
 
 ## Catalog Shape
@@ -35,7 +35,7 @@ The canonical catalog is the set of independent registry records. Generated `spe
 
 ### Registry Shape
 
-- identity fields: `kind`, `spec_id`, `spec_uid`, `cycle_id`, `feature_key`, `created_at`
+- identity fields: `kind`, `spec_id`, `cycle_id`, `feature_key`, `created_at`
 - planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `priority`, `order_hint`
 - dependency fields: `depends_on_features`, `depends_on_specs`
 - lifecycle fields: `supersedes`, `superseded_by`
@@ -61,7 +61,7 @@ Catalog authoring means creating or reconciling independent registry records; it
 - create identities and initial registry records with scripts/create_planning_identity.py; use templates directly only as read-only structural references when no script can perform the needed check
 - keep existing truthful values when a registry record already established them
 - replace placeholders and examples with real values derived from discovery evidence and repository truth
-- never reuse an existing ULID for a different cycle or spec
+- never reuse an existing canonical ID or path for a different cycle or spec; do not generate a suffix or counter to hide a collision
 - do not copy template literals for identity, status, priority, dependency, handoff, or feature version blindly
 - do not mutate another worker's unrelated registry record while ordering one candidate
 
@@ -73,7 +73,7 @@ Catalog authoring means creating or reconciling independent registry records; it
 - do not force weak discovery evidence into the registry
 - set `handoff.status: ready_for_prepare_define` only when the ordered discovery artifacts already justify a stable downstream package shape
 - if the boundary is too ambiguous, stop and keep ordering blocked rather than inventing structure
-- duplicate active `feature_key` values are semantic conflicts to resolve, not sequence collisions to renumber
+- duplicate `feature_key` values are semantic conflicts to resolve, not sequence collisions to renumber
 
 ## Output Rules
 
