@@ -1,15 +1,19 @@
 interface:
   display_name: nomia
-  short_description: Product and delivery governance clerk for intake, status, roadmap
+  short_description:
+    Product and delivery governance clerk for intake, status, roadmap
     bookkeeping, and handoff records.
-  default_prompt: Use $nomia to register, normalize, validate, or report on nomia-owned
+  default_prompt:
+    Use $nomia to register, normalize, validate, or report on nomia-owned
     governance artifacts only; route technical design, ADRs, Mago technical planning,
     and execution to Mago or Magia.
   allow_implicit_invocation: true
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+    - chatgpt
+    - codex
+    - api
+    - atlas
   allow_implicit_invocation: true

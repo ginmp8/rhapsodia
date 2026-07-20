@@ -1,6 +1,25 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M7 20.4524C6.225 20.4524 5.53333 20.2857 4.925 19.9524C4.31667 19.6107 3.84167 19.1357 3.5 18.5274C3.16667 17.9191 3 17.2274 3 16.4524V6.45239C3 5.67739 3.16667 4.98573 3.5 4.37739C3.84167 3.76906 4.31667 3.29823 4.925 2.96489C5.53333 2.62323 6.225 2.45239 7 2.45239H17C17.775 2.45239 18.4667 2.62323 19.075 2.96489C19.6833 3.29823 20.1542 3.76906 20.4875 4.37739C20.8292 4.98573 21 5.67739 21 6.45239V16.4524C21 17.2274 20.8292 17.9191 20.4875 18.5274C20.1542 19.1357 19.6833 19.6107 19.075 19.9524C18.4667 20.2857 17.775 20.4524 17 20.4524H7Z" fill="#4D4D4D"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M7.95981 8.77245C8.22487 8.41907 8.72648 8.34735 9.07992 8.6123C9.43319 8.87741 9.50509 9.37903 9.24008 9.73241L7.79965 11.6523L9.24008 13.5723C9.50496 13.9257 9.43325 14.4273 9.07992 14.6924C8.72654 14.9573 8.22491 14.8854 7.95981 14.5322L6.16 12.1328C5.94667 11.8484 5.94667 11.4563 6.16 11.1719L7.95981 8.77245Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.6844 8.89452C12.882 8.49943 13.3625 8.33957 13.7577 8.5371C14.1526 8.73474 14.3136 9.21526 14.1161 9.61034L11.7157 14.4101C11.5181 14.8051 11.0375 14.9649 10.6424 14.7676C10.2473 14.57 10.0865 14.0895 10.284 13.6943L12.6844 8.89452Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M15.3202 8.6123C15.6736 8.34741 16.1752 8.41908 16.4403 8.77245L18.2401 11.1719C18.4533 11.4563 18.4534 11.8484 18.2401 12.1328L16.4403 14.5322C16.1753 14.8855 15.6736 14.9571 15.3202 14.6924C14.9667 14.4273 14.8949 13.9257 15.16 13.5723L16.5995 11.6523L15.16 9.73241C14.8949 9.37896 14.9667 8.87738 15.3202 8.6123Z" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Magia</title>
+  <desc id="desc">Ícone de feitiço em forma de código com estrela, representando execução, validação e transformação.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#082834"/><stop offset="1" stop-color="#090d1d"/>
+    </linearGradient>
+    <radialGradient id="orb">
+      <stop stop-color="#fff"/><stop offset=".28" stop-color="#a5f3fc"/><stop offset=".72" stop-color="#22d3ee" stop-opacity=".35"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)" stroke="#22d3ee" stroke-width="12"/>
+  <circle cx="256" cy="266" r="163" fill="none" stroke="#164e63" stroke-width="7"/>
+  <circle cx="256" cy="266" r="130" fill="none" stroke="#22d3ee" stroke-width="8" stroke-linecap="round" stroke-dasharray="18 22"/>
+  <circle cx="256" cy="266" r="120" fill="url(#orb)" opacity=".84"/>
+  <g stroke="#67e8f9" stroke-width="12" stroke-linecap="round" filter="url(#glow)">
+    <path d="M256 82v42M386 136l-30 30M440 266h-42M386 396l-30-30M256 450v-42M126 396l30-30M72 266h42M126 136l30 30"/>
+  </g>
+  <path d="m213 211-55 55 55 55M299 211l55 55-55 55" fill="none" stroke="#ecfeff" stroke-width="27" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  <path d="m278 183-44 166" stroke="#5eead4" stroke-width="23" stroke-linecap="round" filter="url(#glow)"/>
+  <path d="m256 53 13 37 37 13-37 13-13 37-13-37-37-13 37-13Z" fill="#fff" stroke="#67e8f9" stroke-width="7" filter="url(#glow)"/>
 </svg>

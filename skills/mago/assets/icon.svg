@@ -1,8 +1,25 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M19.58 4.38996C18.05 2.86996 15.68 2.88996 14.18 4.38996L5.26999 13.33C4.25999 14.34 3.84999 14.92 3.59999 16.26L3.06999 19.56C2.88999 20.47 3.50999 21.09 4.43999 20.93L7.74999 20.39C9.06999 20.18 9.64999 19.76 10.66 18.75L19.58 9.82996C21.1 8.30996 21.12 5.93996 19.58 4.40996V4.38996Z" fill="#FEBD08"/>
-<path d="M19.58 9.81997C21.1 8.29997 21.12 5.92997 19.58 4.39997C18.05 2.87997 15.68 2.89997 14.18 4.39997L13.77 4.80997L19.18 10.22L19.58 9.81997Z" fill="#FF928C"/>
-<path d="M13.7694 4.81308L12.3552 6.22729L17.7646 11.6367L19.1788 10.2224L13.7694 4.81308Z" fill="#D9D9D9"/>
-<path opacity="0.5" d="M12.36 6.22998L5.26998 13.34C4.25998 14.35 3.84998 14.93 3.59998 16.27L3.06998 19.57C2.97998 20.02 3.08998 20.4 3.32998 20.65L15.05 8.92998L12.36 6.22998Z" fill="white"/>
-<path d="M4.60001 14.05C4.06001 14.69 3.79001 15.27 3.60001 16.26L3.51001 16.81L7.18001 20.48L7.75001 20.39C8.74001 20.23 9.31001 19.96 9.95001 19.41L4.60001 14.05Z" fill="#FFDDBC"/>
-<path d="M3.50999 16.8101L3.06999 19.5601C2.88999 20.4701 3.50999 21.0901 4.43999 20.9301L7.17999 20.4801L3.50999 16.8101Z" fill="#4D4D4D"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Mago</title>
+  <desc id="desc">Ícone de chapéu de mago com estrela e planta técnica, representando planejamento e arquitetura.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#171033"/><stop offset="1" stop-color="#090d1d"/>
+    </linearGradient>
+    <linearGradient id="hat" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#5b21b6"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)" stroke="#8b5cf6" stroke-width="12"/>
+  <path d="M183 311c43-58 69-119 91-198 5-18 29-22 40-7 18 25 14 71 56 97 23 14 34 42 22 66-20 40-137 68-209 42Z" fill="url(#hat)"/>
+  <path d="M288 115c2 79-22 143-77 202 53 10 128-3 169-38-74 5-76-86-92-164Z" fill="#312e81" opacity=".72"/>
+  <path d="M148 304c76 24 177 24 259-2 18-6 38 4 43 22 5 19-6 38-26 44-94 28-210 27-296-4-19-7-28-28-18-45 8-13 23-20 38-15Z" fill="#6d28d9" stroke="#ddd6fe" stroke-width="10"/>
+  <path d="m327 191 10 25 27 2-21 18 7 27-23-15-24 15 7-27-21-18 28-2Z" fill="#fff7cc" filter="url(#glow)"/>
+  <g transform="translate(150 377)">
+    <rect width="212" height="64" rx="18" fill="#171a34" stroke="#a78bfa" stroke-width="8"/>
+    <path d="M33 18v28M57 20h69M57 42h104" stroke="#ddd6fe" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="33" cy="32" r="17" fill="#312e81" stroke="#c4b5fd" stroke-width="5"/>
+  </g>
 </svg>
