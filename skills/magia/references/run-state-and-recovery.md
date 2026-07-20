@@ -1,56 +1,76 @@
-# Run State, Recovery, and Multi-Repository Execution
+# Run State and Recovery
 
-Load for multi-step, interruptible, automated, governed, or multi-repository work. Run-state controls execution and is the machine summary; it does not replace required human implementation/validation records.
+Use a machine-readable run state for resumable, multi-step, governed, multi-repository, or interruption-prone execution. The state is execution evidence, not a substitute for repository truth.
 
 ## Contract
 
-Schema `1` requires:
+A run state records:
 
-- identity/control: `run_id`, `profile`, internal `mode`, `status`, `checkpoint`, `pending_step`, bounded `scope`;
-- evidence/writes: fingerprinted repository-relative `inspected_files`, `planned_writes`, `completed_writes`, and commands with `pass|fail|not_run`;
-- outcome/recovery: `validation_status`, `convergence_status`, `retry`, `cancellation`, `rollback_evidence`, `handoff`;
-- repositories: dependency order, checkpoint/status, compatibility window, rollback state, and `atomicity: not_guaranteed` for more than one repository.
+- schema version and run identity;
+- source mode and execution profile;
+- repository root, selected scope, task, and allowed writes;
+- inspected files and their fingerprints;
+- planned and completed writes;
+- commands with pass, fail, or not-run results;
+- current checkpoint and pending step;
+- status: active, cancelled, retry_pending, rollback_pending, rolled_back, handed_off, blocked, or closed;
+- retry count, cancellation reason, rollback evidence, and handoff state;
+- creation and update timestamps.
 
-Locations: ADHOC `.magia/run-state/<run_id>.json`; RALPH `{BOARD_ROOT}/specs/<spec_id>/.magia/run-state.json`; multi-repo uses one explicit coordinator state with per-repo entries. Never imply a distributed transaction.
+Use `scripts/run_state.py` to create and transition the contract. Use `assets/templates/run-state.json.template` as the field reference.
 
-Validate before resume/close:
+## Fingerprints and Drift
 
-```bash
-python scripts/validate_run_state.py --state <file> --repo-root <root> --verify-drift --json
-```
+Fingerprint every inspected or frozen source file that supports the next action. A fingerprint includes existence, size, and SHA-256 content digest. Before resume:
 
-## Transitions
+1. resolve the stored repository root;
+2. recompute every tracked fingerprint;
+3. compare existence and digest;
+4. stop with `repository_drift` when any tracked file changed, appeared, or disappeared;
+5. re-inspect and create a new checkpoint or run before continuing.
 
-Checkpoints are `inspect|execute|validate|converge|close`; statuses are `pending|in_progress|paused|cancelled|blocked|failed|completed|rolled_back|handoff`.
+Never resume blindly after branch changes, dependency changes, generated-code changes, migrations, or external contract updates. Directory names alone are not sufficient evidence; track the concrete files relied upon.
 
-- Resume `paused|blocked|failed|in_progress` only after rechecking scope, file hashes, dependencies, and pending step.
-- Any source/dependency drift stops with `repository_drift`; inspect again, restart safely, or hand off.
-- `completed` requires `close`, null pending step, validation `pass`, convergence `satisfied`, no failed repo, and no cancellation request.
-- Cancellation preserves writes/evidence; retry is bounded and records the prior category; repeated failure without new evidence stops.
-- Rollback records action, affected scope, result, and residual state; rollback failure is a separate blocker.
+## Checkpoints
 
-## Multi-Repository Protocol
+Create a checkpoint after a meaningful, independently reviewable transition:
 
-1. Record dependency order and compatibility windows before writes.
-2. Checkpoint and validate each repository before dependents.
-3. Prefer expand-contract: add compatible behavior, migrate, then remove old behavior.
-4. On partial failure, stop dependents, preserve compatible successes, assess rollback per repo, and report residual topology.
-5. Keep `atomicity: not_guaranteed` unless a real external transaction/orchestrator proves otherwise.
-6. Stop when compatibility/rollback cannot preserve a supported state or ordering would change planning intent.
+- scope and profile resolved;
+- reproduction or baseline captured;
+- bounded patch applied;
+- targeted validation completed;
+- repository-level boundary completed;
+- convergence evaluated;
+- rollback completed;
+- handoff prepared;
+- closure completed.
 
-## Failure Taxonomy
+A checkpoint must identify the next pending step. Do not use a checkpoint to imply a successful command that was not executed.
 
-- `input_blocker`: locate/request concrete input; no unbounded mutation.
-- `repository_drift`: stop resume, refresh context/fingerprints, restart safely.
-- `reproducibility_failure`: gather evidence; do not patch a guessed cause.
-- `implementation_failure`: repair the bounded patch or roll back.
-- `test_failure`: diagnose, repair, or revert; never complete.
-- `environment_failure`: retry only with transient evidence; otherwise block/record `not_run`.
-- `dependency_failure`: isolate/fallback only within intent; otherwise hand off.
-- `contract_conflict`: stop incompatible rollout; hand material change to Mago.
-- `planning_gap`: technical-gap handoff to Mago; do not rewrite intent.
-- `governance_gap`: hand owner/date/status/risk acceptance to nomia.
-- `security_stop`: stop exposure, redact, preserve evidence, recommend containment/rotation.
-- `rollback_failure`: freeze rollout and report residual state/operator action.
+## Cancellation
 
-Every failure records category, evidence, repair/retry/rollback decision, next safe checkpoint, and handoff target.
+Cancellation stops new mutation. Preserve accepted completed writes and evidence, set status to `cancelled`, record the reason, and report whether rollback is required. Cancellation is not completion.
+
+## Retry
+
+Retry only the failed or blocked step when inputs and fingerprints still match. Increment retry count and retain the earlier failed result. Do not overwrite failure history. If the failure class or source assumptions changed, re-inspect instead of retrying.
+
+## Rollback
+
+Rollback must identify:
+
+- files, migrations, repositories, or operations reverted;
+- command or manual evidence;
+- pass, fail, or not-run status;
+- remaining side effects;
+- whether a forward fix is safer than reversal.
+
+Set `rollback_pending` before reversal and `rolled_back` only after evidence exists. A rollback failure is a separate stop category and cannot be hidden by returning the run to active.
+
+## Handoff
+
+Set `handed_off` when execution cannot continue within MAGIA authority. Record destination owner category, evidence path or summary, exact planning/governance gap, and the safe state of completed writes. Do not rewrite product intent to avoid a handoff.
+
+## Close
+
+Close only after validation and convergence have current evidence. Closed state includes final checkpoint, no pending mutation step, command outcomes, changed-file mapping, and residual risks. A closed run can be inspected but not resumed; create a new run for follow-up work.

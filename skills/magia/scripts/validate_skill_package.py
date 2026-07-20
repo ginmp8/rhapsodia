@@ -15,7 +15,6 @@ from typing import Any
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
 from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
-from validate_execution_scenarios import validate_suite as validate_execution_suite
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with " + "actual|this is a " + "placeholder)", re.IGNORECASE)
@@ -83,6 +82,55 @@ def rel(path: Path, root: Path) -> str:
 ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
 REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
+BOOSTER_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
+BOOSTER_PREFIXES = {
+    "should_activate": ("activate",),
+    "should_not_activate": ("do_not_activate",),
+    "ambiguous": ("clarify_or_", "activate only"),
+    "edge_case": ("activate_and_refuse", "refuse", "activate"),
+}
+
+
+def validate_booster_scenarios(path: Path) -> list[str]:
+    errors: list[str] = []
+    if not path.exists():
+        return [f"missing booster scenario suite: {path.name}"]
+    try:
+        payload = json.loads(read_text(path))
+    except Exception as exc:  # noqa: BLE001
+        return [f"booster scenario suite is invalid JSON: {exc}"]
+    scenarios = payload.get("scenarios")
+    if not isinstance(scenarios, list) or len(scenarios) < 8:
+        return ["booster scenario suite must contain at least 8 scenarios"]
+    seen: set[str] = set()
+    counts: dict[str, int] = {}
+    for index, scenario in enumerate(scenarios):
+        label = f"index {index}"
+        if not isinstance(scenario, dict):
+            errors.append(f"booster scenario {label} is not an object")
+            continue
+        sid = scenario.get("id") or label
+        if sid in seen:
+            errors.append(f"duplicate booster scenario id: {sid}")
+        seen.add(str(sid))
+        stype = scenario.get("type")
+        if stype not in BOOSTER_SCENARIO_TYPES:
+            errors.append(f"booster scenario {sid} has invalid type: {stype}")
+            continue
+        counts[stype] = counts.get(stype, 0) + 1
+        prompt = scenario.get("prompt")
+        if not isinstance(prompt, str) or len(prompt.strip()) < 12:
+            errors.append(f"booster scenario {sid} prompt is missing or too short")
+        expected = scenario.get("expected_behavior")
+        if not isinstance(expected, str) or not expected.strip().startswith(BOOSTER_PREFIXES[stype]):
+            errors.append(f"booster scenario {sid} expected_behavior conflicts with type {stype}")
+        criteria = scenario.get("acceptance_criteria")
+        if not isinstance(criteria, list) or not criteria or not all(isinstance(item, str) and item.strip() for item in criteria):
+            errors.append(f"booster scenario {sid} must have non-empty string acceptance criteria")
+    missing = BOOSTER_SCENARIO_TYPES - set(counts)
+    if missing:
+        errors.append(f"booster scenario suite missing types: {sorted(missing)}")
+    return errors
 
 
 def validate_shared_artifact_boundaries(target: Path) -> list[str]:
@@ -209,32 +257,35 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/board-contract.md",
         "references/common-execution.md",
         "references/resource-map.md",
-        "references/execution-profiles.md",
-        "references/run-state-and-recovery.md",
-        "references/convergence-and-validation.md",
-        "references/public-artifact-adapters.md",
         "references/package-delivery.md",
         "references/modes/adhoc.md",
         "references/modes/ralph.md",
         "references/artifacts/execution-records.md",
         "references/artifacts/execution-evidence.md",
         "references/validation-and-closure.md",
-        "assets/templates/implementation-notes.md.template",
+        "references/execution-profiles.md",
+        "references/run-state-and-recovery.md",
+        "references/convergence-and-validation.md",
+        "references/multi-repository-execution.md",
+        "references/public-artifact-adapters.md",
+        "references/failure-recovery-taxonomy.md",
         "assets/templates/run-state.json.template",
+        "assets/templates/execution-summary.json.template",
+        "assets/templates/convergence-report.json.template",
+        "assets/templates/implementation-notes.md.template",
         "assets/templates/validation-evidence.md.template",
         "assets/templates/technical-gap-note.md.template",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
-        "evals/execution-scenarios.json",
+        "evals/booster-activation-scenarios.json",
+        "scripts/run_state.py",
+        "scripts/select_validation.py",
+        "scripts/validate_convergence.py",
+        "scripts/adapt_public_artifacts.py",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
-        "scripts/validate_run_state.py",
-        "scripts/select_validation_profile.py",
-        "scripts/validate_convergence.py",
-        "scripts/normalize_public_artifacts.py",
-        "scripts/validate_execution_scenarios.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]
@@ -293,12 +344,8 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(validate_eval_scenarios(target / "evals" / "activation-scenarios.json"))
     checks.append("eval scenarios")
 
-    try:
-        execution_payload = json.loads(read_text(target / "evals" / "execution-scenarios.json"))
-        errors.extend(validate_execution_suite(execution_payload))
-    except Exception as exc:  # noqa: BLE001
-        errors.append(f"execution scenario suite is invalid JSON: {exc}")
-    checks.append("execution scenarios")
+    errors.extend(validate_booster_scenarios(target / "evals" / "booster-activation-scenarios.json"))
+    checks.append("booster scenario schema")
 
     errors.extend(validate_shared_artifact_boundaries(target))
     checks.append("shared artifact boundaries")
@@ -320,23 +367,22 @@ def zip_required_resources() -> list[str]:
         "SKILL.md",
         "agents/openai.yaml",
         "references/resource-map.md",
+        "references/package-delivery.md",
+        "examples/activation-scenarios.json",
+        "evals/activation-scenarios.json",
+        "evals/booster-activation-scenarios.json",
         "references/execution-profiles.md",
         "references/run-state-and-recovery.md",
         "references/convergence-and-validation.md",
         "references/public-artifact-adapters.md",
-        "references/package-delivery.md",
-        "examples/activation-scenarios.json",
-        "evals/activation-scenarios.json",
-        "evals/execution-scenarios.json",
+        "scripts/run_state.py",
+        "scripts/select_validation.py",
+        "scripts/validate_convergence.py",
+        "scripts/adapt_public_artifacts.py",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
-        "scripts/validate_run_state.py",
-        "scripts/select_validation_profile.py",
-        "scripts/validate_convergence.py",
-        "scripts/normalize_public_artifacts.py",
-        "scripts/validate_execution_scenarios.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]

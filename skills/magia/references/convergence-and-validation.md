@@ -1,49 +1,75 @@
-# Deterministic Convergence and Risk-Driven Validation
+# Convergence and Risk-Driven Validation
 
-Load before validation planning and close. Completion must be traceable, not narrative.
+Validation proves selected technical behavior. Convergence proves that the implementation evidence covers the approved intent without silently changing it.
 
-## Convergence
+## Convergence Chain
+
+Evaluate this chain for each bounded requirement or task:
 
 ```text
-requirements/objective -> acceptance criteria -> tasks -> changed files -> checks -> evidence
+requirements
+-> acceptance criteria
+-> planned tasks
+-> changed files
+-> tests and checks
+-> validation evidence
 ```
 
-Create one item per requirement or bounded ADHOC objective. Statuses:
+Use `scripts/validate_convergence.py` with the contract in `assets/templates/convergence-report.json.template`.
 
-- `satisfied`: current implementation/evidence covers it;
-- `partially_satisfied`: required behavior/evidence is missing;
-- `unsatisfied`: absent or contradicted;
-- `obsolete`: superseded with authoritative evidence;
-- `unverified`: implementation may exist but evidence is insufficient;
-- `out_of_scope`: excluded by selected scope with reason;
-- `planning_change_required`: code evidence requires Mago to change intent, criteria, tasks, sequence, architecture, contract, or data model.
+## Allowed Statuses
 
-Every modified file maps to an item and an applicable check. Completion requires every in-scope item `satisfied`, no unverified file, current evidence, and no unresolved planning change. Validate with `scripts/validate_convergence.py`.
+- `satisfied`: current evidence covers the item.
+- `partially_satisfied`: some required evidence or implementation is missing.
+- `unsatisfied`: implementation or validation contradicts the item.
+- `obsolete`: source authority explicitly superseded the item; cite that authority.
+- `unverified`: implementation may exist but current evidence is missing.
+- `out_of_scope`: the item is explicitly excluded from this run without being silently dropped.
+- `planning_change_required`: execution evidence shows approved intent, acceptance criteria, task definition, architecture, public behavior, persistence, or sequencing must change.
 
-## Risk Selection
+MAGIA may emit a technical-gap handoff for `planning_change_required`; it must not rewrite the planning source. Governed closure requires every in-scope item to be `satisfied` or explicitly accepted by the owning authority outside MAGIA.
 
-Classify current changes by file/generated types, components/dependencies, public API/event/schema/interface contracts, persistence/migrations/caches/data repair, auth/authz/secrets/PII/compliance, concurrency/idempotency/order/retries, performance/resource limits, messaging/observability/infrastructure/deployment, rollback complexity, and cross-service/repo compatibility.
+## Risk Inputs
 
-```bash
-python scripts/select_validation_profile.py --input <change-facts.json> --json
-```
+Select validation from changed evidence, not generic habit. Inspect:
 
-The selector returns strictest profile, reasons, checks, documentation triggers, run-state need, and rollback expectation.
+- file types and generated/source relationships;
+- changed components and dependency boundaries;
+- public API, event, schema, file, and interface contracts;
+- persistence, migrations, transactions, and data transforms;
+- authentication, authorization, secrets, and PII;
+- concurrency, ordering, idempotency, retries, and messaging;
+- performance-sensitive paths and resource limits;
+- observability, infrastructure, configuration, and rollout;
+- rollback complexity and blast radius.
 
-Required checks by signal:
+Use `scripts/select_validation.py` for deterministic selection from a JSON change descriptor. The script provides a minimum profile and checks; repository evidence may only add checks or escalate the profile.
 
-- localized docs/config/code: focused check; syntax/build when applicable;
-- normal feature/bug/refactor: targeted tests, applicable build/lint/static, regression, smoke;
-- public/API/event/schema: contract tests, compatibility/consumer evidence, smoke;
-- persistence/migration: migration and forward/backward compatibility, data-loss review, rollback;
-- auth/authz/secrets/PII/compliance: security and negative-auth tests, redaction, permission/secret evidence;
-- concurrency/order: concurrency/property plus retry/duplicate/reordering checks;
-- performance: representative check or explicit `not_run` risk with baseline/limit evidence;
-- messaging/observability/infrastructure: build/static, smoke, operational and rollback/runbook evidence;
-- cross-service/repo or difficult rollback: governed profile, full relevant suite, compatibility window, per-repo checkpoints/rollback.
+## Risk-to-Check Matrix
 
-`not_run` requires a concrete reason/residual risk and does not satisfy governed work unless equivalent current evidence is named and accepted.
+| Risk class | Minimum checks |
+|---|---|
+| localized code or docs | targeted test or static check; syntax/link/package check as applicable |
+| shared code or normal feature | targeted tests, build/type/lint as applicable, regression check |
+| public contract | contract/schema compatibility tests, consumer impact review, smoke check |
+| persistence or migration | migration validation, expand-contract review, data/rollback check, integration test |
+| auth, secrets, PII, security | authorization/security checks, secret-safe logs, negative tests, least-privilege review |
+| concurrency or messaging | ordering/idempotency/retry tests, race or duplicate-delivery reasoning, operational signals |
+| performance | representative benchmark or load check, limits, regression comparison |
+| observability or infrastructure | configuration/static validation, deployment/smoke/operational verification, rollback |
+| multi-repository | per-repository checks, compatibility-window checks, cross-repository evidence |
 
-## Close Gate
+A check can be `not-run` only with a concrete reason and residual risk. Not-run evidence never becomes a pass.
 
-Run selected checks; validate convergence; verify run-state hashes when resumable/governed; sync truthful records; hand planning/governance changes to Mago/nomia; emit concise, redacted evidence.
+## Evidence Compression
+
+Keep complete evidence without repeating raw output:
+
+1. one machine-readable execution summary using `assets/templates/execution-summary.json.template`;
+2. focused implementation notes describing actual changes and decisions;
+3. focused validation evidence listing commands, results, and gaps;
+4. migration, contract, security, observability, runbook, or troubleshooting documents only when triggered;
+5. references to stored logs or command summaries instead of copied output;
+6. redaction of secrets, credentials, PII, tokens, cookies, and sensitive logs.
+
+Human closure should summarize the decision-relevant evidence and point to durable records. It should not reproduce the run-state document or command transcript.

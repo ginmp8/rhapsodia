@@ -1,47 +1,24 @@
 {
   "schema_version": 1,
-  "run_id": "run-local-change",
-  "profile": "standard",
+  "run_id": "run-id",
   "mode": "adhoc",
-  "status": "pending",
-  "checkpoint": "inspect",
-  "pending_step": "inspect selected scope",
-  "scope": {
-    "repo_root": ".",
-    "task": null,
-    "spec_id": null
-  },
+  "profile": "standard",
+  "repository_root": "/absolute/repository/root",
+  "scope": "bounded scope",
+  "task": null,
+  "allowed_writes": [],
+  "tracked_files": {},
   "inspected_files": [],
-  "dependency_fingerprint": null,
   "planned_writes": [],
   "completed_writes": [],
   "commands": [],
-  "validation_status": "not_run",
-  "convergence_status": "unverified",
-  "retry": {
-    "count": 0,
-    "max": 1,
-    "last_reason": null
-  },
-  "cancellation": {
-    "requested": false,
-    "reason": null
-  },
+  "checkpoint": "inspect_complete",
+  "pending_step": "execute",
+  "status": "active",
+  "retry_count": 0,
+  "cancellation_reason": null,
   "rollback_evidence": [],
-  "handoff": {
-    "target": "none",
-    "reason": null
-  },
-  "atomicity": "single_repository",
-  "repositories": [
-    {
-      "id": "primary",
-      "path": ".",
-      "dependency_order": 0,
-      "status": "pending",
-      "checkpoint": "inspect",
-      "compatibility_window": null,
-      "rollback_status": "not_required"
-    }
-  ]
+  "handoff": null,
+  "created_at": "ISO-8601 UTC",
+  "updated_at": "ISO-8601 UTC"
 }

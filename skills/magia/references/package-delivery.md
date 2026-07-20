@@ -14,9 +14,6 @@ Load only to validate, export, or package MAGIA itself.
 
 ```text
 python scripts/validate_skill_package.py --target <skill-root>
-python scripts/validate_execution_scenarios.py evals/execution-scenarios.json
-python scripts/validate_run_state.py assets/templates/run-state.json.template
-python -m pytest -q
 python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate
 python scripts/validate_skill_package.py --target <skill-root> --zip <output-dir>/skill.zip
 ```
@@ -29,10 +26,9 @@ Folder and archive validators must pass before readiness is claimed.
 2. Every local reference from `SKILL.md` resolves inside the package.
 3. Required resources exist: agent metadata, references, scripts, MAGIA-owned templates, examples, evals.
 4. Python scripts compile.
-5. Activation scenarios remain planned unless prompt outputs were captured; the frozen execution suite passes its deterministic schema/category validator.
-6. The canonical run-state template passes structural validation, and package tests pass.
-7. Source and zip are readable, cache-free, blocked-path-free, secret-path-free, and have one top-level skill directory.
-8. No scaffold markers remain outside templates.
+5. Scenario files keep planned fields null unless measured evidence exists.
+6. Source and zip are readable, cache-free, blocked-path-free, secret-path-free, and have one top-level skill directory.
+7. No scaffold markers remain outside templates.
 
 ## Evidence to Report
 
