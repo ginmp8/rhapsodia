@@ -107,7 +107,7 @@ def zip_skill(skill_root: Path, output: Path) -> int:
         destination.unlink()
     with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for path in files:
-            rel = path.relative_to(root).as_posix()
+            rel = f"nomia/{path.relative_to(root).as_posix()}"
             info = zipfile.ZipInfo(rel, date_time=ZIP_TIMESTAMP)
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
@@ -122,6 +122,13 @@ def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
         run_gate("package-structure", command(root, "validate_skill_package.py", "--target", str(root)), env),
         run_gate("activation-scenarios", command(root, "validate_activation_scenarios.py", str(root / "examples" / "activation-scenarios.json")), env),
         run_gate("golden-examples", command(root, "validate_golden_examples.py", "--skill-root", str(root)), env),
+        run_gate("identity-contract", command(root, "validate_identity_contract.py", "--target", str(root)), env),
+        run_gate("contract-preservation", command(root, "validate_contract_preservation.py", "--target", str(root)), env),
+        run_gate(
+            "unit-tests",
+            [sys.executable, "-S", "-m", "unittest", "discover", "-s", str(root / "tests"), "-p", "test_*.py"],
+            env,
+        ),
     ]
     if any(gate.returncode != 0 for gate in gates):
         return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)

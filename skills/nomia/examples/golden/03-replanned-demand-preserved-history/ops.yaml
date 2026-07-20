@@ -1,5 +1,5 @@
 schema_version: 1
-spec_id: spec021
+spec_id: spec-2026-04-20-csv-export-filtered-columns--01jt1b2c3d4e5f6g7h8j9kmnpq
 request:
   title: CSV export should preserve filtered dashboard table columns
   requester: customer-success
@@ -69,7 +69,7 @@ repos:
   candidate_impacted: []
 links:
   mago:
-    - docs/board/2026/specs/spec021/manifest.yaml
+    - docs/boards/workspace-admin/2026/cycles/2026-04-20-workspace-admin--01jt1a2b3c4d5e6f7g8h9jkmnp/specs/spec-2026-04-20-csv-export-filtered-columns--01jt1b2c3d4e5f6g7h8j9kmnpq/manifest.yaml
   magia: []
   external:
     - https://github.com/example/redash/issues/4821

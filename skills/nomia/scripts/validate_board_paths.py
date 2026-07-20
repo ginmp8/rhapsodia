@@ -8,12 +8,22 @@ import re
 import sys
 from pathlib import Path
 
-from nomia_utils import BOARD_ROOT_TEMPLATE, normalize_path, read_normalized_lines, resolve_board_root, unique
+from nomia_utils import (
+    BOARD_ROOT_TEMPLATE,
+    SPEC_ID_RE,
+    YEAR_RE,
+    infer_year_from_cycle_id,
+    normalize_path,
+    parse_canonical_board_root,
+    parse_cycle_id,
+    read_normalized_lines,
+    resolve_board_root,
+    unique,
+)
 
 CANONICAL_PARTS = ("docs", "boards")
-SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
-SKILL_PACKAGE_DIRS = {"agents", "assets", "evals", "examples", "references", "scripts"}
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$")
+SKILL_PACKAGE_DIRS = {"agents", "assets", "evals", "examples", "references", "scripts", "tests"}
 SKILL_PACKAGE_FILES = {"SKILL.md", "skill.md"}
 BOARD_SCOPED_ARTIFACTS = {
     "feature-map.yaml",
@@ -67,16 +77,21 @@ def is_under_canonical_root(parts: list[str]) -> bool:
 def validate_slug(label: str, value: str, errors: list[str]) -> None:
     if not value:
         errors.append(f"{label} is required")
-    elif not SLUG_RE.match(value):
+    elif not SLUG_RE.fullmatch(value):
         errors.append(f"{label} `{value}` must be lowercase slug-safe")
 
 
 def validate_spec_id(value: str, errors: list[str], path: str) -> None:
-    if not SPEC_ID_RE.match(value):
-        errors.append(f"{path}: spec_id `{value}` must use `specNNN` format")
+    if not SPEC_ID_RE.fullmatch(value):
+        errors.append(f"{path}: spec_id `{value}` must use spec-YYYY-MM-DD-feature-key--ULID format")
 
 
-def validate_path(path: str, expected_board_id: str | None, expected_cycle_version: str | None) -> list[str]:
+def validate_path(
+    path: str,
+    expected_board_id: str | None,
+    expected_cycle_id: str | None,
+    expected_year: str | None = None,
+) -> list[str]:
     errors: list[str] = []
     if is_skill_package_path(path):
         return []
@@ -86,22 +101,32 @@ def validate_path(path: str, expected_board_id: str | None, expected_cycle_versi
 
     if not under_root and is_nomia_artifact(path):
         return [f"{path}: nomia artifact must be under {BOARD_ROOT_TEMPLATE}"]
-
     if not under_root:
         return []
 
-    if len(parts) >= 4:
-        board_id = parts[2]
-        cycle_version = parts[3]
-        validate_slug("board_id", board_id, errors)
-        validate_slug("cycle_version", cycle_version, errors)
-        if expected_board_id and board_id != expected_board_id:
-            errors.append(f"{path}: board_id must be `{expected_board_id}`")
-        if expected_cycle_version and cycle_version != expected_cycle_version:
-            errors.append(f"{path}: cycle_version must be `{expected_cycle_version}`")
+    if len(parts) < 7 or parts[4] != "cycles":
+        return [f"{path}: expected canonical root {BOARD_ROOT_TEMPLATE}"]
 
-    if len(parts) == 5:
-        artifact_name = parts[4]
+    board_id, year, cycle_id = parts[2], parts[3], parts[5]
+    validate_slug("board_id", board_id, errors)
+    if not YEAR_RE.fullmatch(year):
+        errors.append(f"{path}: year `{year}` must use YYYY format")
+    try:
+        parsed_year = infer_year_from_cycle_id(cycle_id)
+    except ValueError as exc:
+        errors.append(f"{path}: {exc}")
+    else:
+        if year != parsed_year:
+            errors.append(f"{path}: year `{year}` conflicts with cycle_id creation year `{parsed_year}`")
+    if expected_board_id and board_id != expected_board_id:
+        errors.append(f"{path}: board_id must be `{expected_board_id}`")
+    if expected_year and year != expected_year:
+        errors.append(f"{path}: year must be `{expected_year}`")
+    if expected_cycle_id and cycle_id != expected_cycle_id:
+        errors.append(f"{path}: cycle_id must be `{expected_cycle_id}`")
+
+    if len(parts) == 7:
+        artifact_name = parts[6]
         if artifact_name not in BOARD_SCOPED_ARTIFACTS:
             if artifact_name in SPEC_SCOPED_ARTIFACTS:
                 errors.append(f"{path}: `{artifact_name}` must be under {BOARD_ROOT_TEMPLATE}specs/<spec_id>/")
@@ -109,9 +134,9 @@ def validate_path(path: str, expected_board_id: str | None, expected_cycle_versi
                 errors.append(f"{path}: artifact name is not nomia-owned")
         return errors
 
-    if len(parts) == 7 and parts[4] == "specs":
-        spec_id = parts[5]
-        artifact_name = parts[6]
+    if len(parts) == 9 and parts[6] == "specs":
+        spec_id = parts[7]
+        artifact_name = parts[8]
         validate_spec_id(spec_id, errors, path)
         if artifact_name not in SPEC_SCOPED_ARTIFACTS:
             if artifact_name in BOARD_SCOPED_ARTIFACTS:
@@ -127,14 +152,13 @@ def validate_path(path: str, expected_board_id: str | None, expected_cycle_versi
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(
-        description=f"Validate nomia artifact paths under {BOARD_ROOT_TEMPLATE}."
-    )
+    parser = argparse.ArgumentParser(description=f"Validate nomia artifact paths under {BOARD_ROOT_TEMPLATE}.")
     parser.add_argument("paths", nargs="*", help="Changed paths or artifact paths to validate.")
     parser.add_argument("--changed-files", help="Newline-delimited file containing changed paths.")
-    parser.add_argument("--board-root", help="Explicit BOARD_ROOT override. When omitted, use --board_id and --cycle_version if provided.")
+    parser.add_argument("--board-root", help="Explicit BOARD_ROOT override. When omitted, use --board_id, --year, and --cycle_id.")
     parser.add_argument("--board_id", help="Expected board_id slug.")
-    parser.add_argument("--cycle_version", help="Expected cycle_version slug.")
+    parser.add_argument("--year", help="Expected creation year in YYYY format.")
+    parser.add_argument("--cycle_id", help="Expected immutable cycle_id.")
     args = parser.parse_args(argv)
 
     paths = [normalize_path(path).lstrip("./") for path in args.paths]
@@ -153,25 +177,43 @@ def main(argv: list[str]) -> int:
                 Path.cwd(),
                 board_root_override=args.board_root,
                 board_id=args.board_id,
-                cycle_version=args.cycle_version,
+                year=args.year,
+                cycle_id=args.cycle_id,
             )
+            parsed = parse_canonical_board_root(resolved_board_root)
         except ValueError as exc:
             errors.append(str(exc))
         else:
-            parts = [part for part in resolved_board_root.as_posix().split("/") if part]
-            if len(parts) >= 2:
-                args.board_id = parts[-2]
-                args.cycle_version = parts[-1]
+            for field in ("board_id", "year", "cycle_id"):
+                supplied = getattr(args, field)
+                if supplied and supplied != parsed[field]:
+                    errors.append(f"{field} `{supplied}` conflicts with BOARD_ROOT `{parsed[field]}`")
+                setattr(args, field, parsed[field])
+    elif args.cycle_id:
+        try:
+            parsed_year = infer_year_from_cycle_id(args.cycle_id)
+        except ValueError as exc:
+            errors.append(str(exc))
+        else:
+            if args.year and args.year != parsed_year:
+                errors.append(f"year `{args.year}` conflicts with cycle_id creation year `{parsed_year}`")
+            args.year = args.year or parsed_year
+
     if args.board_id:
         validate_slug("board_id", args.board_id, errors)
-    if args.cycle_version:
-        validate_slug("cycle_version", args.cycle_version, errors)
+    if args.year and not YEAR_RE.fullmatch(args.year):
+        errors.append(f"year `{args.year}` must use YYYY format")
+    if args.cycle_id:
+        try:
+            parse_cycle_id(args.cycle_id)
+        except ValueError as exc:
+            errors.append(str(exc))
 
     if not paths:
         errors.append("provide at least one path or --changed-files")
 
     for path in paths:
-        errors.extend(validate_path(path, args.board_id, args.cycle_version))
+        errors.extend(validate_path(path, args.board_id, args.cycle_id, args.year))
 
     errors = unique(errors)
     if errors:

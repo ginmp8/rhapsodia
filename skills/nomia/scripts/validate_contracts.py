@@ -9,7 +9,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from nomia_utils import load_yaml_mapping, read_normalized_lines, unique
+from nomia_utils import (
+    YEAR_RE,
+    infer_year_from_cycle_id,
+    load_yaml_mapping,
+    parse_spec_id,
+    read_normalized_lines,
+    unique,
+    validate_cycle_id_format,
+    validate_spec_id_format,
+)
 
 
 nomia_ARTIFACTS = {
@@ -28,37 +37,53 @@ nomia_ARTIFACTS = {
     "portfolio.md",
     "portfolio.yaml",
 }
-MAGO_ARTIFACTS = {"spec-catalog.yaml", "define-queue.yaml", "manifest.yaml", "prd.md", "tasks.md", "notes.md", "validation.md"}
-MAGIA_EVIDENCE_MARKERS = {"execution-evidence.yaml", "execution-log.yaml", "execution-record.yaml"}
-SPEC_PACKAGE_RE = re.compile(r"(^|/|\\)specs(/|\\)[^/\\]+(/|\\)(manifest.yaml|prd.md|tasks.md|notes.md|validation.md)$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
-CYCLE_VERSION_RE = re.compile(r"^\d{2}\.\d{2}\.\d{2}$")
+MAGO_ARTIFACTS = {
+    "cycle.yaml",
+    "manifest.yaml",
+    "prd.md",
+    "tasks.md",
+    "notes.md",
+    "validation.md",
+    "technical-design.md",
+    "architecture-decisions.md",
+    "execution-handoff-plan.md",
+    "contract-spec.md",
+    "migration-strategy.md",
+    "observability-design.md",
+    "operational-requirements.md",
+    "security-and-risk-considerations.md",
+    "open-questions.md",
+    "spec-catalog.yaml",
+    "define-queue.yaml",
+}
+MAGIA_EVIDENCE_MARKERS = {
+    "execution-evidence.yaml",
+    "execution-log.yaml",
+    "execution-record.yaml",
+    "implementation-notes.md",
+    "validation-evidence.md",
+    "implementation-adr.md",
+    "runbook.md",
+    "migration-execution-note.md",
+    "contract-change-note.md",
+    "observability-note.md",
+    "troubleshooting.md",
+    "security-risk-note.md",
+    "technical-gap-note.md",
+}
+SPEC_PACKAGE_RE = re.compile(
+    r"(^|/|\\)specs(/|\\)[^/\\]+(/|\\)(manifest.yaml|prd.md|tasks.md|notes.md|validation.md|technical-design.md|architecture-decisions.md|execution-handoff-plan.md|contract-spec.md|migration-strategy.md|observability-design.md|operational-requirements.md|security-and-risk-considerations.md|open-questions.md)$"
+)
+REGISTRY_RE = re.compile(r"(^|/|\\)registry(/|\\)[^/\\]+\.yaml$")
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-CONTROLLED_RALPH_FILES = {"manifest.yaml", "tasks.md", "notes.md", "validation.md"}
-MAGIA_PLANNING_INTENT_FILES = {"prd.md"}
+CONTROLLED_RALPH_FILES = {"manifest.yaml", "tasks.md"}
+MAGIA_PLANNING_INTENT_FILES = {"prd.md", "notes.md", "validation.md", "technical-design.md"}
 CONTRACT_YAML_REQUIREMENT = "PyYAML is required to validate nomia contract YAML artifacts."
-SKILL_PACKAGE_DIRS = {"agents", "assets", "evals", "examples", "references", "scripts"}
+SKILL_PACKAGE_DIRS = {"agents", "assets", "evals", "examples", "references", "scripts", "tests"}
 SKILL_PACKAGE_FILES = {"SKILL.md", "skill.md"}
 CODE_SUFFIXES = {
-    ".py",
-    ".js",
-    ".jsx",
-    ".ts",
-    ".tsx",
-    ".go",
-    ".rs",
-    ".java",
-    ".rb",
-    ".php",
-    ".cs",
-    ".c",
-    ".cc",
-    ".cpp",
-    ".h",
-    ".hpp",
-    ".sh",
-    ".ps1",
-    ".sql",
+    ".py", ".js", ".jsx", ".ts", ".tsx", ".go", ".rs", ".java", ".rb", ".php",
+    ".cs", ".c", ".cc", ".cpp", ".h", ".hpp", ".sh", ".ps1", ".sql",
 }
 
 
@@ -93,9 +118,18 @@ def is_nomia_owned(path: str) -> bool:
     return is_under_skill(normalized, "nomia") or name in nomia_ARTIFACTS or "/nomia/" in f"/{normalized}/"
 
 
+def is_registry_file(path: str) -> bool:
+    return bool(REGISTRY_RE.search(normalize_repo_path(path)))
+
+
 def is_mago_owned(path: str) -> bool:
     name = Path(path).name
-    return is_under_skill(path, "mago") or name in MAGO_ARTIFACTS or bool(SPEC_PACKAGE_RE.search(path))
+    return (
+        is_under_skill(path, "mago")
+        or name in MAGO_ARTIFACTS
+        or bool(SPEC_PACKAGE_RE.search(path))
+        or is_registry_file(path)
+    )
 
 
 def is_magia_owned(path: str) -> bool:
@@ -138,13 +172,15 @@ def validate_actor(actor: str, changed_files: list[str]) -> list[str]:
                 errors.append(f"magia must not write nomia-owned artifact `{path}`")
             if name in MAGIA_PLANNING_INTENT_FILES:
                 errors.append(f"magia must not rewrite Mago planning intent or task definitions in `{path}`")
+            elif is_registry_file(path):
+                continue
             elif is_mago_owned(path) and not (is_spec_package_file(path) and name in CONTROLLED_RALPH_FILES):
-                errors.append(f"magia may only update controlled RALPH execution-state files in Mago packages: `{path}`")
+                errors.append(f"magia may only update controlled execution-state files in Mago packages: `{path}`")
         elif actor == "nomia":
             if is_under_skill(path, "mago") or is_under_skill(path, "magia"):
                 errors.append(f"nomia must not write Mago or Magia files: `{path}`")
             elif is_mago_owned(path):
-                errors.append(f"nomia must not write Mago planning package artifact `{path}`")
+                errors.append(f"nomia must not write Mago planning or registry artifact `{path}`")
             elif is_magia_owned(path):
                 errors.append(f"nomia must not write Magia execution record `{path}`")
             elif is_repository_code(path):
@@ -156,18 +192,25 @@ def validate_actor(actor: str, changed_files: list[str]) -> list[str]:
 
 
 def validate_spec_id(label: str, value: Any, errors: list[str]) -> None:
-    if value not in (None, "") and not SPEC_ID_RE.match(str(value)):
-        errors.append(f"{label} must use `specNNN` format")
+    error = validate_spec_id_format(value)
+    if error:
+        errors.append(f"{label} {error}")
 
 
 def validate_feature_key(label: str, value: Any, errors: list[str]) -> None:
-    if value not in (None, "") and not FEATURE_KEY_RE.match(str(value)):
+    if value not in (None, "") and not FEATURE_KEY_RE.fullmatch(str(value)):
         errors.append(f"{label} must be lowercase hyphen-case")
 
 
-def validate_cycle_version(label: str, value: Any, errors: list[str]) -> None:
-    if value not in (None, "") and not CYCLE_VERSION_RE.match(str(value)):
-        errors.append(f"{label} must use `NN.NN.NN` format")
+def validate_cycle_id(label: str, value: Any, errors: list[str]) -> None:
+    error = validate_cycle_id_format(value)
+    if error:
+        errors.append(f"{label} {error}")
+
+
+def validate_year(label: str, value: Any, errors: list[str]) -> None:
+    if value not in (None, "") and not YEAR_RE.fullmatch(str(value)):
+        errors.append(f"{label} must use YYYY format")
 
 
 def roadmap_contract_index(path: Path) -> tuple[list[str], dict[str, dict[str, Any]], dict[str, str]]:
@@ -187,6 +230,14 @@ def roadmap_contract_index(path: Path) -> tuple[list[str], dict[str, dict[str, A
         candidate = feature.get("candidate_spec_id")
         validate_feature_key(f"{path}: features[{index}].feature_key", feature_key, errors)
         validate_spec_id(f"{path}: features[{index}].candidate_spec_id", candidate, errors)
+        if candidate and feature_key:
+            try:
+                parsed = parse_spec_id(str(candidate))
+            except ValueError:
+                pass
+            else:
+                if parsed["feature_key"] != str(feature_key):
+                    errors.append(f"{path}: features[{index}].candidate_spec_id feature key must match feature_key")
         if feature_key:
             features[str(feature_key)] = feature
         if candidate:
@@ -211,6 +262,14 @@ def feature_map_contract_index(path: Path) -> tuple[list[str], dict[str, dict[st
         candidate = feature.get("candidate_spec_id")
         validate_feature_key(f"{path}: features[{index}].feature_key", feature_key, errors)
         validate_spec_id(f"{path}: features[{index}].candidate_spec_id", candidate, errors)
+        if candidate and feature_key:
+            try:
+                parsed = parse_spec_id(str(candidate))
+            except ValueError:
+                pass
+            else:
+                if parsed["feature_key"] != str(feature_key):
+                    errors.append(f"{path}: features[{index}].candidate_spec_id feature key must match feature_key")
         if feature_key:
             features[str(feature_key)] = feature
         if candidate:
@@ -227,16 +286,34 @@ def execution_evidence_identity(path: Path) -> tuple[list[str], dict[str, Any]]:
         return [f"{path}: {exc}"], identity
 
     source = data.get("identity") if isinstance(data.get("identity"), dict) else data
-    for key in ("spec_id", "feature_key", "cycle_version", "candidate_spec_id"):
+    for key in ("board_id", "year", "cycle_id", "spec_id", "feature_key", "candidate_spec_id"):
         if key in source:
             identity[key] = source.get(key)
 
     validate_spec_id(f"{path}: spec_id", identity.get("spec_id"), errors)
     validate_spec_id(f"{path}: candidate_spec_id", identity.get("candidate_spec_id"), errors)
     validate_feature_key(f"{path}: feature_key", identity.get("feature_key"), errors)
-    validate_cycle_version(f"{path}: cycle_version", identity.get("cycle_version"), errors)
+    validate_cycle_id(f"{path}: cycle_id", identity.get("cycle_id"), errors)
+    validate_year(f"{path}: year", identity.get("year"), errors)
+    if identity.get("cycle_id"):
+        try:
+            parsed_year = infer_year_from_cycle_id(str(identity["cycle_id"]))
+        except ValueError:
+            pass
+        else:
+            if identity.get("year") and str(identity["year"]) != parsed_year:
+                errors.append(f"{path}: year must match cycle_id creation year `{parsed_year}`")
     if identity.get("candidate_spec_id") and identity.get("spec_id") and identity["candidate_spec_id"] != identity["spec_id"]:
         errors.append(f"{path}: candidate_spec_id must match spec_id when both are present")
+    evidence_spec = identity.get("spec_id") or identity.get("candidate_spec_id")
+    if evidence_spec and identity.get("feature_key"):
+        try:
+            parsed = parse_spec_id(str(evidence_spec))
+        except ValueError:
+            pass
+        else:
+            if parsed["feature_key"] != str(identity["feature_key"]):
+                errors.append(f"{path}: spec_id feature key must match feature_key")
     return errors, identity
 
 
@@ -299,7 +376,6 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     errors: list[str] = []
-
     if args.changed_files and not args.actor:
         errors.append("--actor is required with --changed-files")
     if args.actor and not args.changed_files:
@@ -310,12 +386,7 @@ def main(argv: list[str]) -> int:
         if not changed_path.exists():
             errors.append(f"changed-files list does not exist: {changed_path}")
         else:
-            errors.extend(
-                validate_actor(
-                    args.actor or "",
-                    read_normalized_lines(changed_path),
-                )
-            )
+            errors.extend(validate_actor(args.actor or "", read_normalized_lines(changed_path)))
 
     errors.extend(
         validate_contract_files(

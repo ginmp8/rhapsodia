@@ -9,12 +9,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from nomia_utils import has_unresolved_template_token, is_missing, load_yaml_mapping, scan_unresolved_template_tokens, unique
+from nomia_utils import (
+    has_unresolved_template_token,
+    is_missing,
+    load_yaml_mapping,
+    parse_spec_id,
+    scan_unresolved_template_tokens,
+    unique,
+    validate_spec_id_format,
+)
 
 
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 ROADMAP_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
 VALID_HORIZONS = {"unknown", "now", "next", "later", "future"}
 VALID_COMMITMENTS = {"unknown", "committed", "targeted", "exploratory", "parking_lot"}
 VALID_CONFIDENCE = {"unknown", "low", "medium", "high"}
@@ -74,8 +81,9 @@ def validate_list(label: str, value: Any, errors: list[str]) -> list[Any]:
 
 
 def validate_spec_id(label: str, value: Any, errors: list[str]) -> None:
-    if value not in (None, "") and not has_unresolved_template_token(value) and not SPEC_ID_RE.match(str(value)):
-        errors.append(f"{label} must be null or use `specNNN` format")
+    error = validate_spec_id_format(value)
+    if error:
+        errors.append(f"{label} must be null or {error}")
 
 
 def scan_for_forbidden_keys(label: str, value: Any, errors: list[str]) -> None:
@@ -173,6 +181,14 @@ def validate_roadmap(path: Path) -> tuple[list[str], list[str], dict[str, dict[s
 
         candidate = feature.get("candidate_spec_id")
         validate_spec_id(f"{path}: `{key_label}.candidate_spec_id`", candidate, errors)
+        if candidate and key:
+            try:
+                parsed_candidate = parse_spec_id(str(candidate))
+            except ValueError:
+                pass
+            else:
+                if parsed_candidate["feature_key"] != key:
+                    errors.append(f"{path}: `{key_label}.candidate_spec_id` feature key must match `{key}`")
 
         if feature.get("ready_for_spec") is True and not candidate:
             warnings.append(f"{path}: `{key_label}` is ready_for_spec but has no candidate_spec_id")
@@ -256,6 +272,14 @@ def validate_feature_map(
 
         candidate = feature.get("candidate_spec_id")
         validate_spec_id(f"{path}: `{key_label}.candidate_spec_id`", candidate, errors)
+        if candidate and key:
+            try:
+                parsed_candidate = parse_spec_id(str(candidate))
+            except ValueError:
+                pass
+            else:
+                if parsed_candidate["feature_key"] != key:
+                    errors.append(f"{path}: `{key_label}.candidate_spec_id` feature key must match `{key}`")
 
         deps = feature.get("dependencies")
         if "dependencies" in feature:

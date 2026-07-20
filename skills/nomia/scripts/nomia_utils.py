@@ -14,11 +14,21 @@ except Exception:  # pragma: no cover
     yaml = None
 
 
-CANONICAL_BOARD_ROOT_TEMPLATE = "docs/boards/<board_id>/<cycle_version>/"
+CANONICAL_BOARD_ROOT_TEMPLATE = "docs/boards/<board_id>/<year>/cycles/<cycle_id>/"
 CANONICAL_SPEC_PACKAGE_TEMPLATE = f"{CANONICAL_BOARD_ROOT_TEMPLATE}specs/<spec_id>/"
+CANONICAL_SPEC_REGISTRY_TEMPLATE = f"{CANONICAL_BOARD_ROOT_TEMPLATE}registry/<spec_id>.yaml"
 BOARD_ROOT_TEMPLATE = CANONICAL_BOARD_ROOT_TEMPLATE
 SPEC_PACKAGE_TEMPLATE = CANONICAL_SPEC_PACKAGE_TEMPLATE
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$")
+YEAR_RE = re.compile(r"^\d{4}$")
+ULID_RE = re.compile(r"^[0-9a-hjkmnp-tv-z]{26}$")
+CYCLE_ID_RE = re.compile(
+    r"^(?P<date>\d{4}-\d{2}-\d{2})-(?P<cycle_key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+)
+SPEC_ID_RE = re.compile(
+    r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature_key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
+)
 
 
 def compact_yaml_exception(exc: Exception) -> str:
@@ -52,8 +62,52 @@ def resolve_runtime_path(repo_root: Path, override: str | Path) -> Path:
     return candidate.resolve()
 
 
-def board_root(repo_root: Path, board_id: str, cycle_version: str) -> Path:
-    return repo_root / "docs" / "boards" / board_id / cycle_version
+def parse_cycle_id(value: str) -> dict[str, str]:
+    match = CYCLE_ID_RE.fullmatch(value)
+    if not match:
+        raise ValueError(f"cycle_id has invalid canonical format: {value!r}")
+    parsed = match.groupdict()
+    if date.fromisoformat(parsed["date"]).isoformat() != parsed["date"]:
+        raise ValueError(f"cycle_id has invalid date: {value!r}")
+    return parsed
+
+
+def parse_spec_id(value: str) -> dict[str, str]:
+    match = SPEC_ID_RE.fullmatch(value)
+    if not match:
+        raise ValueError(f"spec_id has invalid canonical format: {value!r}")
+    parsed = match.groupdict()
+    if date.fromisoformat(parsed["date"]).isoformat() != parsed["date"]:
+        raise ValueError(f"spec_id has invalid date: {value!r}")
+    return parsed
+
+
+def validate_spec_id_format(value: Any) -> str | None:
+    if value in (None, "") or has_unresolved_template_token(value):
+        return None
+    try:
+        parse_spec_id(str(value))
+    except ValueError:
+        return "spec_id must use spec-YYYY-MM-DD-feature-key--ULID"
+    return None
+
+
+def validate_cycle_id_format(value: Any) -> str | None:
+    if value in (None, "") or has_unresolved_template_token(value):
+        return None
+    try:
+        parse_cycle_id(str(value))
+    except ValueError:
+        return "cycle_id must use YYYY-MM-DD-cycle-key--ULID"
+    return None
+
+
+def infer_year_from_cycle_id(cycle_id: str) -> str:
+    return parse_cycle_id(cycle_id)["date"][:4]
+
+
+def board_root(repo_root: Path, board_id: str, year: str | int, cycle_id: str) -> Path:
+    return repo_root / "docs" / "boards" / board_id / str(year) / "cycles" / cycle_id
 
 
 def resolve_board_root(
@@ -61,13 +115,41 @@ def resolve_board_root(
     *,
     board_root_override: str | Path | None = None,
     board_id: str | None = None,
-    cycle_version: str | None = None,
+    year: str | int | None = None,
+    cycle_id: str | None = None,
 ) -> Path:
     if board_root_override is not None:
         return resolve_runtime_path(repo_root, board_root_override)
-    if not board_id or not cycle_version:
-        raise ValueError("board_id and cycle_version are required when BOARD_ROOT is not provided.")
-    return board_root(repo_root, board_id, cycle_version)
+    if not board_id or not cycle_id:
+        raise ValueError("board_id and cycle_id are required when BOARD_ROOT is not provided.")
+    if not SLUG_RE.fullmatch(board_id):
+        raise ValueError(f"board_id `{board_id}` must be lowercase slug-safe")
+    parsed_year = infer_year_from_cycle_id(cycle_id)
+    resolved_year = str(year) if year is not None else parsed_year
+    if not YEAR_RE.fullmatch(resolved_year):
+        raise ValueError(f"year `{resolved_year}` must use YYYY format")
+    if resolved_year != parsed_year:
+        raise ValueError(f"year `{resolved_year}` conflicts with cycle_id creation year `{parsed_year}`")
+    return board_root(repo_root, board_id, resolved_year, cycle_id)
+
+
+def parse_canonical_board_root(path: str | Path) -> dict[str, str]:
+    parts = [part for part in normalize_path(str(path)).strip("/").split("/") if part]
+    for index in range(max(0, len(parts) - 5)):
+        if parts[index:index + 2] != ["docs", "boards"]:
+            continue
+        if index + 5 >= len(parts) or parts[index + 4] != "cycles":
+            continue
+        board_id, year, cycle_id = parts[index + 2], parts[index + 3], parts[index + 5]
+        if not SLUG_RE.fullmatch(board_id):
+            raise ValueError(f"board_id `{board_id}` must be lowercase slug-safe")
+        if not YEAR_RE.fullmatch(year):
+            raise ValueError(f"year `{year}` must use YYYY format")
+        parsed_year = infer_year_from_cycle_id(cycle_id)
+        if year != parsed_year:
+            raise ValueError(f"year `{year}` conflicts with cycle_id creation year `{parsed_year}`")
+        return {"board_id": board_id, "year": year, "cycle_id": cycle_id}
+    raise ValueError(f"BOARD_ROOT must match {CANONICAL_BOARD_ROOT_TEMPLATE}")
 
 
 def read_normalized_lines(path: Path) -> list[str]:

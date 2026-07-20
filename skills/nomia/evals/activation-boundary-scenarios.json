@@ -94,7 +94,7 @@
     {
       "id": "nonactivate-002",
       "type": "should_not_activate",
-      "prompt": "Use Mago to write prd.md, tasks.md, and validation.md for spec042.",
+      "prompt": "Use Mago to write prd.md, tasks.md, and validation.md for spec-2026-04-20-sample-feature--01jt1e2f3g4h5j6kmnpqrstvw0.",
       "expected_behavior": "Do not invoke nomia because the requested artifacts are Mago-owned planning and implementation task decomposition.",
       "acceptance_criteria": [
         "does not create Mago artifacts",
@@ -223,7 +223,7 @@
       "prompt": "Create nomia status artifacts, but I only know the board id and not the cycle version or board root.",
       "expected_behavior": "Invoke nomia enough to report blockers, but stop before repository-facing writes because required runtime roots are missing.",
       "acceptance_criteria": [
-        "reports missing BOARD_ROOT and cycle_version",
+        "reports missing BOARD_ROOT, year, and cycle_id",
         "does not write files",
         "lists evidence needed to continue"
       ],

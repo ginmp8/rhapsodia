@@ -96,7 +96,7 @@ links:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Write a canonical nomia ops.yaml scaffold with safe defaults.")
     parser.add_argument("path", help="Destination path for ops.yaml.")
-    parser.add_argument("--spec-id", help="Concrete spec id in the form specNNN. Omit for off-repository drafts.")
+    parser.add_argument("--spec-id", help="Concrete spec id in spec-YYYY-MM-DD-feature-key--ULID format. Omit for off-repository drafts.")
     parser.add_argument("--list-data", help="YAML or JSON payload for scripts/update_template_lists.py.")
     parser.add_argument("--force", action="store_true", help="Overwrite the destination file if it already exists.")
     args = parser.parse_args(argv)

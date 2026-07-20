@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -19,10 +18,9 @@ from nomia_utils import (
     parse_iso_date,
     scan_unresolved_template_tokens,
     unique,
+    validate_spec_id_format,
 )
 
-
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
 VALID_PRIORITY = {"unknown", "low", "medium", "high", "urgent"}
 VALID_URGENCY = {"unknown", "low", "medium", "high", "immediate"}
 VALID_IMPACT = {"unknown", "low", "medium", "high", "critical"}
@@ -68,8 +66,9 @@ def flag_values(flags: dict[str, Any], key: str) -> set[str]:
 
 
 def validate_spec_id(label: str, value: Any, errors: list[str]) -> None:
-    if value not in (None, "") and not has_unresolved_template_token(value) and not SPEC_ID_RE.match(str(value)):
-        errors.append(f"`{label}` must use `specNNN` format")
+    error = validate_spec_id_format(value)
+    if error:
+        errors.append(f"`{label}` {error}")
 
 
 def validate_yaml(path: Path) -> tuple[list[str], list[str]]:

@@ -12,7 +12,7 @@ from typing import Any
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
-REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals"]
+REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals", "tests"]
 REQUIRED_FILES = [
     "SKILL.md",
     "agents/openai.yaml",
@@ -40,7 +40,12 @@ REQUIRED_FILES = [
     "scripts/validate_skill_package.py",
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_golden_examples.py",
+    "scripts/validate_identity_contract.py",
+    "scripts/validate_contract_preservation.py",
     "scripts/package_skill.py",
+    "tests/original-contract.json",
+    "tests/test_identity_model.py",
+    "assets/icon.svg",
     "examples/activation-scenarios.json",
     "evals/activation-boundary-scenarios.json",
 ]
@@ -163,6 +168,8 @@ def validate_skill_md(root: Path, errors: list[str]) -> None:
         "scripts/validate_skill_package.py",
         "scripts/validate_activation_scenarios.py",
         "scripts/validate_golden_examples.py",
+        "scripts/validate_identity_contract.py",
+        "scripts/validate_contract_preservation.py",
         "scripts/package_skill.py",
         "references/package-validation.md",
     ]

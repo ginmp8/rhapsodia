@@ -21,7 +21,7 @@ Use `<skill-root>` for the root folder of this skill package. In this repository
 - `scripts/validate_roadmap.py`: validate `roadmap.yaml` and `feature-map.yaml`.
 - `scripts/validate_reporting.py`: validate `feature-report.md`, `release-notes.md`, optional `internal-notes.md`.
 - `scripts/validate_portfolio.py`: validate `portfolio.yaml` and `portfolio.md`.
-- `scripts/validate_human_artifacts.py`: validate heading/placeholder-based markdown artifacts.
+- `scripts/validate_human_artifacts.py`: validate heading/token-based markdown artifacts.
 - `scripts/validate_contracts.py`: validate cross-skill contracts and actor write boundaries.
 - `scripts/validate_board_paths.py`: validate canonical `BOARD_ROOT` placement.
 - `scripts/normalize_human_artifacts.py`: normalize without inventing content.
@@ -41,7 +41,7 @@ Print clear errors/warnings. Exit non-zero on errors. Use scaffold writers and v
 python <skill-root>/scripts/write_artifact_scaffold.py path/to/status.md
 python <skill-root>/scripts/validate_artifact.py path/to/status.md
 python <skill-root>/scripts/validate_ops.py path/to/ops.yaml
-python <skill-root>/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec001
+python <skill-root>/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec-2026-04-20-sample-feature--01jt1e2f3g4h5j6kmnpqrstvw0
 python <skill-root>/scripts/validate_roadmap.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml
 python <skill-root>/scripts/validate_reporting.py --feature-report path/to/feature-report.md --release-notes path/to/release-notes.md --internal-notes path/to/internal-notes.md
 python <skill-root>/scripts/validate_portfolio.py --portfolio-yaml path/to/portfolio.yaml --portfolio-md path/to/portfolio.md
@@ -53,7 +53,7 @@ python <skill-root>/scripts/normalize_human_artifacts.py path/to/ops.yaml path/t
 
 ## Validator Coverage
 
-Board-path validation checks nomia-owned artifact placement under `BOARD_ROOT` or `BOARD_ROOT/specs/<spec_id>/`, slug-safe `<board_id>/<cycle_version>`, `specNNN` ids, and board/spec artifact names in allowed locations.
+Board-path validation checks nomia-owned artifact placement under `docs/boards/<board_id>/<year>/cycles/<cycle_id>/` or its `specs/<spec_id>/` packages, year/cycle consistency, canonical immutable ids, and board/spec artifact names in allowed locations.
 
 Roadmap validation checks required fields, enums, feature-key format, dependency references, candidate spec consistency, and handoff boundary violations in `feature-map.yaml`.
 

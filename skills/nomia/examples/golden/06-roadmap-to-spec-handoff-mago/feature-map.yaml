@@ -3,7 +3,7 @@ roadmap_id: workspace-admin-controls
 features:
   - feature_key: saved-query-sharing-controls
     ready_for_spec: true
-    candidate_spec_id: spec022
+    candidate_spec_id: spec-2026-04-20-saved-query-sharing-controls--01jt1c2d3e4f5g6h7j8kmnpqrs
     title: Saved-query sharing controls
     scope_summary: Admin-facing saved-query visibility controls for the workspace administration beta.
     dependencies: []
@@ -11,7 +11,7 @@ features:
     handoff_status: ready
     source_summary: nomia roadmap identifies problem, outcome, MVP boundary, non-goals, stakeholders, and uncertainty.
     mago_inputs:
-      - <skill-root>/examples/golden/06-roadmap-to-spec-handoff-mago/roadmap.yaml
-      - <skill-root>/examples/golden/05-roadmap-large-initiative/roadmap.md
-      - <skill-root>/examples/golden/05-roadmap-large-initiative/governance-decisions.md
+      - examples/golden/06-roadmap-to-spec-handoff-mago/roadmap.yaml
+      - examples/golden/05-roadmap-large-initiative/roadmap.md
+      - examples/golden/05-roadmap-large-initiative/governance-decisions.md
     notes: Mago owns the PRD, acceptance criteria, implementation tasks, and validation plan.

@@ -26,7 +26,7 @@ Release evidence: release record `REL-2026-0519`.
 
 ## Validation Status
 
-Validation evidence: passed in summarized execution evidence for `spec022`.
+Validation evidence: passed in summarized execution evidence for `spec-2026-04-20-saved-query-sharing-controls--01jt1c2d3e4f5g6h7j8kmnpqrs`.
 
 ## Known Limitations
 

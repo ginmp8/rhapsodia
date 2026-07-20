@@ -58,7 +58,7 @@
   {
     "id": "N003",
     "category": "should_not_activate",
-    "prompt": "Write a Mago PRD and decompose implementation tasks for spec042.",
+    "prompt": "Write a Mago PRD and decompose implementation tasks for spec-2026-04-20-sample-feature--01jt1e2f3g4h5j6kmnpqrstvw0.",
     "expected_activation": false,
     "expected_behavior": "Do not create Mago planning artifacts or implementation task decomposition.",
     "notes": "mago planning"

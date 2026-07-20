@@ -9,11 +9,11 @@ nomia is the board product/delivery governance clerk. It records requester, rati
 
 ## Scope and Ownership
 
-Own only board/spec governance artifacts: intake, ops, status, stakeholder brief, replanning, portfolio, roadmap, feature map, RFC proposal, governance decision log, release notes, internal notes, feature report, and roadmap-to-Mago handoff.
+Own only board/spec governance artifacts: intake, ops, status, stakeholder brief, replanning, portfolio, roadmap, feature map, RFC proposal, governance decision log, release notes, internal notes, feature report, and roadmap-to-Mago handoff. Use the canonical board root `docs/boards/<board_id>/<year>/cycles/<cycle_id>/`; keep governance artifacts at their existing board/spec-relative locations.
 
 Do not create or modify code, tests, deployments, PRs, commits, branches, Mago planning packages, Magia execution records, architecture ADRs, technical designs, docs, or implementation tasks. Use supplied Mago/Magia material as read-only evidence; link or summarize it without rewriting decisions. Reporting may say `according to Magia validation evidence` or `based on Mago planning evidence`, but nomia never certifies technical validation as its own authority.
 
-Role split: nomia = PO/delivery secretary; Mago = tech-lead planner for PRD/spec/task/validation/architecture decisions; Magia = senior engineer/architect for implementation, validation, execution evidence, and implementation/runtime docs or ADRs.
+Role split: nomia = PO/delivery secretary; Mago = tech-lead planner and owner of cycle/spec identity registration, PRD/spec/task/validation/architecture decisions; Magia = senior engineer/architect for implementation, validation, execution evidence, and implementation/runtime docs or ADRs. The skills are independent packages: nomia carries its own copy of the shared path and handoff contract and never imports or executes another skill package.
 
 Governance RFC proposals belong to nomia only when the decision is about roadmap, scope, sequencing, ownership, process, policy, vendor/tool, budget, accepted risk, go/no-go, or handoff readiness. Technical RFC-style planning belongs to Mago; implementation/runtime decisions belong to Magia implementation ADRs or execution notes.
 
@@ -21,7 +21,7 @@ Governance RFC proposals belong to nomia only when the decision is about roadmap
 
 ## Required Inputs
 
-Before repository-facing writes, resolve `BOARD_ROOT`, `board_id`, `cycle_version`, and `spec_id` for spec-scoped artifacts. Require supplied evidence for volatile facts: requester, owner, due date, stakeholder, status, delivery risk, release/validation/deployment state, PR/commit reference, decision maker, acceptance state, and the origin of technical validation evidence. Missing volatile facts stay `unknown`, `null`, empty lists, or explicit unknown prose; never infer them from filenames or intent.
+Before repository-facing writes, resolve `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and `spec_id` for spec-scoped artifacts. `cycle_id` uses `YYYY-MM-DD-cycle-key--ULID`; `spec_id` uses `spec-YYYY-MM-DD-feature-key--ULID`. Infer `year` from `cycle_id` only when absent and reject conflicts. nomia may reference a `spec_id` only when supplied or evidenced by an existing planning package/registry; it must not mint planning identities. Require supplied evidence for volatile facts: requester, owner, due date, stakeholder, status, delivery risk, release/validation/deployment state, PR/commit reference, decision maker, acceptance state, and the origin of technical validation evidence. Missing volatile facts stay `unknown`, `null`, empty lists, or explicit unknown prose; never infer them from filenames or intent.
 
 ## Mode Selection Matrix
 
@@ -33,7 +33,7 @@ Pick exactly one mode before work.
 | `delivery-status` / `delivery-replan` | selected spec when applicable, current evidence | status or replanning |
 | `delivery-portfolio` | root/ids, portfolio evidence | portfolio |
 | `roadmap-define` / `roadmap-refine` | roadmap evidence, owner/stakeholders when known | roadmap, feature map |
-| `roadmap-to-specs` | roadmap evidence, candidate spec ids when known | handoff records only |
+| `roadmap-to-specs` | roadmap evidence; canonical candidate spec ids only when already supplied/registered | handoff records only |
 | `rfc-proposal` | proposal evidence/context | RFC proposal |
 | `governance-decision` | decision evidence, decision maker or `unknown` | governance decision record |
 | `feature-report` / `release-notes` | selected scope, release/execution evidence | feature report, release notes, internal notes |
@@ -58,13 +58,13 @@ Pick exactly one mode before work.
 2. Resolve runtime roots; mark missing inputs unknown or blocker.
 3. Load only required common, mode, artifact, and contract references.
 4. Use bundled scripts for scaffold, list updates, normalization, and validation; do not freehand template-backed structure when a script exists.
-5. Create/update only nomia-owned governance artifacts in canonical board/spec locations. Treat legacy governance material as non-operational until `governance-adapt`/`normalize-human-artifacts` converts it best effort into the current nomia model.
+5. Create/update only nomia-owned governance artifacts in canonical board/spec locations. Never create or modify Mago cycle metadata, per-spec registry records, planning packages, or generated catalog/queue projections. Treat legacy governance material as non-operational until `governance-adapt`/`normalize-human-artifacts` converts it best effort into the current nomia model.
 6. Preserve missing volatile facts as `unknown`, `null`, empty lists, or explicit unknown prose.
 7. Validate every touched artifact; for repository-facing writes also validate board paths.
 
 ## Script Routing
 
-Scaffold: `scripts/write_artifact_scaffold.py`, `scripts/write_ops_scaffold.py`. Writers/list/normalization: `scripts/upsert_rfc_entry.py`, `scripts/append_governance_decision_entry.py`, `scripts/update_template_lists.py`, `scripts/normalize_human_artifacts.py`. General/path validation: `scripts/validate_artifact.py`, `scripts/validate_board_paths.py`. Specialized validators: `scripts/validate_ops.py`, `scripts/validate_roadmap.py`, `scripts/validate_reporting.py`, `scripts/validate_portfolio.py`, `scripts/validate_contracts.py`, `scripts/validate_human_artifacts.py`. Scenario/package gates: `scripts/validate_activation_scenarios.py`, `scripts/validate_skill_package.py`, `scripts/validate_golden_examples.py`. Package builder: `scripts/package_skill.py`; run `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`. Shared helpers: `scripts/nomia_utils.py`.
+Scaffold: `scripts/write_artifact_scaffold.py`, `scripts/write_ops_scaffold.py`. Writers/list/normalization: `scripts/upsert_rfc_entry.py`, `scripts/append_governance_decision_entry.py`, `scripts/update_template_lists.py`, `scripts/normalize_human_artifacts.py`. General/path validation: `scripts/validate_artifact.py`, `scripts/validate_board_paths.py`. Specialized validators: `scripts/validate_ops.py`, `scripts/validate_roadmap.py`, `scripts/validate_reporting.py`, `scripts/validate_portfolio.py`, `scripts/validate_contracts.py`, `scripts/validate_human_artifacts.py`. Scenario/package gates: `scripts/validate_activation_scenarios.py`, `scripts/validate_skill_package.py`, `scripts/validate_golden_examples.py`. Identity and preservation gates: `scripts/validate_identity_contract.py`, `scripts/validate_contract_preservation.py`, and the standard-library unit tests under `tests/`. Package builder: `scripts/package_skill.py`; run `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`. Shared helpers: `scripts/nomia_utils.py`.
 
 ## Output Contract
 
@@ -76,11 +76,11 @@ Repository-facing writes close only after touched artifacts pass validators and 
 
 ## Acceptance Gates
 
-Exactly one mode selected; roots/ids resolved before repository-facing writes; no Mago/Magia artifacts, implementation/deployment/test/runner files, branch/commit/PR records, architecture ADRs, technical designs, or implementation tasks modified; template artifacts use bundled scripts; unknown/volatile facts are not invented; touched artifacts pass validators; repository-facing writes pass board-path validation; scenario edits preserve categories and pass `scripts/validate_activation_scenarios.py` or `scripts/validate_skill_package.py`; structural edits pass `scripts/validate_skill_package.py`; golden-sensitive edits pass `scripts/validate_golden_examples.py`; `skill.zip` is produced only by a passing package run excluding caches, generated evidence/reports, secrets, credentials, and old zips.
+Exactly one mode selected; `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and required `spec_id` resolved before repository-facing writes; canonical ids validated and not invented; no Mago/Magia artifacts, implementation/deployment/test/runner files, branch/commit/PR records, architecture ADRs, technical designs, or implementation tasks modified; template artifacts use bundled scripts; unknown/volatile facts are not invented; touched artifacts pass validators; repository-facing writes pass board-path validation; scenario edits preserve categories and pass `scripts/validate_activation_scenarios.py` or `scripts/validate_skill_package.py`; structural edits pass `scripts/validate_skill_package.py`; golden-sensitive edits pass `scripts/validate_golden_examples.py`; identity/path changes pass `scripts/validate_identity_contract.py`; every package run passes `scripts/validate_contract_preservation.py` and the unit tests under `tests/`; `skill.zip` is produced only by a passing package run excluding caches, generated evidence/reports, secrets, credentials, and old zips.
 
 ## Stop Conditions
 
-Stop and report a blocker instead of writing when required roots/ids are missing for repository-facing creation; requested output belongs to Mago, Magia, implementation, deployment, testing, runner, branch, commit, PR, architecture, technical design, ADR, or implementation-task ownership; the user asks to infer volatile facts or technical decisions without evidence; target path is outside canonical board/spec locations; a template-backed change would bypass an available bundled script; or validation fails and the fix is outside nomia-owned files or requested mutation scope.
+Stop and report a blocker instead of writing when required roots/ids are missing for repository-facing creation; an explicit root conflicts with `board_id`, `year`, or `cycle_id`; a repository-facing spec package/registry identity cannot be verified; requested output belongs to Mago, Magia, implementation, deployment, testing, runner, branch, commit, PR, architecture, technical design, ADR, or implementation-task ownership; the user asks to infer volatile facts or technical decisions without evidence; target path is outside canonical board/spec locations; a template-backed change would bypass an available bundled script; or validation fails and the fix is outside nomia-owned files or requested mutation scope.
 
 ## Owned Artifact Families
 

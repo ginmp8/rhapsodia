@@ -1,8 +1,10 @@
 identity:
-  spec_id: spec022
-  candidate_spec_id: spec022
+  board_id: workspace-admin
+  year: "2026"
+  spec_id: spec-2026-04-20-saved-query-sharing-controls--01jt1c2d3e4f5g6h7j8kmnpqrs
+  candidate_spec_id: spec-2026-04-20-saved-query-sharing-controls--01jt1c2d3e4f5g6h7j8kmnpqrs
   feature_key: saved-query-sharing-controls
-  cycle_version: 01.02.00
+  cycle_id: 2026-04-20-workspace-admin--01jt1a2b3c4d5e6f7g8h9jkmnp
 summary:
   execution_status: completed
   validation_status: passed

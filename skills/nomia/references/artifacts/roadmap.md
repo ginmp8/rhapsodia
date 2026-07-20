@@ -1,6 +1,6 @@
 # Roadmap Artifacts
 
-Roadmap artifacts belong to nomia. Mago may consume them as upstream evidence, but they do not replace `spec-catalog.yaml`, `prd.md`, or Mago-owned planning artifacts.
+Roadmap artifacts belong to nomia. Mago may consume them as upstream evidence, but they do not replace `cycle.yaml`, `registry/<spec_id>.yaml`, `prd.md`, or Mago-owned planning artifacts. Generated catalog and queue projections are disposable views, not handoff write targets.
 
 ## roadmap.yaml
 
@@ -12,7 +12,7 @@ Each feature includes `feature_key`, `name`, `problem`, `outcome`, `horizon`, `c
 
 Enums: `horizon` = `unknown`, `now`, `next`, `later`, `future`; `commitment` = `unknown`, `committed`, `targeted`, `exploratory`, `parking_lot`; `confidence` = `unknown`, `low`, `medium`, `high`.
 
-Validation: `schema_version` is `1`; `feature_key` is unique lowercase hyphen-case; `dependencies` reference existing feature keys; `candidate_spec_id` is `null` or `specNNN`; `ready_for_spec: true` without `candidate_spec_id` warns; candidate spec values match the same feature in `feature-map.yaml` when present. Populate `goals`, `outcomes`, `themes`, `stakeholders`, `constraints`, `assumptions`, `success_measures`, `risks`, and `features` with `scripts/update_template_lists.py <roadmap.yaml> --data <payload.yaml>`; do not hand-shape list entries.
+Validation: `schema_version` is `1`; `feature_key` is unique lowercase hyphen-case; `dependencies` reference existing feature keys; `candidate_spec_id` is `null` or `spec-YYYY-MM-DD-feature-key--ULID`; `ready_for_spec: true` without `candidate_spec_id` is allowed and means governance is ready while Mago registration is still pending; candidate spec values match the same feature in `feature-map.yaml` when present. Populate `goals`, `outcomes`, `themes`, `stakeholders`, `constraints`, `assumptions`, `success_measures`, `risks`, and `features` with `scripts/update_template_lists.py <roadmap.yaml> --data <payload.yaml>`; do not hand-shape list entries.
 
 ## roadmap.md
 
@@ -28,4 +28,4 @@ Machine-readable handoff map from nomia roadmap features to candidate Mago specs
 
 Required top-level keys: `schema_version`, `roadmap_id`, `features`. Each feature handoff includes `feature_key`, `ready_for_spec`, `candidate_spec_id`, `title`, `scope_summary`, `dependencies`, `recommended_mago_mode`. Recommended fields: `handoff_status`, `source_summary`, `mago_inputs`, `notes`.
 
-Validation: every `feature_key` exists in `roadmap.yaml`; feature keys are unique; `candidate_spec_id` is `null` or `specNNN`; `ready_for_spec` and `candidate_spec_id` match the corresponding `roadmap.yaml` feature; dependencies reference existing roadmap feature keys; file must not contain implementation tasks, acceptance criteria, code instructions, or Magia execution evidence. Populate `features` with `scripts/update_template_lists.py <feature-map.yaml> --data <payload.yaml>`; do not hand-shape handoff list entries.
+Validation: every `feature_key` exists in `roadmap.yaml`; feature keys are unique; `candidate_spec_id` is `null` or `spec-YYYY-MM-DD-feature-key--ULID`; `ready_for_spec` and `candidate_spec_id` match the corresponding `roadmap.yaml` feature; non-null candidate ids must already be supplied or evidenced by a Mago registry and their embedded feature key must match `feature_key`; dependencies reference existing roadmap feature keys; file must not contain implementation tasks, acceptance criteria, code instructions, or Magia execution evidence. Populate `features` with `scripts/update_template_lists.py <feature-map.yaml> --data <payload.yaml>`; do not hand-shape handoff list entries.
