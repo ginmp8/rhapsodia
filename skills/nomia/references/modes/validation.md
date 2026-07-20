@@ -23,7 +23,7 @@ Use `<skill-root>` for the root folder of this skill package. In this repository
 - `scripts/validate_portfolio.py`: validate `portfolio.yaml` and `portfolio.md`.
 - `scripts/validate_human_artifacts.py`: validate heading/token-based markdown artifacts.
 - `scripts/validate_contracts.py`: validate cross-skill contracts and actor write boundaries.
-- `scripts/validate_board_paths.py`: validate canonical `BOARD_ROOT` placement.
+- `scripts/validate_board_paths.py`: validate canonical `BOARD_ROOT` placement; overrides must remain inside the repository and match the complete board/year/cycle identity.
 - `scripts/normalize_human_artifacts.py`: normalize without inventing content.
 - `scripts/nomia_utils.py`: shared helpers; import, do not run directly.
 

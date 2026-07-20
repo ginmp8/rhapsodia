@@ -15,7 +15,6 @@ from nomia_utils import (
     is_legacy_cycle_id,
     is_legacy_spec_id,
     parse_cycle_id,
-    parse_canonical_board_root,
     parse_spec_id,
     resolve_board_root,
     validate_cycle_id_format,
@@ -40,6 +39,28 @@ class IdentityModelTests(unittest.TestCase):
     def test_exact_canonical_examples_are_accepted(self) -> None:
         self.assertIsNone(validate_cycle_id_format("cycle-2026-04-20-q2-delivery"))
         self.assertIsNone(validate_spec_id_format("spec-2026-04-20-csv-export-filtered-columns"))
+
+    def test_impossible_calendar_dates_are_rejected(self) -> None:
+        invalid_cycle_ids = (
+            "cycle-2026-02-30-q2-delivery",
+            "cycle-2026-13-01-q2-delivery",
+            "cycle-0000-01-01-q2-delivery",
+        )
+        invalid_spec_ids = (
+            "spec-2026-02-30-csv-export",
+            "spec-2026-13-01-csv-export",
+            "spec-0000-01-01-csv-export",
+        )
+        for value in invalid_cycle_ids:
+            with self.assertRaises(ValueError):
+                parse_cycle_id(value)
+        for value in invalid_spec_ids:
+            with self.assertRaises(ValueError):
+                parse_spec_id(value)
+
+    def test_valid_leap_day_is_accepted(self) -> None:
+        self.assertEqual(parse_cycle_id("cycle-2028-02-29-q1-delivery")["date"], "2028-02-29")
+        self.assertEqual(parse_spec_id("spec-2028-02-29-csv-export")["date"], "2028-02-29")
 
     def test_former_ulid_ids_are_read_only_legacy_and_rejected_operationally(self) -> None:
         self.assertTrue(is_legacy_cycle_id(LEGACY_CYCLE_ID))
@@ -123,26 +144,6 @@ features:
         parsed = parse_spec_id(SPEC_ID)
         self.assertEqual(parsed["feature_key"], "saved-query-sharing-controls")
 
-    def test_impossible_dates_are_rejected(self) -> None:
-        for cycle_id in (
-            "cycle-2026-02-30-invalid-date",
-            "cycle-2026-13-01-invalid-month",
-            "cycle-0000-01-01-invalid-year",
-        ):
-            with self.subTest(cycle_id=cycle_id), self.assertRaises(ValueError):
-                parse_cycle_id(cycle_id)
-        for spec_id in (
-            "spec-2026-02-30-invalid-date",
-            "spec-2026-13-01-invalid-month",
-            "spec-0000-01-01-invalid-year",
-        ):
-            with self.subTest(spec_id=spec_id), self.assertRaises(ValueError):
-                parse_spec_id(spec_id)
-
-    def test_valid_leap_day_is_accepted(self) -> None:
-        self.assertEqual(parse_cycle_id("cycle-2028-02-29-leap-cycle")["date"], "2028-02-29")
-        self.assertEqual(parse_spec_id("spec-2028-02-29-leap-feature")["date"], "2028-02-29")
-
     def test_board_root_uses_year_cycles_and_cycle_id(self) -> None:
         root = resolve_board_root(Path("/repo"), board_id="workspace-admin", year="2026", cycle_id=CYCLE_ID)
         self.assertEqual(
@@ -154,37 +155,69 @@ features:
         with self.assertRaises(ValueError):
             resolve_board_root(Path("/repo"), board_id="workspace-admin", year="2025", cycle_id=CYCLE_ID)
 
-    def test_board_root_override_is_confined_and_exact(self) -> None:
+    def test_canonical_board_root_override_is_validated_centrally(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            repo_root = Path(tmp) / "repo"
-            canonical = repo_root / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
+            repo = Path(tmp)
+            expected = repo / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
             resolved = resolve_board_root(
-                repo_root,
-                board_root_override=canonical,
+                repo,
+                board_root_override=expected,
                 board_id="workspace-admin",
                 year="2026",
                 cycle_id=CYCLE_ID,
             )
-            self.assertEqual(resolved, canonical.resolve())
+            self.assertEqual(resolved, expected.resolve())
 
+    def test_board_root_override_outside_repository_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as repo_tmp, tempfile.TemporaryDirectory() as outside_tmp:
+            outside = Path(outside_tmp) / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
             with self.assertRaisesRegex(ValueError, "inside the repository root"):
-                resolve_board_root(repo_root, board_root_override=Path(tmp) / "outside")
+                resolve_board_root(Path(repo_tmp), board_root_override=outside)
 
-            with self.assertRaisesRegex(ValueError, "must match"):
-                resolve_board_root(repo_root, board_root_override=canonical / "specs")
+    def test_noncanonical_board_root_override_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            with self.assertRaisesRegex(ValueError, "BOARD_ROOT must match"):
+                resolve_board_root(repo, board_root_override=repo / "tmp" / CYCLE_ID)
 
-            with self.assertRaisesRegex(ValueError, "board_id.*conflicts"):
-                resolve_board_root(
-                    repo_root,
-                    board_root_override=canonical,
-                    board_id="different-board",
-                )
+    def test_board_root_override_cannot_point_to_a_descendant(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            descendant = (
+                repo
+                / "docs"
+                / "boards"
+                / "workspace-admin"
+                / "2026"
+                / "cycles"
+                / CYCLE_ID
+                / "specs"
+                / SPEC_ID
+            )
+            with self.assertRaisesRegex(ValueError, "BOARD_ROOT must match"):
+                resolve_board_root(repo, board_root_override=descendant)
 
-    def test_canonical_board_root_parser_rejects_nested_paths(self) -> None:
-        canonical = f"/repo/docs/boards/workspace-admin/2026/cycles/{CYCLE_ID}"
-        self.assertEqual(parse_canonical_board_root(canonical)["cycle_id"], CYCLE_ID)
-        with self.assertRaises(ValueError):
-            parse_canonical_board_root(f"{canonical}/specs")
+    def test_board_root_override_symlink_escape_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as repo_tmp, tempfile.TemporaryDirectory() as outside_tmp:
+            repo = Path(repo_tmp)
+            outside = Path(outside_tmp) / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
+            outside.mkdir(parents=True)
+            link_parent = repo / "docs" / "boards" / "workspace-admin" / "2026" / "cycles"
+            link_parent.mkdir(parents=True)
+            link = link_parent / CYCLE_ID
+            try:
+                link.symlink_to(outside, target_is_directory=True)
+            except (OSError, NotImplementedError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            with self.assertRaisesRegex(ValueError, "inside the repository root"):
+                resolve_board_root(repo, board_root_override=link)
+
+    def test_board_root_override_identity_conflict_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            override = repo / "docs" / "boards" / "workspace-admin" / "2026" / "cycles" / CYCLE_ID
+            with self.assertRaisesRegex(ValueError, "board_id .* conflicts"):
+                resolve_board_root(repo, board_root_override=override, board_id="different-board")
 
     def test_canonical_nomia_paths_are_accepted(self) -> None:
         paths = [
@@ -203,16 +236,6 @@ features:
                 "2026",
             )
             self.assertTrue(any("spec-YYYY-MM-DD-feature-key" in error for error in errors))
-
-    def test_impossible_spec_date_in_path_is_rejected(self) -> None:
-        invalid_spec_id = "spec-2026-02-30-impossible-date"
-        errors = validate_path(
-            f"docs/boards/workspace-admin/2026/cycles/{CYCLE_ID}/specs/{invalid_spec_id}/ops.yaml",
-            "workspace-admin",
-            CYCLE_ID,
-            "2026",
-        )
-        self.assertTrue(any("real calendar date" in error for error in errors))
 
     def test_nomia_cannot_write_planning_registry(self) -> None:
         errors = validate_actor(

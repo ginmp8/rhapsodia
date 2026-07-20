@@ -343,6 +343,9 @@ def validate_harness_scenarios(root: Path, errors: list[str]) -> None:
 def validate_package_hygiene(root: Path, errors: list[str]) -> None:
     for path in sorted(root.rglob("*")):
         rel = path.relative_to(root).as_posix()
+        if path.is_symlink():
+            errors.append(f"symbolic link is not allowed in the skill package: {rel}")
+            continue
         if any(rel == name or rel.startswith(name + "/") for name in GENERATED_OR_BLOCKED_DIR_NAMES):
             errors.append(f"blocked generated/cache path present: {rel}")
             continue

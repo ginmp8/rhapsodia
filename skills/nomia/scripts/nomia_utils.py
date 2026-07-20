@@ -146,15 +146,15 @@ def resolve_board_root(
     year: str | int | None = None,
     cycle_id: str | None = None,
 ) -> Path:
+    repository = repo_root.resolve()
     if board_root_override is not None:
-        resolved_repo_root = repo_root.resolve()
-        resolved_board_root = resolve_runtime_path(resolved_repo_root, board_root_override)
+        resolved = resolve_runtime_path(repository, board_root_override)
         try:
-            resolved_board_root.relative_to(resolved_repo_root)
+            relative = resolved.relative_to(repository)
         except ValueError as exc:
-            raise ValueError("BOARD_ROOT must remain inside the repository root") from exc
+            raise ValueError("BOARD_ROOT override must stay inside the repository root") from exc
 
-        parsed = parse_canonical_board_root(resolved_board_root)
+        parsed = parse_canonical_board_root(relative)
         supplied = {
             "board_id": board_id,
             "year": str(year) if year is not None else None,
@@ -162,10 +162,9 @@ def resolve_board_root(
         }
         for field, value in supplied.items():
             if value is not None and value != parsed[field]:
-                raise ValueError(
-                    f"{field} `{value}` conflicts with BOARD_ROOT `{parsed[field]}`"
-                )
-        return resolved_board_root
+                raise ValueError(f"{field} `{value}` conflicts with BOARD_ROOT `{parsed[field]}`")
+        return resolved
+
     if not board_id or not cycle_id:
         raise ValueError("board_id and cycle_id are required when BOARD_ROOT is not provided.")
     if not SLUG_RE.fullmatch(board_id):
@@ -176,27 +175,28 @@ def resolve_board_root(
         raise ValueError(f"year `{resolved_year}` must use YYYY format")
     if resolved_year != parsed_year:
         raise ValueError(f"year `{resolved_year}` conflicts with cycle_id creation year `{parsed_year}`")
-    return board_root(repo_root, board_id, resolved_year, cycle_id)
+    return board_root(repository, board_id, resolved_year, cycle_id)
 
 
 def parse_canonical_board_root(path: str | Path) -> dict[str, str]:
     parts = [part for part in normalize_path(str(path)).strip("/").split("/") if part]
-    if len(parts) < 6:
-        raise ValueError(f"BOARD_ROOT must match {CANONICAL_BOARD_ROOT_TEMPLATE}")
-
-    canonical = parts[-6:]
-    if canonical[:2] != ["docs", "boards"] or canonical[4] != "cycles":
-        raise ValueError(f"BOARD_ROOT must match {CANONICAL_BOARD_ROOT_TEMPLATE}")
-
-    board_id, year, cycle_id = canonical[2], canonical[3], canonical[5]
-    if not SLUG_RE.fullmatch(board_id):
-        raise ValueError(f"board_id `{board_id}` must be lowercase slug-safe")
-    if not YEAR_RE.fullmatch(year):
-        raise ValueError(f"year `{year}` must use YYYY format")
-    parsed_year = infer_year_from_cycle_id(cycle_id)
-    if year != parsed_year:
-        raise ValueError(f"year `{year}` conflicts with cycle_id creation year `{parsed_year}`")
-    return {"board_id": board_id, "year": year, "cycle_id": cycle_id}
+    for index in range(max(0, len(parts) - 5)):
+        if parts[index:index + 2] != ["docs", "boards"]:
+            continue
+        if index + 5 >= len(parts) or parts[index + 4] != "cycles":
+            continue
+        if index + 6 != len(parts):
+            continue
+        board_id, year, cycle_id = parts[index + 2], parts[index + 3], parts[index + 5]
+        if not SLUG_RE.fullmatch(board_id):
+            raise ValueError(f"board_id `{board_id}` must be lowercase slug-safe")
+        if not YEAR_RE.fullmatch(year):
+            raise ValueError(f"year `{year}` must use YYYY format")
+        parsed_year = infer_year_from_cycle_id(cycle_id)
+        if year != parsed_year:
+            raise ValueError(f"year `{year}` conflicts with cycle_id creation year `{parsed_year}`")
+        return {"board_id": board_id, "year": year, "cycle_id": cycle_id}
+    raise ValueError(f"BOARD_ROOT must match {CANONICAL_BOARD_ROOT_TEMPLATE}")
 
 
 def read_normalized_lines(path: Path) -> list[str]:

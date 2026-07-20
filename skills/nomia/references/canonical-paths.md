@@ -25,7 +25,7 @@ The `<year>` directory must match the date year encoded in `cycle_id`. Canonical
 ## Resolution
 
 - `BOARD_ROOT` is the active root for repository-facing nomia artifacts.
-- Use prompt-provided `BOARD_ROOT` only when it resolves inside the repository and exactly matches `docs/boards/<board_id>/<year>/cycles/<cycle_id>/`; nested artifact/spec paths and external paths are invalid overrides. Otherwise derive it from concrete `board_id`, `year`, and `cycle_id`.
+- Use prompt-provided `BOARD_ROOT` only after resolving it inside the repository, validating the complete canonical layout, and rejecting conflicts with supplied `board_id`, `year`, or `cycle_id`; otherwise derive it from concrete identifiers.
 - Infer `year` from `cycle_id` only when it is not supplied; reject conflicts.
 - Board-scoped artifacts derive from `BOARD_ROOT`.
 - Spec-scoped artifacts derive from `BOARD_ROOT/specs/<spec_id>/`.
@@ -34,4 +34,4 @@ The `<year>` directory must match the date year encoded in `cycle_id`. Canonical
 
 ## Dynamic Inputs
 
-`board_id` and `cycle_id` are required to derive `BOARD_ROOT`; `year` may be supplied or inferred from the canonical `cycle_id`; `spec_id` is required for repository-facing spec-scoped writes. If explicit `BOARD_ROOT` escapes the repository, points below the cycle root, or conflicts with dynamic ids or repository truth, stop rather than guess.
+`board_id` and `cycle_id` are required to derive `BOARD_ROOT`; `year` may be supplied or inferred from the canonical `cycle_id`; `spec_id` is required for repository-facing spec-scoped writes. If explicit `BOARD_ROOT` conflicts with dynamic ids or repository truth, stop rather than guess.
