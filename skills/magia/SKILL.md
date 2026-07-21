@@ -19,8 +19,7 @@ MAGIA may safely fill implementation gaps Mago left unspecified, including simpl
 
 ## Role Model
 
-Covered scope terms: Code/runtime evidence, Board/spec packages, engineer/architect execution, tests/checks, pass/fail/not-run validation, and implementation-adrs/<adr_id>.md: files for multi-ADR sets.
-
+Role ownership:
 
 - nomia: request, requester, owner, due date, delivery status, stakeholder state, roadmap bookkeeping, governance RFCs, release notes, and governance handoff.
 - Mago: PRD alignment, technical design, tasks, validation plan, architecture decisions, planned ADRs, RFC-style planning, and execution-handoff-plan.md.
@@ -44,7 +43,7 @@ MAGIA owns implementation-reality artifacts: what changed, how it was validated,
 
 MAGIA may update controlled execution records when RALPH state changes. It must not rewrite Mago PRD, planned technical design, or nomia governance artifacts.
 
-For shared MAGO/MAGIA files, load [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md). MAGIA writes execution history to `implementation-notes.md` and validation outcomes to `validation-evidence.md`; it treats `notes.md` and `validation.md` as MAGO-owned planning inputs. `tasks.md` may only receive an existing checkbox toggle after truthful completion. `manifest.yaml` and `registry/<spec_id>.yaml` may only receive technical execution-state sync backed by current evidence.
+For shared MAGO/MAGIA files, load [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md). MAGIA writes execution history to implementation-notes.md and validation outcomes to validation-evidence.md; it treats notes.md and validation.md as MAGO-owned planning inputs. tasks.md may only receive an existing checkbox toggle after truthful completion. manifest.yaml and registry/<spec_id>.yaml may only receive technical execution-state sync backed by current evidence.
 
 ## Technical Decision Authority
 
@@ -80,7 +79,7 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 
 - ADHOC: direct code, config, tests, validators, scripts, or developer docs not driven by a board package. Inputs: repo/file scope, target behavior, known target files, allowed write scope, blocked paths, at least one validation check. Output: smallest safe change plus validation evidence. Gate: targeted checks pass or residual gap reported.
 - RALPH: execution from one concrete board contract and selected Mago spec package. Inputs: board root or concrete board id, year, cycle id, spec id, selected task or dependency-safe batch, repo scope, allowed writes, validators, implementation clues from PRD/tasks/validation/notes/manifest/design/source refs/ADRs. Output: implementation plus truthful execution records and implementation docs/ADRs when justified. Gate: board/spec validators and relevant technical checks pass when local files exist.
-- ADAPT: best-effort conversion of legacy execution sections from `notes.md` and command-result sections from `validation.md` into current MAGIA-owned `implementation-notes.md` and `validation-evidence.md`. Inputs: board root, spec id, legacy files, and target current artifact paths. Output: current artifacts only; no implementation, no planning rewrite, and no operational fallback to legacy files after adaptation. Gate: execution-state validation passes or remaining gaps are reported.
+- ADAPT: best-effort conversion of legacy execution sections from notes.md and command-result sections from validation.md into current MAGIA-owned implementation-notes.md and validation-evidence.md. Inputs: board root, spec id, legacy files, and target current artifact paths. Output: current artifacts only; no implementation, no planning rewrite, and no operational fallback to legacy files after adaptation. Gate: execution-state validation passes or remaining gaps are reported.
 - Bug fix/unblocker: ADHOC or RALPH. Inputs: failure evidence, reproduction signal, relevant artifacts, validation target. Output: root-cause hypothesis, smallest fix, regression evidence. Gate: reproduction fixed or blocker reported.
 - Complexity reduction/refactor: ADHOC or RALPH. Inputs: target scope, behavior to preserve, complexity evidence, write scope, validation safety net. Output: simplification, tests/docs, complexity-reduction evidence, handoff if scope/design changes. Gate: behavior-equivalence checks pass or residual risk/blocker reported.
 - Execution-grounded docs/ADR: ADHOC or RALPH. Inputs: code/runtime evidence, target files or task, doc path, validation status, handoff need. Output: developer docs or ADR grounded in repository truth. Gate: doc review plus relevant checks.
@@ -92,7 +91,7 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 
 - ADHOC: repository root or file scope, requested behavior, target files when known, allowed write scope, blocked paths, observable validation command/check.
 - RALPH: board root or resolvable board id, year, cycle id, selected spec id and task, repo scope, allowed writes, a concrete PRD objective, at least one acceptance criterion, a descriptive task, a concrete validation-plan check, board/spec validators, and implementation handoff clues.
-- ADAPT: board root, selected spec id, readable legacy `notes.md` and/or `validation.md`, and permission to create or update MAGIA-owned `implementation-notes.md` and `validation-evidence.md`.
+- ADAPT: board root, selected spec id, readable legacy notes.md and/or validation.md, and permission to create or update MAGIA-owned implementation-notes.md and validation-evidence.md.
 - Documentation: artifact type/path, source evidence, documented decision/behavior, validation status, Mago/nomia handoff need.
 - Complexity reduction: complexity symptom, behavior to preserve, simplification hypothesis, files/modules, validation safety net, rollback path, stop conditions.
 - Package validation: target skill root, output path, packaging exclusions, package validator command.
@@ -107,7 +106,7 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 5. For complexity reduction: preserve behavior, confirm/create a safety net, remove or inline one abstraction seam at a time, keep before/after evidence, and avoid replacing an abstraction unless net complexity falls.
 6. When Mago omitted implementation detail, choose the safest path grounded in repository conventions, document it, and stay inside product intent.
 7. Use local scripts before manual editing. Template scaffolds require a validated `--board-root` or explicit ADHOC `--allowed-root`; never write through a path or symlink that escapes the authorized root.
-8. For RALPH closure, require concrete passed checks and a Traceability row, validate a candidate snapshot, then commit tasks, manifest, and registry through the journal-validated recoverable transaction writer. Reject path traversal, symlink targets, stale preflight state, and live-process lock takeover; recover only dead-owner locks and valid interrupted journals.
+8. For RALPH mutation, require the selected task to resolve to current PRD intent and a planned validation check, and require dependency-safe order unless planning explicitly marks it `[parallel]` or `[independent]`. For closure, require a concrete passed check and a Traceability source that resolves to the selected task or a current PRD objective/acceptance criterion, then validate a candidate snapshot and commit tasks, manifest, and registry through the journal-validated recoverable transaction writer. Reject path traversal, symlink targets, stale preflight state, and live-process lock takeover; recover only dead-owner locks and valid interrupted journals.
 9. Run the narrowest validation proving the work plus mechanical MAGIA validators that apply.
 10. Finalize with concise evidence: changed, passed, failed/not-run with reasons, and remaining gaps.
 
@@ -163,7 +162,7 @@ Before final response:
 - Confirm changed durable MAGIA artifacts stayed in allowed scope.
 - Validate touched template-backed artifacts with local validators or static review when validators are intentionally lightweight.
 - In RALPH, run readiness, semantic evidence, execution-state, and repo-board validators when local repository files exist. Readiness requires canonical objective and acceptance sections plus a validation action with an explicit expected outcome; negated, scaffold-marker, or meta-only text is not concrete evidence.
-- Confirm a done task has a concrete passed check, command or method, evidence, and requirement/task traceability that references the same executed check; meta-only, scaffold-marker, or explicitly absent evidence is rejected.
+- Confirm the selected task resolves to current PRD intent and a planned validation check before mutation. Confirm a done task has a concrete passed check, command or method, evidence, and traceability whose source resolves to the selected task or a current PRD objective/acceptance criterion and references that same executed check; meta-only, invented, scaffold-marker, or explicitly absent evidence is rejected.
 - Run checks proving code changes; label unrun checks honestly.
 - Run package validators when changing MAGIA package files or building a package.
 - Verify no unresolved scaffold markers, fabricated evidence, broken links, invalid calendar dates in canonical IDs, invalid scenario schema, unscannable package content, or unreported validation gaps remain.

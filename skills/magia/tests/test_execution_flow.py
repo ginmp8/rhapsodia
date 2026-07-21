@@ -372,3 +372,48 @@ def test_heal_uses_recoverable_transaction(tmp_path: Path, monkeypatch):
     heal = load_script("heal_execution_state.py")
     assert heal.main([str(root), "--spec-id", spec_id]) == 1
     assert {path: path.read_bytes() for path in paths} == originals
+
+
+def test_done_rejects_traceability_source_absent_from_planning(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    evidence = (package / "validation-evidence.md").read_text(encoding="utf-8")
+    evidence = evidence.replace("task001 objective", "invented requirement absent from PRD and tasks")
+    (package / "validation-evidence.md").write_text(evidence, encoding="utf-8")
+
+    validate = load_script("validate_execution_state.py")
+    errors = validate.validate_task_evidence(package, "task001", "done")
+    assert any("source resolves to a real PRD objective" in error for error in errors)
+
+    sync = load_script("sync_execution_state.py")
+    original_tasks = (package / "tasks.md").read_bytes()
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 1
+    assert (package / "tasks.md").read_bytes() == original_tasks
+
+
+def test_done_accepts_exact_acceptance_criterion_as_traceability_source(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    evidence = (package / "validation-evidence.md").read_text(encoding="utf-8")
+    evidence = evidence.replace("task001 objective", "A filtered export contains only the selected columns.")
+    (package / "validation-evidence.md").write_text(evidence, encoding="utf-8")
+
+    validate = load_script("validate_execution_state.py")
+    assert validate.validate_task_evidence(package, "task001", "done") == []
+
+
+def test_sync_rejects_unrelated_task_even_with_apparently_valid_evidence(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    (package / "tasks.md").write_text(
+        "# Tasks\n\n- [ ] task001: Rotate production credentials safely\n",
+        encoding="utf-8",
+    )
+    write_execution_evidence(package, "task001", "done")
+
+    sync = load_script("sync_execution_state.py")
+    original_tasks = (package / "tasks.md").read_bytes()
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 1
+    assert (package / "tasks.md").read_bytes() == original_tasks

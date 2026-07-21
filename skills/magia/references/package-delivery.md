@@ -8,7 +8,7 @@ Load only to validate, export, or package MAGIA itself.
 - Zip must contain exactly one top-level directory named after the skill folder.
 - Archived root must contain `SKILL.md`, `VERSION`, `CHANGELOG.md`, `agents/`, `references/`, `scripts/`, `assets/`, `examples/`, and `evals/`.
 - Exclude `.git`, caches, benchmark reports, test result folders, test-results.json, nested zips, temp outputs, secrets, credentials, private keys, tokens, and local env files.
-- Clean stale caches/reports/temp outputs/nested archives/blocked paths from the source folder before packaging; do not rely only on zip exclusions.
+- Remove stale generated noise when practical. `scripts/package_policy.py` is the single inclusion/exclusion contract: folder validation scans every package-eligible file and the packager archives that same candidate set, so known generated caches may remain after tests without entering or blocking the archive. Unknown or eligible binary/undecodable content still fails closed.
 
 ## Standard Commands
 
@@ -27,7 +27,7 @@ Folder and archive validators must pass before readiness is claimed.
 3. Required resources exist: agent metadata, references, scripts, MAGIA-owned templates, examples, evals.
 4. Python scripts compile.
 5. Scenario files keep planned fields null unless measured evidence exists.
-6. Source and zip are readable, cache-free, blocked-path-free, symlink-free, scanned for secret-like names and content, and have one top-level skill directory. Oversized, binary, or undecodable members fail closed unless an explicit future allowlist contract defines a safe scanner for that content class.
+6. The archive is cache-free, blocked-path-free, symlink-free, scanned for secret-like names and content, and has one top-level skill directory; source validation may ignore only generated paths explicitly excluded by `scripts/package_policy.py`. Oversized, binary, or undecodable members fail closed unless an explicit future allowlist contract defines a safe scanner for that content class.
 7. No scaffold markers remain outside templates.
 
 ## Evidence to Report

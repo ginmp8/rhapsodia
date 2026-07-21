@@ -9,6 +9,7 @@ from pathlib import Path
 
 from board_contract import load_registry, validate_board
 from magia_utils import BOARD_ROOT_TEMPLATE, TASK_ID_RE, parse_spec_id, print_errors, spec_package_path
+from planning_traceability import task_linkage_errors
 
 TASK_LINE_RE = re.compile(r"^\s*-\s*\[[ xX]\]\s+(?P<task_id>task\d{3}):\s*(?P<title>.+?)\s*$")
 BULLET_RE = re.compile(r"^\s*[-*]\s+(?:\[[ xX]\]\s+)?(?P<value>.+?)\s*$")
@@ -183,6 +184,8 @@ def collect_errors(board_root: Path, spec_id: str, task_id: str | None = None) -
                 title_error = _task_title_error(tasks[task_id])
                 if title_error:
                     errors.append(f"selected task `{task_id}` {title_error}: `{tasks[task_id]}`")
+                else:
+                    errors.extend(task_linkage_errors(package, task_id))
 
     return list(dict.fromkeys(errors))
 

@@ -46,6 +46,20 @@ Spec statuses: `planned`, `in_progress`, `blocked`, `done`, `cancelled`, `supers
 
 Dependencies in `depends_on_specs` must reference existing registry entries and form an acyclic graph. A dependency is execution-ready only when its registry status is `done`.
 
+## Task and Validation Linkage
+
+Before RALPH mutation, `scripts/validate_execution_readiness.py` must prove that the selected task resolves to both current planning intent and a planned validation check. Prefer shared canonical anchors in planning text:
+
+```text
+OBJ-001 / GOAL-001 / REQ-001
+AC-001
+VAL-001
+```
+
+For legacy packages without anchors, the validator may use deterministic domain-term overlap, but it must reject an unrelated task even when valid objective, acceptance, and validation sections exist elsewhere in the package. Tasks execute in listed order unless planning explicitly marks a task `[parallel]` or `[independent]`; MAGIA does not add those markers.
+
+For done-state closure, each Traceability source in `validation-evidence.md` must resolve to the selected `taskNNN`, a canonical anchor present in the selected task/PRD, or the exact current text of the selected task, PRD objective, or acceptance criterion. The Traceability check must name the same passed check recorded in the evidence table. Free text that does not resolve to planning truth cannot authorize mutation.
+
 ## Execution Sync
 
 MAGIA may update only:

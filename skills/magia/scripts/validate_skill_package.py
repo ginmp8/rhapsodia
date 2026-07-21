@@ -15,16 +15,33 @@ from typing import Any
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
 from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
-from security_scan import scan_bytes, scan_tree
+from security_scan import scan_bytes, scan_paths
+from package_policy import (
+    EXCLUDED_DIR_NAMES,
+    EXCLUDED_FILE_NAMES,
+    SECRET_NAME_RE,
+    blocked_zip_path,
+    is_sensitive_name,
+    iter_package_candidates,
+)
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with " + "actual|this is a " + "placeholder)", re.IGNORECASE)
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 INLINE_PATH_RE = re.compile(r"`([^`]+\.(?:md|py|sh|yaml|yml|json|template|txt))`")
-BLOCKED_ZIP_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "benchmark-reports", "test-results", "tmp", ".tmp"}
-BLOCKED_ZIP_NAMES = {"test-results.json"}
-SECRET_NAME_RE = re.compile(r"(secret|credential|private[_-]?key|\.env$|id_rsa|token)", re.IGNORECASE)
 
+
+
+
+def scan_package_candidates(target: Path) -> list[str]:
+    candidates, _ = iter_package_candidates(target)
+    errors = [
+        f"secret-like file name is not allowed in skill package: {path.relative_to(target).as_posix()}"
+        for path in candidates
+        if is_sensitive_name(path.name)
+    ]
+    errors.extend(scan_paths(candidates, target))
+    return errors
 
 def read_text(path: Path) -> str:
     try:
@@ -80,7 +97,7 @@ def rel(path: Path, root: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
-ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
+ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
 
@@ -224,8 +241,10 @@ def validate_target(target: Path) -> dict[str, Any]:
         "evals/activation-scenarios.json",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
+        "scripts/planning_traceability.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
+        "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]
@@ -303,7 +322,7 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(collect_boundary_errors())
     checks.append("runtime independence and ownership boundary")
 
-    errors.extend(scan_tree(target))
+    errors.extend(scan_package_candidates(target))
     checks.append("sensitive content and symlink scan")
 
     return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings, "checks": checks}
@@ -321,8 +340,10 @@ def zip_required_resources() -> list[str]:
         "evals/activation-scenarios.json",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
+        "scripts/planning_traceability.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
+        "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]
@@ -359,9 +380,9 @@ def validate_zip(zip_path: Path) -> dict[str, Any]:
                 if normalized != name or ".." in Path(normalized).parts:
                     errors.append(f"unsafe zip path: {name}")
                 rel_parts = Path(name.split("/", 1)[1] if "/" in name else name).parts
-                if any(part in BLOCKED_ZIP_DIRS for part in rel_parts):
+                if blocked_zip_path(rel_parts):
                     errors.append(f"blocked path included in zip: {name}")
-                if Path(name).name in BLOCKED_ZIP_NAMES:
+                if Path(name).name in EXCLUDED_FILE_NAMES or Path(name).name.startswith(".coverage."):
                     errors.append(f"blocked file included in zip: {name}")
                 if SECRET_NAME_RE.search(Path(name).name):
                     errors.append(f"secret-like file name included in zip: {name}")

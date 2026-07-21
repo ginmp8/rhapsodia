@@ -1,10 +1,10 @@
 interface:
   display_name: Magia
-  short_description: Senior engineering execution for bounded implementation, validation,
-    hardening, technical docs, and implementation ADRs.
+  short_description: Senior engineering execution with bounded implementation, canonical
+    traceability, validation, hardening, technical docs, and implementation ADRs.
   default_prompt: Use $magia to implement, validate, debug, harden, document, and
-    synchronize execution from current code and Mago specs without rewriting PRDs
-    or governance artifacts.
+    synchronize execution from current code and Mago specs. Require selected-task
+    linkage and canonical closure evidence without rewriting PRDs or governance artifacts.
   allow_implicit_invocation: true
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg

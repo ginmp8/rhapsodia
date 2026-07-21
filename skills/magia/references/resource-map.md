@@ -40,8 +40,13 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 - `scripts/adapt_legacy_execution_records.py`: convert legacy notes.md/validation.md execution content into current MAGIA-owned artifacts.
 - `scripts/sync_execution_state.py`, `scripts/heal_execution_state.py`, `scripts/close_execution_state.py`: sync controlled execution records.
 - `scripts/validate_artifact.py`, `scripts/validate_execution_state.py`, `scripts/validate_repo_board.py`, `scripts/validate_boundary.py`: validate artifacts/boundaries.
+- `scripts/board_contract.py`: import-only canonical board parser consumed by board, readiness, state, and repository validators.
 - `scripts/validate_board_contract.py`: validate canonical cycle, registry, dependencies, and manifest identity without loading another skill.
-- `scripts/validate_execution_readiness.py`: validate selected spec/task readiness and dependency completion.
+- `scripts/planning_traceability.py`: import-only parser for canonical planning anchors, legacy semantic linkage, task order, and Traceability source resolution; consumed by readiness and state validators.
+- `scripts/validate_execution_readiness.py`: validate selected spec/task readiness, task-to-intent/check linkage, task order, and dependency completion.
+- `scripts/validate_instruction_contract.py`: validate preservation of mandatory MAGIA instruction and ownership terms.
 - `scripts/validate_planning_handoff_contract.py`: validate planning-origin execution and blocker rules after handoff-rule edits.
 - `scripts/magia_utils.py`: import-only helper module used by execution-state, boundary, board, and log scripts; it has no standalone CLI by design.
-- `scripts/security_scan.py`, `scripts/validate_skill_package.py`, `scripts/package_skill.py`: scan secret-like content and symlinks, validate, and package MAGIA.
+- `scripts/package_policy.py`: import-only common archive candidate/exclusion and sensitive-name policy consumed by package validation and building.
+- `scripts/security_scan.py`: import-only fail-closed content scanner consumed by package validation and building.
+- `scripts/validate_skill_package.py`, `scripts/package_skill.py`: validate and package the same package-eligible candidate set.

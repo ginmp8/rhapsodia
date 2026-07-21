@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 - 2026-07-21
+
+- Require selected RALPH tasks to resolve to current PRD intent and a planned validation check through explicit anchors or deterministic legacy semantic linkage.
+- Require dependency-safe task order unless planning explicitly marks a task `[parallel]` or `[independent]`.
+- Resolve validation-evidence Traceability sources against the selected task or current PRD objective/acceptance criterion before any done-state mutation.
+- Add adversarial regression tests proving unrelated tasks and invented traceability sources cannot authorize closure.
+- Centralize package inclusion/exclusion policy so validation scans exactly the files eligible for the archive and ignores only known generated artifacts.
+- Normalize activation scenario schema for deterministic shared harness validation while retaining regression/adversarial provenance in `suite`.
+
 ## 1.1.1 - 2026-07-20
 
 - Hardened transaction recovery against target and backup traversal, symlinks, malformed journals, duplicate entries, and unauthorized execution-state files.

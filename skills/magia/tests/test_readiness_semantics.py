@@ -71,3 +71,58 @@ def test_readiness_accepts_manual_check_with_explicit_action_and_expected_outcom
     readiness = load_script("validate_execution_readiness.py")
     errors = readiness.collect_errors(root, spec_id, "task001")
     assert not any("planned validation check" in error for error in errors)
+
+
+def test_readiness_rejects_task_unrelated_to_spec_intent(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    (package / "tasks.md").write_text(
+        "# Tasks\n\n- [ ] task001: Rotate production credentials safely\n",
+        encoding="utf-8",
+    )
+
+    readiness = load_script("validate_execution_readiness.py")
+    errors = readiness.collect_errors(root, spec_id, "task001")
+    assert any("not linked to any concrete PRD objective or acceptance criterion" in error for error in errors)
+    assert any("not linked to any planned validation check" in error for error in errors)
+
+
+def test_readiness_rejects_later_task_when_earlier_task_is_open(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    readiness = load_script("validate_execution_readiness.py")
+    errors = readiness.collect_errors(root, spec_id, "task002")
+    assert any("earlier required tasks remain open: task001" in error for error in errors)
+
+
+def test_readiness_accepts_later_task_after_earlier_task_is_done(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    tasks = (package / "tasks.md").read_text(encoding="utf-8")
+    (package / "tasks.md").write_text(tasks.replace("- [ ] task001:", "- [x] task001:"), encoding="utf-8")
+
+    readiness = load_script("validate_execution_readiness.py")
+    errors = readiness.collect_errors(root, spec_id, "task002")
+    assert not any("earlier required tasks remain open" in error for error in errors)
+    assert not any("not linked to any concrete PRD" in error for error in errors)
+
+
+def test_readiness_accepts_explicit_canonical_anchors(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    (package / "prd.md").write_text(
+        "# PRD\n\n## Objective\n\n[OBJ-001] Produce a filtered export for selected data.\n\n"
+        "## Acceptance Criteria\n\n- [AC-001] Output includes the requested data subset.\n",
+        encoding="utf-8",
+    )
+    (package / "validation.md").write_text(
+        "# Validation Plan\n\n## Planned Checks\n\n"
+        "- [VAL-001] Run `python -m pytest tests/test_export.py` and expect exit code 0.\n",
+        encoding="utf-8",
+    )
+    (package / "tasks.md").write_text(
+        "# Tasks\n\n- [ ] task001: [AC-001] [VAL-001] Implement export pipeline\n",
+        encoding="utf-8",
+    )
+
+    readiness = load_script("validate_execution_readiness.py")
+    assert readiness.collect_errors(root, spec_id, "task001") == []

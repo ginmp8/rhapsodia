@@ -131,3 +131,54 @@ def test_package_validator_rejects_symlink(tmp_path: Path):
     outside.write_text("safe\n", encoding="utf-8")
     (target / "linked.txt").symlink_to(outside)
     assert any("symlink" in finding for finding in scanner.scan_tree(target))
+
+
+def test_package_validation_ignores_only_known_generated_artifacts(tmp_path: Path):
+    import shutil
+
+    validator = load_script("validate_skill_package.py")
+    source = Path(__file__).resolve().parents[1]
+    target = tmp_path / "magia-generated-artifacts"
+    shutil.copytree(source, target, ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache", ".coverage"))
+    (target / ".coverage").write_bytes(b"coverage\x00database")
+    cache = target / "scripts" / "__pycache__"
+    cache.mkdir()
+    (cache / "generated.pyc").write_bytes(b"python\x00bytecode")
+
+    result = validator.validate_target(target)
+    assert result["status"] == "pass"
+
+
+def test_package_validation_rejects_sensitive_eligible_filename(tmp_path: Path):
+    import shutil
+
+    validator = load_script("validate_skill_package.py")
+    source = Path(__file__).resolve().parents[1]
+    target = tmp_path / "magia-sensitive-name"
+    shutil.copytree(source, target, ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache", ".coverage"))
+    (target / "assets" / "credentials.txt").write_text("redacted\n", encoding="utf-8")
+
+    result = validator.validate_target(target)
+    assert result["status"] == "fail"
+    assert any("secret-like file name" in error for error in result["errors"])
+
+
+def test_packager_succeeds_after_tests_create_cache_artifacts(tmp_path: Path):
+    import shutil
+    import zipfile
+
+    packager = load_script("package_skill.py")
+    source = Path(__file__).resolve().parents[1]
+    target = tmp_path / "magia-after-tests"
+    shutil.copytree(source, target, ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache", ".coverage"))
+    (target / ".coverage").write_bytes(b"coverage\x00database")
+    cache = target / "tests" / "__pycache__"
+    cache.mkdir()
+    (cache / "test.pyc").write_bytes(b"python\x00bytecode")
+    output = tmp_path / "skill.zip"
+
+    assert packager.main(["--target", str(target), "--output", str(output), "--validate"]) == 0
+    with zipfile.ZipFile(output) as archive:
+        names = archive.namelist()
+    assert not any("__pycache__" in name for name in names)
+    assert not any(name.endswith("/.coverage") or name.endswith(".coverage") for name in names)

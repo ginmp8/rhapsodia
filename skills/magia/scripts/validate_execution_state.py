@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from board_contract import registry_for
+from planning_traceability import canonical_source_matches
 from magia_utils import (
     BOARD_ROOT_TEMPLATE,
     dedupe_preserve_order,
@@ -189,6 +190,8 @@ def _valid_passed_checks(run: dict[str, Any]) -> list[dict[str, str]]:
 
 
 def _valid_traceability(
+    spec_package: Path,
+    task_id: str,
     run: dict[str, Any],
     passed_checks: list[dict[str, str]],
 ) -> list[dict[str, str]]:
@@ -197,6 +200,7 @@ def _valid_traceability(
         row for row in run["traceability"]
         if normalize_value(row["result"]) in PASS_RESULTS
         and is_concrete(row["source"])
+        and canonical_source_matches(spec_package, task_id, row["source"])
         and is_concrete(row["check"])
         and is_concrete(row["evidence"])
         and normalize_value(row["check"]) in executed_check_names
@@ -252,10 +256,11 @@ def validate_task_evidence(spec_package: Path, task_id: str, requested_status: s
                 f"`{task_id}` cannot be done without at least one passed executed check containing "
                 "a concrete check, command or method, and evidence."
             )
-        if not _valid_traceability(run, passed_checks):
+        if not _valid_traceability(spec_package, task_id, run, passed_checks):
             errors.append(
-                f"`{task_id}` cannot be done without a passed Traceability row linking a requirement, "
-                "acceptance criterion, or task objective to the same passed executed check and evidence."
+                f"`{task_id}` cannot be done without a passed Traceability row whose source resolves to "
+                "a real PRD objective, acceptance criterion, or selected task and whose check matches the same "
+                "passed executed check and evidence."
             )
         if _has_failed_result(run):
             errors.append(f"`{task_id}` cannot be done while failed or blocked validation evidence remains.")
