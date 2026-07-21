@@ -1,0 +1,12 @@
+{
+  "name": "mago",
+  "version": "2.1.0",
+  "released_at": "2026-07-20",
+  "package_schema": "2",
+  "python": ">=3.11",
+  "products": ["chatgpt", "codex", "api", "atlas"],
+  "compatibility_policy": "references/installation-and-release.md",
+  "changelog": "CHANGELOG.md",
+  "breaking_changes": false,
+  "support_boundary": "planning artifacts and deterministic validators; no product-code execution or runtime evidence"
+}

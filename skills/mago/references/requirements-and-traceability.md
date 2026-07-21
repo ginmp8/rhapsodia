@@ -68,6 +68,13 @@ Markdown records use these parsable forms:
 
 Use comma-separated IDs or `none` only where the selected profile permits omission. `governed` forbids `none` for the required chain. A decision may cover several requirements, but every material governed requirement must have at least one linked planned decision or an explicit recorded rationale that no design decision is needed; the validator treats that rationale as a decision record, not as a missing link.
 
+
+## Governed plan-quality fields
+
+Before governed handoff, run `scripts/validate_plan_quality.py <package>`. Each functional requirement records `Evidence basis`, `Failure/recovery behavior`, and linked acceptance `Verification`. Acceptance criteria classify an observable path (`normal`, `boundary`, `error`, `abuse`, `recovery`, or `operational`); governed coverage includes a normal path and at least one non-happy path. Material nonfunctional requirements use stable `NFR` records with a metric, threshold, and `VAL` link, or the NFR section states an evidence-backed non-applicability rationale.
+
+When technical design is triggered, record at least two explicit `OPTION` records with benefits, costs, failure modes, and operational impact, then link the selected option from a `DECISION`. Validation records name environment, command or procedure, expected result, and failure disposition. These fields improve auditability and execution readiness but remain planning evidence, not runtime proof.
+
 ## Deterministic validation
 
 Render a temporary, non-authoritative matrix outside `BOARD_ROOT`:

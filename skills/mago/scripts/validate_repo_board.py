@@ -272,13 +272,6 @@ def validate_spec_packages(board_root: Path, repo_root: Path) -> tuple[list[str]
                 f"{posix_rel(spec_package_path, repo_root)}: spec directory must use canonical spec-YYYY-MM-DD-feature-key"
             )
             continue
-        technical_design_path = spec_package_path / "technical-design.md"
-        if technical_design_path.exists():
-            from validate_technical_design import validate as validate_technical_design
-
-            errors.extend(validate_technical_design(technical_design_path))
-        if not (spec_package_path / "tasks.md").exists():
-            continue
         package_errors, package_warnings = validate_package(spec_package_path)
         errors.extend(package_errors)
         warnings.extend(package_warnings)

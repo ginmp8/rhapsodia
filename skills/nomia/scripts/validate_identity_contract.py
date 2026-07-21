@@ -37,6 +37,9 @@ EXCLUDED_LEGACY_SCAN = {
     "scripts/nomia_utils.py",
     "scripts/validate_identity_contract.py",
     "references/canonical-paths.md",
+    "examples/golden/11-governance-adapt-legacy/legacy-ops.yaml",
+    "examples/golden/11-governance-adapt-legacy/ops.yaml",
+    "examples/golden/11-governance-adapt-legacy/adaptation-report.json",
 }
 EXTERNAL_SKILL_PATTERNS = [
     re.compile(r"/home/oai/skills/(?:mago|magia)(?:/|\b)"),

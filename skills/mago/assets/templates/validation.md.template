@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Use this file as a structural reference only.
 Replace every <...> token with repository-truth values.
 Test case count and checklist items are examples, not mandatory fixed content.
@@ -15,20 +15,20 @@ Test case count and checklist items are examples, not mandatory fixed content.
 - Requirements: REQ-001
 - Acceptance: AC-001
 - Tasks: task001
-
-Expected:
-
-- <observable_outcome>
+- Environment: <environment and fixture>
+- Command or procedure: <reproducible command or bounded manual procedure>
+- Expected: <observable_outcome>
+- Failure disposition: <block, rollback, replan, or explicit residual risk path>
 
 ### VAL-002 - <validation_title>
 
 - Requirements: <REQ_ids>
 - Acceptance: <AC_ids>
 - Tasks: <task_ids>
-
-Expected:
-
-- <observable_outcome>
+- Environment: <environment and fixture>
+- Command or procedure: <reproducible command or bounded manual procedure>
+- Expected: <observable_outcome>
+- Failure disposition: <block, rollback, replan, or explicit residual risk path>
 
 ## Performance Validation
 

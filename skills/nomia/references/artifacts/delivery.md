@@ -73,3 +73,18 @@ Human board portfolio under `BOARD_ROOT`.
 Required sections: `# Portfolio`, `## Summary`, `## Items`, `## Blocked`, `## Overdue`, `## Missing Owners`, `## At Risk`, `## Multi-Repo`, `## Risks`, `## Replans`.
 
 Rules: derive summary from `portfolio.yaml`, `ops.yaml`, and evidence; do not introduce canonical metadata that belongs in `ops.yaml` or `portfolio.yaml`; unknown placeholders warn until intentionally retained.
+
+### Canonical governed record (`schema_version: 2`)
+
+New repository-facing `ops.yaml` files use `schema_version: 2`. In addition to the retained delivery fields above, they require `governance`, `technical_state`, `release`, `dependencies`, `decision`, `handoffs`, `provenance`, and `timestamps`. Select `governance.profile`, `governance.lifecycle`, and `governance.status` before writing. `status.state` mirrors `governance.status`; it is not an independent source of truth.
+
+Planning, execution, validation, and release use the dimension-specific values in [../state-risk-and-handoffs.md](../state-risk-and-handoffs.md). A non-unknown technical state requires its attributed `source` and ISO-8601 `observed_at`. Canonical projection requires `provenance.updated_at`; missing evidence stays unknown and blocks completion claims.
+
+`schema_version: 1` remains accepted only as legacy validation/adaptation input. It is not eligible for canonical projection. Do not silently translate legacy `done` or `at_risk`; use `governance-adapt` with externally supplied current identities and explicit unresolved mappings.
+
+Validate canonical records with:
+
+```bash
+python scripts/validate_ops.py <ops.yaml> --require-canonical
+python scripts/project_governance_views.py <ops.yaml> --generated-at <ISO-8601>
+```

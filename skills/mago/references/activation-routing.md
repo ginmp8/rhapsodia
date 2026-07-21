@@ -6,6 +6,8 @@ Use this reference during hardening, packaging, or when a prompt could be confus
 
 Activate MAGO for canonical repository planning work under a resolved board root: discovery, ordering, adapt, prepare-define, define, refine, technical-design, reshape-tasks, define-product, refine-product, define-tasks, and refine-tasks. The expected output must be a MAGO-owned planning artifact or a validator report for such artifacts.
 
+For read-only reconciliation, activate `reconcile` only when canonical Mago intent and supplied Magia evidence are both identifiable; preserve both authorities and emit only a non-authoritative reconciliation report.
+
 ## Should Not Activate
 
 Do not activate MAGO for product-code implementation, runtime execution, deployment, test execution, runtime evidence gathering, delivery governance, release notes, stakeholder status, portfolio reporting, or general documentation outside the canonical board tree. These are handoff cases.

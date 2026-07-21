@@ -19,6 +19,13 @@ Use this reference for Spec Kit, Kiro, or OpenSpec import/export and for read-on
 
 C4, OpenAPI, and AsyncAPI are technical evidence/export formats, not replacement SDD package authorities. Use C4 views only at the useful abstraction levels; reference or generate OpenAPI for HTTP API contracts and AsyncAPI for message-driven contracts when triggered. Record unsupported semantics and version assumptions in the adapter loss report.
 
+
+## Executable bounded adapters
+
+`scripts/sdd_adapter.py` implements version-explicit file-convention adapters for `spec-kit` and `openspec`. It exports canonical PRD/design/tasks and optional delta files, writes checksums and a non-authoritative metadata sidecar, imports mapped files into an external Mago projection, and performs strict round-trip SHA-256 comparison. Run `scripts/validate_sdd_adapter_report.py` on every report.
+
+The adapters are deliberately bounded: they map the documented file surfaces and do not claim compatibility with an unspecified, `latest`, or complete external tool schema. Board identity, authority, evidence provenance, profile decisions, mutation state, and reconciliation remain Mago concepts and are disclosed as sidecar-only losses. Native external edits are detected and reported on import rather than silently treated as unchanged Mago intent.
+
 ## Import contract
 
 1. Identify source format and version from supplied evidence; never guess a volatile schema version.

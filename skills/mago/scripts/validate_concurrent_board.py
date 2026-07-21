@@ -56,6 +56,7 @@ def validate_manifest_identity(package: Path, cycle_id: str, registry: dict[str,
         "spec_id": registry.get("spec_id"),
         "cycle_id": cycle_id,
         "feature_key": registry.get("feature_key"),
+        "profile": registry.get("profile"),
     }
     for key, value in expected.items():
         if data.get(key) != value:
@@ -101,20 +102,13 @@ def validate(board_root: Path) -> Report:
                 report.error(f"{package}: package has no matching registry record")
                 continue
             validate_manifest_identity(package, str(cycle.get("cycle_id", "")), record.data, report)
-            if (package / "tasks.md").exists():
-                from validate_package import validate_package
+            from validate_package import validate_package
 
-                errors, warnings = validate_package(package)
-                for error in errors:
-                    report.error(error)
-                for warning in warnings:
-                    report.warning(warning)
-            technical_design = package / "technical-design.md"
-            if technical_design.exists():
-                from validate_technical_design import validate as validate_technical_design
-
-                for error in validate_technical_design(technical_design):
-                    report.error(error)
+            errors, warnings = validate_package(package)
+            for error in errors:
+                report.error(error)
+            for warning in warnings:
+                report.warning(warning)
 
     for spec_id, record in by_id.items():
         package = specs_root / spec_id

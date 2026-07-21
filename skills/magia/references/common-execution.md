@@ -33,7 +33,7 @@
 - In RALPH, prd.md, technical-design.md, notes.md, and validation.md are read-only planning inputs; tasks.md is read-mostly and may only have an existing task checkbox toggled when truthfully complete.
 - For execution records, load `references/artifacts/execution-records.md` and preserve canonical structure.
 - Use local scripts for template writes, dynamic-token resolution, execution logs, state sync/heal, artifact validation, and boundary/package validation when available.
-- Use `scripts/write_artifact_scaffold.py` for template-backed writes and `scripts/validate_artifact.py` or a narrower validator before relying on manual review.
+- Use `scripts/write_artifact_scaffold.py --board-root <board_root> <artifact-path>` for RALPH template-backed writes; use explicit `--allowed-root <root>` for authorized ADHOC documentation writes and `scripts/validate_artifact.py` or a narrower validator before relying on manual review.
 - Keep MAGIA durable docs inside `BOARD_ROOT`.
 - Record meaningful execution assumptions/trade-offs in implementation-notes.md when they affect later work; keep notes.md as read-only planning context.
 - After each executed task, use `scripts/write_execution_log.py <board_root> --spec-id <spec_id> --task-id <taskNNN> ...` to update implementation-notes.md; if truthfully done, check the existing tasks.md box in place.

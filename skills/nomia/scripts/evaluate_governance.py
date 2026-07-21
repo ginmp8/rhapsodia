@@ -5,6 +5,10 @@ import argparse, json, sys
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from governance_contract import validate_handoff_envelope
+from validate_ops import validate as validate_ops_file
+
 try:
     import yaml
 except ImportError as exc:
@@ -114,30 +118,8 @@ def load_mapping(path: Path) -> dict[str,Any]:
     return data
 
 def validate_handoff(env: dict[str,Any], as_of: datetime) -> dict[str,Any]:
-    reasons=[]; direction=env.get("direction")
-    if direction not in DIRECTIONS: reasons.append("invalid direction")
-    for field in ("source","observed_at","provenance","payload"):
-        if env.get(field) in (None,"",[]): reasons.append(f"missing {field}")
-    observed=parse_time(env.get("observed_at")); freshness=env.get("freshness_days")
-    stale=False
-    if observed and isinstance(freshness,int) and days_between(observed,as_of)>freshness: stale=True; reasons.append("evidence is stale")
-    payload=env.get("payload") if isinstance(env.get("payload"),dict) else {}
-    required={
-      "nomia_to_mago":{"feature_key","outcome","scope_summary","owner","dependencies","readiness"},
-      "mago_to_nomia":{"spec_id","planning_state","planning_evidence"},
-      "magia_to_nomia":{"evidence_reference"},
-      "nomia_to_stakeholder":{"audience","summary","unknowns","decision_needed"}}
-    for field in required.get(direction,set()):
-        if field not in payload: reasons.append(f"missing payload.{field}")
-    if direction=="nomia_to_mago" and payload.get("candidate_spec_id") and not payload.get("candidate_spec_id_provenance"): reasons.append("candidate spec id lacks provenance")
-    if direction=="magia_to_nomia" and not ({"execution_state","validation_state"}&set(payload)): reasons.append("missing execution_state or validation_state")
-    if env.get("conflict") or payload.get("conflict"): reasons.append("conflicting evidence")
-    if any(r.startswith("invalid") or r.startswith("missing") or "lacks provenance" in r for r in reasons): status="rejected"
-    elif "conflicting evidence" in reasons: status="conflicting"
-    elif stale: status="stale"
-    elif payload.get("readiness") in {"draft","unknown",False}: status="draft"
-    else: status="accepted"
-    return {"status":status,"reasons":reasons,"direction":direction}
+    """Validate a typed handoff envelope against canonical identity, state, freshness, and authority rules."""
+    return validate_handoff_envelope(env, as_of)
 
 def json_safe(v: Any) -> Any:
     if isinstance(v,(date,datetime)): return v.isoformat()
@@ -156,10 +138,16 @@ def main() -> int:
     if not as_of: print("ERROR: invalid --as-of",file=sys.stderr); return 2
     if args.transition: result=validate_transition(*args.transition)
     elif args.handoff: result=validate_handoff(load_mapping(Path(args.handoff)),as_of)
-    elif args.record: result={"status":"pass","metrics":compute_metrics(load_mapping(Path(args.record)),as_of)}
+    elif args.record:
+        record_path=Path(args.record).resolve(); data=load_mapping(record_path)
+        if data.get("schema_version") != 2:
+            result={"status":"rejected","reasons":["metrics require canonical schema_version 2; adapt legacy governance first"]}
+        else:
+            errors,warnings=validate_ops_file(record_path,require_canonical=True)
+            result={"status":"pass","warnings":warnings,"metrics":compute_metrics(data,as_of)} if not errors else {"status":"rejected","reasons":errors}
     else: print("ERROR: record, --transition, or --handoff is required",file=sys.stderr); return 2
     text=json.dumps(json_safe(result),indent=2,sort_keys=True)+"\n"
     if args.json_output: Path(args.json_output).write_text(text,encoding="utf-8")
     print(text,end="")
-    return 0 if result.get("status") not in {"rejected","fail"} else 1
+    return 0 if result.get("status") in {"pass", "accepted", "draft"} else 1
 if __name__=="__main__": sys.exit(main())

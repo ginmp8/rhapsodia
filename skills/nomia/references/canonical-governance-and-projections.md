@@ -79,3 +79,8 @@ Adapters are generated and non-authoritative. They may map to lightweight propos
 - no implementation tasks, architecture, or technical approval authored by Nomia.
 
 External formats never become canonical and must not be imported as current volatile truth without field-level provenance and conflict review.
+
+
+## Human Projection Metadata
+
+Every generated Markdown projection includes `## Projection Metadata` with resolved `Authority`, `Generated From`, `Generated At`, and `Evidence As Of` fields. Use `nomia-projection` only for a view derived from current canonical evidence; use `non-authoritative-draft` for a draft that cannot be treated as source of truth. Validate generated projections with `scripts/validate_projection_metadata.py`.

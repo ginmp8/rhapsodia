@@ -1,0 +1,34 @@
+schema_version: 1
+spec_id: spec-2026-04-20-legacy-demand--01arz3ndektsv4rrffq69g5fav
+request:
+  title: Legacy demand
+  requester: product-operations
+  requested_date: 2026-04-20
+  source: manual
+ownership:
+  owner: onboarding-team
+  backup_owner: null
+  stakeholders:
+    - product-operations
+planning:
+  sprint: null
+  bucket: roadmap
+  target_date: 2026-08-15
+  commitment: tentative
+priority:
+  level: high
+  rationale: Customer commitment
+status:
+  state: done
+  summary: Legacy record claimed completion
+  updated_at: 2026-04-21
+blockers: []
+replanning: []
+tags: []
+links:
+  mago: []
+  magia: []
+  external: []
+technical_state:
+  validation:
+    state: passed

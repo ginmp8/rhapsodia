@@ -29,6 +29,7 @@ ACTIVE_SPEC_STATUSES = {"planned", "in_progress", "blocked"}
 VALID_SPEC_STATUSES = ACTIVE_SPEC_STATUSES | {"done", "cancelled", "superseded"}
 VALID_CYCLE_STATUSES = {"proposed", "planned", "in_progress", "done", "cancelled"}
 VALID_PRIORITIES = {"critical", "high", "normal", "low"}
+VALID_PROFILES = {"quick", "standard", "governed"}
 PRIORITY_ORDER = {"critical": 0, "high": 1, "normal": 2, "low": 3}
 VALID_HANDOFF_STATUS = {"ready_for_prepare_define", "blocked", "needs_discovery"}
 VALID_DOWNSTREAM_MODE = {"define", "define-product", "define-tasks"}
@@ -157,6 +158,8 @@ def validate_record(board_root: Path, cycle: dict[str, Any], record: RegistryRec
         errors.append(f"{path}: invalid status `{data.get('status')}`")
     if data.get("priority") not in VALID_PRIORITIES:
         errors.append(f"{path}: invalid priority `{data.get('priority')}`")
+    if data.get("profile") not in VALID_PROFILES:
+        errors.append(f"{path}: profile must be one of {sorted(VALID_PROFILES)}")
     order_hint = data.get("order_hint")
     if order_hint is not None and (not isinstance(order_hint, int) or order_hint < 0):
         errors.append(f"{path}: order_hint must be null or a non-negative integer")
@@ -188,6 +191,18 @@ def validate_record(board_root: Path, cycle: dict[str, Any], record: RegistryRec
         for artifact in handoff.get("seed_artifacts") or []:
             if artifact not in VALID_SEED_ARTIFACTS:
                 errors.append(f"{path}: unsupported seed artifact `{artifact}`")
+        profile = data.get("profile")
+        expected_seed_artifacts = (
+            {"manifest.yaml", "prd.md", "tasks.md", "validation.md"}
+            if profile == "quick"
+            else {"manifest.yaml", "prd.md", "tasks.md", "notes.md", "validation.md"}
+        )
+        actual_seed_artifacts = set(handoff.get("seed_artifacts") or [])
+        if profile in VALID_PROFILES and actual_seed_artifacts != expected_seed_artifacts:
+            errors.append(
+                f"{path}: handoff.seed_artifacts must match `{profile}` profile minimums: "
+                f"{sorted(expected_seed_artifacts)}"
+            )
         for candidate in handoff.get("source_candidates") or []:
             candidate_path = Path(str(candidate))
             if candidate_path.is_absolute() or ".." in candidate_path.parts:

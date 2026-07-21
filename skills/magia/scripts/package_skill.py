@@ -87,6 +87,15 @@ def main(argv: list[str] | None = None) -> int:
     output = Path(args.output).resolve()
     result: dict[str, Any] = {"target": str(target), "output": str(output)}
 
+    security_errors = validate_skill_package.scan_tree(target)
+    if security_errors:
+        result["status"] = "fail"
+        result["security_errors"] = security_errors
+        if args.json_output:
+            Path(args.json_output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 1
+
     if args.validate:
         folder = validate_skill_package.validate_target(target)
         result["folder_validation"] = folder

@@ -13,6 +13,8 @@ Canonical identities:
 - `cycle_id = cycle-<yyyy-mm-dd>-<cycle-key>`
 - `spec_id = spec-<yyyy-mm-dd>-<feature-key>`
 
+The date segment is calendar-validated, not only pattern-validated. Invalid month/day combinations must stop path resolution.
+
 The `<year>` path segment must match the creation year encoded in `cycle_id`.
 
 ## Resolution

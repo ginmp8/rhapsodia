@@ -1,4 +1,5 @@
-import importlib.util, tempfile, unittest
+import importlib.util, json, tempfile, unittest
+from datetime import date, datetime, timezone
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location("project_governance_views", ROOT/"scripts"/"project_governance_views.py")
@@ -20,6 +21,19 @@ class ProjectionTests(unittest.TestCase):
         a=mod.adapter("openspec_reference",r,v,"ops.yaml","2026-07-20T12:00:00+00:00")
         self.assertEqual(a["authority"],"non_authoritative_projection")
         self.assertTrue(a["lossy_fields"])
+
+    def test_all_adapters_return_json_safe_values_for_yaml_dates(self):
+        r=self.record()
+        r["planning"]["target_date"]=date(2026,8,1)
+        r["status"]["updated_at"]=date(2026,7,20)
+        r["provenance"]["updated_at"]=datetime(2026,7,20,12,0,tzinfo=timezone.utc)
+        views=mod.build_views(r,"ops.yaml","2026-07-20T12:00:00+00:00")
+        names=["lightweight_proposal","roadmap_item","status_report","decision_log","release_note_input","spec_kit_reference","openspec_reference","kiro_reference"]
+        for name in names:
+            with self.subTest(adapter=name):
+                payload=mod.adapter(name,r,views,"ops.yaml","2026-07-20T12:00:00+00:00")
+                json.dumps(payload,sort_keys=True)
+
     def test_non_unknown_technical_state_requires_source(self):
         r=self.record(); r["technical_state"]["execution"]["source"]=None
         errors,_=mod.validate_record(r)

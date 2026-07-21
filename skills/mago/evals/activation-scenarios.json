@@ -377,6 +377,30 @@
         "keeps changes inside the canonical spec package planning path",
         "does not edit product code or claim runtime evidence"
       ]
+    },
+    {
+      "id": "activate-reconcile-001",
+      "type": "should_activate",
+      "prompt": "Reconcile this canonical Mago package with the supplied Magia evidence and report convergence without editing either source.",
+      "expected_behavior": "activate: Activate MAGO in reconcile mode and emit a non-authoritative planning reconciliation report.",
+      "acceptance_criteria": [
+        "selects reconcile as the only primary mode",
+        "preserves Mago and Magia provenance",
+        "does not claim Mago-authored runtime proof"
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "edge-reconcile-ownership-001",
+      "type": "edge_case",
+      "prompt": "Compare the plan with Magia evidence, keep both authorities read-only, and identify planning revisions required by deviations.",
+      "expected_behavior": "activate: Use reconcile mode while preserving authority boundaries and classifying deviations.",
+      "acceptance_criteria": [
+        "does not rewrite Magia evidence",
+        "does not mark runtime validation complete",
+        "routes newly discovered planning work back to Mago"
+      ],
+      "category": "edge_case"
     }
   ]
 }

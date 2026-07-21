@@ -2,7 +2,7 @@
 
 ## Validation Policy
 
-Run the smallest validation set that proves selected work: targeted unit/integration tests, build/compile, schema/parser checks, lint/format only when changed files participate or policy requires. If behavior changed and coverage tooling exists, run targeted coverage when available; otherwise record the gap in validation-evidence.md.
+Before mutation, require a concrete objective under a canonical objective/goal section, at least one criterion under a canonical acceptance/success section, a descriptive selected task, and a validation-plan check with both an executable action and explicit expected outcome through `scripts/validate_execution_readiness.py`. Negated declarations, `Non-Acceptance` headings, placeholders, meta commentary, and checks without an expected result are not execution readiness. Run the smallest validation set that proves selected work: targeted unit/integration tests, build/compile, schema/parser checks, lint/format only when changed files participate or policy requires. If behavior changed and coverage tooling exists, run targeted coverage when available; otherwise record the gap in validation-evidence.md.
 
 ## Execution Records Sync
 
@@ -19,7 +19,9 @@ Keep records truthful:
 - record real commands, outcomes, residual gaps, and skipped checks in validation-evidence.md;
 - when records are touched, follow `references/artifacts/execution-records.md` and validate template-backed artifacts with `scripts/validate_artifact.py <artifact-path>` or narrower validator;
 - reconcile tasks.md, validation-evidence.md, implementation-notes.md, manifest.yaml, and the matching registry entry before close;
-- when completion state or records changed, use `scripts/close_execution_state.py`; fall back to `scripts/sync_execution_state.py <board_root> --spec-id <spec_id> ...` plus `scripts/validate_execution_state.py <board_root> --spec-id <spec_id>` only if close wrapper is unavailable;
+- when completion state or records changed, use `scripts/close_execution_state.py` for semantic preflight, candidate validation, recoverable sync, and final validation; run narrow healing separately before closure when required; fall back to `scripts/sync_execution_state.py <board_root> --spec-id <spec_id> ...` plus `scripts/validate_execution_state.py <board_root> --spec-id <spec_id>` only if close wrapper is unavailable;
+- the transaction writer accepts only the selected spec's `tasks.md`, `manifest.yaml`, and matching registry entry; validates journal schema, canonical relative targets, backup names, containment, and symlink absence before recovery; and rejects source drift detected after candidate preflight;
+- lock recovery must preserve a live owner's lock, reject invalid owner metadata, recover a dead-owner lock, and safely discard a dead-owner pre-journal transaction because no target replacement can occur before the prepared journal is durable;
 - for narrow drift already evidenced by implementation-notes.md and validation-evidence.md, run `scripts/heal_execution_state.py <board_root> --spec-id <spec_id>` before planning handoff;
 - run `scripts/validate_repo_board.py <repo_root> --board-root <board_root>` before final response when local repo files exist;
 - do not check validation.md final checklist items during execution closure; record real outcomes, gaps, and blockers in validation-evidence.md;

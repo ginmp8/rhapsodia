@@ -23,6 +23,7 @@ REQUIRED_MODES = {
     "reshape-tasks",
     "technical-design",
     "complexity-reduction",
+    "reconcile",
 }
 REQUIRED_KEYS = {"id", "case_type", "prompt", "expected_activation", "expected_mode", "expected_boundary"}
 CASE_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
@@ -79,6 +80,8 @@ def classify_prompt(prompt: str) -> tuple[bool | str, str | None]:
     text = " ".join(prompt.lower().replace("-", " ").split())
     if has_execution_request(text) or has_any(text, GOVERNANCE_TERMS):
         return False, None
+    if "reconcile" in text or ("compare" in text and "magia evidence" in text) or "planning reconciliation" in text:
+        return True, "reconcile"
     if "technical design" in text or ("architecture" in text and "spec" in text):
         return True, "technical-design"
 
@@ -143,6 +146,7 @@ def validate(root: Path) -> dict[str, Any]:
     mode_matches = 0
     boundary_cases = {"positive": 0, "negative": 0, "ambiguous": 0}
     case_types = {case_type: 0 for case_type in sorted(CASE_TYPES)}
+    mode_case_types: dict[str, set[str]] = {}
 
     for index, scenario in enumerate(scenarios, start=1):
         if not isinstance(scenario, dict):
@@ -167,6 +171,7 @@ def validate(root: Path) -> dict[str, Any]:
         expected_boundary = scenario["expected_boundary"]
         if expected_mode is not None:
             expected_modes.add(expected_mode)
+            mode_case_types.setdefault(str(expected_mode), set()).add(str(case_type))
         if expected_activation is True:
             boundary_cases["positive"] += 1
         elif expected_activation is False:
@@ -204,6 +209,9 @@ def validate(root: Path) -> dict[str, Any]:
     missing_modes = sorted(REQUIRED_MODES - expected_modes)
     if missing_modes:
         errors.append(f"activation suite does not cover modes: {missing_modes}")
+    reconcile_cases = mode_case_types.get("reconcile", set())
+    if "should_activate" not in reconcile_cases or not (reconcile_cases & {"edge_case", "regression", "adversarial"}):
+        errors.append("activation suite must cover reconcile with one positive and one boundary/regression case")
     for case_name, count in boundary_cases.items():
         if count == 0:
             errors.append(f"activation suite missing {case_name} boundary case")

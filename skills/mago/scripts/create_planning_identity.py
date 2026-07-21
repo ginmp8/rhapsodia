@@ -125,6 +125,7 @@ def create_spec(args: argparse.Namespace) -> Path:
         "title": title,
         "type": args.type,
         "classification": args.classification,
+        "profile": args.profile,
         "created_at": created_at,
         "status": "planned",
         "priority": args.priority,
@@ -138,7 +139,9 @@ def create_spec(args: argparse.Namespace) -> Path:
             "downstream_mode": args.downstream_mode,
             "package_shape": args.package_shape,
             "source_candidates": [],
-            "seed_artifacts": ["manifest.yaml", "prd.md", "tasks.md", "notes.md", "validation.md"],
+            "seed_artifacts": (["manifest.yaml", "prd.md", "tasks.md", "validation.md"]
+                               if args.profile == "quick"
+                               else ["manifest.yaml", "prd.md", "tasks.md", "notes.md", "validation.md"]),
             "blockers": [],
         },
         "imported_from": None,
@@ -166,6 +169,7 @@ def main(argv: list[str] | None = None) -> int:
     spec.add_argument("--feature-version", default="0.1.0")
     spec.add_argument("--type", choices=("feature", "fix"), default="feature")
     spec.add_argument("--classification", default="internal")
+    spec.add_argument("--profile", choices=("quick", "standard", "governed"), default="standard")
     spec.add_argument("--priority", choices=("critical", "high", "normal", "low"), default="normal")
     spec.add_argument("--order-hint", type=int)
     spec.add_argument("--handoff-status", choices=("ready_for_prepare_define", "blocked", "needs_discovery"), default="needs_discovery")

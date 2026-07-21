@@ -72,9 +72,10 @@ def validate_spec_id(label: str, value: Any, errors: list[str]) -> None:
         errors.append(f"`{label}` {error}")
 
 
-def validate_yaml(path: Path) -> tuple[list[str], list[str]]:
+def validate_yaml(path: Path, as_of: date | None = None) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
+    effective_as_of = as_of or date.today()
 
     if not path.exists():
         return [f"missing required file: {path}"], warnings
@@ -164,7 +165,7 @@ def validate_yaml(path: Path) -> tuple[list[str], list[str]]:
         if not is_iso_date(target_date):
             errors.append(f"{path}: `items[{index}].target_date` must use YYYY-MM-DD format")
         target = parse_iso_date(target_date)
-        if target and target < date.today() and str(item.get("state", "")) not in TERMINAL_STATES:
+        if target and target < effective_as_of and str(item.get("state", "")) not in TERMINAL_STATES:
             warnings.append(f"{path}: `items[{index}]` appears overdue")
             if current_key not in flag_values(flags, "overdue"):
                 warnings.append(f"{path}: `{current_key}` should appear in `flags.overdue`")
@@ -224,9 +225,17 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate nomia portfolio artifacts.")
     parser.add_argument("--portfolio-yaml", default="portfolio.yaml")
     parser.add_argument("--portfolio-md", default="portfolio.md")
+    parser.add_argument("--as-of", help="Deterministic YYYY-MM-DD observation date. Defaults to today.")
     args = parser.parse_args(argv)
 
-    errors, warnings = validate_yaml(Path(args.portfolio_yaml).resolve())
+    as_of = None
+    if args.as_of:
+        try:
+            as_of = date.fromisoformat(args.as_of)
+        except ValueError:
+            print("ERROR: --as-of must use YYYY-MM-DD")
+            return 2
+    errors, warnings = validate_yaml(Path(args.portfolio_yaml).resolve(), as_of=as_of)
     md_errors, md_warnings = validate_markdown(Path(args.portfolio_md).resolve())
     errors.extend(md_errors)
     warnings.extend(md_warnings)

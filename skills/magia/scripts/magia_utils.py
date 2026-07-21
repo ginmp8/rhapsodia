@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import re
+from datetime import date
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -90,6 +91,10 @@ def parse_cycle_id(value: str) -> dict[str, str]:
     match = CYCLE_ID_RE.fullmatch(value)
     if not match:
         raise ValueError(f"cycle_id must use cycle-YYYY-MM-DD-cycle-key, got `{value}`")
+    try:
+        date.fromisoformat(match.group("date"))
+    except ValueError as exc:
+        raise ValueError(f"cycle_id must contain a valid calendar date, got `{match.group('date')}`") from exc
     return match.groupdict()
 
 
@@ -97,6 +102,10 @@ def parse_spec_id(value: str) -> dict[str, str]:
     match = SPEC_ID_RE.fullmatch(value)
     if not match:
         raise ValueError(f"spec_id must use spec-YYYY-MM-DD-feature-key, got `{value}`")
+    try:
+        date.fromisoformat(match.group("date"))
+    except ValueError as exc:
+        raise ValueError(f"spec_id must contain a valid calendar date, got `{match.group('date')}`") from exc
     return match.groupdict()
 
 

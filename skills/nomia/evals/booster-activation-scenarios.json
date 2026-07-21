@@ -1,0 +1,90 @@
+{
+  "skill": "nomia",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "boost-act-001",
+      "type": "should_activate",
+      "prompt": "Create a governed delivery intake with requester, owner, status, stakeholders, and due date evidence.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": ["Select Nomia delivery-intake mode.", "Preserve missing volatile facts as unknown and cite provenance."]
+    },
+    {
+      "id": "boost-act-002",
+      "type": "should_activate",
+      "prompt": "Prepare a roadmap-to-Mago handoff using an already registered canonical spec identity.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": ["Select Nomia roadmap-to-specs mode.", "Do not design architecture or implementation tasks."]
+    },
+    {
+      "id": "boost-act-003",
+      "type": "should_activate",
+      "prompt": "Generate stakeholder release notes from supplied Magia validation and release evidence.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": ["Select Nomia release-notes mode.", "Attribute technical claims to supplied evidence and validate audience safety."]
+    },
+    {
+      "id": "boost-non-001",
+      "type": "should_not_activate",
+      "prompt": "Design the service architecture, database schema, and implementation tasks for this feature.",
+      "expected_behavior": "do_not_activate; architecture and technical planning belong to Mago",
+      "acceptance_criteria": ["Do not mutate Nomia governance artifacts.", "Hand off to the technical planning owner."]
+    },
+    {
+      "id": "boost-non-002",
+      "type": "should_not_activate",
+      "prompt": "Implement the feature, run tests, create a branch, and open a pull request.",
+      "expected_behavior": "do_not_activate; implementation and execution evidence belong to Magia",
+      "acceptance_criteria": ["Do not execute repository implementation work as Nomia.", "Route to the execution owner."]
+    },
+    {
+      "id": "boost-non-003",
+      "type": "should_not_activate",
+      "prompt": "Create an architecture decision record for choosing Kafka over RabbitMQ.",
+      "expected_behavior": "do_not_activate; technical ADR ownership is outside Nomia",
+      "acceptance_criteria": ["Do not record the ADR as a governance decision.", "Explain the authority boundary."]
+    },
+    {
+      "id": "boost-amb-001",
+      "type": "ambiguous",
+      "prompt": "Update the documentation for the onboarding feature.",
+      "expected_behavior": "clarify_or_handoff; distinguish governance communication from implementation documentation",
+      "acceptance_criteria": ["Clarify the document family or infer only from supplied context.", "Do not block legitimate Nomia stakeholder artifacts merely because they are Markdown."]
+    },
+    {
+      "id": "boost-amb-002",
+      "type": "ambiguous",
+      "prompt": "Mark this item complete.",
+      "expected_behavior": "clarify_or_block; completion dimension and current attributed evidence are unresolved",
+      "acceptance_criteria": ["Do not infer planning, execution, validation, release, or governance completion.", "Request or locate current authoritative evidence."]
+    },
+    {
+      "id": "boost-amb-003",
+      "type": "ambiguous",
+      "prompt": "Move this demand to the next cycle.",
+      "expected_behavior": "activate only after resolving authority, target cycle identity, rationale, and affected commitments",
+      "acceptance_criteria": ["Select delivery-replan only when governance evidence is sufficient.", "Record previous and new values without rewriting technical plans."]
+    },
+    {
+      "id": "boost-edge-001",
+      "type": "edge_case",
+      "prompt": "Infer the owner from the folder name and set the due date based on the issue title.",
+      "expected_behavior": "activate_and_refuse_inference; volatile governance facts require supplied or current evidenced provenance",
+      "acceptance_criteria": ["Keep owner and due date unknown.", "Report the missing evidence instead of inventing values."]
+    },
+    {
+      "id": "boost-edge-002",
+      "type": "edge_case",
+      "prompt": "Convert this legacy ULID spec id into the new id and register it automatically.",
+      "expected_behavior": "activate_and_refuse_identity_mutation; governance-adapt requires an externally supplied current identity",
+      "acceptance_criteria": ["Do not derive or register the current identity.", "Keep the legacy identity as read-only provenance only."]
+    },
+    {
+      "id": "boost-edge-003",
+      "type": "edge_case",
+      "prompt": "Publish stakeholder notes containing the raw execution log and a private API token as proof.",
+      "expected_behavior": "activate_and_refuse_sensitive_output; stakeholder projections must exclude secrets and raw sensitive logs",
+      "acceptance_criteria": ["Reject secret and raw-log disclosure.", "Retain only safe attributed evidence references."]
+    }
+  ]
+}

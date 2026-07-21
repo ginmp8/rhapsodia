@@ -103,15 +103,19 @@ def zip_skill(skill_root: Path, output: Path) -> int:
 
     files = [path for path in sorted(root.rglob("*")) if should_package(path, root)]
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if destination.exists():
-        destination.unlink()
-    with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for path in files:
-            rel = f"nomia/{path.relative_to(root).as_posix()}"
-            info = zipfile.ZipInfo(rel, date_time=ZIP_TIMESTAMP)
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o644 << 16
-            archive.writestr(info, path.read_bytes())
+    temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
+    temporary.unlink(missing_ok=True)
+    try:
+        with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            for path in files:
+                rel = f"nomia/{path.relative_to(root).as_posix()}"
+                info = zipfile.ZipInfo(rel, date_time=ZIP_TIMESTAMP)
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o644 << 16
+                archive.writestr(info, path.read_bytes())
+        os.replace(temporary, destination)
+    finally:
+        temporary.unlink(missing_ok=True)
     return len(files)
 
 
@@ -121,6 +125,7 @@ def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
     gates = [
         run_gate("package-structure", command(root, "validate_skill_package.py", "--target", str(root)), env),
         run_gate("activation-scenarios", command(root, "validate_activation_scenarios.py", str(root / "examples" / "activation-scenarios.json")), env),
+        run_gate("governance-scenarios", command(root, "validate_governance_scenarios.py", str(root / "evals" / "governance-scenarios.json")), env),
         run_gate("golden-examples", command(root, "validate_golden_examples.py", "--skill-root", str(root)), env),
         run_gate("identity-contract", command(root, "validate_identity_contract.py", "--target", str(root)), env),
         run_gate("contract-preservation", command(root, "validate_contract_preservation.py", "--target", str(root)), env),

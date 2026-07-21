@@ -4,13 +4,24 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
+import inspect
+import io
 import json
+import os
 import re
+import runpy
+import signal
 import subprocess
 import sys
 import tempfile
+import unittest
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+
+# Package validation and nested test subprocesses must not contaminate the target.
+os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
+sys.dont_write_bytecode = True
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".template"}
 REQUIRED_FRONTMATTER_KEYS = ("name", "description")
@@ -25,11 +36,22 @@ REQUIRED_FILES = (
     "references/operating-rules.md",
     "references/validation-and-packaging.md",
     "references/activation-routing.md",
+    "references/mutation-transaction-and-resume.md",
+    "references/security-risk-contract.md",
+    "references/installation-and-release.md",
+    "release.json",
+    "CHANGELOG.md",
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_artifact.py",
     "scripts/validate_boundary.py",
     "scripts/validate_evidence_contract.py",
     "scripts/validate_package.py",
+    "scripts/validate_triggered_artifact.py",
+    "scripts/validate_security_risk.py",
+    "scripts/validate_plan_quality.py",
+    "scripts/mutation_transaction.py",
+    "scripts/sdd_adapter.py",
+    "scripts/validate_release_metadata.py",
     "scripts/validate_repo_board.py",
     "scripts/validate_concurrent_board.py",
     "scripts/validate_planning_execution_handoff.py",
@@ -44,7 +66,10 @@ REQUIRED_FILES = (
     "assets/templates/manifest.yaml.template",
     "assets/templates/tasks.md.template",
     "examples/activation-scenarios.json",
+    "evals/sdd-evidence-scenarios.json",
+    "scripts/run_sdd_evidence_harness.py",
     "tests/test_concurrency_model.py",
+    "tests/test_package_validation.py",
 )
 MODE_REFERENCES = (
     "adapt",
@@ -59,6 +84,8 @@ MODE_REFERENCES = (
     "refine",
     "reshape-tasks",
     "technical-design",
+    "complexity-reduction",
+    "reconcile",
 )
 PLACEHOLDER_PATTERNS = (
     re.compile(r"\[" + "TO" + "DO", re.IGNORECASE),
@@ -78,6 +105,7 @@ class ValidationResult:
     warnings: list[str] = field(default_factory=list)
     checked_files: int = 0
     compiled_scripts: int = 0
+    executed_tests: int = 0
 
     def fail(self, message: str) -> None:
         self.status = "fail"
@@ -89,6 +117,70 @@ class ValidationResult:
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def run_gate_command(root: Path, command: list[str], label: str, result: ValidationResult, timeout: int = 60) -> bool:
+    # File-backed output avoids nested validator/test subprocesses blocking on full pipes.
+    with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stdout_file, tempfile.TemporaryFile(
+        mode="w+", encoding="utf-8"
+    ) as stderr_file:
+        process = subprocess.Popen(
+            command,
+            cwd=str(root),
+            text=True,
+            stdout=stdout_file,
+            stderr=stderr_file,
+            start_new_session=True,
+        )
+        try:
+            return_code = process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait()
+            result.fail(f"{label} gate timed out after {timeout}s")
+            return False
+        stdout_file.seek(0)
+        stderr_file.seek(0)
+        stdout = stdout_file.read()
+        stderr = stderr_file.read()
+    if return_code != 0:
+        detail = (stderr or stdout).strip()
+        result.fail(f"{label} gate failed: {detail[-1600:]}")
+        return False
+    return True
+
+
+
+
+def run_python_gate(root: Path, script_path: Path, args: list[str], label: str, result: ValidationResult) -> bool:
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+    old_argv = sys.argv[:]
+    added_path = str(script_path.parent)
+    sys.path.insert(0, added_path)
+    try:
+        sys.argv = [str(script_path), *args]
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            namespace = runpy.run_path(str(script_path), run_name=f"__mago_gate_{script_path.stem}__")
+            main_fn = namespace.get("main")
+            if not callable(main_fn):
+                result.fail(f"{label} gate has no callable main()")
+                return False
+            return_code = main_fn(args) if len(inspect.signature(main_fn).parameters) else main_fn()
+    except SystemExit as exc:
+        return_code = exc.code if isinstance(exc.code, int) else 1
+    except Exception as exc:
+        result.fail(f"{label} gate raised {type(exc).__name__}: {exc}")
+        return False
+    finally:
+        sys.argv = old_argv
+        if sys.path and sys.path[0] == added_path:
+            sys.path.pop(0)
+    if return_code not in (None, 0):
+        detail = (stderr.getvalue() or stdout.getvalue()).strip()
+        result.fail(f"{label} gate failed: {detail[-1600:]}")
+        return False
+    return True
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -257,16 +349,10 @@ def validate_activation_metrics(root: Path, result: ValidationResult) -> None:
     script_path = root / "scripts" / "validate_activation_scenarios.py"
     with tempfile.TemporaryDirectory(prefix="mago-activation-") as tmp:
         report_path = Path(tmp) / "activation-validation.json"
-        completed = subprocess.run(
-            [sys.executable, str(script_path), str(root), "--json-output", str(report_path)],
-            cwd=str(root),
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        if completed.returncode != 0:
-            detail = (completed.stderr or completed.stdout).strip().splitlines()[-1:]
-            result.fail(f"activation scenario validator failed to run: {detail[0] if detail else completed.returncode}")
+        if not run_python_gate(
+            root, script_path, [str(root), "--json-output", str(report_path)],
+            "activation scenario validator", result,
+        ):
             return
         try:
             report = json.loads(read_text(report_path))
@@ -281,6 +367,89 @@ def validate_activation_metrics(root: Path, result: ValidationResult) -> None:
         result.fail(f"activation scenario metrics below 1.0: {metrics}")
     if metrics.get("measurement_kind") != "deterministic_static_oracle":
         result.fail(f"activation scenario measurement kind is not explicit: {metrics}")
+
+def validate_goldens(root: Path, result: ValidationResult) -> None:
+    scripts = root / "scripts"
+    golden_root = root / "examples" / "golden"
+    run_python_gate(
+        root, scripts / "validate_technical_design.py",
+        [str(golden_root / "governed-traceability" / "technical-design.md")],
+        "governed technical-design golden", result,
+    )
+    run_python_gate(
+        root, scripts / "validate_change_delta.py",
+        [str(golden_root / "change-delta" / "change-delta.md")],
+        "change-delta golden", result,
+    )
+    run_python_gate(
+        root, scripts / "validate_sdd_adapter_report.py",
+        [str(golden_root / "interoperability" / "adapter-report.json.fixture")],
+        "adapter-report golden", result,
+    )
+    run_python_gate(
+        root, scripts / "validate_security_risk.py",
+        [str(golden_root / "security-v2" / "security-and-risk-considerations.md"), "--require-v2"],
+        "security v2 relational golden", result,
+    )
+    run_python_gate(
+        root, scripts / "validate_plan_quality.py",
+        [str(golden_root / "governed-quality")],
+        "governed plan-quality golden", result,
+    )
+    with tempfile.TemporaryDirectory(prefix="mago-adapter-roundtrip-") as adapter_tmp:
+        adapter_root = Path(adapter_tmp)
+        for target_format, target_version in (
+            ("spec-kit", "spec-kit-file-contract-1"),
+            ("openspec", "openspec-file-contract-1"),
+        ):
+            output = adapter_root / target_format
+            report = adapter_root / f"{target_format}-report.json"
+            if run_python_gate(
+                root, scripts / "sdd_adapter.py",
+                [
+                    "round-trip",
+                    "--package", str(golden_root / "interoperability" / "package"),
+                    "--format", target_format,
+                    "--source-version", "mago-2026.07",
+                    "--target-version", target_version,
+                    "--output", str(output),
+                    "--report", str(report),
+                ],
+                f"{target_format} executable round trip", result,
+            ):
+                run_python_gate(
+                    root, scripts / "validate_sdd_adapter_report.py",
+                    [str(report)],
+                    f"{target_format} round-trip report", result,
+                )
+    with tempfile.TemporaryDirectory(prefix="mago-golden-") as tmp:
+        projection = Path(tmp) / "traceability.json"
+        if run_python_gate(
+            root, scripts / "render_traceability.py",
+            [str(golden_root / "governed-traceability"), "--output", str(projection)],
+            "traceability golden render", result,
+        ):
+            run_python_gate(
+                root, scripts / "validate_traceability.py",
+                [str(projection), "--profile", "governed"],
+                "traceability golden validation", result,
+            )
+        reconciliation = Path(tmp) / "planning-reconciliation.md"
+        if run_python_gate(
+            root, scripts / "reconcile_planning.py",
+            ["--plan", str(golden_root / "reconciliation" / "plan.json.fixture"),
+             "--evidence", str(golden_root / "reconciliation" / "magia-evidence.json.fixture"),
+             "--output", str(reconciliation)],
+            "reconciliation golden", result,
+        ) and not reconciliation.is_file():
+            result.fail("reconciliation golden did not produce its declared output")
+
+def validate_release_controls(root: Path, result: ValidationResult) -> None:
+    run_python_gate(
+        root, root / "scripts" / "validate_release_metadata.py", [str(root)],
+        "release metadata", result,
+    )
+
 
 def validate_evidence_controls(root: Path, result: ValidationResult) -> None:
     script_path = root / "scripts" / "validate_evidence_contract.py"
@@ -307,18 +476,12 @@ def validate_planning_template_boundaries(root: Path, result: ValidationResult) 
 
 
 def validate_semantic_contracts(root: Path, result: ValidationResult) -> None:
-    for script_name, label in (
-        ("validate_planning_execution_handoff.py", "planning-execution handoff"),
-        ("validate_generated_view_contract.py", "generated-view contract"),
-        ("validate_boundary.py", "boundary contract"),
-    ):
-        completed = subprocess.run(
-            [sys.executable, "-B", str(root / "scripts" / script_name), str(root)],
-            cwd=str(root), text=True, capture_output=True, check=False,
-        )
-        if completed.returncode != 0:
-            detail = (completed.stderr or completed.stdout).strip()
-            result.fail(f"{label} gate failed: {detail[-1200:]}")
+    # Handoff and generated-view contracts are exercised by the full unittest suite.
+    # Run the boundary contract directly because it is not duplicated by that suite.
+    run_python_gate(
+        root, root / "scripts" / "validate_boundary.py", [str(root)],
+        "boundary contract", result,
+    )
 
 
 def compile_scripts(root: Path, result: ValidationResult) -> None:
@@ -332,16 +495,13 @@ def compile_scripts(root: Path, result: ValidationResult) -> None:
 
 
 def validate_concurrency_tests(root: Path, result: ValidationResult) -> None:
-    completed = subprocess.run(
-        [sys.executable, "-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"],
-        cwd=str(root),
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    if completed.returncode != 0:
-        detail = (completed.stderr or completed.stdout).strip()
-        result.fail(f"concurrency model tests failed: {detail[-1000:]}")
+    # Run in-process so nested subprocess-based tests cannot hold an outer capture pipe open.
+    stream = io.StringIO()
+    suite = unittest.defaultTestLoader.discover(str(root / "tests"), pattern="test_*.py")
+    outcome = unittest.TextTestRunner(stream=stream, verbosity=1).run(suite)
+    result.executed_tests = outcome.testsRun
+    if not outcome.wasSuccessful():
+        result.fail(f"skill test suite failed: {stream.getvalue()[-1600:]}")
 
 
 def validate_no_caches(root: Path, result: ValidationResult) -> None:
@@ -365,11 +525,15 @@ def run(root: Path) -> ValidationResult:
     validate_placeholders(root, result)
     validate_agents(root, result)
     validate_scenarios(root, result)
+    compile_scripts(root, result)
     validate_activation_metrics(root, result)
+    validate_goldens(root, result)
     validate_evidence_controls(root, result)
+    validate_release_controls(root, result)
     validate_planning_template_boundaries(root, result)
     validate_semantic_contracts(root, result)
-    compile_scripts(root, result)
+    # Tests execute last because their nested process probes can contaminate later
+    # subprocess orchestration on some runtimes even after all test cases pass.
     validate_concurrency_tests(root, result)
     validate_no_caches(root, result)
     return result
@@ -395,6 +559,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"status: {result.status}")
     print(f"checked_files: {result.checked_files}")
     print(f"compiled_scripts: {result.compiled_scripts}")
+    print(f"executed_tests: {result.executed_tests}")
     for warning in result.warnings:
         print(f"warning: {warning}")
     for error in result.errors:

@@ -1,0 +1,42 @@
+# Installation, Compatibility, and Release
+
+## Installation
+
+A distributed archive contains exactly one top-level `mago/` directory. Extract or install that directory into the host's supported skill location without merging it with another Mago version. Keep the package read-only except when intentionally developing a new version.
+
+Validate an extracted package before use:
+
+```bash
+python -B scripts/validate_release_metadata.py .
+python -B scripts/validate_skill_package.py .
+```
+
+Build the archive only from a validated folder:
+
+```bash
+python -B scripts/package_skill.py --target . --output <external-output>/skill.zip --validate
+```
+
+The output directory must be outside the skill root. Reports, caches, credentials, generated evidence, transaction workspaces, and old archives are excluded.
+
+## Compatibility policy
+
+- `release.json.version` follows semantic versioning for the skill distribution, not for cycle/spec identities.
+- Patch releases repair documentation, validators, or scripts without intentionally changing canonical artifact contracts.
+- Minor releases may add backward-compatible validators, templates, modes, or optional artifacts. A stricter contract must provide an explicit legacy path or migration rule.
+- Major releases may change canonical schemas, ownership, or required workflow. They require migration notes and cannot silently rewrite existing packages.
+- External SDD adapter versions are caller-supplied and explicit. Values such as `latest`, `current`, or `unknown` are rejected by executable adapters.
+- Python compatibility and supported OpenAI products are declared in `release.json` and checked against `agents/openai.yaml`.
+
+## Upgrade and rollback
+
+1. Validate the current archive and preserve its checksum.
+2. Extract the candidate into a separate folder; never overlay a live package.
+3. Run release, package, activation, test, security, adapter, and recovery gates.
+4. Compare `CHANGELOG.md`, canonical contracts, and validator behavior.
+5. Switch the host to the candidate only after validation.
+6. Roll back by restoring the prior validated folder; do not downgrade canonical planning artifacts without an explicit `adapt` or migration decision.
+
+## Support boundary
+
+The package supports Mago-owned planning artifacts and deterministic planning validators. It does not implement product code, execute deployment, produce runtime evidence, accept business/security risk, or provide automatic regulatory approval. Live model routing and plan quality remain separate behavioral evidence and must not be inferred from static package validation.

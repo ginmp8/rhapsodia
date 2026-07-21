@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import os
 import re
+import tempfile
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -37,6 +39,24 @@ LEGACY_SPEC_ID_RE = re.compile(
     r"^spec-(?P<date>\d{4}-\d{2}-\d{2})-(?P<feature_key>[a-z0-9]+(?:-[a-z0-9]+)*)--(?P<ulid>[0-9a-hjkmnp-tv-z]{26})$"
 )
 
+
+
+
+def atomic_write_text(path: Path, text: str, *, encoding: str = "utf-8") -> None:
+    """Write text atomically in the destination directory and avoid partial artifacts."""
+    destination = path.resolve()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{destination.name}.", suffix=".tmp", dir=destination.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "w", encoding=encoding, newline="") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, destination)
+    except Exception:
+        temporary.unlink(missing_ok=True)
+        raise
 
 def compact_yaml_exception(exc: Exception) -> str:
     mark = getattr(exc, "problem_mark", None)

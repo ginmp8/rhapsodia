@@ -1,0 +1,132 @@
+schema_version: 2
+spec_id: spec-2026-07-20-legacy-demand
+spec_id_provenance: registry/spec-2026-07-20-legacy-demand.yaml
+request:
+  title: Legacy demand
+  requester: product-operations
+  requested_date: 2026-04-20
+  source: manual
+  context: null
+ownership:
+  owner: onboarding-team
+  backup_owner: null
+  stakeholders:
+  - product-operations
+  decision_maker: null
+  watchers: []
+planning:
+  sprint: null
+  bucket: roadmap
+  target_date: 2026-08-15
+  commitment: tentative
+  milestone: null
+  rollout_target: null
+priority:
+  level: high
+  urgency: unknown
+  impact: unknown
+  risk: unknown
+  rationale: Customer commitment
+  cost_of_delay: null
+status:
+  state: triage
+  summary: Legacy record claimed completion
+  updated_at: 2026-04-21
+  confidence: unknown
+  evidence_summary: null
+  manual:
+    summary: null
+    updated_at: null
+    source: null
+  inferred:
+    summary: null
+    updated_at: null
+    evidence: []
+governance:
+  profile: governed
+  lifecycle: triage
+  status: triage
+technical_state:
+  planning:
+    state: unknown
+    source: null
+    observed_at: null
+  execution:
+    state: unknown
+    source: null
+    observed_at: null
+  validation:
+    state: unknown
+    source: null
+    observed_at: null
+release:
+  state: unknown
+  released_at: null
+  evidence: []
+dependencies: []
+decision:
+  state: unknown
+  current: null
+  evidence: []
+handoffs:
+  mago:
+    state: unknown
+    source: null
+    observed_at: null
+  magia:
+    state: unknown
+    source: null
+    observed_at: null
+provenance:
+  updated_at: '2026-07-20T12:00:00Z'
+  facts:
+    legacy_source: legacy-ops.yaml
+    legacy_schema_version: 1
+    legacy_spec_id: spec-2026-04-20-legacy-demand--01arz3ndektsv4rrffq69g5fav
+    canonical_spec_id: spec-2026-07-20-legacy-demand
+    canonical_spec_id_provenance: registry/spec-2026-07-20-legacy-demand.yaml
+  changes:
+  - field: schema_version
+    from: 1
+    to: 2
+    actor: governance-adapt
+    changed_at: '2026-07-20T12:00:00Z'
+    source: legacy-ops.yaml
+    rationale: canonicalize governance facts without carrying legacy identity or technical
+      authority
+    affected_commitments: []
+  - field: spec_id
+    from: spec-2026-04-20-legacy-demand--01arz3ndektsv4rrffq69g5fav
+    to: spec-2026-07-20-legacy-demand
+    actor: governance-adapt
+    changed_at: '2026-07-20T12:00:00Z'
+    source: registry/spec-2026-07-20-legacy-demand.yaml
+    rationale: use externally supplied current identity; legacy identity remains evidence
+      only
+    affected_commitments: []
+timestamps:
+  intake_at: null
+  state_entered_at: null
+  blocked_since: null
+  decision_requested_at: null
+  decision_at: null
+  planning_started_at: null
+  planning_ready_at: null
+  execution_started_at: null
+  execution_completed_at: null
+  validation_observed_at: null
+  released_at: null
+  closed_at: null
+  stakeholder_requested_at: null
+  stakeholder_responded_at: null
+blockers: []
+risks: []
+risk_history: []
+replanning: []
+tags: []
+repos:
+  candidate_impacted: []
+links:
+  mago: []
+  magia: []
+  external: []

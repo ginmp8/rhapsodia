@@ -59,7 +59,6 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     sync_module = load_local_module(__file__, "sync_execution_state.py")
-    heal_module = load_local_module(__file__, "heal_execution_state.py")
     validate_module = load_local_module(__file__, "validate_execution_state.py")
 
     sync_args = [str(board_root), "--spec-id", args.spec_id, "--task-id", args.task_id, "--status", args.status]
@@ -77,14 +76,8 @@ def main(argv: list[str] | None = None) -> int:
 
     validate_rc, validate_output = _run_module_main(validate_module, [str(board_root), "--spec-id", args.spec_id])
     if validate_rc != 0:
-        heal_rc, heal_output = _run_module_main(heal_module, [str(board_root), "--spec-id", args.spec_id])
-        if heal_rc != 0:
-            print("\n".join(heal_output or validate_output))
-            return validate_rc
-        validate_rc, validate_output = _run_module_main(validate_module, [str(board_root), "--spec-id", args.spec_id])
-        if validate_rc != 0:
-            print("\n".join(validate_output))
-            return validate_rc
+        print("\n".join(validate_output))
+        return validate_rc
 
     print(f"OK: closed {args.task_id} ({args.status})")
     return 0

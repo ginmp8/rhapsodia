@@ -3,7 +3,7 @@
 ## Replace every <...> token with repository-truth values.
 ## Use null or unknown only when the final artifact truthfully remains unknown.
 
-schema_version: 1
+schema_version: 2
 spec_id: "<spec_id_or_null_for_off_repository_draft>"
 spec_id_provenance: "<spec_id_evidence_reference_or_null>"
 request:
@@ -15,7 +15,6 @@ request:
 ownership:
   owner: "<owner_or_null>"
   backup_owner: "<backup_owner_or_null>"
-  ## stakeholders/watchers entries must be non-empty strings.
   stakeholders: []
   decision_maker: "<decision_maker_or_null>"
   watchers: []
@@ -34,7 +33,8 @@ priority:
   rationale: "<priority_rationale_or_null>"
   cost_of_delay: "<cost_of_delay_or_null>"
 status:
-  state: "<status_state_enum_or_unknown>"
+  ## Mirror governance.status for schema_version 2. Never promote legacy done/at_risk values.
+  state: "<governance_status_enum_or_unknown>"
   summary: "<status_summary_or_null>"
   updated_at: "<YYYY-MM-DD_or_null>"
   confidence: "<confidence_enum_or_unknown>"
@@ -46,38 +46,69 @@ status:
   inferred:
     summary: "<inferred_status_summary_or_null>"
     updated_at: "<YYYY-MM-DD_or_null>"
-    ## evidence entries must be non-empty strings describing supplied proof.
     evidence: []
-## blocker item shape:
-## - id: "<blocker_id>"
-##   summary: "<blocker_summary>"
-##   owner: "<owner_or_unknown>"
-##   needed_by: "<YYYY-MM-DD_or_null>"
+governance:
+  profile: "<quick_standard_or_governed>"
+  lifecycle: "<intake_triage_commit_track_decide_or_close>"
+  status: "<governance_status_enum>"
+technical_state:
+  planning:
+    state: unknown
+    source: null
+    observed_at: null
+  execution:
+    state: unknown
+    source: null
+    observed_at: null
+  validation:
+    state: unknown
+    source: null
+    observed_at: null
+release:
+  state: unknown
+  released_at: null
+  evidence: []
+dependencies: []
+decision:
+  state: unknown
+  current: null
+  evidence: []
+handoffs:
+  mago:
+    state: unknown
+    source: null
+    observed_at: null
+  magia:
+    state: unknown
+    source: null
+    observed_at: null
+provenance:
+  updated_at: "<ISO-8601_or_null>"
+  facts: {}
+  changes: []
+timestamps:
+  intake_at: null
+  state_entered_at: null
+  blocked_since: null
+  decision_requested_at: null
+  decision_at: null
+  planning_started_at: null
+  planning_ready_at: null
+  execution_started_at: null
+  execution_completed_at: null
+  validation_observed_at: null
+  released_at: null
+  closed_at: null
+  stakeholder_requested_at: null
+  stakeholder_responded_at: null
 blockers: []
-## risk item shape:
-## - id: "<risk_id>"
-##   summary: "<risk_summary>"
-##   severity: "<risk_severity_enum_or_unknown>"
-##   owner: "<owner_or_unknown>"
 risks: []
-## replanning item shape:
-## - date: "<YYYY-MM-DD>"
-##   changed_fields:
-##     - "<changed_field>"
-##   from: "<from_value_or_unknown>"
-##   to: "<to_value_or_unknown>"
-##   reason: "<reason>"
-##   impact: "<impact>"
-##   decision_maker: "<decision_maker_or_unknown>"
+risk_history: []
 replanning: []
-## tag entries must be non-empty strings. Prefer stable lowercase slugs.
 tags: []
 repos:
-  ## candidate_impacted entries must be non-empty repository identifiers or repository-relative paths.
   candidate_impacted: []
 links:
-  ## links.mago and links.magia entries should be repository-relative paths when they point to local artifacts.
-  ## links.external entries should be external URLs or stable external references.
   mago: []
   magia: []
   external: []

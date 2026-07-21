@@ -26,7 +26,16 @@ def write_execution_evidence(package: Path, task_id: str, status: str):
         encoding="utf-8",
     )
     (package / "validation-evidence.md").write_text(
-        f"# Validation Evidence\n\n## Execution Run - {task_id}\n\n### Executed Checks\n\n- test: passed\n",
+        f"# Validation Evidence\n\n## Execution Run - {task_id}\n\n"
+        "### Executed Checks\n\n"
+        "| Check | Command or method | Result | Evidence |\n"
+        "|---|---|---|---|\n"
+        "| targeted test | `python -m pytest tests/test_target.py` | passed | command exited 0 |\n\n"
+        "### Traceability\n\n"
+        "| Requirement or acceptance criterion | Check | Result | Evidence |\n"
+        "|---|---|---|---|\n"
+        f"| {task_id} objective | targeted test | passed | command exited 0 |\n\n"
+        "### Failed Checks\n\n- `none`\n",
         encoding="utf-8",
     )
 
@@ -61,8 +70,19 @@ def test_blocked_execution_preserves_open_checkbox_and_syncs_blocked_state(tmp_p
 def test_all_done_tasks_close_spec(tmp_path: Path):
     root, spec_id = build_board(tmp_path)
     package = root / "specs" / spec_id
-    (package / "tasks.md").write_text("# Tasks\n\n- [x] task001: First task\n- [ ] task002: Second task\n", encoding="utf-8")
+    (package / "tasks.md").write_text("# Tasks\n\n- [x] task001: Implement filtered export behavior\n- [ ] task002: Validate filtered export compatibility\n", encoding="utf-8")
+    write_execution_evidence(package, "task001", "done")
+    notes = (package / "implementation-notes.md").read_text(encoding="utf-8")
+    validation = (package / "validation-evidence.md").read_text(encoding="utf-8")
     write_execution_evidence(package, "task002", "done")
+    (package / "implementation-notes.md").write_text(
+        notes.rstrip() + "\n\n" + (package / "implementation-notes.md").read_text(encoding="utf-8").split("## Execution Log\n", 1)[1].lstrip(),
+        encoding="utf-8",
+    )
+    (package / "validation-evidence.md").write_text(
+        validation.rstrip() + "\n\n" + (package / "validation-evidence.md").read_text(encoding="utf-8").split("# Validation Evidence\n", 1)[1].lstrip(),
+        encoding="utf-8",
+    )
     sync = load_script("sync_execution_state.py")
     assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task002", "--status", "done"]) == 0
     assert load_yaml(root / "registry" / f"{spec_id}.yaml")["status"] == "done"
@@ -160,7 +180,7 @@ def test_write_execution_log_uses_canonical_spec_id(tmp_path: Path):
         "--change", "src/example.py",
     ]) == 0
     notes = (root / "specs" / spec_id / "implementation-notes.md").read_text(encoding="utf-8")
-    assert "### task001 - First task" in notes
+    assert "### task001 - Implement filtered export behavior" in notes
     assert "- Status: in_progress" in notes
 
 
@@ -171,3 +191,184 @@ def test_repo_board_validator_preserves_placement_and_placeholder_checks(tmp_pat
     assert validator.main([str(repo_root), "--board-root", str(root)]) == 0
     (root / "specs" / next((root / "specs").iterdir()).name / "prd.md").write_text("# PRD\n\n<unresolved>\n", encoding="utf-8")
     assert validator.main([str(repo_root), "--board-root", str(root)]) == 1
+
+
+def test_done_rejects_empty_validation_heading(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    (package / "implementation-notes.md").write_text(
+        "# Implementation Notes\n\n## Execution Log\n\n### task001 - Implement filtered export behavior\n\n"
+        "- Status: done\n- Summary: claimed done\n- Changes: none\n- Context Docs: none\n"
+        "- Decisions: none\n- Follow-Ups: none\n- Blockers: none\n",
+        encoding="utf-8",
+    )
+    (package / "validation-evidence.md").write_text(
+        "# Validation Evidence\n\n## Execution Run - task001\n",
+        encoding="utf-8",
+    )
+    sync = load_script("sync_execution_state.py")
+    original_tasks = (package / "tasks.md").read_bytes()
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 1
+    assert (package / "tasks.md").read_bytes() == original_tasks
+
+
+def test_done_rejects_not_run_only_and_missing_traceability(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    (package / "implementation-notes.md").write_text(
+        "# Implementation Notes\n\n## Execution Log\n\n### task001 - Implement filtered export behavior\n\n"
+        "- Status: done\n- Summary: claimed done\n- Changes: none\n- Context Docs: none\n"
+        "- Decisions: none\n- Follow-Ups: none\n- Blockers: none\n",
+        encoding="utf-8",
+    )
+    (package / "validation-evidence.md").write_text(
+        "# Validation Evidence\n\n## Execution Run - task001\n\n### Not-Run Checks\n\n"
+        "| Check | Reason not run | Risk |\n|---|---|---|\n| tests | unavailable | unverified |\n",
+        encoding="utf-8",
+    )
+    validate = load_script("validate_execution_state.py")
+    errors = validate.validate_task_evidence(package, "task001", "done")
+    assert any("passed executed check" in error for error in errors)
+    assert any("Traceability" in error for error in errors)
+
+
+def test_done_rejects_failed_validation(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    validation = package / "validation-evidence.md"
+    validation.write_text(
+        validation.read_text(encoding="utf-8").replace("### Failed Checks\n\n- `none`", "### Failed Checks\n\n- integration test failed"),
+        encoding="utf-8",
+    )
+    validate = load_script("validate_execution_state.py")
+    errors = validate.validate_task_evidence(package, "task001", "done")
+    assert any("failed or blocked" in error for error in errors)
+
+
+def test_done_rejects_meta_or_placeholder_validation_evidence(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    (package / "validation-evidence.md").write_text(
+        "# Validation Evidence\n\n## Execution Run - task001\n\n"
+        "### Executed Checks\n\n"
+        "| Check | Command or method | Result | Evidence |\n"
+        "|---|---|---|---|\n"
+        "| placeholder test | manual placeholder | passed | no evidence |\n\n"
+        "### Traceability\n\n"
+        "| Requirement or acceptance criterion | Check | Result | Evidence |\n"
+        "|---|---|---|---|\n"
+        "| This is not an acceptance criterion | unrelated check | passed | no evidence |\n\n"
+        "### Failed Checks\n\n- `none`\n",
+        encoding="utf-8",
+    )
+    validate = load_script("validate_execution_state.py")
+    errors = validate.validate_task_evidence(package, "task001", "done")
+    assert any("passed executed check" in error for error in errors)
+    assert any("passed Traceability row" in error for error in errors)
+
+
+def test_done_requires_traceability_to_reference_an_executed_check(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    validation = package / "validation-evidence.md"
+    validation.write_text(
+        validation.read_text(encoding="utf-8").replace(
+            "| task001 objective | targeted test | passed | command exited 0 |",
+            "| task001 objective | different unexecuted check | passed | command exited 0 |",
+        ),
+        encoding="utf-8",
+    )
+    validate = load_script("validate_execution_state.py")
+    errors = validate.validate_task_evidence(package, "task001", "done")
+    assert any("passed Traceability row" in error for error in errors)
+
+
+def test_sync_rolls_back_all_files_after_injected_failure(tmp_path: Path, monkeypatch):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    paths = [
+        package / "tasks.md",
+        package / "manifest.yaml",
+        root / "registry" / f"{spec_id}.yaml",
+    ]
+    originals = {path: path.read_bytes() for path in paths}
+    monkeypatch.setenv("MAGIA_TEST_FAIL_AFTER_REPLACE", "1")
+    sync = load_script("sync_execution_state.py")
+    assert sync.main([str(root), "--spec-id", spec_id, "--task-id", "task001", "--status", "done"]) == 1
+    assert {path: path.read_bytes() for path in paths} == originals
+    assert not (package / ".magia-state-transaction").exists()
+    assert not (package / ".magia-state.lock").exists()
+
+
+def test_sync_rejects_impossible_execution_date(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    sync = load_script("sync_execution_state.py")
+    assert sync.main([
+        str(root),
+        "--spec-id", spec_id,
+        "--task-id", "task001",
+        "--status", "done",
+        "--date", "2026-02-31",
+    ]) == 1
+
+
+def test_sync_recovers_prepared_interrupted_transaction(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    tasks = package / "tasks.md"
+    original = tasks.read_bytes()
+    transaction = package / ".magia-state-transaction"
+    transaction.mkdir()
+    (transaction / "backup-0.bin").write_bytes(original)
+    relative = tasks.relative_to(root).as_posix()
+    (transaction / "transaction.json").write_text(
+        '{"state":"prepared","entries":[{"target":"' + relative + '","backup":"backup-0.bin"}]}',
+        encoding="utf-8",
+    )
+    tasks.write_text("corrupt partial state\n", encoding="utf-8")
+    sync = load_script("sync_execution_state.py")
+    assert sync.recover_interrupted_transaction(package) is True
+    assert tasks.read_bytes() == original
+    assert not transaction.exists()
+
+
+def test_readiness_requires_concrete_prd_acceptance_and_validation(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    readiness = load_script("validate_execution_readiness.py")
+    assert readiness.main([str(root), "--spec-id", spec_id, "--task-id", "task001"]) == 0
+    (package / "prd.md").write_text("# PRD\n", encoding="utf-8")
+    assert readiness.main([str(root), "--spec-id", spec_id, "--task-id", "task001"]) == 1
+
+
+def test_readiness_rejects_generic_task_and_empty_validation_plan(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    (package / "tasks.md").write_text("# Tasks\n\n- [ ] task001: First task\n", encoding="utf-8")
+    (package / "validation.md").write_text("# Validation Plan\n", encoding="utf-8")
+    readiness = load_script("validate_execution_readiness.py")
+    errors = readiness.collect_errors(root, spec_id, "task001")
+    assert any("too generic" in error or "three descriptive words" in error for error in errors)
+    assert any("concrete planned validation check" in error for error in errors)
+
+
+def test_heal_uses_recoverable_transaction(tmp_path: Path, monkeypatch):
+    root, spec_id = build_board(tmp_path)
+    package = root / "specs" / spec_id
+    write_execution_evidence(package, "task001", "done")
+    paths = [
+        package / "tasks.md",
+        package / "manifest.yaml",
+        root / "registry" / f"{spec_id}.yaml",
+    ]
+    originals = {path: path.read_bytes() for path in paths}
+    monkeypatch.setenv("MAGIA_TEST_FAIL_AFTER_REPLACE", "1")
+    heal = load_script("heal_execution_state.py")
+    assert heal.main([str(root), "--spec-id", spec_id]) == 1
+    assert {path: path.read_bytes() for path in paths} == originals

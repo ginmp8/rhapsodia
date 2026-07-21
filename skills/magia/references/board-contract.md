@@ -24,6 +24,8 @@ cycle_id = cycle-<yyyy-mm-dd>-<cycle-key>
 spec_id  = spec-<yyyy-mm-dd>-<feature-key>
 ```
 
+The encoded date must be a real ISO calendar date, including leap-year rules; regex-shaped but impossible dates are invalid identities.
+
 The year directory must match the year encoded in `cycle_id`. The registry filename must equal `<spec_id>.yaml`; the package directory and manifest `spec_id` must match it. ULID-bearing identifiers are rejected for active execution; ADAPT may read legacy content that mentions them without resolving them as active identities.
 
 ## Source of Truth

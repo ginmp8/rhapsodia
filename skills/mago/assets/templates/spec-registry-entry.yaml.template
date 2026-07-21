@@ -7,6 +7,7 @@ feature_version: "0.1.0"
 title: "<title>"
 type: feature
 classification: internal
+profile: standard
 created_at: "<created_at>"
 status: planned
 priority: normal

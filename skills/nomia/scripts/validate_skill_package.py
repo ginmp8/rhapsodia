@@ -15,6 +15,9 @@ EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
 REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals", "tests"]
 REQUIRED_FILES = [
     "SKILL.md",
+    "VERSION",
+    "CHANGELOG.md",
+    "requirements.txt",
     "agents/openai.yaml",
     "references/canonical-paths.md",
     "references/common-governance.md",
@@ -28,6 +31,10 @@ REQUIRED_FILES = [
     "references/modes/governance-decision.md",
     "references/modes/reporting.md",
     "references/modes/validation.md",
+    "references/modes/governance-adapt.md",
+    "references/governance-profiles-and-lifecycle.md",
+    "references/state-risk-and-handoffs.md",
+    "references/canonical-governance-and-projections.md",
     "references/artifacts/delivery.md",
     "references/artifacts/roadmap.md",
     "references/artifacts/rfc.md",
@@ -40,6 +47,13 @@ REQUIRED_FILES = [
     "scripts/validate_skill_package.py",
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_golden_examples.py",
+    "scripts/validate_governance_scenarios.py",
+    "scripts/governance_contract.py",
+    "scripts/adapt_governance.py",
+    "scripts/project_governance_views.py",
+    "scripts/validate_projection_metadata.py",
+    "scripts/evaluate_governance.py",
+    "scripts/validate_all.py",
     "scripts/validate_identity_contract.py",
     "scripts/validate_contract_preservation.py",
     "scripts/package_skill.py",
@@ -48,6 +62,7 @@ REQUIRED_FILES = [
     "assets/icon.svg",
     "examples/activation-scenarios.json",
     "evals/activation-boundary-scenarios.json",
+    "evals/booster-activation-scenarios.json",
 ]
 REQUIRED_TEMPLATE_NAMES = {
     "ops.yaml.template",
@@ -78,18 +93,16 @@ SCENARIO_CATEGORY_PREFIXES = {
     "regression": "R",
     "adversarial": "X",
 }
+EPHEMERAL_CACHE_DIR_NAMES = {"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
+EPHEMERAL_CACHE_SUFFIXES = {".pyc", ".pyo"}
 GENERATED_OR_BLOCKED_DIR_NAMES = {
     ".git",
-    "__pycache__",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".ruff_cache",
     "docs/skill-benchmark",
     "reports",
     "generated-evidence",
     "evidence",
 }
-BLOCKED_FILE_SUFFIXES = {".pyc", ".pyo", ".tmp", ".zip"}
+BLOCKED_FILE_SUFFIXES = {".tmp", ".zip"}
 BLOCKED_FILE_NAMES = {".DS_Store"}
 
 
@@ -168,6 +181,13 @@ def validate_skill_md(root: Path, errors: list[str]) -> None:
         "scripts/validate_skill_package.py",
         "scripts/validate_activation_scenarios.py",
         "scripts/validate_golden_examples.py",
+    "scripts/validate_governance_scenarios.py",
+    "scripts/governance_contract.py",
+    "scripts/adapt_governance.py",
+    "scripts/project_governance_views.py",
+    "scripts/validate_projection_metadata.py",
+    "scripts/evaluate_governance.py",
+    "scripts/validate_all.py",
         "scripts/validate_identity_contract.py",
         "scripts/validate_contract_preservation.py",
         "scripts/package_skill.py",
@@ -343,8 +363,12 @@ def validate_harness_scenarios(root: Path, errors: list[str]) -> None:
 def validate_package_hygiene(root: Path, errors: list[str]) -> None:
     for path in sorted(root.rglob("*")):
         rel = path.relative_to(root).as_posix()
+        if any(part in EPHEMERAL_CACHE_DIR_NAMES for part in path.relative_to(root).parts):
+            continue
+        if path.is_file() and path.suffix.lower() in EPHEMERAL_CACHE_SUFFIXES:
+            continue
         if any(rel == name or rel.startswith(name + "/") for name in GENERATED_OR_BLOCKED_DIR_NAMES):
-            errors.append(f"blocked generated/cache path present: {rel}")
+            errors.append(f"blocked generated path present: {rel}")
             continue
         if path.is_file() and path.name in BLOCKED_FILE_NAMES:
             errors.append(f"blocked generated/system file present: {rel}")

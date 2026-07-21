@@ -35,9 +35,19 @@ depends_on_specs: []
 
 ### REQ-001 - <requirement_title>
 
+- Evidence basis: <repository, intake, contract, incident, or policy evidence>
+- Failure/recovery behavior: <observable failure response and safe retry/recovery path>
+- Verification: AC-001
+
 WHEN <trigger>, the <system> MUST <observable_response>.
 
 ## Non-Functional Requirements
+
+### NFR-001 - <quality_title>
+
+- Metric: <measurable quality signal>
+- Threshold: <numeric or otherwise objectively testable threshold>
+- Validation: VAL-002
 
 ## Constraints
 
@@ -49,6 +59,7 @@ WHEN <trigger>, the <system> MUST <observable_response>.
 ### AC-001 - <acceptance_title>
 
 - Requirements: REQ-001
+- Path: <normal|boundary|error|abuse|recovery|operational>
 
 ```gherkin
 Scenario: AC-001 <acceptance_title>

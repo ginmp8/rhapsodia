@@ -40,10 +40,19 @@ def build_board(tmp_path: Path, *, dependency_status: str = "done") -> tuple[Pat
         f"kind: mago-spec-manifest\nspec_id: {SPEC}\ncycle_id: {CYCLE}\nfeature_key: csv-export-filtered-columns\ntitle: CSV Export Filtered Columns\ntype: feature\nclassification: internal\nstatus: planned\nphase: define\nfeature_version: 0.1.0\ncreated_at: 2026-04-20T00:00:00Z\nsource_of_truth:\n  registry: ../../registry/{SPEC}.yaml\n  prd: prd.md\n  tasks: tasks.md\n  validation: validation.md\n  notes: notes.md\ntraceability:\n  primary_discovery_file: ''\n  supporting_discovery_files: []\n  discovery_frontier: ''\n",
         encoding="utf-8",
     )
-    for name in ("prd.md", "notes.md", "validation.md"):
-        (package / name).write_text(f"# {name}\n", encoding="utf-8")
+    (package / "prd.md").write_text(
+        "# PRD\n\n## Objective\n\nExport only selected columns while preserving the existing file format.\n\n"
+        "## Acceptance Criteria\n\n- A filtered export contains only the selected columns.\n",
+        encoding="utf-8",
+    )
+    (package / "notes.md").write_text("# Notes\n\n- No additional planning notes.\n", encoding="utf-8")
+    (package / "validation.md").write_text(
+        "# Validation Plan\n\n## Planned Checks\n\n- Run `python -m pytest tests/test_export.py` and expect exit code 0.\n",
+        encoding="utf-8",
+    )
     (package / "tasks.md").write_text(
-        "# Tasks\n\n- [ ] task001: First task\n- [ ] task002: Second task\n",
+        "# Tasks\n\n- [ ] task001: Implement filtered export behavior\n"
+        "- [ ] task002: Validate filtered export compatibility\n",
         encoding="utf-8",
     )
     return root, SPEC
@@ -68,6 +77,25 @@ def test_suffix_free_identifiers_are_accepted_without_generated_components():
 def test_legacy_or_shorthand_identifiers_are_rejected(parser, value: str):
     with pytest.raises(ValueError):
         parser(value)
+
+
+@pytest.mark.parametrize(
+    ("parser", "value"),
+    [
+        (parse_cycle_id, "cycle-2026-02-31-invalid-date"),
+        (parse_cycle_id, "cycle-2026-99-99-invalid-date"),
+        (parse_spec_id, "spec-2026-02-31-invalid-date"),
+        (parse_spec_id, "spec-2026-99-99-invalid-date"),
+    ],
+)
+def test_identifiers_reject_impossible_calendar_dates(parser, value: str):
+    with pytest.raises(ValueError, match="valid calendar date"):
+        parser(value)
+
+
+def test_identifiers_accept_valid_leap_day():
+    assert parse_cycle_id("cycle-2024-02-29-leap-cycle")["date"] == "2024-02-29"
+    assert parse_spec_id("spec-2024-02-29-leap-feature")["date"] == "2024-02-29"
 
 
 def test_board_registry_and_package_paths_resolve_from_suffix_free_ids(tmp_path: Path):

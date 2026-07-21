@@ -8,6 +8,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from governance_contract import (
+    GOVERNANCE_STATES,
+    LIFECYCLE_VALUES,
+    PROFILE_VALUES,
+    validate_non_unknown_enum,
+    validate_release_state,
+    validate_technical_state,
+)
 from nomia_utils import (
     has_unresolved_template_token,
     is_iso_date,
@@ -53,7 +61,8 @@ VALID_PRIORITY = {"unknown", "low", "medium", "high", "urgent"}
 VALID_URGENCY = {"unknown", "low", "medium", "high", "immediate"}
 VALID_IMPACT = {"unknown", "low", "medium", "high", "critical"}
 VALID_RISK = {"unknown", "low", "medium", "high", "critical"}
-VALID_STATE = {"unknown", "intake", "triage", "planned", "in_progress", "blocked", "at_risk", "done", "canceled"}
+LEGACY_VALID_STATE = {"unknown", "intake", "triage", "planned", "in_progress", "blocked", "at_risk", "done", "canceled"}
+VALID_STATE = GOVERNANCE_STATES
 VALID_COMMITMENT = {"unknown", "committed", "targeted", "tentative"}
 VALID_CONFIDENCE = {"unknown", "low", "medium", "high"}
 FORBIDDEN_SOURCE_OF_TRUTH_KEYS = {
@@ -139,6 +148,24 @@ OPTIONAL_PATHS = [
     ("planning", "committed_target_date"),
 ]
 
+V2_REQUIRED_PATHS = [
+    ("governance",),
+    ("governance", "profile"),
+    ("governance", "lifecycle"),
+    ("governance", "status"),
+    ("technical_state",),
+    ("technical_state", "planning"),
+    ("technical_state", "execution"),
+    ("technical_state", "validation"),
+    ("release",),
+    ("dependencies",),
+    ("decision",),
+    ("handoffs",),
+    ("provenance",),
+    ("provenance", "updated_at"),
+    ("provenance", "facts"),
+    ("provenance", "changes"),
+]
 
 
 def path_name(path: tuple[str, ...]) -> str:
@@ -267,7 +294,56 @@ def validate_blockers_and_risks(data: dict[str, Any], errors: list[str]) -> None
                 validate_enum(f"risks[{index}].severity", entry.get("severity"), VALID_RISK, errors)
 
 
-def validate(path: Path) -> tuple[list[str], list[str]]:
+def validate_governed_extensions(
+    data: dict[str, Any], errors: list[str], warnings: list[str], *, require_resolved: bool
+) -> None:
+    for required_path in V2_REQUIRED_PATHS:
+        exists, _ = get_path(data, required_path)
+        if not exists:
+            errors.append(f"missing required key `{path_name(required_path)}` for schema_version 2")
+
+    governance = as_map(data, "governance", errors)
+    profile = governance.get("profile", "unknown")
+    lifecycle = governance.get("lifecycle", "unknown")
+    governance_status = governance.get("status", "unknown")
+    if require_resolved:
+        errors.extend(validate_non_unknown_enum("governance.profile", profile, PROFILE_VALUES))
+        errors.extend(validate_non_unknown_enum("governance.lifecycle", lifecycle, LIFECYCLE_VALUES))
+        errors.extend(validate_non_unknown_enum("governance.status", governance_status, GOVERNANCE_STATES))
+    else:
+        validate_enum("governance.profile", profile, PROFILE_VALUES, errors)
+        validate_enum("governance.lifecycle", lifecycle, LIFECYCLE_VALUES, errors)
+        validate_enum("governance.status", governance_status, GOVERNANCE_STATES, errors)
+
+    status = data.get("status") if isinstance(data.get("status"), dict) else {}
+    status_state = str(status.get("state") or "unknown")
+    if governance_status not in (None, "") and status_state != str(governance_status):
+        errors.append("`status.state` must mirror `governance.status` for schema_version 2")
+
+    technical_state = data.get("technical_state")
+    if not isinstance(technical_state, dict):
+        errors.append("`technical_state` must be a mapping")
+        technical_state = {}
+    for dimension in ("planning", "execution", "validation"):
+        errors.extend(validate_technical_state(dimension, technical_state.get(dimension)))
+
+    errors.extend(validate_release_state(data.get("release")))
+    for key in ("dependencies",):
+        if not isinstance(data.get(key), list):
+            errors.append(f"`{key}` must be a list")
+    for key in ("decision", "handoffs", "provenance"):
+        if not isinstance(data.get(key), dict):
+            errors.append(f"`{key}` must be a mapping")
+    provenance = data.get("provenance") if isinstance(data.get("provenance"), dict) else {}
+    if not isinstance(provenance.get("facts"), dict):
+        errors.append("`provenance.facts` must be a mapping")
+    if not isinstance(provenance.get("changes"), list):
+        errors.append("`provenance.changes` must be a list")
+    if is_missing(provenance.get("updated_at")):
+        warnings.append("provenance.updated_at is missing; canonical projections remain blocked")
+
+
+def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
 
@@ -286,8 +362,11 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
         if not exists:
             errors.append(f"missing required key `{path_name(required_path)}`")
 
-    if data.get("schema_version") != 1:
-        errors.append("`schema_version` must be 1")
+    schema_version = data.get("schema_version")
+    if schema_version not in {1, 2}:
+        errors.append("`schema_version` must be 1 (legacy validation-only) or 2 (canonical)")
+    if require_canonical and schema_version != 2:
+        errors.append("canonical validation requires `schema_version: 2`")
 
     spec_id = data.get("spec_id")
     spec_id_error = validate_spec_id_format(spec_id)
@@ -332,7 +411,14 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
     validate_enum("priority.urgency", priority.get("urgency"), VALID_URGENCY, errors)
     validate_enum("priority.impact", priority.get("impact"), VALID_IMPACT, errors)
     validate_enum("priority.risk", priority.get("risk"), VALID_RISK, errors)
-    validate_enum("status.state", status.get("state"), VALID_STATE, errors)
+    validate_enum(
+        "status.state",
+        status.get("state"),
+        LEGACY_VALID_STATE if schema_version == 1 else VALID_STATE,
+        errors,
+    )
+    if schema_version == 2:
+        validate_governed_extensions(data, errors, warnings, require_resolved=spec_id not in (None, ""))
     validate_enum("status.confidence", status.get("confidence"), VALID_CONFIDENCE, errors)
 
     for key in ("blockers", "risks", "replanning", "tags"):
@@ -408,10 +494,11 @@ def qualify(message: str, path: Path) -> str:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate nomia ops.yaml.")
     parser.add_argument("path", nargs="?", default="ops.yaml", help="Path to ops.yaml.")
+    parser.add_argument("--require-canonical", action="store_true", help="Require schema_version 2 and the governed canonical sections.")
     args = parser.parse_args(argv)
 
     target = Path(args.path).resolve()
-    errors, warnings = validate(target)
+    errors, warnings = validate(target, require_canonical=args.require_canonical)
     errors = unique([qualify(error, target) for error in errors])
     warnings = unique([qualify(warning, target) for warning in warnings])
 

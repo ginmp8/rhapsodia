@@ -349,6 +349,18 @@
       "expected_mode": "delivery-triage",
       "expected_boundary": "Reject filename/intent inference and keep volatile facts unknown",
       "risk_triggers": []
+    },
+    {
+      "id": "G029",
+      "title": "Ambiguous documentation request",
+      "prompt": "Update the documentation for this feature without saying whether it is a stakeholder brief or implementation guide.",
+      "category": "ambiguous",
+      "expected_activation": null,
+      "expected_profile": "standard",
+      "expected_lifecycle": "track",
+      "expected_mode": "clarify-boundary",
+      "expected_boundary": "Clarify whether the request is Nomia governance communication or Mago/Magia implementation documentation before writing",
+      "risk_triggers": []
     }
   ]
 }

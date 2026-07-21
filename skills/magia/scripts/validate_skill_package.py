@@ -15,6 +15,7 @@ from typing import Any
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
 from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
+from security_scan import scan_bytes, scan_tree
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with " + "actual|this is a " + "placeholder)", re.IGNORECASE)
@@ -82,55 +83,6 @@ def rel(path: Path, root: Path) -> str:
 ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
 REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
-BOOSTER_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
-BOOSTER_PREFIXES = {
-    "should_activate": ("activate",),
-    "should_not_activate": ("do_not_activate",),
-    "ambiguous": ("clarify_or_", "activate only"),
-    "edge_case": ("activate_and_refuse", "refuse", "activate"),
-}
-
-
-def validate_booster_scenarios(path: Path) -> list[str]:
-    errors: list[str] = []
-    if not path.exists():
-        return [f"missing booster scenario suite: {path.name}"]
-    try:
-        payload = json.loads(read_text(path))
-    except Exception as exc:  # noqa: BLE001
-        return [f"booster scenario suite is invalid JSON: {exc}"]
-    scenarios = payload.get("scenarios")
-    if not isinstance(scenarios, list) or len(scenarios) < 8:
-        return ["booster scenario suite must contain at least 8 scenarios"]
-    seen: set[str] = set()
-    counts: dict[str, int] = {}
-    for index, scenario in enumerate(scenarios):
-        label = f"index {index}"
-        if not isinstance(scenario, dict):
-            errors.append(f"booster scenario {label} is not an object")
-            continue
-        sid = scenario.get("id") or label
-        if sid in seen:
-            errors.append(f"duplicate booster scenario id: {sid}")
-        seen.add(str(sid))
-        stype = scenario.get("type")
-        if stype not in BOOSTER_SCENARIO_TYPES:
-            errors.append(f"booster scenario {sid} has invalid type: {stype}")
-            continue
-        counts[stype] = counts.get(stype, 0) + 1
-        prompt = scenario.get("prompt")
-        if not isinstance(prompt, str) or len(prompt.strip()) < 12:
-            errors.append(f"booster scenario {sid} prompt is missing or too short")
-        expected = scenario.get("expected_behavior")
-        if not isinstance(expected, str) or not expected.strip().startswith(BOOSTER_PREFIXES[stype]):
-            errors.append(f"booster scenario {sid} expected_behavior conflicts with type {stype}")
-        criteria = scenario.get("acceptance_criteria")
-        if not isinstance(criteria, list) or not criteria or not all(isinstance(item, str) and item.strip() for item in criteria):
-            errors.append(f"booster scenario {sid} must have non-empty string acceptance criteria")
-    missing = BOOSTER_SCENARIO_TYPES - set(counts)
-    if missing:
-        errors.append(f"booster scenario suite missing types: {sorted(missing)}")
-    return errors
 
 
 def validate_shared_artifact_boundaries(target: Path) -> list[str]:
@@ -253,6 +205,8 @@ def validate_target(target: Path) -> dict[str, Any]:
 
     required_paths = [
         "agents/openai.yaml",
+        "VERSION",
+        "CHANGELOG.md",
         "references/canonical-paths.md",
         "references/board-contract.md",
         "references/common-execution.md",
@@ -263,25 +217,11 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/artifacts/execution-records.md",
         "references/artifacts/execution-evidence.md",
         "references/validation-and-closure.md",
-        "references/execution-profiles.md",
-        "references/run-state-and-recovery.md",
-        "references/convergence-and-validation.md",
-        "references/multi-repository-execution.md",
-        "references/public-artifact-adapters.md",
-        "references/failure-recovery-taxonomy.md",
-        "assets/templates/run-state.json.template",
-        "assets/templates/execution-summary.json.template",
-        "assets/templates/convergence-report.json.template",
         "assets/templates/implementation-notes.md.template",
         "assets/templates/validation-evidence.md.template",
         "assets/templates/technical-gap-note.md.template",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
-        "evals/booster-activation-scenarios.json",
-        "scripts/run_state.py",
-        "scripts/select_validation.py",
-        "scripts/validate_convergence.py",
-        "scripts/adapt_public_artifacts.py",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/validate_execution_readiness.py",
@@ -293,6 +233,13 @@ def validate_target(target: Path) -> dict[str, Any]:
         if not (target / required).exists():
             errors.append(f"missing required package resource: {required}")
     checks.append("required resources")
+
+    version_path = target / "VERSION"
+    if version_path.is_file():
+        version = read_text(version_path).strip()
+        if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+            errors.append(f"VERSION must contain semantic version X.Y.Z, got `{version}`")
+    checks.append("release version")
 
     agent_text = read_text(target / "agents/openai.yaml") if (target / "agents/openai.yaml").exists() else ""
     for token in ["display_name:", "short_description:", "default_prompt:", "allow_implicit_invocation:"]:
@@ -344,9 +291,6 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(validate_eval_scenarios(target / "evals" / "activation-scenarios.json"))
     checks.append("eval scenarios")
 
-    errors.extend(validate_booster_scenarios(target / "evals" / "booster-activation-scenarios.json"))
-    checks.append("booster scenario schema")
-
     errors.extend(validate_shared_artifact_boundaries(target))
     checks.append("shared artifact boundaries")
 
@@ -359,6 +303,9 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(collect_boundary_errors())
     checks.append("runtime independence and ownership boundary")
 
+    errors.extend(scan_tree(target))
+    checks.append("sensitive content and symlink scan")
+
     return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings, "checks": checks}
 
 
@@ -366,19 +313,12 @@ def zip_required_resources() -> list[str]:
     return [
         "SKILL.md",
         "agents/openai.yaml",
+        "VERSION",
+        "CHANGELOG.md",
         "references/resource-map.md",
         "references/package-delivery.md",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
-        "evals/booster-activation-scenarios.json",
-        "references/execution-profiles.md",
-        "references/run-state-and-recovery.md",
-        "references/convergence-and-validation.md",
-        "references/public-artifact-adapters.md",
-        "scripts/run_state.py",
-        "scripts/select_validation.py",
-        "scripts/validate_convergence.py",
-        "scripts/adapt_public_artifacts.py",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/validate_execution_readiness.py",
@@ -425,6 +365,12 @@ def validate_zip(zip_path: Path) -> dict[str, Any]:
                     errors.append(f"blocked file included in zip: {name}")
                 if SECRET_NAME_RE.search(Path(name).name):
                     errors.append(f"secret-like file name included in zip: {name}")
+                info = archive.getinfo(name)
+                unix_mode = (info.external_attr >> 16) & 0o170000
+                if unix_mode == 0o120000:
+                    errors.append(f"symlink included in zip: {name}")
+                else:
+                    errors.extend(scan_bytes(archive.read(name), label=name))
             for required in zip_required_resources():
                 if required not in normalized_names:
                     errors.append(f"zip missing required resource: {required}")

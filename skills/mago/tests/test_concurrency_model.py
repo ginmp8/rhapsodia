@@ -83,6 +83,7 @@ class ConcurrencyModelTests(unittest.TestCase):
             "title": feature.replace("-", " ").title(),
             "type": "feature",
             "classification": "internal",
+            "profile": "standard",
             "created_at": f"{created_date}T13:00:00Z",
             "status": status,
             "priority": "normal",
@@ -258,7 +259,7 @@ class ConcurrencyModelTests(unittest.TestCase):
         self.assertIn("REUSED: identical identity already exists", second.stderr)
         self.assertEqual(path.read_bytes(), original)
 
-    def test_duplicate_ulid_is_rejected_without_overwrite(self) -> None:
+    def test_legacy_ulid_argument_is_rejected_without_overwrite(self) -> None:
         completed = subprocess.run(
             self.spec_command("audit-trail", "Audit Trail") + ["--ulid", ULID_B],
             capture_output=True,

@@ -1,6 +1,6 @@
 {
   "suite": "mago activation and boundary scenarios",
-  "version": 4,
+  "version": "4-reconcile",
   "scenarios": [
     {
       "id": "activate-discovery-board",
@@ -352,6 +352,24 @@
       "expected_boundary": "produce planning artifacts only, including simplification hypotheses, task slices, validation plan, and Magia handoff; do not edit code",
       "case_type": "should_activate",
       "category": "should_activate"
+    },
+    {
+      "id": "activate-reconcile-planning-evidence",
+      "prompt": "Reconcile the canonical Mago plan with supplied Magia evidence and produce a read-only planning reconciliation report.",
+      "expected_activation": true,
+      "expected_mode": "reconcile",
+      "expected_boundary": "compare both authorities without rewriting Mago intent or Magia evidence",
+      "case_type": "should_activate",
+      "category": "should_activate"
+    },
+    {
+      "id": "regression-reconcile-read-only-boundary",
+      "prompt": "Compare canonical Mago intent with Magia evidence for planning reconciliation; keep both sources read-only and report deviations.",
+      "expected_activation": true,
+      "expected_mode": "reconcile",
+      "expected_boundary": "produce only a non-authoritative reconciliation report with preserved provenance",
+      "case_type": "regression",
+      "category": "regression"
     }
   ]
 }

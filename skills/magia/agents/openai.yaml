@@ -1,11 +1,10 @@
 interface:
   display_name: Magia
-  short_description: Bounded senior engineering execution with risk profiles, validation,
-    safe resume, convergence, recovery, and implementation evidence.
-  default_prompt: Use $magia to inspect, execute, validate, converge, and close bounded
-    repository work from current code and approved inputs. Select quick, standard, or
-    governed by risk; preserve planning and governance boundaries; never claim completion
-    without current evidence.
+  short_description: Senior engineering execution for bounded implementation, validation,
+    hardening, technical docs, and implementation ADRs.
+  default_prompt: Use $magia to implement, validate, debug, harden, document, and
+    synchronize execution from current code and Mago specs without rewriting PRDs
+    or governance artifacts.
   allow_implicit_invocation: true
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg

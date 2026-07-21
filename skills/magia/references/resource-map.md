@@ -1,109 +1,47 @@
-# MAGIA Resource Map
+# Resource Map
 
-Load only resources required by the active source mode, execution profile, risk, artifact, or package operation. `SKILL.md` is the control plane; references carry branch detail; scripts perform deterministic work; templates define output structures; examples and evals calibrate behavior.
+Use to locate MAGIA resources without loading every file.
 
-## Core Execution
+## Core References
 
-- `references/canonical-paths.md`: canonical board and spec paths.
-- `references/board-contract.md`: local board-contract semantics.
-- `references/common-execution.md`: shared source-of-truth and editing rules.
-- `references/senior-engineering-discipline.md`: non-trivial engineering discipline.
-- `references/complexity-reduction-execution.md`: behavior-preserving simplification.
-- `references/validation-and-closure.md`: final validation and record alignment.
+- `references/board-contract.md`: self-contained canonical board, registry, identity, dependency, and execution-sync contract.
 
-## Modes and Profiles
+- `references/common-execution.md`: shared execution rules.
+- `references/senior-engineering-discipline.md`: small, explicit, verifiable engineering behavior.
+- `references/complexity-reduction-execution.md`: behavior-preserving simplification, de-abstraction, refactor execution.
+- `references/planning-handoff.md`: consume Mago/nomia artifacts, including execution-handoff-plan.md, as execution inputs.
+- `references/developer-artifact-standards.md`: implementation-doc taxonomy/templates.
+- `references/technical-documentation.md`: implementation ADR and doc rules.
+- `references/validation-and-closure.md`: truthful validation/closure.
+- `references/markdown-writing.md`: durable Markdown quality.
+- `references/package-delivery.md`: package MAGIA itself.
 
-- `references/modes/adhoc.md`: direct repository execution.
-- `references/modes/ralph.md`: selected board/spec task execution.
-- `references/modes/adapt.md`: legacy execution-record adaptation.
-- `references/execution-profiles.md`: quick, standard, governed evidence and escalation.
+## Mode References
 
-## State, Convergence, Recovery
+- `references/modes/adhoc.md`: direct repository work.
+- `references/modes/ralph.md`: selected board/spec package execution.
+- `references/modes/adapt.md`: best-effort conversion of legacy execution records into current MAGIA-owned artifacts.
 
-- `references/run-state-and-recovery.md`: checkpoints, fingerprints, resume, cancel, retry, rollback, handoff.
-- `references/convergence-and-validation.md`: requirement-to-evidence statuses, risk matrix, evidence compression.
-- `references/multi-repository-execution.md`: dependency order, compatibility windows, partial failure.
-- `references/failure-recovery-taxonomy.md`: repair, retry, rollback, stop, and handoff categories.
-- `scripts/run_state.py`: standalone run-state transition CLI.
-- `scripts/select_validation.py`: deterministic minimum profile and check selector.
-- `scripts/validate_convergence.py`: convergence JSON validator.
+## Artifact References
 
-## Planning and External Inputs
-
-- `references/planning-handoff.md`: planning-gap handoff and non-blockers.
-- `references/shared-artifact-ownership.md`: Mago/Magia record ownership.
-- `references/public-artifact-adapters.md`: read-only Spec Kit, Kiro, and OpenSpec mapping.
-- `scripts/adapt_public_artifacts.py`: read-only normalization into an external JSON execution view.
-
-## Execution Records and Evidence
-
-- `references/artifacts/execution-records.md`: controlled task, manifest, registry, notes, and validation record rules.
-- `references/artifacts/execution-evidence.md`: structured evidence for downstream consumers.
-- `scripts/write_execution_log.py`: append implementation execution history.
-- `scripts/sync_execution_state.py`: synchronize controlled state from current evidence.
-- `scripts/heal_execution_state.py`: narrow mechanical healing of inconsistent execution state.
-- `scripts/close_execution_state.py`: validated closure transition.
-- `scripts/validate_execution_state.py`: cross-record consistency checks.
-
-## Board and Repository Validation
-
-- `scripts/board_contract.py`: import-only board-contract query helpers used by validators and execution scripts.
-- `scripts/magia_utils.py`: import-only path, YAML, identity, and shared script helpers.
-- `scripts/validate_board_contract.py`: board-contract validator.
-- `scripts/validate_execution_readiness.py`: selected spec/task readiness gate.
-- `scripts/validate_repo_board.py`: canonical repository-board structure validator.
-- `scripts/validate_planning_handoff_contract.py`: planning handoff boundary validator.
-- `scripts/validate_boundary.py`: self-containment, ownership, and forbidden downstream surface checks.
-- `scripts/validate_instruction_contract.py`: instruction-depth and preserved-capability gate.
-
-## Artifact Writing
-
-- `references/developer-artifact-standards.md`: technical artifact quality rules.
-- `references/technical-documentation.md`: execution-grounded documentation.
-- `references/markdown-writing.md`: durable Markdown conventions.
-- `scripts/write_artifact_scaffold.py`: template-backed MAGIA artifact creation.
-- `scripts/update_template_lists.py`: narrow list updates for MAGIA-owned template-backed records.
-- `scripts/validate_artifact.py`: artifact structure validation.
-- `scripts/adapt_legacy_execution_records.py`: ADAPT conversion command.
+- `references/artifacts/execution-records.md`: controlled state sync.
+- `references/artifacts/execution-evidence.md`: structured downstream evidence.
 
 ## Templates
 
-Human-readable templates under `assets/templates/`:
+MAGIA-owned execution evidence templates: `assets/templates/implementation-notes.md.template`, `assets/templates/validation-evidence.md.template`, and `assets/templates/technical-gap-note.md.template`. MAGIA intentionally does not bundle templates for MAGO-owned planning artifacts (`registry/<spec_id>.yaml`, `manifest.yaml`, `tasks.md`, `notes.md`, or `validation.md`). Use MAGO to create or normalize those files, then use MAGIA execution-state scripts only to update existing records from truthful execution evidence.
 
-- implementation notes, validation evidence, technical gap, complexity reduction, implementation ADR;
-- migration, contract, observability, runbook, troubleshooting, and security records.
+Developer docs: `assets/templates/implementation-notes.md.template`, `assets/templates/complexity-reduction-evidence.md.template`, `assets/templates/implementation-adr.md.template`, `assets/templates/validation-evidence.md.template`, `assets/templates/runbook.md.template`, `assets/templates/migration-execution-note.md.template`, `assets/templates/contract-change-note.md.template`, `assets/templates/observability-note.md.template`, `assets/templates/troubleshooting.md.template`, `assets/templates/security-risk-note.md.template`, `assets/templates/technical-gap-note.md.template`.
 
-Machine-readable templates:
+## Scripts
 
-- `assets/templates/run-state.json.template`;
-- `assets/templates/execution-summary.json.template`;
-- `assets/templates/convergence-report.json.template`.
-
-Templates are copied or filled as outputs. Do not load every template as reasoning context.
-
-## Scenarios and Tests
-
-- `examples/activation-scenarios.json`: human-readable activation calibration.
-- `evals/activation-scenarios.json`: target activation, boundary, regression, adversarial, recovery, and adapter coverage.
-- `evals/booster-activation-scenarios.json`: deterministic four-category booster schema/coverage suite.
-- `tests/test_board_contract.py`: board contract behavior.
-- `tests/test_execution_flow.py`: execution record workflow.
-- `tests/test_independence.py`: package independence and ownership.
-- `tests/test_preserved_surface.py`: original resource and capability preservation.
-- `tests/test_optimization_architecture.py`: profiles, state drift, convergence, and read-only adapter behavior.
-
-## Package Delivery
-
-- `references/package-delivery.md`: folder/archive validation and exclusions.
-- `scripts/validate_skill_package.py`: complete package and optional archive validator.
-- `scripts/package_skill.py`: deterministic complete `skill.zip` builder.
-
-## Loading Discipline
-
-1. Read `SKILL.md` first.
-2. Load core execution and exactly one source mode.
-3. Load execution profiles for every mutation.
-4. Add state, convergence, recovery, multi-repository, adapter, or documentation resources only when triggered.
-5. Prefer deterministic scripts over manual mutation for strict state, validation, adaptation, or packaging.
-6. Keep board helpers import-only; do not add artificial CLIs merely to satisfy superficial resource checks.
-7. Validate touched resources and package shape before readiness claims.
+- `scripts/write_artifact_scaffold.py`: copy a matching MAGIA-owned template only inside a validated `--board-root` or explicit ADHOC `--allowed-root`; it must not scaffold or update MAGO-owned planning files.
+- `scripts/write_execution_log.py`: write execution logs.
+- `scripts/adapt_legacy_execution_records.py`: convert legacy notes.md/validation.md execution content into current MAGIA-owned artifacts.
+- `scripts/sync_execution_state.py`, `scripts/heal_execution_state.py`, `scripts/close_execution_state.py`: sync controlled execution records.
+- `scripts/validate_artifact.py`, `scripts/validate_execution_state.py`, `scripts/validate_repo_board.py`, `scripts/validate_boundary.py`: validate artifacts/boundaries.
+- `scripts/validate_board_contract.py`: validate canonical cycle, registry, dependencies, and manifest identity without loading another skill.
+- `scripts/validate_execution_readiness.py`: validate selected spec/task readiness and dependency completion.
+- `scripts/validate_planning_handoff_contract.py`: validate planning-origin execution and blocker rules after handoff-rule edits.
+- `scripts/magia_utils.py`: import-only helper module used by execution-state, boundary, board, and log scripts; it has no standalone CLI by design.
+- `scripts/security_scan.py`, `scripts/validate_skill_package.py`, `scripts/package_skill.py`: scan secret-like content and symlinks, validate, and package MAGIA.

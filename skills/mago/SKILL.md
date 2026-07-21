@@ -67,11 +67,11 @@ Select exactly one write mode per mutation step; the public lifecycle may traver
 2. Resolve canonical identity and registry state before writes.
 3. Select profile, lifecycle stage, and one internal mode.
 4. Load [common planning](references/common-planning.md), then only branch-specific references.
-5. Select artifacts through the decision matrix; use [technical standards](references/technical-artifact-standards.md) and [ADR quality](references/adr-quality.md) only when triggered.
+5. Select artifacts through the decision matrix; use [technical standards](references/technical-artifact-standards.md), [ADR quality](references/adr-quality.md), and the [security-risk contract](references/security-risk-contract.md) only when triggered.
 6. For existing-spec evolution, generate the external [change delta](references/change-delta.md) with added behavior, modified behavior, removed behavior, preserved behavior, compatibility impact, migration impact, and rollback assumptions; merge accepted intent into canonical artifacts and regenerate the delta.
 7. For Spec Kit, Kiro, OpenSpec, C4, OpenAPI, AsyncAPI, or convergence work, use [interoperability and reconciliation](references/interoperability-and-reconciliation.md). Validate imports; keep exports non-authoritative; disclose every known round-trip loss.
-8. Create/refresh supported artifacts from templates through scripts, replace placeholders with evidence, then run the narrowest artifact validator and broader package/repository gates.
-9. Handoff only validated intended work. Reconcile read-only and report: implemented as planned, implementation deviation, unmet acceptance criteria, obsolete planned task, newly discovered work, required planning revision, or no-change convergence.
+8. For multi-artifact writes, use the [mutation transaction and resume contract](references/mutation-transaction-and-resume.md) and `scripts/mutation_transaction.py`: fingerprint inspected state, stage outside canonical destinations, validate before atomic promotion, detect drift, resume safely, and require verified rollback after partial failure. Keep `manifest.yaml.mutation_state` non-clean until recovery completes.
+9. Handoff only validated intended work with a clean mutation state. Reconcile read-only and report: implemented as planned, implementation deviation, unmet acceptance criteria, obsolete planned task, newly discovered work, required planning revision, or no-change convergence.
 
 ## Templates, scripts, and validation
 
@@ -79,12 +79,12 @@ Templates under `assets/templates/` are structural inputs, not defaults to copy 
 
 Use the relevant validators:
 
-- artifact/package/repository: `scripts/validate_artifact.py`, `scripts/validate_package.py`, `scripts/validate_repo_board.py`;
+- artifact/package/repository: `scripts/validate_artifact.py`, `scripts/validate_package.py`, `scripts/validate_repo_board.py`; governed quality and triggered technical content: `scripts/validate_plan_quality.py`, `scripts/validate_triggered_artifact.py`, `scripts/validate_security_risk.py --require-v2`;
 - boundary/evidence/handoff/generated views: `scripts/validate_boundary.py`, `scripts/validate_evidence_contract.py`, `scripts/validate_planning_execution_handoff.py`, `scripts/validate_generated_view_contract.py`;
-- SDD semantics: `scripts/render_traceability.py`, `scripts/validate_traceability.py`, `scripts/validate_artifact_matrix.py`, `scripts/validate_change_delta.py`, `scripts/validate_sdd_adapter_report.py`, `scripts/reconcile_planning.py`;
-- skill/package integrity: `scripts/validate_skill_package.py`, then `scripts/package_skill.py` only after all gates pass.
+- SDD semantics: `scripts/render_traceability.py`, `scripts/validate_traceability.py`, `scripts/validate_artifact_matrix.py`, `scripts/validate_change_delta.py`, `scripts/sdd_adapter.py`, `scripts/validate_sdd_adapter_report.py`, `scripts/reconcile_planning.py`;
+- skill/package integrity: `scripts/validate_release_metadata.py`, `scripts/run_sdd_evidence_harness.py`, `scripts/validate_skill_package.py`, then `scripts/package_skill.py` only after all gates pass.
 
-Required gates: canonical identity matches registry/package paths; feature keys are unique; dependencies resolve and are acyclic; generated views are reproducible; selected-profile artifacts and triggered technical concerns are complete; planning claims are evidenced or unresolved; changed behavior links to tasks and validation; governed golden/package traceability is complete; adapters disclose losses; reconciliation preserves Magia provenance and never claims Mago-authored runtime proof.
+Required gates: canonical identity matches registry/package paths; feature keys are unique; dependencies resolve and are acyclic; generated views are reproducible; selected-profile artifacts and triggered technical concerns are complete; planning claims are evidenced or unresolved; changed behavior links to tasks and validation; governed packages pass traceability and plan-quality gates; new security plans use the v2 relational contract; adapter versions and losses are explicit; multi-artifact recovery is executable; reconciliation preserves Magia provenance and never claims Mago-authored runtime proof.
 
 ## Output contract
 
@@ -92,4 +92,4 @@ Report: profile and lifecycle stage; selected mode; resolved board/spec identity
 
 ## Stop conditions
 
-Stop before writes or readiness claims when identity/root is unresolved; registry/package state conflicts; evidence is insufficient for safe canonical intent; requested work belongs to Nomia or Magia; quick escalation is required but rejected; a second source of truth would be created; a generated view would be hand-edited; Magia evidence would be rewritten; runtime proof would be fabricated; required traceability, dependency, security, migration, compatibility, or package gates fail; protected fixtures/evaluators/reports/secrets are targeted; or packaging validation does not pass.
+Stop before writes or readiness claims when identity/root is unresolved; registry/package state conflicts; evidence is insufficient for safe canonical intent; requested work belongs to Nomia or Magia; quick escalation is required but rejected; a second source of truth would be created; a generated view would be hand-edited; Magia evidence would be rewritten; runtime proof would be fabricated; required traceability, dependency, security, migration, compatibility, mutation-state, or package gates fail; protected fixtures/evaluators/reports/secrets are targeted; or packaging validation does not pass.
