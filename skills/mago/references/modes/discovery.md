@@ -17,7 +17,7 @@ Use this mode for iterative repository scanning. It is the upstream evidence sta
 3. Update discovery-state.json with frontier progress, file coverage, and next-frontier decisions.
 4. Update discovery-index.yaml with stable candidate entries and candidate status transitions.
 5. Create or reconcile candidate docs only for materially distinct capability boundaries.
-6. Stop after the current bounded frontier batch is truthfully captured; discovery is iterative by design.
+6. Stop after the current bounded frontier batch is truthfully captured; discovery is iterative by design. When the next consumer needs a compact view, produce the non-authoritative brownfield discovery summary described in `references/brownfield-discovery-summary.md` without replacing candidate evidence.
 
 ## Discovery Boundaries
 

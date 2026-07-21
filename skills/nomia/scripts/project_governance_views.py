@@ -194,6 +194,112 @@ def list_summary(items: Any, field: str = "summary") -> list[str]:
     return result
 
 
+def evidence_health(stale: list[str], conflicts: list[str], unknown: list[str]) -> str:
+    if conflicts:
+        return "conflicting"
+    if stale:
+        return "stale"
+    if unknown:
+        return "incomplete"
+    return "current"
+
+
+def next_responsible_skill(data: dict[str, Any], stale: list[str], conflicts: list[str]) -> str:
+    lifecycle = str(dotted(data, "governance.lifecycle") or "unknown")
+    decision = dotted(data, "decision.current")
+    planning = str(dotted(data, "technical_state.planning.state") or "unknown")
+    execution = str(dotted(data, "technical_state.execution.state") or "unknown")
+    validation = str(dotted(data, "technical_state.validation.state") or "unknown")
+    release = str(dotted(data, "release.state") or "unknown")
+    if stale or conflicts or lifecycle in {"intake", "triage", "commit", "decide"} or decision not in (None, "", "unknown"):
+        return "nomia"
+    if planning not in {"ready", "complete"}:
+        return "mago"
+    if execution != "complete" or validation != "passed":
+        return "magia"
+    if release not in {"released", "closed", "canceled", "superseded"}:
+        return "nomia"
+    return "nomia"
+
+
+def next_governance_action(data: dict[str, Any], stale: list[str], conflicts: list[str]) -> str:
+    lifecycle = str(dotted(data, "governance.lifecycle") or "unknown")
+    decision = dotted(data, "decision.current")
+    planning = str(dotted(data, "technical_state.planning.state") or "unknown")
+    execution = str(dotted(data, "technical_state.execution.state") or "unknown")
+    validation = str(dotted(data, "technical_state.validation.state") or "unknown")
+    release = str(dotted(data, "release.state") or "unknown")
+    if conflicts:
+        return "Resolve conflicting evidence before changing any governed state."
+    if stale:
+        return "Refresh stale evidence before changing commitments or completion claims."
+    if decision not in (None, "", "unknown"):
+        return "Prepare or resolve the pending governance decision with the required authority."
+    if lifecycle in {"intake", "triage"}:
+        return "Refine the minimum governance intake and preserve unresolved facts as unknown."
+    if planning not in {"ready", "complete"}:
+        return "Validate the typed Nomia-to-Mago handoff; do not create technical planning artifacts."
+    if execution != "complete" or validation != "passed":
+        return "Await or request current attributed Magia execution and validation evidence."
+    if release not in {"released", "closed", "canceled", "superseded"}:
+        return "Evaluate governance release readiness without certifying technical validation."
+    return "Close or supersede the governance record with final attributed evidence."
+
+
+def build_audience_views(
+    data: dict[str, Any],
+    common: dict[str, Any],
+    operational: dict[str, Any],
+    stakeholder: dict[str, Any],
+    executive: dict[str, Any],
+    next_action: str,
+) -> dict[str, dict[str, Any]]:
+    request = dotted(data, "request.title") or "unknown"
+    decision = dotted(data, "decision.current") or "unknown"
+    risks = list_summary(data.get("risks"))
+    blockers = list_summary(data.get("blockers"))
+    dependencies = list_summary(data.get("dependencies"), "summary")
+    minimal = {
+        "authority": "non_authoritative_projection",
+        "canonical_source": common["canonical_source"],
+        "generated_at": common["generated_at"],
+        "evidence_as_of": common["evidence_as_of"],
+        "request": request,
+        "state": common["state"],
+        "target_date": common["target_date"],
+        "unknown_fields": common["unknown_fields"],
+        "stale_fields": common["stale_fields"],
+        "conflicting_fields": common["conflicting_fields"],
+        "decision_needed": decision,
+        "next_action": next_action,
+    }
+    return {
+        "requester": {**minimal, "owner": common["owner"], "blockers": blockers},
+        "owner": {**operational, "next_action": next_action},
+        "executive": {**executive, "decision_needed": decision, "next_action": next_action},
+        "product": {**stakeholder, "dependencies": dependencies, "next_action": next_action},
+        "engineering": {
+            **minimal,
+            "spec_id": data.get("spec_id"),
+            "technical_state": common["technical_state"],
+            "dependencies": dependencies,
+            "boundary": "Technical planning belongs to Mago; execution evidence belongs to Magia.",
+        },
+        "operations": {**operational, "release_state": common["technical_state"]["release"], "next_action": next_action},
+        "compliance": {
+            **minimal,
+            "profile": common["profile"],
+            "material_risks": risks,
+            "decision_authority": dotted(data, "ownership.decision_maker") or "unknown",
+        },
+        "risk": {**minimal, "material_risks": risks, "blockers": blockers},
+        "external_partner": {
+            **minimal,
+            "confidentiality_note": "Audit records, internal notes, and technical detail are intentionally excluded.",
+        },
+    }
+
+
 def build_views(data: dict[str, Any], source: str, generated_at: str) -> dict[str, Any]:
     generated = parse_timestamp(generated_at)
     if generated is None:
@@ -262,12 +368,56 @@ def build_views(data: dict[str, Any], source: str, generated_at: str) -> dict[st
         "completion_claim_supported": completion["validation"] == "passed"
         and completion["release"] in {"released", "closed"},
     }
+    health = evidence_health(stale, conflicts, unknown)
+    next_skill = next_responsible_skill(data, stale, conflicts)
+    next_action = next_governance_action(data, stale, conflicts)
+    lifecycle_status = {
+        **common,
+        "evidence_health": health,
+        "state_authority": {
+            "governance": "nomia",
+            "planning": "mago",
+            "execution": "magia",
+            "validation": "magia",
+            "release": "nomia with attributed technical and release evidence",
+        },
+        "blockers": blockers,
+        "pending_decision": dotted(data, "decision.current") or "unknown",
+        "handoff_status": {
+            "mago": dotted(data, "handoffs.mago.state") or "unknown",
+            "magia": dotted(data, "handoffs.magia.state") or "unknown",
+        },
+        "next_action": next_action,
+        "next_responsible_skill": next_skill,
+        "technical_certification": "not_provided_by_nomia",
+    }
+    decision_ready = {
+        **common,
+        "decision_required": dotted(data, "decision.current") or "unknown",
+        "decision_state": dotted(data, "decision.state") or "unknown",
+        "authority_required": dotted(data, "ownership.decision_maker") or "unknown",
+        "context": dotted(data, "request.context") or "unknown",
+        "business_alternatives": dotted(data, "decision.alternatives", []) or [],
+        "decision_criteria": dotted(data, "decision.criteria", []) or [],
+        "impact": dotted(data, "priority.impact") or "unknown",
+        "stakeholders": dotted(data, "ownership.stakeholders", []) or [],
+        "deadline": target,
+        "business_risks": risks,
+        "evidence": dotted(data, "decision.evidence", []) or [],
+        "consequence_of_no_decision": dotted(data, "decision.consequence_of_no_decision") or "unknown",
+        "next_action": next_action,
+        "note": "This projection organizes supplied governance evidence and does not manufacture a recommendation or technical assessment.",
+    }
+    audience_views = build_audience_views(data, common, operational, stakeholder, executive, next_action)
     audit = {**common, "record": data, "projection_rule": "deterministic-v2"}
     return {
         "one_line": one_line,
         "operational_summary": operational,
         "stakeholder_brief": stakeholder,
         "executive_summary": executive,
+        "lifecycle_status": lifecycle_status,
+        "decision_ready_brief": decision_ready,
+        "audience_views": audience_views,
         "audit_record": audit,
     }
 

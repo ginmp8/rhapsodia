@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0 - 2026-07-21
+
+- Added a compact execution-entry contract for faster safe starts while preserving ADHOC, RALPH, ADAPT, planning, and governance boundaries.
+- Added deterministic read-only repository orientation, conservative execution-wave analysis, and risk-based validation-category selection without executing repository commands or inventing results.
+- Added a non-authoritative execution and recovery projection covering task/evidence state, live/dead locks, transaction journals, blockers, and the next safe action.
+- Added progressive quickstarts for direct work, board execution, legacy adaptation, governed changes, blocked handoffs, validation, and recovery.
+- Added 20 focused tests for the new capabilities; the complete suite now contains 92 passing tests.
+- Preserved truthful evidence statuses, smallest-sufficient-change discipline, recoverable state transactions, source-of-truth authority, and Mago/Nomia ownership boundaries.
+
 ## 1.3.0 - 2026-07-21
 
 - Added explicit standard/governed risk escalation for contract, data, security, compliance, availability, financial, and multi-repository work.

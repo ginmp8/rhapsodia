@@ -2,6 +2,21 @@
 
 All notable package changes are recorded here. Versions follow semantic versioning for the distributed skill package only; cycle and spec filesystem identities never use semantic versioning.
 
+## [2.5.0] - 2026-07-21
+
+### Added
+
+- Progressive getting-started guidance that routes new users through Nomia, Mago, and Magia boundaries without creating a second lifecycle.
+- A non-authoritative planning compass renderer for package identity, artifact completeness, mutation state, mechanically observed gates, and the next safe Mago action.
+- A deterministic execution-wave renderer that rejects unknown dependencies and cycles while preserving Magia responsibility for file, contract, environment, and runtime overlap checks.
+- Clarification prioritization, brownfield discovery summaries, and a version-explicit adapter development contract.
+- `scripts/validate_planning_experience.py` as an additive integration gate for the new onboarding and projection resources.
+
+### Compatibility
+
+- Canonical identity, registry, package, traceability, profile, mutation, adapter, Nomia, and Magia authority contracts are unchanged.
+- Planning compass and execution-wave outputs are disposable external projections and never become canonical planning or runtime evidence.
+
 ## [2.4.0] - 2026-07-21
 
 ### Added

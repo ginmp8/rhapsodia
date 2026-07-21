@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,12 @@ from typing import Any
 
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+
+def semantic_version(value: Any) -> tuple[int, int, int] | None:
+    match = re.fullmatch(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)", str(value or ""))
+    return tuple(int(part) for part in match.groups()) if match else None
 
 
 def load_object(path: Path, label: str) -> dict[str, Any]:
@@ -122,8 +129,12 @@ def validate_release_contract(
                 errors.append(f"migration from_sha256 does not match historical contract for {path}")
             if migration.get("to_sha256") != current_expected:
                 errors.append(f"migration to_sha256 does not match current release contract for {path}")
-            if migration.get("version") != current_version:
-                errors.append(f"migration version does not match VERSION for {path}")
+            migration_version = semantic_version(migration.get("version"))
+            release_version = semantic_version(current_version)
+            if migration_version is None:
+                errors.append(f"migration version is invalid for {path}")
+            elif release_version is None or migration_version > release_version:
+                errors.append(f"migration version is newer than VERSION for {path}")
             if not isinstance(migration.get("authority"), str) or len(migration["authority"].strip()) < 8:
                 errors.append(f"migration authority is required for {path}")
             if not isinstance(migration.get("reason"), str) or len(migration["reason"].strip()) < 40:

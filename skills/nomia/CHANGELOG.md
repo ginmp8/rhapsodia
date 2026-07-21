@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.0 - 2026-07-21
+
+- Add guided intake and progressive product-discovery facilitation that preserves unknowns, prioritizes blocking questions, and never writes canonical governance records.
+- Add lifecycle, decision-ready, and audience-specific non-authoritative projections with explicit authority, evidence health, next action, and next responsible skill.
+- Add actionable typed-handoff diagnostics while preserving rejection, freshness, conflict, provenance, and cross-skill authority gates.
+- Fix atomic `--json-output` handling in `evaluate_governance.py` and add regression coverage for the new guided and projection flows.
+- Preserve the exact bytes of protected `agents/openai.yaml` and `assets/icon.svg`.
+
 ## 2.2.0 - 2026-07-21
 
 - Preserve the immutable historical contract while adding a separate current-release contract and an explicit protected-icon hash migration record.

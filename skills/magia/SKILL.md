@@ -62,18 +62,22 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 ## Load Order
 
 1. Classify the request as executable repository work, blocker, execution-grounded documentation, or planning/governance handoff.
-2. Load [references/canonical-paths.md](references/canonical-paths.md) and [references/common-execution.md](references/common-execution.md).
-3. Load [references/senior-engineering-discipline.md](references/senior-engineering-discipline.md) for non-trivial implementation, debugging, testing, refactor, risk, or operability. Load [references/risk-and-change-escalation.md](references/risk-and-change-escalation.md) when contracts, data, security, compliance, availability, financial outcomes, or multiple repositories/services may be affected.
+2. Load [references/canonical-paths.md](references/canonical-paths.md), [references/common-execution.md](references/common-execution.md), and [references/execution-entry.md](references/execution-entry.md) to establish the bounded start card and first safe action.
+3. Load [references/repository-orientation.md](references/repository-orientation.md) for brownfield, unfamiliar, multi-module, or validator-discovery work. Load [references/senior-engineering-discipline.md](references/senior-engineering-discipline.md) for non-trivial implementation, debugging, testing, refactor, risk, or operability. Load [references/risk-and-change-escalation.md](references/risk-and-change-escalation.md) when contracts, data, security, compliance, availability, financial outcomes, or multiple repositories/services may be affected.
 4. Load [references/complexity-reduction-execution.md](references/complexity-reduction-execution.md) for simplification, de-abstraction, behavior-preserving refactor, or Mago complexity-reduction plans.
-5. For RALPH, load [references/board-contract.md](references/board-contract.md). Load [references/planning-handoff.md](references/planning-handoff.md) and [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md) when using specs, PRDs, technical designs, roadmaps, governance records, or packages authored outside MAGIA.
+5. For RALPH, load [references/board-contract.md](references/board-contract.md). Load [references/safe-parallelism.md](references/safe-parallelism.md) only for an explicit dependency-safe batch or proposed execution wave. Load [references/planning-handoff.md](references/planning-handoff.md) and [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md) when using specs, PRDs, technical designs, roadmaps, governance records, or packages authored outside MAGIA.
 6. Load [references/developer-artifact-standards.md](references/developer-artifact-standards.md) and [references/technical-documentation.md](references/technical-documentation.md) for implementation docs, decisions, or ADRs.
 7. Load exactly one mode reference: [ADHOC](references/modes/adhoc.md) for direct work, [RALPH](references/modes/ralph.md) for board-contract execution, or [ADAPT](references/modes/adapt.md) for best-effort conversion of legacy execution records into current MAGIA-owned artifacts.
 8. Load [references/artifacts/execution-records.md](references/artifacts/execution-records.md) only when controlled execution records may change.
 9. Load [references/artifacts/execution-evidence.md](references/artifacts/execution-evidence.md) only for structured downstream evidence.
-10. Load [references/validation-and-closure.md](references/validation-and-closure.md) before finalizing runs that changed code, docs, validation evidence, task state, or execution state.
+10. Load [references/validation-selection.md](references/validation-selection.md) before selecting checks for non-trivial or governed work. Load [references/validation-and-closure.md](references/validation-and-closure.md) before finalizing runs that changed code, docs, validation evidence, task state, or execution state.
 11. Load [references/markdown-writing.md](references/markdown-writing.md) when creating or editing durable Markdown records.
 12. Load [references/package-delivery.md](references/package-delivery.md) only for validating, exporting, or packaging MAGIA itself.
-13. Use [references/resource-map.md](references/resource-map.md) as the package index. Load `scripts/` only for deterministic scaffolding, validation, state, or packaging; `assets/` only for the agent icon or MAGIA-owned templates; and `examples/` or `evals/` only for calibration and activation checks. Do not scaffold MAGO-owned planning files from MAGIA.
+13. Load [references/quickstarts.md](references/quickstarts.md) only for onboarding, mode selection, script discovery, or recovery guidance. Use [references/resource-map.md](references/resource-map.md) as the package index. Load `scripts/` only for deterministic scaffolding, inspection, validation, state, or packaging; `assets/` only for the agent icon or MAGIA-owned templates; and `examples/` or `evals/` only for calibration and activation checks. Do not scaffold MAGO-owned planning files from MAGIA.
+
+## Execution Entry Contract
+
+Before non-trivial mutation, produce the compact start card defined in [references/execution-entry.md](references/execution-entry.md): mode, risk profile, bounded scope, objective, proving check, blockers, next safe action, and handoff reason. The card is a projection from current evidence, never a source of truth or substitute for readiness, validation, execution evidence, or controlled state.
 
 ## Mode Selection
 
@@ -138,7 +142,7 @@ Stop or hand off when:
 
 Final responses include only applicable sections:
 
-1. Mode and scope.
+1. Mode, risk profile, scope, and next safe action or handoff when work is non-trivial.
 2. Changes made.
 3. Technical artifacts created/updated, including complexity-reduction evidence when simplification/refactor changed code.
 4. Validation commands/checks with pass, fail, or not-run status and reason for each skipped check.

@@ -14,6 +14,9 @@ Use `<skill-root>` for the root folder of this skill package. In this repository
 
 ## Scripts
 
+- `scripts/guide_intake.py`: inspect partial YAML/JSON intake evidence and emit non-authoritative profile, lifecycle, blocker, unknown, and next-step guidance.
+- `scripts/evaluate_governance.py`: evaluate transitions, metrics, and typed handoffs; handoff results include missing-field and remediation diagnostics without changing contract authority.
+- `scripts/project_governance_views.py`: generate canonical-source projections, lifecycle state separation, decision-ready briefs, and audience-specific views.
 - `scripts/write_artifact_scaffold.py`: create nomia artifact scaffold.
 - `scripts/validate_artifact.py`: dispatch canonical validator for one artifact.
 - `scripts/validate_ops.py`: validate `ops.yaml`.
@@ -38,6 +41,9 @@ Print clear errors/warnings. Exit non-zero on errors. Use scaffold writers and v
 ## Commands
 
 ```bash
+python <skill-root>/scripts/guide_intake.py path/to/intake.yaml --as-of 2026-07-21T12:00:00+00:00
+python <skill-root>/scripts/evaluate_governance.py --handoff path/to/handoff.yaml --as-of 2026-07-21T12:00:00+00:00 --json-output path/to/handoff-result.json
+python <skill-root>/scripts/project_governance_views.py path/to/ops.yaml --as-of 2026-07-21T12:00:00+00:00
 python <skill-root>/scripts/write_artifact_scaffold.py path/to/status.md
 python <skill-root>/scripts/validate_artifact.py path/to/status.md
 python <skill-root>/scripts/validate_ops.py path/to/ops.yaml

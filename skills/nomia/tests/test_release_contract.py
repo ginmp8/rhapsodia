@@ -65,6 +65,24 @@ class ReleaseContractTests(unittest.TestCase):
             errors = validate_release_contract(root)
             self.assertTrue(any("from_sha256" in error for error in errors))
 
+    def test_historical_protected_file_migration_remains_valid_in_later_release(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = self.copy_contract_fixture(Path(raw))
+            migration = json.loads((root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
+            self.assertEqual(migration["migrations"][0]["version"], "2.2.0")
+            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.3.0")
+            self.assertEqual(validate_release_contract(root), [])
+
+    def test_future_protected_file_migration_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = self.copy_contract_fixture(Path(raw))
+            path = root / "tests" / "protected-file-migrations.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["migrations"][0]["version"] = "9.9.9"
+            path.write_text(json.dumps(data) + "\n", encoding="utf-8")
+            errors = validate_release_contract(root)
+            self.assertTrue(any("newer than VERSION" in error for error in errors))
+
     def test_release_version_must_match_version_file(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = self.copy_contract_fixture(Path(raw))

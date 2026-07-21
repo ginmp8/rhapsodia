@@ -57,15 +57,18 @@ Nomia never invents missing sections or upgrades unknown technical state. Techni
 
 ## Deterministic Human Views
 
-Use `scripts/project_governance_views.py` with one canonical YAML source. It emits:
+Use `scripts/project_governance_views.py` with one canonical YAML source. It emits the existing views plus derived lifecycle, decision, and audience views:
 
 - `one-line`: state, owner, target, top blocker/risk, and unknown/stale marker;
 - `operational`: current facts, next governance action, blockers, dependencies, and evidence;
 - `stakeholder`: outcome, timing, impact, decision needed, and communication risks;
 - `executive`: commitment, confidence, material risk, decision, and release/closure evidence;
 - `audit`: canonical values, provenance, changes, conflicts, and generation metadata.
+- `lifecycle_status`: separate governance, planning, execution, validation, and release states with owning authority, evidence health, next governance action, and next responsible skill.
+- `decision_ready_brief`: decision needed, context, alternatives already evidenced, criteria, impact, stakeholders, deadline, risks, unknowns, non-decision consequence, and required authority; it never invents a recommendation.
+- `audience_views`: requester, owner, executive, product, engineering, operations, compliance, risk, and external-partner projections derived from the same canonical record.
 
-A projection must never state released, validated, implemented, or complete unless the corresponding attributed evidence is present and current. Unknown and stale facts are displayed, not hidden.
+A projection must never state released, validated, implemented, or complete unless the corresponding attributed evidence is present and current. Unknown and stale facts are displayed, not hidden. Audience views must filter detail rather than duplicate canonical facts; external-partner output excludes audit and technical internals. Every lifecycle projection states that governance status does not certify technical completion.
 
 ## Public Adapters
 

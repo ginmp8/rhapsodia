@@ -1,0 +1,48 @@
+<!-- Generated or filled as a discovery evidence summary. Not canonical design or runtime evidence. -->
+
+# Brownfield Discovery Summary - <frontier>
+
+- Authoritative: false
+- Evidence observed at: <ISO-8601 timestamp>
+- Repository/ref: <repository and revision>
+- Discovery frontier: <frontier>
+- Boundary confidence: <low|medium|high>
+
+## Likely Capability Boundary
+
+<bounded evidence-backed capability description>
+
+## Primary Modules and Entry Points
+
+- `<path>` - <role and evidence>
+
+## Dependencies and Existing Patterns
+
+- <dependency or pattern with source path>
+
+## Contracts and Risk Surfaces
+
+- Contracts/schemas: <observed or none>
+- Data/migrations: <observed or none>
+- Security/privacy: <observed or none>
+- Operations/observability: <observed or none>
+
+## Existing Validators
+
+- `<command or path>` - <what it can prove>
+
+## Unknowns and Conflicts
+
+- <unknown, conflict, access gap, or none>
+
+## Provisional Affected Files
+
+- `<path>` - <why likely; provisional only>
+
+## Recommended Next Step
+
+<continue discovery frontier | ready for order | blocked>
+
+## Non-Claims
+
+No implementation, runtime validation, owner, priority, final architecture, or release status is asserted by this summary.

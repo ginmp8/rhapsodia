@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from governance_contract import validate_handoff_envelope
+from nomia_utils import atomic_write_text
 from validate_ops import validate as validate_ops_file
 
 try:
@@ -117,9 +118,50 @@ def load_mapping(path: Path) -> dict[str,Any]:
     if not isinstance(data,dict): raise ValueError("input must be a mapping")
     return data
 
+def handoff_diagnostics(result: dict[str,Any]) -> dict[str,Any]:
+    """Add non-authoritative, human-actionable remediation to a contract result."""
+    reasons=[str(x) for x in result.get("reasons",[])]; missing=[]; remediation=[]
+    for reason in reasons:
+        if reason.startswith("missing "):
+            field=reason.removeprefix("missing ")
+            missing.append(field)
+            remediation.append(f"supply {field} from its authoritative source")
+        elif reason == "evidence is stale":
+            remediation.append("refresh the evidence, observed_at, and freshness window before retrying")
+        elif reason == "conflicting evidence":
+            remediation.append("reconcile the conflicting sources and preserve the unresolved conflict until authority resolves it")
+        elif "outside nomia authority" in reason:
+            remediation.append("remove technical planning or execution content and route it to Mago or Magia")
+        elif "legacy ULID" in reason:
+            remediation.append("replace the legacy identifier with the canonical date-and-feature-key identifier from Mago")
+        elif reason.startswith("invalid "):
+            remediation.append(f"correct {reason.removeprefix('invalid ')} according to the typed handoff contract")
+        elif "does not match" in reason:
+            remediation.append("align the candidate identity with the supplied feature key and provenance")
+        elif "must use" in reason:
+            remediation.append("use the authority-owned canonical identity or source required by the contract")
+    status=str(result.get("status","rejected"))
+    if status == "accepted":
+        next_action="deliver the accepted payload to the declared recipient; acceptance does not certify technical completion"
+    elif status == "draft":
+        next_action="preserve the draft and complete the stated readiness evidence before requesting acceptance"
+    elif status in {"stale","conflicting","rejected"}:
+        next_action="apply the remediation without changing authority, then re-run handoff validation"
+    else:
+        next_action="review the contract result before changing governance state"
+    enriched=dict(result)
+    enriched.update({
+        "missing_fields": sorted(set(missing)),
+        "remediation": list(dict.fromkeys(remediation)),
+        "next_action": next_action,
+        "authority_note": "Nomia validates governance transfer only; Mago owns planning and Magia owns execution evidence.",
+    })
+    return enriched
+
+
 def validate_handoff(env: dict[str,Any], as_of: datetime) -> dict[str,Any]:
-    """Validate a typed handoff envelope against canonical identity, state, freshness, and authority rules."""
-    return validate_handoff_envelope(env, as_of)
+    """Validate a typed handoff and return contract-safe diagnostics."""
+    return handoff_diagnostics(validate_handoff_envelope(env, as_of))
 
 def json_safe(v: Any) -> Any:
     if isinstance(v,(date,datetime)): return v.isoformat()

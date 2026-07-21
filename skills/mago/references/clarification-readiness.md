@@ -13,7 +13,7 @@ Use `ASSUMPTION-NNN`, `BLOCKER-NNN`, and `QUESTION-NNN` headings. Every record d
 - observable `Resolution condition`;
 - `Resolution evidence` whenever closed.
 
-Handoff fails for any open blocker and for open high/critical assumptions or questions. Lower-severity open records may continue only when visible in the handoff output and accepted by the downstream planning boundary; Mago still does not accept business or security risk.
+When several records are open, rank and batch them through [clarification prioritization](clarification-prioritization.md). Handoff fails for any open blocker and for open high/critical assumptions or questions. Lower-severity open records may continue only when visible in the handoff output and accepted by the downstream planning boundary; Mago still does not accept business or security risk.
 
 ## Validation
 

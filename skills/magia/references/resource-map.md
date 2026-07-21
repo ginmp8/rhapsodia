@@ -7,14 +7,20 @@ Use to locate MAGIA resources without loading every file.
 - `references/board-contract.md`: self-contained canonical board, registry, identity, dependency, and execution-sync contract.
 
 - `references/common-execution.md`: shared execution rules.
+- `references/execution-entry.md`: compact start card, first-safe-action rules, bounded ambiguity handling, and concise completion view.
+- `references/repository-orientation.md`: read-only brownfield orientation, repository signals, and orientation-to-execution gates.
 - `references/senior-engineering-discipline.md`: small, explicit, verifiable engineering behavior.
 - `references/risk-and-change-escalation.md`: standard/governed risk profiles, evidence precedence, contract-change controls, and closure gates.
+- `references/safe-parallelism.md`: explicit execution-wave prerequisites, conflict rules, sequential fallback, and reconciliation gates.
 - `references/complexity-reduction-execution.md`: behavior-preserving simplification, de-abstraction, refactor execution.
 - `references/planning-handoff.md`: consume Mago/nomia artifacts, including execution-handoff-plan.md, as execution inputs.
 - `references/developer-artifact-standards.md`: implementation-doc taxonomy/templates.
 - `references/technical-documentation.md`: implementation ADR and doc rules.
+- `references/validation-selection.md`: risk-based proof-category selection with explicit unavailable-check handling.
 - `references/validation-and-closure.md`: truthful validation/closure.
+- `references/execution-visibility-and-recovery.md`: non-authoritative execution-state projection and safe recovery decisions.
 - `references/markdown-writing.md`: durable Markdown quality.
+- `references/quickstarts.md`: onboarding for ADHOC, RALPH, ADAPT, validation, governed examples, blocked handoffs, and recovery.
 - `references/package-delivery.md`: package MAGIA itself.
 
 ## Mode References
@@ -46,6 +52,10 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 
 ## Scripts
 
+- `scripts/inspect_repository_context.py`: produce a deterministic read-only JSON or Markdown orientation view without executing repository commands.
+- `scripts/analyze_execution_waves.py`: conservatively classify explicit task graphs into parallel-safe or sequential waves without executing or mutating tasks.
+- `scripts/select_validation_checks.py`: map explicit change surfaces to required and recommended validation categories without running checks.
+- `scripts/summarize_execution_state.py`: produce a read-only execution and recovery projection without mutating state or running recovery.
 - `scripts/write_artifact_scaffold.py`: copy a matching MAGIA-owned template only inside a validated `--board-root` or explicit ADHOC `--allowed-root`; it must not scaffold or update MAGO-owned planning files.
 - `scripts/write_execution_log.py`: write execution logs.
 - `scripts/adapt_legacy_execution_records.py`: convert legacy notes.md/validation.md execution content into current MAGIA-owned artifacts.

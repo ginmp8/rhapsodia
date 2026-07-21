@@ -8,6 +8,18 @@ Use for `delivery-intake`, `delivery-triage`, `delivery-status`, `delivery-repla
 
 Create/refresh template-backed artifacts with local scripts; validate with `scripts/validate_artifact.py` or narrower validators. Do not copy template text manually when a script can write or validate.
 
+## Guided Intake Before Canonical Writes
+
+For an incomplete idea or demand, run `scripts/guide_intake.py <input.yaml-or-json> --as-of <timestamp>`. The result is a non-authoritative triage aid that:
+
+- selects the smallest safe profile and escalates on regulatory, financial, privacy, security, contractual, executive, cross-organization, irreversible, stale, or conflicting evidence triggers;
+- asks blocking questions before optional enrichment;
+- preserves absent owner, date, requester, stakeholder, evidence, and identity facts as unknown;
+- distinguishes supplied facts, opinions, hypotheses, and commitments;
+- states whether repository writing or a Nomia-to-Mago handoff is currently supportable.
+
+Do not copy guidance output into canonical records without source, observation time, authority, freshness, and conflict review. Product discovery may frame the problem, outcome, business process, policy constraints, affected users, success measures, non-goals, and decisions needed. Stop and hand off when the work requires architecture, stack, contracts, technical acceptance criteria, or implementation tasks.
+
 ## delivery-intake / delivery-triage
 
 Purpose: register or triage a demand into governance records.
