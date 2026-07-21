@@ -10,6 +10,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from nomia_utils import atomic_write_text, sensitive_package_reason
+
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
 REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals", "tests"]
@@ -367,6 +369,10 @@ def validate_package_hygiene(root: Path, errors: list[str]) -> None:
             continue
         if path.is_file() and path.suffix.lower() in EPHEMERAL_CACHE_SUFFIXES:
             continue
+        reason = sensitive_package_reason(path)
+        if reason:
+            errors.append(f"unsafe package path {rel}: {reason}")
+            continue
         if any(rel == name or rel.startswith(name + "/") for name in GENERATED_OR_BLOCKED_DIR_NAMES):
             errors.append(f"blocked generated path present: {rel}")
             continue
@@ -403,7 +409,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json_output:
         output_path = Path(args.json_output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(output_path, json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(f"status: {status}")
     if errors:
         for error in errors:

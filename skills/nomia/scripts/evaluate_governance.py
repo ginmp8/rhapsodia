@@ -147,7 +147,7 @@ def main() -> int:
             result={"status":"pass","warnings":warnings,"metrics":compute_metrics(data,as_of)} if not errors else {"status":"rejected","reasons":errors}
     else: print("ERROR: record, --transition, or --handoff is required",file=sys.stderr); return 2
     text=json.dumps(json_safe(result),indent=2,sort_keys=True)+"\n"
-    if args.json_output: Path(args.json_output).write_text(text,encoding="utf-8")
+    if args.json_output: atomic_write_text(Path(args.json_output), text)
     print(text,end="")
     return 0 if result.get("status") in {"pass", "accepted", "draft"} else 1
 if __name__=="__main__": sys.exit(main())

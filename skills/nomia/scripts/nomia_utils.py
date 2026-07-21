@@ -22,6 +22,49 @@ CANONICAL_SPEC_REGISTRY_TEMPLATE = f"{CANONICAL_BOARD_ROOT_TEMPLATE}registry/<sp
 BOARD_ROOT_TEMPLATE = CANONICAL_BOARD_ROOT_TEMPLATE
 SPEC_PACKAGE_TEMPLATE = CANONICAL_SPEC_PACKAGE_TEMPLATE
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
+
+SENSITIVE_FILE_NAMES = {
+    ".env",
+    ".npmrc",
+    ".pypirc",
+    "credentials.json",
+    "secrets.json",
+    "secrets.yaml",
+    "secrets.yml",
+    "id_rsa",
+    "id_ed25519",
+}
+SENSITIVE_FILE_SUFFIXES = {".key", ".pem", ".p12", ".pfx", ".jks", ".keystore"}
+PRIVATE_KEY_HEADERS = tuple(
+    f"-----BEGIN {kind}-----".encode("ascii")
+    for kind in (
+        "PRIVATE KEY",
+        "ENCRYPTED PRIVATE KEY",
+        "RSA PRIVATE KEY",
+        "EC PRIVATE KEY",
+        "OPENSSH PRIVATE KEY",
+    )
+)
+
+
+def sensitive_package_reason(path: Path) -> str | None:
+    """Return a high-confidence package-security violation for a path."""
+    name = path.name.lower()
+    if path.is_symlink():
+        return "symlink is not allowed in a skill package"
+    if name == ".env" or name.startswith(".env.") or name in SENSITIVE_FILE_NAMES:
+        return "sensitive credential or environment file is not allowed"
+    if path.suffix.lower() in SENSITIVE_FILE_SUFFIXES:
+        return "private key or credential container is not allowed"
+    if path.is_file():
+        try:
+            if path.stat().st_size <= 2_000_000:
+                sample = path.read_bytes()
+                if any(header in sample for header in PRIVATE_KEY_HEADERS):
+                    return "private key material is not allowed"
+        except OSError as exc:
+            return f"file cannot be safely inspected: {exc}"
+    return None
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$")
 YEAR_RE = re.compile(r"^\d{4}$")
 CYCLE_ID_RE = re.compile(

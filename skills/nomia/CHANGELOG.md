@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.0 - 2026-07-21
+
+- Fail closed when package input contains symlinks, environment/credential files, private-key containers, or private-key material; validate the completed archive before release.
+- Make RFC, governance-decision, structured-list, normalization, adaptation-report, and validation-report writes atomic through the shared same-directory replacement helper.
+- Add adversarial package-security and writer-interruption regression tests.
+- Reconcile the protected Nomia icon contract with the installed 2.0.1 baseline while retaining exact-byte preservation.
+- Clarify canonical schema-version-2 authoring versus schema-version-1 legacy validation/adaptation.
+
 ## 2.0.1 - 2026-07-20
 
 - Ensure all direct adapter results are JSON-safe when YAML parsing produces `date` or `datetime` values.

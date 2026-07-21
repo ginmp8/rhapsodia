@@ -83,10 +83,12 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 - Scenario and package gates: `scripts/validate_activation_scenarios.py`, `scripts/validate_governance_scenarios.py`, `scripts/validate_skill_package.py`, `scripts/validate_golden_examples.py`.
 - Identity and preservation gates: `scripts/validate_identity_contract.py`, `scripts/validate_contract_preservation.py`, and the standard-library tests under `tests/`.
 - Reproducible ledger: run `python scripts/validate_all.py --target <skill-root> --json-output <report.json>`.
-- Package builder: run `python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it performs the required gates, writes atomically, uses deterministic archive metadata, and excludes caches, generated evidence/reports, secrets, credentials, and old zips.
+- Package builder: run `python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it performs the required gates, rejects symlinks and high-confidence credential/private-key material, validates the completed archive, writes atomically, uses deterministic archive metadata, and excludes caches, generated evidence/reports, and old zips.
 - Shared helpers: `scripts/nomia_utils.py`.
 
 ## Output Contract
+
+Output format: use structured Markdown for responses and reports; emit canonical YAML or JSON only when the selected mode requires that artifact.
 
 Every response includes:
 
@@ -119,7 +121,7 @@ Repository-facing writes close only after touched artifacts pass their validator
 - Scenario edits preserve categories and pass `scripts/validate_activation_scenarios.py` or `scripts/validate_skill_package.py`; governance scenarios pass `scripts/validate_governance_scenarios.py`.
 - Structural edits pass `scripts/validate_skill_package.py`; golden-sensitive edits pass `scripts/validate_golden_examples.py`; identity/path changes pass `scripts/validate_identity_contract.py`.
 - Every readiness or package run passes `scripts/validate_all.py`, including preservation and unit-test gates.
-- `skill.zip` is produced only by a passing deterministic package run and excludes caches, bytecode, generated evidence/reports, secrets, credentials, temporary files, and old zips.
+- `skill.zip` is produced only by a passing deterministic package run; source and archive checks reject symlinks, path traversal, caches, bytecode, generated evidence/reports, secrets, credentials, private-key material, temporary files, and old zips.
 
 ## Stop Conditions
 

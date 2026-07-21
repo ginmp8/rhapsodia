@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from nomia_utils import SPEC_ID_RE
+from nomia_utils import SPEC_ID_RE, atomic_write_text
 
 try:
     import yaml  # type: ignore
@@ -229,11 +229,11 @@ def load_artifact(path: Path) -> dict[str, Any]:
 
 def write_artifact(path: Path, data: dict[str, Any]) -> None:
     if path.suffix.lower() == ".json":
-        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        atomic_write_text(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
         return
     if yaml is None:
         fail("PyYAML is required for YAML artifacts.")
-    path.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=False), encoding="utf-8")
+    atomic_write_text(path, yaml.safe_dump(data, sort_keys=False, allow_unicode=False))
 
 
 def get_parent(data: dict[str, Any], dotted_path: str) -> tuple[dict[str, Any], str]:

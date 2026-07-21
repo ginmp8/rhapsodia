@@ -5,6 +5,8 @@ import argparse, json, sys
 from collections import Counter
 from pathlib import Path
 
+from nomia_utils import atomic_write_text
+
 REQUIRED_FIELDS = {"id", "title", "prompt", "category", "expected_activation", "expected_profile", "expected_lifecycle", "expected_mode", "expected_boundary"}
 CATEGORIES = {"activation", "non_activation", "ambiguous", "edge", "adversarial", "governance"}
 PROFILES = {"quick", "standard", "governed", "not_applicable", "escalate"}
@@ -50,7 +52,7 @@ def main() -> int:
     args = p.parse_args()
     try: result = validate(Path(args.scenario_file))
     except Exception as exc: result = {"status": "fail", "errors": [str(exc)], "warnings": [], "count": 0}
-    if args.json_output: Path(args.json_output).write_text(json.dumps(result, indent=2, sort_keys=True)+"\n", encoding="utf-8")
+    if args.json_output: atomic_write_text(Path(args.json_output), json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["status"] == "pass" else 1
 

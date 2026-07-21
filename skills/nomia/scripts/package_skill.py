@@ -11,8 +11,10 @@ import sys
 import sysconfig
 import zipfile
 from dataclasses import asdict, dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
+
+from nomia_utils import PRIVATE_KEY_HEADERS, atomic_write_text, sensitive_package_reason
 
 EXCLUDED_DIR_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
 EXCLUDED_DIR_PATHS = {"docs/skill-benchmark", "reports", "generated-evidence", "evidence"}
@@ -86,9 +88,55 @@ def should_package(path: Path, root: Path) -> bool:
         return False
     if path.name in EXCLUDED_FILE_NAMES:
         return False
-    if path.suffix in EXCLUDED_SUFFIXES:
+    if path.suffix.lower() in EXCLUDED_SUFFIXES:
         return False
     return path.is_file()
+
+
+def collect_package_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for path in sorted(root.rglob("*")):
+        rel_parts = path.relative_to(root).parts
+        if any(part in EXCLUDED_DIR_NAMES for part in rel_parts):
+            continue
+        if path.is_file() and path.suffix.lower() in {".pyc", ".pyo"}:
+            continue
+        rel = path.relative_to(root).as_posix()
+        reason = sensitive_package_reason(path)
+        if reason:
+            raise ValueError(f"unsafe package path {rel}: {reason}")
+        if should_package(path, root):
+            files.append(path)
+    return files
+
+
+def validate_archive(path: Path) -> list[str]:
+    errors: list[str] = []
+    seen: set[str] = set()
+    try:
+        with zipfile.ZipFile(path) as archive:
+            for info in archive.infolist():
+                name = info.filename
+                pure = PurePosixPath(name)
+                if name in seen:
+                    errors.append(f"duplicate archive entry: {name}")
+                seen.add(name)
+                if pure.is_absolute() or ".." in pure.parts or not pure.parts or pure.parts[0] != "nomia":
+                    errors.append(f"unsafe archive entry: {name}")
+                    continue
+                mode = (info.external_attr >> 16) & 0o170000
+                if mode == 0o120000:
+                    errors.append(f"symlink archive entry is not allowed: {name}")
+                reason = sensitive_package_reason(Path(pure.name))
+                if reason:
+                    errors.append(f"unsafe archive entry {name}: {reason}")
+                if not info.is_dir() and info.file_size <= 2_000_000:
+                    content = archive.read(info)
+                    if any(header in content for header in PRIVATE_KEY_HEADERS):
+                        errors.append(f"private key material is not allowed: {name}")
+    except (OSError, zipfile.BadZipFile) as exc:
+        errors.append(f"cannot validate archive: {exc}")
+    return errors
 
 
 def zip_skill(skill_root: Path, output: Path) -> int:
@@ -101,7 +149,7 @@ def zip_skill(skill_root: Path, output: Path) -> int:
     else:
         raise ValueError("output zip must be outside the skill folder to avoid packaging itself")
 
-    files = [path for path in sorted(root.rglob("*")) if should_package(path, root)]
+    files = collect_package_files(root)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
     temporary.unlink(missing_ok=True)
@@ -137,7 +185,26 @@ def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
     ]
     if any(gate.returncode != 0 for gate in gates):
         return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)
-    count = zip_skill(root, output)
+    try:
+        count = zip_skill(root, output)
+    except Exception as exc:
+        gates.append(GateResult("package-content", ["internal", "collect-package-files"], 1, "", str(exc)))
+        output.unlink(missing_ok=True)
+        return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)
+
+    archive_errors = validate_archive(output)
+    gates.append(
+        GateResult(
+            "archive-content",
+            ["internal", "validate-archive", str(output.resolve())],
+            1 if archive_errors else 0,
+            "archive content is safe" if not archive_errors else "",
+            "\n".join(archive_errors),
+        )
+    )
+    if archive_errors:
+        output.unlink(missing_ok=True)
+        return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)
     return PackageResult(str(root), str(output.resolve()), "pass", gates, count)
 
 
@@ -167,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json_output:
         output = Path(args.json_output)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(output, json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
     print(f"status: {result.status}")
     print(f"target: {result.target}")

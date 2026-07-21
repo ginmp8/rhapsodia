@@ -16,7 +16,7 @@ from typing import Any
 import yaml  # type: ignore
 
 from governance_contract import GOVERNANCE_STATES, LIFECYCLE_VALUES, PROFILE_VALUES
-from nomia_utils import is_legacy_spec_id, load_yaml_mapping, validate_spec_id_format
+from nomia_utils import atomic_write_text, is_legacy_spec_id, load_yaml_mapping, validate_spec_id_format
 from validate_ops import validate
 from write_ops_scaffold import render
 
@@ -206,7 +206,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.report:
         report_path = Path(args.report).resolve()
         report_path.parent.mkdir(parents=True, exist_ok=True)
-        report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(report_path, json.dumps(report, indent=2, sort_keys=True) + "\n")
 
     action = "validated dry-run" if args.dry_run else "adapted"
     print(f"OK: {action} {source} -> {output}")

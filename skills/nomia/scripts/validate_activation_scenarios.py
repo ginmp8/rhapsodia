@@ -11,6 +11,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from nomia_utils import atomic_write_text
+
 REQUIRED_CATEGORIES = [
     "should_activate",
     "should_not_activate",
@@ -172,7 +174,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json_output:
         output = Path(args.json_output)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(output, json.dumps(result, indent=2, sort_keys=True) + "\n")
 
     print(f"status: {result['status']}")
     print(f"scenario_count: {result.get('scenario_count', 0)}")

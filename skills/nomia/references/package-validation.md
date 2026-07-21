@@ -31,6 +31,8 @@ Do not share or install a zip from a failed gate.
 
 `package_skill.py` excludes `.git`, caches and bytecode as reproducible ephemeral exclusions, plus temp/system files, generated evidence/report folders, and nested `.zip` files. Package/golden runners set `PYTHONPATH` to local `scripts/` plus interpreter package paths so validators can run under `python -S` without writing bytecode.
 
+Packaging fails closed when the source tree contains a symlink, `.env` variant, known credential file, private-key/container suffix (`.key`, `.pem`, `.p12`, `.pfx`, `.jks`, `.keystore`), or recognized private-key header. The completed archive is reopened and checked for one `nomia/` root, duplicate or traversal entries, symlink metadata, blocked names/suffixes, and private-key material. A failed content or archive gate deletes the candidate ZIP.
+
 The archive must be named exactly `skill.zip` and contain one top-level `nomia/` directory. `assets/icon.svg` and `agents/openai.yaml` are protected byte-for-byte: packaging, identity changes, metadata updates, and formatting tools must not alter, normalize, reserialize, or regenerate either file. Validate SHA-256 for both before and after mutation and again after ZIP extraction.
 
 ## Readiness Rule
@@ -40,4 +42,4 @@ Ready only when all gates pass, `skill.zip` contains `nomia/SKILL.md`, no non-te
 
 ## Release Discipline
 
-`VERSION` identifies the package contract version, `CHANGELOG.md` records material behavior and compatibility changes, and `requirements.txt` pins the YAML runtime dependency used by validators. Package creation is atomic: a failed archive build cannot replace a previously valid `skill.zip`. Repository-facing writers and the governance adapter use same-directory temporary files and atomic replacement to avoid partial artifacts.
+`VERSION` identifies the package contract version, `CHANGELOG.md` records material behavior and compatibility changes, and `requirements.txt` pins the YAML runtime dependency used by validators. Package creation is atomic: a failed archive build cannot replace a previously valid `skill.zip`. Repository-facing writers, normalizers, adaptation reports, validator reports, and the governance adapter use same-directory temporary files and atomic replacement to avoid partial artifacts. Interruption tests must prove that a failed replace leaves the original bytes unchanged and removes temporary files.

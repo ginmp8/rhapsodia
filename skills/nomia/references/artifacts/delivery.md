@@ -4,9 +4,15 @@ nomia delivery artifacts communicate human delivery governance, not Mago executi
 
 Placement: spec-scoped `ops.yaml`, `status.md`, `stakeholder-brief.md`, `replanning.md` live under `BOARD_ROOT/specs/<spec_id>/`. Board-scoped `portfolio.yaml` and `portfolio.md` live directly under `BOARD_ROOT`.
 
+## Canonical version policy
+
+Create every new repository-facing `ops.yaml` as `schema_version: 2` and validate it with `scripts/validate_ops.py --require-canonical`. Schema version 1 remains read-only legacy input for validation or `governance-adapt`; it must not be used for a new canonical record or canonical projection. The retained v1 field reference below documents compatibility and extraction behavior, not the preferred authoring shape.
+
 ## ops.yaml
 
-Structured source of truth for one spec's delivery metadata.
+### Legacy field reference (`schema_version: 1`)
+
+Legacy structured delivery metadata retained for validation and controlled adaptation.
 
 Required top-level keys: `schema_version`, `spec_id`, `request`, `ownership`, `planning`, `priority`, `status`, `blockers`, `replanning`, `tags`, `links`.
 
@@ -74,7 +80,7 @@ Required sections: `# Portfolio`, `## Summary`, `## Items`, `## Blocked`, `## Ov
 
 Rules: derive summary from `portfolio.yaml`, `ops.yaml`, and evidence; do not introduce canonical metadata that belongs in `ops.yaml` or `portfolio.yaml`; unknown placeholders warn until intentionally retained.
 
-### Canonical governed record (`schema_version: 2`)
+## Canonical governed record (`schema_version: 2`)
 
 New repository-facing `ops.yaml` files use `schema_version: 2`. In addition to the retained delivery fields above, they require `governance`, `technical_state`, `release`, `dependencies`, `decision`, `handoffs`, `provenance`, and `timestamps`. Select `governance.profile`, `governance.lifecycle`, and `governance.status` before writing. `status.state` mirrors `governance.status`; it is not an independent source of truth.
 

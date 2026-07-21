@@ -12,6 +12,8 @@ import sys
 sys.dont_write_bytecode = True
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from nomia_utils import atomic_write_text
 from typing import Any, Callable
 
 
@@ -201,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json_output:
         output = Path(args.json_output)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(output, json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
     print(f"status: {result.status}")
     print(f"target: {result.target}")
