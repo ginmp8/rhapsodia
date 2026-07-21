@@ -11,18 +11,22 @@ python -m pip install -r requirements.txt
 python -B scripts/validate_runtime_dependencies.py .
 ```
 
-Validate an extracted package before use:
+Validate and build a distribution from outside the skill folder:
+
+```bash
+python -B scripts/validate_distribution.py \
+  --target . \
+  --output-dir <external-output>/distribution \
+  --report <external-output>/distribution-validation.json \
+  --jobs 1
+```
+
+For installation-only verification of an extracted package:
 
 ```bash
 python -B scripts/validate_runtime_dependencies.py .
 python -B scripts/validate_release_metadata.py .
 python -B scripts/validate_skill_package.py .
-```
-
-Build the archive only from a validated folder:
-
-```bash
-python -B scripts/package_skill.py --target . --output <external-output>/skill.zip --validate
 ```
 
 The output directory must be outside the skill root. Reports, caches, credentials, generated evidence, transaction workspaces, and old archives are excluded.

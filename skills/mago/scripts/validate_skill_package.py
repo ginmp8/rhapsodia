@@ -69,13 +69,16 @@ REQUIRED_FILES = (
     "assets/templates/manifest.yaml.template",
     "assets/templates/tasks.md.template",
     "examples/activation-scenarios.json",
-    "evals/sdd-evidence-scenarios.json",
+    "evidence/sdd-evidence-scenarios.json",
+    "evidence/lifecycle-contract-scenarios.json",
     "scripts/run_sdd_evidence_harness.py",
+    "scripts/validate_distribution.py",
     "scripts/run_test_suite.py",
     "scripts/merge_test_reports.py",
     "scripts/merge_evidence_reports.py",
     "tests/test_concurrency_model.py",
     "tests/test_package_validation.py",
+    "tests/test_distribution_validation_v3.py",
 )
 MODE_REFERENCES = (
     "adapt",
@@ -98,7 +101,7 @@ PLACEHOLDER_PATTERNS = (
     re.compile(r"\b" + "TO" + "DO" + r"\s*:", re.IGNORECASE),
     re.compile("FIX" + "ME", re.IGNORECASE),
     re.compile("replace" + " with actual", re.IGNORECASE),
-    re.compile(r"this is a placeholder", re.IGNORECASE),
+    re.compile("this is a " + "placeholder", re.IGNORECASE),
 )
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 INLINE_PATH_RE = re.compile(r"`([^`]+\.(?:md|py|sh|yaml|yml|json|template|txt))`")

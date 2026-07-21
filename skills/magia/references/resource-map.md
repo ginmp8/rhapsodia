@@ -8,6 +8,7 @@ Use to locate MAGIA resources without loading every file.
 
 - `references/common-execution.md`: shared execution rules.
 - `references/senior-engineering-discipline.md`: small, explicit, verifiable engineering behavior.
+- `references/risk-and-change-escalation.md`: standard/governed risk profiles, evidence precedence, contract-change controls, and closure gates.
 - `references/complexity-reduction-execution.md`: behavior-preserving simplification, de-abstraction, refactor execution.
 - `references/planning-handoff.md`: consume Mago/nomia artifacts, including execution-handoff-plan.md, as execution inputs.
 - `references/developer-artifact-standards.md`: implementation-doc taxonomy/templates.
@@ -26,6 +27,16 @@ Use to locate MAGIA resources without loading every file.
 
 - `references/artifacts/execution-records.md`: controlled state sync.
 - `references/artifacts/execution-evidence.md`: structured downstream evidence.
+
+## Agent Metadata and Assets
+
+- `agents/openai.yaml`: ChatGPT/Codex/API/Atlas metadata and activation defaults.
+- `assets/icon.svg`: icon consumed by `agents/openai.yaml`; it is an asset, not reasoning context.
+
+## Examples and Evaluations
+
+- `examples/activation-scenarios.json`: human-readable calibration cases.
+- `evals/activation-scenarios.json`: canonical planned activation, non-activation, ambiguous, edge, regression, and adversarial coverage. Metrics remain unmeasured until prompt outputs and evaluator decisions are captured.
 
 ## Templates
 

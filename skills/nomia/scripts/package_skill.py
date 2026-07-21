@@ -4,10 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
 import sys
+
+# Keep validation and packaging read-only with respect to the source tree.
+sys.dont_write_bytecode = True
 import sysconfig
 import zipfile
 from dataclasses import asdict, dataclass
@@ -139,6 +143,53 @@ def validate_archive(path: Path) -> list[str]:
     return errors
 
 
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def validate_reproducible_archive(path: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        with zipfile.ZipFile(path) as archive:
+            names = [info.filename for info in archive.infolist()]
+            if names != sorted(names):
+                errors.append("archive entries are not sorted deterministically")
+            for info in archive.infolist():
+                if info.date_time != ZIP_TIMESTAMP:
+                    errors.append(f"archive timestamp is not deterministic: {info.filename}")
+                mode = (info.external_attr >> 16) & 0o777
+                if not info.is_dir() and mode != 0o644:
+                    errors.append(f"archive mode is not 0644: {info.filename}")
+    except (OSError, zipfile.BadZipFile) as exc:
+        errors.append(f"cannot validate reproducible archive metadata: {exc}")
+    return errors
+
+
+def build_release_attestation(result: PackageResult) -> dict[str, Any]:
+    root = Path(result.target)
+    output = Path(result.output)
+    version = (root / "VERSION").read_text(encoding="utf-8").strip() if (root / "VERSION").is_file() else None
+    contract_path = root / "tests" / "current-release-contract.json"
+    contract = json.loads(contract_path.read_text(encoding="utf-8")) if contract_path.is_file() else {}
+    protected = {}
+    for rel in sorted((contract.get("protected_files") or {})):
+        path = root / rel
+        if path.is_file():
+            protected[rel] = sha256_file(path)
+    return {
+        "skill": "nomia",
+        "version": version,
+        "package_root": "nomia",
+        "archive_sha256": sha256_file(output) if output.is_file() else None,
+        "archive_size_bytes": output.stat().st_size if output.is_file() else None,
+        "packaged_files": result.packaged_files,
+        "protected_files": protected,
+        "original_contract_sha256": sha256_file(root / "tests" / "original-contract.json") if (root / "tests" / "original-contract.json").is_file() else None,
+        "deterministic_zip_timestamp": list(ZIP_TIMESTAMP),
+        "behavioral_activation_measured": False,
+    }
+
 def zip_skill(skill_root: Path, output: Path) -> int:
     root = skill_root.resolve()
     destination = output.resolve()
@@ -176,7 +227,10 @@ def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
         run_gate("governance-scenarios", command(root, "validate_governance_scenarios.py", str(root / "evals" / "governance-scenarios.json")), env),
         run_gate("golden-examples", command(root, "validate_golden_examples.py", "--skill-root", str(root)), env),
         run_gate("identity-contract", command(root, "validate_identity_contract.py", "--target", str(root)), env),
+        run_gate("release-contract", command(root, "validate_release_contract.py", "--target", str(root)), env),
         run_gate("contract-preservation", command(root, "validate_contract_preservation.py", "--target", str(root)), env),
+        run_gate("documentation-links", command(root, "validate_documentation.py", "--target", str(root)), env),
+        run_gate("assurance-contract", command(root, "validate_assurance_contract.py", "--target", str(root)), env),
         run_gate(
             "unit-tests",
             [sys.executable, "-S", "-m", "unittest", "discover", "-s", str(root / "tests"), "-p", "test_*.py"],
@@ -202,20 +256,33 @@ def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
             "\n".join(archive_errors),
         )
     )
-    if archive_errors:
+    reproducibility_errors = validate_reproducible_archive(output)
+    gates.append(
+        GateResult(
+            "archive-reproducibility",
+            ["internal", "validate-reproducible-archive", str(output.resolve())],
+            1 if reproducibility_errors else 0,
+            "archive metadata is deterministic" if not reproducibility_errors else "",
+            "\n".join(reproducibility_errors),
+        )
+    )
+    if archive_errors or reproducibility_errors:
         output.unlink(missing_ok=True)
         return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)
     return PackageResult(str(root), str(output.resolve()), "pass", gates, count)
 
 
 def to_jsonable(result: PackageResult) -> dict[str, Any]:
-    return {
+    payload = {
         "target": result.target,
         "output": result.output,
         "status": result.status,
         "packaged_files": result.packaged_files,
         "gates": [asdict(gate) | {"status": gate.status} for gate in result.gates],
     }
+    if result.status == "pass":
+        payload["release_attestation"] = build_release_attestation(result)
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:

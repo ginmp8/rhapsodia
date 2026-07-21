@@ -10,6 +10,19 @@ Load only to validate, export, or package MAGIA itself.
 - Exclude `.git`, caches, benchmark reports, test result folders, test-results.json, nested zips, temp outputs, secrets, credentials, private keys, tokens, and local env files.
 - Remove stale generated noise when practical. `scripts/package_policy.py` is the single inclusion/exclusion contract: folder validation scans every package-eligible file and the packager archives that same candidate set, so known generated caches may remain after tests without entering or blocking the archive. Unknown or eligible binary/undecodable content still fails closed.
 
+## Release and Compatibility Discipline
+
+Treat a packaged MAGIA update as a versioned contract change, not only an archive operation.
+
+1. Classify the release impact before changing `VERSION`: `patch` for compatible corrections, `minor` for compatible capabilities or resources, and `major` for intentional incompatible contract changes. Do not infer compatibility from file count alone.
+2. Update `CHANGELOG.md` with the exact version/date, accepted hypotheses or repairs, compatibility impact, validation evidence, and any known migration or rollback requirement. Do not list rejected or unexecuted work as shipped.
+3. For changes to activation, authority, modes, artifact ownership, CLI behavior, schemas, package shape, or execution-state semantics, record affected consumers and whether behavior is preserved, added, modified, or removed.
+4. Require explicit migration/rollout and rollback/recovery evidence for incompatible or governed changes. A package must not be labeled ready when those gates are missing or failed.
+5. Keep baseline hashes, optimization reports, test output, and prior archives outside the skill folder. Retain enough external evidence to reproduce the package decision without shipping generated reports inside `skill.zip`.
+6. Validate the final folder, build the archive once from that validated state, validate the archive, and record its SHA-256. Any source change after packaging invalidates the readiness evidence and requires rebuilding.
+
+A version bump, changelog entry, or successful zip command is not evidence of behavioral compatibility by itself.
+
 ## Standard Commands
 
 ```text

@@ -20,10 +20,11 @@ Default validator: `scripts/validate_artifact.py`; it dispatches by path/name. U
 - `scripts/validate_evidence_contract.py`: evidence/traceability checks for repository truth, execution state, validation state, dependency state, or source-of-truth paths.
 - `scripts/validate_planning_execution_handoff.py`: task/handoff language and planning-to-execution boundary.
 - `scripts/validate_skill_package.py`: MAGO package integrity before packaging; also gates activation metrics, concurrency tests, generated-view contract, evidence controls, governed quality, security v2, executable adapter round trips, release metadata, and the full test suite.
-- `scripts/run_sdd_evidence_harness.py`: isolated parallel, machine-readable execution record for deterministic quality, security, recovery, adapter, release, and activation scenarios. Its report records jobs and duration and explicitly excludes live LLM claims.
-- `scripts/run_test_suite.py`: isolated unittest-file runner with bounded shards, per-file timeouts, suite hashes, exact test counts, and machine-readable failure evidence.
+- `scripts/run_sdd_evidence_harness.py`: isolated, bounded, machine-readable execution for deterministic quality, security, recovery, adapter, release, activation, and lifecycle scenarios. It defaults to reliable sequential execution, persists progress atomically, enforces per-scenario and whole-run deadlines, terminates process groups on interruption, and explicitly excludes live LLM claims.
+- `scripts/run_test_suite.py`: isolated unittest-file runner with bounded shards, per-file and whole-suite deadlines, atomic checkpoints, signal-aware child cleanup, suite hashes, exact test counts, and machine-readable partial failure evidence.
 - `scripts/merge_test_reports.py`: merges shard reports only when hashes match the current complete test suite, every test file appears exactly once, and all results pass.
 - `scripts/validate_release_metadata.py`: version, changelog, compatibility, product declaration, installation, upgrade, rollback, and support-boundary checks.
+- `scripts/validate_distribution.py`: one external gate for dependencies, release, activation, complete tests, core and lifecycle evidence, package validation, archive integrity, byte-equivalent extraction, and extracted-package revalidation.
 - `scripts/package_skill.py`: build `skill.zip` after folder validation and validate the produced archive.
 
 ## Validation Gates
@@ -36,22 +37,25 @@ Render with `scripts/render_registry_views.py <board_root> --output <external-di
 
 ## Package-Level Hardening Gates
 
-Before distributing MAGO:
+For a complete distribution check, use one external command:
 
-1. Run static hardening audit if available.
-2. Run `scripts/validate_activation_scenarios.py` against the skill root with `examples/activation-scenarios.json` as deterministic oracle.
-3. Run the skill-harness validator so `evals/activation-scenarios.json` stays schema-valid planned prompt-review coverage.
-4. Run `scripts/run_sdd_evidence_harness.py --target <skill-root> --output <external-report>.json`; require every deterministic scenario to pass and preserve the live-LLM limitation.
-5. Run `scripts/validate_release_metadata.py <skill-root>`.
-6. Run `scripts/validate_skill_package.py` against the skill root; it must compose activation coverage, applicable goldens, semantic contracts, script compilation, and the full test suite.
-7. Run `scripts/validate_planning_execution_handoff.py` against the skill root.
-8. Run `scripts/validate_generated_view_contract.py` against the skill root.
-9. Run `scripts/validate_boundary.py` from the skill root.
-10. Run or smoke-test `scripts/validate_evidence_contract.py` against a representative local package fixture when evidence controls changed.
-11. Run the complete isolated unit suite with cache creation disabled. Large suites may be split with `run_test_suite.py --include ...`; merge every shard through `merge_test_reports.py`, then pass the hash-bound report to `validate_skill_package.py --test-report <merged-report>` and include positive/negative package, task-DAG, profile, triggered-artifact, golden, and mutation-state cases.
-12. Compile/smoke-test Python scripts without creating bytecode caches inside the skill.
-13. Run `python3 -B scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate`.
-14. Verify the archive has exactly one top-level `mago/` directory containing `SKILL.md`, excludes transient reports/caches, and passes folder/archive/extracted validation.
+```bash
+python -B scripts/validate_distribution.py \
+  --target <skill-root> \
+  --output-dir <external-output>/distribution \
+  --report <external-output>/distribution-validation.json \
+  --jobs 1
+```
+
+The command stops on the first failed gate and preserves an atomic JSON checkpoint. A passing report proves: declared runtime dependencies import; release and activation metadata validate; every current unittest file is represented by a hash-bound passing report; every core and lifecycle evidence scenario passes; package validation consumes the current test digest; the archive has one safe top-level `mago/` tree; extracted bytes match the validated source tree; and the extracted package passes dependency, release, and package validation again. It does not measure live model routing, prose quality, product runtime behavior, or business acceptance.
+
+Individual validators remain available for diagnosis and sharding:
+
+1. Run `scripts/validate_activation_scenarios.py` for the frozen static routing oracle.
+2. Run `scripts/run_test_suite.py` and merge complete shards with `scripts/merge_test_reports.py`.
+3. Run `scripts/run_sdd_evidence_harness.py` for `evidence/sdd-evidence-scenarios.json` and `evidence/lifecycle-contract-scenarios.json`; merge shards with `scripts/merge_evidence_reports.py`.
+4. Pass the current merged test report to `scripts/validate_skill_package.py --test-report <report>`.
+5. Build and validate `skill.zip` only after those gates pass.
 
 ## Packaging Exclusions
 

@@ -8,6 +8,9 @@ import json
 import os
 import subprocess
 import sys
+
+# Keep validation and packaging read-only with respect to the source tree.
+sys.dont_write_bytecode = True
 import sysconfig
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -62,17 +65,61 @@ def validate(root: Path) -> dict[str, Any]:
         ("governance-scenarios", script(root, "validate_governance_scenarios.py", str(root / "evals" / "governance-scenarios.json"))),
         ("golden-examples", script(root, "validate_golden_examples.py", "--skill-root", str(root))),
         ("identity-contract", script(root, "validate_identity_contract.py", "--target", str(root))),
+        ("release-contract", script(root, "validate_release_contract.py", "--target", str(root))),
         ("contract-preservation", script(root, "validate_contract_preservation.py", "--target", str(root))),
+        ("documentation-links", script(root, "validate_documentation.py", "--target", str(root))),
+        ("assurance-contract", script(root, "validate_assurance_contract.py", "--target", str(root))),
         ("unit-tests", [sys.executable, "-S", "-m", "unittest", "discover", "-s", str(root / "tests"), "-p", "test_*.py"]),
     ]
     gates = [run(name, command, env) for name, command in commands]
+    assurance = summarize_assurance(root, gates)
     return {
         "target": str(root),
-        "status": "pass" if all(gate.returncode == 0 for gate in gates) else "fail",
+        "status": "pass" if all(gate.returncode == 0 for gate in gates) and assurance["status"] == "pass" else "fail",
         "gate_count": len(gates),
         "gates": [asdict(gate) | {"status": gate.status} for gate in gates],
+        "assurance": assurance,
     }
 
+
+
+def summarize_assurance(root: Path, gates: list[Gate]) -> dict[str, Any]:
+    contract_path = root / "references" / "assurance-contract.json"
+    try:
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return {"status": "fail", "error": str(exc), "claims": []}
+    gate_status = {gate.name: gate.status for gate in gates}
+    claims: list[dict[str, Any]] = []
+    supported = True
+    for claim in contract.get("claims", []):
+        evidence_status = claim.get("evidence_status")
+        ledger_gates = claim.get("ledger_gates", [])
+        mapped = {name: gate_status.get(name, "not-run") for name in ledger_gates}
+        if evidence_status == "planned":
+            result = "planned"
+        elif ledger_gates and all(status == "pass" for status in mapped.values()):
+            result = "supported"
+        elif evidence_status == "observed" and not ledger_gates:
+            result = "observed"
+        else:
+            result = "unsupported"
+            supported = False
+        claims.append({
+            "id": claim.get("id"),
+            "evidence_status": evidence_status,
+            "result": result,
+            "ledger_gates": mapped,
+            "limitations": claim.get("limitations", []),
+        })
+    return {
+        "status": "pass" if supported else "fail",
+        "claim_count": len(claims),
+        "supported_claims": sum(item["result"] in {"supported", "observed"} for item in claims),
+        "planned_claims": sum(item["result"] == "planned" for item in claims),
+        "behavioral_activation_measured": False,
+        "claims": claims,
+    }
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run every required Nomia validation gate.")

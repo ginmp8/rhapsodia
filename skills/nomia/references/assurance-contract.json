@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "skill": "nomia",
+  "claims": [
+    {
+      "id": "A01",
+      "statement": "Nomia owns product and delivery governance artifacts and does not claim technical planning, implementation, or validation authority.",
+      "evidence_status": "observed",
+      "critical_gates": ["G6"],
+      "artifacts": ["SKILL.md", "references/contracts.md"],
+      "validators": ["scripts/validate_skill_package.py", "scripts/validate_contracts.py"],
+      "ledger_gates": ["package-structure"],
+      "limitations": []
+    },
+    {
+      "id": "A02",
+      "statement": "Canonical cycle and spec identities are externally sourced, immutable, provenance-bearing, and never minted by Nomia.",
+      "evidence_status": "measured",
+      "critical_gates": ["G6", "G7"],
+      "artifacts": ["references/canonical-paths.md", "tests/test_identity_model.py"],
+      "validators": ["scripts/validate_identity_contract.py"],
+      "ledger_gates": ["identity-contract", "unit-tests"],
+      "limitations": []
+    },
+    {
+      "id": "A03",
+      "statement": "Unknown, stale, conflicting, or unauthoritative volatile facts are preserved rather than invented.",
+      "evidence_status": "measured",
+      "critical_gates": ["G1", "G2"],
+      "artifacts": ["references/common-governance.md", "examples/golden/01-delivery-intake-github-issue/ops.yaml"],
+      "validators": ["scripts/validate_ops.py", "scripts/validate_golden_examples.py"],
+      "ledger_gates": ["golden-examples", "unit-tests"],
+      "limitations": []
+    },
+    {
+      "id": "A04",
+      "statement": "Governance, planning, execution, validation, and release states remain separate and require their owning evidence.",
+      "evidence_status": "measured",
+      "critical_gates": ["G2", "G3", "G6"],
+      "artifacts": ["references/state-risk-and-handoffs.md", "tests/test_ops_schema_v2.py"],
+      "validators": ["scripts/governance_contract.py", "scripts/validate_ops.py"],
+      "ledger_gates": ["unit-tests"],
+      "limitations": []
+    },
+    {
+      "id": "A05",
+      "statement": "Typed handoffs reject malformed identities, stale or conflicting evidence, unsupported authority, and technical content outside Nomia ownership.",
+      "evidence_status": "measured",
+      "critical_gates": ["G3", "G6"],
+      "artifacts": ["references/state-risk-and-handoffs.md", "tests/test_governance_contract_hardening.py"],
+      "validators": ["scripts/evaluate_governance.py", "scripts/validate_contracts.py"],
+      "ledger_gates": ["governance-scenarios", "unit-tests"],
+      "limitations": []
+    },
+    {
+      "id": "A06",
+      "statement": "Human reports are non-authoritative projections from canonical facts and expose source, generation time, evidence time, unknowns, staleness, and conflicts.",
+      "evidence_status": "measured",
+      "critical_gates": ["G1", "G3"],
+      "artifacts": ["references/canonical-governance-and-projections.md", "tests/test_projection_metadata.py"],
+      "validators": ["scripts/project_governance_views.py", "scripts/validate_projection_metadata.py"],
+      "ledger_gates": ["golden-examples", "unit-tests"],
+      "limitations": []
+    },
+    {
+      "id": "A07",
+      "statement": "Historical protected-file hashes remain immutable evidence; current protected bytes require a versioned release contract and explicit migration record.",
+      "evidence_status": "measured",
+      "critical_gates": ["G1", "G7"],
+      "artifacts": ["tests/original-contract.json", "tests/current-release-contract.json", "tests/protected-file-migrations.json"],
+      "validators": ["scripts/validate_release_contract.py", "scripts/validate_contract_preservation.py"],
+      "ledger_gates": ["release-contract", "contract-preservation", "unit-tests"],
+      "limitations": ["Historical icon bytes are unavailable; the historical SHA-256 remains preserved in the immutable original contract and migration record."]
+    },
+    {
+      "id": "A08",
+      "statement": "Local Markdown links are resolved relative to their source, normalized, constrained to the skill root, and checked for existence.",
+      "evidence_status": "measured",
+      "critical_gates": ["G1", "G3"],
+      "artifacts": ["tests/test_documentation_validation.py"],
+      "validators": ["scripts/validate_documentation.py"],
+      "ledger_gates": ["documentation-links", "unit-tests"],
+      "limitations": ["Inline code spans are not interpreted as hyperlinks."]
+    },
+    {
+      "id": "A09",
+      "statement": "Packaging fails closed on secrets, credential files, private-key material, symlinks, traversal, duplicate entries, caches, generated evidence, and nested archives.",
+      "evidence_status": "measured",
+      "critical_gates": ["G5", "G7"],
+      "artifacts": ["tests/test_package_security.py", "references/package-validation.md"],
+      "validators": ["scripts/package_skill.py", "scripts/validate_skill_package.py"],
+      "ledger_gates": ["package-structure", "unit-tests"],
+      "limitations": ["Dependency vulnerability status requires an approved current scanner and is not claimed by this package."]
+    },
+    {
+      "id": "A10",
+      "statement": "Repository-facing writers and package creation use atomic replacement and preserve original bytes on interrupted replacement.",
+      "evidence_status": "measured",
+      "critical_gates": ["G8"],
+      "artifacts": ["tests/test_atomic_writes.py", "tests/test_writer_atomicity.py"],
+      "validators": ["scripts/nomia_utils.py", "scripts/package_skill.py"],
+      "ledger_gates": ["unit-tests"],
+      "limitations": []
+    },
+    {
+      "id": "A11",
+      "statement": "Activation and governance scenario files have deterministic structural coverage across positive, negative, ambiguous, edge, regression, and adversarial categories.",
+      "evidence_status": "measured",
+      "critical_gates": ["G2", "G4"],
+      "artifacts": ["examples/activation-scenarios.json", "evals/activation-boundary-scenarios.json", "evals/governance-scenarios.json"],
+      "validators": ["scripts/validate_activation_scenarios.py", "scripts/validate_governance_scenarios.py"],
+      "ledger_gates": ["activation-scenarios", "governance-scenarios"],
+      "limitations": ["This is structural scenario evidence, not live model activation precision, recall, or robustness."]
+    },
+    {
+      "id": "A12",
+      "statement": "Live model activation precision, recall, output conformance, and adversarial robustness require an independent executed prompt harness.",
+      "evidence_status": "planned",
+      "critical_gates": ["G4"],
+      "artifacts": ["evals/booster-activation-scenarios.json"],
+      "validators": [],
+      "ledger_gates": [],
+      "limitations": ["No independent live model runner is available in the current environment; no behavioral metric is claimed."]
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import hashlib
 import os
 import re
@@ -280,3 +282,12 @@ def strip_quotes(value: str | None) -> str | None:
     if text[0] == text[-1] and text[0] in {'"', "'"}:
         return text[1:-1]
     return text
+
+
+def _import_only_main() -> int:
+    print("mago_utils.py is an import-only helper; use the documented Mago CLI scripts.", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(_import_only_main())

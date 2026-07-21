@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import os
 import tempfile
+import time
 import unittest
 from pathlib import Path
 import sys
@@ -36,6 +38,44 @@ class ParallelTestRunnerV2Tests(unittest.TestCase):
             result = run_suite(root, tests, jobs=1, timeout=1)
             self.assertEqual(result["status"], "fail")
             self.assertTrue(result["results"][0]["timed_out"])
+            self.assertEqual(result["results"][0]["termination_reason"], "per-file-timeout")
+
+    def test_total_timeout_emits_partial_result_and_reaps_child(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mago-runner-total-timeout-") as tmp:
+            root = Path(tmp)
+            tests = root / "tests"
+            tests.mkdir()
+            pid_path = root / "child.pid"
+            self.make_test(
+                tests,
+                "test_slow.py",
+                "import os, pathlib, time\n"
+                f"pathlib.Path({str(pid_path)!r}).write_text(str(os.getpid()))\n"
+                "time.sleep(30)\n",
+            )
+            checkpoints: list[dict] = []
+            result = run_suite(
+                root,
+                tests,
+                jobs=1,
+                timeout=20,
+                total_timeout=2,
+                checkpoint=lambda payload: checkpoints.append(payload),
+            )
+            self.assertEqual(result["status"], "fail")
+            self.assertTrue(result["total_timed_out"])
+            self.assertEqual(result["stop_reason"], "total-timeout")
+            self.assertTrue(checkpoints)
+            self.assertIn("running", {item["status"] for item in checkpoints})
+            pid = int(pid_path.read_text(encoding="utf-8"))
+            for _ in range(20):
+                try:
+                    os.kill(pid, 0)
+                except ProcessLookupError:
+                    break
+                time.sleep(0.05)
+            else:
+                self.fail(f"timed-out child process still exists: {pid}")
 
 
 if __name__ == "__main__":

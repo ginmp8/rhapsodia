@@ -13,7 +13,7 @@ SCRIPT = ROOT / "scripts" / "merge_evidence_reports.py"
 
 class MergeEvidenceReportsV2Tests(unittest.TestCase):
     def test_incomplete_shards_are_rejected(self) -> None:
-        suite = json.loads((ROOT / "evals" / "sdd-evidence-scenarios.json").read_text())
+        suite = json.loads((ROOT / "evidence" / "sdd-evidence-scenarios.json").read_text())
         with tempfile.TemporaryDirectory(prefix="mago-evidence-merge-") as temp:
             report = Path(temp) / "part.json"
             report.write_text(json.dumps({

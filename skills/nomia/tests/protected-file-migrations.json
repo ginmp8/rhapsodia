@@ -1,0 +1,15 @@
+{
+  "migrations": [
+    {
+      "authority": "user-authorized-skill-optimization",
+      "from_sha256": "9be88f8dd4c5e658961515c71389eafd45142ffa68bcae58e8dcff57d178ed91",
+      "path": "assets/icon.svg",
+      "reason": "The installed Nomia icon is the selected current asset, while the 2.0.1 historical preservation contract retained the prior icon hash. This record preserves both hashes and makes the branding migration explicit rather than weakening exact-byte validation.",
+      "recorded_at": "2026-07-21",
+      "to_sha256": "51a6923974188748638a424aa59b42b6afad2d910f910a1d43bb13ee10f3ce26",
+      "version": "2.2.0"
+    }
+  ],
+  "schema_version": 1,
+  "skill": "nomia"
+}

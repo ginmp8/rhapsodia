@@ -20,7 +20,7 @@ def load(path: Path) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Merge deterministic evidence harness shard reports.")
     parser.add_argument("--target", required=True)
-    parser.add_argument("--suite", default="evals/sdd-evidence-scenarios.json")
+    parser.add_argument("--suite", default="evidence/sdd-evidence-scenarios.json")
     parser.add_argument("--report", action="append", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)

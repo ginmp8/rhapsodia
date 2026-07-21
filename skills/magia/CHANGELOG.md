@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 - 2026-07-21
+
+- Added explicit standard/governed risk escalation for contract, data, security, compliance, availability, financial, and multi-repository work.
+- Added evidence precedence, change classification, compatibility, migration, rollback/recovery, operations, and authority gates without changing MAGIA ownership boundaries.
+- Converted mode selection into a compact evidence-and-closure matrix and integrated all package resources through explicit progressive-loading links.
+- Added release compatibility discipline requiring truthful changelog/version decisions, final-state folder/archive validation, and SHA-256 evidence.
+- Preserved existing runtime behavior and passed the full 72-test suite plus package, boundary, instruction, planning-handoff, security, and structural gates.
+
 ## 1.2.0 - 2026-07-21
 
 - Require selected RALPH tasks to resolve to current PRD intent and a planned validation check through explicit anchors or deterministic legacy semantic linkage.

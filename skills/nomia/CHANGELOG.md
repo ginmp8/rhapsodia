@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.0 - 2026-07-21
+
+- Preserve the immutable historical contract while adding a separate current-release contract and an explicit protected-icon hash migration record.
+- Add fail-closed release, documentation, and machine-readable assurance gates with SDD G1-G8 coverage.
+- Add regression tests for missing migrations, tampered protected files, version drift, root-escaping links, unsupported assurance claims, and archive metadata drift.
+- Add deterministic archive attestation and prove repeated builds are byte-identical.
+- Keep validation and packaging read-only with respect to source bytecode caches.
+- Keep the selected `assets/icon.svg` and `agents/openai.yaml` bytes unchanged.
+
 ## 2.1.0 - 2026-07-21
 
 - Fail closed when package input contains symlinks, environment/credential files, private-key containers, or private-key material; validate the completed archive before release.

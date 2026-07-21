@@ -12,6 +12,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from validate_release_contract import load_object, migration_index, sha256_file, validate_release_contract
+
 HEADING_RE = re.compile(r"(?m)^#{1,6}\s+(.+?)\s*$")
 
 
@@ -64,18 +66,37 @@ def validate(root: Path, contract_path: Path) -> list[str]:
                 continue
             errors.append(f"original public symbol is missing from {rel}: {symbol}")
 
+    release_contract_path = root / "tests" / "current-release-contract.json"
+    migrations_path = root / "tests" / "protected-file-migrations.json"
+    release_errors = validate_release_contract(root, contract_path, release_contract_path, migrations_path)
+    errors.extend(release_errors)
+
+    release = load_object(release_contract_path, "current release contract") if release_contract_path.is_file() else {}
+    migrations = load_object(migrations_path, "protected-file migrations") if migrations_path.is_file() else {}
+    migration_by_path, _ = migration_index(migrations)
+    current_protected = dict(release.get("protected_files") or {})
+
     protected_files = dict(contract.get("protected_files") or {})
     icon = contract.get("icon") or {}
     if icon:
         protected_files.setdefault(str(icon.get("path", "")), str(icon.get("sha256", "")))
-    for rel, expected in protected_files.items():
+    for rel, historical_expected in protected_files.items():
         protected_path = root / str(rel)
         if not protected_path.is_file():
             errors.append(f"protected file is missing: {rel}")
             continue
-        actual = hashlib.sha256(protected_path.read_bytes()).hexdigest()
-        if actual != str(expected):
-            errors.append(f"protected file hash changed for {rel}: expected {expected}, got {actual}")
+        actual = sha256_file(protected_path)
+        if actual == str(historical_expected):
+            continue
+        current_expected = current_protected.get(rel)
+        migration = migration_by_path.get(rel)
+        if current_expected == actual and isinstance(migration, dict):
+            if migration.get("from_sha256") == str(historical_expected) and migration.get("to_sha256") == actual:
+                continue
+        errors.append(
+            f"protected file hash changed for {rel} without an accepted migration: "
+            f"historical {historical_expected}, current {actual}"
+        )
 
     return errors
 

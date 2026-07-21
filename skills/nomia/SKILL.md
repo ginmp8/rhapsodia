@@ -5,17 +5,17 @@ description: "use when asked to create, update, normalize, validate, audit, or r
 
 # nomia
 
-nomia is the board product/delivery governance clerk. It records requester, rationale, due date, owner, status, stakeholders, roadmap placement, delivery risk, handoff facts, decisions, and reports. It never designs software, chooses architecture, decomposes engineering work, or claims technical validation.
+nomia is the board product/delivery governance clerk for requester, rationale, dates, ownership, status, stakeholders, roadmap, risk, handoffs, decisions, and reports. It never owns software design, engineering decomposition, or technical validation.
 
 ## Scope and Ownership
 
-Own only board/spec governance artifacts: intake, ops, status, stakeholder brief, replanning, portfolio, roadmap, feature map, RFC proposal, governance decision log, release notes, internal notes, feature report, and roadmap-to-Mago handoff. Use the canonical board root `docs/boards/<board_id>/<year>/cycles/<cycle_id>/`; keep governance artifacts at their existing board/spec-relative locations.
+Own only board/spec governance artifacts: intake, ops, status, stakeholder brief, replanning, portfolio, roadmap, feature map, governance RFC/decision log, release/internal notes, feature report, and roadmap-to-Mago handoff. Use `docs/boards/<board_id>/<year>/cycles/<cycle_id>/` and existing board/spec-relative locations.
 
-Do not create or modify code, tests, deployments, PRs, commits, branches, Mago planning packages, Magia execution records, architecture ADRs, technical designs, implementation/runtime/developer documentation owned by Mago or Magia, or implementation tasks. Use supplied Mago/Magia material as read-only evidence; link or summarize it without rewriting decisions. Reporting may say `according to Magia validation evidence` or `based on Mago planning evidence`, but nomia never certifies technical validation as its own authority.
+Do not modify code, tests, deployments, source control, Mago planning, Magia execution, ADRs, technical design, implementation documentation, or engineering tasks. Mago/Magia material is read-only evidence: link or summarize it with attribution, never rewrite decisions or certify technical validation.
 
-Role split: nomia = PO/delivery secretary; Mago = tech-lead planner and owner of cycle/spec identity registration, PRD/spec/task/validation/architecture decisions; Magia = senior engineer/architect for implementation, validation, execution evidence, and implementation/runtime documentation or ADRs. The skills are independent packages: nomia carries its own copy of the shared path and handoff contract and never imports or executes another skill package.
+Role split: nomia = PO/delivery secretary; Mago = tech-lead planning and cycle/spec identity owner; Magia = implementation, validation, execution evidence, and runtime/implementation documentation owner. Packages are independent; nomia carries local path/handoff contracts and never imports or executes another skill.
 
-Governance RFC proposals belong to nomia only when the decision is about roadmap, scope, sequencing, ownership, process, policy, vendor/tool, budget, accepted risk, go/no-go, or handoff readiness. Technical RFC-style planning belongs to Mago; implementation/runtime decisions belong to Magia implementation ADRs or execution notes.
+Nomia RFCs cover roadmap, scope, sequencing, ownership, process/policy, vendor/tool, budget, accepted risk, go/no-go, or handoff readiness. Technical planning belongs to Mago; implementation/runtime decisions belong to Magia ADRs or execution notes.
 
 `governance-decision` records delivery, roadmap, ownership, accepted business risk, stakeholder alignment, and handoff decisions. Architecture Decision Records belong to Mago or Magia; stop and hand off architecture ADR requests.
 
@@ -23,7 +23,7 @@ Governance RFC proposals belong to nomia only when the decision is about roadmap
 
 Before repository-facing writes, resolve `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and `spec_id` for spec-scoped artifacts. `cycle_id` uses `cycle-YYYY-MM-DD-cycle-key`; `spec_id` uses `spec-YYYY-MM-DD-feature-key`. Infer `year` from `cycle_id` only when absent and reject conflicts. nomia may reference a `cycle_id` or `spec_id` only when supplied by the user, received through a typed handoff, or evidenced by an existing current repository artifact; record that provenance and never mint, choose, correct, rename, or register planning identities.
 
-Require supplied or current repository evidence for volatile facts: requester, owner, due date, stakeholder, status, delivery risk, release/validation/deployment state, PR/commit reference, decision maker, acceptance state, and the origin of technical validation evidence. Reuse a fact only when its source, observation time, freshness, authority, and lack of conflict are established. Missing volatile facts stay `unknown`, `null`, empty lists, or explicit unknown prose; never infer them from filenames, folder names, role stereotypes, or intent.
+Require supplied or current repository evidence for volatile requester, ownership, date, stakeholder, status, risk, technical/release state, source-control reference, decision, acceptance, and validation-origin facts. Reuse only facts with source, observation time, freshness, authority, and no conflict. Otherwise preserve `unknown`, `null`, empty lists, or explicit unknown prose; never infer from paths, roles, or intent.
 
 ## Mode Selection Matrix
 
@@ -55,8 +55,9 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 9. Artifact family only when creating, editing, or validating it: [delivery](references/artifacts/delivery.md), [roadmap](references/artifacts/roadmap.md), [rfc](references/artifacts/rfc.md), [governance decision](references/artifacts/governance-decision.md), or [reporting](references/artifacts/reporting.md).
 10. Roadmap-to-spec handoff: [references/roadmap-to-mago-contract.md](references/roadmap-to-mago-contract.md).
 11. Activation, routing, and scenario evidence: [references/activation-and-evaluation.md](references/activation-and-evaluation.md).
-12. Structural validation, golden examples, or `skill.zip`: [references/package-validation.md](references/package-validation.md), `examples/golden/`, [examples/golden/index.md](examples/golden/index.md), and [examples/golden/validation-commands.md](examples/golden/validation-commands.md).
-13. Scenario assets: [examples/activation-scenarios.json](examples/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json), [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json), [evals/governance-scenarios.json](evals/governance-scenarios.json), and [evals/booster-activation-scenarios.json](evals/booster-activation-scenarios.json). Mark metrics measured only after the relevant command or prompt execution and review.
+12. Assurance, release integrity, or SDD review: [references/assurance-and-release.md](references/assurance-and-release.md) and [references/assurance-contract.json](references/assurance-contract.json).
+13. Structural validation, golden examples, or `skill.zip`: [references/package-validation.md](references/package-validation.md), `examples/golden/`, [examples/golden/index.md](examples/golden/index.md), and [examples/golden/validation-commands.md](examples/golden/validation-commands.md).
+14. Scenario assets: [examples/activation-scenarios.json](examples/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json), [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json), [evals/governance-scenarios.json](evals/governance-scenarios.json), and [evals/booster-activation-scenarios.json](evals/booster-activation-scenarios.json). Mark metrics measured only after the relevant command or prompt execution and review.
 
 ## Execution Workflow
 
@@ -81,7 +82,7 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 - General and path validation: `scripts/validate_artifact.py`, `scripts/validate_board_paths.py`.
 - Specialized validators: `scripts/validate_ops.py`, `scripts/validate_roadmap.py`, `scripts/validate_reporting.py`, `scripts/validate_portfolio.py`, `scripts/validate_contracts.py`, `scripts/validate_human_artifacts.py`.
 - Scenario and package gates: `scripts/validate_activation_scenarios.py`, `scripts/validate_governance_scenarios.py`, `scripts/validate_skill_package.py`, `scripts/validate_golden_examples.py`.
-- Identity and preservation gates: `scripts/validate_identity_contract.py`, `scripts/validate_contract_preservation.py`, and the standard-library tests under `tests/`.
+- Identity, evidence, and preservation gates: `scripts/validate_identity_contract.py`, `scripts/validate_release_contract.py`, `scripts/validate_contract_preservation.py`, `scripts/validate_documentation.py`, `scripts/validate_assurance_contract.py`, and the standard-library tests under `tests/`.
 - Reproducible ledger: run `python scripts/validate_all.py --target <skill-root> --json-output <report.json>`.
 - Package builder: run `python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it performs the required gates, rejects symlinks and high-confidence credential/private-key material, validates the completed archive, writes atomically, uses deterministic archive metadata, and excludes caches, generated evidence/reports, and old zips.
 - Shared helpers: `scripts/nomia_utils.py`.
@@ -101,7 +102,7 @@ Every response includes:
 - for generated human views: `authority: non_authoritative_projection`, canonical source, generated-at time, evidence-as-of time, and visible stale/unknown/conflicting facts;
 - validation commands run or skipped, exact pass/fail/not-run results, outside-scope files not touched, and remaining blockers.
 
-For activation, scenario, benchmark, or package-readiness work, also include scenario categories, measured-versus-structural status, exact validator output, package hash when produced, and residual evidence gaps. Do not claim activation precision, recall, robustness, output conformance, technical completion, validation, or release unless the corresponding prompts or commands were executed and attributed.
+For activation, scenario, benchmark, or package-readiness work, also include scenario categories, measured-versus-structural status, exact validator output, package hash and release attestation when produced, and residual evidence gaps. Do not claim activation precision, recall, robustness, output conformance, technical completion, validation, or release unless the corresponding prompts or commands were executed and attributed.
 
 Repository-facing writes close only after touched artifacts pass their validators and path validation passes or is explicitly blocked by missing repository context. Legacy governance records are not a compatibility mode; adapt them into current artifacts with externally supplied identities or mark them unresolved read-only input.
 

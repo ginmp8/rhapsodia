@@ -1,0 +1,12 @@
+{
+  "original_contract_sha256": "dba0d334efec5057a316d32aecc0288f4a40400e7e03f482d803c3460035cd40",
+  "package_root": "nomia",
+  "protected_files": {
+    "agents/openai.yaml": "192d64f29d3095b05660761e23217f5e89501e092de99780cd15760fcc2d0e3b",
+    "assets/icon.svg": "51a6923974188748638a424aa59b42b6afad2d910f910a1d43bb13ee10f3ce26"
+  },
+  "schema_version": 1,
+  "skill": "nomia",
+  "source_contract": "tests/original-contract.json",
+  "version": "2.2.0"
+}

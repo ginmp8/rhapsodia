@@ -87,7 +87,7 @@ ARTIFACT_HEADINGS: dict[str, tuple[str, ...]] = {
 
 SECTION_RE = re.compile(r"^##\s+.+$", re.MULTILINE)
 TOKEN_RE = re.compile(r"<[A-Za-z0-9_|.-]+>")
-UNRESOLVED_RE = re.compile(r"(?im)(?:`?unknown`?|\bTBD\b|\bTO[D]O\b|replace with actua[l]|this is a placeholder)")
+UNRESOLVED_RE = re.compile(r"(?im)(?:`?unknown`?|\bTBD\b|\bTO[D]O\b|replace with actua[l]|this is a " + "placeholder)")
 
 
 def section_content(text: str, heading: str) -> str:

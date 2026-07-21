@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import heapq
 from dataclasses import dataclass
 from datetime import datetime
@@ -290,3 +292,12 @@ def topological_order(records: list[RegistryRecord]) -> list[RegistryRecord]:
 
 def registry_digest(records: list[RegistryRecord]) -> str:
     return canonical_yaml_digest(record.path for record in records)
+
+
+def _import_only_main() -> int:
+    print("concurrent_model.py is an import-only helper; use the documented Mago CLI scripts.", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(_import_only_main())

@@ -2,6 +2,25 @@
 
 All notable package changes are recorded here. Versions follow semantic versioning for the distributed skill package only; cycle and spec filesystem identities never use semantic versioning.
 
+## [2.4.0] - 2026-07-21
+
+### Added
+
+- Bounded aggregate test and evidence runners with sequential-safe defaults, whole-run deadlines, atomic progress checkpoints, signal-aware process-group termination, and truthful partial failure reports.
+- A separate deterministic lifecycle evidence suite covering quick, standard, governed, handoff, concurrency, recovery, security, interoperability, release, and dependency contracts without changing the frozen activation oracle.
+- `scripts/validate_distribution.py` as a single external distribution gate that composes dependencies, release metadata, activation, the complete test suite, core and lifecycle evidence, package validation, archive validation, byte-equivalent extraction, and extracted-package revalidation.
+- An explicit Markdown output contract and direct progressive-loading links for activation, roadmap intake, RFC quality, handoff, validation, and release guidance.
+
+### Changed
+
+- Deterministic mechanism scenarios moved from `evals/` to `evidence/` so activation schema tooling cannot misclassify executable evidence as prompt-routing cases; scenario bytes remain unchanged.
+- Import-only helpers now fail clearly when invoked as CLIs instead of appearing to succeed silently.
+
+### Compatibility
+
+- Canonical board, registry, package, requirement, task, validation, security, adapter, and ownership contracts are unchanged.
+- The new distribution and lifecycle gates are additive. Existing 2.3 planning packages remain readable and require no artifact migration.
+
 ## [2.3.0] - 2026-07-21
 
 ### Added

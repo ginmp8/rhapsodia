@@ -63,29 +63,27 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 
 1. Classify the request as executable repository work, blocker, execution-grounded documentation, or planning/governance handoff.
 2. Load [references/canonical-paths.md](references/canonical-paths.md) and [references/common-execution.md](references/common-execution.md).
-3. Load [references/senior-engineering-discipline.md](references/senior-engineering-discipline.md) for non-trivial implementation, debugging, testing, refactor, risk, or operability.
+3. Load [references/senior-engineering-discipline.md](references/senior-engineering-discipline.md) for non-trivial implementation, debugging, testing, refactor, risk, or operability. Load [references/risk-and-change-escalation.md](references/risk-and-change-escalation.md) when contracts, data, security, compliance, availability, financial outcomes, or multiple repositories/services may be affected.
 4. Load [references/complexity-reduction-execution.md](references/complexity-reduction-execution.md) for simplification, de-abstraction, behavior-preserving refactor, or Mago complexity-reduction plans.
-5. Load [references/planning-handoff.md](references/planning-handoff.md) and [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md) when using specs, PRDs, technical designs, roadmaps, governance records, or packages authored outside MAGIA.
+5. For RALPH, load [references/board-contract.md](references/board-contract.md). Load [references/planning-handoff.md](references/planning-handoff.md) and [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md) when using specs, PRDs, technical designs, roadmaps, governance records, or packages authored outside MAGIA.
 6. Load [references/developer-artifact-standards.md](references/developer-artifact-standards.md) and [references/technical-documentation.md](references/technical-documentation.md) for implementation docs, decisions, or ADRs.
-7. Load exactly one mode reference from `references/modes/`: ADHOC for direct work, RALPH for board-contract execution, or ADAPT for best-effort conversion of legacy execution records into current MAGIA-owned artifacts.
+7. Load exactly one mode reference: [ADHOC](references/modes/adhoc.md) for direct work, [RALPH](references/modes/ralph.md) for board-contract execution, or [ADAPT](references/modes/adapt.md) for best-effort conversion of legacy execution records into current MAGIA-owned artifacts.
 8. Load [references/artifacts/execution-records.md](references/artifacts/execution-records.md) only when controlled execution records may change.
 9. Load [references/artifacts/execution-evidence.md](references/artifacts/execution-evidence.md) only for structured downstream evidence.
 10. Load [references/validation-and-closure.md](references/validation-and-closure.md) before finalizing runs that changed code, docs, validation evidence, task state, or execution state.
 11. Load [references/markdown-writing.md](references/markdown-writing.md) when creating or editing durable Markdown records.
 12. Load [references/package-delivery.md](references/package-delivery.md) only for validating, exporting, or packaging MAGIA itself.
-13. Use [references/resource-map.md](references/resource-map.md), `scripts/`, MAGIA-owned `assets/templates/`, `examples/`, and `evals/` only for scaffolding MAGIA-owned artifacts, validation, packaging, or activation checks. Do not scaffold MAGO-owned planning files from MAGIA.
+13. Use [references/resource-map.md](references/resource-map.md) as the package index. Load `scripts/` only for deterministic scaffolding, validation, state, or packaging; `assets/` only for the agent icon or MAGIA-owned templates; and `examples/` or `evals/` only for calibration and activation checks. Do not scaffold MAGO-owned planning files from MAGIA.
 
 ## Mode Selection
 
-- ADHOC: direct code, config, tests, validators, scripts, or developer docs not driven by a board package. Inputs: repo/file scope, target behavior, known target files, allowed write scope, blocked paths, at least one validation check. Output: smallest safe change plus validation evidence. Gate: targeted checks pass or residual gap reported.
-- RALPH: execution from one concrete board contract and selected Mago spec package. Inputs: board root or concrete board id, year, cycle id, spec id, selected task or dependency-safe batch, repo scope, allowed writes, validators, implementation clues from PRD/tasks/validation/notes/manifest/design/source refs/ADRs. Output: implementation plus truthful execution records and implementation docs/ADRs when justified. Gate: board/spec validators and relevant technical checks pass when local files exist.
-- ADAPT: best-effort conversion of legacy execution sections from notes.md and command-result sections from validation.md into current MAGIA-owned implementation-notes.md and validation-evidence.md. Inputs: board root, spec id, legacy files, and target current artifact paths. Output: current artifacts only; no implementation, no planning rewrite, and no operational fallback to legacy files after adaptation. Gate: execution-state validation passes or remaining gaps are reported.
-- Bug fix/unblocker: ADHOC or RALPH. Inputs: failure evidence, reproduction signal, relevant artifacts, validation target. Output: root-cause hypothesis, smallest fix, regression evidence. Gate: reproduction fixed or blocker reported.
-- Complexity reduction/refactor: ADHOC or RALPH. Inputs: target scope, behavior to preserve, complexity evidence, write scope, validation safety net. Output: simplification, tests/docs, complexity-reduction evidence, handoff if scope/design changes. Gate: behavior-equivalence checks pass or residual risk/blocker reported.
-- Execution-grounded docs/ADR: ADHOC or RALPH. Inputs: code/runtime evidence, target files or task, doc path, validation status, handoff need. Output: developer docs or ADR grounded in repository truth. Gate: doc review plus relevant checks.
-- Migration, contract, observability, runbook, troubleshooting, security note: inputs are implemented change, affected systems, evidence, validation/operation checks. Output: focused operational artifact with evidence separated from unknowns.
-- Planning/governance request: return blocker or handoff summary only; do not rewrite planning/governance artifacts.
-- Missing root/spec/task/files/validation evidence: return honest blocker plus safe partial evidence; do not invent state.
+| Mode | Use when | Required evidence | Closure gate |
+|---|---|---|---|
+| `ADHOC` | Direct code, config, tests, validators, scripts, or developer docs outside a board package | Repository/file scope, target behavior, allowed writes, blocked paths, observable validation | Smallest safe change passes targeted checks or residual gap is reported |
+| `RALPH` | Execute one selected task or dependency-safe batch from a concrete Mago board/spec contract | Board root/id/year/cycle/spec/task, PRD objective, acceptance criterion, validation action and expected outcome, repo scope, validators, implementation clues | Readiness, technical checks, traceability, execution-state, and board/spec gates pass when applicable |
+| `ADAPT` | Convert legacy execution records into current MAGIA-owned evidence | Board root, spec id, readable legacy notes/validation, target current artifacts | Current execution-state validation passes or remaining gaps are reported |
+
+Bug fixes, complexity reduction, implementation-grounded docs, migrations, contracts, observability, runbooks, troubleshooting, and security notes use ADHOC or RALPH according to their source. Apply the `standard` or `governed` profile from [risk-and-change-escalation.md](references/risk-and-change-escalation.md) independently of mode. Planning/governance requests return a blocker or handoff; missing roots, tasks, files, or truthful validation return safe partial evidence without invented state.
 
 ## Required Inputs Before Mutation
 
@@ -99,7 +97,7 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 
 ## Execution Workflow
 
-1. Resolve mode and bounded scope before editing; inspect repo/board evidence when ambiguous. In RALPH, run the readiness validator before mutation.
+1. Resolve mode, bounded scope, and risk profile before editing; inspect repo/board evidence when ambiguous. In RALPH, run the readiness validator before mutation.
 2. Define success first: test, build, lint, type check, smoke, reproduction, static reasoning, validator, or manual verification.
 3. Inspect relevant repository files, existing patterns, runtime evidence, and active contract artifacts.
 4. Make the smallest sufficient change; avoid broad rewrites, speculative abstractions, new dependencies, unrelated cleanup, and unverifiable production claims.

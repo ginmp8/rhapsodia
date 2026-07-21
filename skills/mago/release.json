@@ -1,6 +1,6 @@
 {
   "name": "mago",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "released_at": "2026-07-21",
   "package_schema": "3",
   "python": ">=3.11",

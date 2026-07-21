@@ -1,45 +1,64 @@
 # Package Validation
 
-Use for structural edits, identity/path changes, golden examples, preservation checks, or `skill.zip` delivery.
+Use for structural edits, identity/path changes, golden examples, preservation checks, assurance review, or `skill.zip` delivery.
 
 ## Canonical Command
-
-Run the full reproducible ledger with one command:
 
 ```bash
 python <skill-root>/scripts/validate_all.py --target <skill-root> --json-output <report.json>
 ```
 
-The ledger isolates dependencies under `python -S`, disables bytecode writes, and records every gate result.
+The ledger runs under an isolated local `PYTHONPATH`, disables bytecode writes, records every gate, and maps executed gate results to the machine-readable assurance claims.
 
 ## Gates
 
 The ledger runs in order:
 
-1. `scripts/validate_skill_package.py --target <skill-root>`: required files, frontmatter, links, templates, harness scenarios, scaffold hygiene, blocked generated/package artifacts.
-2. `scripts/validate_activation_scenarios.py <skill-root>/examples/activation-scenarios.json`: native scenario schema, category coverage, activation labels, boundary coverage. This is structural scenario evidence, not live behavioral measurement.
-3. `scripts/validate_governance_scenarios.py <skill-root>/evals/governance-scenarios.json`: profile, lifecycle, mode, escalation, and boundary scenario structure.
-4. `scripts/validate_golden_examples.py --skill-root <skill-root>`: golden examples satisfy artifact, path, and contract validators; warnings are allowed only for intentional unknown or missing facts.
-5. `scripts/validate_identity_contract.py --target <skill-root>`: canonical board/spec identities, year/cycle consistency, independence from other skill packages, and retained icon references.
-6. `scripts/validate_contract_preservation.py --target <skill-root>`: every original file, Markdown heading, public script symbol, and the exact hashes and bytes of all protected files remain present unless an explicitly recorded symbol replacement applies.
-7. isolated unit tests through `scripts/validate_all.py`; do not run the raw `python -S -m unittest` form without the ledger environment because third-party YAML loading is intentionally excluded by `-S`. The ledger executes: `python -S -m unittest discover -s <skill-root>/tests -p 'test_*.py'`: canonical identity, path, ownership, and negative compatibility tests.
-8. `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`: reruns gates 1-7, then writes the archive.
+1. `validate_skill_package.py`: required files, frontmatter, templates, scenarios, links, and package hygiene.
+2. `validate_activation_scenarios.py`: native activation category and boundary structure; not live model behavior.
+3. `validate_governance_scenarios.py`: profile, lifecycle, mode, escalation, and ownership scenario structure.
+4. `validate_golden_examples.py`: artifact, path, projection, and contract fixtures; only allowlisted unknown-fact warnings are accepted.
+5. `validate_identity_contract.py`: canonical identities, year consistency, package independence, and icon references.
+6. `validate_release_contract.py`: current version, historical-contract hash, protected-file hashes, and explicit migrations.
+7. `validate_contract_preservation.py`: original files, headings, public script symbols, protected bytes, and authorized migration continuity.
+8. `validate_documentation.py`: normalized local Markdown links with root-escape rejection.
+9. `validate_assurance_contract.py`: claim schema, evidence labels, validator references, and SDD gate coverage.
+10. isolated standard-library tests: `python -S -m unittest discover -s <skill-root>/tests -p 'test_*.py'`.
 
-Do not share or install a zip from a failed gate.
+Do not share, install, or score a release as ready when any applicable gate fails. Structural scenarios remain structural evidence until an independent prompt runner captures and evaluates model outputs.
 
 ## Packaging Rules
 
-`package_skill.py` excludes `.git`, caches and bytecode as reproducible ephemeral exclusions, plus temp/system files, generated evidence/report folders, and nested `.zip` files. Package/golden runners set `PYTHONPATH` to local `scripts/` plus interpreter package paths so validators can run under `python -S` without writing bytecode.
+Run:
 
-Packaging fails closed when the source tree contains a symlink, `.env` variant, known credential file, private-key/container suffix (`.key`, `.pem`, `.p12`, `.pfx`, `.jks`, `.keystore`), or recognized private-key header. The completed archive is reopened and checked for one `nomia/` root, duplicate or traversal entries, symlink metadata, blocked names/suffixes, and private-key material. A failed content or archive gate deletes the candidate ZIP.
+```bash
+python <skill-root>/scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip
+```
 
-The archive must be named exactly `skill.zip` and contain one top-level `nomia/` directory. `assets/icon.svg` and `agents/openai.yaml` are protected byte-for-byte: packaging, identity changes, metadata updates, and formatting tools must not alter, normalize, reserialize, or regenerate either file. Validate SHA-256 for both before and after mutation and again after ZIP extraction.
+The package builder reruns the ledger-equivalent gates, excludes `.git`, caches, bytecode, temporary/system files, generated reports/evidence, and nested ZIPs, and fails closed on symlinks, environment or credential files, private-key containers, recognized private-key material, traversal, duplicate entries, or multiple archive roots.
+
+The archive must be named `skill.zip`, contain one top-level `nomia/` directory, use sorted entries, fixed timestamps, and normalized file modes. Two builds from identical source must be byte-identical. A failed gate or archive inspection removes the candidate archive and cannot replace a prior valid package.
+
+## Protected Release Evidence
+
+`tests/original-contract.json` is immutable historical evidence. `tests/current-release-contract.json` locks the selected release, original-contract hash, and current protected-file hashes. `tests/protected-file-migrations.json` is mandatory when historical and current protected hashes differ.
+
+`assets/icon.svg` and `agents/openai.yaml` remain byte-protected. Validate them before mutation, after mutation, and after archive extraction. Never update the historical contract merely to make a changed asset pass.
+
+A successful package result includes a release attestation with version, package root, archive SHA-256, size, packaged-file count, protected hashes, original-contract hash, deterministic timestamp, and the explicit statement that live behavioral activation is not measured.
 
 ## Readiness Rule
 
-Ready only when all gates pass, `skill.zip` contains `nomia/SKILL.md`, no non-template scaffold markers remain, links resolve, generated evidence/reports/caches/secrets/credentials/old zips are excluded, the original functional surface and all protected-file hashes and bytes are preserved, harness scenarios cover activation/non-activation/ambiguous/edge/regression/adversarial criteria, and behavioral metrics are claimed only after prompt execution and review.
+Ready only when:
 
+- every ledger and archive gate passes;
+- `skill.zip` contains `nomia/SKILL.md` and no blocked residue;
+- the original functional surface and protected release chain validate;
+- local documentation links resolve;
+- assurance claims are supported or explicitly `planned`;
+- scenario categories cover activation, non-activation, ambiguity, edge, regression, and adversarial cases;
+- behavioral metrics are claimed only from executed and reviewed prompt results.
 
 ## Release Discipline
 
-`VERSION` identifies the package contract version, `CHANGELOG.md` records material behavior and compatibility changes, and `requirements.txt` pins the YAML runtime dependency used by validators. Package creation is atomic: a failed archive build cannot replace a previously valid `skill.zip`. Repository-facing writers, normalizers, adaptation reports, validator reports, and the governance adapter use same-directory temporary files and atomic replacement to avoid partial artifacts. Interruption tests must prove that a failed replace leaves the original bytes unchanged and removes temporary files.
+`VERSION` identifies the package contract version and `CHANGELOG.md` records material behavior, validation, migration, and compatibility changes. `requirements.txt` pins the YAML runtime dependency used by validators. Repository-facing writers, normalizers, adaptation reports, validation reports, the ledger, and package creation use atomic replacement or read-only execution. Interruption tests must show that failed replacement leaves original bytes unchanged and removes temporary files.
