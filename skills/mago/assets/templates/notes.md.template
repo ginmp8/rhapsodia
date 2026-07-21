@@ -4,10 +4,14 @@ Replace every <...> token with repository-truth values.
 Follow `references/artifacts/templates-and-status.md` for the canonical notes contract.
 -->
 
+---
+clarification_contract: 2
+---
+
 # Notes - <title>
 
 ## Assumptions
-<!-- Working assumptions used for planning. Do not state confirmed requirements or execution results here. -->
+<!-- Use `### ASSUMPTION-NNN - <title>` with Status, Severity, Evidence, Owner, Resolution condition, and Resolution evidence when closed. -->
 
 ## Repository Findings
 <!-- Concrete facts discovered in code, configs, schemas, tests, or existing docs. -->
@@ -21,8 +25,11 @@ Follow `references/artifacts/templates-and-status.md` for the canonical notes co
 ## Trade-Offs
 <!-- Intentional compromises and what was accepted or rejected because of them. Preserve historical rationale; add corrections instead of silently rewriting decision meaning. -->
 
+## Blockers
+<!-- Use `### BLOCKER-NNN - <title>`. Every open blocker prevents handoff. -->
+
 ## Open Questions
-<!-- Important unresolved questions that still need future evidence or decisions. -->
+<!-- Use `### QUESTION-NNN - <title>`. Open high/critical questions prevent handoff. -->
 
 ## Specialist Rationale
 <!-- Include when tasks are in scope or when preserving truthful existing specialist-selection history. Omit in product-only notes. -->

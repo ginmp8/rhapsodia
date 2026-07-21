@@ -87,3 +87,7 @@ python scripts/validate_traceability.py <external-dir>/traceability.json --profi
 The renderer reads canonical artifacts; the JSON is a disposable validation projection and must never replace PRD, design, tasks, validation, manifest, registry, or source repository truth. Delete or exclude it after validation.
 
 Validation fails for duplicate identifiers, malformed link fields, references to unknown identifiers, missing task/validation coverage, and incomplete governed chains. A passing static traceability check does not prove implementation or runtime acceptance.
+
+## Governed quality contract v2
+
+New governed packages use `quality_contract: 2` and run `scripts/validate_plan_quality.py <package> --require-v2`. Every requirement records `Criticality` and `Criticality basis`; acceptance coverage is calibrated per requirement rather than only across the package. High and critical requirements require linked recovery coverage, critical requirements require explicit error coverage, and critical security requirements require abuse-path coverage. Every acceptance criterion must be covered by a validation record. V2 validation records also declare evidence capture and residual-risk disposition, and decisions declare rollback or reversibility. Legacy v1 packages remain readable through the default validator and must migrate through `refine` or `adapt` before a new governed handoff.

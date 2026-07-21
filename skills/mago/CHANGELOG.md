@@ -2,6 +2,21 @@
 
 All notable package changes are recorded here. Versions follow semantic versioning for the distributed skill package only; cycle and spec filesystem identities never use semantic versioning.
 
+## [2.3.0] - 2026-07-21
+
+### Added
+
+- Clarification readiness v2 with stable assumption, blocker, and question records plus deterministic handoff blocking.
+
+- Explicit `requirements.txt` and machine-validated runtime dependency metadata with actionable installation diagnostics.
+- Executable, explicit-version Kiro requirements/design/tasks adapter with checksum round trips and external-edit disclosure.
+- Isolated parallel test and evidence-harness execution with per-file/scenario timeouts, exact counts, ordered results, and duration metrics.
+- Governed plan-quality contract v2 with requirement criticality, risk-calibrated acceptance paths, complete AC-to-validation coverage, evidence capture, residual-risk disposition, and rollback/reversibility fields.
+
+### Compatibility
+
+- Existing Mago planning artifacts and plan-quality v1 packages remain readable; new governed handoffs migrate to quality contract v2. The distributed skill now requires installation of the declared PyYAML runtime range before deterministic validators run.
+
 ## [2.1.0] - 2026-07-20
 
 ### Added

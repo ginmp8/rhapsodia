@@ -22,6 +22,7 @@ REQUIRED_RELEASE_FIELDS = {
     "changelog",
     "breaking_changes",
     "support_boundary",
+    "runtime_dependencies",
 }
 
 
@@ -55,6 +56,13 @@ def validate(root: Path) -> list[str]:
         products = []
     if not isinstance(data.get("breaking_changes"), bool):
         errors.append(f"{release_path}: breaking_changes must be boolean")
+    runtime_dependencies = data.get("runtime_dependencies")
+    if not isinstance(runtime_dependencies, list) or not runtime_dependencies:
+        errors.append(f"{release_path}: runtime_dependencies must be a non-empty list")
+    else:
+        for index, dependency in enumerate(runtime_dependencies):
+            if not isinstance(dependency, dict) or not all(str(dependency.get(key, "")).strip() for key in ("distribution", "import", "specifier")):
+                errors.append(f"{release_path}: runtime_dependencies[{index}] needs distribution, import, and specifier")
     for key in ("python", "package_schema", "support_boundary"):
         if not str(data.get(key, "")).strip():
             errors.append(f"{release_path}: {key} must be explicit")

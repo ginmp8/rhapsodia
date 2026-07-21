@@ -29,6 +29,11 @@ MAPPINGS: dict[str, dict[str, str]] = {
         "tasks.md": "tasks.md",
         "change-delta.md": "spec-delta.md",
     },
+    "kiro": {
+        "prd.md": "requirements.md",
+        "technical-design.md": "design.md",
+        "tasks.md": "tasks.md",
+    },
 }
 SOURCE_ONLY = [
     "board_identity",

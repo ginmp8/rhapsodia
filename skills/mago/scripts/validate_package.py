@@ -80,6 +80,7 @@ TASK_HEADER_RE = re.compile(
 TASK_METADATA_RE = re.compile(r"^\s{2,}-\s+(?P<key>[^:]+):\s*(?P<value>.*?)\s*$")
 PHASE_RE = re.compile(r"^##\s+Phase\s+(?P<number>[1-5])\s+-\s+(?P<name>.+?)\s*$")
 PHASE_NA_RE = re.compile(r"^\s*(?:-\s*)?Not applicable:\s*(?P<value>.+?)\s*$", re.IGNORECASE)
+PHASE_EVIDENCE_RE = re.compile(r"^\s*(?:-\s*)?Evidence:\s*(?P<value>.+?)\s*$", re.IGNORECASE)
 NOTES_TASK_RE = re.compile(r"^###\s+(?P<task_id>task\d{3})\b")
 NOTES_STATUS_RE = re.compile(r"^\s*-\s+Status:\s*(?P<value>.+?)\s*$")
 PLACEHOLDER_RE = re.compile(r"<[A-Za-z0-9_|.-]+>")
@@ -111,6 +112,7 @@ class PhaseBlock:
     line_number: int
     task_ids: list[str] = field(default_factory=list)
     not_applicable_rationale: str | None = None
+    not_applicable_evidence: str | None = None
 
 
 class ManifestParseError(ValueError):
@@ -203,6 +205,17 @@ def parse_tasks(tasks_path: Path) -> tuple[dict[str, TaskBlock], list[PhaseBlock
                 current_phase.not_applicable_rationale = rationale
             continue
 
+        evidence_match = PHASE_EVIDENCE_RE.match(line)
+        if evidence_match and current_phase is not None and current_task is None:
+            evidence = evidence_match.group("value").strip()
+            if not is_resolved_value(evidence):
+                errors.append(f"{tasks_path}:{line_number}: phase non-applicability evidence needs an explicit source")
+            elif current_phase.not_applicable_evidence is not None:
+                errors.append(f"{tasks_path}:{line_number}: duplicate phase non-applicability evidence")
+            else:
+                current_phase.not_applicable_evidence = evidence
+            continue
+
         metadata_match = TASK_METADATA_RE.match(line)
         if metadata_match and current_task is not None:
             key = normalize_field_name(metadata_match.group("key"))
@@ -279,18 +292,31 @@ def validate_task_contract(tasks_path: Path, profile: str) -> tuple[dict[str, Ta
             continue
         if phase.name != name:
             errors.append(f"{tasks_path}:{phase.line_number}: Phase {number} must be named `{name}`")
-        if phase.task_ids and phase.not_applicable_rationale:
+        if phase.task_ids and (phase.not_applicable_rationale or phase.not_applicable_evidence):
             errors.append(
-                f"{tasks_path}:{phase.line_number}: phase cannot contain tasks and a `Not applicable` rationale"
+                f"{tasks_path}:{phase.line_number}: phase cannot contain tasks and non-applicability metadata"
             )
+        if phase.not_applicable_evidence and not phase.not_applicable_rationale:
+            errors.append(f"{tasks_path}:{phase.line_number}: phase evidence requires a `Not applicable` rationale")
         if not phase.task_ids:
             if profile == "quick":
                 if not phase.not_applicable_rationale:
                     errors.append(
                         f"{tasks_path}:{phase.line_number}: empty quick phase needs `Not applicable: <rationale>`"
                     )
+            elif number in {2, 4}:
+                errors.append(
+                    f"{tasks_path}:{phase.line_number}: {profile} profile requires at least one task in Phase {number}"
+                )
             else:
-                errors.append(f"{tasks_path}:{phase.line_number}: {profile} profile requires at least one task in Phase {number}")
+                if not phase.not_applicable_rationale:
+                    errors.append(
+                        f"{tasks_path}:{phase.line_number}: empty {profile} phase needs `Not applicable: <rationale>`"
+                    )
+                if not phase.not_applicable_evidence:
+                    errors.append(
+                        f"{tasks_path}:{phase.line_number}: empty {profile} phase needs `Evidence: <source or linked planning id>`"
+                    )
 
     dependencies: dict[str, list[str]] = {}
     required_fields = BASE_REQUIRED_TASK_FIELDS + (TRACEABILITY_TASK_FIELDS if profile in {"standard", "governed"} else ())
@@ -597,6 +623,17 @@ def validate_package(package_path: Path) -> tuple[list[str], list[str]]:
         warnings.extend(task_warnings)
 
     notes_path = package_path / "notes.md"
+    if notes_path.exists():
+        notes_text = notes_path.read_text(encoding="utf-8-sig")
+        clarification_v2 = bool(re.search(r"(?m)^clarification_contract:\s*2\s*$", notes_text))
+        handoff_phase = str(manifest.get("phase", "")).strip().lower() in {"execute", "review", "done"}
+        if clarification_v2 or (profile == "governed" and handoff_phase):
+            from validate_clarification_readiness import validate_notes
+            errors.extend(validate_notes(
+                notes_path,
+                require_v2=(profile == "governed" and handoff_phase),
+                handoff=handoff_phase,
+            ))
     if notes_path.exists() and task_map:
         note_refs, duplicate_note_errors, note_warnings = parse_notes_task_ids(notes_path)
         errors.extend(duplicate_note_errors)

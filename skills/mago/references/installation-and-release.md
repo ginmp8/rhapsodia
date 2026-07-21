@@ -4,9 +4,17 @@
 
 A distributed archive contains exactly one top-level `mago/` directory. Extract or install that directory into the host's supported skill location without merging it with another Mago version. Keep the package read-only except when intentionally developing a new version.
 
+Install the declared runtime dependencies before validation:
+
+```bash
+python -m pip install -r requirements.txt
+python -B scripts/validate_runtime_dependencies.py .
+```
+
 Validate an extracted package before use:
 
 ```bash
+python -B scripts/validate_runtime_dependencies.py .
 python -B scripts/validate_release_metadata.py .
 python -B scripts/validate_skill_package.py .
 ```
@@ -26,7 +34,7 @@ The output directory must be outside the skill root. Reports, caches, credential
 - Minor releases may add backward-compatible validators, templates, modes, or optional artifacts. A stricter contract must provide an explicit legacy path or migration rule.
 - Major releases may change canonical schemas, ownership, or required workflow. They require migration notes and cannot silently rewrite existing packages.
 - External SDD adapter versions are caller-supplied and explicit. Values such as `latest`, `current`, or `unknown` are rejected by executable adapters.
-- Python compatibility and supported OpenAI products are declared in `release.json` and checked against `agents/openai.yaml`.
+- Python compatibility, runtime dependencies, and supported OpenAI products are declared in `release.json`; `requirements.txt`, importability, installed versions, and `agents/openai.yaml` are validated before packaging.
 
 ## Upgrade and rollback
 

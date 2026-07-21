@@ -18,6 +18,7 @@ FIELD_RE = re.compile(r"^-\s+([^:]+):\s*(.*?)\s*$")
 REF_RE = re.compile(r"\b(?:REQ|NFR|AC|DECISION|OPTION|VAL)-\d{3}\b")
 NORMATIVE_RE = re.compile(r"\b(?:MUST|MUST NOT|SHALL|SHALL NOT|SHOULD|SHOULD NOT|MAY)\b")
 VALID_PATHS = {"normal", "boundary", "error", "abuse", "recovery", "operational"}
+VALID_CRITICALITY = {"low", "medium", "high", "critical"}
 VAGUE_RE = re.compile(r"(?i)\b(?:works correctly|as expected|test everything|verify it works|appropriate tests)\b")
 
 
@@ -101,7 +102,7 @@ def require_fields(path: Path, items: dict[str, dict[str, Any]], names: tuple[st
                 errors.append(f"{path}: `{item_id}` field `{name}` is not observable/reproducible: {value!r}")
 
 
-def validate_prd(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+def validate_prd(path: Path, errors: list[str], *, require_v2: bool = False, security_triggered: bool = False) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     text = read(path)
     requirements = records(text, "REQ")
     nfrs = records(text, "NFR")
@@ -111,6 +112,10 @@ def validate_prd(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict[st
     if not acceptance:
         errors.append(f"{path}: governed quality gate requires at least one AC record")
     require_fields(path, requirements, ("Evidence basis", "Failure/recovery behavior", "Verification"), errors)
+    if require_v2:
+        require_fields(path, requirements, ("Criticality", "Criticality basis"), errors)
+        if not re.search(r"(?m)^quality_contract:\s*2\s*$", text):
+            errors.append(f"{path}: governed quality v2 requires frontmatter `quality_contract: 2`")
     require_fields(path, acceptance, ("Requirements", "Path"), errors)
 
     for req_id, req in requirements.items():
@@ -124,6 +129,7 @@ def validate_prd(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict[st
                 errors.append(f"{path}: `{req_id}` references unknown acceptance `{ac_id}`")
 
     paths: set[str] = set()
+    paths_by_requirement: dict[str, set[str]] = {req_id: set() for req_id in requirements}
     for ac_id, ac in acceptance.items():
         selected_requirements = references(ac["fields"].get("Requirements", ""), "REQ")
         if not selected_requirements:
@@ -136,6 +142,9 @@ def validate_prd(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict[st
             errors.append(f"{path}: `{ac_id}` Path must be one of {sorted(VALID_PATHS)}")
         else:
             paths.add(path_kind)
+            for req_id in selected_requirements:
+                if req_id in paths_by_requirement:
+                    paths_by_requirement[req_id].add(path_kind)
         if "Scenario:" not in ac["body"] or "Given " not in ac["body"] or "When " not in ac["body"] or "Then " not in ac["body"]:
             errors.append(f"{path}: `{ac_id}` requires a complete observable Gherkin scenario")
 
@@ -143,6 +152,24 @@ def validate_prd(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict[st
         errors.append(f"{path}: governed acceptance must include a normal path")
     if not paths.intersection({"boundary", "error", "recovery", "abuse"}):
         errors.append(f"{path}: governed acceptance must include a boundary, error, recovery, or abuse path")
+
+    if require_v2:
+        for req_id, req in requirements.items():
+            criticality = req["fields"].get("Criticality", "").strip().lower()
+            if criticality not in VALID_CRITICALITY:
+                errors.append(f"{path}: `{req_id}` Criticality must be one of {sorted(VALID_CRITICALITY)}")
+                continue
+            req_paths = paths_by_requirement.get(req_id, set())
+            if "normal" not in req_paths:
+                errors.append(f"{path}: `{req_id}` requires a linked normal acceptance path")
+            if criticality in {"medium", "high", "critical"} and not req_paths.intersection({"boundary", "error", "recovery", "abuse", "operational"}):
+                errors.append(f"{path}: `{req_id}` {criticality} criticality requires a linked non-happy acceptance path")
+            if criticality in {"high", "critical"} and "recovery" not in req_paths:
+                errors.append(f"{path}: `{req_id}` {criticality} criticality requires a linked recovery acceptance path")
+            if criticality == "critical" and "error" not in req_paths:
+                errors.append(f"{path}: `{req_id}` critical criticality requires a linked error acceptance path")
+            if criticality == "critical" and security_triggered and "abuse" not in req_paths:
+                errors.append(f"{path}: `{req_id}` critical security requirement requires a linked abuse acceptance path")
 
     nfr_section = section(text, "## Non-Functional Requirements")
     if not nfrs and "Not applicable:" not in nfr_section:
@@ -154,7 +181,7 @@ def validate_prd(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict[st
     return requirements, nfrs, acceptance
 
 
-def validate_design(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict[str, Any]]:
+def validate_design(path: Path, errors: list[str], *, require_v2: bool = False) -> tuple[dict[str, Any], dict[str, Any]]:
     text = read(path)
     decisions = records(text, "DECISION")
     options = records(text, "OPTION")
@@ -164,6 +191,8 @@ def validate_design(path: Path, errors: list[str]) -> tuple[dict[str, Any], dict
         errors.append(f"{path}: governed design requires at least two explicit OPTION records")
     require_fields(path, options, ("Benefits", "Costs", "Failure modes", "Operational impact"), errors)
     require_fields(path, decisions, ("Requirements", "Selected option", "Rationale", "Consequences"), errors)
+    if require_v2:
+        require_fields(path, decisions, ("Rollback or reversibility",), errors)
     for decision_id, decision in decisions.items():
         selected = references(decision["fields"].get("Selected option", ""), "OPTION")
         if len(selected) != 1:
@@ -180,25 +209,20 @@ def validate_validation(
     acceptance: dict[str, Any],
     nfrs: dict[str, Any],
     errors: list[str],
+    *,
+    require_v2: bool = False,
 ) -> dict[str, Any]:
     text = read(path)
     validations = records(text, "VAL")
     if not validations:
         errors.append(f"{path}: governed quality gate requires at least one VAL record")
-    require_fields(
-        path,
-        validations,
-        (
-            "Requirements",
-            "Acceptance",
-            "Tasks",
-            "Environment",
-            "Command or procedure",
-            "Expected",
-            "Failure disposition",
-        ),
-        errors,
-    )
+    required_validation_fields = [
+        "Requirements", "Acceptance", "Tasks", "Environment",
+        "Command or procedure", "Expected", "Failure disposition",
+    ]
+    if require_v2:
+        required_validation_fields.extend(["Evidence capture", "Residual risk disposition"])
+    require_fields(path, validations, tuple(required_validation_fields), errors)
     for val_id, validation in validations.items():
         for prefix, field, targets in (
             ("REQ", "Requirements", requirements),
@@ -217,17 +241,29 @@ def validate_validation(
         for val_id in references(nfr["fields"].get("Validation", ""), "VAL"):
             if val_id not in validations:
                 errors.append(f"{path}: `{nfr_id}` references unknown validation `{val_id}`")
+    if require_v2:
+        covered_acceptance: set[str] = set()
+        for validation in validations.values():
+            covered_acceptance.update(references(validation["fields"].get("Acceptance", ""), "AC"))
+        missing_acceptance = sorted(set(acceptance) - covered_acceptance)
+        if missing_acceptance:
+            errors.append(f"{path}: quality v2 requires validation coverage for every AC; missing {missing_acceptance}")
     return validations
 
 
-def validate_package(package: Path) -> list[str]:
+def validate_package(package: Path, *, require_v2: bool = False) -> list[str]:
     errors: list[str] = []
     if not package.is_dir() or package.is_symlink():
         return [f"{package}: package must be a non-symlink directory"]
     try:
-        requirements, nfrs, acceptance = validate_prd(package / "prd.md", errors)
-        validate_design(package / "technical-design.md", errors)
-        validate_validation(package / "validation.md", requirements, acceptance, nfrs, errors)
+        security_triggered = (package / "security-and-risk-considerations.md").is_file()
+        requirements, nfrs, acceptance = validate_prd(
+            package / "prd.md", errors, require_v2=require_v2, security_triggered=security_triggered
+        )
+        validate_design(package / "technical-design.md", errors, require_v2=require_v2)
+        validate_validation(
+            package / "validation.md", requirements, acceptance, nfrs, errors, require_v2=require_v2
+        )
     except QualityError as exc:
         errors.append(str(exc))
     return errors
@@ -236,15 +272,16 @@ def validate_package(package: Path) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate governed Mago plan quality fields.")
     parser.add_argument("package")
+    parser.add_argument("--require-v2", action="store_true", help="Require criticality-calibrated governed quality contract v2.")
     args = parser.parse_args(argv)
     package = Path(args.package).resolve()
-    errors = validate_package(package)
+    errors = validate_package(package, require_v2=args.require_v2)
     for error in errors:
         print(f"ERROR: {error}")
     if errors:
         print(f"FAILED: {len(errors)} quality error(s)")
         return 1
-    print("OK: governed plan quality contract passed")
+    print(f"OK: governed plan quality contract {'v2' if args.require_v2 else 'v1-compatible'} passed")
     return 0
 
 

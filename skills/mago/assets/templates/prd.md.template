@@ -4,6 +4,7 @@ Replace every <...> token with repository-truth values.
 Never copy placeholder or example values blindly into generated files.
 -->
 ---
+quality_contract: 2
 spec_id: "<spec_id>"
 feature_key: "<feature_key>"
 title: "<title>"
@@ -38,6 +39,8 @@ depends_on_specs: []
 - Evidence basis: <repository, intake, contract, incident, or policy evidence>
 - Failure/recovery behavior: <observable failure response and safe retry/recovery path>
 - Verification: AC-001
+- Criticality: <low|medium|high|critical>
+- Criticality basis: <evidence-backed impact and recovery rationale>
 
 WHEN <trigger>, the <system> MUST <observable_response>.
 

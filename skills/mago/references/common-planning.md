@@ -93,3 +93,7 @@ Templates are structural references and script inputs first. Use `scripts/create
 ## Naming Rules
 
 Directory names, file names, ids, YAML keys, and enums are lowercase. Slugs use lowercase kebab-case. `board_id`, `year`, `cycle_id`, and `spec_id` must be safe POSIX path segments: no slashes, backslashes, empty segments, `.`, `..` traversal, whitespace padding, or unresolved tokens.
+
+## Clarification readiness
+
+Use `references/clarification-readiness.md` for structured assumptions, blockers, and questions. Governed handoff requires contract v2 with no open blocker or open high/critical uncertainty.

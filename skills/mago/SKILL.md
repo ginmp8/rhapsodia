@@ -40,7 +40,7 @@ Select the least costly safe profile through [profiles and lifecycle](references
 
 Create files only through the [artifact decision matrix](references/artifact-decision-matrix.md). A template is not a creation trigger. Every artifact needs a trigger, owner, consumer, validator, retention rule, and non-duplication rationale.
 
-For `standard` and `governed`, use [requirements and traceability](references/requirements-and-traceability.md): EARS-style conditions/responses where useful, BCP 14 keywords only with normative meaning, Gherkin for observable acceptance, stable `REQ`, `AC`, `DECISION`, `task`, and `VAL` identifiers, and the governed chain `REQ -> AC -> DECISION -> TASK -> VALIDATION`.
+For `standard` and `governed`, use [requirements and traceability](references/requirements-and-traceability.md) and [clarification readiness](references/clarification-readiness.md): EARS-style conditions/responses where useful, BCP 14 keywords only with normative meaning, Gherkin for observable acceptance, stable `REQ`, `AC`, `DECISION`, `task`, and `VAL` identifiers, and the governed chain `REQ -> AC -> DECISION -> TASK -> VALIDATION`.
 
 ## Internal mode router
 
@@ -79,12 +79,12 @@ Templates under `assets/templates/` are structural inputs, not defaults to copy 
 
 Use the relevant validators:
 
-- artifact/package/repository: `scripts/validate_artifact.py`, `scripts/validate_package.py`, `scripts/validate_repo_board.py`; governed quality and triggered technical content: `scripts/validate_plan_quality.py`, `scripts/validate_triggered_artifact.py`, `scripts/validate_security_risk.py --require-v2`;
+- artifact/package/repository: `scripts/validate_artifact.py`, `scripts/validate_package.py`, `scripts/validate_repo_board.py`; governed quality and triggered technical content: `scripts/validate_plan_quality.py`, `scripts/validate_clarification_readiness.py`, `scripts/validate_triggered_artifact.py`, `scripts/validate_security_risk.py --require-v2`;
 - boundary/evidence/handoff/generated views: `scripts/validate_boundary.py`, `scripts/validate_evidence_contract.py`, `scripts/validate_planning_execution_handoff.py`, `scripts/validate_generated_view_contract.py`;
 - SDD semantics: `scripts/render_traceability.py`, `scripts/validate_traceability.py`, `scripts/validate_artifact_matrix.py`, `scripts/validate_change_delta.py`, `scripts/sdd_adapter.py`, `scripts/validate_sdd_adapter_report.py`, `scripts/reconcile_planning.py`;
 - skill/package integrity: `scripts/validate_release_metadata.py`, `scripts/run_sdd_evidence_harness.py`, `scripts/validate_skill_package.py`, then `scripts/package_skill.py` only after all gates pass.
 
-Required gates: canonical identity matches registry/package paths; feature keys are unique; dependencies resolve and are acyclic; generated views are reproducible; selected-profile artifacts and triggered technical concerns are complete; planning claims are evidenced or unresolved; changed behavior links to tasks and validation; governed packages pass traceability and plan-quality gates; new security plans use the v2 relational contract; adapter versions and losses are explicit; multi-artifact recovery is executable; reconciliation preserves Magia provenance and never claims Mago-authored runtime proof.
+Required gates: canonical identity matches registry/package paths; feature keys are unique; dependencies resolve and are acyclic; generated views are reproducible; selected-profile artifacts and triggered technical concerns are complete; planning claims are evidenced or unresolved; changed behavior links to tasks and validation; new governed packages pass traceability and plan-quality v2 gates; new security plans use the v2 relational contract; adapter versions and losses are explicit; multi-artifact recovery is executable; reconciliation preserves Magia provenance and never claims Mago-authored runtime proof.
 
 ## Output contract
 

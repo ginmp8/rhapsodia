@@ -40,6 +40,7 @@ REQUIRED_FILES = (
     "references/security-risk-contract.md",
     "references/installation-and-release.md",
     "release.json",
+    "requirements.txt",
     "CHANGELOG.md",
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_artifact.py",
@@ -49,9 +50,11 @@ REQUIRED_FILES = (
     "scripts/validate_triggered_artifact.py",
     "scripts/validate_security_risk.py",
     "scripts/validate_plan_quality.py",
+    "scripts/validate_clarification_readiness.py",
     "scripts/mutation_transaction.py",
     "scripts/sdd_adapter.py",
     "scripts/validate_release_metadata.py",
+    "scripts/validate_runtime_dependencies.py",
     "scripts/validate_repo_board.py",
     "scripts/validate_concurrent_board.py",
     "scripts/validate_planning_execution_handoff.py",
@@ -68,6 +71,9 @@ REQUIRED_FILES = (
     "examples/activation-scenarios.json",
     "evals/sdd-evidence-scenarios.json",
     "scripts/run_sdd_evidence_harness.py",
+    "scripts/run_test_suite.py",
+    "scripts/merge_test_reports.py",
+    "scripts/merge_evidence_reports.py",
     "tests/test_concurrency_model.py",
     "tests/test_package_validation.py",
 )
@@ -396,11 +402,22 @@ def validate_goldens(root: Path, result: ValidationResult) -> None:
         [str(golden_root / "governed-quality")],
         "governed plan-quality golden", result,
     )
+    run_python_gate(
+        root, scripts / "validate_plan_quality.py",
+        [str(golden_root / "governed-quality-v2"), "--require-v2"],
+        "governed plan-quality v2 golden", result,
+    )
+    run_python_gate(
+        root, scripts / "validate_clarification_readiness.py",
+        [str(golden_root / "clarification-v2" / "notes.md"), "--require-v2", "--handoff"],
+        "clarification readiness v2 golden", result,
+    )
     with tempfile.TemporaryDirectory(prefix="mago-adapter-roundtrip-") as adapter_tmp:
         adapter_root = Path(adapter_tmp)
         for target_format, target_version in (
             ("spec-kit", "spec-kit-file-contract-1"),
             ("openspec", "openspec-file-contract-1"),
+            ("kiro", "kiro-file-contract-1"),
         ):
             output = adapter_root / target_format
             report = adapter_root / f"{target_format}-report.json"
@@ -445,6 +462,10 @@ def validate_goldens(root: Path, result: ValidationResult) -> None:
             result.fail("reconciliation golden did not produce its declared output")
 
 def validate_release_controls(root: Path, result: ValidationResult) -> None:
+    run_python_gate(
+        root, root / "scripts" / "validate_runtime_dependencies.py", [str(root)],
+        "runtime dependencies", result,
+    )
     run_python_gate(
         root, root / "scripts" / "validate_release_metadata.py", [str(root)],
         "release metadata", result,
@@ -494,14 +515,35 @@ def compile_scripts(root: Path, result: ValidationResult) -> None:
             result.fail(f"python syntax validation failed for {path.relative_to(root).as_posix()}: {exc}")
 
 
-def validate_concurrency_tests(root: Path, result: ValidationResult) -> None:
-    # Run in-process so nested subprocess-based tests cannot hold an outer capture pipe open.
-    stream = io.StringIO()
-    suite = unittest.defaultTestLoader.discover(str(root / "tests"), pattern="test_*.py")
-    outcome = unittest.TextTestRunner(stream=stream, verbosity=1).run(suite)
-    result.executed_tests = outcome.testsRun
-    if not outcome.wasSuccessful():
-        result.fail(f"skill test suite failed: {stream.getvalue()[-1600:]}")
+def validate_concurrency_tests(root: Path, result: ValidationResult, test_report: Path | None = None) -> None:
+    # A hash-bound merged report allows bounded test shards without weakening coverage.
+    if test_report is not None:
+        try:
+            report = json.loads(test_report.read_text(encoding="utf-8"))
+        except Exception as exc:
+            result.fail(f"merged test suite report could not be read: {exc}")
+            return
+        if report.get("kind") != "mago-merged-test-report" or report.get("status") != "pass":
+            result.fail(f"merged test suite report is not a passing Mago report: {report.get('errors', [])}")
+            return
+        from merge_test_reports import current_manifest
+        _, expected_digest = current_manifest(root)
+        if report.get("suite_digest") != expected_digest:
+            result.fail("merged test suite report does not match current test-file hashes")
+            return
+        result.executed_tests = int(report.get("test_count", 0))
+        if result.executed_tests < 69:
+            result.fail(f"merged test suite report contains only {result.executed_tests} tests")
+        return
+    with tempfile.TemporaryDirectory(prefix="mago-tests-") as tmp:
+        report_path = Path(tmp) / "test-suite.json"
+        command = [sys.executable, "-B", str(root / "scripts" / "run_test_suite.py"),
+                   "--target", str(root), "--jobs", "1", "--timeout", "180",
+                   "--minimum-tests", "69", "--output", str(report_path)]
+        if not run_gate_command(root, command, "isolated test suite", result, timeout=600):
+            return
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        result.executed_tests = int(report.get("test_count", 0))
 
 
 def validate_no_caches(root: Path, result: ValidationResult) -> None:
@@ -511,7 +553,7 @@ def validate_no_caches(root: Path, result: ValidationResult) -> None:
             result.fail(f"forbidden generated directory present: {path.relative_to(root).as_posix()}")
 
 
-def run(root: Path) -> ValidationResult:
+def run(root: Path, test_report: Path | None = None) -> ValidationResult:
     result = ValidationResult()
     if not root.exists() or not root.is_dir():
         result.fail(f"target is not a directory: {root}")
@@ -534,7 +576,7 @@ def run(root: Path) -> ValidationResult:
     validate_semantic_contracts(root, result)
     # Tests execute last because their nested process probes can contaminate later
     # subprocess orchestration on some runtimes even after all test cases pass.
-    validate_concurrency_tests(root, result)
+    validate_concurrency_tests(root, result, test_report)
     validate_no_caches(root, result)
     return result
 
@@ -543,10 +585,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate MAGO skill package integrity before packaging.")
     parser.add_argument("target", nargs="?", default=str(Path(__file__).resolve().parents[1]), help="MAGO skill root. Defaults to this script's skill root.")
     parser.add_argument("--json-output", help="Optional path to write a JSON validation report.")
+    parser.add_argument("--test-report", help="Optional hash-bound merged test report from merge_test_reports.py.")
     args = parser.parse_args(argv)
 
     target = Path(args.target).resolve()
-    result = run(target)
+    result = run(target, Path(args.test_report).resolve() if args.test_report else None)
     payload: dict[str, Any] = asdict(result)
     payload["target"] = str(target)
 
