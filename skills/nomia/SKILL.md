@@ -72,7 +72,8 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 9. Generate human reports as non-authoritative projections from canonical facts. Include projection authority, canonical source, generation timestamp, evidence-as-of timestamp, unknowns, stale facts, conflicts, and lossy fields when applicable.
 10. Preserve missing volatile facts as `unknown`, `null`, empty lists, or explicit unknown prose.
 11. Build `nomia_to_mago` envelopes with `scripts/ecosystem_handoff.py`; validate incoming `mago_to_nomia` and `magia_to_nomia` before using them as attributed governance evidence. Preserve source package version, provenance, freshness, unknowns, conflicts, mapping version, and the original technical authority.
-12. Validate every touched artifact. For repository-facing writes also validate board paths; for package or readiness claims run the complete validation ledger.
+12. Require strict handoff v2 and exact package versions. Technical completion never closes governance without `scripts/validate_governance_closure.py`, an explicit Nomia decision, and external release evidence.
+13. Validate every touched artifact. For repository-facing writes also validate board paths; for package or readiness claims run the complete validation ledger.
 
 ## Script Routing
 
@@ -110,6 +111,8 @@ Every response includes:
 For activation, scenario, benchmark, or package-readiness work, also include scenario categories, measured-versus-structural status, exact validator output, package hash and release attestation when produced, and residual evidence gaps. Do not claim activation precision, recall, robustness, output conformance, technical completion, validation, or release unless the corresponding prompts or commands were executed and attributed.
 
 Repository-facing writes close only after touched artifacts pass their validators and path validation passes or is explicitly blocked by missing repository context. Legacy governance records are not a compatibility mode; adapt them into current artifacts with externally supplied identities or mark them unresolved read-only input.
+
+Historical governance inputs are isolated to the explicit `governance-adapt` mode and are never accepted as ecosystem handoff compatibility.
 
 ## Acceptance Gates
 

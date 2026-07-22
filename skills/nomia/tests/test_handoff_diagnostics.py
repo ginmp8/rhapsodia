@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+import ecosystem_handoff as handoff
 spec = importlib.util.spec_from_file_location("evaluate_governance_diagnostics", ROOT / "scripts" / "evaluate_governance.py")
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
@@ -16,27 +18,32 @@ AS_OF = datetime(2026, 7, 20, tzinfo=timezone.utc)
 
 class HandoffDiagnosticTests(unittest.TestCase):
     def envelope(self):
-        return {
-            "direction": "nomia_to_mago",
-            "source": "roadmap.yaml",
-            "observed_at": "2026-07-20T12:00:00+00:00",
-            "provenance": "decision-1",
-            "freshness_days": 30,
-            "payload": {
-                "feature_key": "demo-feature",
-                "outcome": "Outcome",
-                "scope_summary": "Scope",
-                "owner": "Owner",
-                "dependencies": [],
-                "readiness": "ready",
-                "candidate_spec_id": "spec-2026-07-20-demo-feature",
-                "candidate_spec_id_provenance": "registry/spec-2026-07-20-demo-feature.yaml",
-            },
+        payload = {
+            "feature_key": "demo-feature",
+            "outcome": "Outcome",
+            "scope_summary": "Scope",
+            "owner": "Owner",
+            "business_priority": {"level": "high", "owner": "nomia", "source": "roadmap.yaml", "observed_at": AS_OF.isoformat()},
+            "dependencies": [],
+            "governance_readiness": "ready",
+            "candidate_spec_id": "spec-2026-07-20-demo-feature",
+            "candidate_spec_id_provenance": "registry/spec-2026-07-20-demo-feature.yaml",
         }
+        return handoff.build_envelope(
+            direction="nomia_to_mago", payload=payload, source="roadmap.yaml",
+            authority="nomia", evidence_refs=["decision-1"],
+            observed_at=AS_OF.isoformat(), freshness_days=30, root=ROOT,
+        )
+
+    @staticmethod
+    def refresh_id(env):
+        env["handoff_id"] = handoff.handoff_id_for(env)
+        return env
 
     def test_missing_field_has_actionable_remediation(self):
         env = self.envelope()
         del env["payload"]["outcome"]
+        self.refresh_id(env)
         result = mod.validate_handoff(env, AS_OF)
         self.assertEqual(result["status"], "rejected")
         self.assertIn("payload.outcome", result["missing_fields"])
@@ -45,6 +52,7 @@ class HandoffDiagnosticTests(unittest.TestCase):
     def test_technical_content_routes_to_correct_authority(self):
         env = self.envelope()
         env["payload"]["tasks"] = ["Implement migration"]
+        self.refresh_id(env)
         result = mod.validate_handoff(env, AS_OF)
         self.assertEqual(result["status"], "rejected")
         self.assertTrue(any("Mago or Magia" in item for item in result["remediation"]))

@@ -1,14 +1,11 @@
 {
   "compatibility": {
-    "legacy_aliases": {
-      "freshness_days": "freshness.max_age_days",
-      "readiness": "governance_readiness",
-      "source": "provenance.source"
-    },
-    "legacy_nomia_envelope": "compatible-with-migration",
-    "new_writers_must_emit_schema_version": "1.0.0"
+    "classification": "breaking-no-legacy",
+    "legacy_read_support": false,
+    "mixed_package_versions_allowed": false,
+    "required_ecosystem_release": "1.6.0"
   },
-  "contract_id": "nomia-mago-magia-handoff-v1",
+  "contract_id": "nomia-mago-magia-handoff-v2",
   "directions": {
     "magia_to_mago": {
       "boolean_payload": [
@@ -31,6 +28,8 @@
         ]
       },
       "forbidden_payload_keys": [
+        "priority",
+        "order_hint",
         "rewritten_prd",
         "rewritten_acceptance_criteria",
         "rewritten_tasks",
@@ -84,32 +83,13 @@
         ]
       },
       "forbidden_payload_keys": [
+        "priority",
+        "order_hint",
         "governance_state",
         "business_priority",
         "business_risk_acceptance",
         "release_notes",
         "stakeholder_message"
-      ],
-      "legacy_enum_payload": {
-        "execution_state": [
-          "unknown",
-          "not_started",
-          "ready",
-          "in_progress",
-          "blocked",
-          "complete"
-        ],
-        "validation_state": [
-          "unknown",
-          "not_started",
-          "in_progress",
-          "blocked",
-          "passed",
-          "failed"
-        ]
-      },
-      "legacy_required_payload": [
-        "evidence_reference"
       ],
       "list_payload": [
         "delivery_impacts"
@@ -141,15 +121,11 @@
           "draft",
           "ready",
           "blocked"
-        ],
-        "technical_criticality": [
-          "low",
-          "normal",
-          "high",
-          "critical"
         ]
       },
       "forbidden_payload_keys": [
+        "priority",
+        "order_hint",
         "governance_state",
         "business_priority_override",
         "runtime_evidence",
@@ -163,6 +139,7 @@
         "validation_refs"
       ],
       "object_payload": [
+        "technical_criticality",
         "execution_sequence"
       ],
       "producer": "mago",
@@ -192,6 +169,7 @@
         ],
         "planning_state": [
           "planned",
+          "ready",
           "in_progress",
           "blocked",
           "done",
@@ -199,26 +177,13 @@
         ]
       },
       "forbidden_payload_keys": [
+        "priority",
+        "order_hint",
         "business_priority",
         "business_priority_override",
         "governance_state",
         "stakeholder_status",
         "business_risk_acceptance"
-      ],
-      "legacy_enum_payload": {
-        "planning_state": [
-          "unknown",
-          "not_started",
-          "planned",
-          "ready",
-          "blocked",
-          "complete"
-        ]
-      },
-      "legacy_required_payload": [
-        "spec_id",
-        "planning_state",
-        "planning_evidence"
       ],
       "object_payload": [
         "dependency_summary",
@@ -240,13 +205,6 @@
     "nomia_to_mago": {
       "consumer": "mago",
       "enum_payload": {
-        "business_priority": [
-          "unknown",
-          "low",
-          "medium",
-          "high",
-          "urgent"
-        ],
         "governance_readiness": [
           "unknown",
           "draft",
@@ -257,6 +215,8 @@
         ]
       },
       "forbidden_payload_keys": [
+        "priority",
+        "order_hint",
         "architecture",
         "architecture_decision",
         "design",
@@ -268,16 +228,11 @@
         "technical_criticality",
         "execution_sequence"
       ],
-      "legacy_required_payload": [
-        "feature_key",
-        "outcome",
-        "scope_summary",
-        "owner",
-        "dependencies",
-        "readiness"
-      ],
       "list_payload": [
         "dependencies"
+      ],
+      "object_payload": [
+        "business_priority"
       ],
       "producer": "nomia",
       "required_payload": [
@@ -289,45 +244,12 @@
         "dependencies",
         "governance_readiness"
       ]
-    },
-    "nomia_to_stakeholder": {
-      "consumer": "stakeholder",
-      "forbidden_payload_keys": [
-        "unredacted_secret",
-        "private_key",
-        "credential"
-      ],
-      "legacy_required_payload": [
-        "audience",
-        "summary",
-        "unknowns",
-        "decision_needed"
-      ],
-      "list_payload": [
-        "unknowns",
-        "evidence_references"
-      ],
-      "producer": "nomia",
-      "required_payload": [
-        "audience",
-        "summary",
-        "unknowns",
-        "decision_needed",
-        "evidence_references"
-      ]
     }
   },
+  "ecosystem_release": "1.6.0",
   "envelope": {
     "freshness_required_fields": [
       "max_age_days"
-    ],
-    "legacy_required_fields": [
-      "direction",
-      "source",
-      "observed_at",
-      "provenance",
-      "freshness_days",
-      "payload"
     ],
     "provenance_required_fields": [
       "source",
@@ -336,6 +258,7 @@
     ],
     "required_fields": [
       "schema_version",
+      "ecosystem_release",
       "direction",
       "source_skill",
       "source_version",
@@ -345,10 +268,11 @@
       "freshness",
       "payload",
       "unknowns",
-      "conflicts"
+      "conflicts",
+      "handoff_id"
     ]
   },
-  "purpose": "Versioned, mechanically validated handoff envelopes for the Nomia, Mago, and Magia ecosystem.",
+  "purpose": "Strict, versioned, mechanically validated handoff envelopes for the Nomia, Mago, and Magia ecosystem.",
   "roles": {
     "magia": {
       "consumes": [
@@ -375,12 +299,11 @@
         "magia_to_nomia"
       ],
       "produces": [
-        "nomia_to_mago",
-        "nomia_to_stakeholder"
+        "nomia_to_mago"
       ]
     }
   },
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "state_mapping": {
     "magia_execution_to_nomia": {
       "blocked": "blocked",
@@ -400,8 +323,9 @@
       "cancelled": "unknown",
       "done": "complete",
       "in_progress": "planned",
-      "planned": "planned"
+      "planned": "planned",
+      "ready": "ready"
     },
-    "version": "1.0.0"
+    "version": "2.0.0"
   }
 }

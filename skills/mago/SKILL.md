@@ -11,7 +11,7 @@ Plan intended technical work from Nomia intake and repository evidence. Mago own
 
 - Nomia owns requester, owner, due date, `business_priority`, stakeholders, roadmap, status, release notes, and governance decisions.
 - Mago owns intended requirements, design, decisions, tasks, validation plans, `technical_criticality`, `execution_sequence`, technical risks, and execution handoff. Apply the [ecosystem priority contract](references/priority-contract.md); never convert business priority into technical criticality automatically.
-- Cross-skill transfers use the versioned [ecosystem handoff contract](references/ecosystem-handoff-contract.md) and local `scripts/ecosystem_handoff.py`. Mago consumes `nomia_to_mago` and `magia_to_mago`; it produces `mago_to_magia` and `mago_to_nomia`. A handoff transfers attributed evidence, never ownership.
+- Consume `nomia_to_mago` and `magia_to_mago`, and produce `mago_to_magia` and `mago_to_nomia`, only through the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) and `scripts/ecosystem_handoff.py`.
 - Implementation and runtime evidence belong exclusively to Magia. Mago may read Magia evidence only for reconciliation and must not rewrite it.
 - A Mago planning boundary is an authoring boundary, not an execution prohibition: execution-required tasks are valid planning outputs when bounded, evidenced, assigned to downstream Magia, and paired with a validation path. Mago never performs those tasks.
 
@@ -75,17 +75,18 @@ Select exactly one write mode per mutation step; the public lifecycle may traver
 8. For multi-artifact writes, use the [mutation transaction and resume contract](references/mutation-transaction-and-resume.md) and `scripts/mutation_transaction.py`: fingerprint inspected state, stage outside canonical destinations, validate before atomic promotion, detect drift, resume safely, and require verified rollback after partial failure. Keep `manifest.yaml.mutation_state` non-clean until recovery completes.
 9. When visibility helps, run `scripts/render_planning_compass.py` for the external [planning compass](references/planning-compass.md) or `scripts/render_execution_waves.py` for the [execution-wave projection](references/execution-wave-projection.md); both remain disposable and non-authoritative.
 10. Handoff only validated intended work with a clean mutation state. Reconcile read-only and report: conforms to plan, execution deviation, unmet acceptance criteria, obsolete planned task, newly discovered work, required planning revision, or no-change convergence.
-
-After that gate passes, build `mago_to_magia` or `mago_to_nomia` envelopes with `scripts/ecosystem_handoff.py`, validate the produced envelope, and preserve source version, provenance, freshness, unknowns, conflicts, and state-mapping version. Validate incoming `nomia_to_mago` or `magia_to_mago` before consuming it.
+11. Build and validate `mago_to_magia` or `mago_to_nomia` envelopes with `scripts/ecosystem_handoff.py`; reject mixed ecosystem versions before mutation and consume `magia_to_mago` only as attributed execution evidence.
 
 ## Templates, scripts, and validation
 
 Templates under `assets/templates/` are structural inputs, not defaults to copy blindly. Use `scripts/create_planning_identity.py` for identity/registry creation and `scripts/write_artifact_scaffold.py` for supported scaffolds. `scripts/mago_utils.py` and `scripts/concurrent_model.py` are import-only helpers, not CLIs. Load branch guidance only when triggered: [activation routing](references/activation-routing.md), [brownfield discovery summary](references/brownfield-discovery-summary.md), [operating rules](references/operating-rules.md), [roadmap evidence](references/roadmap-evidence-input.md), [RFC quality](references/rfc-quality.md), [planning-to-execution handoff](references/planning-execution-handoff.md), [validation and packaging](references/validation-and-packaging.md), or [installation and release](references/installation-and-release.md).
 
+Ecosystem releases additionally require `scripts/validate_ecosystem_handoff_contract.py`, `scripts/validate_ecosystem_compatibility.py`, and `scripts/run_ecosystem_flow_harness.py` against resolved peer roots:
+
 Use the relevant validators:
 
 - artifact/package/repository: `scripts/validate_artifact.py`, `scripts/validate_package.py`, `scripts/validate_repo_board.py`; governed quality and triggered technical content: `scripts/validate_plan_quality.py`, `scripts/validate_clarification_readiness.py`, `scripts/validate_triggered_artifact.py`, `scripts/validate_security_risk.py --require-v2`;
-- boundary/evidence/handoff/generated views: `scripts/validate_boundary.py`, `scripts/validate_evidence_contract.py`, `scripts/validate_planning_execution_handoff.py`, `scripts/ecosystem_handoff.py`, `scripts/validate_ecosystem_handoff_contract.py`, `scripts/validate_generated_view_contract.py`, `scripts/validate_planning_experience.py`;
+- boundary/evidence/handoff/generated views: `scripts/validate_boundary.py`, `scripts/validate_evidence_contract.py`, `scripts/validate_planning_execution_handoff.py`, `scripts/validate_generated_view_contract.py`, `scripts/validate_planning_experience.py`;
 - SDD semantics: `scripts/render_traceability.py`, `scripts/validate_traceability.py`, `scripts/validate_artifact_matrix.py`, `scripts/validate_change_delta.py`, `scripts/sdd_adapter.py`, `scripts/validate_sdd_adapter_report.py`, `scripts/reconcile_planning.py`;
 - skill/package integrity: `scripts/validate_release_metadata.py`, `scripts/run_sdd_evidence_harness.py`, `scripts/merge_evidence_reports.py`, `scripts/validate_skill_package.py`, and `scripts/validate_distribution.py`; package only after all gates pass.
 

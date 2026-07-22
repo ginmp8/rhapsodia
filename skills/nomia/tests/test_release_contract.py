@@ -31,7 +31,7 @@ class ReleaseContractTests(unittest.TestCase):
             shutil.copy2(source, target)
         return root
 
-    def configure_agent_migration(self, root: Path, version: str = "2.2.0") -> None:
+    def configure_agent_migration(self, root: Path, version: str = "1.2.0") -> None:
         protected_path = root / "agents" / "openai.yaml"
         protected_path.write_text(
             protected_path.read_text(encoding="utf-8") + "\n# migrated test fixture\n",
@@ -107,8 +107,8 @@ class ReleaseContractTests(unittest.TestCase):
             root = self.copy_contract_fixture(Path(raw))
             self.configure_agent_migration(root)
             migration = json.loads((root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
-            self.assertEqual(migration["migrations"][0]["version"], "2.2.0")
-            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "3.1.0")
+            self.assertEqual(migration["migrations"][0]["version"], "1.2.0")
+            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "1.6.0")
             self.assertEqual(validate_release_contract(root), [])
 
     def test_future_protected_file_migration_fails_closed(self) -> None:

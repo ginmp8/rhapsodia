@@ -1,24 +1,26 @@
 {
+  "breaking_changes": true,
+  "changelog": "CHANGELOG.md",
+  "compatibility_policy": "references/installation-and-release.md",
+  "ecosystem_contract": "references/ecosystem-compatibility.json",
+  "ecosystem_release": "1.6.0",
   "name": "mago",
-  "version": "3.1.0",
-  "released_at": "2026-07-22",
   "package_schema": "3",
-  "python": ">=3.11",
   "products": [
     "chatgpt",
     "codex",
     "api",
     "atlas"
   ],
-  "compatibility_policy": "references/installation-and-release.md",
-  "changelog": "CHANGELOG.md",
-  "breaking_changes": false,
-  "support_boundary": "planning artifacts and deterministic validators; no product-code execution or runtime evidence",
+  "python": ">=3.11",
+  "released_at": "2026-07-22",
   "runtime_dependencies": [
     {
       "distribution": "PyYAML",
       "import": "yaml",
       "specifier": ">=6.0,<7"
     }
-  ]
+  ],
+  "support_boundary": "planning artifacts and deterministic validators; no product-code execution or runtime evidence",
+  "version": "1.6.0"
 }

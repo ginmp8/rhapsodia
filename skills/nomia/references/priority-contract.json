@@ -1,103 +1,128 @@
 {
-  "schema_version": "2.0.0",
-  "contract_id": "nomia-mago-magia-priority-v2",
-  "purpose": "Assign business priority, technical criticality, and dependency-safe execution sequencing to distinct owners with no generic priority compatibility surface.",
+  "compatibility": {
+    "accepted_fields": {
+      "magia": [
+        "business_priority",
+        "technical_criticality",
+        "execution_sequence"
+      ],
+      "mago": [
+        "business_priority",
+        "technical_criticality",
+        "execution_sequence"
+      ],
+      "nomia": [
+        "business_priority"
+      ]
+    },
+    "classification": "breaking-no-legacy",
+    "legacy_read_support": false,
+    "migration_policy": "Records using rejected fields must be migrated outside runtime validation before use; no package performs implicit conversion.",
+    "rejected_fields": [
+      "priority",
+      "order_hint"
+    ]
+  },
+  "compatibility_manifest": "references/ecosystem-compatibility.json",
   "concepts": {
     "business_priority": {
-      "owner": "nomia",
-      "values": [
-        "unknown",
-        "low",
-        "medium",
-        "high",
-        "urgent"
+      "consumers": [
+        "mago",
+        "magia"
       ],
+      "owner": "nomia",
       "required_projection_fields": [
         "level",
         "owner",
         "source",
         "observed_at"
       ],
-      "consumers": [
-        "mago",
-        "magia"
-      ]
-    },
-    "technical_criticality": {
-      "owner": "mago",
       "values": [
+        "unknown",
         "low",
-        "normal",
+        "medium",
         "high",
-        "critical"
-      ],
-      "required_fields": [
-        "level",
-        "owner",
-        "rationale"
-      ],
-      "consumers": [
-        "magia",
-        "nomia"
+        "urgent"
       ]
     },
     "execution_sequence": {
-      "owner": "mago",
+      "consumers": [
+        "magia",
+        "nomia"
+      ],
       "lanes": [
         "expedite",
         "fixed_date",
         "standard",
         "deferred"
       ],
+      "owner": "mago",
       "required_fields": [
         "rank",
         "lane",
         "owner",
         "rationale"
-      ],
+      ]
+    },
+    "technical_criticality": {
       "consumers": [
         "magia",
         "nomia"
+      ],
+      "owner": "mago",
+      "required_fields": [
+        "level",
+        "owner",
+        "rationale"
+      ],
+      "values": [
+        "low",
+        "normal",
+        "high",
+        "critical"
       ]
     }
   },
+  "contract_id": "nomia-mago-magia-priority-v2",
+  "ecosystem_release": "1.6.0",
   "mapping_guidance": [
     {
       "business_priority": "unknown",
-      "suggested_lanes": [],
-      "ready_allowed": false
+      "ready_allowed": false,
+      "suggested_lanes": []
     },
     {
       "business_priority": "low",
+      "ready_allowed": true,
       "suggested_lanes": [
         "deferred"
-      ],
-      "ready_allowed": true
+      ]
     },
     {
       "business_priority": "medium",
+      "ready_allowed": true,
       "suggested_lanes": [
         "standard"
-      ],
-      "ready_allowed": true
+      ]
     },
     {
       "business_priority": "high",
+      "ready_allowed": true,
       "suggested_lanes": [
         "standard",
         "fixed_date"
-      ],
-      "ready_allowed": true
+      ]
     },
     {
       "business_priority": "urgent",
+      "ready_allowed": true,
       "suggested_lanes": [
         "expedite",
         "fixed_date"
-      ],
-      "ready_allowed": true
+      ]
     }
   ],
+  "purpose": "Assign business priority, technical criticality, and dependency-safe execution sequencing to distinct owners with no generic priority compatibility surface.",
   "rules": [
     "Nomia is the only writer of business_priority.",
     "Mago is the only writer of technical_criticality and execution_sequence.",
@@ -109,28 +134,5 @@
     "A non-unknown business priority projection requires Nomia provenance and observation time.",
     "The generic fields priority and order_hint are unsupported and must be rejected by every package."
   ],
-  "compatibility": {
-    "classification": "breaking-no-legacy",
-    "legacy_read_support": false,
-    "accepted_fields": {
-      "nomia": [
-        "business_priority"
-      ],
-      "mago": [
-        "business_priority",
-        "technical_criticality",
-        "execution_sequence"
-      ],
-      "magia": [
-        "business_priority",
-        "technical_criticality",
-        "execution_sequence"
-      ]
-    },
-    "rejected_fields": [
-      "priority",
-      "order_hint"
-    ],
-    "migration_policy": "Records using rejected fields must be migrated outside runtime validation before use; no package performs implicit conversion."
-  }
+  "schema_version": "2.0.0"
 }

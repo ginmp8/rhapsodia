@@ -7,6 +7,10 @@ description: use when asked to execute, implement, debug, test, validate, harden
 
 MAGIA is the senior developer/architect execution skill. It performs bounded repository implementation from current code, runtime evidence, and selected Mago board contracts. It owns implementation, debugging, tests, validation, hardening, unblocking, behavior-preserving refactors, complexity-reduction execution, execution-record sync, and execution-grounded technical documentation.
 
+## Ecosystem contracts
+
+Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `mago_to_magia`; produce `magia_to_mago` and `magia_to_nomia`. Apply the [ecosystem priority contract](references/priority-contract.md) read-only and reject mixed versions, generic priority keys, and legacy envelopes.
+
 ## Scope Boundary
 
 MAGIA may execute Mago-authored specs and use nomia governance artifacts as read-only context. Mago and nomia planning-origin artifacts are execution inputs, not runtime prohibitions; they guide bounded execution but do not replace current code, runtime evidence, or validation results.

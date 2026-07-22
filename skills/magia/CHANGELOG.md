@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.0 - 2026-07-22
+
+- Adopt exact ecosystem compatibility with Mago and Nomia `1.6.0`.
+- Upgrade ecosystem handoffs to strict schema v2 with deterministic ids, exact package versions, no legacy aliases, and object-shaped priority contracts.
+- Carry and validate byte-equivalent priority, handoff, and compatibility contracts locally without runtime dependency on peer skills.
+- Add the integrated Nomia-to-Mago-to-Magia reconciliation and closure harness.
+- Supersede the 1.5.0 handoff-v1 compatibility surface; historical changelog entries below describe their release-time behavior and do not enable current runtime compatibility.
+
 ## 1.5.0 - 2026-07-22
 
 - Added a versioned, mechanically validated ecosystem handoff contract carried locally by MAGIA.

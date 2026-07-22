@@ -40,7 +40,13 @@ The year directory must match the year encoded in `cycle_id`. The registry filen
 
 ## Registry Contract
 
-A registry entry uses `kind: mago-spec` and includes `spec_id`, `cycle_id`, `feature_key`, `feature_version`, title, type, classification, created timestamp, status, priority, optional order hint, dependencies, supersession and handoff data.
+A registry entry uses `kind: mago-spec` and includes `spec_id`, `cycle_id`, `feature_key`, `feature_version`, title, type, classification, created timestamp, status, dependencies, supersession, handoff data, and the three explicitly separated scheduling concepts:
+
+- `business_priority`: Nomia-owned read-only evidence (`unknown`, `low`, `medium`, `high`, `urgent`) with source and observation time when known;
+- `technical_criticality`: Mago-owned technical impact/risk (`low`, `normal`, `high`, `critical`) with rationale for non-default values;
+- `execution_sequence`: Mago-owned dependency-safe rank/lane/rationale.
+
+Generic `priority` and `order_hint` fields are invalid. MAGIA consumes these values and validates their provenance; it never changes business priority, technical criticality, or planning sequence.
 
 Spec statuses: `planned`, `in_progress`, `blocked`, `done`, `cancelled`, `superseded`.
 

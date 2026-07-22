@@ -18,7 +18,7 @@ Load when execution updates tasks.md, registry/<spec_id>.yaml, manifest.yaml, va
 
 ## Canonical Structure
 
-- `registry/<spec_id>.yaml`: preserve `kind`, `spec_id`, `cycle_id`, `feature_key`, `feature_version`, `title`, `type`, `classification`, `created_at`, `priority`, `order_hint`, dependency fields, supersession fields, handoff, and import provenance. MAGIA may update only evidence-backed technical execution `status`.
+- `registry/<spec_id>.yaml`: preserve `kind`, `spec_id`, `cycle_id`, `feature_key`, `feature_version`, `title`, `type`, `classification`, `created_at`, Nomia-owned `business_priority`, Mago-owned `technical_criticality`, Mago-owned `execution_sequence`, dependency fields, supersession fields, handoff, and import provenance. MAGIA may update only evidence-backed technical execution `status`.
 - manifest.yaml: preserve field set/order, including `kind`, immutable identity fields, `status`, `phase`, `feature_version`, `created_at`, `source_of_truth`, `traceability`, and optional last_execution. Canonical last_execution keeps `task_id` required and `date`, `summary`, `files_changed` optional.
 - tasks.md: preserve phase headings, task order, task ids, metadata, and only toggle existing checkboxes for tasks completed in the current run.
 - validation.md: read-only planning validation plan; preserve when encountered and do not append new runtime evidence.

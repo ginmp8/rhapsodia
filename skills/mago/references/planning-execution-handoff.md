@@ -39,19 +39,6 @@ For implementation, integration, validation, hardening, migration, or rollout ta
 
 If a task cannot name an affected boundary or validation path, split, refine, or block the planning output as under-specified. Do not mark implementation itself as the blocker.
 
-## Typed Envelope Handoff
-
-Use `references/ecosystem-handoff-contract.json` and local `scripts/ecosystem_handoff.py` for mechanical transfer. Mago consumes `nomia_to_mago` governance context before planning and `magia_to_mago` execution findings during reconciliation. Mago produces `mago_to_magia` only after the planning package and selected tasks validate, and produces `mago_to_nomia` only as attributed planning evidence.
-
-The `mago_to_magia` payload references requirements, acceptance criteria, tasks, validation, technical criticality, and dependency-safe execution sequence; it does not duplicate runtime evidence or governance decisions. The `mago_to_nomia` payload preserves Mago's source planning state and emits the contract-defined Nomia projection with `mapping_version`. Never freehand a translated state or silently rewrite business priority.
-
-Before delivery, run both producer and consumer validation:
-
-```text
-python scripts/ecosystem_handoff.py build --direction mago_to_magia --payload <payload.json> --source <manifest-or-plan> --authority mago --evidence-ref <ref> --output <handoff.json>
-python scripts/ecosystem_handoff.py validate --input <handoff.json> --operation produce
-```
-
 ## Reverse Handoff
 
 When MAGIA reports `technical-gap-note.md`, implementation ADRs, validation gaps, or contradictions with code/runtime truth, MAGO may refine PRD interpretation, technical design, task definitions, dependencies, validation plans, registry handoff wording, or execution handoff wording. When MAGIA reports release posture, stakeholder risk, ownership, due date, accepted business risk, or go/no-go impact, route that evidence to nomia instead of updating delivery governance from MAGO.

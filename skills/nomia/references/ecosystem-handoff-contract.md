@@ -1,6 +1,6 @@
-# Ecosystem Handoff Contract
+# Ecosystem Handoff Contract v2
 
-Use this contract whenever Nomia, Mago, or Magia transfers governed facts, planning intent, execution instructions, implementation evidence, or delivery-impact evidence to another ecosystem skill.
+Use this contract whenever Nomia, Mago, or Magia transfers governed facts, planning intent, execution instructions, implementation evidence, or delivery-impact evidence to another ecosystem skill. The machine-readable source is [ecosystem-handoff-contract.json](ecosystem-handoff-contract.json); coordinated package compatibility is defined by [ecosystem-compatibility.json](ecosystem-compatibility.json).
 
 ## Contract boundary
 
@@ -8,47 +8,35 @@ Each package carries its own byte-equivalent copy of `references/ecosystem-hando
 
 A typed envelope transfers attributed evidence; it never transfers authority. The producer owns only its source facts. The consumer validates the envelope before using it and preserves the source skill, source version, provenance, observation time, freshness, unknowns, conflicts, and mapping version.
 
+## Release contract
+
+- Ecosystem release: `1.6.0`.
+- Handoff schema: `2.0.0`.
+- State mapping: `2.0.0`.
+- Compatibility: exact coordinated versions only.
+- Legacy aliases and envelopes are rejected; adaptation must occur before a handoff is built.
+
 ## Directions
 
-| Direction | Producer | Consumer | Meaning |
+| Direction | Producer | Consumer | Meaning and boundary |
 |---|---|---|---|
-| `nomia_to_mago` | Nomia | Mago | Governance outcome, scope, owner, business priority, dependencies, and readiness. |
-| `mago_to_magia` | Mago | Magia | Requirements, acceptance criteria, tasks, validation references, technical criticality, and execution sequence. |
-| `magia_to_mago` | Magia | Mago | Execution findings, deviations, validation state, and evidence requiring reconciliation. |
-| `mago_to_nomia` | Mago | Nomia | Planning state and delivery-impact projections with explicit state mapping. |
-| `magia_to_nomia` | Magia | Nomia | Execution and validation evidence with explicit state mapping. |
+| `nomia_to_mago` | Nomia | Mago | Governance outcome, scope, owner, attributed business priority, dependencies, and readiness; no technical design or tasks. |
+| `mago_to_magia` | Mago | Magia | Requirements, acceptance criteria, tasks, validation references, technical criticality, and execution sequence; no governance replacement or runtime completion claim. |
+| `magia_to_mago` | Magia | Mago | Execution findings, deviations, validation state, and evidence requiring reconciliation; no silent planning rewrite. |
+| `mago_to_nomia` | Mago | Nomia | Planning state and delivery-impact projections with explicit state mapping; no governance decision. |
+| `magia_to_nomia` | Magia | Nomia | Execution and validation evidence with explicit state mapping; no closure, business-risk acceptance, or release communication decision. |
 
 `nomia_to_stakeholder` remains a Nomia-owned projection direction and does not grant stakeholder communication authority to Mago or Magia.
 
 ## Required envelope
 
-New writers emit:
+Current writers emit `schema_version`, `ecosystem_release`, `direction`, `source_skill`, `source_version`, `target_skill`, `observed_at`, `provenance`, `freshness`, `payload`, `unknowns`, `conflicts`, and deterministic `handoff_id`. `provenance` contains `source`, `authority`, and `evidence_refs`; `freshness` contains `max_age_days`.
 
-```json
-{
-  "schema_version": "1.0.0",
-  "direction": "mago_to_magia",
-  "source_skill": "mago",
-  "source_version": "3.1.0",
-  "target_skill": "magia",
-  "observed_at": "2026-07-22T12:00:00+00:00",
-  "provenance": {
-    "source": "docs/boards/example/2026/cycles/cycle-2026-07-22-demo/specs/spec-2026-07-22-demo/manifest.yaml",
-    "authority": "mago",
-    "evidence_refs": ["tasks.md", "validation.md"]
-  },
-  "freshness": {"max_age_days": 30},
-  "payload": {},
-  "unknowns": [],
-  "conflicts": []
-}
-```
-
-Legacy Nomia envelopes may be read during migration, but new producers must emit contract v1. Legacy acceptance is compatibility evidence, not permission to keep producing the old shape.
+A stale, conflicting, malformed, wrong-role, wrong-version, tampered-id, mixed-version, or authority-violating envelope is rejected. There is no runtime compatibility switch for pre-v2 envelopes.
 
 ## State projections
 
-Source states remain authoritative in their source dimensions. Projections sent to Nomia use mapping version `1.0.0`:
+Source states remain authoritative in their source dimensions. Projections sent to Nomia use mapping version `2.0.0`:
 
 - Mago planning `done` projects to Nomia planning `complete`.
 - Magia execution `done` projects to Nomia execution `complete`.
@@ -58,22 +46,12 @@ Mappings do not let Nomia certify planning, execution, or validation. A projecte
 
 ## Commands
 
-Build an envelope with the current package as producer:
-
 ```text
+python scripts/ecosystem_handoff.py contract
 python scripts/ecosystem_handoff.py build --direction <direction> --payload <payload.json> --source <artifact-or-record> --authority <authority> --evidence-ref <ref> --freshness-days 30 --output <handoff.json>
-```
-
-Validate an envelope as the current package consumer:
-
-```text
 python scripts/ecosystem_handoff.py validate --input <handoff.json> --operation consume --json-output <validation.json>
-```
-
-Validate the local contract and role declaration:
-
-```text
 python scripts/validate_ecosystem_handoff_contract.py --target <skill-root>
+python scripts/validate_ecosystem_compatibility.py --target <skill-root> --peer-root <peer-root> --peer-root <peer-root>
 ```
 
 ## Release gate
@@ -82,6 +60,7 @@ A coordinated Mago/Magia/Nomia release must prove:
 
 1. the three local JSON contracts are byte-equivalent;
 2. every producer output is accepted by the declared consumer;
-3. positive, missing-field, stale, conflict, forbidden-content, wrong-producer, and state-mapping scenarios pass;
+3. positive, missing-field, stale, conflict, forbidden-content, wrong-producer, mixed-version, tampered-id, and state-mapping scenarios pass;
 4. package-local validators pass;
-5. the SDD Ecosystem Change Gate accepts every changed package under strict policy.
+5. the integrated Nomia-to-Mago-to-Magia reconciliation and closure harness passes;
+6. the SDD Ecosystem Change Gate reviews every changed package under strict policy.

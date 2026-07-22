@@ -1,6 +1,6 @@
 # Ecosystem Priority Contract v2
 
-This package implements `nomia-mago-magia-priority-v2`. The machine-readable source is [priority-contract.json](priority-contract.json).
+This package implements `nomia-mago-magia-priority-v2`. The machine-readable source is [priority-contract.json](priority-contract.json). The coordinated package release is frozen by [ecosystem-compatibility.json](ecosystem-compatibility.json).
 
 ## Authority
 

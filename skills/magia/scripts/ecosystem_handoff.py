@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Build and validate local Nomia/Mago/Magia ecosystem handoff envelopes."""
-
+"""Build and validate strict Nomia/Mago/Magia ecosystem handoff envelopes."""
 from __future__ import annotations
 
 import argparse
@@ -14,9 +13,12 @@ from pathlib import Path
 from typing import Any
 
 CONTRACT_FILE = "references/ecosystem-handoff-contract.json"
+COMPATIBILITY_FILE = "references/ecosystem-compatibility.json"
+PRIORITY_FILE = "references/priority-contract.json"
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SPEC_ID_RE = re.compile(r"^spec-(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$")
+HANDOFF_ID_RE = re.compile(r"^handoff-[0-9a-f]{16}$")
 
 
 def root_for_script() -> Path:
@@ -50,6 +52,16 @@ def load_contract(root: Path | None = None) -> dict[str, Any]:
     return load_json_object(base / CONTRACT_FILE, "ecosystem handoff contract")
 
 
+def load_compatibility(root: Path | None = None) -> dict[str, Any]:
+    base = (root or root_for_script()).resolve()
+    return load_json_object(base / COMPATIBILITY_FILE, "ecosystem compatibility manifest")
+
+
+def load_priority_contract(root: Path | None = None) -> dict[str, Any]:
+    base = (root or root_for_script()).resolve()
+    return load_json_object(base / PRIORITY_FILE, "ecosystem priority contract")
+
+
 def package_role(root: Path | None = None) -> str:
     package_root = (root or root_for_script()).resolve()
     direct = package_root.name.lower()
@@ -58,9 +70,9 @@ def package_role(root: Path | None = None) -> str:
     release_path = package_root / "release.json"
     if release_path.is_file():
         try:
-            release_name = str(json.loads(release_path.read_text(encoding="utf-8")).get("name") or "").lower()
-            if release_name in {"nomia", "mago", "magia"}:
-                return release_name
+            name = str(json.loads(release_path.read_text(encoding="utf-8")).get("name") or "").lower()
+            if name in {"nomia", "mago", "magia"}:
+                return name
         except (OSError, ValueError, TypeError):
             pass
     skill_path = package_root / "SKILL.md"
@@ -108,90 +120,70 @@ def valid_spec_id(value: Any) -> bool:
     return True
 
 
-def contract_errors(contract: dict[str, Any]) -> list[str]:
+def contract_errors(contract: dict[str, Any], root: Path | None = None) -> list[str]:
     errors: list[str] = []
-    if contract.get("schema_version") != "1.0.0":
-        errors.append("contract schema_version must be 1.0.0")
-    if contract.get("contract_id") != "nomia-mago-magia-handoff-v1":
-        errors.append("contract_id must be nomia-mago-magia-handoff-v1")
+    compatibility = load_compatibility(root)
+    priority = load_priority_contract(root)
+    if contract.get("schema_version") != "2.0.0":
+        errors.append("contract schema_version must be 2.0.0")
+    if contract.get("contract_id") != "nomia-mago-magia-handoff-v2":
+        errors.append("contract_id must be nomia-mago-magia-handoff-v2")
+    if contract.get("ecosystem_release") != compatibility.get("ecosystem_release"):
+        errors.append("handoff ecosystem_release must match compatibility manifest")
+    policy = contract.get("compatibility")
+    if not isinstance(policy, dict) or policy.get("classification") != "breaking-no-legacy":
+        errors.append("handoff compatibility must be breaking-no-legacy")
+    elif policy.get("legacy_read_support") is not False:
+        errors.append("handoff legacy_read_support must be false")
     envelope = contract.get("envelope")
     roles = contract.get("roles")
     directions = contract.get("directions")
     mappings = contract.get("state_mapping")
     if not isinstance(envelope, dict):
         errors.append("contract envelope must be an object")
+        envelope = {}
+    required = set(envelope.get("required_fields") or [])
+    for field in ("schema_version","ecosystem_release","source_skill","source_version","target_skill","handoff_id","payload"):
+        if field not in required:
+            errors.append(f"envelope.required_fields missing {field}")
     if not isinstance(roles, dict):
         errors.append("contract roles must be an object")
         roles = {}
     if not isinstance(directions, dict) or not directions:
         errors.append("contract directions must be a non-empty object")
         directions = {}
-    if not isinstance(mappings, dict) or not SEMVER_RE.fullmatch(str(mappings.get("version") or "")):
-        errors.append("state_mapping.version must be semantic versioning")
-    for role in ("nomia", "mago", "magia"):
+    expected_directions = set(compatibility.get("required_directions") or [])
+    if set(directions) != expected_directions:
+        errors.append("handoff directions must exactly match compatibility manifest")
+    if not isinstance(mappings, dict) or mappings.get("version") != "2.0.0":
+        errors.append("state_mapping.version must be 2.0.0")
+    for role in ("nomia","mago","magia"):
         item = roles.get(role)
         if not isinstance(item, dict):
             errors.append(f"missing role contract: {role}")
             continue
-        for field in ("produces", "consumes"):
+        for field in ("produces","consumes"):
             if not isinstance(item.get(field), list):
                 errors.append(f"roles.{role}.{field} must be a list")
     for direction, item in directions.items():
         if not isinstance(item, dict):
             errors.append(f"directions.{direction} must be an object")
             continue
-        producer = item.get("producer")
-        consumer = item.get("consumer")
-        if producer not in roles:
-            errors.append(f"directions.{direction}.producer is invalid")
-        if consumer not in {*roles, "stakeholder"}:
-            errors.append(f"directions.{direction}.consumer is invalid")
-        if producer in roles and direction not in roles[producer].get("produces", []):
-            errors.append(f"direction {direction} is not declared under producer {producer}")
-        if consumer in roles and direction not in roles[consumer].get("consumes", []):
-            errors.append(f"direction {direction} is not declared under consumer {consumer}")
+        producer, consumer = item.get("producer"), item.get("consumer")
+        if producer not in roles or consumer not in roles:
+            errors.append(f"directions.{direction} producer/consumer is invalid")
+            continue
+        if direction not in roles[producer].get("produces", []):
+            errors.append(f"direction {direction} missing from producer {producer}")
+        if direction not in roles[consumer].get("consumes", []):
+            errors.append(f"direction {direction} missing from consumer {consumer}")
         if not isinstance(item.get("required_payload"), list) or not item.get("required_payload"):
             errors.append(f"directions.{direction}.required_payload must be non-empty")
+    if priority.get("contract_id") != "nomia-mago-magia-priority-v2":
+        errors.append("priority contract id mismatch")
+    if priority.get("ecosystem_release") != compatibility.get("ecosystem_release"):
+        errors.append("priority ecosystem_release must match compatibility manifest")
     return errors
-
-
-def normalize_legacy(envelope: dict[str, Any], contract: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
-    normalized = json.loads(json.dumps(envelope))
-    warnings: list[str] = []
-    direction = str(normalized.get("direction") or "")
-    direction_contract = (contract.get("directions") or {}).get(direction) or {}
-    producer = direction_contract.get("producer")
-    consumer = direction_contract.get("consumer")
-    if normalized.get("schema_version") == contract.get("schema_version"):
-        return normalized, warnings
-    warnings.append("legacy envelope accepted only for compatibility migration; rebuild with contract v1")
-    normalized["schema_version"] = "legacy-v0"
-    normalized.setdefault("source_skill", producer)
-    normalized.setdefault("source_version", "legacy")
-    normalized.setdefault("target_skill", consumer)
-    provenance = normalized.get("provenance")
-    legacy_source = normalized.get("source")
-    if not isinstance(provenance, dict):
-        provenance = {
-            "source": str(legacy_source or provenance or "unknown"),
-            "authority": str(producer or "unknown"),
-            "evidence_refs": [str(provenance)] if provenance not in (None, "", "unknown") else [],
-        }
-    normalized["provenance"] = provenance
-    if not isinstance(normalized.get("freshness"), dict):
-        normalized["freshness"] = {"max_age_days": normalized.get("freshness_days")}
-    normalized.setdefault("unknowns", [])
-    conflicts: list[str] = []
-    if normalized.get("conflict"):
-        conflicts.append("legacy top-level conflict flag")
-    payload = normalized.get("payload") if isinstance(normalized.get("payload"), dict) else {}
-    if payload.get("conflict"):
-        conflicts.append("legacy payload conflict flag")
-    normalized.setdefault("conflicts", conflicts)
-    if direction == "nomia_to_mago" and "governance_readiness" not in payload and "readiness" in payload:
-        payload["governance_readiness"] = payload.get("readiness")
-    normalized["payload"] = payload
-    return normalized, warnings
 
 
 def recursive_forbidden(value: Any, forbidden: set[str], prefix: str = "payload") -> list[str]:
@@ -199,7 +191,7 @@ def recursive_forbidden(value: Any, forbidden: set[str], prefix: str = "payload"
     if isinstance(value, dict):
         for key, child in value.items():
             current = f"{prefix}.{key}"
-            if str(key) in forbidden:
+            if str(key) in forbidden or str(key) in {"priority", "order_hint"}:
                 errors.append(f"{current} is outside producer authority")
             errors.extend(recursive_forbidden(child, forbidden, current))
     elif isinstance(value, list):
@@ -208,59 +200,97 @@ def recursive_forbidden(value: Any, forbidden: set[str], prefix: str = "payload"
     return errors
 
 
-def validate_envelope(
-    envelope: Any,
-    *,
-    as_of: datetime | None = None,
-    role: str | None = None,
-    operation: str = "any",
-    allow_legacy: bool = False,
-    root: Path | None = None,
-) -> dict[str, Any]:
+def handoff_id_for(envelope: dict[str, Any]) -> str:
+    canonical_data = {key: value for key, value in envelope.items() if key != "handoff_id"}
+    canonical = json.dumps(canonical_data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return "handoff-" + hashlib.sha256(canonical).hexdigest()[:16]
+
+
+def validate_priority_objects(payload: dict[str, Any], direction: str, priority: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    concepts = priority.get("concepts") or {}
+    if direction == "nomia_to_mago":
+        item = payload.get("business_priority")
+        if not isinstance(item, dict):
+            return ["invalid payload.business_priority"]
+        allowed = ((concepts.get("business_priority") or {}).get("values") or [])
+        if item.get("level") not in allowed:
+            errors.append("invalid payload.business_priority.level")
+        if item.get("owner") != "nomia":
+            errors.append("invalid payload.business_priority.owner")
+        if item.get("level") != "unknown":
+            if item.get("source") in (None, "", "unknown"):
+                errors.append("missing payload.business_priority.source")
+            if parse_time(item.get("observed_at")) is None:
+                errors.append("invalid payload.business_priority.observed_at")
+    if direction == "mago_to_magia":
+        criticality = payload.get("technical_criticality")
+        sequence = payload.get("execution_sequence")
+        if not isinstance(criticality, dict):
+            errors.append("invalid payload.technical_criticality")
+        else:
+            allowed = ((concepts.get("technical_criticality") or {}).get("values") or [])
+            if criticality.get("level") not in allowed:
+                errors.append("invalid payload.technical_criticality.level")
+            if criticality.get("owner") != "mago":
+                errors.append("invalid payload.technical_criticality.owner")
+            if criticality.get("rationale") in (None, "", []):
+                errors.append("missing payload.technical_criticality.rationale")
+        if not isinstance(sequence, dict):
+            errors.append("invalid payload.execution_sequence")
+        else:
+            allowed = ((concepts.get("execution_sequence") or {}).get("lanes") or [])
+            if sequence.get("lane") not in allowed:
+                errors.append("invalid payload.execution_sequence.lane")
+            if not isinstance(sequence.get("rank"), int) or sequence.get("rank") < 0:
+                errors.append("invalid payload.execution_sequence.rank")
+            if sequence.get("owner") != "mago":
+                errors.append("invalid payload.execution_sequence.owner")
+            if sequence.get("rationale") in (None, "", []):
+                errors.append("missing payload.execution_sequence.rationale")
+    return errors
+
+
+def validate_envelope(envelope: Any, *, as_of: datetime | None = None, role: str | None = None, operation: str = "any", root: Path | None = None) -> dict[str, Any]:
     contract = load_contract(root)
+    compatibility = load_compatibility(root)
+    priority = load_priority_contract(root)
     reasons: list[str] = []
-    warnings: list[str] = []
     if not isinstance(envelope, dict):
-        return {"status": "rejected", "direction": None, "reasons": ["handoff envelope must be a mapping"], "warnings": []}
-    native = envelope.get("schema_version") == contract.get("schema_version")
-    if not native and not allow_legacy:
-        reasons.append("invalid schema_version; contract v1 is required")
-        normalized = dict(envelope)
-    else:
-        normalized, migration_warnings = normalize_legacy(envelope, contract)
-        warnings.extend(migration_warnings)
+        return {"status":"rejected","direction":None,"reasons":["handoff envelope must be a mapping"],"warnings":[]}
+    normalized = dict(envelope)
+    if normalized.get("schema_version") != contract.get("schema_version"):
+        reasons.append("invalid schema_version; contract v2 is required")
+    if normalized.get("ecosystem_release") != compatibility.get("ecosystem_release"):
+        reasons.append("invalid ecosystem_release")
     direction = normalized.get("direction")
-    directions = contract.get("directions") or {}
-    direction_contract = directions.get(str(direction))
+    direction_contract = (contract.get("directions") or {}).get(str(direction))
     if not isinstance(direction_contract, dict):
         reasons.append("invalid direction")
         direction_contract = {}
-    producer = direction_contract.get("producer")
-    consumer = direction_contract.get("consumer")
-
-    if native:
-        for field in (contract.get("envelope") or {}).get("required_fields", []):
-            if field not in normalized or normalized.get(field) in (None, ""):
-                reasons.append(f"missing {field}")
-        if normalized.get("source_skill") != producer:
-            reasons.append("invalid source_skill for direction")
-        if normalized.get("target_skill") != consumer:
-            reasons.append("invalid target_skill for direction")
-        if SEMVER_RE.fullmatch(str(normalized.get("source_version") or "")) is None:
-            reasons.append("invalid source_version")
-    else:
-        for field in (contract.get("envelope") or {}).get("legacy_required_fields", []):
-            if field not in envelope or envelope.get(field) in (None, "", []):
-                reasons.append(f"missing {field}")
-
+    producer, consumer = direction_contract.get("producer"), direction_contract.get("consumer")
+    for field in (contract.get("envelope") or {}).get("required_fields", []):
+        if field not in normalized or normalized.get(field) in (None, ""):
+            reasons.append(f"missing {field}")
+    if normalized.get("source_skill") != producer:
+        reasons.append("invalid source_skill for direction")
+    if normalized.get("target_skill") != consumer:
+        reasons.append("invalid target_skill for direction")
+    source_version = str(normalized.get("source_version") or "")
+    if SEMVER_RE.fullmatch(source_version) is None:
+        reasons.append("invalid source_version")
+    elif source_version != str((compatibility.get("packages") or {}).get(str(producer)) or ""):
+        reasons.append("incompatible source_version")
+    handoff_id = str(normalized.get("handoff_id") or "")
+    if HANDOFF_ID_RE.fullmatch(handoff_id) is None or handoff_id != handoff_id_for(normalized):
+        reasons.append("invalid handoff_id")
     selected_role = role or package_role(root)
     if operation == "produce" and selected_role != producer:
         reasons.append(f"invalid producer role; {producer} owns {direction}")
     if operation == "consume" and selected_role != consumer:
         reasons.append(f"invalid consumer role; {consumer} consumes {direction}")
-    if operation not in {"any", "produce", "consume"}:
+    if operation not in {"any","produce","consume"}:
         reasons.append("invalid operation")
-
     observed_at = parse_time(normalized.get("observed_at"))
     if observed_at is None:
         reasons.append("invalid observed_at")
@@ -274,7 +304,6 @@ def validate_envelope(
         stale = (check_time - observed_at).total_seconds() / 86400 > max_age_days
         if stale:
             reasons.append("evidence is stale")
-
     provenance = normalized.get("provenance")
     if not isinstance(provenance, dict):
         reasons.append("invalid provenance")
@@ -284,18 +313,16 @@ def validate_envelope(
                 reasons.append(f"missing provenance.{field}")
         if not isinstance(provenance.get("evidence_refs"), list):
             reasons.append("invalid provenance.evidence_refs")
-
-    for field in ("unknowns", "conflicts"):
+        if producer and provenance.get("authority") != producer:
+            reasons.append("invalid provenance.authority")
+    for field in ("unknowns","conflicts"):
         if not isinstance(normalized.get(field), list):
             reasons.append(f"invalid {field}")
     payload = normalized.get("payload")
     if not isinstance(payload, dict):
         reasons.append("invalid payload")
         payload = {}
-
-    required_key = "required_payload" if native else "legacy_required_payload"
-    required_payload = direction_contract.get(required_key) or direction_contract.get("required_payload") or []
-    for field in required_payload:
+    for field in direction_contract.get("required_payload", []):
         if field not in payload or payload.get(field) in (None, ""):
             reasons.append(f"missing payload.{field}")
     for field in direction_contract.get("list_payload", []):
@@ -307,15 +334,14 @@ def validate_envelope(
     for field in direction_contract.get("boolean_payload", []):
         if field in payload and not isinstance(payload.get(field), bool):
             reasons.append(f"invalid payload.{field}")
-    enum_contract = direction_contract.get("enum_payload") if native else direction_contract.get("legacy_enum_payload", direction_contract.get("enum_payload"))
-    for field, allowed in (enum_contract or {}).items():
+    for field, allowed in (direction_contract.get("enum_payload") or {}).items():
         if field in payload and payload.get(field) not in allowed:
             reasons.append(f"invalid payload.{field}")
-    forbidden_reasons = recursive_forbidden(payload, set(direction_contract.get("forbidden_payload_keys") or []))
+    forbidden = recursive_forbidden(payload, set(direction_contract.get("forbidden_payload_keys") or []))
     if direction == "nomia_to_mago":
-        forbidden_reasons = [reason.replace("outside producer authority", "outside nomia authority") for reason in forbidden_reasons]
-    reasons.extend(forbidden_reasons)
-
+        forbidden = [item.replace("outside producer authority", "outside nomia authority") for item in forbidden]
+    reasons.extend(forbidden)
+    reasons.extend(validate_priority_objects(payload, str(direction), priority))
     spec_id = payload.get("spec_id")
     if spec_id is not None and not valid_spec_id(spec_id):
         reasons.append("invalid payload.spec_id")
@@ -332,17 +358,15 @@ def validate_envelope(
     feature_key = payload.get("feature_key")
     if feature_key is not None and FEATURE_KEY_RE.fullmatch(str(feature_key)) is None:
         reasons.append("invalid payload.feature_key")
-
     mapping = contract.get("state_mapping") or {}
     mapping_version = str(mapping.get("version") or "")
-    if direction == "mago_to_nomia" and native:
-        source_state = payload.get("planning_state")
-        expected = (mapping.get("mago_planning_to_nomia") or {}).get(source_state)
+    if direction == "mago_to_nomia":
+        expected = (mapping.get("mago_planning_to_nomia") or {}).get(payload.get("planning_state"))
         if payload.get("mapping_version") != mapping_version:
             reasons.append("invalid payload.mapping_version")
         if expected is None or payload.get("nomia_planning_state") != expected:
             reasons.append("invalid payload.nomia_planning_state projection")
-    if direction == "magia_to_nomia" and native:
+    if direction == "magia_to_nomia":
         execution_expected = (mapping.get("magia_execution_to_nomia") or {}).get(payload.get("execution_state"))
         validation_expected = (mapping.get("magia_validation_to_nomia") or {}).get(payload.get("validation_state"))
         if payload.get("mapping_version") != mapping_version:
@@ -351,18 +375,10 @@ def validate_envelope(
             reasons.append("invalid payload.nomia_execution_state projection")
         if validation_expected is None or payload.get("nomia_validation_state") != validation_expected:
             reasons.append("invalid payload.nomia_validation_state projection")
-
     conflicts = normalized.get("conflicts") if isinstance(normalized.get("conflicts"), list) else []
     if conflicts:
         reasons.append("conflicting evidence")
-    blocking = [
-        reason
-        for reason in reasons
-        if reason.startswith(("invalid", "missing"))
-        or "outside producer authority" in reason
-        or "outside nomia authority" in reason
-        or "does not match" in reason
-    ]
+    blocking = [reason for reason in reasons if reason.startswith(("invalid","missing","incompatible")) or "outside producer authority" in reason or "outside nomia authority" in reason or "does not match" in reason]
     readiness = payload.get("governance_readiness", payload.get("readiness"))
     if blocking:
         status = "rejected"
@@ -370,20 +386,11 @@ def validate_envelope(
         status = "conflicting"
     elif stale:
         status = "stale"
-    elif readiness in {"draft", "unknown", False}:
+    elif readiness in {"draft","unknown",False}:
         status = "draft"
     else:
         status = "accepted"
-    return {
-        "status": status,
-        "direction": direction,
-        "schema_version": normalized.get("schema_version"),
-        "compatibility": "native-v1" if native else "legacy-v0",
-        "reasons": reasons,
-        "warnings": warnings,
-        "source_skill": normalized.get("source_skill"),
-        "target_skill": normalized.get("target_skill"),
-    }
+    return {"status":status,"direction":direction,"schema_version":normalized.get("schema_version"),"compatibility":"native-v2","reasons":reasons,"warnings":[],"source_skill":normalized.get("source_skill"),"target_skill":normalized.get("target_skill")}
 
 
 def apply_state_projection(direction: str, payload: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any]:
@@ -391,32 +398,18 @@ def apply_state_projection(direction: str, payload: dict[str, Any], contract: di
     mapping = contract.get("state_mapping") or {}
     version = mapping.get("version")
     if direction == "mago_to_nomia":
-        source = result.get("planning_state")
-        result["nomia_planning_state"] = (mapping.get("mago_planning_to_nomia") or {}).get(source)
+        result["nomia_planning_state"] = (mapping.get("mago_planning_to_nomia") or {}).get(result.get("planning_state"))
         result["mapping_version"] = version
     elif direction == "magia_to_nomia":
-        execution = result.get("execution_state")
-        validation = result.get("validation_state")
-        result["nomia_execution_state"] = (mapping.get("magia_execution_to_nomia") or {}).get(execution)
-        result["nomia_validation_state"] = (mapping.get("magia_validation_to_nomia") or {}).get(validation)
+        result["nomia_execution_state"] = (mapping.get("magia_execution_to_nomia") or {}).get(result.get("execution_state"))
+        result["nomia_validation_state"] = (mapping.get("magia_validation_to_nomia") or {}).get(result.get("validation_state"))
         result["mapping_version"] = version
     return result
 
 
-def build_envelope(
-    *,
-    direction: str,
-    payload: dict[str, Any],
-    source: str,
-    authority: str,
-    evidence_refs: list[str],
-    observed_at: str,
-    freshness_days: int,
-    unknowns: list[str] | None = None,
-    conflicts: list[str] | None = None,
-    root: Path | None = None,
-) -> dict[str, Any]:
+def build_envelope(*, direction: str, payload: dict[str, Any], source: str, authority: str, evidence_refs: list[str], observed_at: str, freshness_days: int, unknowns: list[str] | None = None, conflicts: list[str] | None = None, root: Path | None = None) -> dict[str, Any]:
     contract = load_contract(root)
+    compatibility = load_compatibility(root)
     direction_contract = (contract.get("directions") or {}).get(direction)
     if not isinstance(direction_contract, dict):
         raise ValueError(f"unsupported direction: {direction}")
@@ -425,26 +418,22 @@ def build_envelope(
         raise ValueError(f"{role} cannot produce {direction}; owner is {direction_contract.get('producer')}")
     mapped_payload = apply_state_projection(direction, payload, contract)
     envelope = {
-        "schema_version": contract["schema_version"],
-        "direction": direction,
-        "source_skill": role,
-        "source_version": package_version(root),
-        "target_skill": direction_contract["consumer"],
-        "observed_at": observed_at,
-        "provenance": {
-            "source": source,
-            "authority": authority,
-            "evidence_refs": list(evidence_refs),
-        },
-        "freshness": {"max_age_days": freshness_days},
-        "payload": mapped_payload,
-        "unknowns": list(unknowns or []),
-        "conflicts": list(conflicts or []),
+        "schema_version":contract["schema_version"],
+        "ecosystem_release":compatibility["ecosystem_release"],
+        "direction":direction,
+        "source_skill":role,
+        "source_version":package_version(root),
+        "target_skill":direction_contract["consumer"],
+        "observed_at":observed_at,
+        "provenance":{"source":source,"authority":authority,"evidence_refs":list(evidence_refs)},
+        "freshness":{"max_age_days":freshness_days},
+        "payload":mapped_payload,
+        "unknowns":list(unknowns or []),
+        "conflicts":list(conflicts or []),
     }
-    canonical = json.dumps(envelope, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    envelope["handoff_id"] = "handoff-" + hashlib.sha256(canonical).hexdigest()[:16]
+    envelope["handoff_id"] = handoff_id_for(envelope)
     result = validate_envelope(envelope, role=role, operation="produce", root=root)
-    if result["status"] not in {"accepted", "draft"}:
+    if result["status"] not in {"accepted","draft"}:
         raise ValueError("cannot build invalid handoff: " + "; ".join(result["reasons"]))
     return envelope
 
@@ -457,10 +446,9 @@ def emit_json(data: dict[str, Any], output: str | None) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build or validate a local ecosystem handoff envelope.")
+    parser = argparse.ArgumentParser(description="Build or validate a strict ecosystem handoff envelope.")
     sub = parser.add_subparsers(dest="command", required=True)
-
-    build = sub.add_parser("build", help="Build a contract-v1 envelope owned by the current package.")
+    build = sub.add_parser("build", help="Build a contract-v2 envelope owned by the current package.")
     build.add_argument("--direction", required=True)
     build.add_argument("--payload", required=True)
     build.add_argument("--source", required=True)
@@ -471,34 +459,19 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--unknown", action="append", default=[])
     build.add_argument("--conflict", action="append", default=[])
     build.add_argument("--output", required=True)
-
-    validate = sub.add_parser("validate", help="Validate an incoming or outgoing envelope.")
+    validate = sub.add_parser("validate", help="Validate an incoming or outgoing contract-v2 envelope.")
     validate.add_argument("--input", required=True)
-    validate.add_argument("--operation", choices=["any", "produce", "consume"], default="consume")
+    validate.add_argument("--operation", choices=["any","produce","consume"], default="consume")
     validate.add_argument("--as-of", default=datetime.now(timezone.utc).replace(microsecond=0).isoformat())
-    validate.add_argument("--allow-legacy", action="store_true")
     validate.add_argument("--json-output")
-
-    contract = sub.add_parser("contract", help="Validate the local contract file.")
+    contract = sub.add_parser("contract", help="Validate local handoff, priority, and compatibility contracts.")
     contract.add_argument("--json-output")
-
     args = parser.parse_args(argv)
     root = root_for_script()
     try:
         if args.command == "build":
             payload = load_json_object(Path(args.payload), "payload")
-            envelope = build_envelope(
-                direction=args.direction,
-                payload=payload,
-                source=args.source,
-                authority=args.authority,
-                evidence_refs=args.evidence_ref,
-                observed_at=args.observed_at,
-                freshness_days=args.freshness_days,
-                unknowns=args.unknown,
-                conflicts=args.conflict,
-                root=root,
-            )
+            envelope = build_envelope(direction=args.direction,payload=payload,source=args.source,authority=args.authority,evidence_refs=args.evidence_ref,observed_at=args.observed_at,freshness_days=args.freshness_days,unknowns=args.unknown,conflicts=args.conflict,root=root)
             emit_json(envelope, args.output)
             return 0
         if args.command == "validate":
@@ -506,24 +479,16 @@ def main(argv: list[str] | None = None) -> int:
             as_of = parse_time(args.as_of)
             if as_of is None:
                 raise ValueError("--as-of must be ISO-8601")
-            result = validate_envelope(
-                envelope,
-                as_of=as_of,
-                role=package_role(root),
-                operation=args.operation,
-                allow_legacy=args.allow_legacy,
-                root=root,
-            )
+            result = validate_envelope(envelope, as_of=as_of, role=package_role(root), operation=args.operation, root=root)
             emit_json(result, args.json_output)
-            return 0 if result["status"] in {"accepted", "draft"} else 1
-        errors = contract_errors(load_contract(root))
-        result = {"status": "pass" if not errors else "fail", "errors": errors, "role": package_role(root)}
+            return 0 if result["status"] in {"accepted","draft"} else 1
+        errors = contract_errors(load_contract(root), root)
+        result = {"status":"pass" if not errors else "fail","errors":errors,"role":package_role(root)}
         emit_json(result, args.json_output)
         return 0 if not errors else 1
     except (OSError, ValueError, json.JSONDecodeError) as exc:
-        print(json.dumps({"status": "error", "error": str(exc)}, indent=2, sort_keys=True))
+        print(json.dumps({"status":"error","error":str(exc)}, indent=2, sort_keys=True))
         return 2
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

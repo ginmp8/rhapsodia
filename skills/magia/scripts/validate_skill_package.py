@@ -15,6 +15,8 @@ from typing import Any
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
 from validate_ecosystem_handoff_contract import collect_errors as collect_ecosystem_handoff_errors
+from validate_priority_contract import collect_errors as collect_priority_errors
+from validate_ecosystem_compatibility import collect_errors as collect_compatibility_errors
 from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
 from security_scan import scan_bytes, scan_paths
 from package_policy import (
@@ -232,6 +234,14 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/package-delivery.md",
         "references/ecosystem-handoff-contract.md",
         "references/ecosystem-handoff-contract.json",
+        "references/ecosystem-versioning.md",
+        "references/ecosystem-compatibility.json",
+        "references/priority-contract.json",
+        "references/priority-contract.md",
+        "references/priority-contract.md",
+        "references/priority-contract.json",
+        "references/ecosystem-compatibility.json",
+        "references/ecosystem-versioning.md",
         "references/modes/adhoc.md",
         "references/modes/ralph.md",
         "references/artifacts/execution-records.md",
@@ -249,6 +259,12 @@ def validate_target(target: Path) -> dict[str, Any]:
         "scripts/validate_instruction_contract.py",
         "scripts/ecosystem_handoff.py",
         "scripts/validate_ecosystem_handoff_contract.py",
+        "scripts/run_ecosystem_flow_harness.py",
+        "scripts/validate_ecosystem_compatibility.py",
+        "scripts/validate_priority_contract.py",
+        "scripts/validate_priority_contract.py",
+        "scripts/validate_ecosystem_compatibility.py",
+        "scripts/run_ecosystem_flow_harness.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
@@ -327,6 +343,12 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(collect_ecosystem_handoff_errors(target))
     checks.append("ecosystem handoff contract")
 
+    errors.extend(collect_priority_errors(target))
+    checks.append("ecosystem priority contract")
+
+    errors.extend(collect_compatibility_errors(target))
+    checks.append("ecosystem compatibility")
+
     errors.extend(collect_boundary_errors())
     checks.append("runtime independence and ownership boundary")
 
@@ -346,6 +368,10 @@ def zip_required_resources() -> list[str]:
         "references/package-delivery.md",
         "references/ecosystem-handoff-contract.md",
         "references/ecosystem-handoff-contract.json",
+        "references/ecosystem-versioning.md",
+        "references/ecosystem-compatibility.json",
+        "references/priority-contract.json",
+        "references/priority-contract.md",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
         "scripts/board_contract.py",
@@ -355,6 +381,9 @@ def zip_required_resources() -> list[str]:
         "scripts/validate_instruction_contract.py",
         "scripts/ecosystem_handoff.py",
         "scripts/validate_ecosystem_handoff_contract.py",
+        "scripts/run_ecosystem_flow_harness.py",
+        "scripts/validate_ecosystem_compatibility.py",
+        "scripts/validate_priority_contract.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",

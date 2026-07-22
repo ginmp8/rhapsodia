@@ -33,7 +33,7 @@ def build_board(tmp_path: Path, *, dependency_status: str = "done") -> tuple[Pat
         encoding="utf-8",
     )
     (registry / f"{SPEC}.yaml").write_text(
-        f"kind: mago-spec\nspec_id: {SPEC}\ncycle_id: {CYCLE}\nfeature_key: csv-export-filtered-columns\nfeature_version: 0.1.0\ntitle: CSV Export Filtered Columns\ntype: feature\nclassification: internal\ncreated_at: 2026-04-20T00:00:00Z\nstatus: planned\npriority: normal\norder_hint: null\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
+        f"kind: mago-spec\nspec_id: {SPEC}\ncycle_id: {CYCLE}\nfeature_key: csv-export-filtered-columns\nfeature_version: 0.1.0\ntitle: CSV Export Filtered Columns\ntype: feature\nclassification: internal\ncreated_at: 2026-04-20T00:00:00Z\nstatus: planned\nbusiness_priority:\n  level: unknown\n  owner: nomia\n  source: null\n  observed_at: null\ntechnical_criticality:\n  level: normal\n  owner: mago\n  rationale: null\nexecution_sequence:\n  rank: null\n  lane: standard\n  owner: mago\n  rationale: []\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
         encoding="utf-8",
     )
     (package / "manifest.yaml").write_text(
@@ -122,6 +122,16 @@ def test_canonical_path_shape(tmp_path: Path):
 def test_board_contract_is_valid(tmp_path: Path):
     root, _ = build_board(tmp_path)
     assert validate_board(root) == []
+
+
+def test_generic_priority_aliases_are_rejected(tmp_path: Path):
+    root, spec_id = build_board(tmp_path)
+    path = root / "registry" / f"{spec_id}.yaml"
+    text = path.read_text(encoding="utf-8")
+    text = text.replace("business_priority:\n", "priority: normal\norder_hint: null\nbusiness_priority:\n")
+    path.write_text(text, encoding="utf-8")
+    errors = validate_board(root)
+    assert any("unsupported generic field" in error for error in errors)
 
 
 def test_generated_aggregate_is_rejected(tmp_path: Path):

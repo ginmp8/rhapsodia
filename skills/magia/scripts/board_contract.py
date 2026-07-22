@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,9 @@ VALID_CYCLE_STATUSES = {"proposed", "planned", "in_progress", "done", "cancelled
 VALID_SPEC_STATUSES = {"planned", "in_progress", "blocked", "done", "cancelled", "superseded"}
 VALID_MANIFEST_PHASES = {"define", "execute", "review", "done"}
 FORBIDDEN_AGGREGATES = {"spec-catalog.yaml", "define-queue.yaml"}
+VALID_BUSINESS_PRIORITIES = {"unknown", "low", "medium", "high", "urgent"}
+VALID_TECHNICAL_CRITICALITIES = {"low", "normal", "high", "critical"}
+VALID_EXECUTION_LANES = {"expedite", "fixed_date", "standard", "deferred"}
 
 
 def _as_list(value: Any, label: str, errors: list[str]) -> list[Any]:
@@ -65,6 +69,73 @@ def _cycle_errors(board_root: Path) -> tuple[dict[str, Any], list[str]]:
     return cycle, errors
 
 
+def _parse_timestamp(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def validate_priority_semantics(data: dict[str, Any], path: Path) -> list[str]:
+    """Validate Mago-owned sequencing and read-only Nomia business-priority evidence."""
+    errors: list[str] = []
+    rejected = [key for key in ("priority", "order_hint") if key in data]
+    if rejected:
+        errors.append(
+            f"{path.name}: unsupported generic field(s) {', '.join(rejected)}; "
+            "use business_priority, technical_criticality, and execution_sequence"
+        )
+
+    business = data.get("business_priority")
+    if not isinstance(business, dict):
+        errors.append(f"{path.name}: business_priority must be a mapping")
+    else:
+        if business.get("owner") != "nomia":
+            errors.append(f"{path.name}: business_priority.owner must be nomia")
+        level = business.get("level")
+        if level not in VALID_BUSINESS_PRIORITIES:
+            errors.append(f"{path.name}: invalid business_priority.level `{level}`")
+        if level != "unknown":
+            if not isinstance(business.get("source"), str) or not business.get("source", "").strip():
+                errors.append(f"{path.name}: non-unknown business_priority requires source")
+            if _parse_timestamp(business.get("observed_at")) is None:
+                errors.append(f"{path.name}: non-unknown business_priority requires ISO-8601 observed_at")
+
+    technical = data.get("technical_criticality")
+    if not isinstance(technical, dict):
+        errors.append(f"{path.name}: technical_criticality must be a mapping")
+    else:
+        if technical.get("owner") != "mago":
+            errors.append(f"{path.name}: technical_criticality.owner must be mago")
+        level = technical.get("level")
+        if level not in VALID_TECHNICAL_CRITICALITIES:
+            errors.append(f"{path.name}: invalid technical_criticality.level `{level}`")
+        rationale = technical.get("rationale")
+        if level != "normal" and (not isinstance(rationale, str) or not rationale.strip()):
+            errors.append(f"{path.name}: non-normal technical_criticality requires rationale")
+
+    sequence = data.get("execution_sequence")
+    if not isinstance(sequence, dict):
+        errors.append(f"{path.name}: execution_sequence must be a mapping")
+    else:
+        if sequence.get("owner") != "mago":
+            errors.append(f"{path.name}: execution_sequence.owner must be mago")
+        lane = sequence.get("lane")
+        if lane not in VALID_EXECUTION_LANES:
+            errors.append(f"{path.name}: invalid execution_sequence.lane `{lane}`")
+        rank = sequence.get("rank")
+        if rank is not None and (not isinstance(rank, int) or isinstance(rank, bool) or rank < 0):
+            errors.append(f"{path.name}: execution_sequence.rank must be null or a non-negative integer")
+        rationale = sequence.get("rationale")
+        if not isinstance(rationale, list) or any(not isinstance(item, str) or not item.strip() for item in rationale):
+            errors.append(f"{path.name}: execution_sequence.rationale must be a list of non-empty strings")
+        elif (lane != "standard" or rank is not None) and not rationale:
+            errors.append(f"{path.name}: non-default execution_sequence requires rationale")
+    return errors
+
+
 def load_registry(board_root: Path) -> tuple[dict[str, dict[str, Any]], list[str]]:
     errors: list[str] = []
     records: dict[str, dict[str, Any]] = {}
@@ -91,6 +162,7 @@ def load_registry(board_root: Path) -> tuple[dict[str, dict[str, Any]], list[str
             errors.append(f"{path.name}: feature_key must match the feature encoded in spec_id")
         if data.get("status") not in VALID_SPEC_STATUSES:
             errors.append(f"{path.name}: invalid status `{data.get('status')}`")
+        errors.extend(validate_priority_semantics(data, path))
         for dependency in _as_list(data.get("depends_on_specs"), f"{path.name}.depends_on_specs", errors):
             if not isinstance(dependency, str) or not SPEC_ID_RE.fullmatch(dependency):
                 errors.append(f"{path.name}: invalid depends_on_specs entry `{dependency}`")

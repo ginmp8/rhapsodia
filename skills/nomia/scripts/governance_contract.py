@@ -166,11 +166,10 @@ def validate_candidate_spec_identity(payload: dict[str, Any]) -> list[str]:
 
 
 def validate_handoff_envelope(env: Any, as_of: datetime) -> dict[str, Any]:
-    """Validate current and explicitly supported legacy handoffs through the local ecosystem contract."""
+    """Validate strict current handoffs through the local ecosystem contract."""
     return validate_ecosystem_envelope(
         env,
         root=Path(__file__).resolve().parents[1],
         operation="any",
         as_of=as_of,
-        allow_legacy=True,
     )

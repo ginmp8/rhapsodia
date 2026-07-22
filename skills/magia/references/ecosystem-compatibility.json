@@ -1,0 +1,46 @@
+{
+  "contract_id": "nomia-mago-magia-compatibility-v1",
+  "contracts": {
+    "handoff": {
+      "contract_id": "nomia-mago-magia-handoff-v2",
+      "path": "references/ecosystem-handoff-contract.json",
+      "schema_version": "2.0.0"
+    },
+    "priority": {
+      "contract_id": "nomia-mago-magia-priority-v2",
+      "path": "references/priority-contract.json",
+      "schema_version": "2.0.0"
+    },
+    "state_mapping": {
+      "path": "references/ecosystem-handoff-contract.json",
+      "version": "2.0.0"
+    }
+  },
+  "ecosystem_release": "1.6.0",
+  "packages": {
+    "magia": "1.6.0",
+    "mago": "1.6.0",
+    "nomia": "1.6.0"
+  },
+  "policy": {
+    "classification": "coordinated-exact",
+    "legacy_package_support": false,
+    "mixed_versions_allowed": false,
+    "unknown_version_behavior": "reject-before-mutation"
+  },
+  "release_gates": [
+    "all package versions equal ecosystem_release",
+    "shared contract files are byte-equivalent",
+    "package-local validators pass",
+    "ecosystem flow harness passes",
+    "strict ecosystem release gate passes"
+  ],
+  "required_directions": [
+    "nomia_to_mago",
+    "mago_to_magia",
+    "magia_to_mago",
+    "mago_to_nomia",
+    "magia_to_nomia"
+  ],
+  "schema_version": "1.0.0"
+}
