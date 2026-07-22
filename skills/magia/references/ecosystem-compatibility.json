@@ -16,11 +16,11 @@
       "version": "2.0.0"
     }
   },
-  "ecosystem_release": "1.6.0",
+  "ecosystem_release": "1.7.0",
   "packages": {
-    "magia": "1.6.0",
-    "mago": "1.6.0",
-    "nomia": "1.6.0"
+    "magia": "1.7.0",
+    "mago": "1.7.0",
+    "nomia": "1.7.0"
   },
   "policy": {
     "classification": "coordinated-exact",
@@ -30,8 +30,11 @@
   "release_gates": [
     "all package versions equal ecosystem_release",
     "shared contract files are byte-equivalent",
-    "package-local validators pass",
-    "ecosystem flow harness passes",
+    "shared contract provenance hashes validate",
+    "distributed routing contract and corpus validate",
+    "package-local validators and complete test suites pass",
+    "positive ecosystem flow harness passes",
+    "negative ecosystem fail-closed harness passes",
     "strict ecosystem release gate passes"
   ],
   "required_directions": [

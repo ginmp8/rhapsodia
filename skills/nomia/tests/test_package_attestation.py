@@ -29,7 +29,7 @@ class PackageAttestationTests(unittest.TestCase):
             self.assertEqual(validate_reproducible_archive(first), [])
             result = PackageResult(str(self.skill_root), str(first), "pass", [], count)
             attestation = build_release_attestation(result)
-            self.assertEqual(attestation["version"], "1.6.0")
+            self.assertEqual(attestation["version"], "1.7.0")
             self.assertEqual(attestation["archive_sha256"], sha256_file(first))
             self.assertFalse(attestation["behavioral_activation_measured"])
             self.assertIn("agents/openai.yaml", attestation["protected_files"])

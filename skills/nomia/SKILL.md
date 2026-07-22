@@ -8,6 +8,10 @@ description: "use when asked to create, update, validate, audit, or report on no
 Nomia owns product/delivery governance and reporting. It never owns software design, engineering decomposition, or technical validation.
 Priority ownership follows `references/priority-contract.md`: Nomia owns `business_priority`; generic `priority` is unsupported.
 
+## Distributed ecosystem routing
+
+Use the [distributed routing contract](references/ecosystem-routing-contract.md) and [ecosystem lifecycle map](references/ecosystem-lifecycle.md). For multi-intent requests, Nomia performs only the governance phase currently owned by Nomia, then hands technical planning to Mago. Governed implementation never routes directly from Nomia to Magia.
+
 ## Scope and Ownership
 
 - Own: intake, ops, status, stakeholder brief, replanning, portfolio, roadmap, feature map, governance RFC/decision log, release/internal notes, feature report, and roadmap-to-Mago handoff under existing `docs/boards/<board_id>/<year>/cycles/<cycle_id>/` locations.

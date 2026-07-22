@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0] - 2026-07-22
+
+### Added
+- Add the distributed ecosystem routing contract, shared cross-skill corpus, lifecycle map, provenance validation, and negative ecosystem harness.
+- Add coordinated development requirements and release gates for routing, provenance, full local validation, and positive/negative ecosystem flows.
+
+### Changed
+- Canonicalize activation terminology to `cycle_id` and strengthen multi-intent handoff guidance while preserving Mago planning ownership.
+
+### Compatibility
+- Coordinated exact release `1.7.0` for Mago, Magia, and Nomia. Mixed versions remain rejected before mutation.
+
+
 ## [1.6.0] - 2026-07-22
 
 - Adopt exact ecosystem compatibility with Nomia and Magia `1.6.0`.

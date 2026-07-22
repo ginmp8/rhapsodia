@@ -36,6 +36,8 @@ EXCLUDED_LEGACY_SCAN = {
     "evals/activation-boundary-scenarios.json",
     "scripts/nomia_utils.py",
     "scripts/validate_identity_contract.py",
+    "scripts/run_ecosystem_negative_harness.py",
+    "scripts/validate_ecosystem_routing_contract.py",
     "references/canonical-paths.md",
     "examples/golden/11-governance-adapt-legacy/legacy-ops.yaml",
     "examples/golden/11-governance-adapt-legacy/ops.yaml",

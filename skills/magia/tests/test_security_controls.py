@@ -176,28 +176,8 @@ def test_packager_succeeds_after_tests_create_cache_artifacts(tmp_path: Path):
     cache.mkdir()
     (cache / "test.pyc").write_bytes(b"python\x00bytecode")
     output = tmp_path / "skill.zip"
-    runner = load_script("run_test_suite.py")
-    manifest, digest = runner.suite_manifest(target)
-    report_path = tmp_path / "magia-test-report.json"
-    report_path.write_text(
-        __import__("json").dumps({
-            "kind": runner.REPORT_KIND,
-            "status": "pass",
-            "root": str(target),
-            "suite_files": manifest,
-            "suite_digest": digest,
-            "test_count": 1,
-            "command": ["supplied-test-evidence"],
-            "return_code": 0,
-            "errors": [],
-        }) + "\n",
-        encoding="utf-8",
-    )
 
-    assert packager.main([
-        "--target", str(target), "--output", str(output), "--validate",
-        "--test-report", str(report_path),
-    ]) == 0
+    assert packager.main(["--target", str(target), "--output", str(output), "--validate"]) == 0
     with zipfile.ZipFile(output) as archive:
         names = archive.namelist()
     assert not any("__pycache__" in name for name in names)

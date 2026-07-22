@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0] - 2026-07-22
+
+- Replace retired cycle-version vocabulary in current activation scenarios with canonical `cycle_id` terminology.
+- Add distributed routing, lifecycle, shared provenance, negative ecosystem harness, coordinated release metadata, and declared development requirements.
+- Standardize the display name as `Nomia` while preserving the technical id `nomia`.
+- Preserve Nomia governance ownership and coordinated exact compatibility with Mago and Magia `1.7.0`.
+
+### Compatibility
+
+- Coordinated exact ecosystem release `1.7.0`; mixed versions remain rejected before mutation or closure.
+
+
 ## 1.6.0 - 2026-07-22
 
 - Maintenance correction: align handoff prose with the strict breaking-no-legacy contract; legacy governance input remains isolated to `governance-adapt` and is never accepted as ecosystem handoff compatibility.

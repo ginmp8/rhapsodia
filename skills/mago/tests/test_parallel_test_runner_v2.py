@@ -40,6 +40,28 @@ class ParallelTestRunnerV2Tests(unittest.TestCase):
             self.assertTrue(result["results"][0]["timed_out"])
             self.assertEqual(result["results"][0]["termination_reason"], "per-file-timeout")
 
+    def test_success_summary_reaps_lingering_process_without_false_failure(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="mago-runner-summary-") as tmp:
+            root = Path(tmp)
+            tests = root / "tests"
+            tests.mkdir()
+            self.make_test(
+                tests,
+                "test_linger.py",
+                "import time, unittest\n"
+                "class T(unittest.TestCase):\n"
+                " def test_ok(self): self.assertTrue(True)\n"
+                "if __name__ == '__main__':\n"
+                " unittest.main(exit=False)\n"
+                " time.sleep(30)\n",
+            )
+            result = run_suite(root, tests, jobs=1, timeout=20)
+            self.assertEqual(result["status"], "pass", result)
+            self.assertEqual(result["test_count"], 1)
+            self.assertTrue(result["results"][0]["post_summary_cleanup"])
+            self.assertEqual(result["results"][0]["termination_reason"], "post-summary-process-cleanup")
+            self.assertLess(result["duration_seconds"], 10)
+
     def test_total_timeout_emits_partial_result_and_reaps_child(self) -> None:
         with tempfile.TemporaryDirectory(prefix="mago-runner-total-timeout-") as tmp:
             root = Path(tmp)

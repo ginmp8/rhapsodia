@@ -224,8 +224,9 @@
       "prompt": "Define <spec_id> from this evidence, but I do not know the board id or cycle version.",
       "expected_activation": true,
       "expected_mode": "define",
-      "expected_boundary": "activate define mode but stop before writing until board_id, year, and cycle_id are concrete",
-      "category": "edge_case"
+      "expected_boundary": "Treat the retired phrase as legacy migration input, adapt only to canonical board_id, year, and cycle_id, and stop before writing until those identities are concrete.",
+      "category": "edge_case",
+      "notes": "Legacy migration regression fixture retained at the historical position; normal define flows require canonical board_id, year, and cycle_id."
     },
     {
       "id": "edge-refine-preserve-evidence",

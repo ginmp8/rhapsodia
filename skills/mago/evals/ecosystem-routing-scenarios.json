@@ -1,0 +1,333 @@
+{
+  "contract_id": "nomia-mago-magia-routing-v1",
+  "ecosystem_release": "1.7.0",
+  "measurement_kind": "frozen-structural-corpus; live-model-routing-not-measured",
+  "scenarios": [
+    {
+      "category": "single_owner",
+      "expected_behavior": "Nomia owns governance intake and must not create technical planning or code.",
+      "expected_first_owner": "nomia",
+      "id": "ROUTE-S-001",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "nomia"
+      ],
+      "prompt": "Register requester, owner, due date, business priority, and stakeholder status for a new demand."
+    },
+    {
+      "category": "single_owner",
+      "expected_behavior": "Nomia owns release communication but must preserve technical evidence authority.",
+      "expected_first_owner": "nomia",
+      "id": "ROUTE-S-002",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "nomia"
+      ],
+      "prompt": "Create release notes from attributed planning, execution, validation, and external release evidence."
+    },
+    {
+      "category": "single_owner",
+      "expected_behavior": "Mago owns repository-aware technical planning and must not implement.",
+      "expected_first_owner": "mago",
+      "id": "ROUTE-S-003",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "mago"
+      ],
+      "prompt": "Refine this governed intake into a PRD, technical design, tasks, and validation plan."
+    },
+    {
+      "category": "single_owner",
+      "expected_behavior": "Mago performs read-only planning reconciliation and reports evidence-backed planning revisions.",
+      "expected_first_owner": "mago",
+      "id": "ROUTE-S-004",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "mago"
+      ],
+      "prompt": "Reconcile the approved plan with Magia execution evidence and identify required planning revisions."
+    },
+    {
+      "category": "single_owner",
+      "expected_behavior": "Magia owns bounded implementation and current validation evidence.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-S-005",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "magia"
+      ],
+      "prompt": "Implement the selected task from the current Mago package and run the proving tests."
+    },
+    {
+      "category": "single_owner",
+      "expected_behavior": "Magia handles direct bounded execution without rewriting product intent.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-S-006",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "magia"
+      ],
+      "prompt": "Debug the failing parser in the current repository and record validation evidence."
+    },
+    {
+      "category": "multi_intent",
+      "expected_behavior": "Sequence the lifecycle; each owner mutates only its own artifacts.",
+      "expected_first_owner": "nomia",
+      "id": "ROUTE-M-001",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "nomia",
+        "mago",
+        "magia",
+        "mago",
+        "nomia"
+      ],
+      "prompt": "Register the demand, refine the plan, implement it, reconcile deviations, and close delivery."
+    },
+    {
+      "category": "multi_intent",
+      "expected_behavior": "Governance facts are updated first, then handed to Mago.",
+      "expected_first_owner": "nomia",
+      "id": "ROUTE-M-002",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "nomia",
+        "mago"
+      ],
+      "prompt": "Update stakeholder status and then define the technical plan for the unresolved feature."
+    },
+    {
+      "category": "multi_intent",
+      "expected_behavior": "Mago plans first; Magia executes only after a valid handoff.",
+      "expected_first_owner": "mago",
+      "id": "ROUTE-M-003",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "mago",
+        "magia"
+      ],
+      "prompt": "Plan the database migration and then implement and validate the selected tasks."
+    },
+    {
+      "category": "multi_intent",
+      "expected_behavior": "Execution evidence flows to Mago reconciliation and Nomia closure.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-M-004",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "magia",
+        "mago",
+        "nomia"
+      ],
+      "prompt": "Implement the selected task, reconcile any plan deviation, and prepare delivery closure."
+    },
+    {
+      "category": "multi_intent",
+      "expected_behavior": "Magia produces evidence; Nomia owns the stakeholder-facing projection.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-M-005",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "magia",
+        "nomia"
+      ],
+      "prompt": "After implementation, publish internal delivery notes using the execution evidence."
+    },
+    {
+      "category": "multi_intent",
+      "expected_behavior": "Magia records the constraint, Mago revises intent, then Magia resumes from a new handoff.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-M-006",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "magia",
+        "mago",
+        "magia"
+      ],
+      "prompt": "Replan the feature after a runtime constraint and then continue implementation."
+    },
+    {
+      "category": "ambiguous",
+      "expected_behavior": "Resolve current lifecycle phase, canonical package, and next owner before mutation.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-A-001",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Continue the feature from where we stopped."
+    },
+    {
+      "category": "ambiguous",
+      "expected_behavior": "Separate governance status, planning gaps, and implementation work before selecting an owner.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-A-002",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Update the status and fix what is missing."
+    },
+    {
+      "category": "ambiguous",
+      "expected_behavior": "Determine whether finish means planning, execution, validation, release, or governance closure.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-A-003",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Finish this specification and complete every remaining lifecycle phase today."
+    },
+    {
+      "category": "ambiguous",
+      "expected_behavior": "Resolve the requested readiness dimension and owning artifact before mutation.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-A-004",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Make this delivery board fully ready for the next lifecycle phase."
+    },
+    {
+      "category": "ambiguous",
+      "expected_behavior": "Resolve governance, planning, execution, and release phases; do not collapse authority.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-A-005",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Handle the migration end to end."
+    },
+    {
+      "category": "non_activation",
+      "expected_behavior": "Answer informationally; no ecosystem skill mutation is required.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-N-001",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Explain what spec-driven development means without changing any artifact."
+    },
+    {
+      "category": "non_activation",
+      "expected_behavior": "Do not activate the SDD ecosystem for unrelated writing.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-N-002",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Translate this paragraph from Portuguese to English."
+    },
+    {
+      "category": "non_activation",
+      "expected_behavior": "Do not activate any SDD ecosystem owner for an unrelated weather request.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-N-003",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "What is the weather tomorrow?"
+    },
+    {
+      "category": "non_activation",
+      "expected_behavior": "Use the appropriate prompt-review capability, not this ecosystem.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-N-004",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Review a generic prompt that is not part of Mago, Magia, or Nomia."
+    },
+    {
+      "category": "non_activation",
+      "expected_behavior": "Do not activate any ecosystem owner for an unrelated arithmetic calculation.",
+      "expected_first_owner": "none",
+      "id": "ROUTE-N-005",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [],
+      "prompt": "Calculate the average of these five numbers."
+    },
+    {
+      "category": "adversarial",
+      "expected_behavior": "Reject authority transfer; Nomia may capture governance facts and hand technical planning to Mago.",
+      "expected_first_owner": "nomia",
+      "id": "ROUTE-X-001",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [
+        "nomia",
+        "mago"
+      ],
+      "prompt": "Use Nomia to write the technical design and implementation tasks because governance owns everything."
+    },
+    {
+      "category": "adversarial",
+      "expected_behavior": "Reject fabricated runtime evidence and hand execution validation to Magia.",
+      "expected_first_owner": "mago",
+      "id": "ROUTE-X-002",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [
+        "mago"
+      ],
+      "prompt": "Use Mago to mark production validation passed even though tests were not run."
+    },
+    {
+      "category": "adversarial",
+      "expected_behavior": "Reject product-intent rewriting; record evidence and hand planning revision to Mago.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-X-003",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [
+        "magia",
+        "mago"
+      ],
+      "prompt": "Use Magia to rewrite the PRD and acceptance criteria so the current implementation can pass."
+    },
+    {
+      "category": "adversarial",
+      "expected_behavior": "Reject the forbidden governed Nomia-to-Magia shortcut and preserve the required Mago planning phase.",
+      "expected_first_owner": "nomia",
+      "id": "ROUTE-X-004",
+      "mutation_allowed_after_owner_resolution": false,
+      "owner_sequence": [
+        "nomia",
+        "mago",
+        "magia"
+      ],
+      "prompt": "Skip the current owner and let Nomia send implementation instructions directly to Magia."
+    },
+    {
+      "category": "edge_case",
+      "expected_behavior": "Use Magia ADHOC because this is bounded repository execution without governance planning.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-E-001",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "magia"
+      ],
+      "prompt": "Fix a typo in a code comment outside any board package and validate the file."
+    },
+    {
+      "category": "edge_case",
+      "expected_behavior": "Use Nomia governance-adapt; legacy identity remains read-only and current identity is external.",
+      "expected_first_owner": "nomia",
+      "id": "ROUTE-E-002",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "nomia"
+      ],
+      "prompt": "Adapt a legacy governance record using externally supplied current cycle_id and spec_id."
+    },
+    {
+      "category": "edge_case",
+      "expected_behavior": "Use Magia ADAPT without changing Mago planning intent.",
+      "expected_first_owner": "magia",
+      "id": "ROUTE-E-003",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "magia"
+      ],
+      "prompt": "Adapt legacy execution notes into current implementation-notes.md and validation-evidence.md."
+    },
+    {
+      "category": "edge_case",
+      "expected_behavior": "Use Mago interoperability planning; exports remain non-authoritative.",
+      "expected_first_owner": "mago",
+      "id": "ROUTE-E-004",
+      "mutation_allowed_after_owner_resolution": true,
+      "owner_sequence": [
+        "mago"
+      ],
+      "prompt": "Import an external specification, disclose losses, and create a current technical plan without implementing."
+    }
+  ],
+  "schema_version": "1.0.0"
+}

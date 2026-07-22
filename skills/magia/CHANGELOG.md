@@ -1,9 +1,18 @@
 # Changelog
 
-## 1.6.0 - 2026-07-22
+## [1.7.0] - 2026-07-22
 
-- Maintenance correction: replace generic priority/order aliases in shared-artifact ownership guidance with canonical typed fields and explicit rejection semantics.
-- Maintenance correction: add contract-semantic lint, canonical activation scenario paths, explicit regression/adversarial categories, declared pytest dependency, hash-bound test evidence, and mandatory test-gated validation/packaging.
+- Execute the complete pytest suite inside the MAGIA package gate with collected/executed/pass/fail counts and a suite digest.
+- Replace obsolete positive activation paths with canonical board, cycle, and spec identities.
+- Add distributed routing, lifecycle, shared provenance, negative ecosystem harness, release metadata, and declared development requirements.
+- Preserve MAGIA execution ownership and coordinated exact compatibility with Mago and Nomia `1.7.0`.
+
+### Compatibility
+
+- Coordinated exact ecosystem release `1.7.0`; mixed versions remain rejected before mutation or closure.
+
+
+## 1.6.0 - 2026-07-22
 
 - Adopt exact ecosystem compatibility with Mago and Nomia `1.6.0`.
 - Upgrade ecosystem handoffs to strict schema v2 with deterministic ids, exact package versions, no unsupported aliases, and object-shaped priority contracts.

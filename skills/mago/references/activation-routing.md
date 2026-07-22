@@ -14,7 +14,7 @@ Do not activate MAGO for product-code implementation, runtime execution, deploym
 
 ## Ambiguous Cases
 
-Treat requests such as "plan this", "make a package", "update docs", or "turn this roadmap into specs" as ambiguous until the user or repository evidence establishes the canonical board root, board id, cycle version, and artifact family. Ask only for the smallest missing input when a safe default cannot be derived.
+Treat requests such as "plan this", "make a package", "update docs", or "turn this roadmap into specs" as ambiguous until the user or repository evidence establishes the canonical board root, board_id, cycle_id, and artifact family. Ask only for the smallest missing input when a safe default cannot be derived.
 
 ## Edge Cases
 

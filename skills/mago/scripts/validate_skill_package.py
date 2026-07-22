@@ -45,6 +45,12 @@ REQUIRED_FILES = (
     "references/ecosystem-handoff-contract.json",
     "references/ecosystem-compatibility.json",
     "references/ecosystem-compatibility.md",
+    "references/ecosystem-routing-contract.md",
+    "references/ecosystem-routing-contract.json",
+    "references/ecosystem-lifecycle.md",
+    "references/ecosystem-contract-provenance.json",
+    "evals/ecosystem-routing-scenarios.json",
+    "requirements-dev.txt",
     "VERSION",
     "release.json",
     "requirements.txt",
@@ -67,6 +73,10 @@ REQUIRED_FILES = (
     "scripts/validate_ecosystem_handoff_contract.py",
     "scripts/validate_ecosystem_compatibility.py",
     "scripts/run_ecosystem_flow_harness.py",
+    "scripts/run_ecosystem_negative_harness.py",
+    "scripts/validate_ecosystem_routing_contract.py",
+    "scripts/validate_shared_contract_provenance.py",
+    "scripts/validate_ecosystem_release_metadata.py",
     "scripts/validate_runtime_dependencies.py",
     "scripts/validate_repo_board.py",
     "scripts/validate_concurrent_board.py",
@@ -492,6 +502,12 @@ def validate_release_controls(root: Path, result: ValidationResult) -> None:
     )
 
 
+    run_python_gate(
+        root, root / "scripts" / "validate_ecosystem_release_metadata.py", ["--target", str(root)],
+        "coordinated ecosystem release metadata", result,
+    )
+
+
 def validate_evidence_controls(root: Path, result: ValidationResult) -> None:
     script_path = root / "scripts" / "validate_evidence_contract.py"
     text = read_text(script_path)
@@ -527,6 +543,8 @@ def validate_semantic_contracts(root: Path, result: ValidationResult) -> None:
     )
     run_python_gate(root, root / "scripts" / "validate_ecosystem_handoff_contract.py", ["--target", str(root)], "ecosystem handoff contract", result)
     run_python_gate(root, root / "scripts" / "validate_ecosystem_compatibility.py", ["--target", str(root)], "ecosystem compatibility", result)
+    run_python_gate(root, root / "scripts" / "validate_ecosystem_routing_contract.py", ["--target", str(root)], "distributed ecosystem routing", result)
+    run_python_gate(root, root / "scripts" / "validate_shared_contract_provenance.py", ["--target", str(root)], "shared contract provenance", result)
     # Handoff and generated-view contracts are exercised by the full unittest suite.
     # Run the boundary contract directly because it is not duplicated by that suite.
     run_python_gate(

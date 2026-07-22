@@ -12,6 +12,7 @@ from typing import Any
 
 from nomia_utils import atomic_write_text, sensitive_package_reason
 from validate_contract_semantics import collect_errors as collect_contract_semantic_errors
+from validate_ecosystem_release_metadata import validate as validate_release_metadata
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
@@ -21,6 +22,8 @@ REQUIRED_FILES = [
     "VERSION",
     "CHANGELOG.md",
     "requirements.txt",
+    "requirements-dev.txt",
+    "release.json",
     "agents/openai.yaml",
     "references/canonical-paths.md",
     "references/common-governance.md",
@@ -33,6 +36,11 @@ REQUIRED_FILES = [
     "references/ecosystem-handoff-contract.json",
     "references/ecosystem-compatibility.json",
     "references/ecosystem-compatibility.md",
+    "references/ecosystem-routing-contract.md",
+    "references/ecosystem-routing-contract.json",
+    "references/ecosystem-lifecycle.md",
+    "references/ecosystem-contract-provenance.json",
+    "evals/ecosystem-routing-scenarios.json",
     "references/priority-contract.json",
     "references/assurance-contract.json",
     "references/assurance-and-release.md",
@@ -67,6 +75,10 @@ REQUIRED_FILES = [
     "scripts/validate_ecosystem_handoff_contract.py",
     "scripts/validate_ecosystem_compatibility.py",
     "scripts/run_ecosystem_flow_harness.py",
+    "scripts/run_ecosystem_negative_harness.py",
+    "scripts/validate_ecosystem_routing_contract.py",
+    "scripts/validate_shared_contract_provenance.py",
+    "scripts/validate_ecosystem_release_metadata.py",
     "scripts/validate_governance_closure.py",
     "scripts/guide_intake.py",
     "scripts/adapt_governance.py",
@@ -429,6 +441,7 @@ def validate_package(root: Path) -> list[str]:
     validate_scenarios(root, errors)
     validate_harness_scenarios(root, errors)
     errors.extend(collect_contract_semantic_errors(root))
+    errors.extend(validate_release_metadata(root).get("errors", []))
     validate_package_hygiene(root, errors)
     return errors
 

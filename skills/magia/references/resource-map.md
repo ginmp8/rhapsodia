@@ -70,10 +70,15 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 - `scripts/validate_planning_handoff_contract.py`: validate planning-origin execution and blocker rules after handoff-rule edits.
 - `scripts/ecosystem_handoff.py`: build and validate local typed ecosystem handoff envelopes without importing peer skills.
 - `scripts/validate_ecosystem_handoff_contract.py`: validate contract shape, role-specific directions, mappings, and SKILL integration.
-- `scripts/validate_contract_semantics.py`: reject prose drift from the canonical priority and compatibility contracts.
-- `scripts/run_test_suite.py`: run the complete pytest suite and emit a hash-bound `magia-test-report-v1` for validation and packaging.
 - `scripts/magia_utils.py`: import-only helper module used by execution-state, boundary, board, and log scripts; it has no standalone CLI by design.
 - `scripts/package_policy.py`: import-only common archive candidate/exclusion and sensitive-name policy consumed by package validation and building.
 - `scripts/security_scan.py`: import-only fail-closed content scanner consumed by package validation and building.
-- `scripts/validate_skill_package.py`, `scripts/package_skill.py`: require current test evidence for release validation, validate the same package-eligible candidate set, and package only after all gates pass.
-- `requirements-test.txt`: declares the pytest dependency required by the complete MAGIA test suite.
+- `scripts/validate_skill_package.py`, `scripts/package_skill.py`: validate and package the same package-eligible candidate set.
+
+## Ecosystem coordination
+
+- `references/ecosystem-routing-contract.md` and `.json`: distributed owner resolution and sequencing.
+- `references/ecosystem-lifecycle.md`: global lifecycle map.
+- `evals/ecosystem-routing-scenarios.json`: frozen structural cross-skill corpus.
+- `references/ecosystem-contract-provenance.json`: release hash manifest for local shared copies.
+- `scripts/run_ecosystem_negative_harness.py`: fail-closed cross-package scenarios.

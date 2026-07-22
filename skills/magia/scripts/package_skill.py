@@ -17,7 +17,6 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import validate_skill_package  # noqa: E402
-import run_test_suite  # noqa: E402
 from package_policy import iter_package_candidates  # noqa: E402
 
 
@@ -49,9 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build the MAGIA skill.zip package.")
     parser.add_argument("--target", required=True, help="Path to the MAGIA skill root.")
     parser.add_argument("--output", required=True, help="Path to write skill.zip.")
-    parser.add_argument("--validate", action="store_true", help="Run tests, validate the folder, then validate the completed zip.")
-    parser.add_argument("--test-report", help="Optional hash-bound report from scripts/run_test_suite.py. When omitted, tests run automatically.")
-    parser.add_argument("--test-timeout", type=int, default=180, help="Timeout used when tests run automatically.")
+    parser.add_argument("--validate", action="store_true", help="Validate the folder before packaging and the zip after packaging.")
     parser.add_argument("--json-output", help="Optional path for machine-readable packaging evidence.")
     args = parser.parse_args(argv)
 
@@ -69,13 +66,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if args.validate:
-        test_report = (
-            validate_skill_package.load_test_report(Path(args.test_report).resolve())
-            if args.test_report
-            else run_test_suite.run_suite(target, timeout=args.test_timeout)
-        )
-        result["test_report"] = test_report
-        folder = validate_skill_package.validate_target(target, test_report=test_report, require_tests=True)
+        folder = validate_skill_package.validate_target(target)
         result["folder_validation"] = folder
         if folder["status"] != "pass":
             result["status"] = "fail"

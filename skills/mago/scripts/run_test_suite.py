@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 COUNT_RE = re.compile(r"Ran\s+(\d+)\s+tests?\s+in")
+SUCCESS_RE = re.compile(r"(?:^|\n)OK(?:\s|$)")
+FAILURE_RE = re.compile(r"(?:^|\n)(?:FAILED|ERROR)(?:\s|$)")
 HEAVY_TEST_PRIORITY = (
     "test_mutation_transaction.py",
     "test_sdd_adapter_roundtrip.py",
@@ -77,17 +79,37 @@ def launch(root: Path, test_file: Path) -> dict[str, Any]:
     }
 
 
+def output_snapshot(state: dict[str, Any]) -> str:
+    """Read current child output without moving the shared file offset."""
+    chunks: list[str] = []
+    for key in ("stdout_file", "stderr_file"):
+        handle = state[key]
+        try:
+            size = os.fstat(handle.fileno()).st_size
+            raw = os.pread(handle.fileno(), size, 0) if size else b""
+            chunks.append(raw.decode("utf-8", errors="replace"))
+        except (OSError, AttributeError):
+            chunks.append("")
+    return "\n".join(chunks)
+
+
+def successful_unittest_summary(state: dict[str, Any]) -> bool:
+    text = output_snapshot(state)
+    return bool(COUNT_RE.search(text) and SUCCESS_RE.search(text) and not FAILURE_RE.search(text))
+
+
 def finish(
     root: Path,
     state: dict[str, Any],
     *,
     timed_out: bool,
     termination_reason: str | None = None,
+    summary_success: bool = False,
 ) -> dict[str, Any]:
     process: subprocess.Popen[str] = state["process"]
-    if timed_out:
+    if timed_out or summary_success:
         terminate(process)
-        return_code = -1
+        return_code = 0 if summary_success else -1
     else:
         return_code = int(process.returncode or 0)
     stdout_file = state["stdout_file"]
@@ -100,7 +122,8 @@ def finish(
     stderr_file.close()
     match = COUNT_RE.search(stdout + "\n" + stderr)
     count = int(match.group(1)) if match else 0
-    status = "pass" if return_code == 0 and not timed_out and count > 0 else "fail"
+    summary_ok = bool(COUNT_RE.search(stdout + "\n" + stderr) and SUCCESS_RE.search(stdout + "\n" + stderr) and not FAILURE_RE.search(stdout + "\n" + stderr))
+    status = "pass" if return_code == 0 and not timed_out and count > 0 and (summary_ok or not summary_success) else "fail"
     return {
         "file": state["test_file"].relative_to(root).as_posix(),
         "command": state["command"],
@@ -110,6 +133,7 @@ def finish(
         "duration_seconds": round(time.monotonic() - state["started"], 3),
         "timed_out": timed_out,
         "termination_reason": termination_reason,
+        "post_summary_cleanup": summary_success,
         "stdout_tail": stdout[-1200:],
         "stderr_tail": stderr[-1200:],
     }
@@ -229,6 +253,7 @@ def run_suite(
     heavy_limit = 1
     warmup_done = not pending_heavy
     stop_reason: str | None = None
+    last_heartbeat = started
 
     def pending_paths() -> list[Path]:
         return [*pending_heavy, *pending_light]
@@ -288,13 +313,24 @@ def run_suite(
             for state_item in active:
                 process: subprocess.Popen[str] = state_item["process"]
                 return_code = process.poll()
+                summary_complete = return_code is None and successful_unittest_summary(state_item)
+                if summary_complete:
+                    state_item.setdefault("summary_seen_at", now)
+                else:
+                    state_item.pop("summary_seen_at", None)
+                summary_linger = summary_complete and now - state_item["summary_seen_at"] >= 0.5
                 expired = now - state_item["started"] >= timeout
-                if return_code is not None or expired:
+                if return_code is not None or expired or summary_linger:
                     result_item = finish(
                         root,
                         state_item,
-                        timed_out=return_code is None and expired,
-                        termination_reason="per-file-timeout" if return_code is None and expired else None,
+                        timed_out=return_code is None and expired and not summary_linger,
+                        termination_reason=(
+                            "post-summary-process-cleanup" if summary_linger
+                            else "per-file-timeout" if return_code is None and expired
+                            else None
+                        ),
+                        summary_success=bool(summary_linger),
                     )
                     results.append(result_item)
                     if progress:
@@ -311,6 +347,10 @@ def run_suite(
             if completed:
                 emit("running")
             if active and not completed:
+                if progress and time.monotonic() - last_heartbeat >= 10.0:
+                    active_names = ", ".join(item["test_file"].name for item in active)
+                    print(f"running {active_names} ({round(time.monotonic() - started, 1)}s elapsed)", flush=True)
+                    last_heartbeat = time.monotonic()
                 time.sleep(0.05)
     finally:
         # Covers unexpected exceptions in library callers. The CLI signal path

@@ -5,7 +5,7 @@
     {
       "id": "activate-001",
       "type": "should_activate",
-      "prompt": "Use nomia to create a stakeholder brief and delivery status for board onboarding cycle 2026.04 from the supplied notes.",
+      "prompt": "Use nomia to create a stakeholder brief and delivery status for board onboarding with cycle_id cycle-2026-04-01-onboarding from the supplied notes.",
       "expected_behavior": "Invoke nomia, select a delivery mode, require board root, board id, cycle version, and supplied evidence before writing governance artifacts.",
       "acceptance_criteria": [
         "selected mode is delivery-intake or delivery-triage",
@@ -15,7 +15,10 @@
       ],
       "mode": "delivery-triage",
       "risk": "missed direct governance artifact trigger",
-      "category": "should_activate"
+      "category": "should_activate",
+      "legacy_migration_fixture": true,
+      "canonical_behavior": "Invoke Nomia in explicit legacy migration/adaptation context only; translate the retired cycle version phrase into canonical board_id, year, and cycle_id before writing governance artifacts.",
+      "notes": "Explicit legacy migration/adaptation regression fixture; normal operation uses canonical board_id, year, and cycle_id."
     },
     {
       "id": "activate-002",
@@ -187,7 +190,10 @@
       ],
       "mode": "roadmap-define",
       "risk": "roadmap scope ambiguity",
-      "category": "ambiguous"
+      "category": "ambiguous",
+      "legacy_migration_fixture": true,
+      "canonical_behavior": "Treat the retired cycle version phrase as legacy migration input and adapt it to canonical board_id, year, and cycle_id before any roadmap write.",
+      "notes": "Explicit legacy migration/adaptation regression fixture; normal operation uses canonical board_id, year, and cycle_id."
     },
     {
       "id": "ambiguous-004",
@@ -220,7 +226,7 @@
     {
       "id": "edge-001",
       "type": "edge_case",
-      "prompt": "Create nomia status artifacts, but I only know the board id and not the cycle version or board root.",
+      "prompt": "Create nomia status artifacts, but I only know the board_id and not the cycle_id or board root.",
       "expected_behavior": "Invoke nomia enough to report blockers, but stop before repository-facing writes because required runtime roots are missing.",
       "acceptance_criteria": [
         "reports missing BOARD_ROOT, year, and cycle_id",

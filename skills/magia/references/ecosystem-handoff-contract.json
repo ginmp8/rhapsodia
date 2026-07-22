@@ -3,7 +3,7 @@
     "classification": "breaking-no-legacy",
     "legacy_read_support": false,
     "mixed_package_versions_allowed": false,
-    "required_ecosystem_release": "1.6.0"
+    "required_ecosystem_release": "1.7.0"
   },
   "contract_id": "nomia-mago-magia-handoff-v2",
   "directions": {
@@ -246,7 +246,7 @@
       ]
     }
   },
-  "ecosystem_release": "1.6.0",
+  "ecosystem_release": "1.7.0",
   "envelope": {
     "freshness_required_fields": [
       "max_age_days"

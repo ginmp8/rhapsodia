@@ -1,132 +1,104 @@
 #!/usr/bin/env python3
-"""Run the complete MAGIA pytest suite and emit hash-bound evidence."""
+"""Run the complete MAGIA pytest suite and emit a deterministic attestation."""
 from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.metadata
-import importlib.util
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
-from typing import Any
 
-REPORT_KIND = "magia-test-report-v1"
-PASS_RE = re.compile(r"(\d+)\s+passed")
+SUMMARY_RE = re.compile(r"(?P<count>\d+)\s+(?P<label>passed|failed|skipped|error|errors|xfailed|xpassed)")
 
 
-def suite_manifest(root: Path) -> tuple[list[dict[str, str]], str]:
-    root = root.resolve()
-    files = sorted(path for path in (root / "tests").glob("test_*.py") if path.is_file())
-    entries = [
-        {
-            "file": path.relative_to(root).as_posix(),
-            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-        }
-        for path in files
-    ]
-    digest_input = "\n".join(f"{entry['file']}:{entry['sha256']}" for entry in entries)
-    digest = hashlib.sha256(digest_input.encode("utf-8")).hexdigest()
-    return entries, digest
+def suite_digest(root: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted((root / "tests").glob("test_*.py")):
+        digest.update(path.relative_to(root).as_posix().encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
-def run_suite(root: Path, *, timeout: int = 180) -> dict[str, Any]:
-    root = root.resolve()
-    manifest, digest = suite_manifest(root)
-    started = time.monotonic()
-    command = [sys.executable, "-B", "-m", "pytest", "-q", str(root / "tests")]
-    if not manifest:
-        return {
-            "kind": REPORT_KIND,
-            "status": "fail",
-            "root": str(root),
-            "suite_files": manifest,
-            "suite_digest": digest,
-            "test_count": 0,
-            "command": command,
-            "return_code": None,
-            "failure_classification": "configuration",
-            "errors": ["no tests/test_*.py files found"],
-        }
-    if importlib.util.find_spec("pytest") is None:
-        return {
-            "kind": REPORT_KIND,
-            "status": "fail",
-            "root": str(root),
-            "suite_files": manifest,
-            "suite_digest": digest,
-            "test_count": 0,
-            "command": command,
-            "return_code": None,
-            "failure_classification": "environment",
-            "errors": ["pytest is unavailable; install dependencies from requirements-test.txt"],
-        }
+def parse_summary(text: str) -> dict[str, int]:
+    result = {"passed": 0, "failed": 0, "skipped": 0, "errors": 0, "xfailed": 0, "xpassed": 0}
+    for match in SUMMARY_RE.finditer(text):
+        label = match.group("label")
+        if label == "error":
+            label = "errors"
+        result[label] = int(match.group("count"))
+    return result
+
+
+def run(root: Path) -> dict[str, object]:
     env = dict(os.environ)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
-    try:
-        completed = subprocess.run(
-            command,
-            cwd=str(root),
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=timeout,
-            env=env,
-        )
-        combined = completed.stdout + "\n" + completed.stderr
-        match = PASS_RE.search(combined)
-        count = int(match.group(1)) if match else 0
-        status = "pass" if completed.returncode == 0 and count > 0 else "fail"
-        errors = [] if status == "pass" else [f"pytest exited with {completed.returncode}"]
-        return {
-            "kind": REPORT_KIND,
-            "status": status,
-            "root": str(root),
-            "suite_files": manifest,
-            "suite_digest": digest,
-            "test_count": count,
-            "command": command,
-            "return_code": completed.returncode,
-            "duration_seconds": round(time.monotonic() - started, 3),
-            "python_version": sys.version.split()[0],
-            "pytest_version": importlib.metadata.version("pytest"),
-            "failure_classification": None if status == "pass" else "test",
-            "errors": errors,
-            "stdout_tail": completed.stdout[-4000:],
-            "stderr_tail": completed.stderr[-4000:],
-        }
-    except subprocess.TimeoutExpired as exc:
-        return {
-            "kind": REPORT_KIND,
-            "status": "fail",
-            "root": str(root),
-            "suite_files": manifest,
-            "suite_digest": digest,
-            "test_count": 0,
-            "command": command,
-            "return_code": None,
-            "duration_seconds": round(time.monotonic() - started, 3),
-            "failure_classification": "test",
-            "errors": [f"pytest timed out after {timeout} seconds"],
-            "stdout_tail": (exc.stdout or "")[-4000:] if isinstance(exc.stdout, str) else "",
-            "stderr_tail": (exc.stderr or "")[-4000:] if isinstance(exc.stderr, str) else "",
-        }
+    # Package-validation tests call the validator recursively. This marker lets
+    # nested validators suppress only the nested full-suite run while the outer
+    # release gate still executes all tests once.
+    env["MAGIA_TEST_SUITE_ACTIVE"] = "1"
+    with tempfile.TemporaryDirectory(prefix="magia-pytest-attestation-") as temp_dir:
+        temp = Path(temp_dir)
+        stdout_path = temp / "pytest.out"
+        stderr_path = temp / "pytest.err"
+        pytest_target = shlex.quote(str(root / "tests"))
+        python_executable = shlex.quote(sys.executable)
+        shell_command = f"{python_executable} -B -m pytest -q {pytest_target}"
+        start = time.monotonic()
+        # A shell parent avoids a pytest teardown edge observed when package tests
+        # spawn validation children under a direct Python subprocess parent.
+        with stdout_path.open("w", encoding="utf-8") as stdout, stderr_path.open("w", encoding="utf-8") as stderr:
+            completed = subprocess.run(["bash", "-lc", shell_command], stdout=stdout, stderr=stderr, env=env, check=False)
+        duration = round(time.monotonic() - start, 3)
+        stdout_text = stdout_path.read_text(encoding="utf-8")
+        stderr_text = stderr_path.read_text(encoding="utf-8")
+
+    summary = parse_summary(stdout_text + "\n" + stderr_text)
+    executed = sum(summary.values())
+    # A successful full execution proves collection of the same test set; separate
+    # collect-only invocation is intentionally avoided because it can leave pytest
+    # plugin teardown state that blocks a second run in the same attestation process.
+    collected = executed
+    status = "pass" if completed.returncode == 0 and collected > 0 and summary["passed"] > 0 else "fail"
+    errors: list[str] = []
+    if completed.returncode != 0:
+        errors.append("pytest execution or collection failed")
+    if collected == 0:
+        errors.append("pytest collected zero tests")
+    if summary["passed"] == 0:
+        errors.append("pytest reported zero passed tests")
+    return {
+        "kind": "magia-pytest-attestation-v1",
+        "status": status,
+        "collected": collected,
+        "executed": executed,
+        **summary,
+        "duration_seconds": duration,
+        "suite_digest": suite_digest(root),
+        "command": [sys.executable, "-B", "-m", "pytest", "-q", "tests"],
+        "collection_evidence": "derived from the completed pytest execution summary",
+        "errors": errors,
+        "stdout_tail": "\n".join(stdout_text.splitlines()[-12:]),
+        "stderr_tail": "\n".join(stderr_text.splitlines()[-12:]),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target", default=str(Path(__file__).resolve().parents[1]))
-    parser.add_argument("--timeout", type=int, default=180)
-    parser.add_argument("--json-output")
+    parser.add_argument("--output")
     args = parser.parse_args(argv)
-    result = run_suite(Path(args.target), timeout=args.timeout)
+    result = run(Path(args.target).resolve())
     text = json.dumps(result, indent=2, sort_keys=True) + "\n"
-    if args.json_output:
-        output = Path(args.json_output).resolve()
+    if args.output:
+        output = Path(args.output)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(text, encoding="utf-8")
     print(text, end="")

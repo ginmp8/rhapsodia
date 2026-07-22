@@ -2,7 +2,7 @@
   {
     "id": "A001",
     "category": "should_activate",
-    "prompt": "Use nomia to create a delivery status artifact for board onboarding cycle 2026.04 from these supplied notes.",
+    "prompt": "Use nomia to create a delivery status artifact for board onboarding with cycle_id cycle-2026-04-01-onboarding from these supplied notes.",
     "expected_activation": true,
     "expected_behavior": "Select one delivery mode, resolve runtime roots, write only nomia-owned governance artifacts, preserve unknown facts, and validate outputs.",
     "notes": "delivery governance creation"
@@ -93,7 +93,9 @@
     "prompt": "Create the roadmap deliverables for the next cycle.",
     "expected_activation": null,
     "expected_behavior": "Confirm nomia roadmap governance scope and require board root, board id, cycle version, and evidence before writing.",
-    "notes": "roadmap scope ambiguity"
+    "notes": "roadmap scope ambiguity Explicit legacy migration/adaptation regression fixture; normal operation uses canonical board_id, year, and cycle_id.",
+    "legacy_migration_fixture": true,
+    "canonical_behavior": "Treat the retired cycle version phrase as legacy migration input and adapt it to canonical board_id, year, and cycle_id before writing."
   },
   {
     "id": "B003",
@@ -154,7 +156,7 @@
   {
     "id": "E005",
     "category": "edge_case",
-    "prompt": "Generate governance artifacts for a spec package, but board id and cycle version are absent.",
+    "prompt": "Generate governance artifacts for a spec package, but board_id and cycle_id are absent.",
     "expected_activation": true,
     "expected_behavior": "Stop before repository-facing writes and report the missing runtime inputs as blockers.",
     "notes": "required input blocker"

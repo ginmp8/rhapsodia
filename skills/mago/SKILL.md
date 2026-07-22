@@ -7,6 +7,10 @@ description: use when asked to plan, normalize, audit, define, or refine tech-le
 
 Plan intended technical work from Nomia intake and repository evidence. Mago owns planning; it does not modify product code, deploy, commit, open PRs, accept business risk, or own delivery governance. Mago does not fabricate runtime evidence.
 
+## Distributed ecosystem routing
+
+Use the [distributed routing contract](references/ecosystem-routing-contract.md) and [ecosystem lifecycle map](references/ecosystem-lifecycle.md). For multi-intent requests, Mago performs only the planning or reconciliation phase currently owned by Mago, then emits the typed handoff for the next owner. Never collapse Nomia governance or Magia execution into Mago.
+
 ## Authority and canonical state
 
 - Nomia owns requester, owner, due date, `business_priority`, stakeholders, roadmap, status, release notes, and governance decisions.

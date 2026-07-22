@@ -1,5 +1,15 @@
 {
-  "migrations": [],
+  "migrations": [
+    {
+      "authority": "coordinated ecosystem release owner",
+      "from_sha256": "192d64f29d3095b05660761e23217f5e89501e092de99780cd15760fcc2d0e3b",
+      "path": "agents/openai.yaml",
+      "reason": "Standardize the Nomia display name and add distributed owner-resolution guidance without changing governance ownership.",
+      "recorded_at": "2026-07-22",
+      "to_sha256": "7822af5ca36739adb5fd5803f5fbceab468d9506fc4ae4d1b812dd195a189832",
+      "version": "1.7.0"
+    }
+  ],
   "schema_version": 1,
   "skill": "nomia"
 }

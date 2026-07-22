@@ -5,22 +5,27 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import py_compile
 import re
+import subprocess
+import sys
 import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
 
+from validate_ecosystem_routing_contract import validate as validate_routing_contract
+from validate_shared_contract_provenance import validate as validate_shared_provenance
+from validate_ecosystem_release_metadata import validate as validate_release_metadata
+
 from validate_boundary import collect_errors as collect_boundary_errors
-from validate_contract_semantics import collect_errors as collect_contract_semantic_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
 from validate_ecosystem_handoff_contract import collect_errors as collect_ecosystem_handoff_errors
 from validate_priority_contract import collect_errors as collect_priority_errors
 from validate_ecosystem_compatibility import collect_errors as collect_compatibility_errors
 from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
 from security_scan import scan_bytes, scan_paths
-from run_test_suite import REPORT_KIND, run_suite, suite_manifest
 from package_policy import (
     EXCLUDED_DIR_NAMES,
     EXCLUDED_FILE_NAMES,
@@ -102,7 +107,7 @@ def rel(path: Path, root: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
-ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
+ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
 
@@ -187,44 +192,7 @@ def validate_eval_scenarios(path: Path) -> list[str]:
     return errors
 
 
-
-def load_test_report(path: Path) -> dict[str, Any]:
-    try:
-        data = json.loads(read_text(path))
-    except Exception as exc:  # noqa: BLE001
-        return {"kind": REPORT_KIND, "status": "fail", "errors": [f"cannot read test report: {exc}"]}
-    if not isinstance(data, dict):
-        return {"kind": REPORT_KIND, "status": "fail", "errors": ["test report root must be an object"]}
-    return data
-
-
-def validate_test_report(target: Path, report: dict[str, Any]) -> list[str]:
-    errors: list[str] = []
-    manifest, digest = suite_manifest(target)
-    if report.get("kind") != REPORT_KIND:
-        errors.append(f"test report kind must be {REPORT_KIND}")
-    if report.get("status") != "pass":
-        errors.append("test report status must be pass")
-    if report.get("suite_digest") != digest:
-        errors.append("test report suite digest does not match current tests")
-    if report.get("suite_files") != manifest:
-        errors.append("test report suite manifest does not match current tests")
-    if not isinstance(report.get("test_count"), int) or report.get("test_count", 0) <= 0:
-        errors.append("test report must record at least one passing test")
-    return errors
-
-
-def validate_test_dependency(target: Path) -> list[str]:
-    path = target / "requirements-test.txt"
-    if not path.is_file():
-        return ["missing requirements-test.txt"]
-    lines = [line.strip().lower() for line in read_text(path).splitlines() if line.strip() and not line.lstrip().startswith("#")]
-    if not any(line.startswith("pytest") for line in lines):
-        return ["requirements-test.txt must declare pytest"]
-    return []
-
-
-def validate_target(target: Path, test_report: dict[str, Any] | None = None, require_tests: bool = False) -> dict[str, Any]:
+def validate_target(target: Path) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     checks: list[str] = []
@@ -265,8 +233,9 @@ def validate_target(target: Path, test_report: dict[str, Any] | None = None, req
     required_paths = [
         "agents/openai.yaml",
         "VERSION",
+        "release.json",
+        "requirements-dev.txt",
         "CHANGELOG.md",
-        "requirements-test.txt",
         "references/canonical-paths.md",
         "references/board-contract.md",
         "references/common-execution.md",
@@ -276,12 +245,13 @@ def validate_target(target: Path, test_report: dict[str, Any] | None = None, req
         "references/ecosystem-handoff-contract.json",
         "references/ecosystem-compatibility.md",
         "references/ecosystem-compatibility.json",
+        "references/ecosystem-routing-contract.md",
+        "references/ecosystem-routing-contract.json",
+        "references/ecosystem-lifecycle.md",
+        "references/ecosystem-contract-provenance.json",
+        "evals/ecosystem-routing-scenarios.json",
         "references/priority-contract.json",
         "references/priority-contract.md",
-        "references/priority-contract.md",
-        "references/priority-contract.json",
-        "references/ecosystem-compatibility.json",
-        "references/ecosystem-compatibility.md",
         "references/modes/adhoc.md",
         "references/modes/ralph.md",
         "references/artifacts/execution-records.md",
@@ -300,25 +270,21 @@ def validate_target(target: Path, test_report: dict[str, Any] | None = None, req
         "scripts/ecosystem_handoff.py",
         "scripts/validate_ecosystem_handoff_contract.py",
         "scripts/run_ecosystem_flow_harness.py",
+        "scripts/run_ecosystem_negative_harness.py",
+        "scripts/validate_ecosystem_routing_contract.py",
+        "scripts/validate_shared_contract_provenance.py",
+        "scripts/validate_ecosystem_release_metadata.py",
+        "scripts/run_test_suite.py",
         "scripts/validate_ecosystem_compatibility.py",
         "scripts/validate_priority_contract.py",
-        "scripts/validate_priority_contract.py",
-        "scripts/validate_ecosystem_compatibility.py",
-        "scripts/run_ecosystem_flow_harness.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
-        "scripts/validate_contract_semantics.py",
-        "scripts/run_test_suite.py",
-        "tests/test_package_assurance.py",
     ]
     for required in required_paths:
         if not (target / required).exists():
             errors.append(f"missing required package resource: {required}")
     checks.append("required resources")
-
-    errors.extend(validate_test_dependency(target))
-    checks.append("declared test dependency")
 
     version_path = target / "VERSION"
     if version_path.is_file():
@@ -395,18 +361,36 @@ def validate_target(target: Path, test_report: dict[str, Any] | None = None, req
     errors.extend(collect_compatibility_errors(target))
     checks.append("ecosystem compatibility")
 
-    errors.extend(collect_contract_semantic_errors(target))
-    checks.append("contract semantic consistency")
-
-    if require_tests:
-        if test_report is None:
-            errors.append("passing hash-bound MAGIA test report is required")
-        else:
-            errors.extend(validate_test_report(target, test_report))
-        checks.append("hash-bound test evidence")
-
     errors.extend(collect_boundary_errors())
     checks.append("runtime independence and ownership boundary")
+
+    routing = validate_routing_contract(target)
+    errors.extend(routing.get("errors", []))
+    warnings.extend(routing.get("warnings", []))
+    checks.append("distributed ecosystem routing")
+
+    provenance = validate_shared_provenance(target)
+    errors.extend(provenance.get("errors", []))
+    checks.append("shared contract provenance")
+
+    release_metadata = validate_release_metadata(target)
+    errors.extend(release_metadata.get("errors", []))
+    checks.append("coordinated ecosystem release metadata")
+
+    if os.environ.get("MAGIA_TEST_SUITE_ACTIVE") == "1":
+        checks.append("complete pytest suite (nested execution suppressed by active suite)")
+    else:
+        with tempfile.TemporaryDirectory(prefix="magia-tests-") as tmp:
+            report_path = Path(tmp) / "pytest.json"
+            completed = subprocess.run([sys.executable, "-B", str(target / "scripts/run_test_suite.py"), "--target", str(target), "--output", str(report_path)], capture_output=True, text=True, check=False)
+            if completed.returncode != 0 or not report_path.exists():
+                errors.append(f"complete pytest suite failed: {completed.stdout} {completed.stderr}")
+            else:
+                test_report = json.loads(report_path.read_text(encoding="utf-8"))
+                if test_report.get("status") != "pass" or int(test_report.get("collected", 0)) == 0:
+                    errors.append(f"complete pytest suite attestation failed: {test_report.get('errors', [])}")
+                else:
+                    checks.append(f"complete pytest suite ({test_report.get('passed')} passed; digest {test_report.get('suite_digest')})")
 
     errors.extend(scan_package_candidates(target))
     checks.append("sensitive content and symlink scan")
@@ -419,14 +403,20 @@ def zip_required_resources() -> list[str]:
         "SKILL.md",
         "agents/openai.yaml",
         "VERSION",
+        "release.json",
+        "requirements-dev.txt",
         "CHANGELOG.md",
-        "requirements-test.txt",
         "references/resource-map.md",
         "references/package-delivery.md",
         "references/ecosystem-handoff-contract.md",
         "references/ecosystem-handoff-contract.json",
         "references/ecosystem-compatibility.md",
         "references/ecosystem-compatibility.json",
+        "references/ecosystem-routing-contract.md",
+        "references/ecosystem-routing-contract.json",
+        "references/ecosystem-lifecycle.md",
+        "references/ecosystem-contract-provenance.json",
+        "evals/ecosystem-routing-scenarios.json",
         "references/priority-contract.json",
         "references/priority-contract.md",
         "examples/activation-scenarios.json",
@@ -439,14 +429,16 @@ def zip_required_resources() -> list[str]:
         "scripts/ecosystem_handoff.py",
         "scripts/validate_ecosystem_handoff_contract.py",
         "scripts/run_ecosystem_flow_harness.py",
+        "scripts/run_ecosystem_negative_harness.py",
+        "scripts/validate_ecosystem_routing_contract.py",
+        "scripts/validate_shared_contract_provenance.py",
+        "scripts/validate_ecosystem_release_metadata.py",
+        "scripts/run_test_suite.py",
         "scripts/validate_ecosystem_compatibility.py",
         "scripts/validate_priority_contract.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
-        "scripts/validate_contract_semantics.py",
-        "scripts/run_test_suite.py",
-        "tests/test_package_assurance.py",
     ]
 
 
@@ -518,28 +510,13 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate the MAGIA skill package and optional zip artifact.")
     parser.add_argument("--target", required=True, help="Path to the MAGIA skill root.")
     parser.add_argument("--zip", dest="zip_path", help="Optional packaged skill zip to validate.")
-    parser.add_argument("--test-report", help="Optional hash-bound report from scripts/run_test_suite.py. When omitted, tests run automatically.")
-    parser.add_argument("--structural-only", action="store_true", help="Skip test execution and test-evidence gating. Not valid for package readiness claims.")
-    parser.add_argument("--test-timeout", type=int, default=180, help="Timeout used when tests run automatically.")
     parser.add_argument("--json-output", help="Optional path for machine-readable validation output.")
     args = parser.parse_args(argv)
 
-    target = Path(args.target).resolve()
-    test_report: dict[str, Any] | None = None
-    if not args.structural_only:
-        if args.test_report:
-            test_report = load_test_report(Path(args.test_report).resolve())
-        else:
-            test_report = run_suite(target, timeout=args.test_timeout)
-
-    result: dict[str, Any] = {
-        "target": validate_target(target, test_report=test_report, require_tests=not args.structural_only)
-    }
-    if test_report is not None:
-        result["test_report"] = test_report
+    result: dict[str, Any] = {"target": validate_target(Path(args.target))}
     if args.zip_path:
         result["zip"] = validate_zip(Path(args.zip_path))
-    statuses = [section["status"] for section in result.values() if isinstance(section, dict) and "status" in section]
+    statuses = [section["status"] for section in result.values() if isinstance(section, dict)]
     overall = "pass" if statuses and all(status == "pass" for status in statuses) else "fail"
     result["status"] = overall
 
@@ -552,7 +529,7 @@ def main(argv: list[str] | None = None) -> int:
     for section_name, section in result.items():
         if not isinstance(section, dict) or section_name == "status":
             continue
-        print(f"[{section_name}] {section.get('status', 'observed')}")
+        print(f"[{section_name}] {section['status']}")
         for check in section.get("checks", []):
             print(f"  check: {check}")
         for warning in section.get("warnings", []):

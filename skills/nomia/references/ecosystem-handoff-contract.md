@@ -10,7 +10,7 @@ A typed envelope transfers attributed evidence; it never transfers authority. Th
 
 ## Release contract
 
-- Ecosystem release: `1.6.0`.
+- Ecosystem release: `1.7.0`.
 - Handoff schema: `2.0.0`.
 - State mapping: `2.0.0`.
 - Compatibility: exact coordinated versions only.

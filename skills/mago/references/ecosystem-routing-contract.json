@@ -1,0 +1,68 @@
+{
+  "allowed_handoffs": [
+    "nomia_to_mago",
+    "mago_to_magia",
+    "magia_to_mago",
+    "mago_to_nomia",
+    "magia_to_nomia"
+  ],
+  "contract_id": "nomia-mago-magia-routing-v1",
+  "ecosystem_release": "1.7.0",
+  "evidence_status": "structural-contract; live-model-routing-not-measured",
+  "forbidden_direct_handoffs": [
+    "nomia_to_magia"
+  ],
+  "owner_resolution": {
+    "ambiguous_rule": "preserve-unknowns-and-resolve-owner-before-mutation",
+    "monolithic_router_required": false,
+    "multi_intent_rule": "sequence-owners-through-typed-handoffs",
+    "mutation_rule": "resolve-exactly-one-current-owner-before-mutation"
+  },
+  "package_model": "independent-coordinated-skills",
+  "roles": {
+    "magia": {
+      "must_not_own": [
+        "product intent",
+        "planning requirements",
+        "business governance"
+      ],
+      "owns": [
+        "implementation",
+        "tests",
+        "runtime validation",
+        "execution evidence",
+        "implementation decisions"
+      ]
+    },
+    "mago": {
+      "must_not_own": [
+        "business priority",
+        "implementation",
+        "release truth"
+      ],
+      "owns": [
+        "technical planning",
+        "requirements",
+        "design",
+        "tasks",
+        "validation plans",
+        "execution sequence"
+      ]
+    },
+    "nomia": {
+      "must_not_own": [
+        "technical planning",
+        "implementation",
+        "runtime validation"
+      ],
+      "owns": [
+        "product governance",
+        "delivery governance",
+        "business priority",
+        "stakeholder state",
+        "release communication"
+      ]
+    }
+  },
+  "schema_version": "1.0.0"
+}

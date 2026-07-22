@@ -8,7 +8,6 @@ ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL_RESOURCES = {
     "SKILL.md",
     "agents/openai.yaml",
-    "requirements-test.txt",
     "assets/templates/complexity-reduction-evidence.md.template",
     "assets/templates/contract-change-note.md.template",
     "assets/templates/implementation-adr.md.template",
@@ -52,8 +51,6 @@ ORIGINAL_RESOURCES = {
     "scripts/validate_planning_handoff_contract.py",
     "scripts/validate_repo_board.py",
     "scripts/validate_skill_package.py",
-    "scripts/validate_contract_semantics.py",
-    "scripts/run_test_suite.py",
     "scripts/write_artifact_scaffold.py",
     "scripts/write_execution_log.py",
 }
@@ -78,11 +75,8 @@ REQUIRED_FUNCTIONS = {
     },
     "scripts/validate_boundary.py": {"iter_skill_files", "collect_errors", "main"},
     "scripts/validate_skill_package.py": {
-        "validate_shared_artifact_boundaries", "validate_eval_scenarios", "load_test_report",
-        "validate_test_report", "validate_test_dependency", "validate_target", "validate_zip", "main",
+        "validate_shared_artifact_boundaries", "validate_eval_scenarios", "validate_target", "validate_zip", "main",
     },
-    "scripts/validate_contract_semantics.py": {"collect_errors", "main"},
-    "scripts/run_test_suite.py": {"suite_manifest", "run_suite", "main"},
     "scripts/write_execution_log.py": {
         "load_task_title", "split_execution_log", "parse_execution_log", "build_entry", "write_execution_log", "main",
     },
