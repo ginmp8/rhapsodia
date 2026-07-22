@@ -30,16 +30,12 @@ def collect_errors(root: Path, peers: list[Path] | None = None) -> list[str]:
     if version != expected or version != manifest.get("ecosystem_release"):
         errors.append(f"{role} version {version} does not equal ecosystem release {manifest.get('ecosystem_release')}")
     policy = manifest.get("policy") or {}
-    if policy.get("classification") != "coordinated-exact" or policy.get("mixed_versions_allowed") is not False or policy.get("legacy_package_support") is not False:
-        errors.append("compatibility policy must be coordinated-exact with no mixed or legacy versions")
+    if policy.get("classification") != "coordinated-exact" or policy.get("mixed_versions_allowed") is not False:
+        errors.append("compatibility policy must be coordinated-exact and reject mixed versions")
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     versions = SEMVER_HEADING.findall(changelog)
     if not versions or versions[0] != version:
         errors.append("CHANGELOG latest version must equal package version")
-    for item in versions:
-        major, minor, patch = map(int, item.split('.'))
-        if major < 1 or (major == 1 and minor < 1):
-            errors.append(f"CHANGELOG contains version below normalized 1.1.0: {item}")
     if role == "mago":
         release = json.loads((root / "release.json").read_text(encoding="utf-8"))
         if release.get("version") != version or release.get("ecosystem_release") != version:

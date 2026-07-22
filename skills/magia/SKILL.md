@@ -9,7 +9,7 @@ MAGIA is the senior developer/architect execution skill. It performs bounded rep
 
 ## Ecosystem contracts
 
-Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `mago_to_magia`; produce `magia_to_mago` and `magia_to_nomia`. Apply the [ecosystem priority contract](references/priority-contract.md) read-only and reject mixed versions, generic priority keys, and legacy envelopes.
+Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `mago_to_magia`; produce `magia_to_mago` and `magia_to_nomia`. Apply the [ecosystem priority contract](references/priority-contract.md) read-only and reject mixed versions, generic priority keys, and unsupported envelope schemas.
 
 ## Scope Boundary
 

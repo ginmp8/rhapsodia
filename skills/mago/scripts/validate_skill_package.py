@@ -44,7 +44,7 @@ REQUIRED_FILES = (
     "references/ecosystem-handoff-contract.md",
     "references/ecosystem-handoff-contract.json",
     "references/ecosystem-compatibility.json",
-    "references/ecosystem-versioning.md",
+    "references/ecosystem-compatibility.md",
     "VERSION",
     "release.json",
     "requirements.txt",

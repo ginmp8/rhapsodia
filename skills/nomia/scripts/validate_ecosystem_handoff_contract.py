@@ -27,7 +27,7 @@ def collect_errors(root: Path) -> list[str]:
         for phrase in REQUIRED_SKILL_PHRASES[role]:
             if phrase.lower() not in text:
                 errors.append(f"SKILL.md missing handoff integration phrase: {phrase}")
-    for rel in (CONTRACT_FILE,"references/ecosystem-handoff-contract.md","references/ecosystem-compatibility.json","references/ecosystem-versioning.md","scripts/ecosystem_handoff.py","scripts/validate_ecosystem_compatibility.py","scripts/run_ecosystem_flow_harness.py"):
+    for rel in (CONTRACT_FILE,"references/ecosystem-handoff-contract.md","references/ecosystem-compatibility.json","references/ecosystem-compatibility.md","scripts/ecosystem_handoff.py","scripts/validate_ecosystem_compatibility.py","scripts/run_ecosystem_flow_harness.py"):
         if not (root / rel).is_file():
             errors.append(f"missing ecosystem handoff resource: {rel}")
     return errors

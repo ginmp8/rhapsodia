@@ -24,7 +24,6 @@
   },
   "policy": {
     "classification": "coordinated-exact",
-    "legacy_package_support": false,
     "mixed_versions_allowed": false,
     "unknown_version_behavior": "reject-before-mutation"
   },
