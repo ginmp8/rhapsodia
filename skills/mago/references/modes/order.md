@@ -20,10 +20,10 @@
 2. Load cycle.yaml, discovery-index.yaml, and only the candidate docs referenced by the candidates being ordered.
 3. Load existing registry records so identity, dependencies, status, supersession, and handoff truth are preserved.
 4. Deduplicate discovery candidates by capability boundary and stable `feature_key`.
-5. Preserve existing `spec_id`, dependency relationships, priority, `order_hint`, and define handoff truth unless stronger evidence proves correction is necessary.
+5. Preserve existing `spec_id`, dependency relationships, read-only `business_priority`, `technical_criticality`, `execution_sequence`, and define handoff truth unless stronger evidence proves correction is necessary.
 6. Create new specs only when the work is materially distinct or a new package is genuinely needed.
 7. Create identity atomically with `scripts/create_planning_identity.py spec`; never coordinate through a shared sequence counter.
-8. Assign priority and optional `order_hint` conservatively; dependency topology remains authoritative.
+8. Assign `technical_criticality` and `execution_sequence` conservatively; preserve `business_priority` only as attributed Nomia evidence. Dependency topology and safety constraints remain authoritative.
 9. Keep `depends_on_features` and `depends_on_specs` distinct.
 10. Reconcile the registry handoff for every ordered spec so downstream define preparation is explicit.
 11. Validate duplicate features, missing dependencies, cycles, and registry/package drift with `scripts/validate_repo_board.py`.
@@ -36,7 +36,7 @@ The canonical catalog is the set of independent registry records. Generated `spe
 ### Registry Shape
 
 - identity fields: `kind`, `spec_id`, `cycle_id`, `feature_key`, `created_at`
-- planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `priority`, `order_hint`
+- planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `business_priority`, `technical_criticality`, `execution_sequence`
 - dependency fields: `depends_on_features`, `depends_on_specs`
 - lifecycle fields: `supersedes`, `superseded_by`
 - handoff fields: `status`, `downstream_mode`, `package_shape`, `source_candidates`, `seed_artifacts`, `blockers`
@@ -63,6 +63,7 @@ Catalog authoring means creating or reconciling independent registry records; it
 - replace placeholders and examples with real values derived from discovery evidence and repository truth
 - never reuse an existing canonical ID or path for a different cycle or spec; do not generate a suffix or counter to hide a collision
 - do not copy template literals for identity, status, priority, dependency, handoff, or feature version blindly
+Priority ownership in this file follows `references/priority-contract.md`: Nomia-owned business priority remains read-only; Mago owns technical criticality and execution sequence.
 - do not mutate another worker's unrelated registry record while ordering one candidate
 
 ## Ordering Heuristics
@@ -80,3 +81,7 @@ Catalog authoring means creating or reconciling independent registry records; it
 - ordering touches only the selected registry records and, when justified, cycle planning metadata; it does not create spec folders or implementation output
 - generated catalog/queue files are disposable external views and never canonical outputs
 - if registry records and handoffs are already coherent, keep them stable and make only justified bounded corrections
+
+## Priority and sequencing contract
+
+Use `references/priority-contract.md`. New registry writes must emit `business_priority`, `technical_criticality`, and `execution_sequence`. `priority` and `order_hint` are unsupported; migrate the source record before Mago reads or orders it.

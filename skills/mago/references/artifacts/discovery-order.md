@@ -58,7 +58,7 @@ Each registry file owns one ordered spec. Create new identities atomically throu
 
 - purpose: canonical registration and define handoff for one planning item
 - required identity fields: `kind`, `spec_id`, `cycle_id`, `feature_key`, `created_at`
-- required planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `priority`, `order_hint`
+- required planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `business_priority`, `technical_criticality`, `execution_sequence`
 - required dependency fields: `depends_on_features`, `depends_on_specs`
 - required lifecycle fields: `supersedes`, `superseded_by`
 - required handoff mapping: `status`, `downstream_mode`, `package_shape`, `source_candidates`, `seed_artifacts`, `blockers`
@@ -85,7 +85,7 @@ Each registry file owns one ordered spec. Create new identities atomically throu
 
 - templates document the complete generated schemas
 - generated views include `cycle_id` and a registry digest
-- ordering is deterministic from dependency topology, priority, order hint, creation timestamp, and spec id
+- ordering is deterministic from dependency topology, execution-sequence lane/rank, creation timestamp, and spec id
 - never write generated views under `BOARD_ROOT`
 - never hand-edit generated views or synchronize their values back into registry/package state
 

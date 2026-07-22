@@ -6,6 +6,7 @@ description: "use when asked to create, update, validate, audit, or report on no
 # nomia
 
 Nomia owns product/delivery governance and reporting. It never owns software design, engineering decomposition, or technical validation.
+Priority ownership follows `references/priority-contract.md`: Nomia owns `business_priority`; generic `priority` is unsupported.
 
 ## Scope and Ownership
 
@@ -50,10 +51,11 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 9. Template-backed work: [references/template-integration.md](references/template-integration.md), `assets/templates/`.
 10. Artifact family only when creating, editing, or validating it: [delivery](references/artifacts/delivery.md), [roadmap](references/artifacts/roadmap.md), [rfc](references/artifacts/rfc.md), [governance decision](references/artifacts/governance-decision.md), or [reporting](references/artifacts/reporting.md).
 11. Roadmap-to-spec handoff: [references/roadmap-to-mago-contract.md](references/roadmap-to-mago-contract.md).
-12. Activation, routing, and scenario evidence: [references/activation-and-evaluation.md](references/activation-and-evaluation.md).
-13. Assurance, release integrity, or SDD review: [references/assurance-and-release.md](references/assurance-and-release.md) and [references/assurance-contract.json](references/assurance-contract.json).
-14. Structural validation, golden examples, or `skill.zip`: [references/package-validation.md](references/package-validation.md), `examples/golden/`, [examples/golden/index.md](examples/golden/index.md), and [examples/golden/validation-commands.md](examples/golden/validation-commands.md).
-15. Scenario assets: [examples/activation-scenarios.json](examples/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json), [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json), [evals/governance-scenarios.json](evals/governance-scenarios.json), and [evals/booster-activation-scenarios.json](evals/booster-activation-scenarios.json). Mark metrics measured only after the relevant command or prompt execution and review.
+12. Ecosystem priority ownership and migration: [references/priority-contract.md](references/priority-contract.md) and [references/priority-contract.json](references/priority-contract.json).
+13. Activation, routing, and scenario evidence: [references/activation-and-evaluation.md](references/activation-and-evaluation.md).
+14. Assurance, release integrity, or SDD review: [references/assurance-and-release.md](references/assurance-and-release.md) and [references/assurance-contract.json](references/assurance-contract.json).
+15. Structural validation, golden examples, or `skill.zip`: [references/package-validation.md](references/package-validation.md), `examples/golden/`, [examples/golden/index.md](examples/golden/index.md), and [examples/golden/validation-commands.md](examples/golden/validation-commands.md).
+16. Scenario assets: [examples/activation-scenarios.json](examples/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json), [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json), [evals/governance-scenarios.json](evals/governance-scenarios.json), and [evals/booster-activation-scenarios.json](evals/booster-activation-scenarios.json). Mark metrics measured only after the relevant command or prompt execution and review.
 
 ## Execution Workflow
 
@@ -74,6 +76,7 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 - Guided intake and discovery: `scripts/guide_intake.py`; its output is non-authoritative and never creates canonical records.
 - Canonical scaffolds: `scripts/write_artifact_scaffold.py`, `scripts/write_ops_scaffold.py` (`--dry-run` available).
 - Legacy adaptation: `scripts/adapt_governance.py`; validate output with `scripts/validate_ops.py --require-canonical`.
+- Ecosystem priority ownership and migration: `scripts/validate_priority_contract.py`; new Nomia writers emit `business_priority`, while `technical_criticality` and `execution_sequence` remain read-only Mago evidence.
 - Canonical state, transitions, metrics, and typed handoffs: `scripts/governance_contract.py`, `scripts/evaluate_governance.py`.
 - Human projections and provenance validation: `scripts/project_governance_views.py`, `scripts/validate_projection_metadata.py`.
 - Writers, lists, and normalization: `scripts/upsert_rfc_entry.py`, `scripts/append_governance_decision_entry.py`, `scripts/update_template_lists.py`, `scripts/normalize_human_artifacts.py`.
@@ -118,6 +121,7 @@ Repository-facing writes close only after touched artifacts pass their validator
 - Unknown or volatile facts are not invented; warnings in golden validation are deterministic and explicitly allowlisted.
 - Touched artifacts pass specialized validators and repository-facing writes pass board-path validation.
 - Scenario edits preserve categories and pass `scripts/validate_activation_scenarios.py` or `scripts/validate_skill_package.py`; governance scenarios pass `scripts/validate_governance_scenarios.py`.
+- Priority-contract edits pass `scripts/validate_priority_contract.py`; generic aliases are rejected, and Nomia never writes Mago-owned technical criticality or execution sequence.
 - Structural edits pass `scripts/validate_skill_package.py`; golden-sensitive edits pass `scripts/validate_golden_examples.py`; identity/path changes pass `scripts/validate_identity_contract.py`.
 - Every readiness or package run passes `scripts/validate_all.py`, including preservation and unit-test gates.
 - `skill.zip` is produced only by a passing deterministic package run; source and archive checks reject symlinks, path traversal, caches, bytecode, generated evidence/reports, secrets, credentials, private-key material, temporary files, and old zips.

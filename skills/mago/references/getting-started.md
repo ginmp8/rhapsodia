@@ -6,7 +6,7 @@ Use this page when the user has selected Mago but has not supplied an internal m
 
 | User state | Mago action | Hand off instead when |
 |---|---|---|
-| "I have an idea or demand" | inspect the resolved Nomia handoff, then clarify technical planning inputs | requester, owner, priority, due date, roadmap, or stakeholder facts are missing and must be authored by Nomia |
+| "I have an idea or demand" | inspect the resolved Nomia handoff, then clarify technical planning inputs | requester, owner, business priority, due date, roadmap, or stakeholder facts are missing and must be authored by Nomia |
 | "I need to understand the repository" | use `discovery` and produce bounded repository evidence | the user asks to edit code, run product tests, deploy, commit, or open a PR; route to Magia |
 | "I need a plan" | select profile, lifecycle stage, and one internal mode; create only triggered artifacts | canonical identity or registry state is unresolved |
 | "I need to change an existing spec" | refine canonical intent and generate a non-authoritative change delta | runtime evidence must be changed; Magia owns it |

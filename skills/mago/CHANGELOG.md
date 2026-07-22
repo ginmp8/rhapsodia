@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.0.0] - 2026-07-22
+
+### Breaking
+- Remove all runtime, projection, and migration support for generic `priority` and `order_hint`.
+- Require `business_priority`, `technical_criticality`, and `execution_sequence` on every active registry record.
+- Replace generated catalog `order_hint` with explicit business-priority, technical-criticality, execution-lane, and execution-rank fields.
+- Reject generic priority records rather than interpreting or converting them.
+
+## [2.6.0] - 2026-07-21
+
+- Replace new generic registry `priority`/`order_hint` writes with explicit `business_priority`, `technical_criticality`, and `execution_sequence` contracts.
+- Add a versioned ecosystem priority contract, provenance rules, migration compatibility, deterministic validators, and regression tests.
+- Preserve legacy Mago registry records as read-only migration inputs while rejecting mixed canonical and legacy forms.
+
 All notable package changes are recorded here. Versions follow semantic versioning for the distributed skill package only; cycle and spec filesystem identities never use semantic versioning.
 
 ## [2.5.0] - 2026-07-21

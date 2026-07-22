@@ -26,7 +26,7 @@ COPYABLE_SECTIONS = {
     "request",
     "ownership",
     "planning",
-    "priority",
+    "business_priority",
     "blockers",
     "risks",
     "risk_history",
@@ -76,6 +76,9 @@ def adapt(
 
     copied: list[str] = []
     ignored: list[str] = []
+    legacy = copy.deepcopy(legacy)
+    if "priority" in legacy:
+        raise ValueError("generic priority is unsupported; the Nomia source owner must provide business_priority explicitly")
     for section, value in legacy.items():
         if section in COPYABLE_SECTIONS and section in canonical:
             if isinstance(canonical[section], dict) and isinstance(value, dict):

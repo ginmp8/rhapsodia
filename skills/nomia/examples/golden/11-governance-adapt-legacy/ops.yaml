@@ -21,7 +21,7 @@ planning:
   commitment: tentative
   milestone: null
   rollout_target: null
-priority:
+business_priority:
   level: high
   urgency: unknown
   impact: unknown

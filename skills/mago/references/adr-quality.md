@@ -17,6 +17,7 @@ MAGO owns planning-level architecture rationale and planned Architecture Decisio
 Good planning rationale includes system boundary choices, contracts, data persistence, workflow orchestration, eventing, dependency posture, validation strategy, package shape, migration strategy, rollback strategy, observability, security posture, and task split rationale.
 
 Do not create governance decision logs from Mago. For material roadmap, priority, stakeholder, ownership, due date, or business-risk decisions, hand off to nomia.
+Priority terminology in this file follows `references/priority-contract.md`: Nomia-owned business priority remains read-only; Mago owns technical criticality and execution sequence.
 
 Do not create implementation ADRs from Mago after code has been changed unless Magia supplied execution evidence and the request is to refine planning records based on that evidence.
 

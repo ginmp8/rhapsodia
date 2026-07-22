@@ -4,7 +4,8 @@ Use to locate MAGIA resources without loading every file.
 
 ## Core References
 
-- `references/board-contract.md`: self-contained canonical board, registry, identity, dependency, and execution-sync contract.
+- `references/board-contract.md`
+- `references/priority-contract.md` and `references/priority-contract.json`: self-contained canonical board, registry, identity, dependency, and execution-sync contract.
 
 - `references/common-execution.md`: shared execution rules.
 - `references/execution-entry.md`: compact start card, first-safe-action rules, bounded ambiguity handling, and concise completion view.

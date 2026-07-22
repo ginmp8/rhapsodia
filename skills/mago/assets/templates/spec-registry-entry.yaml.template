@@ -10,8 +10,20 @@ classification: internal
 profile: standard
 created_at: "<created_at>"
 status: planned
-priority: normal
-order_hint: null
+business_priority:
+  level: unknown
+  owner: nomia
+  source: null
+  observed_at: null
+technical_criticality:
+  level: normal
+  owner: mago
+  rationale: null
+execution_sequence:
+  rank: null
+  lane: standard
+  owner: mago
+  rationale: []
 depends_on_features: []
 depends_on_specs: []
 supersedes: []

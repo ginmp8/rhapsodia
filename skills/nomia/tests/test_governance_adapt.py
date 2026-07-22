@@ -18,7 +18,7 @@ class GovernanceAdaptTests(unittest.TestCase):
             "request": {"title": "Demo", "requester": "product", "requested_date": "2026-04-20", "source": "manual"},
             "ownership": {"owner": "team-a", "backup_owner": None, "stakeholders": []},
             "planning": {"sprint": None, "bucket": "roadmap", "target_date": None, "commitment": "tentative"},
-            "priority": {"level": "medium", "rationale": "legacy evidence"},
+            "business_priority": {"level": "medium", "rationale": "source evidence"},
             "status": {"state": "done", "summary": "legacy summary", "updated_at": "2026-04-21"},
             "blockers": [], "replanning": [], "tags": [],
             "links": {"mago": [], "magia": [], "external": []},
@@ -70,6 +70,16 @@ class GovernanceAdaptTests(unittest.TestCase):
                     "--profile", "standard", "--lifecycle", "intake", "--governance-status", "intake",
                 ])
         self.assertEqual(rc, 1)
+
+    def test_generic_priority_is_rejected(self):
+        legacy = self.legacy()
+        legacy["priority"] = legacy.pop("business_priority")
+        with self.assertRaisesRegex(ValueError, "generic priority is unsupported"):
+            adapt(
+                legacy, source_path="legacy.yaml", observed_at="2026-07-22T10:00:00Z",
+                spec_id="spec-2026-07-22-demo", spec_id_provenance="registry/spec.yaml",
+                profile="standard", lifecycle="track", governance_status="triage",
+            )
 
 
 if __name__ == "__main__":

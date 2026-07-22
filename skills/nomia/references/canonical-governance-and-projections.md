@@ -15,7 +15,7 @@ The canonical logical record covers:
 
 - request: title, rationale/context, requester, requested date, source;
 - ownership: owner, backup owner, stakeholders, decision maker;
-- priority and target date;
+- business priority and target date;
 - governance profile, lifecycle stage, and governance status;
 - separate planning, execution, validation, and release statuses;
 - risks, blockers, dependencies, and accepted business risk;

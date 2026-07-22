@@ -14,7 +14,9 @@ Allow unrelated developers or agents to create planning work in parallel without
 | `feature_version` | semantic evolution of a capability | yes |
 | `proposed_version` | intended delivery version | yes |
 | `accepted_version` | approved delivery version | only with evidence |
-| `order_hint` | optional presentation preference | yes |
+| `business_priority` | read-only Nomia business urgency/importance with provenance | only by refreshed Nomia evidence |
+| `technical_criticality` | technical risk and blast-radius classification | yes, with rationale |
+| `execution_sequence` | dependency-safe lane, optional rank, and rationale | yes |
 | `depends_on_specs` | executable dependency constraint | yes |
 
 Never use semantic versioning, counters, or list position as a filesystem identity.
@@ -61,11 +63,13 @@ Duplicate active cycle or feature work is a real semantic conflict. Resolve it t
 
 `scripts/render_registry_views.py` builds catalog and define-queue projections from registry files. Ordering is deterministic:
 
-1. dependency topology;
-2. priority;
-3. `order_hint`;
+1. dependency topology and safety constraints;
+2. `execution_sequence.lane`;
+3. `execution_sequence.rank`;
 4. creation timestamp;
 5. `spec_id` lexical tie-break.
+
+`business_priority` never participates directly in sorting. `technical_criticality` never implies order. Any non-default lane or explicit rank requires rationale.
 
 The renderer includes a registry digest and must produce byte-identical output for the same inputs. Views are inspection/CI artifacts, not write targets.
 

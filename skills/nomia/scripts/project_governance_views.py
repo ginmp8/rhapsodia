@@ -50,6 +50,13 @@ def missing(value: Any) -> bool:
     return value is None or value == "" or value == "unknown" or value == []
 
 
+def business_priority_value(data: dict[str, Any], field: str, default: Any = None) -> Any:
+    value = data.get("business_priority")
+    if isinstance(value, dict):
+        return value.get(field, default)
+    return default
+
+
 def dotted(data: dict[str, Any], path: str, default: Any = None) -> Any:
     current: Any = data
     for part in path.split("."):
@@ -72,7 +79,6 @@ def validate_record(data: dict[str, Any]) -> tuple[list[str], list[str]]:
         "request",
         "ownership",
         "planning",
-        "priority",
         "status",
         "blockers",
         "risks",
@@ -88,6 +94,10 @@ def validate_record(data: dict[str, Any]) -> tuple[list[str], list[str]]:
     for key in required_sections:
         if key not in data:
             errors.append(f"missing canonical section: {key}")
+    if "priority" in data:
+        errors.append("unsupported generic section: priority")
+    if "business_priority" not in data:
+        errors.append("missing canonical section: business_priority")
 
     if data.get("schema_version") != 2:
         errors.append("schema_version must be 2 for canonical projections; adapt legacy schema_version 1 first")
@@ -355,13 +365,13 @@ def build_views(data: dict[str, Any], source: str, generated_at: str) -> dict[st
     stakeholder = {
         **common,
         "request": dotted(data, "request.title") or "unknown",
-        "impact": dotted(data, "priority.impact") or "unknown",
+        "impact": business_priority_value(data, "impact") or "unknown",
         "decision_needed": dotted(data, "decision.current") or "unknown",
         "stakeholders": dotted(data, "ownership.stakeholders", []) or [],
     }
     executive = {
         **common,
-        "priority": dotted(data, "priority.level") or "unknown",
+        "business_priority": business_priority_value(data, "level") or "unknown",
         "confidence": dotted(data, "status.confidence") or "unknown",
         "material_risks": risks,
         "release_state": completion["release"],
@@ -399,7 +409,7 @@ def build_views(data: dict[str, Any], source: str, generated_at: str) -> dict[st
         "context": dotted(data, "request.context") or "unknown",
         "business_alternatives": dotted(data, "decision.alternatives", []) or [],
         "decision_criteria": dotted(data, "decision.criteria", []) or [],
-        "impact": dotted(data, "priority.impact") or "unknown",
+        "impact": business_priority_value(data, "impact") or "unknown",
         "stakeholders": dotted(data, "ownership.stakeholders", []) or [],
         "deadline": target,
         "business_risks": risks,
@@ -478,7 +488,7 @@ def adapter(name: str, data: dict[str, Any], views: dict[str, Any], source: str,
         "request",
         "ownership",
         "planning",
-        "priority",
+        "business_priority",
         "status",
         "governance",
         "blockers",

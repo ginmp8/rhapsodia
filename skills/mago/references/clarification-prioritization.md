@@ -43,3 +43,4 @@ Safe partial work: repository discovery and current-consumer inventory only
 ```
 
 Do not convert missing governance authority into a technical assumption. Route owner, priority, due-date, stakeholder, roadmap, release, or business-risk decisions to Nomia.
+Priority terminology in this file follows `references/priority-contract.md`: Nomia-owned business priority remains read-only; Mago owns technical criticality and execution sequence.

@@ -106,9 +106,6 @@ REQUIRED_PATHS = [
     ("planning", "bucket"),
     ("planning", "target_date"),
     ("planning", "commitment"),
-    ("priority",),
-    ("priority", "level"),
-    ("priority", "rationale"),
     ("status",),
     ("status", "state"),
     ("status", "summary"),
@@ -127,10 +124,6 @@ OPTIONAL_PATHS = [
     ("ownership", "watchers"),
     ("planning", "milestone"),
     ("planning", "rollout_target"),
-    ("priority", "urgency"),
-    ("priority", "impact"),
-    ("priority", "risk"),
-    ("priority", "cost_of_delay"),
     ("status", "confidence"),
     ("status", "evidence_summary"),
     ("status", "manual"),
@@ -381,7 +374,12 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
     request = as_map(data, "request", errors)
     ownership = as_map(data, "ownership", errors)
     planning = as_map(data, "planning", errors)
-    priority = as_map(data, "priority", errors)
+    if "priority" in data:
+        errors.append("unsupported generic key `priority`; use Nomia-owned `business_priority`")
+    business_priority = as_map(data, "business_priority", errors)
+    for required_child in ("level", "rationale"):
+        if required_child not in business_priority:
+            errors.append(f"missing required key `business_priority.{required_child}`")
     status = as_map(data, "status", errors)
     links = as_map(data, "links", errors)
     repos = data.get("repos") if isinstance(data.get("repos"), dict) else {}
@@ -407,10 +405,10 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
     validate_enum("request.source", request.get("source"), VALID_SOURCES, errors)
     validate_enum("planning.bucket", planning.get("bucket"), VALID_BUCKETS, errors)
     validate_enum("planning.commitment", planning.get("commitment"), VALID_COMMITMENT, errors)
-    validate_enum("priority.level", priority.get("level"), VALID_PRIORITY, errors)
-    validate_enum("priority.urgency", priority.get("urgency"), VALID_URGENCY, errors)
-    validate_enum("priority.impact", priority.get("impact"), VALID_IMPACT, errors)
-    validate_enum("priority.risk", priority.get("risk"), VALID_RISK, errors)
+    validate_enum("business_priority.level", business_priority.get("level"), VALID_PRIORITY, errors)
+    validate_enum("business_priority.urgency", business_priority.get("urgency"), VALID_URGENCY, errors)
+    validate_enum("business_priority.impact", business_priority.get("impact"), VALID_IMPACT, errors)
+    validate_enum("business_priority.risk", business_priority.get("risk"), VALID_RISK, errors)
     validate_enum(
         "status.state",
         status.get("state"),
@@ -454,8 +452,8 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
         warnings.append("target date is missing")
     if is_missing(planning.get("bucket")):
         warnings.append("planning bucket is unknown")
-    if is_missing(priority.get("level")):
-        warnings.append("priority level is unknown")
+    if is_missing(business_priority.get("level")):
+        warnings.append("business priority level is unknown")
 
     replanning = data.get("replanning")
     replan_entries = replanning if isinstance(replanning, list) else []

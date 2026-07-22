@@ -24,7 +24,7 @@ Do not copy guidance output into canonical records without source, observation t
 
 Purpose: register or triage a demand into governance records.
 
-Inputs: requester, problem/request, source, desired outcome, target date, owner, stakeholders, priority, risk, links when supplied. Unknowns remain explicit.
+Inputs: requester, problem/request, source, desired outcome, target date, owner, stakeholders, business priority, risk, links when supplied. Unknowns remain explicit.
 
 Outputs: `ops.yaml` and, when useful, `status.md` or `stakeholder-brief.md` in the selected spec package. Use `scripts/write_ops_scaffold.py` or `scripts/write_artifact_scaffold.py`; populate supported lists with `scripts/update_template_lists.py`; validate touched artifacts and board paths.
 
@@ -36,7 +36,7 @@ Inputs: current state evidence, notes, risks, blockers, next steps, validation/r
 
 ## delivery-replan
 
-Purpose: record material changes to target date, sprint, scope, owner, commitment, priority, or risk.
+Purpose: record material changes to target date, sprint, scope, owner, commitment, business priority, or risk.
 
 Outputs: append `replanning.md` entry and mirror structured `ops.yaml.replanning` change. Include date, changed fields, from, to, reason, impact, and decision maker when known. Do not use for routine status updates.
 

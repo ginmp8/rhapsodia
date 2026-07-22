@@ -21,7 +21,8 @@ Execution-ready full packages contain manifest.yaml, prd.md, tasks.md, validatio
 
 ## Artifact Rules
 
-Use templates only through local scripts for writing, refresh, normalization, or validation. Create missing template-backed files with `scripts/write_artifact_scaffold.py <artifact-path>` before filling truth values. Replace all placeholders/examples. Preserve truthful registry/package values. Never blindly copy template dynamic fields (`cycle_id`, `spec_id`, `feature_version`, `type`, `classification`, `status`, `phase`, dependencies, priority, `order_hint`) or suggested task metadata (`Reasoning`, `Why this reasoning is sufficient`, `Specialist Support`, `Dependencies`, `Task type`). If evidence does not justify a required value, resolve from the selected registry record conservatively or record uncertainty in notes.md.
+Use templates only through local scripts for writing, refresh, normalization, or validation. Create missing template-backed files with `scripts/write_artifact_scaffold.py <artifact-path>` before filling truth values. Replace all placeholders/examples. Preserve truthful registry/package values. Never blindly copy template dynamic fields (`cycle_id`, `spec_id`, `feature_version`, `type`, `classification`, `status`, `phase`, dependencies, `business_priority`, `technical_criticality`, `execution_sequence`) or suggested task metadata (`Reasoning`, `Why this reasoning is sufficient`, `Specialist Support`, `Dependencies`, `Task type`). If evidence does not justify a required value, resolve from the selected registry record conservatively or record uncertainty in notes.md.
+Priority ownership in this file follows `references/priority-contract.md`: Nomia-owned business priority remains read-only; Mago owns technical criticality and execution sequence.
 
 ## Artifact Requirements
 

@@ -120,7 +120,7 @@ RULES: dict[str, dict[str, ListRule]] = {
         "specs": ListRule(
             "specs",
             "mapping",
-            required=("order", "order_hint", "spec_id", "feature_key", "title", "type", "classification", "depends_on_features", "depends_on_specs", "status", "feature_version"),
+            required=("order", "business_priority", "technical_criticality", "execution_lane", "execution_rank", "spec_id", "feature_key", "title", "type", "classification", "depends_on_features", "depends_on_specs", "status", "feature_version"),
             regex_fields={"spec_id": SPEC_ID_RE, "feature_key": FEATURE_KEY_RE},
             enum_fields={"status": VALID_SPEC_STATUS},
             list_fields={"depends_on_features": "string", "depends_on_specs": "spec_id"},

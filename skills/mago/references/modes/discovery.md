@@ -33,7 +33,7 @@ Discovery must not assign:
 - `spec_id`
 - `cycle_id`
 - `feature_version`
-- priority, dependency order, or `order_hint`
+- business priority, technical criticality, dependency order, or execution sequence
 
 Discovery must not create:
 
@@ -77,7 +77,7 @@ Use discovery to decide whether work should stay upstream or move downstream.
 Hand off downstream only when the evidence is strong enough:
 
 - stay in discovery if boundaries are still ambiguous
-- move to `order` when discovery can support identity, dependency, priority, and package-shape judgment for new work
+- move to `order` when discovery can support identity, dependency, technical-criticality, execution-sequence, and package-shape judgment for new work
 - move to `refine` only when an already-defined registry-backed package stays valid and needs bounded documentation updates
 
 Do not skip `order` for new package creation, and do not use discovery to fake certainty that belongs to later phases.

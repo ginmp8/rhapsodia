@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.0.0 - 2026-07-22
+
+### Breaking
+- Remove the generic `priority` alias from ops records, governance adaptation, projections, portfolio items, validators, examples, and writers.
+- Require Nomia-owned `business_priority` everywhere governance priority is represented.
+- Reject source records that use generic `priority`; no implicit adaptation or enum conversion is performed.
+- Rename executive and portfolio projection fields to `business_priority`.
+- Adopt ecosystem priority contract v2 with no legacy read surface.
+
+## 2.4.0 - 2026-07-21
+
+- Make `business_priority` the canonical Nomia ops field while retaining deprecated `priority` as a read-only migration alias.
+- Publish the shared ecosystem priority contract and explicit handoff semantics for Mago technical criticality and execution sequence.
+- Add deterministic priority-contract validation, canonical/legacy conflict rejection, projection fallback, and migration tests.
+
 ## 2.3.0 - 2026-07-21
 
 - Add guided intake and progressive product-discovery facilitation that preserves unknowns, prioritizes blocking questions, and never writes canonical governance records.

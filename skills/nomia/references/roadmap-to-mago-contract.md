@@ -4,7 +4,7 @@ Use only for nomia governance handoff from roadmap to Mago. nomia prepares hando
 
 ## Handoff Preconditions
 
-Before `roadmap-to-specs`, collect or preserve unknowns for: feature key/title, problem, desired outcome, requester/stakeholders, owner/decision maker, priority/bucket, risk, target cycle/date, dependencies, acceptance or handoff notes, and links/evidence.
+Before `roadmap-to-specs`, collect or preserve unknowns for: feature key/title, problem, desired outcome, requester/stakeholders, owner/decision maker, business priority/bucket, risk, target cycle/date, dependencies, acceptance or handoff notes, and links/evidence.
 
 A handoff does not require nomia to invent a spec identity. `candidate_spec_id` may be absent or `null` until a canonical `spec_id` is supplied by the user, received through handoff, or evidenced by an existing repository artifact. If a candidate id is present, it must use `spec-YYYY-MM-DD-feature-key`, its embedded feature key must match `feature_key`, and `candidate_spec_id_provenance` must identify the evidence source. nomia does not create or modify registry records or claim technical registration without evidence.
 

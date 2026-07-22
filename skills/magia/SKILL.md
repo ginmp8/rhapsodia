@@ -55,7 +55,7 @@ MAGIA may create implementation decisions or execution-grounded ADRs only when t
 - cites evidence from code, commands, tests, runtime output, package artifacts, or supplied context;
 - records executed or expected validation honestly.
 
-Hand off to Mago for material changes to planned architecture, public contract, persistence model, security posture, cross-service behavior, or user-visible behavior beyond the selected task. Hand off to nomia for delivery commitments, stakeholder communication, release posture, due date, roadmap priority, owner, or accepted business risk changes.
+Consume `business_priority`, `technical_criticality`, and `execution_sequence` through the [ecosystem priority contract](references/priority-contract.md) without rewriting them. Hand off to Mago for material changes to planned architecture, public contract, persistence model, security posture, cross-service behavior, execution sequence, or user-visible behavior beyond the selected task. Hand off to nomia for delivery commitments, stakeholder communication, release posture, due date, roadmap priority, owner, or accepted business risk changes.
 
 MAGIA evidence is source material for downstream Mago planning reconciliation and nomia reporting. MAGIA must label pass/fail/not-run validation honestly, avoid stakeholder-ready release claims, and never create governance RFCs, release notes, portfolio reports, or delivery status as an execution shortcut.
 

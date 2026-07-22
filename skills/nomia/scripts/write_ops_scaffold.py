@@ -49,7 +49,7 @@ planning:
   commitment: unknown
   milestone: null
   rollout_target: null
-priority:
+business_priority:
   level: unknown
   urgency: unknown
   impact: unknown

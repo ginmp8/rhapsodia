@@ -20,6 +20,9 @@ MANIFEST_KIND = "mago-spec-manifest"
 VALID_CYCLE_STATUSES = {"proposed", "planned", "in_progress", "done", "cancelled"}
 VALID_SPEC_STATUSES = {"planned", "in_progress", "blocked", "done", "cancelled", "superseded"}
 VALID_MANIFEST_PHASES = {"define", "execute", "review", "done"}
+VALID_BUSINESS_PRIORITIES = {"unknown", "low", "medium", "high", "urgent"}
+VALID_TECHNICAL_CRITICALITIES = {"low", "normal", "high", "critical"}
+VALID_EXECUTION_LANES = {"expedite", "fixed_date", "standard", "deferred"}
 FORBIDDEN_AGGREGATES = {"spec-catalog.yaml", "define-queue.yaml"}
 
 
@@ -91,12 +94,45 @@ def load_registry(board_root: Path) -> tuple[dict[str, dict[str, Any]], list[str
             errors.append(f"{path.name}: feature_key must match the feature encoded in spec_id")
         if data.get("status") not in VALID_SPEC_STATUSES:
             errors.append(f"{path.name}: invalid status `{data.get('status')}`")
+        errors.extend(validate_priority_semantics(data, path.name))
         for dependency in _as_list(data.get("depends_on_specs"), f"{path.name}.depends_on_specs", errors):
             if not isinstance(dependency, str) or not SPEC_ID_RE.fullmatch(dependency):
                 errors.append(f"{path.name}: invalid depends_on_specs entry `{dependency}`")
         records[spec_id] = data
     return records, errors
 
+
+
+def validate_priority_semantics(data: dict[str, Any], label: str) -> list[str]:
+    errors: list[str] = []
+    rejected = [key for key in ("priority", "order_hint") if key in data]
+    if rejected:
+        errors.append(
+            f"{label}: unsupported generic field(s) {', '.join(rejected)}; "
+            "the Mago source must provide canonical priority-contract fields"
+        )
+
+    business = data.get("business_priority")
+    if not isinstance(business, dict) or business.get("owner") != "nomia" or business.get("level") not in VALID_BUSINESS_PRIORITIES:
+        errors.append(f"{label}: invalid business_priority projection")
+    elif business.get("level") != "unknown" and (not business.get("source") or not business.get("observed_at")):
+        errors.append(f"{label}: non-unknown business_priority requires source and observed_at")
+
+    technical = data.get("technical_criticality")
+    if not isinstance(technical, dict) or technical.get("owner") != "mago" or technical.get("level") not in VALID_TECHNICAL_CRITICALITIES:
+        errors.append(f"{label}: invalid technical_criticality")
+
+    sequence = data.get("execution_sequence")
+    if not isinstance(sequence, dict) or sequence.get("owner") != "mago" or sequence.get("lane") not in VALID_EXECUTION_LANES:
+        errors.append(f"{label}: invalid execution_sequence")
+    else:
+        rank = sequence.get("rank")
+        rationale = sequence.get("rationale")
+        if rank is not None and (not isinstance(rank, int) or isinstance(rank, bool) or rank < 0):
+            errors.append(f"{label}: execution_sequence.rank must be null or non-negative integer")
+        if not isinstance(rationale, list) or any(not isinstance(item, str) or not item.strip() for item in rationale):
+            errors.append(f"{label}: execution_sequence.rationale must be a list of non-empty strings")
+    return errors
 
 def dependency_errors(records: dict[str, dict[str, Any]]) -> list[str]:
     errors: list[str] = []

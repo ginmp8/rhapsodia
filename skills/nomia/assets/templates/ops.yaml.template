@@ -25,12 +25,12 @@ planning:
   commitment: "<commitment_enum_or_unknown>"
   milestone: "<milestone_or_null>"
   rollout_target: "<rollout_target_or_null>"
-priority:
-  level: "<priority_level_enum_or_unknown>"
+business_priority:
+  level: "<business_priority_level_enum_or_unknown>"
   urgency: "<urgency_enum_or_unknown>"
   impact: "<impact_enum_or_unknown>"
   risk: "<risk_enum_or_unknown>"
-  rationale: "<priority_rationale_or_null>"
+  rationale: "<business_priority_rationale_or_null>"
   cost_of_delay: "<cost_of_delay_or_null>"
 status:
   ## Mirror governance.status for schema_version 2. Never promote legacy done/at_risk values.

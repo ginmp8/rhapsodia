@@ -44,6 +44,7 @@ Planning claims must trace to at least one of these sources:
 - validator output for structural claims.
 
 Distinguish observed, inferred, planned, and measured claims. Do not transform guesses into identity, status, priority, dependency, order, handoff readiness, completion, approval, or specialist assignments.
+Priority terminology in this file follows `references/priority-contract.md`: Nomia-owned business priority remains read-only; Mago owns technical criticality and execution sequence.
 
 ## Planning/Execution Boundary
 

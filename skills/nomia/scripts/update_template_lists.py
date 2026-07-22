@@ -97,11 +97,11 @@ RULES: dict[str, dict[str, ListRule]] = {
         "items": ListRule(
             "items",
             "mapping",
-            required=("spec_id", "feature_key", "title", "owner", "state", "target_date", "priority", "urgency", "impact", "risk", "confidence", "candidate_impacted_repos", "source"),
+            required=("spec_id", "feature_key", "title", "owner", "state", "target_date", "business_priority", "urgency", "impact", "risk", "confidence", "candidate_impacted_repos", "source"),
             optional=(),
             enum_fields={
                 "state": VALID_STATE,
-                "priority": VALID_PRIORITY,
+                "business_priority": VALID_PRIORITY,
                 "urgency": VALID_URGENCY,
                 "impact": VALID_IMPACT,
                 "risk": VALID_RISK,

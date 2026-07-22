@@ -7,32 +7,40 @@ Placement: spec-scoped `ops.yaml`, `status.md`, `stakeholder-brief.md`, `replann
 ## Canonical version policy
 
 Create every new repository-facing `ops.yaml` as `schema_version: 2` and validate it with `scripts/validate_ops.py --require-canonical`. Schema version 1 remains read-only legacy input for validation or `governance-adapt`; it must not be used for a new canonical record or canonical projection. The retained v1 field reference below documents compatibility and extraction behavior, not the preferred authoring shape.
+Priority ownership follows `references/priority-contract.md`: Nomia owns `business_priority`; generic `priority` is unsupported.
 
 ## ops.yaml
 
+### Canonical business-priority field (`schema_version: 2`)
+
+New records use `business_priority` with the same business-owned subfields and enums formerly stored under `priority`. The required keys are `business_priority.level` and `business_priority.rationale`; optional keys are `urgency`, `impact`, `risk`, and `cost_of_delay`. Apply `references/priority-contract.md`.
+
+Validators require `business_priority` and reject generic `priority`. Projections preserve Nomia ownership without aliases or implicit conversion.
+
+
 ### Legacy field reference (`schema_version: 1`)
 
-Legacy structured delivery metadata retained for validation and controlled adaptation.
+Legacy structured delivery metadata may be adapted only when it already provides explicit `business_priority`; generic `priority` is rejected.
 
-Required top-level keys: `schema_version`, `spec_id`, `request`, `ownership`, `planning`, `priority`, `status`, `blockers`, `replanning`, `tags`, `links`.
+Required top-level keys: `schema_version`, `spec_id`, `request`, `ownership`, `planning`, `business_priority`, `status`, `blockers`, `replanning`, `tags`, `links`.
 
-Required nested keys: `request.title`, `request.requester`, `request.requested_date`, `request.source`, `ownership.owner`, `ownership.backup_owner`, `ownership.stakeholders`, `planning.sprint`, `planning.bucket`, `planning.target_date`, `planning.commitment`, `priority.level`, `priority.rationale`, `status.state`, `status.summary`, `status.updated_at`, `links.mago`, `links.magia`, `links.external`. Values may be `null`, `unknown`, or empty lists when facts are missing.
+Required nested keys: `request.title`, `request.requester`, `request.requested_date`, `request.source`, `ownership.owner`, `ownership.backup_owner`, `ownership.stakeholders`, `planning.sprint`, `planning.bucket`, `planning.target_date`, `planning.commitment`, `business_priority.level`, `business_priority.rationale`, `status.state`, `status.summary`, `status.updated_at`, `links.mago`, `links.magia`, `links.external`. Values may be `null`, `unknown`, or empty lists when facts are missing.
 
-Optional fields for new files when practical: `request.context`, `ownership.decision_maker`, `ownership.watchers`, `planning.milestone`, `planning.rollout_target`, `priority.urgency`, `priority.impact`, `priority.risk`, `priority.cost_of_delay`, `status.confidence`, `status.evidence_summary`, `status.manual`, `status.inferred`, `risks`, `repos.candidate_impacted`. Missing optional fields warn, not fail.
+Optional fields for new files when practical: `request.context`, `ownership.decision_maker`, `ownership.watchers`, `planning.milestone`, `planning.rollout_target`, `business_priority.urgency`, `business_priority.impact`, `business_priority.risk`, `business_priority.cost_of_delay`, `status.confidence`, `status.evidence_summary`, `status.manual`, `status.inferred`, `risks`, `repos.candidate_impacted`. Missing optional fields warn, not fail.
 
 Enums:
 
 - `request.source`: `unknown`, `github_issue`, `chat`, `email`, `rough_demand`, `roadmap`, `support_ticket`, `customer_request`, `incident`, `manual`, `other`
 - `planning.bucket`: `unknown`, `customer_commitment`, `revenue`, `retention`, `growth`, `risk_reduction`, `compliance`, `platform`, `maintenance`, `support`, `incident`, `roadmap`, `quality`, `research`, `other`
 - `planning.commitment`: `unknown`, `committed`, `targeted`, `tentative`
-- `priority.level`: `unknown`, `low`, `medium`, `high`, `urgent`
-- `priority.urgency`: `unknown`, `low`, `medium`, `high`, `immediate`
-- `priority.impact`: `unknown`, `low`, `medium`, `high`, `critical`
-- `priority.risk`: `unknown`, `low`, `medium`, `high`, `critical`
+- `business_priority.level`: `unknown`, `low`, `medium`, `high`, `urgent`
+- `business_priority.urgency`: `unknown`, `low`, `medium`, `high`, `immediate`
+- `business_priority.impact`: `unknown`, `low`, `medium`, `high`, `critical`
+- `business_priority.risk`: `unknown`, `low`, `medium`, `high`, `critical`
 - `status.state`: `unknown`, `intake`, `triage`, `planned`, `in_progress`, `blocked`, `at_risk`, `done`, `canceled`
 - `status.confidence`: `unknown`, `low`, `medium`, `high`
 
-Rules: `schema_version` = `1`; repository `spec_id` uses `spec-YYYY-MM-DD-feature-key`, matches the enclosing spec package, and is supplied or evidenced rather than minted by nomia; non-null ids require `spec_id_provenance`; off-repository drafts may keep `spec_id: null` with provenance absent or null; dates use `YYYY-MM-DD`; `ownership.stakeholders`, `ownership.watchers`, `blockers`, `risks`, `replanning`, `tags`, `repos.candidate_impacted`, and all `links.*` values are lists. Missing owner, stakeholders, target date, priority, urgency, impact, risk, and candidate repos warn. Invalid enums, dates, types, required keys, or replanning entries fail. Replanning changes to `target_date`, `sprint`, `scope`, `owner`, or `commitment` require `date`, `changed_fields`, `from`, `to`, `reason`, `impact`.
+Rules: `schema_version` = `1`; repository `spec_id` uses `spec-YYYY-MM-DD-feature-key`, matches the enclosing spec package, and is supplied or evidenced rather than minted by nomia; non-null ids require `spec_id_provenance`; off-repository drafts may keep `spec_id: null` with provenance absent or null; dates use `YYYY-MM-DD`; `ownership.stakeholders`, `ownership.watchers`, `blockers`, `risks`, `replanning`, `tags`, `repos.candidate_impacted`, and all `links.*` values are lists. Missing owner, stakeholders, target date, business priority, urgency, impact, risk, and candidate repos warn. Invalid enums, dates, types, required keys, or replanning entries fail. Replanning changes to `target_date`, `sprint`, `scope`, `owner`, or `commitment` require `date`, `changed_fields`, `from`, `to`, `reason`, `impact`.
 
 Collection shapes: simple-list entries (`ownership.stakeholders`, `ownership.watchers`, `status.inferred.evidence`, `tags`, `repos.candidate_impacted`, `links.*`) are non-empty strings. `blockers[]`: mappings with `id`, `summary`, optional `owner`, `needed_by`. `risks[]`: mappings with `id`, `summary`, `severity`, optional `owner`. `replanning[]`: mappings with `date`, `changed_fields`, `reason`, `impact`, plus conditional `from`/`to` for material changes.
 
@@ -68,9 +76,9 @@ Machine-readable board portfolio under `BOARD_ROOT`.
 
 Required top-level keys: `schema_version`, `portfolio_id`, `updated_at`, `items`, `blocked`, `risks`, `replans`. Recommended keys: `flags.blocked`, `flags.overdue`, `flags.replanned`, `flags.missing_owner`, `flags.at_risk`, `flags.multi_repo`.
 
-Item fields: `spec_id`, `feature_key`, `title`, `owner`, `state`, `target_date`, `priority`, `urgency`, `impact`, `risk`, `confidence`, `candidate_impacted_repos`, `source`.
+Item fields: `spec_id`, `feature_key`, `title`, `owner`, `state`, `target_date`, `business_priority`, `urgency`, `impact`, `risk`, `confidence`, `candidate_impacted_repos`, `source`.
 
-Rules: `schema_version` = `1`; `updated_at` and `target_date` use `YYYY-MM-DD`; item `spec_id` is `null` or a supplied canonical `spec-YYYY-MM-DD-feature-key`; when non-null, item `source` records the id provenance; item `state`, `priority`, `urgency`, `impact`, `risk`, `confidence` reuse `ops.yaml` enums; `items`, `blocked`, `risks`, `replans`, `flags.*`, `candidate_impacted_repos` are lists. Populate lists with `scripts/update_template_lists.py <portfolio.yaml> --data <payload.yaml>`; do not hand-shape entries. Missing item owner, duplicate spec IDs, overdue non-terminal items, and multi-repo items warn.
+Rules: `schema_version` = `1`; `updated_at` and `target_date` use `YYYY-MM-DD`; item `spec_id` is `null` or a supplied canonical `spec-YYYY-MM-DD-feature-key`; when non-null, item `source` records the id provenance; item `state`, `business_priority`, `urgency`, `impact`, `risk`, `confidence` reuse `ops.yaml` enums; `items`, `blocked`, `risks`, `replans`, `flags.*`, `candidate_impacted_repos` are lists. Populate lists with `scripts/update_template_lists.py <portfolio.yaml> --data <payload.yaml>`; do not hand-shape entries. Missing item owner, duplicate spec IDs, overdue non-terminal items, and multi-repo items warn.
 
 ## portfolio.md
 

@@ -9,7 +9,9 @@
 - `feature_key`: stable lowercase kebab-case functional identity; it remains separate from physical `spec_id`.
 - `feature_version`: semantic capability/fix version; never use semantic versioning for filesystem identity or roadmap order.
 - `proposed_version` / `accepted_version`: optional delivery metadata; they do not define directories or IDs.
-- `order_hint`: optional presentation preference; it is not unique and does not define identity.
+- `business_priority`: read-only Nomia evidence with owner, source, and observation time.
+- `technical_criticality`: Mago-owned technical risk/impact classification.
+- `execution_sequence`: Mago-owned dependency-safe lane, optional rank, and rationale; it does not define identity.
 
 ## Operational Roots and Layout
 
@@ -41,7 +43,7 @@ Block if required root segments cannot be proven. All modes write under `BOARD_R
 
 - `BOARD_ROOT`: mandatory location boundary.
 - `cycle.yaml`: cycle identity, lifecycle status, proposed/accepted delivery metadata, planning revision, import traceability.
-- `registry/<spec_id>.yaml`: one spec registration, feature identity, dependencies, status, priority, order hint, supersession, define handoff, and source candidates.
+- `registry/<spec_id>.yaml`: one spec registration, feature identity, dependencies, status, read-only business priority, technical criticality, execution sequence, supersession, define handoff, and source candidates.
 - generated `spec-catalog.yaml`: deterministic catalog projection for inspection only; never the source of truth.
 - generated `define-queue.yaml`: deterministic define-handoff projection for inspection only; never the source of truth.
 - manifest.yaml: package identity, classification, planning `status`/`phase`, `source_of_truth`, traceability, optional truthful `last_execution` preserved from MAGIA evidence.
@@ -55,7 +57,7 @@ Block if required root segments cannot be proven. All modes write under `BOARD_R
 - Cycle status: `proposed`, `planned`, `in_progress`, `done`, `cancelled`.
 - Spec status: `planned`, `in_progress`, `blocked`, `done`, `cancelled`, `superseded`.
 - Manifest `phase`: `define`, `execute`, `review`, `done`.
-- Dependency topology is authoritative for executable ordering. Priority and `order_hint` are secondary deterministic presentation inputs.
+- Dependency topology and safety constraints are authoritative. `execution_sequence.lane` and `execution_sequence.rank` are explicit Mago-owned tie-breakers; `business_priority` is read-only context and `technical_criticality` never implies order.
 
 ## Mode Boundaries
 
@@ -71,6 +73,7 @@ Block if required root segments cannot be proven. All modes write under `BOARD_R
 MAGO plans/refines/documents; it does not implement product code or run execution workflows. Execution headings such as `Execution Rules`, task `Validation`, or `phase: execute` are artifact schema. New execution history belongs to MAGIA-owned `implementation-notes.md`; validation outcomes belong to `validation-evidence.md`. Reflect execution progress only when MAGIA evidence or repository truth supports it. If a request crosses into implementation, stop at planning.
 
 Rules: preserve truthful history and discovery traceability; prefer bounded updates over rewrites; derive the smallest coherent artifact set current evidence supports; every changed artifact traces to repository truth, discovery evidence, or a necessary downstream clarification; record assumptions/risks/open questions in notes.md when in scope, otherwise in the touched artifact; do not ask for clarification during unattended loops; continue conservatively only when honest and downstream-enabling; block instead of inventing boundaries, dependencies, priority, order, handoff readiness, or status.
+Priority terminology in this file follows `references/priority-contract.md`: Nomia-owned business priority remains read-only; Mago owns technical criticality and execution sequence.
 
 ## Template Rules
 

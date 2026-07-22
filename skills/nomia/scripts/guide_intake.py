@@ -87,7 +87,7 @@ def build_guidance(data: dict[str, Any]) -> dict[str, Any]:
         "affected": dotted(data, "affected", "request.affected"),
         "outcome": dotted(data, "outcome", "request.outcome"),
         "rationale": dotted(data, "rationale", "request.rationale"),
-        "urgency": dotted(data, "urgency", "priority.urgency"),
+        "urgency": dotted(data, "urgency", "business_priority.urgency"),
         "target_date": dotted(data, "target_date", "planning.target_date"),
         "owner": dotted(data, "owner", "ownership.owner"),
         "stakeholders": dotted(data, "stakeholders", "ownership.stakeholders", default=[]),

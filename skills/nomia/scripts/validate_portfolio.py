@@ -143,7 +143,7 @@ def validate_yaml(path: Path, as_of: date | None = None) -> tuple[list[str], lis
             seen_specs.add(str(spec_id))
 
         validate_enum(f"items[{index}].state", item.get("state"), VALID_STATE, errors)
-        validate_enum(f"items[{index}].priority", item.get("priority"), VALID_PRIORITY, errors)
+        validate_enum(f"items[{index}].business_priority", item.get("business_priority"), VALID_PRIORITY, errors)
         validate_enum(f"items[{index}].urgency", item.get("urgency"), VALID_URGENCY, errors)
         validate_enum(f"items[{index}].impact", item.get("impact"), VALID_IMPACT, errors)
         validate_enum(f"items[{index}].risk", item.get("risk"), VALID_RISK, errors)

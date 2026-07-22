@@ -30,9 +30,11 @@ from mago_utils import (
 ACTIVE_SPEC_STATUSES = {"planned", "in_progress", "blocked"}
 VALID_SPEC_STATUSES = ACTIVE_SPEC_STATUSES | {"done", "cancelled", "superseded"}
 VALID_CYCLE_STATUSES = {"proposed", "planned", "in_progress", "done", "cancelled"}
-VALID_PRIORITIES = {"critical", "high", "normal", "low"}
+VALID_BUSINESS_PRIORITIES = {"unknown", "low", "medium", "high", "urgent"}
+VALID_TECHNICAL_CRITICALITIES = {"low", "normal", "high", "critical"}
+VALID_EXECUTION_LANES = {"expedite", "fixed_date", "standard", "deferred"}
 VALID_PROFILES = {"quick", "standard", "governed"}
-PRIORITY_ORDER = {"critical": 0, "high": 1, "normal": 2, "low": 3}
+EXECUTION_LANE_ORDER = {"expedite": 0, "fixed_date": 1, "standard": 2, "deferred": 3}
 VALID_HANDOFF_STATUS = {"ready_for_prepare_define", "blocked", "needs_discovery"}
 VALID_DOWNSTREAM_MODE = {"define", "define-product", "define-tasks"}
 VALID_PACKAGE_SHAPE = {"full", "product_only", "tasks_only"}
@@ -158,13 +160,9 @@ def validate_record(board_root: Path, cycle: dict[str, Any], record: RegistryRec
         errors.append(f"{path}: feature_version must use semantic versioning")
     if data.get("status") not in VALID_SPEC_STATUSES:
         errors.append(f"{path}: invalid status `{data.get('status')}`")
-    if data.get("priority") not in VALID_PRIORITIES:
-        errors.append(f"{path}: invalid priority `{data.get('priority')}`")
+    errors.extend(validate_priority_semantics(data, path))
     if data.get("profile") not in VALID_PROFILES:
         errors.append(f"{path}: profile must be one of {sorted(VALID_PROFILES)}")
-    order_hint = data.get("order_hint")
-    if order_hint is not None and (not isinstance(order_hint, int) or order_hint < 0):
-        errors.append(f"{path}: order_hint must be null or a non-negative integer")
     raw_created_at = data.get("created_at")
     created_at = parse_timestamp(raw_created_at)
     if created_at is None:
@@ -213,6 +211,66 @@ def validate_record(board_root: Path, cycle: dict[str, Any], record: RegistryRec
                 errors.append(f"{path}: source candidate does not exist: `{candidate}`")
     return errors
 
+
+
+def validate_priority_semantics(data: dict[str, Any], path: Path) -> list[str]:
+    errors: list[str] = []
+    rejected = [key for key in ("priority", "order_hint") if key in data]
+    if rejected:
+        errors.append(
+            f"{path}: unsupported generic field(s) {', '.join(rejected)}; "
+            "use business_priority, technical_criticality, and execution_sequence"
+        )
+
+    business = data.get("business_priority")
+    if not isinstance(business, dict):
+        errors.append(f"{path}: business_priority must be a mapping")
+    else:
+        if business.get("owner") != "nomia":
+            errors.append(f"{path}: business_priority.owner must be nomia")
+        level = business.get("level")
+        if level not in VALID_BUSINESS_PRIORITIES:
+            errors.append(f"{path}: business_priority.level must be one of {sorted(VALID_BUSINESS_PRIORITIES)}")
+        if level != "unknown":
+            if not isinstance(business.get("source"), str) or not business.get("source", "").strip():
+                errors.append(f"{path}: non-unknown business_priority requires source")
+            observed_at = business.get("observed_at")
+            if parse_timestamp(observed_at) is None:
+                errors.append(f"{path}: non-unknown business_priority requires ISO-8601 observed_at")
+
+    technical = data.get("technical_criticality")
+    if not isinstance(technical, dict):
+        errors.append(f"{path}: technical_criticality must be a mapping")
+    else:
+        if technical.get("owner") != "mago":
+            errors.append(f"{path}: technical_criticality.owner must be mago")
+        level = technical.get("level")
+        if level not in VALID_TECHNICAL_CRITICALITIES:
+            errors.append(f"{path}: technical_criticality.level must be one of {sorted(VALID_TECHNICAL_CRITICALITIES)}")
+        rationale = technical.get("rationale")
+        if rationale not in (None, "") and (not isinstance(rationale, str) or not rationale.strip()):
+            errors.append(f"{path}: technical_criticality.rationale must be null or a non-empty string")
+        if level != "normal" and (not isinstance(rationale, str) or not rationale.strip()):
+            errors.append(f"{path}: non-normal technical_criticality requires rationale")
+
+    sequence = data.get("execution_sequence")
+    if not isinstance(sequence, dict):
+        errors.append(f"{path}: execution_sequence must be a mapping")
+    else:
+        if sequence.get("owner") != "mago":
+            errors.append(f"{path}: execution_sequence.owner must be mago")
+        lane = sequence.get("lane")
+        if lane not in VALID_EXECUTION_LANES:
+            errors.append(f"{path}: execution_sequence.lane must be one of {sorted(VALID_EXECUTION_LANES)}")
+        rank = sequence.get("rank")
+        if rank is not None and (not isinstance(rank, int) or isinstance(rank, bool) or rank < 0):
+            errors.append(f"{path}: execution_sequence.rank must be null or a non-negative integer")
+        rationale = sequence.get("rationale")
+        if not isinstance(rationale, list) or any(not isinstance(item, str) or not item.strip() for item in rationale):
+            errors.append(f"{path}: execution_sequence.rationale must be a list of non-empty strings")
+        elif (lane != "standard" or rank is not None) and not rationale:
+            errors.append(f"{path}: non-default execution_sequence requires rationale")
+    return errors
 
 def dependency_errors(records: list[RegistryRecord]) -> list[str]:
     errors: list[str] = []
@@ -266,12 +324,12 @@ def topological_order(records: list[RegistryRecord]) -> list[RegistryRecord]:
     def key(spec_id: str) -> tuple[object, ...]:
         record = by_id[spec_id]
         data = record.data
-        return (
-            PRIORITY_ORDER.get(str(data.get("priority")), 99),
-            data.get("order_hint") if isinstance(data.get("order_hint"), int) else 2**31,
-            str(data.get("created_at", "")),
-            spec_id,
-        )
+        sequence = data.get("execution_sequence")
+        sequence = sequence if isinstance(sequence, dict) else {}
+        lane = EXECUTION_LANE_ORDER.get(str(sequence.get("lane")), 99)
+        rank_value = sequence.get("rank")
+        rank = rank_value if isinstance(rank_value, int) and not isinstance(rank_value, bool) else 2**31
+        return (lane, rank, str(data.get("created_at", "")), spec_id)
 
     ready: list[tuple[tuple[object, ...], str]] = []
     for spec_id, count in indegree.items():

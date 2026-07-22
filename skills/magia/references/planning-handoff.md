@@ -1,4 +1,6 @@
-# Planning Handoff for MAGIA Execution
+# Planning Handoff
+
+For priority and ordering inputs, apply [the ecosystem priority contract](priority-contract.md): consume Nomia `business_priority` and Mago `technical_criticality`/`execution_sequence` as read-only planning evidence. for MAGIA Execution
 
 Load when RALPH executes a spec package, PRD, technical design, roadmap/governance package, architecture decision, or board artifact authored outside MAGIA.
 
@@ -30,3 +32,4 @@ When file targets are missing, derive the narrowest safe target from: task metad
 - Do not convert planning provenance into a blocker.
 - Link implementation ADRs from implementation-notes.md and validation-evidence.md, and state Mago handoff need. Treat execution-handoff-plan.md as planned input, not proof of implementation.
 - If execution evidence affects release posture, stakeholder risk, owner, due date, roadmap priority, accepted business risk, or go/no-go decisions, record the evidence and hand off to nomia; do not update delivery governance artifacts from MAGIA.
+Priority terminology in this file follows `references/priority-contract.md`: Magia consumes business priority, technical criticality, and execution sequence as read-only planning evidence and never rewrites them.

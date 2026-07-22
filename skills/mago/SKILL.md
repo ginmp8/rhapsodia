@@ -9,8 +9,8 @@ Plan intended technical work from Nomia intake and repository evidence. Mago own
 
 ## Authority and canonical state
 
-- Nomia owns requester, owner, due date, priority, stakeholders, roadmap, status, release notes, and governance decisions.
-- Mago owns intended requirements, design, decisions, tasks, validation plans, technical risks, and execution handoff.
+- Nomia owns requester, owner, due date, `business_priority`, stakeholders, roadmap, status, release notes, and governance decisions.
+- Mago owns intended requirements, design, decisions, tasks, validation plans, `technical_criticality`, `execution_sequence`, technical risks, and execution handoff. Apply the [ecosystem priority contract](references/priority-contract.md); never convert business priority into technical criticality automatically.
 - Implementation and runtime evidence belong exclusively to Magia. Mago may read Magia evidence only for reconciliation and must not rewrite it.
 - A Mago planning boundary is an authoring boundary, not an execution prohibition: execution-required tasks are valid planning outputs when bounded, evidenced, assigned to downstream Magia, and paired with a validation path. Mago never performs those tasks.
 

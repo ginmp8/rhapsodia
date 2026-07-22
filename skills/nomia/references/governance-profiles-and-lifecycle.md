@@ -8,6 +8,7 @@ Use this reference before choosing a Nomia mode. The profile controls the minimu
 |---|---|---|---|---|---|---|
 | `quick` | low-risk intake, clarification, or status-only update | request or selected existing item; known actor/context; known status evidence | source reference for every non-null volatile fact; unknowns remain explicit | no repository artifact is required until canonical identity and path are evidenced; one-line or operational projection is allowed | none unless a material commitment, accepted risk, or due-date/priority change is requested | one-line or operational |
 | `standard` | normal delivery governance | board/cycle context for board writes; spec identity for spec writes; requester/owner/stakeholders/dates when known | field-level source or change-event evidence for volatile facts | canonical YAML for the affected scope plus requested projection | material commitment, accepted business risk, priority, owner, scope, or target-date changes require a decision/change record | operational or stakeholder |
+Priority ownership follows `references/priority-contract.md`: Nomia owns `business_priority`; generic `priority` is unsupported.
 | `governed` | regulated, high-risk, executive-visible, contractual, financial, privacy, security, cross-organization, or major stakeholder work | all standard facts plus risk class, decision authority, required reviewers, evidence freshness, and affected commitments | durable field-level provenance, timestamps, actor, rationale, and evidence references | canonical YAML, audit/change record, stakeholder or executive projection, and required handoff envelope | explicit approval/decision evidence; unresolved mandatory approval blocks commitment/release claims | stakeholder, executive, and audit |
 
 ### Mandatory escalation from `quick`
@@ -27,7 +28,7 @@ intake -> triage -> commit -> track -> decide -> close
 | Lifecycle stage | Typical Nomia modes | Governance result |
 |---|---|---|
 | `intake` | `delivery-intake`, `roadmap-define`, `rfc-proposal` | capture request, rationale, source, known actors, and unknowns |
-| `triage` | `delivery-triage`, `roadmap-refine`, `delivery-portfolio` | classify priority, risk, dependencies, stakeholders, profile, and next authority |
+| `triage` | `delivery-triage`, `roadmap-refine`, `delivery-portfolio` | classify business priority, risk, dependencies, stakeholders, profile, and next authority |
 | `commit` | `governance-decision`, `roadmap-to-specs`, `delivery-replan` | record approved commitment, target, ownership, accepted business risk, or Mago handoff readiness |
 | `track` | `delivery-status`, `delivery-portfolio`, `feature-report` | report current governance state and attributed planning/execution/validation evidence |
 | `decide` | `rfc-proposal`, `governance-decision`, `delivery-replan` | record material changes, acceptance/rejection/deferment, and affected commitments |

@@ -5,6 +5,7 @@ Use for structural edits, identity/path changes, golden examples, preservation c
 ## Canonical Command
 
 ```bash
+python <skill-root>/scripts/validate_priority_contract.py --target <skill-root>
 python <skill-root>/scripts/validate_all.py --target <skill-root> --json-output <report.json>
 ```
 

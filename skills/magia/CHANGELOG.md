@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.0 - 2026-07-22
+
+### Breaking
+- Remove read compatibility for generic Mago `priority` and `order_hint`.
+- Require canonical `business_priority`, `technical_criticality`, and `execution_sequence` on board execution inputs.
+- Reject non-canonical registry records instead of adapting or inferring planning semantics.
+- Preserve all canonical priority-contract fields as read-only execution inputs.
+
+## 1.5.0 - 2026-07-21
+
+- Adopt the versioned ecosystem priority contract with explicit Nomia business priority, Mago technical criticality, and Mago execution sequence.
+- Validate canonical and legacy Mago registry forms while rejecting mixed sources of truth.
+- Preserve all priority and sequence fields as read-only execution inputs; Magia reports blockers and deviations without rewriting them.
+
 ## 1.4.0 - 2026-07-21
 
 - Added a compact execution-entry contract for faster safe starts while preserving ADHOC, RALPH, ADAPT, planning, and governance boundaries.

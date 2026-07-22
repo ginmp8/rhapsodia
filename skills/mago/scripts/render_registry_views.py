@@ -40,7 +40,10 @@ def build_views(board_root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
         data = record.data
         specs.append({
             "order": index * 10,
-            "order_hint": data.get("order_hint"),
+            "business_priority": (data.get("business_priority") or {}).get("level"),
+            "technical_criticality": (data.get("technical_criticality") or {}).get("level"),
+            "execution_lane": (data.get("execution_sequence") or {}).get("lane"),
+            "execution_rank": (data.get("execution_sequence") or {}).get("rank"),
             "spec_id": data["spec_id"],
             "feature_key": data["feature_key"],
             "title": data["title"],

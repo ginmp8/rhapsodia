@@ -40,7 +40,7 @@ The year directory must match the year encoded in `cycle_id`. The registry filen
 
 ## Registry Contract
 
-A registry entry uses `kind: mago-spec` and includes `spec_id`, `cycle_id`, `feature_key`, `feature_version`, title, type, classification, created timestamp, status, priority, optional order hint, dependencies, supersession and handoff data.
+A registry entry uses `kind: mago-spec` and includes `spec_id`, `cycle_id`, `feature_key`, `feature_version`, title, type, classification, created timestamp, status, read-only `business_priority`, `technical_criticality`, `execution_sequence`, dependencies, supersession and handoff data.
 
 Spec statuses: `planned`, `in_progress`, `blocked`, `done`, `cancelled`, `superseded`.
 
@@ -72,3 +72,7 @@ MAGIA may update only:
 MAGIA must not rewrite planning identity, task prose, task order, dependencies, acceptance criteria, PRD, validation plan, technical design, handoff fields or governance records.
 
 When the selected task is done but other required tasks remain open, spec status remains `in_progress`. Set spec and manifest to `done` only when every required task is checked and execution evidence is aligned.
+
+## Priority semantics
+
+Apply [the ecosystem priority contract](priority-contract.md). Canonical Mago records contain `business_priority`, `technical_criticality`, and `execution_sequence`. `priority` and `order_hint` are unsupported. MAGIA rejects them and never writes any priority-contract field.

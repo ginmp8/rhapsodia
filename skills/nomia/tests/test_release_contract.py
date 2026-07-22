@@ -108,7 +108,7 @@ class ReleaseContractTests(unittest.TestCase):
             self.configure_agent_migration(root)
             migration = json.loads((root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
             self.assertEqual(migration["migrations"][0]["version"], "2.2.0")
-            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.3.0")
+            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "3.0.0")
             self.assertEqual(validate_release_contract(root), [])
 
     def test_future_protected_file_migration_fails_closed(self) -> None:

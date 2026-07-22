@@ -1,7 +1,7 @@
 {
   "name": "mago",
-  "version": "2.5.0",
-  "released_at": "2026-07-21",
+  "version": "3.0.0",
+  "released_at": "2026-07-22",
   "package_schema": "3",
   "python": ">=3.11",
   "products": [
@@ -12,7 +12,7 @@
   ],
   "compatibility_policy": "references/installation-and-release.md",
   "changelog": "CHANGELOG.md",
-  "breaking_changes": false,
+  "breaking_changes": true,
   "support_boundary": "planning artifacts and deterministic validators; no product-code execution or runtime evidence",
   "runtime_dependencies": [
     {

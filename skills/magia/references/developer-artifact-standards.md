@@ -5,6 +5,7 @@ Load when MAGIA creates, updates, validates, or decides whether to create execut
 ## Ownership
 
 Mago documents intended design. Magia documents implementation reality. MAGIA artifacts must be grounded in code, tests, command output, runtime evidence, dependency behavior, or selected Mago package evidence. They must not rewrite PRD, acceptance criteria, roadmap priority, stakeholder commitments, or product intent.
+Priority terminology in this file follows `references/priority-contract.md`: Magia consumes business priority, technical criticality, and execution sequence as read-only planning evidence and never rewrites them.
 
 ## Canonical Artifact Set
 

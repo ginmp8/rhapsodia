@@ -13,7 +13,8 @@ except Exception:  # pragma: no cover
 
 CATALOG_TOP = ["kind", "generated", "cycle_id", "cycle_status", "registry_digest", "specs"]
 CATALOG_ITEM = [
-    "order", "order_hint", "spec_id", "feature_key", "title", "type", "classification",
+    "order", "business_priority", "technical_criticality", "execution_lane", "execution_rank",
+    "spec_id", "feature_key", "title", "type", "classification",
     "depends_on_features", "depends_on_specs", "status", "feature_version",
 ]
 QUEUE_TOP = ["kind", "generated", "cycle_id", "registry_digest", "entries"]

@@ -24,7 +24,7 @@ planning:
   commitment: targeted
   milestone: enterprise-export-fixes
   rollout_target: affected-enterprise-accounts
-priority:
+business_priority:
   level: high
   urgency: high
   impact: high

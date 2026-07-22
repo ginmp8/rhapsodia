@@ -19,7 +19,7 @@ MAGO owns canonical planning templates for cycle/registry identity and package p
 Do not remove canonical structure unless replacing it with the canonical equivalent.
 
 - `cycle.yaml`: keep immutable identity, board/year, creation metadata, lifecycle, planning revision, and optional delivery-version metadata.
-- `registry/<spec_id>.yaml`: keep immutable identity, feature metadata, status, priority/order hint, dependencies, supersession, handoff, and import traceability.
+- `registry/<spec_id>.yaml`: keep immutable identity, feature metadata, status, read-only business priority, technical criticality, execution sequence, dependencies, supersession, handoff, and import traceability.
 - generated `spec-catalog.yaml`: keep kind/generated/cycle/digest fields and the full per-spec projection shape documented by its template.
 - generated `define-queue.yaml`: keep kind/generated/cycle/digest fields and the full handoff projection shape documented by its template.
 - `manifest.yaml`: keep identity, classification, planning status/phase, source-of-truth links, traceability, and evidence-backed `last_execution` only when it exists.

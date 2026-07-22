@@ -27,7 +27,7 @@ class GovernanceContractHardeningTests(unittest.TestCase):
             "request": {"title": "Demo", "requester": "Requester", "context": "Outcome"},
             "ownership": {"owner": "Owner", "stakeholders": ["Ops"]},
             "planning": {"target_date": "2026-08-01"},
-            "priority": {"level": "high", "impact": "high"},
+            "business_priority": {"level": "high", "impact": "high"},
             "status": {"state": "in_progress", "summary": "Building", "updated_at": "2026-07-20", "confidence": "medium"},
             "blockers": [],
             "risks": [],

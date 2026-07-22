@@ -8,7 +8,7 @@ items:
     owner: analytics-experience
     state: planned
     target_date: 2026-05-15
-    priority: high
+    business_priority: high
     urgency: high
     impact: high
     risk: medium
@@ -21,7 +21,7 @@ items:
     owner: product-platform
     state: at_risk
     target_date: 2026-05-22
-    priority: high
+    business_priority: high
     urgency: medium
     impact: high
     risk: high
@@ -34,7 +34,7 @@ items:
     owner: product-platform
     state: unknown
     target_date: null
-    priority: unknown
+    business_priority: unknown
     urgency: unknown
     impact: medium
     risk: unknown

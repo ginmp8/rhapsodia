@@ -15,7 +15,7 @@ planning:
   bucket: roadmap
   target_date: 2026-08-15
   commitment: tentative
-priority:
+business_priority:
   level: high
   rationale: Customer commitment
 status:

@@ -15,7 +15,7 @@ class GovernanceViewV23Tests(unittest.TestCase):
             "request": {"title": "Governance view", "requester": "Ops", "context": "Need a decision"},
             "ownership": {"owner": "Delivery", "stakeholders": ["Risk"], "decision_maker": "Sponsor"},
             "planning": {"target_date": "2026-08-01"},
-            "priority": {"level": "high", "impact": "high"},
+            "business_priority": {"level": "high", "impact": "high"},
             "status": {"state": "planned", "summary": "Awaiting decision", "updated_at": "2026-07-21", "confidence": "medium"},
             "blockers": [],
             "risks": [{"summary": "Policy deadline"}],

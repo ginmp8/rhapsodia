@@ -113,6 +113,14 @@ def create_spec(args: argparse.Namespace) -> Path:
     created_at = normalize_utc_timestamp(args.created_at or utc_now())
     if not SEMVER_RE.fullmatch(args.feature_version):
         raise ValueError("feature_version must use semantic versioning")
+    if args.business_priority != "unknown" and (not args.business_priority_source or not args.business_priority_observed_at):
+        raise ValueError("non-unknown business_priority requires --business-priority-source and --business-priority-observed-at")
+    if args.business_priority == "unknown" and (args.business_priority_source or args.business_priority_observed_at):
+        raise ValueError("unknown business_priority must not carry source or observed_at")
+    if args.technical_criticality != "normal" and not args.technical_criticality_rationale:
+        raise ValueError("non-normal technical_criticality requires --technical-criticality-rationale")
+    if (args.execution_lane != "standard" or args.execution_rank is not None) and not args.sequence_rationale:
+        raise ValueError("non-default execution_sequence requires at least one --sequence-rationale")
     spec_id = make_spec_id(feature_key, created_at[:10])
     parse_spec_id(spec_id)
     registry_path = board_root / "registry" / f"{spec_id}.yaml"
@@ -128,8 +136,23 @@ def create_spec(args: argparse.Namespace) -> Path:
         "profile": args.profile,
         "created_at": created_at,
         "status": "planned",
-        "priority": args.priority,
-        "order_hint": args.order_hint,
+        "business_priority": {
+            "level": args.business_priority,
+            "owner": "nomia",
+            "source": args.business_priority_source,
+            "observed_at": normalize_utc_timestamp(args.business_priority_observed_at) if args.business_priority_observed_at else None,
+        },
+        "technical_criticality": {
+            "level": args.technical_criticality,
+            "owner": "mago",
+            "rationale": args.technical_criticality_rationale,
+        },
+        "execution_sequence": {
+            "rank": args.execution_rank,
+            "lane": args.execution_lane,
+            "owner": "mago",
+            "rationale": args.sequence_rationale or [],
+        },
         "depends_on_features": [],
         "depends_on_specs": [],
         "supersedes": [],
@@ -170,8 +193,14 @@ def main(argv: list[str] | None = None) -> int:
     spec.add_argument("--type", choices=("feature", "fix"), default="feature")
     spec.add_argument("--classification", default="internal")
     spec.add_argument("--profile", choices=("quick", "standard", "governed"), default="standard")
-    spec.add_argument("--priority", choices=("critical", "high", "normal", "low"), default="normal")
-    spec.add_argument("--order-hint", type=int)
+    spec.add_argument("--business-priority", choices=("unknown", "low", "medium", "high", "urgent"), default="unknown")
+    spec.add_argument("--business-priority-source")
+    spec.add_argument("--business-priority-observed-at")
+    spec.add_argument("--technical-criticality", choices=("low", "normal", "high", "critical"), default="normal")
+    spec.add_argument("--technical-criticality-rationale")
+    spec.add_argument("--execution-rank", type=int)
+    spec.add_argument("--execution-lane", choices=("expedite", "fixed_date", "standard", "deferred"), default="standard")
+    spec.add_argument("--sequence-rationale", action="append", default=[])
     spec.add_argument("--handoff-status", choices=("ready_for_prepare_define", "blocked", "needs_discovery"), default="needs_discovery")
     spec.add_argument("--downstream-mode", choices=("define", "define-product", "define-tasks"), default="define")
     spec.add_argument("--package-shape", choices=("full", "product_only", "tasks_only"), default="full")
