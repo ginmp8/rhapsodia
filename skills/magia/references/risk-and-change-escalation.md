@@ -22,8 +22,6 @@ Use evidence in this order:
 
 When higher-priority evidence conflicts with product intent, acceptance criteria, task definition, planned architecture, or authority records, stop the affected mutation and hand off. Do not silently choose the easier source.
 
-Priority terminology in this file follows `references/priority-contract.md`: Magia consumes business priority, technical criticality, and execution sequence as read-only planning evidence and never rewrites them.
-
 ## Change Classification
 
 Classify affected behavior and contracts as `preserved`, `added`, `modified`, or `removed`. For each `modified` or `removed` surface, identify consumers, compatibility impact, rollout/migration order, rollback or recovery, and validation evidence. Treat API, event, schema, file format, configuration contract, permission, and persisted-data changes as contract surfaces.

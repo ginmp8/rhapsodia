@@ -41,6 +41,8 @@ REQUIRED_FILES = (
     "references/installation-and-release.md",
     "references/priority-contract.md",
     "references/priority-contract.json",
+    "references/ecosystem-handoff-contract.md",
+    "references/ecosystem-handoff-contract.json",
     "release.json",
     "requirements.txt",
     "CHANGELOG.md",
@@ -57,6 +59,8 @@ REQUIRED_FILES = (
     "scripts/sdd_adapter.py",
     "scripts/validate_release_metadata.py",
     "scripts/validate_priority_contract.py",
+    "scripts/ecosystem_handoff.py",
+    "scripts/validate_ecosystem_handoff_contract.py",
     "scripts/validate_runtime_dependencies.py",
     "scripts/validate_repo_board.py",
     "scripts/validate_concurrent_board.py",
@@ -82,6 +86,7 @@ REQUIRED_FILES = (
     "tests/test_concurrency_model.py",
     "tests/test_package_validation.py",
     "tests/test_priority_contract.py",
+    "tests/test_ecosystem_handoff.py",
     "tests/test_distribution_validation_v3.py",
 )
 MODE_REFERENCES = (
@@ -507,6 +512,10 @@ def validate_semantic_contracts(root: Path, result: ValidationResult) -> None:
     run_python_gate(
         root, root / "scripts" / "validate_priority_contract.py", ["--target", str(root)],
         "ecosystem priority contract", result,
+    )
+    run_python_gate(
+        root, root / "scripts" / "validate_ecosystem_handoff_contract.py", ["--target", str(root)],
+        "ecosystem handoff contract", result,
     )
     # Handoff and generated-view contracts are exercised by the full unittest suite.
     # Run the boundary contract directly because it is not duplicated by that suite.

@@ -8,6 +8,18 @@ Before `roadmap-to-specs`, collect or preserve unknowns for: feature key/title, 
 
 A handoff does not require nomia to invent a spec identity. `candidate_spec_id` may be absent or `null` until a canonical `spec_id` is supplied by the user, received through handoff, or evidenced by an existing repository artifact. If a candidate id is present, it must use `spec-YYYY-MM-DD-feature-key`, its embedded feature key must match `feature_key`, and `candidate_spec_id_provenance` must identify the evidence source. nomia does not create or modify registry records or claim technical registration without evidence.
 
+
+## Mechanical Envelope
+
+When governance facts are ready for transfer, build a `nomia_to_mago` envelope rather than relying on prose interpretation:
+
+```bash
+python scripts/ecosystem_handoff.py build --direction nomia_to_mago --payload <payload.json> --source <roadmap-or-feature-map> --authority nomia --evidence-ref <ref> --output <handoff.json>
+python scripts/ecosystem_handoff.py validate --input <handoff.json> --operation produce
+```
+
+The payload keeps `business_priority` as Nomia-owned evidence and may include an externally evidenced `candidate_spec_id`; it must not contain technical design, tasks, validation plans, technical criticality, or execution sequence. Mago validates the same envelope locally before consuming it.
+
 ## nomia May Do
 
 - Mark `feature-map.yaml` handoff status as `ready`, `draft`, `blocked`, `parked`, `accepted`, or `unknown` based on evidence.

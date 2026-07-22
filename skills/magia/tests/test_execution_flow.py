@@ -106,7 +106,7 @@ def test_readiness_blocks_unfinished_spec_dependency(tmp_path: Path):
     dependency = "spec-2026-04-19-foundation"
     registry = root / "registry"
     (registry / f"{dependency}.yaml").write_text(
-        f"kind: mago-spec\nspec_id: {dependency}\ncycle_id: {CYCLE}\nfeature_key: foundation\nfeature_version: 0.1.0\ntitle: Foundation\ntype: feature\nclassification: internal\ncreated_at: 2026-04-19T00:00:00Z\nstatus: in_progress\nbusiness_priority:\n  level: unknown\n  owner: nomia\n  source: null\n  observed_at: null\ntechnical_criticality:\n  level: normal\n  owner: mago\n  rationale: null\nexecution_sequence:\n  rank: null\n  lane: standard\n  owner: mago\n  rationale: []\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
+        f"kind: mago-spec\nspec_id: {dependency}\ncycle_id: {CYCLE}\nfeature_key: foundation\nfeature_version: 0.1.0\ntitle: Foundation\ntype: feature\nclassification: internal\ncreated_at: 2026-04-19T00:00:00Z\nstatus: in_progress\npriority: normal\norder_hint: null\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
         encoding="utf-8",
     )
     selected = registry / f"{spec_id}.yaml"

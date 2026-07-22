@@ -14,6 +14,13 @@ Handoff direction is explicit: nomia hands governance facts to Mago; Mago create
 
 All three skills are independent packages. Shared path, identity, ownership, and handoff rules are duplicated as local contracts; no skill imports, executes, or requires another skill package at runtime.
 
+
+## Mechanical Handoff Contract
+
+Use `references/ecosystem-handoff-contract.json` as the normative machine contract and `scripts/ecosystem_handoff.py` as the only local producer/consumer interface. Nomia produces `nomia_to_mago`; it consumes `mago_to_nomia` and `magia_to_nomia` as attributed evidence. Each peer carries a byte-equivalent local copy, so no package imports or reads another package at runtime.
+
+Every envelope carries schema and mapping versions, direction, source and target roles, source package version, observation time, provenance, freshness, payload, evidence references, unknowns, conflicts, and deterministic handoff identity. An accepted envelope authorizes only the receiving skill's existing role. It never authorizes Nomia to certify planning, execution, validation, release, or technical risk acceptance.
+
 ## Actor Write Boundaries
 
 `nomia` may write only nomia governance, roadmap bookkeeping, governance RFC, governance decision log, reporting, portfolio, intake, status, stakeholder, and replanning artifacts. Repository-facing writes must be only in canonical board/spec locations from [canonical-paths.md](canonical-paths.md). It must not write Mago/Magia files, `cycle.yaml`, registry records, generated catalog/queue views, code, planning packages, technical designs, architecture ADRs, execution records, implementation docs, or implementation task decomposition.

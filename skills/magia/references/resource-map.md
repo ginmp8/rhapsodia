@@ -4,8 +4,7 @@ Use to locate MAGIA resources without loading every file.
 
 ## Core References
 
-- `references/board-contract.md`
-- `references/priority-contract.md` and `references/priority-contract.json`: self-contained canonical board, registry, identity, dependency, and execution-sync contract.
+- `references/board-contract.md`: self-contained canonical board, registry, identity, dependency, and execution-sync contract.
 
 - `references/common-execution.md`: shared execution rules.
 - `references/execution-entry.md`: compact start card, first-safe-action rules, bounded ambiguity handling, and concise completion view.
@@ -15,6 +14,7 @@ Use to locate MAGIA resources without loading every file.
 - `references/safe-parallelism.md`: explicit execution-wave prerequisites, conflict rules, sequential fallback, and reconciliation gates.
 - `references/complexity-reduction-execution.md`: behavior-preserving simplification, de-abstraction, refactor execution.
 - `references/planning-handoff.md`: consume Mago/nomia artifacts, including execution-handoff-plan.md, as execution inputs.
+- `references/ecosystem-handoff-contract.md`: versioned producer/consumer envelope schema, state mappings, provenance, freshness, and compatibility rules.
 - `references/developer-artifact-standards.md`: implementation-doc taxonomy/templates.
 - `references/technical-documentation.md`: implementation ADR and doc rules.
 - `references/validation-selection.md`: risk-based proof-category selection with explicit unavailable-check handling.
@@ -68,6 +68,8 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 - `scripts/validate_execution_readiness.py`: validate selected spec/task readiness, task-to-intent/check linkage, task order, and dependency completion.
 - `scripts/validate_instruction_contract.py`: validate preservation of mandatory MAGIA instruction and ownership terms.
 - `scripts/validate_planning_handoff_contract.py`: validate planning-origin execution and blocker rules after handoff-rule edits.
+- `scripts/ecosystem_handoff.py`: build and validate local typed ecosystem handoff envelopes without importing peer skills.
+- `scripts/validate_ecosystem_handoff_contract.py`: validate contract shape, role-specific directions, mappings, and SKILL integration.
 - `scripts/magia_utils.py`: import-only helper module used by execution-state, boundary, board, and log scripts; it has no standalone CLI by design.
 - `scripts/package_policy.py`: import-only common archive candidate/exclusion and sensitive-name policy consumed by package validation and building.
 - `scripts/security_scan.py`: import-only fail-closed content scanner consumed by package validation and building.

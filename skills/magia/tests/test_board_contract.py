@@ -33,7 +33,7 @@ def build_board(tmp_path: Path, *, dependency_status: str = "done") -> tuple[Pat
         encoding="utf-8",
     )
     (registry / f"{SPEC}.yaml").write_text(
-        f"kind: mago-spec\nspec_id: {SPEC}\ncycle_id: {CYCLE}\nfeature_key: csv-export-filtered-columns\nfeature_version: 0.1.0\ntitle: CSV Export Filtered Columns\ntype: feature\nclassification: internal\ncreated_at: 2026-04-20T00:00:00Z\nstatus: planned\nbusiness_priority:\n  level: unknown\n  owner: nomia\n  source: null\n  observed_at: null\ntechnical_criticality:\n  level: normal\n  owner: mago\n  rationale: null\nexecution_sequence:\n  rank: null\n  lane: standard\n  owner: mago\n  rationale: []\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
+        f"kind: mago-spec\nspec_id: {SPEC}\ncycle_id: {CYCLE}\nfeature_key: csv-export-filtered-columns\nfeature_version: 0.1.0\ntitle: CSV Export Filtered Columns\ntype: feature\nclassification: internal\ncreated_at: 2026-04-20T00:00:00Z\nstatus: planned\npriority: normal\norder_hint: null\ndepends_on_features: []\ndepends_on_specs: []\nsupersedes: []\nsuperseded_by: null\nhandoff:\n  status: ready_for_prepare_define\n  downstream_mode: define\n  package_shape: full\n  source_candidates: []\n  seed_artifacts: []\n  blockers: []\nimported_from: null\n",
         encoding="utf-8",
     )
     (package / "manifest.yaml").write_text(

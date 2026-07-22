@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.0] - 2026-07-22
+
+### Added
+- Add a byte-equivalent ecosystem handoff contract, local producer/consumer CLI, explicit state projections, and regression coverage for Nomia, Mago, and Magia transfers.
+- Add mechanical `nomia_to_mago`, `mago_to_magia`, `magia_to_mago`, `mago_to_nomia`, and `magia_to_nomia` envelope validation without runtime imports between skills.
+
+### Compatibility
+- Existing planning artifacts remain unchanged. Legacy Nomia handoff envelopes remain readable during migration, while new Mago writers emit contract v1.
+- The change is additive and preserves Mago ownership, canonical identity, priority, planning, mutation, and evidence boundaries.
+
 ## [3.0.0] - 2026-07-22
 
 ### Breaking

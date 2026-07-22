@@ -5,7 +5,10 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime, timezone
+from pathlib import Path
 from typing import Any
+
+from ecosystem_handoff import validate_envelope as validate_ecosystem_envelope
 
 from nomia_utils import (
     is_legacy_spec_id,
@@ -163,88 +166,11 @@ def validate_candidate_spec_identity(payload: dict[str, Any]) -> list[str]:
 
 
 def validate_handoff_envelope(env: Any, as_of: datetime) -> dict[str, Any]:
-    reasons: list[str] = []
-    if not isinstance(env, dict):
-        return {"status": "rejected", "reasons": ["handoff envelope must be a mapping"], "direction": None}
-
-    direction = env.get("direction")
-    if direction not in HANDOFF_DIRECTIONS:
-        reasons.append("invalid direction")
-    for field in ("source", "observed_at", "provenance", "freshness_days", "payload"):
-        if env.get(field) in (None, "", []):
-            reasons.append(f"missing {field}")
-
-    observed = parse_timestamp(env.get("observed_at"))
-    if env.get("observed_at") not in (None, "", "unknown") and observed is None:
-        reasons.append("invalid observed_at")
-    freshness = env.get("freshness_days")
-    if not isinstance(freshness, int) or freshness < 0:
-        reasons.append("invalid freshness_days")
-    stale = False
-    if observed is not None and isinstance(freshness, int):
-        stale = (as_of - observed).total_seconds() / 86400 > freshness
-        if stale:
-            reasons.append("evidence is stale")
-
-    payload = env.get("payload") if isinstance(env.get("payload"), dict) else {}
-    required = {
-        "nomia_to_mago": {"feature_key", "outcome", "scope_summary", "owner", "dependencies", "readiness"},
-        "mago_to_nomia": {"spec_id", "planning_state", "planning_evidence"},
-        "magia_to_nomia": {"evidence_reference"},
-        "nomia_to_stakeholder": {"audience", "summary", "unknowns", "decision_needed"},
-    }
-    for field in required.get(str(direction), set()):
-        if field not in payload or payload.get(field) in (None, ""):
-            reasons.append(f"missing payload.{field}")
-
-    if direction == "nomia_to_mago":
-        feature_key = payload.get("feature_key")
-        if not isinstance(feature_key, str) or FEATURE_KEY_RE.fullmatch(feature_key) is None:
-            reasons.append("invalid payload.feature_key")
-        if not isinstance(payload.get("dependencies"), list):
-            reasons.append("invalid payload.dependencies")
-        reasons.extend(validate_candidate_spec_identity(payload))
-        reasons.extend(nested_forbidden_keys(payload))
-    elif direction == "mago_to_nomia":
-        spec_id = payload.get("spec_id")
-        if is_legacy_spec_id(spec_id):
-            reasons.append("payload.spec_id uses a legacy ULID identity")
-        elif validate_spec_id_format(spec_id):
-            reasons.append("invalid payload.spec_id")
-        if str(payload.get("planning_state") or "unknown") not in PLANNING_STATES:
-            reasons.append("invalid payload.planning_state")
-    elif direction == "magia_to_nomia":
-        if not ({"execution_state", "validation_state"} & set(payload)):
-            reasons.append("missing execution_state or validation_state")
-        if "execution_state" in payload and str(payload.get("execution_state")) not in EXECUTION_STATES:
-            reasons.append("invalid payload.execution_state")
-        if "validation_state" in payload and str(payload.get("validation_state")) not in VALIDATION_STATES:
-            reasons.append("invalid payload.validation_state")
-    elif direction == "nomia_to_stakeholder":
-        if not isinstance(payload.get("unknowns"), list):
-            reasons.append("invalid payload.unknowns")
-
-    if env.get("conflict") or payload.get("conflict"):
-        reasons.append("conflicting evidence")
-
-    blocking = [
-        reason
-        for reason in reasons
-        if reason.startswith(("invalid", "missing"))
-        or "legacy ULID" in reason
-        or "must use" in reason
-        or "does not match" in reason
-        or "outside nomia authority" in reason
-        or "provenance" in reason
-    ]
-    if blocking:
-        status = "rejected"
-    elif "conflicting evidence" in reasons:
-        status = "conflicting"
-    elif stale:
-        status = "stale"
-    elif payload.get("readiness") in {"draft", "unknown", False}:
-        status = "draft"
-    else:
-        status = "accepted"
-    return {"status": status, "reasons": reasons, "direction": direction}
+    """Validate current and explicitly supported legacy handoffs through the local ecosystem contract."""
+    return validate_ecosystem_envelope(
+        env,
+        root=Path(__file__).resolve().parents[1],
+        operation="any",
+        as_of=as_of,
+        allow_legacy=True,
+    )

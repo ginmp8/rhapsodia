@@ -64,13 +64,9 @@ Business acceptance of risk is a Nomia governance decision. Technical risk asses
 
 ## Typed Handoff Envelopes
 
-All handoffs use an envelope with `direction`, `source`, `observed_at`, `provenance`, `freshness_days`, and `payload`. Acceptance is mechanical:
+The executable contract is `references/ecosystem-handoff-contract.json`; use local `scripts/ecosystem_handoff.py` to produce or consume envelopes. Nomia produces `nomia_to_mago`, consumes `mago_to_nomia` and `magia_to_nomia`, and may retain `nomia_to_stakeholder` for its governance projection surface.
 
-| Direction | Required payload | Acceptance | Rejection reasons |
-|---|---|---|---|
-| `nomia_to_mago` | `feature_key`, outcome, scope summary, owner/unknown, dependencies, readiness, candidate spec id/provenance when non-null | governance context current; no technical design/tasks; identity externally sourced | missing outcome/provenance, stale context, invented identity, technical content |
-| `mago_to_nomia` | `spec_id`, planning state, planning evidence reference, observed time | identity/provenance valid and evidence current | missing source, stale/conflicting state, identity mismatch |
-| `magia_to_nomia` | execution and/or validation state, evidence reference, observed time | technical state attributed and current | unsupported completion claim, stale/conflicting evidence, missing source |
-| `nomia_to_stakeholder` | audience, summary, unknowns, decision needed, evidence references | derived from canonical facts and output profile | hidden unknowns, unsupported completion, confidential/audit data leaked to wrong audience |
+Required envelope metadata includes schema and mapping versions, producer and consumer roles, package version, timestamp, provenance, freshness, payload, evidence references, unknowns, conflicts, and deterministic `handoff_id`. State translations are explicit projections: Mago `done` maps to Nomia planning `complete`; Magia execution `done` maps to execution `complete`; Magia validation `passed` remains validation `passed`. The source skill retains authority.
 
-Use `scripts/evaluate_governance.py --handoff <json-or-yaml>` to return `accepted`, `draft`, `stale`, `conflicting`, or `rejected` with reasons.
+Legacy Nomia envelope fields are accepted only by explicit compatibility mode and are normalized before validation. New writers must emit the versioned schema. Stale or conflicting evidence is never silently accepted.
+

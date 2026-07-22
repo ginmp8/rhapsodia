@@ -1,18 +1,11 @@
 # Changelog
 
-## 2.0.0 - 2026-07-22
+## 1.5.0 - 2026-07-22
 
-### Breaking
-- Remove read compatibility for generic Mago `priority` and `order_hint`.
-- Require canonical `business_priority`, `technical_criticality`, and `execution_sequence` on board execution inputs.
-- Reject non-canonical registry records instead of adapting or inferring planning semantics.
-- Preserve all canonical priority-contract fields as read-only execution inputs.
-
-## 1.5.0 - 2026-07-21
-
-- Adopt the versioned ecosystem priority contract with explicit Nomia business priority, Mago technical criticality, and Mago execution sequence.
-- Validate canonical and legacy Mago registry forms while rejecting mixed sources of truth.
-- Preserve all priority and sequence fields as read-only execution inputs; Magia reports blockers and deviations without rewriting them.
+- Added a versioned, mechanically validated ecosystem handoff contract carried locally by MAGIA.
+- Added a local producer/consumer CLI for `mago_to_magia`, `magia_to_mago`, and `magia_to_nomia` envelopes with provenance, freshness, conflicts, unknowns, package versions, and state-mapping metadata.
+- Added positive, negative, stale, conflict, authority, mapping, and round-trip tests without introducing runtime dependency on Mago or Nomia.
+- Integrated the shared contract into planning-handoff, validation/closure, package validation, archive validation, and resource discovery.
 
 ## 1.4.0 - 2026-07-21
 

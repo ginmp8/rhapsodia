@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.0 - 2026-07-22
+
+- Add a versioned ecosystem handoff contract with local producer and consumer validation for Nomia, Mago, and Magia.
+- Make `nomia_to_mago`, `mago_to_nomia`, and `magia_to_nomia` mechanically validated with source package version, provenance, freshness, unknowns, conflicts, evidence references, target role, and state-mapping metadata.
+- Preserve runtime independence by carrying byte-equivalent contract and validator files in each package rather than importing peer skills.
+- Retain explicit legacy-envelope compatibility only for reads while requiring all new writers to emit contract v1.
+
 ## 3.0.0 - 2026-07-22
 
 ### Breaking

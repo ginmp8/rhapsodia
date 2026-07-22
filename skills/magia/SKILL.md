@@ -13,6 +13,8 @@ MAGIA may execute Mago-authored specs and use nomia governance artifacts as read
 
 MAGIA is independent. It carries its own canonical board contract and local validators. Never import, invoke, or read another skill package at runtime. Planning-origin artifacts are execution inputs, not runtime prohibitions. Never use implementation requirement alone as the blocker.
 
+Cross-skill transfers use the local versioned [ecosystem handoff contract](references/ecosystem-handoff-contract.md) and `scripts/ecosystem_handoff.py`; MAGIA consumes `mago_to_magia` and produces `magia_to_mago` or `magia_to_nomia` without transferring execution authority.
+
 MAGIA does not own product governance, stakeholder updates, release notes, portfolio reports, roadmap bookkeeping, broad planning, PRD refinement, product-intent rewrites, acceptance-criteria rewrites, task-definition rewrites, or unvalidated completion claims.
 
 MAGIA may safely fill implementation gaps Mago left unspecified, including simplifying over-engineered code, only inside existing product intent, task boundary, acceptance criteria, and repository truth. If execution proves PRD, acceptance criteria, task definitions, sequencing, or planned architecture must change, record evidence and hand off to Mago instead of rewriting planning intent.
@@ -55,7 +57,7 @@ MAGIA may create implementation decisions or execution-grounded ADRs only when t
 - cites evidence from code, commands, tests, runtime output, package artifacts, or supplied context;
 - records executed or expected validation honestly.
 
-Consume `business_priority`, `technical_criticality`, and `execution_sequence` through the [ecosystem priority contract](references/priority-contract.md) without rewriting them. Hand off to Mago for material changes to planned architecture, public contract, persistence model, security posture, cross-service behavior, execution sequence, or user-visible behavior beyond the selected task. Hand off to nomia for delivery commitments, stakeholder communication, release posture, due date, roadmap priority, owner, or accepted business risk changes.
+Hand off to Mago for material changes to planned architecture, public contract, persistence model, security posture, cross-service behavior, or user-visible behavior beyond the selected task. Hand off to nomia for delivery commitments, stakeholder communication, release posture, due date, roadmap priority, owner, or accepted business risk changes.
 
 MAGIA evidence is source material for downstream Mago planning reconciliation and nomia reporting. MAGIA must label pass/fail/not-run validation honestly, avoid stakeholder-ready release claims, and never create governance RFCs, release notes, portfolio reports, or delivery status as an execution shortcut.
 
@@ -65,7 +67,7 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 2. Load [references/canonical-paths.md](references/canonical-paths.md), [references/common-execution.md](references/common-execution.md), and [references/execution-entry.md](references/execution-entry.md) to establish the bounded start card and first safe action.
 3. Load [references/repository-orientation.md](references/repository-orientation.md) for brownfield, unfamiliar, multi-module, or validator-discovery work. Load [references/senior-engineering-discipline.md](references/senior-engineering-discipline.md) for non-trivial implementation, debugging, testing, refactor, risk, or operability. Load [references/risk-and-change-escalation.md](references/risk-and-change-escalation.md) when contracts, data, security, compliance, availability, financial outcomes, or multiple repositories/services may be affected.
 4. Load [references/complexity-reduction-execution.md](references/complexity-reduction-execution.md) for simplification, de-abstraction, behavior-preserving refactor, or Mago complexity-reduction plans.
-5. For RALPH, load [references/board-contract.md](references/board-contract.md). Load [references/safe-parallelism.md](references/safe-parallelism.md) only for an explicit dependency-safe batch or proposed execution wave. Load [references/planning-handoff.md](references/planning-handoff.md) and [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md) when using specs, PRDs, technical designs, roadmaps, governance records, or packages authored outside MAGIA.
+5. For RALPH, load [references/board-contract.md](references/board-contract.md). Load [references/safe-parallelism.md](references/safe-parallelism.md) only for an explicit dependency-safe batch or proposed execution wave. Load [references/planning-handoff.md](references/planning-handoff.md), the [ecosystem handoff contract](references/ecosystem-handoff-contract.md), and [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md) when using specs, PRDs, technical designs, roadmaps, governance records, or packages authored outside MAGIA.
 6. Load [references/developer-artifact-standards.md](references/developer-artifact-standards.md) and [references/technical-documentation.md](references/technical-documentation.md) for implementation docs, decisions, or ADRs.
 7. Load exactly one mode reference: [ADHOC](references/modes/adhoc.md) for direct work, [RALPH](references/modes/ralph.md) for board-contract execution, or [ADAPT](references/modes/adapt.md) for best-effort conversion of legacy execution records into current MAGIA-owned artifacts.
 8. Load [references/artifacts/execution-records.md](references/artifacts/execution-records.md) only when controlled execution records may change.
@@ -109,8 +111,8 @@ Bug fixes, complexity reduction, implementation-grounded docs, migrations, contr
 6. When Mago omitted implementation detail, choose the safest path grounded in repository conventions, document it, and stay inside product intent.
 7. Use local scripts before manual editing. Template scaffolds require a validated `--board-root` or explicit ADHOC `--allowed-root`; never write through a path or symlink that escapes the authorized root.
 8. For RALPH mutation, require the selected task to resolve to current PRD intent and a planned validation check, and require dependency-safe order unless planning explicitly marks it `[parallel]` or `[independent]`. For closure, require a concrete passed check and a Traceability source that resolves to the selected task or a current PRD objective/acceptance criterion, then validate a candidate snapshot and commit tasks, manifest, and registry through the journal-validated recoverable transaction writer. Reject path traversal, symlink targets, stale preflight state, and live-process lock takeover; recover only dead-owner locks and valid interrupted journals.
-9. Run the narrowest validation proving the work plus mechanical MAGIA validators that apply.
-10. Finalize with concise evidence: changed, passed, failed/not-run with reasons, and remaining gaps.
+9. Run the narrowest validation proving the work plus mechanical MAGIA validators that apply. Validate incoming `mago_to_magia` before execution and build a `magia_to_mago` or `magia_to_nomia` envelope only from current implementation and validation evidence.
+10. Finalize with concise evidence: changed, passed, failed/not-run with reasons, remaining gaps, and the exact typed handoff path when downstream review is required.
 
 ## Operating Rules
 

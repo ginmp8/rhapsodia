@@ -13,6 +13,7 @@ Priority ownership follows `references/priority-contract.md`: Nomia owns `busine
 - Own: intake, ops, status, stakeholder brief, replanning, portfolio, roadmap, feature map, governance RFC/decision log, release/internal notes, feature report, and roadmap-to-Mago handoff under existing `docs/boards/<board_id>/<year>/cycles/<cycle_id>/` locations.
 - Never modify code, tests, deployments, source control, Mago planning, Magia execution, ADRs, technical design, implementation documentation, or engineering tasks. Use Mago/Magia material only as attributed read-only evidence; never rewrite it or certify technical validation.
 - Authority: Nomia is the PO/delivery secretary; Mago owns technical planning and cycle/spec identity; Magia owns implementation, validation, execution evidence, and runtime documentation. Nomia uses local path/handoff contracts and never imports another skill.
+- Cross-skill transfers use the local versioned [ecosystem handoff contract](references/ecosystem-handoff-contract.md) and `scripts/ecosystem_handoff.py`. Nomia produces `nomia_to_mago` and consumes `mago_to_nomia` or `magia_to_nomia`; envelopes transfer attributed evidence without transferring governance or technical authority.
 - Nomia RFCs and `governance-decision` cover roadmap, scope, sequencing, ownership, policy/process, vendor/tool, budget, accepted business risk, go/no-go, stakeholder alignment, and handoff readiness. Hand off architecture or implementation decisions to Mago or Magia.
 
 ## Required Inputs
@@ -52,10 +53,11 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 10. Artifact family only when creating, editing, or validating it: [delivery](references/artifacts/delivery.md), [roadmap](references/artifacts/roadmap.md), [rfc](references/artifacts/rfc.md), [governance decision](references/artifacts/governance-decision.md), or [reporting](references/artifacts/reporting.md).
 11. Roadmap-to-spec handoff: [references/roadmap-to-mago-contract.md](references/roadmap-to-mago-contract.md).
 12. Ecosystem priority ownership and migration: [references/priority-contract.md](references/priority-contract.md) and [references/priority-contract.json](references/priority-contract.json).
-13. Activation, routing, and scenario evidence: [references/activation-and-evaluation.md](references/activation-and-evaluation.md).
-14. Assurance, release integrity, or SDD review: [references/assurance-and-release.md](references/assurance-and-release.md) and [references/assurance-contract.json](references/assurance-contract.json).
-15. Structural validation, golden examples, or `skill.zip`: [references/package-validation.md](references/package-validation.md), `examples/golden/`, [examples/golden/index.md](examples/golden/index.md), and [examples/golden/validation-commands.md](examples/golden/validation-commands.md).
-16. Scenario assets: [examples/activation-scenarios.json](examples/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json), [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json), [evals/governance-scenarios.json](evals/governance-scenarios.json), and [evals/booster-activation-scenarios.json](evals/booster-activation-scenarios.json). Mark metrics measured only after the relevant command or prompt execution and review.
+13. Ecosystem handoff schema and mechanical producer/consumer: [references/ecosystem-handoff-contract.md](references/ecosystem-handoff-contract.md), [references/ecosystem-handoff-contract.json](references/ecosystem-handoff-contract.json), and `scripts/ecosystem_handoff.py`.
+14. Activation, routing, and scenario evidence: [references/activation-and-evaluation.md](references/activation-and-evaluation.md).
+15. Assurance, release integrity, or SDD review: [references/assurance-and-release.md](references/assurance-and-release.md) and [references/assurance-contract.json](references/assurance-contract.json).
+16. Structural validation, golden examples, or `skill.zip`: [references/package-validation.md](references/package-validation.md), `examples/golden/`, [examples/golden/index.md](examples/golden/index.md), and [examples/golden/validation-commands.md](examples/golden/validation-commands.md).
+17. Scenario assets: [examples/activation-scenarios.json](examples/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json), [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json), [evals/governance-scenarios.json](evals/governance-scenarios.json), and [evals/booster-activation-scenarios.json](evals/booster-activation-scenarios.json). Mark metrics measured only after the relevant command or prompt execution and review.
 
 ## Execution Workflow
 
@@ -69,7 +71,8 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 8. Treat legacy governance material as read-only, non-operational input. `governance-adapt` may extract governance facts only; canonical outputs require externally supplied current ids and provenance and must not carry, convert, rename, or derive former ULID identities.
 9. Generate human reports as non-authoritative projections from canonical facts. Include projection authority, canonical source, generation timestamp, evidence-as-of timestamp, unknowns, stale facts, conflicts, and lossy fields when applicable.
 10. Preserve missing volatile facts as `unknown`, `null`, empty lists, or explicit unknown prose.
-11. Validate every touched artifact. For repository-facing writes also validate board paths; for package or readiness claims run the complete validation ledger.
+11. Build `nomia_to_mago` envelopes with `scripts/ecosystem_handoff.py`; validate incoming `mago_to_nomia` and `magia_to_nomia` before using them as attributed governance evidence. Preserve source package version, provenance, freshness, unknowns, conflicts, mapping version, and the original technical authority.
+12. Validate every touched artifact. For repository-facing writes also validate board paths; for package or readiness claims run the complete validation ledger.
 
 ## Script Routing
 
@@ -78,6 +81,7 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 - Legacy adaptation: `scripts/adapt_governance.py`; validate output with `scripts/validate_ops.py --require-canonical`.
 - Ecosystem priority ownership and migration: `scripts/validate_priority_contract.py`; new Nomia writers emit `business_priority`, while `technical_criticality` and `execution_sequence` remain read-only Mago evidence.
 - Canonical state, transitions, metrics, and typed handoffs: `scripts/governance_contract.py`, `scripts/evaluate_governance.py`.
+- Mechanical ecosystem handoffs: `scripts/ecosystem_handoff.py` builds/validates role-scoped envelopes; `scripts/validate_ecosystem_handoff_contract.py` validates the local contract and its integration.
 - Human projections and provenance validation: `scripts/project_governance_views.py`, `scripts/validate_projection_metadata.py`.
 - Writers, lists, and normalization: `scripts/upsert_rfc_entry.py`, `scripts/append_governance_decision_entry.py`, `scripts/update_template_lists.py`, `scripts/normalize_human_artifacts.py`.
 - General and path validation: `scripts/validate_artifact.py`, `scripts/validate_board_paths.py`.
@@ -115,6 +119,7 @@ Repository-facing writes close only after touched artifacts pass their validator
 - Canonical spec governance uses `schema_version: 2` for new or adapted records; dimension-specific states and evidence contracts validate.
 - Non-null technical or release states have the required authority, source, observation time, freshness, and compatible value.
 - Typed handoffs reject malformed identities, stale/conflicting evidence, unsupported authority, technical content in Nomia-to-Mago payloads, and `feature_key`/`candidate_spec_id` mismatches.
+- Typed handoffs are built or consumed through `scripts/ecosystem_handoff.py`; they additionally reject incompatible producer/consumer roles and invalid state projections.
 - No registry record, generated catalog, generated queue, Mago/Magia artifact, implementation/deployment/test/runner file, branch/commit/PR record, architecture ADR, technical design, or implementation task is modified.
 - Template artifacts use bundled scripts; repository-facing writes are atomic; supported writers expose `--dry-run` where documented.
 - Guided intake and generated projections declare non-authoritative status, preserve unknowns, identify the next governance action and responsible skill, and never certify planning, execution, validation, or release.
@@ -122,6 +127,7 @@ Repository-facing writes close only after touched artifacts pass their validator
 - Touched artifacts pass specialized validators and repository-facing writes pass board-path validation.
 - Scenario edits preserve categories and pass `scripts/validate_activation_scenarios.py` or `scripts/validate_skill_package.py`; governance scenarios pass `scripts/validate_governance_scenarios.py`.
 - Priority-contract edits pass `scripts/validate_priority_contract.py`; generic aliases are rejected, and Nomia never writes Mago-owned technical criticality or execution sequence.
+- Ecosystem-contract edits pass `scripts/validate_ecosystem_handoff_contract.py`; all three packages carry byte-equivalent contract JSON and producer/consumer behavior remains direction-scoped.
 - Structural edits pass `scripts/validate_skill_package.py`; golden-sensitive edits pass `scripts/validate_golden_examples.py`; identity/path changes pass `scripts/validate_identity_contract.py`.
 - Every readiness or package run passes `scripts/validate_all.py`, including preservation and unit-test gates.
 - `skill.zip` is produced only by a passing deterministic package run; source and archive checks reject symlinks, path traversal, caches, bytecode, generated evidence/reports, secrets, credentials, private-key material, temporary files, and old zips.

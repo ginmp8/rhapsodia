@@ -14,16 +14,25 @@ REQUIRED_FILES = [
     "references/modes/refine.md",
     "references/modes/reshape-tasks.md",
     "assets/templates/tasks.md.template",
+    "references/ecosystem-handoff-contract.md",
+    "references/ecosystem-handoff-contract.json",
+    "scripts/ecosystem_handoff.py",
+    "scripts/validate_ecosystem_handoff_contract.py",
 ]
 
 REQUIRED_PHRASES = {
     "SKILL.md": [
         "planning boundary is an authoring boundary",
         "execution-required tasks are valid planning outputs",
+        "ecosystem handoff contract",
+        "scripts/ecosystem_handoff.py",
     ],
     "references/planning-execution-handoff.md": [
         "A MAGO planning boundary is not an implementation prohibition",
         "Do not label a task `blocked` merely because it requires code",
+        "## Typed Envelope Handoff",
+        "mago_to_magia",
+        "mago_to_nomia",
     ],
     "references/artifacts/templates-and-status.md": [
         "Execution Handoff Consistency",

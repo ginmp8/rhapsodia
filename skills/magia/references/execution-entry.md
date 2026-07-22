@@ -42,7 +42,7 @@ Proceed conservatively only when all conditions hold:
 
 When proceeding, record the assumption, its evidence, the smallest chosen implementation, and the proving check.
 
-Hand off to Mago when a missing decision changes requirements, acceptance criteria, task definition, sequencing, planned architecture, public contract, persistence model, cross-service behavior, or security posture. Hand off to nomia when the missing decision changes owner, business priority, due date, delivery status, stakeholder communication, release posture, or accepted business risk.
+Hand off to Mago when a missing decision changes requirements, acceptance criteria, task definition, sequencing, planned architecture, public contract, persistence model, cross-service behavior, or security posture. Hand off to nomia when the missing decision changes owner, priority, due date, delivery status, stakeholder communication, release posture, or accepted business risk.
 
 ## Compact Completion View
 

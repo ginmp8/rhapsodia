@@ -44,6 +44,10 @@ If no honest verifiable objective can be derived without changing the task plan,
 
 Stop broadening scope; classify a concrete execution blocker; record it in implementation-notes.md and validation-evidence.md; preserve partial truth; do not mark task done. Valid blockers: missing targets, unresolved dependencies, unavailable credentials/services, contradictory source-of-truth, unsafe secret access, missing validation path, or required planning changes. A concrete execution blocker is required. Report what is blocked, why, what completed, missing evidence, and what remains.
 
+## Typed downstream evidence
+
+When closure evidence must leave MAGIA, use `references/ecosystem-handoff-contract.json` and `scripts/ecosystem_handoff.py`. A `magia_to_mago` envelope carries deviations and planning-change need; a `magia_to_nomia` envelope carries attributed execution and validation states plus mapping version. Envelope acceptance does not authorize governance closure, release communication, or business-risk acceptance.
+
 ## Final Closure Pass
 
 Verify: the selected task still resolves to current PRD intent and planned validation; changed code matches selected work; the matching registry entry and manifest.yaml match actual state and were reconciled together if changed; manifest phase is execute for active work or done only for full completion; tasks.md checkbox and implementation-notes.md Execution Log match completion; last_execution is omitted or points to an existing truthful taskNNN; validation-evidence.md records real evidence and checked items are satisfied; implementation-notes.md reflects blockers/decisions; every executed task has a truthful log and no log references a missing task; canonical sections/fields/checklists survived; no MAGIA durable docs exist outside `BOARD_ROOT`. Run `scripts/close_execution_state.py ...` when state changed; otherwise run validation/state scripts as applicable, including `scripts/validate_repo_board.py <repo_root> --board-root <board_root>` when local files exist.

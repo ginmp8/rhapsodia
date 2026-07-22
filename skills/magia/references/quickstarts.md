@@ -11,7 +11,6 @@ Load only for onboarding, mode selection, script discovery, or recovery guidance
 | Legacy execution notes must become current MAGIA evidence | `ADAPT` | Inspect legacy records and identify which claims have current evidence |
 | Product intent, design, task, sequencing, or validation plan must change | handoff to Mago | Record the technical gap and stop the affected mutation |
 | Owner, priority, date, stakeholder, release, or business-risk decision must change | handoff to nomia | Record evidence and stop the governance mutation |
-Priority terminology in this file follows `references/priority-contract.md`: Magia consumes business priority, technical criticality, and execution sequence as read-only planning evidence and never rewrites them.
 
 For non-trivial work, begin with the [execution start card](execution-entry.md).
 

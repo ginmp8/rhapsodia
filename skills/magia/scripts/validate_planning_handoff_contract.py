@@ -6,16 +6,29 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+REQUIRED_FILES = [
+    "references/ecosystem-handoff-contract.md",
+    "references/ecosystem-handoff-contract.json",
+    "scripts/ecosystem_handoff.py",
+    "scripts/validate_ecosystem_handoff_contract.py",
+]
+
 REQUIRED_PHRASES = {
     "SKILL.md": [
         "Planning-origin artifacts are execution inputs, not runtime prohibitions",
         "Never use implementation requirement alone as the blocker",
         "MAGIA is independent",
+        "ecosystem handoff contract",
+        "scripts/ecosystem_handoff.py",
     ],
     "references/planning-handoff.md": [
         "Planning-origin artifacts are execution inputs for MAGIA",
         "Do not block merely because",
         "Return BLOCKED only when a concrete execution blocker",
+        "## Typed Envelope Handoff",
+        "mago_to_magia",
+        "magia_to_mago",
+        "magia_to_nomia",
     ],
     "references/modes/ralph.md": [
         "Planning-Origin Handoff",
@@ -46,6 +59,9 @@ BANNED = [
 
 def collect_errors(root: Path) -> list[str]:
     errors: list[str] = []
+    for rel in REQUIRED_FILES:
+        if not (root / rel).is_file():
+            errors.append(f"missing required ecosystem handoff file: {rel}")
     for rel, phrases in REQUIRED_PHRASES.items():
         path = root / rel
         if not path.is_file():

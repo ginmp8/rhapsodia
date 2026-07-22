@@ -14,8 +14,8 @@ from typing import Any
 
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
+from validate_ecosystem_handoff_contract import collect_errors as collect_ecosystem_handoff_errors
 from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
-from validate_priority_contract import collect_errors as collect_priority_contract_errors
 from security_scan import scan_bytes, scan_paths
 from package_policy import (
     EXCLUDED_DIR_NAMES,
@@ -230,8 +230,8 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/common-execution.md",
         "references/resource-map.md",
         "references/package-delivery.md",
-        "references/priority-contract.md",
-        "references/priority-contract.json",
+        "references/ecosystem-handoff-contract.md",
+        "references/ecosystem-handoff-contract.json",
         "references/modes/adhoc.md",
         "references/modes/ralph.md",
         "references/artifacts/execution-records.md",
@@ -247,7 +247,8 @@ def validate_target(target: Path) -> dict[str, Any]:
         "scripts/planning_traceability.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
-        "scripts/validate_priority_contract.py",
+        "scripts/ecosystem_handoff.py",
+        "scripts/validate_ecosystem_handoff_contract.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
@@ -323,8 +324,8 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(collect_planning_handoff_errors(target))
     checks.append("planning handoff contract")
 
-    errors.extend(collect_priority_contract_errors(target))
-    checks.append("ecosystem priority contract")
+    errors.extend(collect_ecosystem_handoff_errors(target))
+    checks.append("ecosystem handoff contract")
 
     errors.extend(collect_boundary_errors())
     checks.append("runtime independence and ownership boundary")
@@ -343,8 +344,8 @@ def zip_required_resources() -> list[str]:
         "CHANGELOG.md",
         "references/resource-map.md",
         "references/package-delivery.md",
-        "references/priority-contract.md",
-        "references/priority-contract.json",
+        "references/ecosystem-handoff-contract.md",
+        "references/ecosystem-handoff-contract.json",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
         "scripts/board_contract.py",
@@ -352,7 +353,8 @@ def zip_required_resources() -> list[str]:
         "scripts/planning_traceability.py",
         "scripts/validate_execution_readiness.py",
         "scripts/validate_instruction_contract.py",
-        "scripts/validate_priority_contract.py",
+        "scripts/ecosystem_handoff.py",
+        "scripts/validate_ecosystem_handoff_contract.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",

@@ -66,6 +66,7 @@ def validate(root: Path) -> dict[str, Any]:
         ("golden-examples", script(root, "validate_golden_examples.py", "--skill-root", str(root))),
         ("identity-contract", script(root, "validate_identity_contract.py", "--target", str(root))),
         ("priority-contract", script(root, "validate_priority_contract.py", "--target", str(root))),
+        ("ecosystem-handoff-contract", script(root, "validate_ecosystem_handoff_contract.py", "--target", str(root))),
         ("release-contract", script(root, "validate_release_contract.py", "--target", str(root))),
         ("contract-preservation", script(root, "validate_contract_preservation.py", "--target", str(root))),
         ("documentation-links", script(root, "validate_documentation.py", "--target", str(root))),

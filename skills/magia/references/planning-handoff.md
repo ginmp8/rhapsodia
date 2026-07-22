@@ -1,6 +1,4 @@
-# Planning Handoff
-
-For priority and ordering inputs, apply [the ecosystem priority contract](priority-contract.md): consume Nomia `business_priority` and Mago `technical_criticality`/`execution_sequence` as read-only planning evidence. for MAGIA Execution
+# Planning Handoff for MAGIA Execution
 
 Load when RALPH executes a spec package, PRD, technical design, roadmap/governance package, architecture decision, or board artifact authored outside MAGIA.
 
@@ -11,6 +9,17 @@ Planning-origin artifacts are execution inputs for MAGIA. Authorship states prov
 Handoff is bidirectional. Mago plans, Magia executes, and nomia interprets delivery implications. MAGIA returns technical gaps to Mago through `technical-gap-note.md`, implementation ADRs, implementation notes, or validation evidence; MAGIA returns delivery-impact evidence to nomia only as source evidence, not as stakeholder communication authored by MAGIA.
 
 MAGIA may fill safe implementation gaps Mago did not detail when repository evidence, technical design, execution-handoff-plan.md, tasks, validation plan, and acceptance criteria are sufficient. This is technical execution refinement, not PRD refinement.
+
+## Typed Envelope Handoff
+
+Validate `mago_to_magia` with local `scripts/ecosystem_handoff.py` before treating planning references as an execution entry. The envelope must identify the Mago package version, canonical `spec_id`, planning state, requirement and acceptance references, selected task ids, validation references, technical criticality, execution sequence, provenance, freshness, unknowns, and conflicts. It remains planning evidence, not runtime proof.
+
+After execution, build `magia_to_mago` when implementation findings require planning reconciliation and `magia_to_nomia` when current execution or validation evidence has delivery impact. The producer automatically adds contract-v1 state projections for Nomia. Do not freehand `complete` or `passed` governance-facing states, and do not use the envelope to close governance or accept business risk.
+
+```text
+python scripts/ecosystem_handoff.py validate --input <mago-handoff.json> --operation consume
+python scripts/ecosystem_handoff.py build --direction magia_to_mago --payload <payload.json> --source <validation-evidence> --authority magia --evidence-ref <ref> --output <handoff.json>
+```
 
 ## Non-Blockers
 
@@ -32,4 +41,3 @@ When file targets are missing, derive the narrowest safe target from: task metad
 - Do not convert planning provenance into a blocker.
 - Link implementation ADRs from implementation-notes.md and validation-evidence.md, and state Mago handoff need. Treat execution-handoff-plan.md as planned input, not proof of implementation.
 - If execution evidence affects release posture, stakeholder risk, owner, due date, roadmap priority, accepted business risk, or go/no-go decisions, record the evidence and hand off to nomia; do not update delivery governance artifacts from MAGIA.
-Priority terminology in this file follows `references/priority-contract.md`: Magia consumes business priority, technical criticality, and execution sequence as read-only planning evidence and never rewrites them.
