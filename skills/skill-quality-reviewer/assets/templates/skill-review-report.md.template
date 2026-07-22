@@ -1,0 +1,76 @@
+# Skill Quality Review
+
+## Executive Summary
+- Target: {{TARGET}}
+- Mode: {{MODE}}
+- Review type: {{REVIEW_TYPE}}
+- Verdict: {{VERDICT}}
+- Weighted score: {{SCORE}}/100
+- Score basis: {{SCORE_BASIS}}
+- Finding counts: {{FINDING_COUNTS}}
+- Correction input status: {{CORRECTION_STATUS}}
+
+## Scope and Evidence
+
+### Reviewed
+{{REVIEWED}}
+
+### Not reviewed
+{{NOT_REVIEWED}}
+
+### Assumptions
+{{ASSUMPTIONS}}
+
+### Commands executed
+| Command/check | Status | Evidence |
+|---|---|---|
+{{COMMAND_ROWS}}
+
+## Reconstructed Skill Contract
+- Role: {{ROLE}}
+- Activation: {{ACTIVATION}}
+- Non-activation: {{NON_ACTIVATION}}
+- Modes: {{MODES}}
+- Inputs: {{INPUTS}}
+- Outputs: {{OUTPUTS}}
+- Validation: {{VALIDATION}}
+- Stop conditions: {{STOP_CONDITIONS}}
+
+## Behavioral Invariants
+{{INVARIANTS}}
+
+## Scorecard
+| ID | Dimension | Weight | Raw 0-5 | Weighted | Evidence | Main deduction |
+|---|---|---:|---:|---:|---|---|
+{{SCORE_ROWS}}
+
+### Gate Overrides
+{{GATE_OVERRIDES}}
+
+## Findings
+{{FINDINGS}}
+
+## Rejected Hypotheses and Positive Signals
+
+### Rejected hypotheses
+{{REJECTED_HYPOTHESES}}
+
+### Positive signals
+{{POSITIVE_SIGNALS}}
+
+## Validation Gaps
+{{VALIDATION_GAPS}}
+
+## Prioritized Remediation Plan
+| Order | Finding | Action | Depends on | Closure evidence |
+|---:|---|---|---|---|
+{{REMEDIATION_ROWS}}
+
+## Correction Input
+{{CORRECTION_INPUT}}
+
+## Final Verdict
+- Verdict: {{VERDICT}}
+- Why: {{VERDICT_REASON}}
+- Remaining uncertainty: {{REMAINING_UNCERTAINTY}}
+- Next review gate: {{NEXT_GATE}}

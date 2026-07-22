@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Quality Reviewer
+  short_description: Audits skill packages and produces evidence-backed, prompt-ready remediation reports.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
