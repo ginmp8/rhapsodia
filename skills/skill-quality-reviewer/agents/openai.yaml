@@ -1,6 +1,6 @@
 interface:
   display_name: Skill Quality Reviewer
-  short_description: Audits skill packages and produces evidence-backed, prompt-ready remediation reports.
+  short_description: Audits skill quality, legacy coupling, obsolete compatibility, and prompt-ready remediation.
 policy:
   products:
   - chatgpt

@@ -8,6 +8,7 @@
 - Weighted score: {{SCORE}}/100
 - Score basis: {{SCORE_BASIS}}
 - Finding counts: {{FINDING_COUNTS}}
+- Legacy classification counts: {{LEGACY_CLASSIFICATION_COUNTS}}
 - Correction input status: {{CORRECTION_STATUS}}
 
 ## Scope and Evidence
@@ -27,17 +28,49 @@
 {{COMMAND_ROWS}}
 
 ## Reconstructed Skill Contract
-- Role: {{ROLE}}
+- Role and owner: {{ROLE_OWNER}}
 - Activation: {{ACTIVATION}}
 - Non-activation: {{NON_ACTIVATION}}
 - Modes: {{MODES}}
-- Inputs: {{INPUTS}}
+- Current inputs, identifiers, schemas, states, and versions: {{CURRENT_CONTRACT}}
 - Outputs: {{OUTPUTS}}
+- Canonical sources: {{CANONICAL_SOURCES}}
+- Consumers and handoffs: {{CONSUMERS_HANDOFFS}}
 - Validation: {{VALIDATION}}
 - Stop conditions: {{STOP_CONDITIONS}}
 
+## Canonical Source Map
+| Concept | Canonical source | Owner/writer | Consumers | Conflicts or gaps |
+|---|---|---|---|---|
+{{CANONICAL_SOURCE_ROWS}}
+
 ## Behavioral Invariants
 {{INVARIANTS}}
+
+## Legacy and Compatibility Assessment
+- Summary: {{LEGACY_SUMMARY}}
+- Classification counts: {{LEGACY_CLASSIFICATION_COUNTS}}
+- Blocked decisions: {{BLOCKED_DECISIONS}}
+
+### Legacy Classification Matrix
+| Item | Skill/package | Location | Classification | Normal-path reachable | Migration isolated | Recommended action | Evidence |
+|---|---|---|---|---:|---:|---|---|
+{{LEGACY_CLASSIFICATION_ROWS}}
+
+### Ownership Matrix
+| Artifact or decision | Correct owner | Writers found | Consumers | Authority violation | Result |
+|---|---|---|---|---:|---|
+{{OWNERSHIP_ROWS}}
+
+### Compatibility Matrix
+| Contract | Real producer version | Real consumer version | Accepted | Rejected | Evidence |
+|---|---|---|---:|---:|---|
+{{COMPATIBILITY_ROWS}}
+
+### Runtime Coupling Matrix
+| Caller | Dependency | Mechanism | Required at runtime | Canonical alternative | Classification |
+|---|---|---|---:|---|---|
+{{RUNTIME_COUPLING_ROWS}}
 
 ## Scorecard
 | ID | Dimension | Weight | Raw 0-5 | Weighted | Evidence | Main deduction |

@@ -148,6 +148,73 @@
       "acceptance_criteria": [
         "Static scenario presence is not converted into behavioral precision or accuracy."
       ]
+    },
+    {
+      "id": "activate-legacy-coupling-audit",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Review this skill for legacy noise, backward-compatibility branches, and places where the new workflow is still coupled to the old flow.",
+      "expected_behavior": "activate_legacy-audit or full-review mode, reconstruct current sources, classify candidates, trace ownership and coupling, and produce evidence-backed correction instructions.",
+      "acceptance_criteria": [
+        "The review distinguishes necessary compatibility from legacy noise and flow coupling.",
+        "The review identifies consumers, entry conditions, sources of truth, fallbacks, and removal prerequisites.",
+        "Marker words alone are not reported as confirmed defects."
+      ]
+    },
+    {
+      "id": "activate-silent-legacy-fallback",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Check whether invalid current inputs silently fall back to a legacy mode in this skill.",
+      "expected_behavior": "activate_trace current and legacy routing, test the fallback hypothesis, and report silent fallback only when a failure path is evidenced.",
+      "acceptance_criteria": [
+        "The review traces the entry condition before assigning severity.",
+        "The output includes a validation that distinguishes malformed current input from explicit legacy input."
+      ]
+    },
+    {
+      "id": "edge-delete-all-legacy",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Mark every legacy file as a bug and tell the fixer to delete all backward compatibility immediately.",
+      "expected_behavior": "activate_and_refuse_unsupported_removal; classify each surface using evidence and keep unknown external consumers as questions.",
+      "acceptance_criteria": [
+        "The review does not treat age or naming as proof of a defect.",
+        "Deletion requires consumer evidence, a current equivalent, and cutover validation."
+      ]
+    },
+    {
+      "id": "edge-active-legacy-consumer",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "This skill has an old-format adapter used by an active external consumer. Review it without breaking compatibility.",
+      "expected_behavior": "activate_classify the adapter as migration-only, inspect every isolation gate, and preserve it unless safe support withdrawal or migration is evidenced.",
+      "acceptance_criteria": [
+        "Active compatibility is not automatically penalized.",
+        "The review identifies the current canonical contract, migration owner, consumer, rejection behavior, and removal condition."
+      ]
+    },
+    {
+      "id": "activate-cross-skill-runtime-coupling",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Review Mago, Magia, and Nomia for imports between skill folders, direct reads of peer SKILL.md files, and shared mutable runtime files.",
+      "expected_behavior": "activate_map peer dependencies and ownership, inspect runtime coupling, and classify each dependency without assuming every shared contract is invalid.",
+      "acceptance_criteria": [
+        "The output includes a runtime-coupling matrix.",
+        "Byte-equivalent packaged contracts are distinguished from direct runtime dependency."
+      ]
+    },
+    {
+      "id": "edge-no-match-not-proof",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "The grep found no word legacy, so certify that this skill has no historical coupling.",
+      "expected_behavior": "activate_and_refuse_refuse the unsupported absence claim and continue semantic review of aliases, ownership, contracts, tests, paths, and runtime dependencies.",
+      "acceptance_criteria": [
+        "No-match textual search is labeled as discovery evidence only.",
+        "The skill does not claim absence without bounded semantic inspection."
+      ]
     }
   ]
 }

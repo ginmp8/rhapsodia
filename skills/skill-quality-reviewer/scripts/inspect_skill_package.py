@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# legacy-scan: definitions-only
 """Deterministic structural preflight for a skill package.
 
 This script reports objective package signals. It intentionally does not assign
@@ -33,6 +34,25 @@ PLACEHOLDER_RE = re.compile(r"(?i)(\bTO" r"DO\b|\bTBD\b|\bFIXME\b|\bXXX\b|\[TO" 
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+LEGACY_SIGNAL_PATTERNS = {
+    "historical-language": re.compile(r"\blegacy\b|\blegado\b|\bdeprecated\b|\bobsolete\b|old format|previously|formerly|historical|pre-normalization|normalized history|retained for compatibility|migration alias", re.IGNORECASE),
+    "compatibility-control": re.compile(r"allow_legacy|legacy_read_support|compatibility[_ -]?mode|compatible_with_any|backward[- ]compat|best[_ -]?effort|try legacy|ignore_unknown_fields|allow_unknown|coerce|default to current", re.IGNORECASE),
+    "versioned-contract": re.compile(r"handoff-v1|native-v1|schema.?version.?1|ecosystem_contract_version|mixed versions?|old workflow|previous format", re.IGNORECASE),
+    "identity-path": re.compile(r"\bulid\b|\buuid\b|docs/current|old path|legacy path", re.IGNORECASE),
+    "field-state-alias": re.compile(r"order_hint|critical_priority|business_urgency|technical_priority|[`\"'](?:priority|done|complete|completed|closed|finished|success|ready_for_release|cancelled|canceled)[`\"']|\b(?:priority|done|complete|completed|closed|finished|success|ready_for_release|cancelled|canceled)\s*[:=]", re.IGNORECASE),
+    "runtime-coupling": re.compile(r"/home/oai/skills/|skills://|read_text.*SKILL\.md|subprocess.*skills|import .*mago|import .*magia|import .*nomia", re.IGNORECASE),
+    "fragile-validation": re.compile(r"keyword|textual search|search textual|pass-with-warnings|expected output regenerated|update hash|grep-only|rg-only", re.IGNORECASE),
+    "migration-adapter": re.compile(r"\bmigration\b|\bmigra(?:tion|ção|cao)\b|\bsunset\b|remove later|\badapter\b|\badaptador\b|normaliz(?:e|er|ation|ação|acao)", re.IGNORECASE),
+    "dual-source": re.compile(r"dual source|two sources of truth|multiple sources of truth|duas fontes de verdade", re.IGNORECASE),
+}
+EXECUTABLE_SUFFIXES = {".py", ".sh", ".js", ".ts", ".tsx", ".ps1"}
+RUNTIME_COUPLING_RE = re.compile(
+    r"(?i)(/home/oai/skills/|skills://|read_text\s*\([^\n]*SKILL\.md|open\s*\([^\n]*SKILL\.md|subprocess[^\n]*skills|(?:from|import)\s+(?:mago|magia|nomia)\b)"
+)
+PERMISSIVE_CODE_RE = re.compile(
+    r"(?i)\b(?:allow_legacy|legacy_read_support|compatibility[_ -]?mode|compatible_with_any|best[_ -]?effort|ignore_unknown_fields|allow_unknown|coerce|default[_ -]?to[_ -]?current)\b|(?:try|fallback)[^\n]{0,80}legacy"
+)
+SUSPICIOUS_FILENAME_RE = re.compile(r"(?i)(?:^|[_-])(?:legacy|deprecated|obsolete|old|v1|backup|copy|new)(?:[_\.-]|$)")
 
 
 @dataclass
@@ -167,10 +187,89 @@ def add(findings: list[Finding], code: str, severity: str, path: str, message: s
     findings.append(Finding(code, severity, evidence_status, path, message, suggestion))
 
 
+
+def collect_legacy_signal_hotspots(root: Path, files: list[Path], limit_per_category: int = 20) -> dict[str, list[dict[str, object]]]:
+    """Collect explicit compatibility markers as discovery leads, never automatic defects."""
+    hotspots: dict[str, list[dict[str, object]]] = {key: [] for key in LEGACY_SIGNAL_PATTERNS}
+    for path in files:
+        if path.suffix.lower() not in {".md", ".markdown", ".json", ".yaml", ".yml", ".py", ".sh", ".js", ".ts", ".tsx", ".ps1"}:
+            continue
+        relative = path.relative_to(root).as_posix()
+        text = read_text(path)
+        if "legacy-scan: definitions-only" in "\n".join(text.splitlines()[:12]).lower():
+            continue
+        searchable = strip_fenced_code(text) if path.suffix.lower() in {".md", ".markdown"} else text
+        for line_number, line in enumerate(searchable.splitlines(), start=1):
+            compact = re.sub(r"\s+", " ", line.strip())
+            if not compact:
+                continue
+            for category, pattern in LEGACY_SIGNAL_PATTERNS.items():
+                if len(hotspots[category]) >= limit_per_category:
+                    continue
+                match = pattern.search(compact)
+                if match:
+                    hotspots[category].append({
+                        "path": relative,
+                        "line": line_number,
+                        "term": match.group(0),
+                        "snippet": compact[:240],
+                        "evidence_status": "discovery-only",
+                    })
+        if relative.startswith(("scripts/", "examples/", "evals/", "assets/")) and SUSPICIOUS_FILENAME_RE.search(path.name):
+            hotspots.setdefault("suspicious-filename", []).append({
+                "path": relative,
+                "line": 0,
+                "term": path.name,
+                "snippet": "Filename suggests an old, copied, backup, or version-specific artifact.",
+                "evidence_status": "discovery-only",
+            })
+    return {key: value for key, value in hotspots.items() if value}
+
+
+def collect_legacy_question_leads(root: Path, files: list[Path]) -> list[Finding]:
+    """Emit questions only for executable coupling or permissive compatibility signals."""
+    leads: list[Finding] = []
+    seen: set[tuple[str, str]] = set()
+    for path in files:
+        if path.suffix.lower() not in EXECUTABLE_SUFFIXES:
+            continue
+        relative = path.relative_to(root).as_posix()
+        text = read_text(path)
+        if "legacy-scan: definitions-only" in "\n".join(text.splitlines()[:12]).lower():
+            continue
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            runtime = RUNTIME_COUPLING_RE.search(line)
+            if runtime and ("LEG001", f"{relative}:{line_number}") not in seen:
+                seen.add(("LEG001", f"{relative}:{line_number}"))
+                leads.append(Finding(
+                    "LEG001", "QUESTION", "needs verification", f"{relative}:{line_number}",
+                    "Executable code contains a possible runtime dependency on a peer skill package or SKILL.md file.",
+                    "Trace the dependency, owner, runtime necessity, and package-independent contract before classifying it.",
+                ))
+            permissive = PERMISSIVE_CODE_RE.search(line)
+            if permissive and ("LEG002", f"{relative}:{line_number}") not in seen:
+                seen.add(("LEG002", f"{relative}:{line_number}"))
+                leads.append(Finding(
+                    "LEG002", "QUESTION", "needs verification", f"{relative}:{line_number}",
+                    "Executable code contains a possible permissive or legacy compatibility control.",
+                    "Verify normal-path reachability, migration isolation, bounded versions, negative tests, and fail-closed behavior.",
+                ))
+        if relative.startswith("scripts/") and SUSPICIOUS_FILENAME_RE.search(path.name):
+            key = ("LEG003", relative)
+            if key not in seen:
+                seen.add(key)
+                leads.append(Finding(
+                    "LEG003", "QUESTION", "needs verification", relative,
+                    "Script filename suggests a legacy, copied, backup, or version-specific operational artifact.",
+                    "Trace imports, calls, tests, documentation, packaging, and current semantics before classifying it.",
+                ))
+    return leads
+
 def inspect(root: Path, source_kind: str) -> dict[str, object]:
     findings: list[Finding] = []
     files = list(iter_files(root))
     relative_files = [path.relative_to(root).as_posix() for path in files]
+    findings.extend(collect_legacy_question_leads(root, files))
     skill_path = root / "SKILL.md"
     skill_text = read_text(skill_path)
 
@@ -370,6 +469,8 @@ def inspect(root: Path, source_kind: str) -> dict[str, object]:
         for key, signals in section_signals.items()
     }
 
+    legacy_signal_hotspots = collect_legacy_signal_hotspots(root, files)
+
     token_estimates = {
         path.relative_to(root).as_posix(): max(1, round(len(read_text(path)) / 4))
         for path in files
@@ -382,7 +483,7 @@ def inspect(root: Path, source_kind: str) -> dict[str, object]:
               for severity in ("BLOCKER", "MAJOR", "MINOR", "QUESTION", "NIT")}
 
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "target_root": str(root),
         "source_kind": source_kind,
         "inventory": {
@@ -392,10 +493,16 @@ def inspect(root: Path, source_kind: str) -> dict[str, object]:
             "activation_scenario_categories": eval_categories,
             "token_estimate_by_file": token_estimates,
             "token_estimate_total": sum(token_estimates.values()),
+            "legacy_signal_summary": {
+                "total": sum(len(items) for items in legacy_signal_hotspots.values()),
+                "categories": {key: len(items) for key, items in legacy_signal_hotspots.items()},
+                "hotspots": legacy_signal_hotspots,
+                "interpretation": "Discovery signals only; inspect consumers and current contracts before classification.",
+            },
         },
         "finding_counts": counts,
         "findings": [asdict(item) for item in findings],
-        "interpretation": "Structural preflight only. Candidate orphan and heuristic findings require semantic verification.",
+        "interpretation": "Structural preflight only. Candidate orphan and legacy-signal findings require semantic verification; keyword matches are not removal decisions.",
     }
 
 
@@ -404,6 +511,7 @@ def print_summary(report: dict[str, object]) -> None:
     print(f"Target: {report['target_root']}")
     print(f"Files: {report['inventory']['file_count']}")
     print("Findings: " + ", ".join(f"{key}={value}" for key, value in counts.items()))
+    print(f"Legacy signal hotspots: {report['inventory']['legacy_signal_summary']['total']} (review leads only)")
     for item in report["findings"]:
         print(f"[{item['severity']}] {item['code']} {item['path']}: {item['message']}")
 

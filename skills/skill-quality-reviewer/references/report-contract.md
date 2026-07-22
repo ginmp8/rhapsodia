@@ -1,6 +1,6 @@
 # Report Contract
 
-Match the user's language unless explicitly requested otherwise. Keep evidence labels in a consistent vocabulary.
+Match the user's language unless explicitly requested otherwise. Keep evidence labels and legacy classifications consistent.
 
 ## Full review
 
@@ -9,12 +9,13 @@ Match the user's language unless explicitly requested otherwise. Keep evidence l
 
 ## Executive Summary
 - Target:
-- Mode: `full-review`
+- Mode: `full-review` | `legacy-audit`
 - Review type: static judgment | executed validation | mixed
 - Verdict: ✅ `READY` | 🟡 `READY_WITH_COMMENTS` | 🔴 `REWORK_REQUIRED` | 🟣 `NEEDS_MORE_CONTEXT`
 - Weighted score: n/100
 - Score basis:
 - Finding counts:
+- Legacy classification counts:
 - Correction input status: ready | ready with questions | blocked
 
 ## Scope and Evidence
@@ -25,17 +26,46 @@ Match the user's language unless explicitly requested otherwise. Keep evidence l
 | Command/check | Status | Evidence |
 
 ## Reconstructed Skill Contract
-- Role:
+- Role and owner:
 - Activation:
 - Non-activation:
 - Modes:
-- Inputs:
+- Current inputs, identifiers, schemas, states, and versions:
 - Outputs:
+- Canonical sources:
+- Consumers and handoffs:
 - Validation:
 - Stop conditions:
 
+## Canonical Source Map
+| Concept | Canonical source | Owner/writer | Consumers | Conflicts or gaps |
+|---|---|---|---|---|
+
 ## Behavioral Invariants
 1. ...
+
+## Legacy and Compatibility Assessment
+- Summary:
+- Classification counts:
+- Blocked decisions:
+
+### Legacy Classification Matrix
+| Item | Skill/package | Location | Classification | Normal-path reachable | Migration isolated | Recommended action | Evidence |
+|---|---|---|---|---:|---:|---|---|
+
+### Ownership Matrix
+| Artifact or decision | Correct owner | Writers found | Consumers | Authority violation | Result |
+|---|---|---|---|---:|---|
+
+### Compatibility Matrix
+| Contract | Real producer version | Real consumer version | Accepted | Rejected | Evidence |
+|---|---|---|---:|---:|---|
+
+### Runtime Coupling Matrix
+| Caller | Dependency | Mechanism | Required at runtime | Canonical alternative | Classification |
+|---|---|---|---:|---|---|
+
+For `legacy-audit`, include all four matrices even when empty. For ordinary `full-review`, retain relevant rows and write `No material candidate observed in the inspected scope` for matrices with no applicable evidence. Do not infer absence from keyword searches alone.
 
 ## Scorecard
 | ID | Dimension | Weight | Raw 0-5 | Weighted | Evidence | Main deduction |
@@ -78,9 +108,10 @@ Limit to the five highest-value findings.
 - Scope:
 - Verdict:
 - Review type:
+- Legacy/compatibility signal status:
 
 ## Top Findings
-1. **🟠 `MAJOR` - Issue:** evidence -> impact -> smallest fix -> validation.
+1. **🟠 `MAJOR` - Issue:** evidence -> classification when applicable -> impact -> smallest fix -> validation.
 
 ## Gaps
 - ...
@@ -106,6 +137,8 @@ Limit to the five highest-value findings.
 ## Introduced Regressions
 ## Resolved Defects
 ## Unchanged Defects
+## Legacy Reintroduction, Removal, or Migration Effects
+## Ownership and Runtime-Coupling Effects
 ## Uncertain Differences
 ## Score Delta
 State whether the delta is static judgment or measured evidence.
@@ -113,7 +146,7 @@ State whether the delta is static judgment or measured evidence.
 ## Correction Input
 ```
 
-Do not infer improvement from fewer files, fewer tokens, or more tests alone. Connect the change to preserved or improved behavior.
+Do not infer improvement from fewer files, fewer tokens, deleted legacy content, or more tests alone. Connect the change to preserved current behavior, explicit rejection, migration isolation, ownership, and validation.
 
 ## Report validation
 
@@ -126,6 +159,7 @@ Do not infer improvement from fewer files, fewer tokens, or more tests alone. Co
 ## Unsupported Claims
 ## Finding Quality Failures
 ## Score/Verdict Inconsistencies
+## Legacy Classification and Matrix Gaps
 ## Correction Input Defects
 ## Minimal Repairs
 ```
@@ -136,6 +170,6 @@ Do not infer improvement from fewer files, fewer tokens, or more tests alone. Co
 - `observed`: direct file or report inspection.
 - `inferred`: conclusion supported by observed evidence.
 - `planned`: not executed.
-- `blocked`: unavailable because of scope, access, or missing target.
+- `blocked`: unavailable because of scope, access, missing owner, consumer, version, or migration evidence.
 
-Do not use `measured` for a checklist score. Do not state that the skill is bug-free, optimal, production-ready, or fully validated unless the declared gates were executed and support that exact claim.
+Do not use `measured` for a checklist score. Do not state that the skill is bug-free, optimal, production-ready, legacy-free, or fully validated unless the declared gates were executed and support that exact claim.

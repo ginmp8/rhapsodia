@@ -13,7 +13,9 @@ REQUIRED_HEADINGS = [
     "Executive Summary",
     "Scope and Evidence",
     "Reconstructed Skill Contract",
+    "Canonical Source Map",
     "Behavioral Invariants",
+    "Legacy and Compatibility Assessment",
     "Scorecard",
     "Findings",
     "Validation Gaps",
@@ -30,18 +32,36 @@ REQUIRED_FINDING_FIELDS = [
     "Evidence",
     "Failure path",
     "Impact",
+    "Root cause",
     "Smallest fix",
     "Acceptance criteria",
     "Validation",
     "Correction priority",
     "Dependencies",
 ]
+LEGACY_CATEGORY_RE = re.compile(
+    r"\*\*Category:\*\*\s*(?:Legacy|Compatibility|Migration|Ownership|Runtime coupling|Structural noise)",
+    re.IGNORECASE,
+)
+LEGACY_REQUIRED_FINDING_FIELDS = [
+    "Legacy classification",
+    "Canonical source",
+]
+LEGACY_AUDIT_MATRIX_HEADINGS = [
+    "Legacy Classification Matrix",
+    "Ownership Matrix",
+    "Compatibility Matrix",
+    "Runtime Coupling Matrix",
+]
+
+
 CORRECTION_REQUIRED = [
     "Objective",
     "Writable Scope",
     "Read-only / Protected Scope",
     "Preserve",
     "Non-goals",
+    "Legacy and Compatibility Constraints",
     "Required Fixes",
     "Validation Sequence",
     "Completion Report",
@@ -115,6 +135,24 @@ def validate(text: str) -> dict[str, object]:
         for field in REQUIRED_FINDING_FIELDS:
             if not re.search(rf"\*\*{re.escape(field)}:\*\*", block, re.IGNORECASE):
                 errors.append(f"{finding_id} is missing field: {field}")
+        if LEGACY_CATEGORY_RE.search(block):
+            for field in LEGACY_REQUIRED_FINDING_FIELDS:
+                if not re.search(rf"\*\*{re.escape(field)}:\*\*", block, re.IGNORECASE):
+                    errors.append(f"{finding_id} is a legacy finding missing field: {field}")
+            classification = re.search(
+                r"\*\*Legacy classification:\*\*\s*`?([a-z-]+)`?",
+                block,
+                re.IGNORECASE,
+            )
+            allowed = {"current", "migration-only", "obsolete", "duplicate", "contradictory", "noise", "blocked"}
+            if classification and classification.group(1).lower() not in allowed:
+                errors.append(f"{finding_id} has invalid legacy classification: {classification.group(1)}")
+
+    legacy_mode = bool(re.search(r"Mode:\s*`?legacy-audit`?", text, re.IGNORECASE))
+    if legacy_mode:
+        for heading in LEGACY_AUDIT_MATRIX_HEADINGS:
+            if not re.search(rf"^###\s+{re.escape(heading)}\s*$", text, re.MULTILINE | re.IGNORECASE):
+                errors.append(f"legacy-audit report is missing matrix: {heading}")
 
     correction = section_between(text, "Correction Input", "Final Verdict")
     if correction:
@@ -124,7 +162,7 @@ def validate(text: str) -> dict[str, object]:
         if "```" not in correction:
             warnings.append("Correction Input is not fenced as a copy-paste-ready block.")
 
-    if re.search(r"\b(100% activation|bug[- ]free|fully validated|production[- ]ready)\b", text, re.IGNORECASE):
+    if re.search(r"\b(100% activation|bug[- ]free|fully validated|production[- ]ready|free of legacy|no legacy exists)\b", text, re.IGNORECASE):
         warnings.append("Report contains a strong readiness or quality claim; verify that executed evidence supports it.")
 
     verdict_match = re.search(r"Verdict:\s*(.+)", text, re.IGNORECASE)
