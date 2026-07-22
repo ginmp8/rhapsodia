@@ -20,11 +20,12 @@ The ledger runs in order:
 3. `validate_governance_scenarios.py`: profile, lifecycle, mode, escalation, and ownership scenario structure.
 4. `validate_golden_examples.py`: artifact, path, projection, and contract fixtures; only allowlisted unknown-fact warnings are accepted.
 5. `validate_identity_contract.py`: canonical identities, year consistency, package independence, and icon references.
-6. `validate_release_contract.py`: current version, historical-contract hash, protected-file hashes, and explicit migrations.
-7. `validate_contract_preservation.py`: original files, headings, public script symbols, protected bytes, and authorized migration continuity.
-8. `validate_documentation.py`: normalized local Markdown links with root-escape rejection.
-9. `validate_assurance_contract.py`: claim schema, evidence labels, validator references, and SDD gate coverage.
-10. isolated standard-library tests: `python -S -m unittest discover -s <skill-root>/tests -p 'test_*.py'`.
+6. `validate_contract_semantics.py`: strict-v2 prose consistency and rejection of legacy handoff compatibility outside migration-only adaptation.
+7. `validate_release_contract.py`: current version, historical-contract hash, protected-file hashes, and explicit migrations.
+8. `validate_contract_preservation.py`: original files, headings, public script symbols, protected bytes, and authorized migration continuity.
+9. `validate_documentation.py`: normalized local Markdown links with root-escape rejection.
+10. `validate_assurance_contract.py`: claim schema, evidence labels, validator references, and SDD gate coverage.
+11. isolated standard-library tests: `python -S -m unittest discover -s <skill-root>/tests -p 'test_*.py'`.
 
 Do not share, install, or score a release as ready when any applicable gate fails. Structural scenarios remain structural evidence until an independent prompt runner captures and evaluates model outputs.
 
@@ -52,7 +53,7 @@ A successful package result includes a release attestation with version, package
 
 Ready only when:
 
-- every ledger and archive gate passes;
+- every ledger and archive gate passes, including contract-semantic consistency;
 - `skill.zip` contains `nomia/SKILL.md` and no blocked residue;
 - the original functional surface and protected release chain validate;
 - local documentation links resolve;

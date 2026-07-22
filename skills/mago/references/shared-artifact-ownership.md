@@ -18,6 +18,8 @@ Use this reference whenever MAGO touches artifacts that MAGIA also reads or upda
 | `manifest.yaml` | package identity, shape, traceability, planning status/phase defaults | may update execution status, phase, and `last_execution` from evidence | MAGO preserves truthful execution fields during later refinement. |
 | generated catalog/queue views | renderer-owned disposable projections | read-only inspection only | Neither MAGO nor MAGIA hand-edits or synchronizes them. |
 
+`business_priority` in the registry is read-only Nomia evidence. Mago owns `technical_criticality` and `execution_sequence`; Magia consumes them without rewriting their source authority.
+
 ## Template Boundary
 
 MAGO owns templates and structural normalization for planning-origin files. MAGIA may update generated package files only for narrow, evidence-backed execution state and checkbox synchronization. Missing or invalid planning structure is a MAGO refinement input, not a MAGIA scaffold task.

@@ -2,6 +2,9 @@
 
 ## 1.6.0 - 2026-07-22
 
+- Maintenance correction: replace generic priority/order aliases in shared-artifact ownership guidance with canonical typed fields and explicit rejection semantics.
+- Maintenance correction: add contract-semantic lint, canonical activation scenario paths, explicit regression/adversarial categories, declared pytest dependency, hash-bound test evidence, and mandatory test-gated validation/packaging.
+
 - Adopt exact ecosystem compatibility with Mago and Nomia `1.6.0`.
 - Upgrade ecosystem handoffs to strict schema v2 with deterministic ids, exact package versions, no unsupported aliases, and object-shaped priority contracts.
 - Carry and validate byte-equivalent priority, handoff, and compatibility contracts locally without runtime dependency on peer skills.

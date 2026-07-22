@@ -10,6 +10,9 @@
 - Keep planning-compass and execution-wave outputs non-authoritative and disposable.
 - Require security contract v2 for new governed security work before handoff.
 - Keep external adapters bounded to declared file conventions and explicit schema versions.
+- Add semantic contract linting so current prose cannot re-enable legacy handoffs, mixed versions, or generic priority aliases.
+- Strengthen negative handoff tests for fake compatibility switches and recursive `order_hint` aliases.
+- Clarify shared registry ownership for `business_priority`, `technical_criticality`, and `execution_sequence`.
 
 ### Compatibility
 

@@ -62,6 +62,7 @@ REQUIRED_FILES = (
     "scripts/sdd_adapter.py",
     "scripts/validate_release_metadata.py",
     "scripts/validate_priority_contract.py",
+    "scripts/validate_contract_semantics.py",
     "scripts/ecosystem_handoff.py",
     "scripts/validate_ecosystem_handoff_contract.py",
     "scripts/validate_ecosystem_compatibility.py",
@@ -91,6 +92,7 @@ REQUIRED_FILES = (
     "tests/test_concurrency_model.py",
     "tests/test_package_validation.py",
     "tests/test_priority_contract.py",
+    "tests/test_contract_semantics.py",
     "tests/test_ecosystem_handoff.py",
     "tests/test_ecosystem_compatibility.py",
     "tests/test_distribution_validation_v3.py",
@@ -518,6 +520,10 @@ def validate_semantic_contracts(root: Path, result: ValidationResult) -> None:
     run_python_gate(
         root, root / "scripts" / "validate_priority_contract.py", ["--target", str(root)],
         "ecosystem priority contract", result,
+    )
+    run_python_gate(
+        root, root / "scripts" / "validate_contract_semantics.py", ["--target", str(root)],
+        "ecosystem contract semantics", result,
     )
     run_python_gate(root, root / "scripts" / "validate_ecosystem_handoff_contract.py", ["--target", str(root)], "ecosystem handoff contract", result)
     run_python_gate(root, root / "scripts" / "validate_ecosystem_compatibility.py", ["--target", str(root)], "ecosystem compatibility", result)

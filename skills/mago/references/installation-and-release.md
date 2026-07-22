@@ -35,7 +35,7 @@ The output directory must be outside the skill root. Reports, caches, credential
 
 - `release.json.version` follows semantic versioning for the skill distribution, not for cycle/spec identities.
 - Patch releases repair documentation, validators, or scripts without intentionally changing canonical artifact contracts.
-- Minor releases may add backward-compatible validators, templates, modes, or optional artifacts. A stricter contract must provide an explicit legacy path or migration rule.
+- Minor releases may add backward-compatible validators, templates, modes, or optional artifacts. A stricter contract must provide an explicit external migration rule. A legacy runtime path is permitted only when the machine-readable compatibility contract explicitly enables it; current handoff and priority v2 contracts do not enable legacy runtime support.
 - Major releases may change canonical schemas, ownership, or required workflow. They require migration notes and cannot silently rewrite existing packages.
 - External SDD adapter versions are caller-supplied and explicit. Values such as `latest`, `current`, or `unknown` are rejected by executable adapters.
 - Python compatibility, runtime dependencies, and supported OpenAI products are declared in `release.json`; `requirements.txt`, importability, installed versions, and `agents/openai.yaml` are validated before packaging.

@@ -48,6 +48,14 @@ class EcosystemHandoffTests(unittest.TestCase):
   env=self.peer_envelope('nomia_to_mago'); env['payload']['nested']={'priority':'urgent'}; env['handoff_id']=handoff.handoff_id_for(env)
   result=handoff.validate_envelope(env,as_of=NOW,role='mago',operation='consume',root=ROOT)
   self.assertEqual(result['status'],'rejected'); self.assertTrue(any('priority' in r for r in result['reasons']))
+ def test_generic_order_hint_is_rejected_recursively(self):
+  env=self.peer_envelope('nomia_to_mago'); env['payload']['nested']={'order_hint':1}; env['handoff_id']=handoff.handoff_id_for(env)
+  result=handoff.validate_envelope(env,as_of=NOW,role='mago',operation='consume',root=ROOT)
+  self.assertEqual(result['status'],'rejected'); self.assertTrue(any('order_hint' in r for r in result['reasons']))
+ def test_legacy_envelope_rejects_fake_compatibility_switch(self):
+  legacy={'direction':'nomia_to_mago','source':'old','observed_at':NOW.isoformat(),'freshness_days':30,'compatibility_mode':True,'payload':{}}
+  result=handoff.validate_envelope(legacy,as_of=NOW,role='mago',operation='consume',root=ROOT)
+  self.assertEqual(result['status'],'rejected'); self.assertTrue(any('contract v2' in r for r in result['reasons']))
  def test_tampered_projection_and_handoff_id_are_rejected(self):
   env=self.peer_envelope('mago_to_nomia'); env['payload']['nomia_planning_state']='ready'
   result=handoff.validate_envelope(env,as_of=NOW,role='nomia',operation='consume',root=ROOT)

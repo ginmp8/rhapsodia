@@ -68,5 +68,5 @@ The executable contract is `references/ecosystem-handoff-contract.json`; use loc
 
 Required envelope metadata includes schema and mapping versions, producer and consumer roles, package version, timestamp, provenance, freshness, payload, evidence references, unknowns, conflicts, and deterministic `handoff_id`. State translations are explicit projections: Mago `done` maps to Nomia planning `complete`; Magia execution `done` maps to execution `complete`; Magia validation `passed` remains validation `passed`. The source skill retains authority.
 
-Legacy Nomia envelope fields are accepted only by explicit compatibility mode and are normalized before validation. New writers must emit the versioned schema. Stale or conflicting evidence is never silently accepted.
+Legacy envelope fields are not accepted as ecosystem handoff compatibility. Normal producers and consumers require strict handoff v2 and reject legacy, mixed-version, or unsupported envelopes before mutation. Historical governance material may be read only through `governance-adapt`; adaptation produces current Nomia-owned governance artifacts only when externally supplied current identities and provenance are available. New writers must emit the versioned schema. Stale or conflicting evidence is never silently accepted.
 

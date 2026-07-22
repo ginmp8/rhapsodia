@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from nomia_utils import atomic_write_text, sensitive_package_reason
+from validate_contract_semantics import collect_errors as collect_contract_semantic_errors
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
@@ -56,6 +57,7 @@ REQUIRED_FILES = [
     "scripts/write_artifact_scaffold.py",
     "scripts/update_template_lists.py",
     "scripts/validate_skill_package.py",
+    "scripts/validate_contract_semantics.py",
     "scripts/validate_priority_contract.py",
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_golden_examples.py",
@@ -93,6 +95,7 @@ REQUIRED_FILES = [
     "tests/test_governance_views_v23.py",
     "tests/test_priority_contract.py",
     "tests/test_handoff_diagnostics.py",
+    "tests/test_contract_semantics.py",
     "assets/icon.svg",
     "examples/activation-scenarios.json",
     "evals/activation-boundary-scenarios.json",
@@ -425,6 +428,7 @@ def validate_package(root: Path) -> list[str]:
     validate_no_markers(root, errors)
     validate_scenarios(root, errors)
     validate_harness_scenarios(root, errors)
+    errors.extend(collect_contract_semantic_errors(root))
     validate_package_hygiene(root, errors)
     return errors
 

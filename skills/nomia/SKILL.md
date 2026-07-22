@@ -83,6 +83,7 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 - Ecosystem priority ownership and migration: `scripts/validate_priority_contract.py`; new Nomia writers emit `business_priority`, while `technical_criticality` and `execution_sequence` remain read-only Mago evidence.
 - Canonical state, transitions, metrics, and typed handoffs: `scripts/governance_contract.py`, `scripts/evaluate_governance.py`.
 - Mechanical ecosystem handoffs: `scripts/ecosystem_handoff.py` builds/validates role-scoped envelopes; `scripts/validate_ecosystem_handoff_contract.py` validates the local contract and its integration.
+- Contract semantic consistency: `scripts/validate_contract_semantics.py` rejects prose that re-enables legacy handoff compatibility or contradicts strict v2.
 - Human projections and provenance validation: `scripts/project_governance_views.py`, `scripts/validate_projection_metadata.py`.
 - Writers, lists, and normalization: `scripts/upsert_rfc_entry.py`, `scripts/append_governance_decision_entry.py`, `scripts/update_template_lists.py`, `scripts/normalize_human_artifacts.py`.
 - General and path validation: `scripts/validate_artifact.py`, `scripts/validate_board_paths.py`.
@@ -130,7 +131,7 @@ Historical governance inputs are isolated to the explicit `governance-adapt` mod
 - Touched artifacts pass specialized validators and repository-facing writes pass board-path validation.
 - Scenario edits preserve categories and pass `scripts/validate_activation_scenarios.py` or `scripts/validate_skill_package.py`; governance scenarios pass `scripts/validate_governance_scenarios.py`.
 - Priority-contract edits pass `scripts/validate_priority_contract.py`; generic aliases are rejected, and Nomia never writes Mago-owned technical criticality or execution sequence.
-- Ecosystem-contract edits pass `scripts/validate_ecosystem_handoff_contract.py`; all three packages carry byte-equivalent contract JSON and producer/consumer behavior remains direction-scoped.
+- Ecosystem-contract edits pass `scripts/validate_ecosystem_handoff_contract.py`; all three packages carry byte-equivalent contract JSON and producer/consumer behavior remains direction-scoped. Current prose also passes `scripts/validate_contract_semantics.py`, which rejects legacy handoff acceptance outside migration-only governance adaptation.
 - Structural edits pass `scripts/validate_skill_package.py`; golden-sensitive edits pass `scripts/validate_golden_examples.py`; identity/path changes pass `scripts/validate_identity_contract.py`.
 - Every readiness or package run passes `scripts/validate_all.py`, including preservation and unit-test gates.
 - `skill.zip` is produced only by a passing deterministic package run; source and archive checks reject symlinks, path traversal, caches, bytecode, generated evidence/reports, secrets, credentials, private-key material, temporary files, and old zips.

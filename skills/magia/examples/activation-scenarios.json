@@ -2,7 +2,7 @@
   {
     "id": "A001",
     "category": "should_activate",
-    "prompt": "execute task003 for the concrete board package docs/boards/onboarding/v1/specs/spec002 and update execution records truthfully",
+    "prompt": "execute task003 for the concrete board package docs/boards/onboarding/2026/cycles/cycle-2026-04-20-q2-delivery/specs/spec-2026-04-20-csv-export-filtered-columns and update execution records truthfully",
     "expected_activation": true,
     "expected_behavior": "Use RALPH mode, resolve the board and spec package, inspect repository truth, implement the bounded task, validate, and synchronize execution records.",
     "actual_activation": null,
@@ -26,7 +26,7 @@
   {
     "id": "A003",
     "category": "should_activate",
-    "prompt": "validate the board docs for board_id onboarding and cycle_id v1 after the current task execution",
+    "prompt": "validate the board docs for board_id onboarding and cycle_id cycle-2026-04-20-q2-delivery after the current task execution",
     "expected_activation": true,
     "expected_behavior": "Use MAGIA validation tooling for the concrete board and report pass/fail evidence without changing planning intent.",
     "actual_activation": null,

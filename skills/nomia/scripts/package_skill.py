@@ -227,6 +227,7 @@ def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
         run_gate("governance-scenarios", command(root, "validate_governance_scenarios.py", str(root / "evals" / "governance-scenarios.json")), env),
         run_gate("golden-examples", command(root, "validate_golden_examples.py", "--skill-root", str(root)), env),
         run_gate("identity-contract", command(root, "validate_identity_contract.py", "--target", str(root)), env),
+        run_gate("contract-semantics", command(root, "validate_contract_semantics.py", "--target", str(root)), env),
         run_gate("release-contract", command(root, "validate_release_contract.py", "--target", str(root)), env),
         run_gate("contract-preservation", command(root, "validate_contract_preservation.py", "--target", str(root)), env),
         run_gate("documentation-links", command(root, "validate_documentation.py", "--target", str(root)), env),

@@ -2,6 +2,9 @@
 
 ## 1.6.0 - 2026-07-22
 
+- Maintenance correction: align handoff prose with the strict breaking-no-legacy contract; legacy governance input remains isolated to `governance-adapt` and is never accepted as ecosystem handoff compatibility.
+- Maintenance correction: add a contract-semantic gate to package, ledger, unit-test, and packaging assurance.
+
 - Adopt exact ecosystem compatibility with Mago and Magia `1.6.0`.
 - Upgrade ecosystem handoffs to strict schema v2 with deterministic ids, exact package versions, no unsupported aliases, and explicit state projections.
 - Make `business_priority` the only governance priority field; reject generic priority aliases.

@@ -26,9 +26,10 @@ A version bump, changelog entry, or successful zip command is not evidence of be
 ## Standard Commands
 
 ```text
-python scripts/validate_skill_package.py --target <skill-root>
-python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate
-python scripts/validate_skill_package.py --target <skill-root> --zip <output-dir>/skill.zip
+python scripts/run_test_suite.py --target <skill-root> --json-output <output-dir>/magia-test-report.json
+python scripts/validate_skill_package.py --target <skill-root> --test-report <output-dir>/magia-test-report.json
+python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate --test-report <output-dir>/magia-test-report.json
+python scripts/validate_skill_package.py --target <skill-root> --zip <output-dir>/skill.zip --test-report <output-dir>/magia-test-report.json
 ```
 
 Folder and archive validators must pass before readiness is claimed.
@@ -42,6 +43,8 @@ Folder and archive validators must pass before readiness is claimed.
 5. Scenario files keep planned fields null unless measured evidence exists.
 6. The archive is cache-free, blocked-path-free, symlink-free, scanned for secret-like names and content, and has one top-level skill directory; source validation may ignore only generated paths explicitly excluded by `scripts/package_policy.py`. Oversized, binary, or undecodable members fail closed unless an explicit future allowlist contract defines a safe scanner for that content class.
 7. No scaffold markers remain outside templates.
+8. `requirements-test.txt` declares the test dependency, and a passing `magia-test-report-v1` is hash-bound to every current `tests/test_*.py` file. The standard validator and validated packager run the suite automatically when no report is supplied.
+9. Contract-semantic lint rejects stale generic priority aliases in current ownership guidance.
 
 ## Evidence to Report
 

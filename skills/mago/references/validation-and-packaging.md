@@ -12,6 +12,7 @@ Default validator: `scripts/validate_artifact.py`; it dispatches by path/name. U
 - `scripts/validate_generated_view_contract.py`: renderer and complete generated catalog/queue template schemas.
 - `scripts/validate_technical_design.py`: spec architecture artifacts.
 - `scripts/validate_priority_contract.py`: enforce the versioned Nomia/Mago/Magia priority ownership, mapping, migration, and new-write contract.
+- `scripts/validate_contract_semantics.py`: prevent current Mago prose from contradicting strict handoff, compatibility, priority ownership, legacy rejection, or mixed-version rules.
 - `scripts/validate_plan_quality.py --require-v2`: new governed requirement criticality, risk-calibrated acceptance paths, alternatives, measurable NFRs, evidence capture, residual-risk disposition, and reproducible validation procedures; default mode remains legacy-readable.
 - `scripts/validate_security_risk.py --require-v2`: relational security graph and authority checks for new governed security artifacts.
 - `scripts/mutation_transaction.py`: executable staging, resume, drift, fault-injection, and verified rollback for multi-artifact planning writes.

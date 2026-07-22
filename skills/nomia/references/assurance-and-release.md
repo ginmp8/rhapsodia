@@ -37,7 +37,7 @@ The complete ledger adds gate outcomes to every assurance claim. A structural sc
 | G4 validation adequacy | canonical ledger, specialized validators, golden examples, unit tests, explicit not-measured behavior |
 | G5 security/privacy/compliance | fail-closed package hygiene, authority boundaries, governed escalation, no technical-state invention |
 | G6 authority/source of truth | Nomia/Mago/Magia ownership contract, canonical paths, externally sourced identities |
-| G7 compatibility/migration/rollback | original surface contract, protected-file migration, legacy adaptation, atomic package replacement |
+| G7 compatibility/migration/rollback | original surface contract, protected-file migration, strict-v2 semantic lint, migration-only legacy adaptation, atomic package replacement |
 | G8 interruption/recovery | atomic writers, interruption regression tests, deterministic rerunnable ledger |
 
 ## Protected-File Release Contract
@@ -72,7 +72,7 @@ python scripts/validate_contract_preservation.py --target <skill-root>
 1. `validate_skill_package.py` — structure, required resources, scenarios, hygiene.
 2. Activation and governance scenario validators — structural coverage only.
 3. Golden examples — artifact, path, projection, and contract behavior.
-4. Identity, release, preservation, documentation, and assurance contracts.
+4. Identity, strict-v2 contract semantics, release, preservation, documentation, and assurance contracts.
 5. Isolated unit tests — state, handoff, adaptation, projection, atomicity, package security, and negative release cases.
 6. `validate_all.py` — canonical combined ledger and assurance support map.
 7. `package_skill.py` — rerun gates, build, inspect, attest, and hash the archive.
