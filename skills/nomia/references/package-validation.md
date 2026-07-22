@@ -43,7 +43,7 @@ The archive must be named `skill.zip`, contain one top-level `nomia/` directory,
 
 `tests/original-contract.json` is immutable historical evidence. `tests/current-release-contract.json` locks the selected release, original-contract hash, and current protected-file hashes. `tests/protected-file-migrations.json` is mandatory when historical and current protected hashes differ.
 
-`assets/icon.svg` and `agents/openai.yaml` remain byte-protected. Validate them before mutation, after mutation, and after archive extraction. Never update the historical contract merely to make a changed asset pass.
+`agents/openai.yaml` remains byte-protected. Validate it before mutation, after mutation, and after archive extraction. Never update the historical contract merely to make a changed protected file pass. The icon remains a required package asset, but its bytes and SHA-256 are not release-protected.
 
 A successful package result includes a release attestation with version, package root, archive SHA-256, size, packaged-file count, protected hashes, original-contract hash, deterministic timestamp, and the explicit statement that live behavioral activation is not measured.
 

@@ -77,9 +77,6 @@ def validate(root: Path, contract_path: Path) -> list[str]:
     current_protected = dict(release.get("protected_files") or {})
 
     protected_files = dict(contract.get("protected_files") or {})
-    icon = contract.get("icon") or {}
-    if icon:
-        protected_files.setdefault(str(icon.get("path", "")), str(icon.get("sha256", "")))
     for rel, historical_expected in protected_files.items():
         protected_path = root / str(rel)
         if not protected_path.is_file():

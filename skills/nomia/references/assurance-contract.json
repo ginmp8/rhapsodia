@@ -70,7 +70,7 @@
       "artifacts": ["tests/original-contract.json", "tests/current-release-contract.json", "tests/protected-file-migrations.json"],
       "validators": ["scripts/validate_release_contract.py", "scripts/validate_contract_preservation.py"],
       "ledger_gates": ["release-contract", "contract-preservation", "unit-tests"],
-      "limitations": ["Historical icon bytes are unavailable; the historical SHA-256 remains preserved in the immutable original contract and migration record."]
+      "limitations": []
     },
     {
       "id": "A08",

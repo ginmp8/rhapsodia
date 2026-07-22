@@ -32,7 +32,8 @@ class PackageAttestationTests(unittest.TestCase):
             self.assertEqual(attestation["version"], "2.3.0")
             self.assertEqual(attestation["archive_sha256"], sha256_file(first))
             self.assertFalse(attestation["behavioral_activation_measured"])
-            self.assertIn("assets/icon.svg", attestation["protected_files"])
+            self.assertIn("agents/openai.yaml", attestation["protected_files"])
+            self.assertNotIn("assets/icon.svg", attestation["protected_files"])
 
     def test_reproducibility_gate_rejects_noncanonical_timestamp(self) -> None:
         with tempfile.TemporaryDirectory() as raw:

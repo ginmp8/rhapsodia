@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 from validate_contract_preservation import validate as validate_preservation
-from validate_release_contract import validate_release_contract
+from validate_release_contract import sha256_file, validate_release_contract
 
 
 class ReleaseContractTests(unittest.TestCase):
@@ -31,6 +31,41 @@ class ReleaseContractTests(unittest.TestCase):
             shutil.copy2(source, target)
         return root
 
+    def configure_agent_migration(self, root: Path, version: str = "2.2.0") -> None:
+        protected_path = root / "agents" / "openai.yaml"
+        protected_path.write_text(
+            protected_path.read_text(encoding="utf-8") + "\n# migrated test fixture\n",
+            encoding="utf-8",
+        )
+        current_hash = sha256_file(protected_path)
+
+        release_path = root / "tests" / "current-release-contract.json"
+        release = json.loads(release_path.read_text(encoding="utf-8"))
+        release["protected_files"]["agents/openai.yaml"] = current_hash
+        release_path.write_text(json.dumps(release) + "\n", encoding="utf-8")
+
+        original = json.loads((root / "tests" / "original-contract.json").read_text(encoding="utf-8"))
+        historical_hash = original["protected_files"]["agents/openai.yaml"]
+        migrations = {
+            "schema_version": 1,
+            "skill": "nomia",
+            "migrations": [
+                {
+                    "authority": "unit-test-authorized-migration",
+                    "from_sha256": historical_hash,
+                    "path": "agents/openai.yaml",
+                    "reason": "Synthetic protected-file migration used to verify fail-closed release validation behavior.",
+                    "recorded_at": "2026-07-21",
+                    "to_sha256": current_hash,
+                    "version": version,
+                }
+            ],
+        }
+        (root / "tests" / "protected-file-migrations.json").write_text(
+            json.dumps(migrations) + "\n",
+            encoding="utf-8",
+        )
+
     def test_current_release_contract_passes(self) -> None:
         self.assertEqual(validate_release_contract(self.skill_root), [])
         self.assertEqual(
@@ -41,6 +76,7 @@ class ReleaseContractTests(unittest.TestCase):
     def test_missing_migration_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = self.copy_contract_fixture(Path(raw))
+            self.configure_agent_migration(root)
             (root / "tests" / "protected-file-migrations.json").write_text(
                 json.dumps({"schema_version": 1, "skill": "nomia", "migrations": []}) + "\n",
                 encoding="utf-8",
@@ -48,16 +84,17 @@ class ReleaseContractTests(unittest.TestCase):
             errors = validate_release_contract(root)
             self.assertTrue(any("migration is required" in error for error in errors))
 
-    def test_tampered_icon_fails_closed(self) -> None:
+    def test_tampered_protected_file_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = self.copy_contract_fixture(Path(raw))
-            (root / "assets" / "icon.svg").write_text("<svg/>\n", encoding="utf-8")
+            (root / "agents" / "openai.yaml").write_text("tampered: true\n", encoding="utf-8")
             errors = validate_release_contract(root)
             self.assertTrue(any("current protected file hash changed" in error for error in errors))
 
     def test_migration_source_hash_must_match_historical_contract(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = self.copy_contract_fixture(Path(raw))
+            self.configure_agent_migration(root)
             path = root / "tests" / "protected-file-migrations.json"
             data = json.loads(path.read_text(encoding="utf-8"))
             data["migrations"][0]["from_sha256"] = "0" * 64
@@ -68,6 +105,7 @@ class ReleaseContractTests(unittest.TestCase):
     def test_historical_protected_file_migration_remains_valid_in_later_release(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = self.copy_contract_fixture(Path(raw))
+            self.configure_agent_migration(root)
             migration = json.loads((root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
             self.assertEqual(migration["migrations"][0]["version"], "2.2.0")
             self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "2.3.0")
@@ -76,10 +114,7 @@ class ReleaseContractTests(unittest.TestCase):
     def test_future_protected_file_migration_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = self.copy_contract_fixture(Path(raw))
-            path = root / "tests" / "protected-file-migrations.json"
-            data = json.loads(path.read_text(encoding="utf-8"))
-            data["migrations"][0]["version"] = "9.9.9"
-            path.write_text(json.dumps(data) + "\n", encoding="utf-8")
+            self.configure_agent_migration(root, version="9.9.9")
             errors = validate_release_contract(root)
             self.assertTrue(any("newer than VERSION" in error for error in errors))
 

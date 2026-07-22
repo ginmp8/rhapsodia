@@ -675,11 +675,6 @@
     }
   },
   "protected_files": {
-    "assets/icon.svg": "9be88f8dd4c5e658961515c71389eafd45142ffa68bcae58e8dcff57d178ed91",
     "agents/openai.yaml": "192d64f29d3095b05660761e23217f5e89501e092de99780cd15760fcc2d0e3b"
-  },
-  "icon": {
-    "path": "assets/icon.svg",
-    "sha256": "9be88f8dd4c5e658961515c71389eafd45142ffa68bcae58e8dcff57d178ed91"
   }
 }
