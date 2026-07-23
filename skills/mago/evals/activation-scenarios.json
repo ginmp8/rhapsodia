@@ -187,11 +187,11 @@
       "id": "ambiguous-roadmap-001",
       "type": "ambiguous",
       "prompt": "Turn this roadmap into specs.",
-      "expected_behavior": "clarify_or_activate: Infer possible define or prepare-define flow but require BOARD_ROOT, board_id, year, and cycle_id, and selected spec ids before writing.",
+      "expected_behavior": "clarify_or_activate: Route governance-ready roadmap evidence to order; require BOARD_ROOT, board_id, year, cycle_id, feature_key, and provenance, but do not require a pre-existing spec_id before registration.",
       "acceptance_criteria": [
-        "requires canonical identifiers",
-        "does not create duplicate board tree",
-        "records roadmap evidence needs"
+        "allows order to register a spec when candidate_spec_id is null",
+        "requires cycle identity, feature_key, and provenance before registration",
+        "does not create a package before the registry identity exists"
       ],
       "category": "ambiguous"
     },

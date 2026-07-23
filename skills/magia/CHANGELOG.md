@@ -1,5 +1,13 @@
 # Changelog
 
+
+## 1.9.0 - 2026-07-23
+
+- Added privacy-minimized contract-v3 handoffs with workflow lineage.
+- Added deterministic read-only routing and persistent handoff ledger contracts.
+- Preserved independent Nomia, Mago, and Magia ownership.
+- Compatibility impact: breaking coordinated release; contract-v2 envelopes and mixed package versions are rejected before mutation.
+
 ## [1.8.0] - 2026-07-23
 
 - Declare PyYAML as a runtime dependency through `requirements.txt` and `release.json`, add runtime dependency validation, clean-environment YAML smoke coverage, and source/archive package gates.

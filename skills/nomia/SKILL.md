@@ -5,145 +5,81 @@ description: "use when asked to create, update, validate, audit, or report on no
 
 # nomia
 
-Nomia owns product/delivery governance and reporting. It never owns software design, engineering decomposition, or technical validation.
-Priority ownership follows `references/priority-contract.md`: Nomia owns `business_priority`; generic `priority` is unsupported.
+Nomia owns product/delivery governance and reporting, never software design, engineering decomposition, or technical validation. It writes `business_priority`; generic `priority` is unsupported.
 
 ## Distributed ecosystem routing
 
-Use the [distributed routing contract](references/ecosystem-routing-contract.md) and [ecosystem lifecycle map](references/ecosystem-lifecycle.md). For multi-intent requests, Nomia performs only the governance phase currently owned by Nomia, then hands technical planning to Mago. Governed implementation never routes directly from Nomia to Magia.
+Use the [routing contract](references/ecosystem-routing-contract.md) and [lifecycle](references/ecosystem-lifecycle.md). Perform only the current governance phase, then hand technical planning to Mago; governed implementation never routes directly to Magia. `scripts/route_ecosystem_request.py` is a read-only owner projection; `scripts/handoff_ledger.py` records authority-neutral transport state.
 
 ## Scope and Ownership
 
-- Own: intake, ops, status, stakeholder brief, replanning, portfolio, roadmap, feature map, governance RFC/decision log, release/internal notes, feature report, and roadmap-to-Mago handoff under existing `docs/boards/<board_id>/<year>/cycles/<cycle_id>/` locations.
-- Never modify code, tests, deployments, source control, Mago planning, Magia execution, ADRs, technical design, implementation documentation, or engineering tasks. Use Mago/Magia material only as attributed read-only evidence; never rewrite it or certify technical validation.
-- Authority: Nomia is the PO/delivery secretary; Mago owns technical planning and cycle/spec identity; Magia owns implementation, validation, execution evidence, and runtime documentation. Nomia uses local path/handoff contracts and never imports another skill.
-- Cross-skill transfers use the local versioned [ecosystem handoff contract](references/ecosystem-handoff-contract.md) and `scripts/ecosystem_handoff.py`. Nomia produces `nomia_to_mago` and consumes `mago_to_nomia` or `magia_to_nomia`; envelopes transfer attributed evidence without transferring governance or technical authority.
-- Nomia RFCs and `governance-decision` cover roadmap, scope, sequencing, ownership, policy/process, vendor/tool, budget, accepted business risk, go/no-go, stakeholder alignment, and handoff readiness. Hand off architecture or implementation decisions to Mago or Magia.
+- Own: intake, ops/status/stakeholder brief, replanning, portfolio, roadmap/feature map, governance RFC/decisions, release/internal notes, feature report, and roadmap-to-Mago handoff in canonical board/spec locations.
+- Never change code, tests, deployments, source control, Mago planning, Magia execution, ADR/technical design, implementation docs/tasks, or technical validation. Consume technical material only as attributed read-only evidence.
+- Mago owns cycle/spec identity and planning; Magia owns implementation/validation evidence. Nomia does not require Mago or Magia skill files at runtime.
+- Exchange `nomia_to_mago`, `mago_to_nomia`, and `magia_to_nomia` only through the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) and `scripts/ecosystem_handoff.py`. Handoffs transfer evidence, not authority.
+- Governance decisions may cover scope/sequence/owner/policy/vendor/budget/business-risk/go-no-go/stakeholders; architecture and implementation decisions are handed off.
 
 ## Required Inputs
 
-Before repository writes, resolve `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and, for spec artifacts, `spec_id`. IDs use `cycle-YYYY-MM-DD-cycle-key` and `spec-YYYY-MM-DD-feature-key`. Infer `year` from `cycle_id` only when absent and reject conflicts. Reference an identity only when user-supplied, received through a typed handoff, or evidenced by a current repository artifact; record provenance and never mint, choose, correct, rename, or register it.
+Before repository writes resolve `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and required `spec_id`. IDs use `cycle-YYYY-MM-DD-cycle-key` and `spec-YYYY-MM-DD-feature-key`; infer year only from a valid cycle ID and reject conflicts. Nomia must not mint planning identities, correct/rename/register them, derive them from legacy IDs, or create/modify registry/package identity. Every identity needs user, typed-handoff, or current-repository provenance such as `candidate_spec_id_provenance`.
 
-For volatile requester, ownership, dates, stakeholders, status, risk, technical/release state, source-control reference, decisions, acceptance, or validation facts, require supplied/current evidence with source, observation time, freshness, authority, and no conflict. Otherwise preserve `unknown`, `null`, empty lists, or explicit unknown prose; never infer from paths, roles, or intent.
+Volatile people, dates, status, risk, source-control, decision, acceptance, validation, and release facts require source, observation time, freshness, authority, and no conflict. Otherwise preserve `unknown`, `null`, empty lists, or explicit uncertainty.
 
 ## Mode Selection Matrix
 
-Select and state one governance profile (`quick`, `standard`, or `governed`), one lifecycle stage (`intake`, `triage`, `commit`, `track`, `decide`, or `close`), and exactly one mode before work. Escalate to `governed` for regulatory, financial, privacy, security, contractual, executive, cross-organization, irreversible, stale, or conflicting evidence scenarios. Profile and lifecycle rules live in [references/governance-profiles-and-lifecycle.md](references/governance-profiles-and-lifecycle.md).
+Select one profile (`quick`, `standard`, `governed`), one stage (`intake`, `triage`, `commit`, `track`, `decide`, `close`), and exactly one mode. Escalate regulatory, financial, privacy/security, contractual, executive, cross-organization, irreversible, stale, or conflicting work to `governed`.
 
-| Mode | Required evidence | Output |
-|---|---|---|
-| `delivery-intake` / `delivery-triage` | root/ids, requester/problem/date/owner when known | intake, ops, status, stakeholder brief |
-| `delivery-status` / `delivery-replan` | selected spec when applicable, current evidence | status or replanning |
-| `delivery-portfolio` | root/ids, portfolio evidence | portfolio |
-| `roadmap-define` / `roadmap-refine` | roadmap evidence, owner/stakeholders when known | roadmap, feature map |
-| `roadmap-to-specs` | roadmap evidence; canonical candidate spec ids only when already supplied or evidenced | typed handoff records only |
-| `rfc-proposal` | proposal evidence/context | RFC proposal |
-| `governance-decision` | decision evidence, authority, decision maker or `unknown` | governance decision record |
-| `feature-report` / `release-notes` | selected scope, attributed release/execution evidence | feature report, release notes, internal notes |
-| `validate-contracts` / `normalize-human-artifacts` | target paths, repository root when path checks matter | validation or normalized artifacts |
-| `governance-adapt` | read-only legacy source, externally supplied current identity and provenance, profile/lifecycle/state | canonical schema-v2 governance artifact plus adaptation report |
+| Mode | Output |
+|---|---|
+| `delivery-intake`, `delivery-triage` | intake, ops, status, stakeholder brief |
+| `delivery-status`, `delivery-replan` | current status or replanning |
+| `delivery-portfolio` | portfolio |
+| `roadmap-define`, `roadmap-refine` | roadmap and feature map |
+| `roadmap-to-specs` | typed handoff only; existing/evidenced candidate IDs optional |
+| `rfc-proposal`, `governance-decision` | governance proposal/decision record |
+| `feature-report`, `release-notes` | attributed reports/notes |
+| `validate-contracts`, `normalize-human-artifacts` | validation/normalization |
+| `governance-adapt` | schema-v2 governance output plus adaptation report from read-only legacy input |
 
 ## Progressive Loading
 
-1. Roots and identities: [references/canonical-paths.md](references/canonical-paths.md).
-2. Common evidence, unknowns, owners, stakeholders: [references/common-governance.md](references/common-governance.md).
-3. Guided intake, progressive discovery, and quick-start decisions: [references/guided-intake-and-discovery.md](references/guided-intake-and-discovery.md).
-4. Profile, escalation, lifecycle, and context reuse: [references/governance-profiles-and-lifecycle.md](references/governance-profiles-and-lifecycle.md).
-5. State dimensions, transitions, metrics, risk, and typed handoffs: [references/state-risk-and-handoffs.md](references/state-risk-and-handoffs.md).
-6. Canonical truth and generated projections: [references/canonical-governance-and-projections.md](references/canonical-governance-and-projections.md).
-7. Boundaries and cross-skill contracts: [references/contracts.md](references/contracts.md).
-8. Load exactly one mode reference: [delivery](references/modes/delivery.md), [roadmap](references/modes/roadmap.md), [rfc](references/modes/rfc.md), [governance decision](references/modes/governance-decision.md), [reporting](references/modes/reporting.md), [validation](references/modes/validation.md), or [governance adapt](references/modes/governance-adapt.md).
-9. Template-backed work: [references/template-integration.md](references/template-integration.md), `assets/templates/`.
-10. Artifact family only when creating, editing, or validating it: [delivery](references/artifacts/delivery.md), [roadmap](references/artifacts/roadmap.md), [rfc](references/artifacts/rfc.md), [governance decision](references/artifacts/governance-decision.md), or [reporting](references/artifacts/reporting.md).
-11. Roadmap-to-spec handoff: [references/roadmap-to-mago-contract.md](references/roadmap-to-mago-contract.md).
-12. Ecosystem priority ownership and migration: [references/priority-contract.md](references/priority-contract.md) and [references/priority-contract.json](references/priority-contract.json).
-13. Ecosystem handoff schema and mechanical producer/consumer: [references/ecosystem-handoff-contract.md](references/ecosystem-handoff-contract.md), [references/ecosystem-handoff-contract.json](references/ecosystem-handoff-contract.json), and `scripts/ecosystem_handoff.py`.
-14. Activation, routing, and scenario evidence: [references/activation-and-evaluation.md](references/activation-and-evaluation.md).
-15. Assurance, release integrity, or SDD review: [references/assurance-and-release.md](references/assurance-and-release.md) and [references/assurance-contract.json](references/assurance-contract.json).
-16. Structural validation, golden examples, or `skill.zip`: [references/package-validation.md](references/package-validation.md), `examples/golden/`, [examples/golden/index.md](examples/golden/index.md), and [examples/golden/validation-commands.md](examples/golden/validation-commands.md).
-17. Scenario assets: [examples/activation-scenarios.json](examples/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json), [evals/activation-boundary-scenarios.json](evals/activation-boundary-scenarios.json), [evals/governance-scenarios.json](evals/governance-scenarios.json), and [evals/booster-activation-scenarios.json](evals/booster-activation-scenarios.json). Mark metrics measured only after the relevant command or prompt execution and review.
+1. [Canonical paths](references/canonical-paths.md), [common governance](references/common-governance.md), [guided intake](references/guided-intake-and-discovery.md), [profiles/lifecycle](references/governance-profiles-and-lifecycle.md), [state/risk/handoffs](references/state-risk-and-handoffs.md), [canonical projections](references/canonical-governance-and-projections.md), then [boundaries](references/contracts.md).
+2. Exactly one mode: [delivery](references/modes/delivery.md), [roadmap](references/modes/roadmap.md), [RFC](references/modes/rfc.md), [decision](references/modes/governance-decision.md), [reporting](references/modes/reporting.md), [validation](references/modes/validation.md), or [adapt](references/modes/governance-adapt.md).
+3. Load [template integration](references/template-integration.md) and only the affected artifact family: [delivery](references/artifacts/delivery.md), [roadmap](references/artifacts/roadmap.md), [RFC](references/artifacts/rfc.md), [decision](references/artifacts/governance-decision.md), or [reporting](references/artifacts/reporting.md).
+4. For handoff/release load [roadmap-to-Mago](references/roadmap-to-mago-contract.md), [priority](references/priority-contract.md), [activation](references/activation-and-evaluation.md), [assurance](references/assurance-and-release.md), and [package validation](references/package-validation.md) only when relevant.
 
 ## Execution Workflow
 
-1. Select and state one profile, one lifecycle stage, and exactly one mode.
-2. For incomplete ideas or demands, run `scripts/guide_intake.py` first; use its result only as non-authoritative guidance, preserve unknowns, and do not write canonical records until identity and provenance gates pass.
-3. Resolve runtime roots and current canonical identities; mark missing, stale, conflicting, or unverifiable inputs as unknown or blocker.
-4. Load only the required common, profile, state, canonical-source, mode, artifact, and handoff references.
-5. Prefer `schema_version: 2` canonical governance records. Keep governance, planning, execution, validation, and release states separate; never upgrade a technical dimension from governance state.
-6. Use bundled scripts for scaffold, adaptation, projections, transitions, metrics, list updates, normalization, and validation; do not freehand template-backed structure when a script exists.
-7. Create or update only nomia-owned governance artifacts in canonical board/spec locations. Never create or modify Mago cycle metadata, per-spec registry records, planning packages, generated catalog/queue projections, or Magia execution artifacts.
-8. Treat legacy governance material as read-only, non-operational input. `governance-adapt` may extract governance facts only; canonical outputs require externally supplied current ids and provenance and must not carry, convert, rename, or derive former ULID identities.
-9. Generate human reports as non-authoritative projections from canonical facts. Include projection authority, canonical source, generation timestamp, evidence-as-of timestamp, unknowns, stale facts, conflicts, and lossy fields when applicable.
-10. Preserve missing volatile facts as `unknown`, `null`, empty lists, or explicit unknown prose.
-11. Build `nomia_to_mago` envelopes with `scripts/ecosystem_handoff.py`; validate incoming `mago_to_nomia` and `magia_to_nomia` before using them as attributed governance evidence. Preserve source package version, provenance, freshness, unknowns, conflicts, mapping version, and the original technical authority.
-12. Require strict handoff v2 and exact package versions. Technical completion never closes governance without `scripts/validate_governance_closure.py`, an explicit Nomia decision, and external release evidence.
-13. Validate every touched artifact. For repository-facing writes also validate board paths; for package or readiness claims run the complete validation ledger.
+1. Select profile/stage/mode. For incomplete intake, run `scripts/guide_intake.py`; guidance is non-authoritative.
+2. Resolve canonical roots/identities and evidence; mark missing/stale/conflicting facts unknown or blocked.
+3. Use schema-v2 governance records and keep governance, planning, execution, validation, and release states separate.
+4. Use bundled writers/projectors; do not freehand template-backed structures when a script exists.
+5. Write only Nomia artifacts. Treat legacy governance as read-only; `scripts/adapt_governance.py` requires externally supplied current identity and never carries/derives old ULID identity.
+6. Generate human views with `scripts/project_governance_views.py` as non-authoritative projections containing canonical source, generated/evidence timestamps, unknowns/conflicts/loss, next action, and owner. Use `scripts/project_lifecycle_status.py` for read-only lifecycle status.
+7. Build/validate typed v3 handoffs with privacy minimization and causal lineage. Preserve producer version, provenance, freshness, unknowns, conflicts, mapping, and technical authority.
+8. Technical completion never closes governance without `scripts/validate_governance_closure.py`, explicit Nomia decision, and external release evidence.
+9. Validate every touched artifact and repository path; package/readiness requires the complete ledger.
 
 ## Script Routing
 
-- Guided intake and discovery: `scripts/guide_intake.py`; its output is non-authoritative and never creates canonical records.
-- Canonical scaffolds: `scripts/write_artifact_scaffold.py`, `scripts/write_ops_scaffold.py` (`--dry-run` available).
-- Legacy adaptation: `scripts/adapt_governance.py`; validate output with `scripts/validate_ops.py --require-canonical`.
-- Ecosystem priority ownership and migration: `scripts/validate_priority_contract.py`; new Nomia writers emit `business_priority`, while `technical_criticality` and `execution_sequence` remain read-only Mago evidence.
-- Canonical state, transitions, metrics, and typed handoffs: `scripts/governance_contract.py`, `scripts/evaluate_governance.py`.
-- Mechanical ecosystem handoffs: `scripts/ecosystem_handoff.py` builds/validates role-scoped envelopes; `scripts/validate_ecosystem_handoff_contract.py` validates the local contract and its integration.
-- Contract semantic consistency: `scripts/validate_contract_semantics.py` rejects prose that re-enables legacy handoff compatibility or contradicts strict v2.
-- Human projections and provenance validation: `scripts/project_governance_views.py`, `scripts/validate_projection_metadata.py`.
-- Writers, lists, and normalization: `scripts/upsert_rfc_entry.py`, `scripts/append_governance_decision_entry.py`, `scripts/update_template_lists.py`, `scripts/normalize_human_artifacts.py`.
-- General and path validation: `scripts/validate_artifact.py`, `scripts/validate_board_paths.py`.
-- Specialized validators: `scripts/validate_ops.py`, `scripts/validate_roadmap.py`, `scripts/validate_reporting.py`, `scripts/validate_portfolio.py`, `scripts/validate_contracts.py`, `scripts/validate_human_artifacts.py`.
-- Scenario and package gates: `scripts/validate_activation_scenarios.py`, `scripts/validate_governance_scenarios.py`, `scripts/validate_skill_package.py`, `scripts/validate_golden_examples.py`.
-- Identity, evidence, and preservation gates: `scripts/validate_identity_contract.py`, `scripts/validate_release_contract.py`, `scripts/validate_contract_preservation.py`, `scripts/validate_documentation.py`, `scripts/validate_assurance_contract.py`, and the standard-library tests under `tests/`.
-- Reproducible local ledger: run `python scripts/validate_all.py --target <skill-root> --json-output <report.json>`. For a coordinated three-package release, run `scripts/validate_ecosystem_release.py` with explicit Mago, Magia, and Nomia roots and retain its external attestation ledger.
-- Package builder: run `python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it performs the required gates, rejects symlinks and high-confidence credential/private-key material, validates the completed archive, writes atomically, uses deterministic archive metadata, and excludes caches, generated evidence/reports, and old zips.
-- Shared helpers: `scripts/nomia_utils.py`.
+- Intake/state: `scripts/guide_intake.py`, `scripts/governance_contract.py`, `scripts/evaluate_governance.py`.
+- Writers/adaptation/projections: `scripts/write_artifact_scaffold.py`, `scripts/write_ops_scaffold.py`, `scripts/adapt_governance.py`, `scripts/project_governance_views.py`, `scripts/project_lifecycle_status.py`, `scripts/normalize_human_artifacts.py`.
+- Contracts: `scripts/ecosystem_handoff.py`, `scripts/validate_ecosystem_handoff_contract.py`, `scripts/validate_priority_contract.py`, `scripts/validate_contract_semantics.py`, `scripts/validate_contracts.py`.
+- Artifact/path gates: `scripts/validate_artifact.py`, `scripts/validate_board_paths.py`, `scripts/validate_ops.py`, `scripts/validate_roadmap.py`, `scripts/validate_reporting.py`, `scripts/validate_portfolio.py`, `scripts/validate_human_artifacts.py`.
+- Scenario/package/release: `scripts/validate_activation_scenarios.py`, `scripts/validate_governance_scenarios.py`, `scripts/validate_golden_examples.py`, `scripts/validate_identity_contract.py`, `scripts/validate_contract_preservation.py`, `scripts/validate_projection_metadata.py`, `scripts/validate_assurance_contract.py`, `scripts/validate_skill_package.py`, `scripts/validate_all.py`, `scripts/package_skill.py`, and `scripts/validate_ecosystem_release.py`.
 
 ## Output Contract
 
-Output format: use structured Markdown for responses and reports; emit canonical YAML or JSON only when the selected mode requires that artifact.
-
-Every response includes:
-
-- selected governance profile, escalation reason when applicable, lifecycle stage, and exactly one mode;
-- runtime roots and identities used or missing;
-- artifacts created or updated and whether each is canonical or a non-authoritative projection;
-- evidence sources, observation time, freshness, authority, conflicts, and unknowns for volatile facts;
-- provenance for every externally supplied or evidenced `cycle_id`, `spec_id`, or non-null `candidate_spec_id`;
-- separate governance, planning, execution, validation, and release states with their owning evidence;
-- for generated human views: `authority: non_authoritative_projection`, canonical source, generated-at time, evidence-as-of time, visible stale/unknown/conflicting facts, next governance action, and next responsible skill;
-- validation commands run or skipped, exact pass/fail/not-run results, outside-scope files not touched, and remaining blockers.
-
-For activation, scenario, benchmark, or package-readiness work, also include scenario categories, measured-versus-structural status, exact validator output, package hash and release attestation when produced, and residual evidence gaps. Do not claim activation precision, recall, robustness, output conformance, technical completion, validation, or release unless the corresponding prompts or commands were executed and attributed.
-
-Repository-facing writes close only after touched artifacts pass their validators and path validation passes or is explicitly blocked by missing repository context. Legacy governance records are not a compatibility mode; adapt them into current artifacts with externally supplied identities or mark them unresolved read-only input.
-
-Historical governance inputs are isolated to the explicit `governance-adapt` mode and are never accepted as ecosystem handoff compatibility.
+Return structured Markdown with profile/stage/mode; roots/identities/provenance; artifacts and canonical/projection authority; volatile evidence source/time/freshness/authority/conflicts/unknowns; separate state dimensions; projection metadata; exact validations/results; untouched outside-scope files; downstream owner/action; and blockers. For readiness/package work, distinguish structural from measured behavior, include scenario categories, package hash/attestation when produced, and never claim live activation, technical completion, validation, or release without corresponding evidence.
 
 ## Acceptance Gates
 
-- One profile, one lifecycle stage, and exactly one mode are selected; mandatory escalation rules are applied.
-- `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and required `spec_id` are resolved before repository-facing writes.
-- Canonical ids are valid, externally sourced provenance is recorded, and ids are not invented, selected, corrected, renamed, derived from legacy ULIDs, or registered by nomia.
-- Canonical spec governance uses `schema_version: 2` for new or adapted records; dimension-specific states and evidence contracts validate.
-- Non-null technical or release states have the required authority, source, observation time, freshness, and compatible value.
-- Typed handoffs reject malformed identities, stale/conflicting evidence, unsupported authority, technical content in Nomia-to-Mago payloads, and `feature_key`/`candidate_spec_id` mismatches.
-- Typed handoffs are built or consumed through `scripts/ecosystem_handoff.py`; they additionally reject incompatible producer/consumer roles and invalid state projections.
-- No registry record, generated catalog, generated queue, Mago/Magia artifact, implementation/deployment/test/runner file, branch/commit/PR record, architecture ADR, technical design, or implementation task is modified.
-- Template artifacts use bundled scripts; repository-facing writes are atomic; supported writers expose `--dry-run` where documented.
-- Guided intake and generated projections declare non-authoritative status, preserve unknowns, identify the next governance action and responsible skill, and never certify planning, execution, validation, or release.
-- Unknown or volatile facts are not invented; warnings in golden validation are deterministic and explicitly allowlisted.
-- Touched artifacts pass specialized validators and repository-facing writes pass board-path validation.
-- Scenario edits preserve categories and pass `scripts/validate_activation_scenarios.py` or `scripts/validate_skill_package.py`; governance scenarios pass `scripts/validate_governance_scenarios.py`.
-- Priority-contract edits pass `scripts/validate_priority_contract.py`; generic aliases are rejected, and Nomia never writes Mago-owned technical criticality or execution sequence.
-- Ecosystem-contract edits pass `scripts/validate_ecosystem_handoff_contract.py`; all three packages carry byte-equivalent contract JSON and producer/consumer behavior remains direction-scoped. Current prose also passes `scripts/validate_contract_semantics.py`, which rejects legacy handoff acceptance outside migration-only governance adaptation.
-- Structural edits pass `scripts/validate_skill_package.py`; golden-sensitive edits pass `scripts/validate_golden_examples.py`; identity/path changes pass `scripts/validate_identity_contract.py`.
-- Every readiness or package run passes `scripts/validate_all.py`, including preservation and unit-test gates.
-- `skill.zip` is produced only by a passing deterministic package run; source and archive checks reject symlinks, path traversal, caches, bytecode, generated evidence/reports, secrets, credentials, private-key material, temporary files, and old zips.
+Require one profile/stage/mode; resolved canonical identity for writes; provenance and non-invention; schema v2; attributed non-null technical/release states; strict current v3 handoffs and exact compatible versions; privacy metadata/minimization; no writes to another owner; script-backed templates and atomic writes; explicit non-authoritative projections; preserved unknowns; specialized/path/scenario/golden/identity/priority/contract/preservation/unit/package gates; and deterministic archive free of symlinks, traversal, caches, generated reports, secrets, temporary files, and old zips.
 
 ## Stop Conditions
 
-Stop and report a blocker instead of writing when required roots or ids are missing for repository-facing creation; an explicit root conflicts with `board_id`, `year`, or `cycle_id`; a repository-facing identity or external provenance cannot be verified; a current identity is malformed, legacy-ULID-derived, mismatched, or supplied without authority; required current canonical evidence is stale or conflicting; a material commitment lacks decision authority; a non-null technical or release state lacks attributed evidence; projection metadata cannot establish its canonical source or evidence-as-of time; requested output belongs to Mago, Magia, implementation, deployment, testing, runner, branch, commit, PR, architecture, technical design, ADR, or implementation-task ownership; the user asks to infer volatile facts or technical decisions without evidence; the target path is outside canonical board/spec locations; a template-backed change would bypass an available bundled script; adaptation would overwrite its source or infer technical truth; or validation fails and the fix is outside nomia-owned files or requested mutation scope.
+Stop rather than write when roots/IDs/provenance are missing or conflicting; evidence is stale/conflicting; authority is absent; technical/release state lacks attribution; projection source/time cannot be established; work belongs to Mago/Magia; the path is non-canonical; a template script would be bypassed; adaptation would overwrite source or infer technical truth; external sharing violates privacy metadata; or validation fails outside Nomia-owned scope.
 
 ## Owned Artifact Families
 
-Board-scoped: portfolio, roadmap, governance RFC proposal, governance decision log, feature map, release notes, internal notes. Spec-scoped: ops, status, stakeholder brief, replanning, feature report. Canonical names and paths live in [references/canonical-paths.md](references/canonical-paths.md) and [references/contracts.md](references/contracts.md).
+Board: portfolio, roadmap, governance RFC/decisions, feature map, release/internal notes. Spec: ops, status, stakeholder brief, replanning, feature report. Canonical names/paths are in `references/canonical-paths.md` and `references/contracts.md`.

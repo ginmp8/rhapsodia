@@ -13,12 +13,24 @@
     },
     {
       "id": "activate-order-backlog",
-      "prompt": "Order the discovered candidates into the board backlog and update the define queue for board alpha cycle 2026-q2.",
+      "prompt": "Order the discovered candidates into registry-backed backlog records for board alpha cycle 2026-q2 and render an external define-queue projection for inspection.",
       "expected_activation": true,
       "expected_mode": "order",
-      "expected_boundary": "update spec catalog and define queue only under the resolved board root",
+      "expected_boundary": "create or reconcile independent registry records and render external read-only projections; never hand-edit catalog or queue files under BOARD_ROOT",
       "case_type": "should_activate",
-      "category": "should_activate"
+      "category": "should_activate",
+      "boundary_contract": {
+        "authority": "mago",
+        "cardinality": "one-registry-record-per-candidate",
+        "allowed_writes": [
+          "BOARD_ROOT/registry/<spec_id>.yaml"
+        ],
+        "forbidden_writes": [
+          "BOARD_ROOT/spec-catalog.yaml",
+          "BOARD_ROOT/define-queue.yaml"
+        ],
+        "projection_policy": "external-read-only"
+      }
     },
     {
       "id": "activate-adapt-legacy-plan",
@@ -31,12 +43,24 @@
     },
     {
       "id": "activate-prepare-define-shells",
-      "prompt": "Seed define-ready package shells from the define queue for <spec_id> and <spec_id>.",
+      "prompt": "Seed a define-ready package shell for the selected <spec_id> from its registry handoff.",
       "expected_activation": true,
       "expected_mode": "prepare-define",
-      "expected_boundary": "create package scaffolds under BOARD_ROOT/specs only",
+      "expected_boundary": "create only the selected spec package under BOARD_ROOT/specs/<spec_id> from one authoritative registry record",
       "case_type": "should_activate",
-      "category": "should_activate"
+      "category": "should_activate",
+      "boundary_contract": {
+        "authority": "mago",
+        "cardinality": "exactly-one-spec",
+        "allowed_writes": [
+          "BOARD_ROOT/specs/<spec_id>"
+        ],
+        "forbidden_writes": [
+          "unselected spec packages",
+          "generated catalog or queue projections"
+        ],
+        "projection_policy": "registry-authoritative"
+      }
     },
     {
       "id": "activate-define-package",
@@ -249,11 +273,23 @@
     {
       "id": "edge-prepare-define-selected-only",
       "case_type": "edge_case",
-      "prompt": "Seed package shells from the define queue only for <spec_id> and leave all other queued specs untouched.",
+      "prompt": "Seed the package shell only for the selected <spec_id> from its registry handoff and leave every other registry record untouched.",
       "expected_activation": true,
       "expected_mode": "prepare-define",
-      "expected_boundary": "create only selected package scaffolds and preserve unrelated queue entries",
-      "category": "edge_case"
+      "expected_boundary": "create exactly one selected package scaffold and preserve unrelated registry records and generated projections",
+      "category": "edge_case",
+      "boundary_contract": {
+        "authority": "mago",
+        "cardinality": "exactly-one-spec",
+        "allowed_writes": [
+          "BOARD_ROOT/specs/<spec_id>"
+        ],
+        "forbidden_writes": [
+          "other registry records",
+          "generated catalog or queue projections"
+        ],
+        "projection_policy": "registry-authoritative"
+      }
     },
     {
       "id": "regression-define-tasks-preserve-product",

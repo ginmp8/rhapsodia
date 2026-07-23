@@ -26,7 +26,7 @@ def collect_errors(root: Path) -> list[str]:
         if LEGACY_ACCEPT_RE.search(line) and not NEGATED_RE.search(line):
             errors.append(f"legacy handoff compatibility is described as accepted at line {number}")
     required = {
-        "strict handoff v2": "strict handoff v2 requirement is missing",
+        "strict handoff v3": "strict handoff v3 requirement is missing",
         "not accepted as ecosystem handoff compatibility": "explicit legacy handoff rejection is missing",
         "governance-adapt": "migration-only governance-adapt isolation is missing",
         "externally supplied current identities": "current identity provenance gate is missing",

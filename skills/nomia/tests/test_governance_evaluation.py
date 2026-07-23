@@ -7,6 +7,22 @@ import ecosystem_handoff as handoff
 spec=importlib.util.spec_from_file_location("evaluate_governance", ROOT/"scripts"/"evaluate_governance.py")
 mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
 ASOF=datetime(2026,7,20,tzinfo=timezone.utc)
+WORKFLOW = handoff.workflow_id_for("synthetic-nomia-test")
+PRIVACY = {
+    "classification": "internal",
+    "contains_personal_data": False,
+    "contains_third_party_data": False,
+    "contains_confidential_data": False,
+    "contains_secrets": False,
+    "redactions_applied": [],
+    "redaction_method": "none",
+    "intended_audience": ["sdd-maintainers"],
+    "allowed_destinations": ["local", "internal"],
+    "purpose": "synthetic contract validation",
+    "retention_days": 30,
+    "evidence_ref_visibility": "opaque",
+    "external_share_allowed": False,
+}
 class EvaluationTests(unittest.TestCase):
     def base(self):
         return {"request":{"requester":"A"},"ownership":{"owner":"B"},"planning":{"target_date":"2026-07-25"},"status":{"state":"blocked","updated_at":"2026-07-19"},"governance":{"status":"blocked"},"risks":[{"severity":"high"}],"dependencies":[{"id":"dep","status":"blocked","severity":"high"}],"timestamps":{"intake_at":"2026-07-01","state_entered_at":"2026-07-10","blocked_since":"2026-07-15","decision_requested_at":"2026-07-11","decision_at":"2026-07-13"},"risk_history":[{"date":"2026-07-01","severity":"medium"},{"date":"2026-07-19","severity":"high"}],"provenance":{"facts":{}}}
@@ -25,7 +41,7 @@ class EvaluationTests(unittest.TestCase):
         self.assertIn("blocked",c["evidence"])
     def test_handoff_requires_provenance(self):
         payload={"feature_key":"f","outcome":"o","scope_summary":"s","owner":"unknown","business_priority":{"level":"unknown","owner":"nomia","source":None,"observed_at":None},"dependencies":[],"governance_readiness":"ready","candidate_spec_id":"spec-2026-07-20-f","candidate_spec_id_provenance":"registry/spec-2026-07-20-f.yaml"}
-        env=handoff.build_envelope(direction="nomia_to_mago",payload=payload,source="roadmap.yaml",authority="nomia",evidence_refs=["decision-1"],observed_at=ASOF.isoformat(),freshness_days=30,root=ROOT)
+        env=handoff.build_envelope(direction="nomia_to_mago",payload=payload,source="roadmap.yaml",authority="nomia",evidence_refs=["decision-1"],observed_at=ASOF.isoformat(),freshness_days=30,workflow_id=WORKFLOW,privacy_handling=PRIVACY,root=ROOT)
         del env["payload"]["candidate_spec_id_provenance"]
         env["handoff_id"]=handoff.handoff_id_for(env)
         self.assertEqual(mod.validate_handoff(env,ASOF)["status"],"rejected")

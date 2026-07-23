@@ -31,7 +31,7 @@ class ReleaseAttestationTests(unittest.TestCase):
 
     def test_preflight_rejects_mixed_versions(self):
         with tempfile.TemporaryDirectory() as tmp:
-            roots=self.make_roots(Path(tmp)); (roots['magia']/"VERSION").write_text("1.8.0\n"); release=json.loads((roots['magia']/"release.json").read_text()); release['version']='1.8.0'; (roots['magia']/"release.json").write_text(json.dumps(release))
+            roots=self.make_roots(Path(tmp)); (roots['magia']/"VERSION").write_text("1.9.0\n"); release=json.loads((roots['magia']/"release.json").read_text()); release['version']='1.9.0'; (roots['magia']/"release.json").write_text(json.dumps(release))
             self.assertTrue(any('mixed package versions' in item for item in mod.collect_preflight_errors(roots)))
 
     def test_preflight_rejects_contract_drift(self):

@@ -40,7 +40,7 @@ def test_migration_only_language_does_not_enable_handoff_compatibility(tmp_path:
     path.parent.mkdir(parents=True)
     path.write_text(
         "Legacy envelope fields are not accepted as ecosystem handoff compatibility. "
-        "Normal producers require strict handoff v2. Historical input is isolated to governance-adapt "
+        "Normal producers require strict handoff v3. Historical input is isolated to governance-adapt "
         "and requires externally supplied current identities.\n",
         encoding="utf-8",
     )

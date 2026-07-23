@@ -14,6 +14,22 @@ spec = importlib.util.spec_from_file_location("evaluate_governance_diagnostics",
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 AS_OF = datetime(2026, 7, 20, tzinfo=timezone.utc)
+WORKFLOW = handoff.workflow_id_for("synthetic-nomia-test")
+PRIVACY = {
+    "classification": "internal",
+    "contains_personal_data": False,
+    "contains_third_party_data": False,
+    "contains_confidential_data": False,
+    "contains_secrets": False,
+    "redactions_applied": [],
+    "redaction_method": "none",
+    "intended_audience": ["sdd-maintainers"],
+    "allowed_destinations": ["local", "internal"],
+    "purpose": "synthetic contract validation",
+    "retention_days": 30,
+    "evidence_ref_visibility": "opaque",
+    "external_share_allowed": False,
+}
 
 
 class HandoffDiagnosticTests(unittest.TestCase):
@@ -32,7 +48,7 @@ class HandoffDiagnosticTests(unittest.TestCase):
         return handoff.build_envelope(
             direction="nomia_to_mago", payload=payload, source="roadmap.yaml",
             authority="nomia", evidence_refs=["decision-1"],
-            observed_at=AS_OF.isoformat(), freshness_days=30, root=ROOT,
+            observed_at=AS_OF.isoformat(), freshness_days=30, workflow_id=WORKFLOW, privacy_handling=PRIVACY, root=ROOT,
         )
 
     @staticmethod

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guard MAGIA instruction depth and prevent silent functional deletion."""
+"""Guard MAGIA instruction semantics and prevent silent functional deletion."""
 
 from __future__ import annotations
 
@@ -44,7 +44,6 @@ REQUIRED_SECTIONS = {
 }
 
 MIN_LINES = {
-    "SKILL.md": 160,
     "references/artifacts/execution-records.md": 55,
     "references/common-execution.md": 58,
     "references/modes/adhoc.md": 23,

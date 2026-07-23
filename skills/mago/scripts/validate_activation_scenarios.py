@@ -126,6 +126,56 @@ def classify_prompt(prompt: str) -> tuple[bool | str, str | None]:
     return "ambiguous", None
 
 
+
+
+def validate_boundary_contract(scenario_id: str, expected_mode: str | None, scenario: dict[str, Any]) -> list[str]:
+    """Validate write authority/cardinality for modes whose boundaries are safety-critical."""
+    errors: list[str] = []
+    boundary = str(scenario.get("expected_boundary") or "").lower()
+    contract = scenario.get("boundary_contract")
+    forbidden_legacy = (
+        "update spec catalog and define queue",
+        "create package scaffolds under board_root/specs only",
+    )
+    if any(phrase in boundary for phrase in forbidden_legacy):
+        errors.append(f"{scenario_id}: expected_boundary preserves a prohibited legacy mutation")
+    if expected_mode not in {"order", "prepare-define"}:
+        return errors
+    if not isinstance(contract, dict):
+        errors.append(f"{scenario_id}: {expected_mode} requires structured boundary_contract")
+        return errors
+    if contract.get("authority") != "mago":
+        errors.append(f"{scenario_id}: boundary_contract.authority must be mago")
+    allowed = contract.get("allowed_writes")
+    forbidden = contract.get("forbidden_writes")
+    if not isinstance(allowed, list) or not allowed:
+        errors.append(f"{scenario_id}: boundary_contract.allowed_writes must be a non-empty list")
+    if not isinstance(forbidden, list) or not forbidden:
+        errors.append(f"{scenario_id}: boundary_contract.forbidden_writes must be a non-empty list")
+    if expected_mode == "order":
+        if contract.get("cardinality") != "one-registry-record-per-candidate":
+            errors.append(f"{scenario_id}: order cardinality must be one-registry-record-per-candidate")
+        allowed_text = " ".join(map(str, allowed or [])).lower()
+        forbidden_text = " ".join(map(str, forbidden or [])).lower()
+        if "registry/<spec_id>.yaml" not in allowed_text:
+            errors.append(f"{scenario_id}: order must allow canonical registry records")
+        if "spec-catalog.yaml" not in forbidden_text or "define-queue.yaml" not in forbidden_text:
+            errors.append(f"{scenario_id}: order must forbid hand-editing catalog and queue projections")
+        if contract.get("projection_policy") != "external-read-only":
+            errors.append(f"{scenario_id}: order projection_policy must be external-read-only")
+    if expected_mode == "prepare-define":
+        if contract.get("cardinality") != "exactly-one-spec":
+            errors.append(f"{scenario_id}: prepare-define cardinality must be exactly-one-spec")
+        allowed_text = " ".join(map(str, allowed or [])).lower()
+        if "specs/<spec_id>" not in allowed_text:
+            errors.append(f"{scenario_id}: prepare-define must allow only the selected spec package")
+        if contract.get("projection_policy") != "registry-authoritative":
+            errors.append(f"{scenario_id}: prepare-define projection_policy must be registry-authoritative")
+        prompt = str(scenario.get("prompt") or "").lower()
+        if prompt.count("<spec_id>") != 1:
+            errors.append(f"{scenario_id}: prepare-define prompt must select exactly one <spec_id>")
+    return errors
+
 def validate(root: Path) -> dict[str, Any]:
     errors: list[str] = []
     scenario_results: list[dict[str, Any]] = []
@@ -182,6 +232,7 @@ def validate(root: Path) -> dict[str, Any]:
             errors.append(f"{scenario_id}: expected_activation must be true, false, or ambiguous")
         if not isinstance(expected_boundary, str) or len(expected_boundary.split()) < 4:
             errors.append(f"{scenario_id}: expected_boundary is too vague")
+        errors.extend(validate_boundary_contract(str(scenario_id), expected_mode, scenario))
         actual_activation, actual_mode = classify_prompt(str(prompt))
         activation_ok = actual_activation == expected_activation
         mode_ok = actual_mode == expected_mode

@@ -15,8 +15,24 @@ import ecosystem_handoff as handoff
 
 NOW = datetime(2026, 7, 22, 12, 0, tzinfo=timezone.utc)
 SPEC = "spec-2026-07-22-demo-feature"
+WORKFLOW = handoff.workflow_id_for("synthetic-demo-feature")
+PRIVACY = {
+    "classification": "internal",
+    "contains_personal_data": False,
+    "contains_third_party_data": False,
+    "contains_confidential_data": False,
+    "contains_secrets": False,
+    "redactions_applied": [],
+    "redaction_method": "none",
+    "intended_audience": ["sdd-maintainers"],
+    "allowed_destinations": ["local", "internal"],
+    "purpose": "synthetic contract validation",
+    "retention_days": 30,
+    "evidence_ref_visibility": "opaque",
+    "external_share_allowed": False,
+}
 PAYLOADS = {
- "nomia_to_mago":{"feature_key":"demo-feature","outcome":"Governed capability","scope_summary":"Bounded scope","owner":"delivery-owner","business_priority":{"level":"high","owner":"nomia","source":"fixture://governance","observed_at":NOW.isoformat()},"dependencies":[],"governance_readiness":"ready","candidate_spec_id":SPEC,"candidate_spec_id_provenance":"fixture://registry"},
+ "nomia_to_mago":{"feature_key":"demo-feature","outcome":"Governed capability","scope_summary":"Bounded scope","owner":"delivery-role","business_priority":{"level":"high","owner":"nomia","source":"fixture://governance","observed_at":NOW.isoformat()},"dependencies":[],"governance_readiness":"ready","candidate_spec_id":SPEC,"candidate_spec_id_provenance":"fixture://registry"},
  "mago_to_magia":{"spec_id":SPEC,"planning_state":"ready","planning_evidence":"manifest.yaml","requirement_refs":["REQ-001"],"acceptance_criteria_refs":["AC-001"],"task_ids":["task001"],"validation_refs":["VAL-001"],"technical_criticality":{"level":"high","owner":"mago","rationale":"contract impact"},"execution_sequence":{"rank":10,"lane":"fixed_date","owner":"mago","rationale":["dependency-safe"]},"readiness":"ready"},
  "magia_to_mago":{"spec_id":SPEC,"execution_state":"done","validation_state":"passed","evidence_reference":"validation-evidence.md","deviations":[],"planning_change_required":False},
  "mago_to_nomia":{"spec_id":SPEC,"planning_state":"done","planning_evidence":"manifest.yaml","dependency_summary":{"blocked":[],"unknown":[]},"technical_risk_summary":{"level":"low","residual":[]},"forecast_impact":{"kind":"none","evidence":[]}},
@@ -25,10 +41,10 @@ PAYLOADS = {
 
 class EcosystemHandoffTests(unittest.TestCase):
  def role(self): return ROOT.name
- def build(self,direction): return handoff.build_envelope(direction=direction,payload=PAYLOADS[direction],source='fixture://source',authority=self.role(),evidence_refs=['fixture://evidence'],observed_at=NOW.isoformat(),freshness_days=30,root=ROOT)
+ def build(self,direction): return handoff.build_envelope(direction=direction,payload=PAYLOADS[direction],source='fixture://source',authority=self.role(),evidence_refs=['fixture://evidence'],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=WORKFLOW,privacy_handling=PRIVACY,root=ROOT)
  def peer_envelope(self,direction):
   contract=handoff.load_contract(ROOT); compatibility=handoff.load_compatibility(ROOT); item=contract['directions'][direction]
-  envelope={'schema_version':contract['schema_version'],'ecosystem_release':compatibility['ecosystem_release'],'direction':direction,'source_skill':item['producer'],'source_version':compatibility['packages'][item['producer']],'target_skill':item['consumer'],'observed_at':NOW.isoformat(),'provenance':{'source':'fixture://peer','authority':item['producer'],'evidence_refs':['fixture://evidence']},'freshness':{'max_age_days':30},'payload':handoff.apply_state_projection(direction,copy.deepcopy(PAYLOADS[direction]),contract),'unknowns':[],'conflicts':[]}
+  envelope={'schema_version':contract['schema_version'],'ecosystem_release':compatibility['ecosystem_release'],'direction':direction,'source_skill':item['producer'],'source_version':compatibility['packages'][item['producer']],'target_skill':item['consumer'],'workflow_id':WORKFLOW,'observed_at':NOW.isoformat(),'privacy_handling':copy.deepcopy(PRIVACY),'provenance':{'source':'fixture://peer','authority':item['producer'],'evidence_refs':['fixture://evidence']},'freshness':{'max_age_days':30},'payload':handoff.apply_state_projection(direction,copy.deepcopy(PAYLOADS[direction]),contract),'unknowns':[],'conflicts':[]}
   envelope['handoff_id']=handoff.handoff_id_for(envelope); return envelope
  def validate(self,env,role=None,operation='consume'): return handoff.validate_envelope(env,as_of=NOW,role=role or self.role(),operation=operation,root=ROOT)
  def test_contract_is_valid(self): self.assertEqual(handoff.contract_errors(handoff.load_contract(ROOT),ROOT),[])
@@ -67,6 +83,18 @@ class EcosystemHandoffTests(unittest.TestCase):
   self.assertEqual(self.validate(env)['status'],'stale')
   env=self.peer_envelope(direction); env['conflicts']=['sources disagree']; env['handoff_id']=handoff.handoff_id_for(env)
   result=self.validate(env); self.assertEqual(result['status'],'conflicting'); self.assertIn('HANDOFF_CONFLICTING',result['reason_codes'])
+ def test_missing_privacy_metadata_is_rejected(self):
+  env=self.peer_envelope(handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]); del env['privacy_handling']; env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_MISSING_FIELD',result['reason_codes'])
+ def test_secret_transport_is_rejected(self):
+  env=self.peer_envelope(handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]); env['privacy_handling']['contains_secrets']=True; env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_SECRET_EXPOSURE',result['reason_codes'])
+ def test_workflow_lineage_is_required(self):
+  env=self.peer_envelope(handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]); env['workflow_id']='workflow-invalid'; env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_INVALID_WORKFLOW_ID',result['reason_codes'])
+ def test_contract_v2_is_rejected(self):
+  env=self.peer_envelope(handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]); env['schema_version']='2.0.0'; env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_INVALID_SCHEMA',result['reason_codes'])
  def test_exit_code_matrix(self):
   expected={'accepted':0,'error':2,'draft':3,'stale':4,'conflicting':5,'rejected':6}
   for status,code in expected.items(): self.assertEqual(handoff.validation_exit_code(status),code)

@@ -13,6 +13,15 @@ Keep unknown only when the final artifact truthfully remains unknown.
 
 # Internal Notes
 
+## Privacy Handling
+
+- Classification: <internal_or_confidential_or_restricted>
+- Audience Roles: <role_labels_csv>
+- Contains Personal Data: <true_or_false>
+- Retention Policy: <policy_id_or_ISO_date>
+- Redactions Applied: <none_or_methods>
+- External Share Allowed: false
+
 ## Summary
 
 <summary_or_unknown>

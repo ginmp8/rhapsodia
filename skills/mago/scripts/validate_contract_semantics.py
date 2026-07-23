@@ -78,7 +78,7 @@ def collect_errors(root: Path) -> list[str]:
     handoff_md = read_required(root, "references/ecosystem-handoff-contract.md", errors)
     required_handoff_phrases = (
         "Legacy aliases and envelopes are rejected",
-        "There is no runtime compatibility switch for pre-v2 envelopes",
+        "There is no runtime compatibility switch for pre-v3 envelopes",
         "adaptation must occur before a handoff is built",
     )
     for phrase in required_handoff_phrases:
@@ -127,7 +127,7 @@ def collect_errors(root: Path) -> list[str]:
     release_lower = release_md.lower()
     if "legacy runtime path is permitted only when the machine-readable compatibility contract explicitly enables it" not in release_lower:
         errors.append("release guidance must condition legacy runtime support on the machine-readable contract")
-    if "current handoff and priority v2 contracts do not enable legacy runtime support" not in release_lower:
+    if "current handoff v3 and priority v2 contracts do not enable legacy runtime support" not in release_lower:
         errors.append("release guidance must explicitly reject legacy runtime support for current contracts")
 
     skill_md = read_required(root, "SKILL.md", errors)

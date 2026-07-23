@@ -1,0 +1,81 @@
+{
+  "evidence_status": "structural-fixture; not production execution",
+  "journeys": [
+    {
+      "handoff_sequence": [
+        "nomia_to_mago",
+        "mago_to_magia",
+        "magia_to_mago",
+        "mago_to_nomia"
+      ],
+      "id": "quick-reversible-fix",
+      "owner_sequence": [
+        "nomia",
+        "mago",
+        "magia",
+        "mago",
+        "nomia"
+      ],
+      "privacy_case": "public synthetic fixture",
+      "profile": "quick",
+      "rollback_exercised": true,
+      "scenario": "A bounded reversible defect in a synthetic parser repository.",
+      "validation": [
+        "targeted unit test",
+        "package-local validator"
+      ]
+    },
+    {
+      "handoff_sequence": [
+        "nomia_to_mago",
+        "mago_to_magia",
+        "magia_to_mago",
+        "mago_to_nomia"
+      ],
+      "id": "standard-contract-feature",
+      "owner_sequence": [
+        "nomia",
+        "mago",
+        "magia",
+        "mago",
+        "nomia"
+      ],
+      "privacy_case": "internal metadata with opaque references",
+      "profile": "standard",
+      "rollback_exercised": true,
+      "scenario": "A synthetic API contract feature with one consumer and migration-free rollout.",
+      "validation": [
+        "contract test",
+        "integration test",
+        "reconciliation"
+      ]
+    },
+    {
+      "handoff_sequence": [
+        "nomia_to_mago",
+        "mago_to_magia",
+        "magia_to_mago",
+        "mago_to_nomia"
+      ],
+      "id": "governed-privacy-migration",
+      "owner_sequence": [
+        "nomia",
+        "mago",
+        "magia",
+        "mago",
+        "nomia"
+      ],
+      "privacy_case": "confidential data generalized and redacted before handoff",
+      "profile": "governed",
+      "rollback_exercised": true,
+      "scenario": "A synthetic multi-repository migration that processes confidential records.",
+      "validation": [
+        "privacy handoff negative cases",
+        "migration dry run",
+        "rollback recovery",
+        "governance closure denial before evidence"
+      ]
+    }
+  ],
+  "schema_version": "1.0.0"
+}

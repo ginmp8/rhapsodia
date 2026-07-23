@@ -3,9 +3,9 @@
     "classification": "breaking-no-legacy",
     "legacy_read_support": false,
     "mixed_package_versions_allowed": false,
-    "required_ecosystem_release": "1.8.0"
+    "required_ecosystem_release": "1.9.0"
   },
-  "contract_id": "nomia-mago-magia-handoff-v2",
+  "contract_id": "nomia-mago-magia-handoff-v3",
   "directions": {
     "magia_to_mago": {
       "boolean_payload": [
@@ -254,7 +254,7 @@
       ]
     }
   },
-  "ecosystem_release": "1.8.0",
+  "ecosystem_release": "1.9.0",
   "envelope": {
     "freshness_policy": {
       "max_age_days": 365,
@@ -264,6 +264,75 @@
     "freshness_required_fields": [
       "max_age_days"
     ],
+    "optional_fields": [
+      "causation_id"
+    ],
+    "privacy_handling": {
+      "allowed_destinations": [
+        "local",
+        "internal",
+        "approved-vendor",
+        "public"
+      ],
+      "boolean_fields": [
+        "contains_personal_data",
+        "contains_third_party_data",
+        "contains_confidential_data",
+        "contains_secrets",
+        "external_share_allowed"
+      ],
+      "enum_fields": {
+        "classification": [
+          "public",
+          "internal",
+          "confidential",
+          "restricted"
+        ],
+        "evidence_ref_visibility": [
+          "opaque",
+          "internal",
+          "public"
+        ],
+        "redaction_method": [
+          "none",
+          "mask",
+          "pseudonymize",
+          "generalize",
+          "coarsen",
+          "synthesize",
+          "aggregate",
+          "remove"
+        ]
+      },
+      "list_fields": [
+        "redactions_applied",
+        "intended_audience",
+        "allowed_destinations"
+      ],
+      "max_retention_days": 3650,
+      "required_fields": [
+        "classification",
+        "contains_personal_data",
+        "contains_third_party_data",
+        "contains_confidential_data",
+        "contains_secrets",
+        "redactions_applied",
+        "redaction_method",
+        "intended_audience",
+        "allowed_destinations",
+        "purpose",
+        "retention_days",
+        "evidence_ref_visibility",
+        "external_share_allowed"
+      ],
+      "rules": [
+        "contains_secrets must be false; secrets are removed before handoff",
+        "public handoffs cannot contain personal, third-party, or confidential data",
+        "sensitive handoffs require explicit redactions and a non-none redaction method",
+        "public destination requires public classification and external_share_allowed true",
+        "evidence references are opaque by default and must not embed raw logs or private URLs"
+      ]
+    },
     "provenance_required_fields": [
       "source",
       "authority",
@@ -282,10 +351,12 @@
       "payload",
       "unknowns",
       "conflicts",
+      "workflow_id",
+      "privacy_handling",
       "handoff_id"
     ]
   },
-  "purpose": "Strict, versioned, mechanically validated handoff envelopes for the Nomia, Mago, and Magia ecosystem.",
+  "purpose": "Transfer owner-scoped evidence through privacy-minimized, causally linked, fail-closed envelopes without transferring authority.",
   "roles": {
     "magia": {
       "consumes": [
@@ -316,7 +387,7 @@
       ]
     }
   },
-  "schema_version": "2.0.0",
+  "schema_version": "3.0.0",
   "state_mapping": {
     "magia_execution_to_nomia": {
       "blocked": "blocked",

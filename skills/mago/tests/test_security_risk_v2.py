@@ -56,7 +56,7 @@ class SecurityRiskV2Tests(unittest.TestCase):
         errors = self.validate_text(text)
         self.assertTrue(any("requires a Sensitive logging check" in error for error in errors), errors)
 
-    def test_legacy_contract_remains_accepted_without_strict_flag(self) -> None:
+    def test_legacy_contract_is_rejected_on_current_path_and_allowed_only_for_explicit_migration(self) -> None:
         legacy = """# Security and Risk Considerations
 
 ## Scope
@@ -82,8 +82,9 @@ content
         with tempfile.TemporaryDirectory(prefix="mago-security-v1-") as tmp:
             path = Path(tmp) / "security-and-risk-considerations.md"
             path.write_text(legacy, encoding="utf-8")
-            self.assertEqual(validate(path), [])
-            self.assertTrue(any("version 2 is required" in error for error in validate(path, require_v2=True)))
+            self.assertTrue(any("version 2 is required" in error for error in validate(path)))
+            self.assertEqual(validate(path, require_v2=False, allow_legacy_v1=True), [])
+            self.assertTrue(any("version 2 is required" in error for error in validate(path, require_v2=True, allow_legacy_v1=True)))
 
 
 if __name__ == "__main__":

@@ -7,6 +7,22 @@ from pathlib import Path
 from typing import Any
 NOW=datetime(2026,7,22,12,0,tzinfo=timezone.utc)
 SPEC="spec-2026-07-22-negative-contract"
+WORKFLOW="workflow-0123456789abcdef"
+PRIVACY = {
+    "classification": "internal",
+    "contains_personal_data": False,
+    "contains_third_party_data": False,
+    "contains_confidential_data": False,
+    "contains_secrets": False,
+    "redactions_applied": [],
+    "redaction_method": "none",
+    "intended_audience": ["sdd-maintainers"],
+    "allowed_destinations": ["local", "internal"],
+    "purpose": "synthetic contract validation",
+    "retention_days": 30,
+    "evidence_ref_visibility": "opaque",
+    "external_share_allowed": False,
+}
 
 def load_module(root:Path,alias:str):
  path=root/'scripts/ecosystem_handoff.py'; spec=importlib.util.spec_from_file_location(alias,path)
@@ -36,9 +52,13 @@ def main(argv=None):
   shared=('references/priority-contract.json','references/ecosystem-handoff-contract.json','references/ecosystem-compatibility.json','references/ecosystem-routing-contract.json','evals/ecosystem-routing-scenarios.json','references/ecosystem-contract-provenance.json','scripts/ecosystem_handoff.py')
   for rel in shared:
    if len({(root/rel).read_bytes() for root in roots.values()})!=1: raise RuntimeError(f'shared file differs: {rel}')
-  payload={'feature_key':'negative-contract','outcome':'exercise fail-closed behavior','scope_summary':'negative fixture','owner':'delivery-owner','business_priority':{'level':'high','owner':'nomia','source':'fixture://governance','observed_at':NOW.isoformat()},'dependencies':[],'governance_readiness':'ready','candidate_spec_id':SPEC,'candidate_spec_id_provenance':'fixture://mago-registry'}
-  current=modules['nomia'].build_envelope(direction='nomia_to_mago',payload=payload,source='fixture://nomia',authority='nomia',evidence_refs=['fixture://decision'],observed_at=NOW.isoformat(),freshness_days=30,root=roots['nomia'])
+  payload={'feature_key':'negative-contract','outcome':'exercise fail-closed behavior','scope_summary':'negative fixture','owner':'delivery-role','business_priority':{'level':'high','owner':'nomia','source':'fixture://governance','observed_at':NOW.isoformat()},'dependencies':[],'governance_readiness':'ready','candidate_spec_id':SPEC,'candidate_spec_id_provenance':'fixture://mago-registry'}
+  current=modules['nomia'].build_envelope(direction='nomia_to_mago',payload=payload,source='fixture://nomia',authority='nomia',evidence_refs=['fixture://decision'],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=WORKFLOW,privacy_handling=PRIVACY,root=roots['nomia'])
   mixed=resign(modules['nomia'],copy.deepcopy(current)); mixed['ecosystem_release']='1.6.0'; mixed['source_version']='1.6.0'; resign(modules['nomia'],mixed); expect(modules['mago'],roots['mago'],'mago',mixed,'mixed-version-rejected','rejected','HANDOFF_INVALID_ECOSYSTEM_RELEASE',steps)
+  missing_privacy=copy.deepcopy(current); del missing_privacy['privacy_handling']; resign(modules['nomia'],missing_privacy); expect(modules['mago'],roots['mago'],'mago',missing_privacy,'privacy-metadata-required','rejected','HANDOFF_MISSING_FIELD',steps)
+  secret_case=copy.deepcopy(current); secret_case['privacy_handling']['contains_secrets']=True; resign(modules['nomia'],secret_case); expect(modules['mago'],roots['mago'],'mago',secret_case,'secret-transport-rejected','rejected','HANDOFF_SECRET_EXPOSURE',steps)
+  public_bad=copy.deepcopy(current); public_bad['privacy_handling']['allowed_destinations']=['public']; public_bad['privacy_handling']['external_share_allowed']=True; resign(modules['nomia'],public_bad); expect(modules['mago'],roots['mago'],'mago',public_bad,'confidential-public-destination-rejected','rejected','HANDOFF_PUBLIC_DESTINATION_DENIED',steps)
+  lineage=copy.deepcopy(current); lineage['workflow_id']='workflow-invalid'; resign(modules['nomia'],lineage); expect(modules['mago'],roots['mago'],'mago',lineage,'invalid-workflow-rejected','rejected','HANDOFF_INVALID_WORKFLOW_ID',steps)
   stale=copy.deepcopy(current); stale['observed_at']=(NOW-timedelta(days=10)).isoformat(); stale['freshness']={'max_age_days':1}; resign(modules['nomia'],stale); expect(modules['mago'],roots['mago'],'mago',stale,'stale-evidence','stale','HANDOFF_STALE',steps)
   future=copy.deepcopy(current); future['observed_at']=(NOW+timedelta(minutes=10)).isoformat(); resign(modules['nomia'],future); expect(modules['mago'],roots['mago'],'mago',future,'future-evidence-rejected','rejected','HANDOFF_FUTURE_OBSERVED_AT',steps)
   wrong=copy.deepcopy(current); wrong['provenance']['authority']='magia'; resign(modules['nomia'],wrong); expect(modules['mago'],roots['mago'],'mago',wrong,'wrong-authority-rejected','rejected','HANDOFF_INVALID_PROVENANCE_AUTHORITY',steps)
@@ -47,7 +67,7 @@ def main(argv=None):
   empty=copy.deepcopy(current); empty['provenance']['evidence_refs']=[]; resign(modules['nomia'],empty); expect(modules['mago'],roots['mago'],'mago',empty,'empty-evidence-rejected','rejected','HANDOFF_EMPTY_EVIDENCE_REFS',steps)
   bad=copy.deepcopy(current); bad['payload']['candidate_spec_id']='spec002'; resign(modules['nomia'],bad); expect(modules['mago'],roots['mago'],'mago',bad,'legacy-identity-rejected','rejected','HANDOFF_INVALID_CANDIDATE_SPEC_ID',steps)
   conflict=copy.deepcopy(current); conflict['conflicts']=['sources disagree']; resign(modules['nomia'],conflict); expect(modules['mago'],roots['mago'],'mago',conflict,'conflict-evidence','conflicting','HANDOFF_CONFLICTING',steps)
-  draft_payload=copy.deepcopy(payload); draft_payload['governance_readiness']='draft'; draft=modules['nomia'].build_envelope(direction='nomia_to_mago',payload=draft_payload,source='fixture://draft',authority='nomia',evidence_refs=['fixture://draft'],observed_at=NOW.isoformat(),freshness_days=30,root=roots['nomia'])
+  draft_payload=copy.deepcopy(payload); draft_payload['governance_readiness']='draft'; draft=modules['nomia'].build_envelope(direction='nomia_to_mago',payload=draft_payload,source='fixture://draft',authority='nomia',evidence_refs=['fixture://draft'],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=WORKFLOW,privacy_handling=PRIVACY,root=roots['nomia'])
   with tempfile.TemporaryDirectory() as tmp:
    inp=Path(tmp)/'draft.json'; inp.write_text(json.dumps(draft),encoding='utf-8'); base=[sys.executable,'-B',str(roots['mago']/'scripts/ecosystem_handoff.py'),'validate','--input',str(inp),'--operation','consume','--as-of',NOW.isoformat()]
    blocked=subprocess.run(base,text=True,capture_output=True,check=False); allowed=subprocess.run(base+['--allow-draft'],text=True,capture_output=True,check=False)

@@ -344,13 +344,15 @@ def contract_version(text: str) -> int:
     return int(match.group(1)) if match else 1
 
 
-def validate(path: Path, require_v2: bool = False) -> list[str]:
+def validate(path: Path, require_v2: bool = True, allow_legacy_v1: bool = False) -> list[str]:
     if not path.is_file():
         return [f"{path}: missing file"]
     if path.name != "security-and-risk-considerations.md":
         return [f"{path}: expected security-and-risk-considerations.md"]
     text = path.read_text(encoding="utf-8-sig")
     version = contract_version(text)
+    if version == 1 and not allow_legacy_v1:
+        return [f"{path}: security contract version 2 is required on the current path"]
     if require_v2 and version < 2:
         return [f"{path}: security contract version 2 is required"]
     if version == 1:
@@ -363,11 +365,12 @@ def validate(path: Path, require_v2: bool = False) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate MAGO security and risk planning artifacts.")
     parser.add_argument("paths", nargs="+")
-    parser.add_argument("--require-v2", action="store_true")
+    parser.add_argument("--require-v2", action="store_true", help="Require current relational contract v2 (default current-path behavior).")
+    parser.add_argument("--allow-legacy-v1", action="store_true", help="Inspect legacy v1 only in an explicit adapt/refine migration step; never use for readiness or handoff.")
     args = parser.parse_args(argv)
     errors: list[str] = []
     for raw in args.paths:
-        errors.extend(validate(Path(raw).resolve(), require_v2=args.require_v2))
+        errors.extend(validate(Path(raw).resolve(), require_v2=not args.allow_legacy_v1 or args.require_v2, allow_legacy_v1=args.allow_legacy_v1))
     for error in errors:
         print(f"ERROR: {error}")
     if errors:

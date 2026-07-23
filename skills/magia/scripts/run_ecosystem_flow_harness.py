@@ -14,6 +14,21 @@ from typing import Any
 
 NOW = datetime(2026, 7, 22, 12, 0, tzinfo=timezone.utc)
 SPEC = "spec-2026-07-22-ecosystem-contract"
+PRIVACY = {
+    "classification": "internal",
+    "contains_personal_data": False,
+    "contains_third_party_data": False,
+    "contains_confidential_data": False,
+    "contains_secrets": False,
+    "redactions_applied": [],
+    "redaction_method": "none",
+    "intended_audience": ["sdd-maintainers"],
+    "allowed_destinations": ["local", "internal"],
+    "purpose": "synthetic contract validation",
+    "retention_days": 30,
+    "evidence_ref_visibility": "opaque",
+    "external_share_allowed": False,
+}
 
 
 def load_module(root: Path, alias: str):
@@ -40,6 +55,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     roots = {name:Path(getattr(args,name)).resolve() for name in ("mago","magia","nomia")}
     modules = {name:load_module(root, f"{name}_ecosystem_handoff") for name,root in roots.items()}
+    workflow_id = modules["nomia"].workflow_id_for("synthetic-governed-reference-journey")
     steps: list[dict[str, Any]] = []
     try:
         for name, root in roots.items():
@@ -50,27 +66,27 @@ def main(argv: list[str] | None = None) -> int:
             values = {(roots[name]/rel).read_bytes() for name in roots}
             if len(values) != 1: raise RuntimeError(f"shared contract differs: {rel}")
         nomia_payload = {
-            "feature_key":"ecosystem-contract","outcome":"Deliver a governed coordinated capability","scope_summary":"Strict cross-skill contract fixture","owner":"delivery-owner",
+            "feature_key":"ecosystem-contract","outcome":"Deliver a governed coordinated capability","scope_summary":"Strict cross-skill contract fixture","owner":"delivery-role",
             "business_priority":{"level":"high","owner":"nomia","source":"fixture://governance","observed_at":NOW.isoformat()},
             "dependencies":[],"governance_readiness":"ready","candidate_spec_id":SPEC,"candidate_spec_id_provenance":"fixture://mago-registry"
         }
-        n2m = modules['nomia'].build_envelope(direction='nomia_to_mago',payload=nomia_payload,source='fixture://nomia-intake',authority='nomia',evidence_refs=['fixture://decision/1'],observed_at=NOW.isoformat(),freshness_days=30,root=roots['nomia'])
+        n2m = modules['nomia'].build_envelope(direction='nomia_to_mago',payload=nomia_payload,source='fixture://nomia-intake',authority='nomia',evidence_refs=['fixture://decision/1'],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=workflow_id,privacy_handling=PRIVACY,root=roots['nomia'])
         consume(modules['mago'], roots['mago'], 'mago', n2m); steps.append({'step':'nomia_to_mago','handoff_id':n2m['handoff_id'],'status':'pass'})
         m2x_payload = {
             "spec_id":SPEC,"planning_state":"ready","planning_evidence":"fixture://mago/manifest","requirement_refs":["REQ-001"],"acceptance_criteria_refs":["AC-001"],"task_ids":["task001"],"validation_refs":["VAL-001"],
             "technical_criticality":{"level":"high","owner":"mago","rationale":"contract and compatibility impact"},
             "execution_sequence":{"rank":10,"lane":"fixed_date","owner":"mago","rationale":["dependency-safe","governed validation"]},"readiness":"ready"
         }
-        m2x = modules['mago'].build_envelope(direction='mago_to_magia',payload=m2x_payload,source='fixture://mago-plan',authority='mago',evidence_refs=['fixture://manifest','fixture://validation'],observed_at=NOW.isoformat(),freshness_days=30,root=roots['mago'])
+        m2x = modules['mago'].build_envelope(direction='mago_to_magia',payload=m2x_payload,source='fixture://mago-plan',authority='mago',evidence_refs=['fixture://manifest','fixture://validation'],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=workflow_id,privacy_handling=PRIVACY,causation_id=n2m['handoff_id'],root=roots['mago'])
         consume(modules['magia'], roots['magia'], 'magia', m2x); steps.append({'step':'mago_to_magia','handoff_id':m2x['handoff_id'],'status':'pass'})
         x2m_payload = {"spec_id":SPEC,"execution_state":"done","validation_state":"passed","evidence_reference":"fixture://magia/validation-evidence","deviations":[],"planning_change_required":False}
-        x2m = modules['magia'].build_envelope(direction='magia_to_mago',payload=x2m_payload,source='fixture://magia-execution',authority='magia',evidence_refs=['fixture://tests/pass'],observed_at=NOW.isoformat(),freshness_days=30,root=roots['magia'])
+        x2m = modules['magia'].build_envelope(direction='magia_to_mago',payload=x2m_payload,source='fixture://magia-execution',authority='magia',evidence_refs=['fixture://tests/pass'],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=workflow_id,privacy_handling=PRIVACY,causation_id=m2x['handoff_id'],root=roots['magia'])
         consume(modules['mago'], roots['mago'], 'mago', x2m); steps.append({'step':'magia_to_mago','handoff_id':x2m['handoff_id'],'status':'pass'})
         final_mago_payload = {"spec_id":SPEC,"planning_state":"done","planning_evidence":"fixture://mago/reconciliation","dependency_summary":{"blocked":[],"unknown":[]},"technical_risk_summary":{"level":"low","residual":[]},"forecast_impact":{"kind":"none","evidence":[x2m['handoff_id']]}}
-        m2n = modules['mago'].build_envelope(direction='mago_to_nomia',payload=final_mago_payload,source='fixture://mago-reconciliation',authority='mago',evidence_refs=[x2m['handoff_id']],observed_at=NOW.isoformat(),freshness_days=30,root=roots['mago'])
+        m2n = modules['mago'].build_envelope(direction='mago_to_nomia',payload=final_mago_payload,source='fixture://mago-reconciliation',authority='mago',evidence_refs=[x2m['handoff_id']],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=workflow_id,privacy_handling=PRIVACY,causation_id=x2m['handoff_id'],root=roots['mago'])
         consume(modules['nomia'], roots['nomia'], 'nomia', m2n); steps.append({'step':'mago_to_nomia','handoff_id':m2n['handoff_id'],'status':'pass'})
         x2n_payload = {"spec_id":SPEC,"execution_state":"done","validation_state":"passed","evidence_reference":"fixture://magia/validation-evidence","delivery_impacts":[]}
-        x2n = modules['magia'].build_envelope(direction='magia_to_nomia',payload=x2n_payload,source='fixture://magia-execution',authority='magia',evidence_refs=['fixture://tests/pass'],observed_at=NOW.isoformat(),freshness_days=30,root=roots['magia'])
+        x2n = modules['magia'].build_envelope(direction='magia_to_nomia',payload=x2n_payload,source='fixture://magia-execution',authority='magia',evidence_refs=['fixture://tests/pass'],observed_at=NOW.isoformat(),freshness_days=30,workflow_id=workflow_id,privacy_handling=PRIVACY,causation_id=x2m['handoff_id'],root=roots['magia'])
         consume(modules['nomia'], roots['nomia'], 'nomia', x2n); steps.append({'step':'magia_to_nomia','handoff_id':x2n['handoff_id'],'status':'pass'})
         closure = {
           "governance_status":"closed","governance_lifecycle":"close",
@@ -90,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
             if done.returncode != 0: raise RuntimeError(f"Nomia closure gate failed: {done.stdout} {done.stderr}")
             closure_result=json.loads(out.read_text(encoding='utf-8'))
         steps.append({'step':'nomia_closure','status':closure_result['status']})
-        result={'status':'pass','ecosystem_release':(roots['mago']/ 'VERSION').read_text().strip(),'scenario':'nomia-mago-magia-reconcile-close','steps':steps,'limitations':['Fixture evidence proves contract behavior only; it is not production release evidence.']}
+        result={'status':'pass','workflow_id':workflow_id,'ecosystem_release':(roots['mago']/ 'VERSION').read_text().strip(),'scenario':'nomia-mago-magia-reconcile-close','steps':steps,'limitations':['Fixture evidence proves contract behavior only; it is not production release evidence.']}
         rc=0
     except Exception as exc:
         result={'status':'fail','ecosystem_release':(roots['mago']/ 'VERSION').read_text().strip(),'scenario':'nomia-mago-magia-reconcile-close','steps':steps,'error':str(exc)}

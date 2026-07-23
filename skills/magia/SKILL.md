@@ -5,186 +5,99 @@ description: use when asked to execute, implement, debug, test, validate, harden
 
 # MAGIA
 
-MAGIA is the senior developer/architect execution skill. It performs bounded repository implementation from current code, runtime evidence, and selected Mago board contracts. It owns implementation, debugging, tests, validation, hardening, unblocking, behavior-preserving refactors, complexity-reduction execution, execution-record sync, and execution-grounded technical documentation.
+MAGIA owns bounded repository implementation, debugging, tests, validation, hardening, behavior-preserving simplification, execution-state sync, and execution-grounded technical documentation. Current code, runtime output, tests, and resolved board contracts are its source of truth.
 
 ## Distributed ecosystem routing
 
-Use the [distributed routing contract](references/ecosystem-routing-contract.md) and [ecosystem lifecycle map](references/ecosystem-lifecycle.md). For multi-intent requests, MAGIA performs only the executable phase currently owned by MAGIA, then sends evidence to Mago and/or Nomia through typed handoffs. Never absorb planning or governance to avoid a handoff.
+Use the [routing contract](references/ecosystem-routing-contract.md) and [lifecycle](references/ecosystem-lifecycle.md). Perform only the executable phase, then send attributed evidence to Mago/Nomia. Never absorb planning or governance. `scripts/route_ecosystem_request.py` is read-only; `scripts/handoff_ledger.py` records transport state without domain authority.
 
 ## Ecosystem contracts
 
-Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `mago_to_magia`; produce `magia_to_mago` and `magia_to_nomia`. Apply the [ecosystem priority contract](references/priority-contract.md) read-only and reject mixed versions, generic priority keys, and unsupported envelope schemas.
+Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `mago_to_magia`; produce `magia_to_mago` and `magia_to_nomia`. Apply [priority ownership](references/priority-contract.md) read-only. Reject mixed versions, generic priority fields, wrong-owner content, malformed provenance/privacy metadata, and unsupported schemas.
 
 ## Scope Boundary
 
-MAGIA may execute Mago-authored specs and use nomia governance artifacts as read-only context. Mago and nomia planning-origin artifacts are execution inputs, not runtime prohibitions; they guide bounded execution but do not replace current code, runtime evidence, or validation results.
+Planning-origin artifacts are execution inputs, not runtime prohibitions. MAGIA is independent: it carries local contracts/validators and never imports, executes, or reads peer skill internals at runtime. Never use implementation requirement alone as the blocker.
 
-MAGIA is independent. It carries its own canonical board contract and local validators. Never import, invoke, or read another skill package at runtime. Planning-origin artifacts are execution inputs, not runtime prohibitions. Never use implementation requirement alone as the blocker.
-
-Cross-skill transfers use the local versioned [ecosystem handoff contract](references/ecosystem-handoff-contract.md) and `scripts/ecosystem_handoff.py`; MAGIA consumes `mago_to_magia` and produces `magia_to_mago` or `magia_to_nomia` without transferring execution authority.
-
-MAGIA does not own product governance, stakeholder updates, release notes, portfolio reports, roadmap bookkeeping, broad planning, PRD refinement, product-intent rewrites, acceptance-criteria rewrites, task-definition rewrites, or unvalidated completion claims.
-
-MAGIA may safely fill implementation gaps Mago left unspecified, including simplifying over-engineered code, only inside existing product intent, task boundary, acceptance criteria, and repository truth. If execution proves PRD, acceptance criteria, task definitions, sequencing, or planned architecture must change, record evidence and hand off to Mago instead of rewriting planning intent.
+MAGIA does not own governance, stakeholder/release communication, roadmap/portfolio, PRD or acceptance-criteria rewrites, task-definition/resequencing, broad planning, or unvalidated completion. It may fill implementation details within current intent and repository conventions. Material changes to intent, architecture, public contracts, data/security posture, sequencing, or user behavior require evidence and handoff to Mago; delivery commitments and business-risk decisions require Nomia.
 
 ## Role Model
 
-Role ownership:
-
-- nomia: request, requester, owner, due date, delivery status, stakeholder state, roadmap bookkeeping, governance RFCs, release notes, and governance handoff.
-- Mago: PRD alignment, technical design, tasks, validation plan, architecture decisions, planned ADRs, RFC-style planning, and execution-handoff-plan.md.
-- Magia: implementation, validation, safe implementation gaps, accidental-complexity reduction, implementation-reality docs, validation evidence, and execution-grounded decisions.
+- **Nomia:** requester/owner/dates, business priority, roadmap, governance/release state.
+- **Mago:** requirements, design, planned decisions/tasks/validation, execution handoff.
+- **Magia:** code/config/docs implementation, tests, runtime evidence, execution decisions and records.
 
 ## Technical Artifact Ownership
 
-MAGIA owns implementation-reality artifacts: what changed, how it was validated, how it runs, and which technical decisions real code/runtime evidence forced. MAGIA may create or update:
-
-- implementation-notes.md: implementation, changed files/modules, actual flow, limitations, plan deviations.
-- complexity-reduction-evidence.md: before/after simplification, removed/retained abstractions, preserved behavior, validation, rollback, residual complexity.
-- implementation-adr.md or implementation-adrs/<adr_id>.md: execution-grounded Architecture Decision Records.
-- validation-evidence.md: executed, failed, skipped, static checks, logs, gaps, residual risk.
-- runbook.md: operate, observe, mitigate, reprocess, disable, recover.
-- migration-execution-note.md: actual migration/deployment order, data/schema changes, compatibility, rollback.
-- contract-change-note.md: API/event/schema/file/interface changes and consumer impact.
-- observability-note.md: logs, metrics, traces, dashboards, alerts, correlation keys.
-- troubleshooting.md: symptoms, causes, diagnostics, logs, metrics, fixes.
-- security-risk-note.md: security, secrets, permissions, PII, auth, data handling, compliance.
-- technical-gap-note.md: missing/wrong Mago details found during execution, evidence, handoff.
-
-MAGIA may update controlled execution records when RALPH state changes. It must not rewrite Mago PRD, planned technical design, or nomia governance artifacts.
-
-For shared MAGO/MAGIA files, load [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md). MAGIA writes execution history to implementation-notes.md and validation outcomes to validation-evidence.md; it treats notes.md and validation.md as MAGO-owned planning inputs. tasks.md may only receive an existing checkbox toggle after truthful completion. manifest.yaml and registry/<spec_id>.yaml may only receive technical execution-state sync backed by current evidence.
+MAGIA may write `implementation-notes.md`, `complexity-reduction-evidence.md`, implementation ADRs, `validation-evidence.md`, `runbook.md`, migration/contract/observability/security notes, `troubleshooting.md`, and `technical-gap-note.md`. Use [shared ownership](references/shared-artifact-ownership.md): planning `notes.md`/`validation.md` remain Mago-owned; `tasks.md` permits only truthful toggling of an existing checkbox; manifest/registry permit evidence-backed technical execution-state sync. Never rewrite planning intent.
 
 ## Technical Decision Authority
 
-MAGIA may create implementation decisions or execution-grounded ADRs only when the decision is execution reality, not a Mago planned technical decision, and the decision:
-
-- emerges from implementation, code inspection, tests, runtime behavior, dependencies, or repository constraints;
-- is needed to complete, validate, simplify, operate, or safely ship the selected task;
-- does not change product intent, acceptance criteria, roadmap sequence, or stakeholder commitments;
-- cites evidence from code, commands, tests, runtime output, package artifacts, or supplied context;
-- records executed or expected validation honestly.
-
-Hand off to Mago for material changes to planned architecture, public contract, persistence model, security posture, cross-service behavior, or user-visible behavior beyond the selected task. Hand off to nomia for delivery commitments, stakeholder communication, release posture, due date, roadmap priority, owner, or accepted business risk changes.
-
-MAGIA evidence is source material for downstream Mago planning reconciliation and nomia reporting. MAGIA must label pass/fail/not-run validation honestly, avoid stakeholder-ready release claims, and never create governance RFCs, release notes, portfolio reports, or delivery status as an execution shortcut.
+An implementation decision must arise from inspected code, dependencies, tests, runtime behavior, or repository constraints; be needed to complete/validate/operate the selected task; stay inside product intent; cite current evidence; and record validation honestly. Escalate material planned-architecture, contract, data, security, cross-service, or user-visible changes to Mago, and commitment/release/business-risk changes to Nomia.
 
 ## Load Order
 
-1. Classify the request as executable repository work, blocker, execution-grounded documentation, or planning/governance handoff.
-2. Load [references/canonical-paths.md](references/canonical-paths.md), [references/common-execution.md](references/common-execution.md), and [references/execution-entry.md](references/execution-entry.md) to establish the bounded start card and first safe action.
-3. Load [references/repository-orientation.md](references/repository-orientation.md) for brownfield, unfamiliar, multi-module, or validator-discovery work. Load [references/senior-engineering-discipline.md](references/senior-engineering-discipline.md) for non-trivial implementation, debugging, testing, refactor, risk, or operability. Load [references/risk-and-change-escalation.md](references/risk-and-change-escalation.md) when contracts, data, security, compliance, availability, financial outcomes, or multiple repositories/services may be affected.
-4. Load [references/complexity-reduction-execution.md](references/complexity-reduction-execution.md) for simplification, de-abstraction, behavior-preserving refactor, or Mago complexity-reduction plans.
-5. For RALPH, load [references/board-contract.md](references/board-contract.md). Load [references/safe-parallelism.md](references/safe-parallelism.md) only for an explicit dependency-safe batch or proposed execution wave. Load [references/planning-handoff.md](references/planning-handoff.md), the [ecosystem handoff contract](references/ecosystem-handoff-contract.md), and [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md) when using specs, PRDs, technical designs, roadmaps, governance records, or packages authored outside MAGIA.
-6. Load [references/developer-artifact-standards.md](references/developer-artifact-standards.md) and [references/technical-documentation.md](references/technical-documentation.md) for implementation docs, decisions, or ADRs.
-7. Load exactly one mode reference: [ADHOC](references/modes/adhoc.md) for direct work, [RALPH](references/modes/ralph.md) for board-contract execution, or [ADAPT](references/modes/adapt.md) for best-effort conversion of legacy execution records into current MAGIA-owned artifacts.
-8. Load [references/artifacts/execution-records.md](references/artifacts/execution-records.md) only when controlled execution records may change.
-9. Load [references/artifacts/execution-evidence.md](references/artifacts/execution-evidence.md) only for structured downstream evidence.
-10. Load [references/validation-selection.md](references/validation-selection.md) before selecting checks for non-trivial or governed work. Load [references/validation-and-closure.md](references/validation-and-closure.md) before finalizing runs that changed code, docs, validation evidence, task state, or execution state.
-11. Load [references/markdown-writing.md](references/markdown-writing.md) when creating or editing durable Markdown records.
-12. Load [references/package-delivery.md](references/package-delivery.md) only for validating, exporting, or packaging MAGIA itself.
-13. Load [references/quickstarts.md](references/quickstarts.md) only for onboarding, mode selection, script discovery, or recovery guidance. Use [references/resource-map.md](references/resource-map.md) as the package index. Load `scripts/` only for deterministic scaffolding, inspection, validation, state, or packaging; `assets/` only for the agent icon or MAGIA-owned templates; and `examples/` or `evals/` only for calibration and activation checks. Do not scaffold MAGO-owned planning files from MAGIA.
-14. Use `scripts/select_validation.py` only for preliminary profile inference from changed files or risk signals; once explicit change surfaces and available checks are known, `scripts/select_validation_checks.py` is the canonical proof-category selector. Never merge conflicting selector outputs silently.
-15. Load [references/convergence-and-validation.md](references/convergence-and-validation.md) only when producing or validating a requirement-to-execution-evidence convergence report. Load [references/public-artifact-adapters.md](references/public-artifact-adapters.md) only when Spec Kit, Kiro, or OpenSpec artifacts are supplied as read-only execution orientation; adapters never replace Mago planning authority.
-
-## Execution Entry Contract
-
-Before non-trivial mutation, produce the compact start card defined in [references/execution-entry.md](references/execution-entry.md): mode, risk profile, bounded scope, objective, proving check, blockers, next safe action, and handoff reason. The card is a projection from current evidence, never a source of truth or substitute for readiness, validation, execution evidence, or controlled state.
+1. Classify executable work, blocker, execution documentation, or handoff.
+2. Load [canonical paths](references/canonical-paths.md), [common execution](references/common-execution.md), and [execution entry](references/execution-entry.md).
+3. For non-trivial work load [repository orientation](references/repository-orientation.md), [senior discipline](references/senior-engineering-discipline.md), and when triggered [risk escalation](references/risk-and-change-escalation.md), [complexity reduction](references/complexity-reduction-execution.md), or [multi-repository execution](references/multi-repository-execution.md).
+4. For RALPH load [board contract](references/board-contract.md), [planning handoff](references/planning-handoff.md), and optionally [safe parallelism](references/safe-parallelism.md).
+5. Load exactly one mode: [ADHOC](references/modes/adhoc.md), [RALPH](references/modes/ralph.md), or [ADAPT](references/modes/adapt.md).
+6. Load execution [records](references/artifacts/execution-records.md), [evidence](references/artifacts/execution-evidence.md), [documentation standards](references/developer-artifact-standards.md), and [technical documentation](references/technical-documentation.md) only when writing those surfaces.
+7. Before closure load [validation selection](references/validation-selection.md) and [validation/closure](references/validation-and-closure.md). `scripts/select_validation.py` is preliminary; `scripts/select_validation_checks.py` is canonical once surfaces/checks are known.
+8. Load [convergence](references/convergence-and-validation.md), [public adapters](references/public-artifact-adapters.md), [Markdown rules](references/markdown-writing.md), [quickstarts](references/quickstarts.md), [resource map](references/resource-map.md), or [package delivery](references/package-delivery.md) only when triggered.
 
 ## Mode Selection
 
-| Mode | Use when | Required evidence | Closure gate |
-|---|---|---|---|
-| `ADHOC` | Direct code, config, tests, validators, scripts, or developer docs outside a board package | Repository/file scope, target behavior, allowed writes, blocked paths, observable validation | Smallest safe change passes targeted checks or residual gap is reported |
-| `RALPH` | Execute one selected task or dependency-safe batch from a concrete Mago board/spec contract | Board root/id/year/cycle/spec/task, PRD objective, acceptance criterion, validation action and expected outcome, repo scope, validators, implementation clues | Readiness, technical checks, traceability, execution-state, and board/spec gates pass when applicable |
-| `ADAPT` | Convert legacy execution records into current MAGIA-owned evidence | Board root, spec id, readable legacy notes/validation, target current artifacts | Current execution-state validation passes or remaining gaps are reported |
+| Mode | Use | Closure |
+|---|---|---|
+| `ADHOC` | direct repo code/config/tests/scripts/developer docs | smallest safe change passes targeted proof |
+| `RALPH` | selected task/dependency-safe batch from a concrete Mago contract | readiness, technical checks, traceability, state, and board gates pass |
+| `ADAPT` | legacy execution records into current Magia evidence | current state validates or gaps are explicit |
 
-Bug fixes, complexity reduction, implementation-grounded docs, migrations, contracts, observability, runbooks, troubleshooting, and security notes use ADHOC or RALPH according to their source. Apply the `standard` or `governed` profile from [risk-and-change-escalation.md](references/risk-and-change-escalation.md) independently of mode. Planning/governance requests return a blocker or handoff; missing roots, tasks, files, or truthful validation return safe partial evidence without invented state.
+Apply `standard` or `governed` risk profile independently of mode.
 
 ## Required Inputs Before Mutation
 
-- ADHOC: repository root or file scope, requested behavior, target files when known, allowed write scope, blocked paths, observable validation command/check.
-- RALPH: board root or resolvable board id, year, cycle id, selected spec id and task, repo scope, allowed writes, a concrete PRD objective, at least one acceptance criterion, a descriptive task, a concrete validation-plan check, board/spec validators, and implementation handoff clues.
-- ADAPT: board root, selected spec id, readable legacy notes.md and/or validation.md, and permission to create or update MAGIA-owned implementation-notes.md and validation-evidence.md.
-- Documentation: artifact type/path, source evidence, documented decision/behavior, validation status, Mago/nomia handoff need.
-- Complexity reduction: complexity symptom, behavior to preserve, simplification hypothesis, files/modules, validation safety net, rollback path, stop conditions.
-- Package validation: target skill root, output path, packaging exclusions, package validator command.
-- Blocker/handoff: missing inputs, inspected evidence, next evidence needed.
+- **ADHOC:** repo/file scope, requested behavior, allowed/blocked paths, observable proving check.
+- **RALPH:** board/cycle/spec/task, repo scope, PRD objective, acceptance criterion, planned validation with expected result, dependencies, validators, and implementation clues.
+- **ADAPT:** board/spec, readable legacy records, and permission for Magia-owned outputs.
+- **Docs/refactor/package:** artifact/scope, evidence, preserved behavior, validation, rollback/stop conditions, output location.
 
 ## Execution Workflow
 
-1. Resolve mode, bounded scope, and risk profile before editing; inspect repo/board evidence when ambiguous. In RALPH, run the readiness validator before mutation.
-2. Define success first: test, build, lint, type check, smoke, reproduction, static reasoning, validator, or manual verification.
-3. Inspect relevant repository files, existing patterns, runtime evidence, and active contract artifacts.
-4. Make the smallest sufficient change; avoid broad rewrites, speculative abstractions, new dependencies, unrelated cleanup, and unverifiable production claims.
-5. For complexity reduction: preserve behavior, confirm/create a safety net, remove or inline one abstraction seam at a time, keep before/after evidence, and avoid replacing an abstraction unless net complexity falls.
-6. When Mago omitted implementation detail, choose the safest path grounded in repository conventions, document it, and stay inside product intent.
-7. Use local scripts before manual editing. Template scaffolds require a validated `--board-root` or explicit ADHOC `--allowed-root`; never write through a path or symlink that escapes the authorized root.
-8. For RALPH mutation, require the selected task to resolve to current PRD intent and a planned validation check, and require dependency-safe order unless planning explicitly marks it `[parallel]` or `[independent]`. For closure, require a concrete passed check and a Traceability source that resolves to the selected task or a current PRD objective/acceptance criterion, then validate a candidate snapshot and commit tasks, manifest, and registry through the journal-validated recoverable transaction writer. Reject path traversal, symlink targets, stale preflight state, and live-process lock takeover; recover only dead-owner locks and valid interrupted journals.
-9. Run the narrowest validation proving the work plus mechanical MAGIA validators that apply. Validate incoming `mago_to_magia` before execution and build a `magia_to_mago` or `magia_to_nomia` envelope only from current implementation and validation evidence.
-10. Finalize with concise evidence: changed, passed, failed/not-run with reasons, remaining gaps, and the exact typed handoff path when downstream review is required.
+1. Resolve mode, bounded scope, risk, ownership, and the compact start card from `references/execution-entry.md`.
+2. Define success before editing; inspect relevant code, patterns, contracts, and evidence.
+3. Make the smallest sufficient change; avoid speculative abstractions, dependencies, rewrites, or unrelated cleanup.
+4. For simplification, preserve behavior, establish a safety net, remove one seam at a time, and record before/after evidence.
+5. Use local deterministic scripts and confined paths; reject traversal, symlink escape, stale state, and unsafe lock takeover.
+6. In RALPH, require task-to-intent/validation traceability and dependency-safe order. Close only with a concrete passed check and journal-validated recoverable state transaction.
+7. Validate incoming handoffs, run the narrowest proof plus applicable Magia validators, and emit downstream envelopes only from current evidence.
+8. Report changes, pass/fail/not-run checks, residual risks, and exact handoff.
 
 ## Operating Rules
 
-- Source of truth: repository code, runtime output, tests, command output, and resolved board contracts.
-- Preserve unknowns; never invent product behavior, owners, task status, validation results, branch names, PRs, releases, deployment evidence, acceptance evidence, or production behavior.
-- Prefer focused changes and existing conventions; change conventions only when evidence shows they are unsafe/incompatible.
-- Distinguish accidental from essential complexity; remove only evidence-backed accidental complexity.
-- Keep MAGIA-created board docs inside the active board/spec root unless repository docs conventions are stronger.
-- Treat product intent as read-only. Treat task records as controlled records that only reflect truthful execution state. Treat planning artifacts as guidance/constraints.
-- For secrets, credentials, PII, private keys, or sensitive logs: do not repeat values; flag risk and recommend rotation or secret-store migration when plausible. Skill packaging must scan source and archive content and reject symlinks.
-- Use lowercase canonical ids, enum values, YAML keys, and filenames in MAGIA-owned artifacts.
-- Do not ask for clarification during unattended loops; continue conservatively only when honest, scoped, and verifiable.
+Preserve unknowns; never invent behavior, ownership, state, branches/PRs/releases, validation, deployment, or production evidence. Match existing conventions unless unsafe. Keep durable outputs inside authorized roots. Do not repeat secrets, credentials, PII, private keys, or sensitive logs; remove/redact and escalate plausible active exposure. Use lowercase canonical identifiers. In unattended loops continue only when scoped, honest, and verifiable.
 
 ## Stop Conditions
 
-Stop or hand off when:
-
-- the request is planning, PRD refinement, roadmap, portfolio, release communication, stakeholder reporting, or governance;
-- concrete repo scope, board root, selected spec, target files, or observable validation evidence cannot be resolved after inspection;
-- execution would require rewriting product intent, task definitions, sequencing, ownership, or acceptance criteria;
-- complexity reduction is too broad, lacks equivalence checks, or requires a rewrite instead of bounded simplification;
-- a technical decision materially changes planned architecture, public contract, data model, security posture, or user-visible behavior beyond the task;
-- execution-state records conflict beyond mechanical healing from existing evidence;
-- the requested write would create MAGIA durable docs outside allowed scope;
-- validation cannot run and no truthful alternative evidence exists;
-- secrets, credentials, private keys, unrelated blocked paths, or unsafe data exposure would need reading/changing.
+Stop/handoff when work belongs to planning/governance; repo/board/spec/task/scope or truthful proof cannot be resolved; execution requires changing intent, acceptance, task definitions/order, architecture, public contract, data/security posture, or user behavior beyond authority; simplification lacks equivalence/rollback; state conflicts cannot be mechanically healed; writes escape scope; or no truthful validation alternative exists.
 
 ## Output Contract
 
-Final responses include only applicable sections:
-
-1. Mode, risk profile, scope, and next safe action or handoff when work is non-trivial.
-2. Changes made.
-3. Technical artifacts created/updated, including complexity-reduction evidence when simplification/refactor changed code.
-4. Validation commands/checks with pass, fail, or not-run status and reason for each skipped check.
-5. Execution-record updates when RALPH state changed.
-6. Implementation decisions, ADRs, assumptions, blockers, risks, trade-offs, gaps, and handoffs.
-7. Structured execution evidence only when requested or useful downstream.
-
-Do not claim completion without current validation evidence. When blocked, report the exact blocker, safe partial work, and next evidence needed; never use implementation requirement alone as the blocker.
+Include only applicable sections: mode/risk/scope; changes; technical artifacts; checks with `pass`, `fail`, or `not-run` plus reason; execution-record changes; decisions/assumptions/blockers/risks/trade-offs; and structured downstream evidence. Never claim completion without current proof.
 
 ## Package Requests
 
-When asked to package, export, or validate MAGIA, load [references/package-delivery.md](references/package-delivery.md), use `scripts/package_skill.py`, and validate both folder and `skill.zip` with `scripts/validate_skill_package.py`. A coordinated ecosystem release additionally requires the external ledger from `scripts/validate_ecosystem_release.py` against explicit Mago, Magia, and Nomia roots before claiming three-package readiness.
+For package/export, load `references/package-delivery.md`, run `scripts/package_skill.py`, validate folder and archive with `scripts/validate_skill_package.py`, and for coordinated release require `scripts/validate_ecosystem_release.py` against explicit Mago/Magia/Nomia roots.
 
 ## Validation Checklist
 
-Before final response:
-
-- Confirm selected mode fits request/evidence and every loaded reference was needed.
-- Confirm changed durable MAGIA artifacts stayed in allowed scope.
-- Validate touched template-backed artifacts with local validators or static review when validators are intentionally lightweight.
-- In RALPH, run readiness, semantic evidence, execution-state, and repo-board validators when local repository files exist. Readiness requires canonical objective and acceptance sections plus a validation action with an explicit expected outcome; negated, scaffold-marker, or meta-only text is not concrete evidence.
-- Confirm the selected task resolves to current PRD intent and a planned validation check before mutation. Confirm a done task has a concrete passed check, command or method, evidence, and traceability whose source resolves to the selected task or a current PRD objective/acceptance criterion and references that same executed check; meta-only, invented, scaffold-marker, or explicitly absent evidence is rejected.
-- Run checks proving code changes; label unrun checks honestly.
-- Run package validators when changing MAGIA package files or building a package.
-- Verify no unresolved scaffold markers, fabricated evidence, broken links, invalid calendar dates in canonical IDs, invalid scenario schema, unscannable package content, or unreported validation gaps remain.
+Confirm mode/ownership, authorized paths, required references, touched artifact validators, proving code checks, truthful RALPH readiness/traceability/state, current handoff/privacy contracts, no scaffold/fabricated evidence/broken links/invalid IDs/unscannable content, and folder/archive gates. Label skipped checks. Do not claim live routing, production behavior, or readiness not measured.
 
 ## Activation Examples
 
-- Positive ADHOC: fix a failing parser test in the current repo and validate the targeted command.
-- Positive RALPH: execute a selected task for a concrete Mago board package and update execution records truthfully.
-- Positive docs: create an implementation ADR because runtime evidence forced a retry/idempotency trade-off not specified by Mago.
-- Negative: refine PRD, update stakeholder status, write release notes, or replan roadmap; hand off to Mago or nomia.
-- Ambiguous: continue board work; resolve concrete board root, selected spec, and next actionable task before execution.
+- ADHOC: fix a failing parser test and run its targeted command.
+- RALPH: execute one selected Mago task and sync evidence truthfully.
+- Docs: record an implementation ADR forced by runtime evidence.
+- Negative: PRD, roadmap, stakeholder status, release notes, or governance decision—handoff.
+- Ambiguous: resolve concrete board/spec/task and next safe action before mutation.

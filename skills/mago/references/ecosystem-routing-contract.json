@@ -7,7 +7,7 @@
     "magia_to_nomia"
   ],
   "contract_id": "nomia-mago-magia-routing-v1",
-  "ecosystem_release": "1.8.0",
+  "ecosystem_release": "1.9.0",
   "evidence_status": "structural-contract; live-model-routing-not-measured",
   "forbidden_direct_handoffs": [
     "nomia_to_magia"
@@ -23,7 +23,9 @@
     "ambiguous_rule": "preserve-unknowns-and-resolve-owner-before-mutation",
     "monolithic_router_required": false,
     "multi_intent_rule": "sequence-owners-through-typed-handoffs",
-    "mutation_rule": "resolve-exactly-one-current-owner-before-mutation"
+    "mutation_rule": "resolve-exactly-one-current-owner-before-mutation",
+    "read_only_router": "scripts/route_ecosystem_request.py",
+    "router_authority": "read-only; selects current owner and handoff sequence but never writes domain artifacts"
   },
   "package_model": "independent-coordinated-skills",
   "roles": {

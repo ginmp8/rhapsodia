@@ -584,7 +584,7 @@ def validate_conditional_artifacts(package_path: Path) -> list[str]:
     if security.exists():
         from validate_security_risk import validate as validate_security_risk
 
-        errors.extend(validate_security_risk(security))
+        errors.extend(validate_security_risk(security, require_v2=True))
 
     from validate_triggered_artifact import ARTIFACT_HEADINGS, validate as validate_triggered_artifact
 

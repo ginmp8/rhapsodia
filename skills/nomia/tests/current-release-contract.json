@@ -7,5 +7,5 @@
   "schema_version": 1,
   "skill": "nomia",
   "source_contract": "tests/original-contract.json",
-  "version": "1.8.0"
+  "version": "1.9.0"
 }

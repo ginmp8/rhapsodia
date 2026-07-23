@@ -30,7 +30,7 @@ RELEASE_NOTES_HEADINGS = [
     ("## Validation", "## Validation Status"),
     ("## Known Limitations",),
 ]
-INTERNAL_NOTES_HEADINGS = [("# Internal Notes",), ("## Summary",), ("## Internal Details",), ("## Follow-ups",)]
+INTERNAL_NOTES_HEADINGS = [("# Internal Notes",), ("## Privacy Handling",), ("## Summary",), ("## Internal Details",), ("## Follow-ups",)]
 
 EVIDENCE_STATUS_RE = re.compile(
     r"\b(evidence status|deployment evidence|release evidence|rollout evidence|validation evidence|"
@@ -76,6 +76,13 @@ SOURCE_OF_TRUTH_RE = re.compile(
 SECRET_VALUE_RE = re.compile(
     r"(?i)\b(password|token|api[_ -]?key|secret|credential|private[_ -]?key)\b\s*[:=]\s*\S+"
 )
+
+PRIVACY_LINE_RE = re.compile(r"(?im)^-\s*(Classification|Audience Roles|Contains Personal Data|Retention Policy|Redactions Applied|External Share Allowed):\s*(.+?)\s*$")
+PRIVATE_URL_RE = re.compile(r"(?i)https?://(?![^/]*example\.(?:com|org|net)(?:/|$))\S+")
+
+
+def parse_privacy_handling(text: str) -> dict[str, str]:
+    return {match.group(1).strip().lower().replace(" ", "_"): match.group(2).strip() for match in PRIVACY_LINE_RE.finditer(section_body(text, "## Privacy Handling"))}
 
 
 def has_heading(text: str, heading: str) -> bool:
@@ -295,13 +302,29 @@ def validate_release_notes(path: Path, text: str, internal_exists: bool) -> tupl
 def validate_internal_notes(path: Path, text: str) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
-
+    handling = parse_privacy_handling(text)
+    required = {"classification", "audience_roles", "contains_personal_data", "retention_policy", "redactions_applied", "external_share_allowed"}
+    for field in sorted(required - set(handling)):
+        errors.append(f"{path}: privacy handling missing {field}")
+    if handling.get("classification") not in {"internal", "confidential", "restricted"}:
+        errors.append(f"{path}: internal notes classification must be internal, confidential, or restricted")
+    if handling.get("external_share_allowed", "").lower() != "false":
+        errors.append(f"{path}: internal notes must set external_share_allowed to false")
+    personal = handling.get("contains_personal_data", "").lower()
+    if personal not in {"true", "false"}:
+        errors.append(f"{path}: contains_personal_data must be true or false")
+    if personal == "true" and handling.get("redactions_applied", "").lower() in {"", "none"}:
+        errors.append(f"{path}: personal data requires explicit redactions")
+    if not handling.get("audience_roles") or handling.get("audience_roles", "").lower() == "unknown":
+        errors.append(f"{path}: audience_roles must use role labels")
+    if not handling.get("retention_policy") or handling.get("retention_policy", "").lower() == "unknown":
+        errors.append(f"{path}: retention_policy is required")
     if SECRET_VALUE_RE.search(text):
         errors.append(f"{path}: internal notes must not contain secret or credential values")
-
+    if PRIVATE_URL_RE.search(section_body(text, "## Private References")):
+        errors.append(f"{path}: private references must use opaque identifiers or reserved example domains")
     if re.search(r"\b(full raw log|complete raw log|entire log)\b", text, re.I):
         warnings.append(f"{path}: internal notes should summarize logs instead of storing full raw output")
-
     return errors, warnings
 
 

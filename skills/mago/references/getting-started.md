@@ -15,7 +15,7 @@ Use this page when the user has selected Mago but has not supplied an internal m
 
 ## Minimum start sequence
 
-1. Resolve `BOARD_ROOT`, `cycle_id`, `spec_id`, registry state, evidence source, and intended outcome.
+1. Resolve `BOARD_ROOT`, `cycle_id`, evidence source, intended outcome, and one mode. For `order`, resolve `feature_key` and registry context, then create `spec_id` through the canonical identity script; for package-scoped modes, resolve the existing `spec_id` first.
 2. Select the least costly safe profile using `references/profiles-and-lifecycle.md`.
 3. Record unresolved facts as assumptions, questions, or blockers; use `references/clarification-prioritization.md` when several exist.
 4. Select exactly one internal write mode.
@@ -45,7 +45,8 @@ Use for regulated, security-sensitive, financial, privacy, migration, public-con
 ## Typical entry prompts
 
 - `Use Mago to inspect this repository and identify planning candidates without editing code.`
-- `Use Mago to turn this resolved Nomia handoff into the smallest safe quick plan.`
+- `Use Mago to register this governance-ready feature through order, then prepare the selected spec package.`
+- `Use Mago to turn this resolved Nomia handoff with an existing spec id into the smallest safe quick plan.`
 - `Use Mago to refine this existing spec and show added, modified, removed, and preserved behavior.`
 - `Use Mago to show the current planning stage, missing artifacts, pending gates, and next action.`
 - `Use Mago to project dependency-safe execution waves for Magia without executing tasks.`

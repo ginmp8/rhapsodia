@@ -1,10 +1,10 @@
 {
-  "breaking_changes": false,
+  "breaking_changes": true,
   "changelog": "CHANGELOG.md",
   "compatibility_policy": "references/package-delivery.md",
   "development_requirements": "requirements-dev.txt",
   "ecosystem_contract": "references/ecosystem-compatibility.json",
-  "ecosystem_release": "1.8.0",
+  "ecosystem_release": "1.9.0",
   "name": "magia",
   "package_schema": "4",
   "products": [
@@ -25,5 +25,5 @@
     }
   ],
   "support_boundary": "bounded repository execution and validation evidence; no product governance or planning-intent ownership",
-  "version": "1.8.0"
+  "version": "1.9.0"
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+
+## [1.9.0] - 2026-07-23
+
+- Added privacy-minimized contract-v3 handoffs with workflow lineage.
+- Added deterministic read-only routing and persistent handoff ledger contracts.
+- Preserved independent Nomia, Mago, and Magia ownership.
+- Compatibility impact: breaking coordinated release; contract-v2 envelopes and mixed package versions are rejected before mutation.
+
 ## [1.8.0] - 2026-07-23
 
 - Harden strict handoff v2 consumption with closed direction payloads, bounded freshness, future-timestamp rejection, non-empty evidence references, stable reason codes, and non-actionable draft exit semantics.

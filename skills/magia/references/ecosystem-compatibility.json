@@ -2,9 +2,9 @@
   "contract_id": "nomia-mago-magia-compatibility-v1",
   "contracts": {
     "handoff": {
-      "contract_id": "nomia-mago-magia-handoff-v2",
+      "contract_id": "nomia-mago-magia-handoff-v3",
       "path": "references/ecosystem-handoff-contract.json",
-      "schema_version": "2.0.0"
+      "schema_version": "3.0.0"
     },
     "priority": {
       "contract_id": "nomia-mago-magia-priority-v2",
@@ -16,11 +16,11 @@
       "version": "2.0.0"
     }
   },
-  "ecosystem_release": "1.8.0",
+  "ecosystem_release": "1.9.0",
   "packages": {
-    "magia": "1.8.0",
-    "mago": "1.8.0",
-    "nomia": "1.8.0"
+    "magia": "1.9.0",
+    "mago": "1.9.0",
+    "nomia": "1.9.0"
   },
   "policy": {
     "classification": "coordinated-exact",
@@ -29,11 +29,12 @@
   },
   "release_gates": [
     "all package versions equal ecosystem_release",
-    "shared contract files are byte-equivalent",
+    "shared contract files and privacy policy are byte-equivalent",
     "shared contract provenance hashes validate",
     "distributed routing contract and corpus validate",
     "package-local validators and complete test suites pass",
     "positive ecosystem flow harness passes",
+    "workflow lineage and handoff ledger replay/idempotency gates pass",
     "negative ecosystem fail-closed harness passes",
     "strict ecosystem release gate passes",
     "coordinated release attestation ledger passes"

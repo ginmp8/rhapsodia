@@ -1,10 +1,10 @@
 {
-  "breaking_changes": false,
+  "breaking_changes": true,
   "changelog": "CHANGELOG.md",
   "compatibility_policy": "references/installation-and-release.md",
   "development_requirements": "requirements-dev.txt",
   "ecosystem_contract": "references/ecosystem-compatibility.json",
-  "ecosystem_release": "1.8.0",
+  "ecosystem_release": "1.9.0",
   "name": "mago",
   "package_schema": "4",
   "products": [
@@ -21,9 +21,9 @@
     {
       "distribution": "PyYAML",
       "import": "yaml",
-      "specifier": ">=6.0,<7"
+      "specifier": "==6.0.3"
     }
   ],
   "support_boundary": "technical planning artifacts and deterministic validators; no product-code execution or runtime evidence",
-  "version": "1.8.0"
+  "version": "1.9.0"
 }

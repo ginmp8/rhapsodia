@@ -258,63 +258,16 @@ class PackageValidationTests(unittest.TestCase):
     def test_required_security_artifact_rejects_presence_only_content(self) -> None:
         package = self.write_package("governed", required_conditional={"security-and-risk-considerations.md"})
         (package / "security-and-risk-considerations.md").write_text(
-            "# Security and Risk Considerations\n\n## Scope\n\n- Spec: present\n",
+            "# Security and Risk Considerations\n\n- Contract version: 2\n\n## Scope\n\n- Spec: present\n",
             encoding="utf-8",
         )
         errors, _ = validate_package(package)
-        self.assertTrue(any("missing heading" in error for error in errors), errors)
+        self.assertTrue(any("missing" in error and "heading" in error for error in errors), errors)
 
     def test_valid_security_artifact_passes_governed_gate(self) -> None:
         package = self.write_package("governed", required_conditional={"security-and-risk-considerations.md"})
         (package / "security-and-risk-considerations.md").write_text(
-            """# Security and Risk Considerations
-
-## Scope
-
-- Spec: filtered export
-
-## Data Classification and Assets
-
-- Data classification: confidential
-- Protected assets: export data
-
-## Threat Actors and Trust Boundaries
-
-- Threat actors: unauthorized internal caller
-- Trust boundaries: API to export service
-
-## Misuse and Abuse Cases
-
-- Abuse case: request restricted columns
-- Expected prevention or detection: deny and record a safe reason
-
-## Planned Controls
-
-- Control: allowlist selected columns
-- Control owner: export service owner
-- Control validation: Magia contract and negative tests
-- Failure behavior: fail closed
-
-## Risks and Residual Risk
-
-- Risk: stale allowlist
-- Likelihood/impact rationale: bounded but material data exposure
-- Residual risk: configuration drift after deployment
-- Risk authority: security reviewer
-- Status: review_required
-
-## Validation Expectations for Magia
-
-- Security tests: unauthorized column tests
-- Negative/abuse tests: restricted and malformed selections
-- Sensitive logging check: verify selected values are not logged
-
-## Required Review
-
-- Security reviewer: application security
-- Compliance reviewer: data governance
-- Review evidence required before handoff closure: recorded approval or unresolved blocker
-""",
+            '# Security and Risk Considerations\n\n- Contract version: 2\n\n## Scope\n\n- Spec: `spec-2026-07-20-filtered-export`\n- Security domains: authorization, sensitive_data\n- In-scope components and consumers: export API and export worker\n\n## Assets and Data Classification\n\n### ASSET-001 - Exported customer data\n\n- Classification: restricted\n- Sensitive data or secrets: customer identifiers and financial attributes\n- Retention and logging constraints: values must not be logged; generated files follow restricted-data retention\n\n## Trust Boundaries\n\n### BOUNDARY-001 - API to export worker\n\n- Source: authenticated export API\n- Destination: export worker\n- Authentication: workload identity\n- Authorization: API policy and worker-side column allowlist\n\n## Threats\n\n### THREAT-001 - Restricted column disclosure\n\n- Assets: ASSET-001\n- Trust boundaries: BOUNDARY-001\n- Threat actor: unauthorized internal caller\n- Likelihood: medium\n- Impact: high\n- Security domains: authorization, sensitive_data\n\n## Misuse and Abuse Cases\n\n### ABUSE-001 - Request restricted columns\n\n- Threats: THREAT-001\n- Observable misuse: caller submits restricted or unknown column identifiers\n- Expected prevention or detection: reject the request and record only safe metadata\n\n## Planned Controls\n\n### CONTROL-001 - Server-side column allowlist\n\n- Threats: THREAT-001\n- Abuse cases: ABUSE-001\n- Owner: export service owner\n- Validation: SECVAL-001\n- Failure behavior: deny\n\n## Risks and Residual Risk\n\n### RISK-001 - Allowlist configuration drift\n\n- Threats: THREAT-001\n- Controls: CONTROL-001\n- Residual likelihood: low\n- Residual impact: high\n- Risk authority: application security\n- Status: review_required\n- Acceptance evidence: none while review is pending\n\n## Validation Expectations for Magia\n\n### SECVAL-001 - Restricted-column negative tests\n\n- Controls: CONTROL-001\n- Threats: THREAT-001\n- Test type: negative\n- Expected evidence: contract tests proving restricted and unknown columns are rejected\n- Sensitive logging check: verify customer values and requested restricted values are absent from logs\n\n## Required Review\n\n- Security reviewer: application security\n- Compliance reviewer: data governance\n- Review evidence required before handoff closure: linked review record or unresolved blocker\n',
             encoding="utf-8",
         )
         self.assert_valid(package)
