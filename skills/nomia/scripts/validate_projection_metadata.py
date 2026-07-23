@@ -28,8 +28,10 @@ def validate(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
     if "## Projection Metadata" not in text:
         return [f"{path}: missing heading `## Projection Metadata`"]
+    from validate_artifact_privacy import markdown_template_errors
+    privacy_errors = markdown_template_errors(text)
     fields = {match.group("field"): match.group("value").strip() for match in FIELD_RE.finditer(text)}
-    errors: list[str] = []
+    errors: list[str] = list(privacy_errors)
     for field in REQUIRED_FIELDS:
         if field not in fields or fields[field] in {"", "unknown", "null"}:
             errors.append(f"{path}: projection metadata field `{field}` must be resolved")

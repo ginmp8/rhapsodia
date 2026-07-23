@@ -17,7 +17,7 @@ No skill may write another skill's concept or convert one concept into another a
 - `business_priority.level`: `unknown`, `low`, `medium`, `high`, `urgent`.
 - `technical_criticality.level`: `low`, `normal`, `high`, `critical`.
 - `execution_sequence.lane`: `expedite`, `fixed_date`, `standard`, `deferred`.
-- `execution_sequence.rank`: `null` or a non-negative integer; lower values execute earlier inside dependency-safe availability.
+- `execution_sequence.rank`: `null` only for `draft`/`blocked`; non-negative integer is mandatory for `ready`.
 
 ## Guidance, not automatic mapping
 

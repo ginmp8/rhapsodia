@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.9.1] - 2026-07-23
+
+- Preserve ordered and repeated lifecycle phases with a corpus-backed executable routing oracle.
+- Reject legacy Nomia ops schema v1 outside explicit governance adaptation.
+- Verify privacy declarations against content and propagate compact privacy lineage to durable artifacts.
+- Define conditional `execution_sequence.rank` semantics for draft/blocked versus ready handoffs.
+- Add deterministic privacy, routing, compatibility, and regression gates without changing domain authority.
+
 ## 1.9.0 - 2026-07-23
 
 - Added privacy-minimized contract-v3 handoffs with workflow lineage.

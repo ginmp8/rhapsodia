@@ -1,26 +1,45 @@
-schema_version: 1
+schema_version: 2
 spec_id: spec-2026-04-20-csv-export-filtered-columns
-spec_id_provenance: "user-supplied in input.md"
+spec_id_provenance: user-supplied in input.md
+privacy:
+  classification: internal
+  contains_personal_data: false
+  contains_third_party_data: false
+  contains_confidential_data: false
+  contains_secrets: false
+  redactions_applied: []
+  redaction_method: none
+  intended_audience:
+  - governance-operator
+  allowed_destinations:
+  - local
+  purpose: governance-record
+  retention_days: 0
+  external_share_allowed: false
+  source_handoff_id: null
+  source_reference: template://ops.yaml
+  transformations:
+  - synthetic-template
 request:
   title: CSV export should preserve filtered dashboard table columns
   requester: customer-success
   requested_date: 2026-04-20
   source: github_issue
-  context: Enterprise customers expect dashboard and scheduled table exports to match filtered views.
+  context: Enterprise customers expect dashboard and scheduled table exports to match
+    filtered views.
 ownership:
   owner: analytics-experience
   backup_owner: platform-analytics
   stakeholders:
-    - customer-success
-    - support
-    - enterprise-sales
+  - customer-success
+  - support
+  - enterprise-sales
   decision_maker: analytics-experience-lead
   watchers:
-    - renewal-desk
+  - renewal-desk
 planning:
   sprint: 2026-W18
   bucket: retention
-  original_target_date: 2026-05-08
   target_date: 2026-05-15
   commitment: targeted
   milestone: enterprise-export-fixes
@@ -46,31 +65,110 @@ status:
     summary: No execution progress inferred.
     updated_at: null
     evidence: []
+governance:
+  profile: standard
+  lifecycle: track
+  status: planned
+technical_state:
+  planning:
+    state: unknown
+    source: null
+    observed_at: null
+  execution:
+    state: unknown
+    source: null
+    observed_at: null
+  validation:
+    state: unknown
+    source: null
+    observed_at: null
+release:
+  state: unknown
+  released_at: null
+  evidence: []
+dependencies: []
+decision:
+  state: unknown
+  current: null
+  evidence: []
+handoffs:
+  mago:
+    state: unknown
+    source: null
+    observed_at: null
+  magia:
+    state: unknown
+    source: null
+    observed_at: null
+provenance:
+  updated_at: '2026-07-23T00:00:00+00:00'
+  facts:
+    legacy_source: fixture://legacy/03
+    legacy_schema_version: 1
+    legacy_spec_id: spec-2026-04-20-csv-export-filtered-columns
+    canonical_spec_id: spec-2026-04-20-csv-export-filtered-columns
+    canonical_spec_id_provenance: user-supplied in input.md
+  changes:
+  - field: schema_version
+    from: 1
+    to: 2
+    actor: governance-adapt
+    changed_at: '2026-07-23T00:00:00+00:00'
+    source: fixture://legacy/03
+    rationale: canonicalize governance facts without carrying legacy identity or technical
+      authority
+    affected_commitments: []
+  - field: spec_id
+    from: spec-2026-04-20-csv-export-filtered-columns
+    to: spec-2026-04-20-csv-export-filtered-columns
+    actor: governance-adapt
+    changed_at: '2026-07-23T00:00:00+00:00'
+    source: user-supplied in input.md
+    rationale: use externally supplied current identity; legacy identity remains evidence
+      only
+    affected_commitments: []
+timestamps:
+  intake_at: null
+  state_entered_at: null
+  blocked_since: null
+  decision_requested_at: null
+  decision_at: null
+  planning_started_at: null
+  planning_ready_at: null
+  execution_started_at: null
+  execution_completed_at: null
+  validation_observed_at: null
+  released_at: null
+  closed_at: null
+  stakeholder_requested_at: null
+  stakeholder_responded_at: null
 blockers: []
 risks:
-  - id: risk-001
-    summary: Scheduled export behavior may require extra validation before release communication.
-    severity: medium
-    owner: analytics-experience
+- id: risk-001
+  summary: Scheduled export behavior may require extra validation before release communication.
+  severity: medium
+  owner: analytics-experience
+risk_history: []
 replanning:
-  - date: 2026-04-24
-    changed_fields:
-      - target_date
-      - scope
-    from: 2026-05-08
-    to: 2026-05-15
-    reason: Scheduled exports were confirmed as part of the MVP.
-    impact: Target moves one week later; stakeholder message must mention the added scope.
-    decision_maker: analytics-experience-lead
+- date: 2026-04-24
+  changed_fields:
+  - target_date
+  - scope
+  from: 2026-05-08
+  to: 2026-05-15
+  reason: Scheduled exports were confirmed as part of the MVP.
+  impact: Target moves one week later; stakeholder message must mention the added
+    scope.
+  decision_maker: analytics-experience-lead
 tags:
-  - export
-  - enterprise
-  - retention
+- export
+- enterprise
+- retention
 repos:
   candidate_impacted: []
 links:
   mago:
-    - docs/boards/workspace-admin/2026/cycles/cycle-2026-04-20-workspace-admin/specs/spec-2026-04-20-csv-export-filtered-columns/manifest.yaml
+  - docs/boards/workspace-admin/2026/cycles/cycle-2026-04-20-workspace-admin/specs/spec-2026-04-20-csv-export-filtered-columns/manifest.yaml
   magia: []
   external:
-    - https://example.com/issues/4821
+  - https://example.com/issues/4821

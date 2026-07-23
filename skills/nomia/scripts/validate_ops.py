@@ -92,6 +92,7 @@ REPLAN_FIELDS_REQUIRING_FROM_TO = {
 REQUIRED_PATHS = [
     ("schema_version",),
     ("spec_id",),
+    ("privacy",),
     ("request",),
     ("request", "title"),
     ("request", "requester"),
@@ -356,10 +357,8 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
             errors.append(f"missing required key `{path_name(required_path)}`")
 
     schema_version = data.get("schema_version")
-    if schema_version not in {1, 2}:
-        errors.append("`schema_version` must be 1 (legacy validation-only) or 2 (canonical)")
-    if require_canonical and schema_version != 2:
-        errors.append("canonical validation requires `schema_version: 2`")
+    if schema_version != 2:
+        errors.append("`schema_version` must be 2 on the normal path; use governance-adapt for read-only schema 1 input")
 
     spec_id = data.get("spec_id")
     spec_id_error = validate_spec_id_format(spec_id)
@@ -377,6 +376,8 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
     if "priority" in data:
         errors.append("unsupported generic key `priority`; use Nomia-owned `business_priority`")
     business_priority = as_map(data, "business_priority", errors)
+    from validate_artifact_privacy import validate_block as validate_privacy_block
+    errors.extend(validate_privacy_block(data.get("privacy"), Path(__file__).resolve().parents[1]))
     for required_child in ("level", "rationale"):
         if required_child not in business_priority:
             errors.append(f"missing required key `business_priority.{required_child}`")
@@ -412,7 +413,7 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
     validate_enum(
         "status.state",
         status.get("state"),
-        LEGACY_VALID_STATE if schema_version == 1 else VALID_STATE,
+        VALID_STATE,
         errors,
     )
     if schema_version == 2:

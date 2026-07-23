@@ -111,4 +111,13 @@ class EcosystemHandoffTests(unittest.TestCase):
   direction=handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]; env=self.peer_envelope(direction); env['source_version']='1.5.0'; env['handoff_id']=handoff.handoff_id_for(env)
   self.assertEqual(self.validate(env)['status'],'rejected')
 
+ def test_content_privacy_and_rank_semantics(self):
+  env=self.peer_envelope('magia_to_mago'); env['unknowns']=['Contact person@internal.invalid']; env['handoff_id']=handoff.handoff_id_for(env); result=handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT); self.assertIn('HANDOFF_PRIVACY_CONTRADICTION_PERSONAL',result['reason_codes']); self.assertNotIn('person@',json.dumps(result))
+  env=self.peer_envelope('magia_to_mago'); env['provenance']['evidence_refs']=['/home/example/private.log']; env['handoff_id']=handoff.handoff_id_for(env); result=handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT); self.assertIn('HANDOFF_PRIVATE_REFERENCE_EXPOSURE',result['reason_codes']); self.assertNotIn('/home/example',json.dumps(result))
+  secret='token=' + ''.join(('abcd','efgh','ijkl','mnop','qrs')); env=self.peer_envelope('magia_to_mago'); env['unknowns']=[secret]; env['handoff_id']=handoff.handoff_id_for(env); result=handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT); self.assertIn('HANDOFF_SECRET_EXPOSURE',result['reason_codes']); self.assertNotIn(secret[6:18],json.dumps(result))
+  env=self.peer_envelope('mago_to_magia'); env['payload']['readiness']='draft'; env['payload']['execution_sequence']['rank']=None; env['handoff_id']=handoff.handoff_id_for(env); self.assertEqual(handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT)['status'],'draft'); env['payload']['readiness']='ready'; env['handoff_id']=handoff.handoff_id_for(env); self.assertEqual(handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT)['status'],'rejected')
+ def test_artifact_privacy_lineage(self):
+  import validate_artifact_privacy as ap
+  env=self.peer_envelope('magia_to_mago'); block=ap.derive(env); self.assertEqual(block['source_handoff_id'],env['handoff_id']); self.assertEqual(ap.validate_block(block,ROOT),[]); block['allowed_destinations']=['public']; self.assertIn('privacy external destination denied',ap.validate_block(block,ROOT)); block=ap.derive(env); block['contains_personal_data']=True; self.assertIn('privacy sensitive content requires redaction',ap.validate_block(block,ROOT))
+
 if __name__=='__main__': unittest.main()

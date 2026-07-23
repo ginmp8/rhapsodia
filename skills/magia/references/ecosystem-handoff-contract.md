@@ -1,46 +1,25 @@
 # Ecosystem Handoff Contract v3
 
-Use this contract whenever Nomia, Mago, or Magia transfers governed facts, planning intent, execution instructions, implementation evidence, or delivery-impact evidence. The machine-readable source is [ecosystem-handoff-contract.json](ecosystem-handoff-contract.json).
+Applies to every Nomia/Mago/Magia transfer. [ecosystem-handoff-contract.json](ecosystem-handoff-contract.json) is canonical. Packages keep byte-equivalent local copies, never read peers at runtime, and transfer evidence rather than authority. Direction payloads are closed.
 
-## Boundary
+## Compatibility
 
-Each package carries byte-equivalent local copies of the contract and builder. Packages remain runtime-independent and never import peer internals. A handoff transfers attributed evidence, not authority. Payloads are closed per direction and undeclared fields fail closed.
+Release `1.9.1`; envelope `3.0.0`; mapping `2.0.0`; exact versions only. Legacy aliases and envelopes are rejected; adaptation must occur before a handoff is built. There is no runtime compatibility switch for pre-v3 envelopes.
 
-## Release
+## Envelope
 
-- Ecosystem release: `1.9.0`.
-- Handoff schema: `3.0.0`.
-- State mapping: `2.0.0`.
-- Compatibility: exact coordinated versions only; v2 envelopes are rejected on the normal path.
-- Legacy aliases and envelopes are rejected; adaptation must occur before a handoff is built. There is no runtime compatibility switch for pre-v3 envelopes.
+Require identity, direction, versions, provenance, freshness, payload, unknowns, conflicts, deterministic `handoff_id`, stable `workflow_id`, and `privacy_handling`; follow-ups reuse the workflow and set `causation_id`.
 
-## Envelope invariants
-
-Current envelopes require identity, direction, producer/consumer versions, provenance, freshness, payload, unknowns, conflicts, deterministic `handoff_id`, stable `workflow_id`, and `privacy_handling`. Follow-up envelopes reuse `workflow_id` and set `causation_id` to the prior handoff.
-
-`privacy_handling` records classification, audience, allowed destinations, purpose, retention, data categories, redactions, evidence-reference visibility, and external-share policy. Secrets are never transported. Public handoffs cannot contain personal, third-party, or confidential data. Evidence references are opaque by default and must reference evidence rather than embed raw logs or private URLs.
+Privacy covers classification, data categories, redactions, audience, destinations, purpose, retention, reference visibility, and external sharing. Validate declarations against all text-bearing envelope fields. Reject secrets, private locations, contradictory identifiers, and sensitive public output with masked reasons. Durable artifacts inherit [artifact privacy](artifact-privacy-contract.json); external projection fails closed.
 
 ## Directions
 
-| Direction | Producer | Consumer | Boundary |
-|---|---|---|---|
-| `nomia_to_mago` | Nomia | Mago | Governance facts and readiness; no technical design or tasks. |
-| `mago_to_magia` | Mago | Magia | Validated intent and execution plan; no governance replacement or runtime completion claim. |
-| `magia_to_mago` | Magia | Mago | Execution evidence and deviations; no silent planning rewrite. |
-| `mago_to_nomia` | Mago | Nomia | Attributed planning projection; no governance decision. |
-| `magia_to_nomia` | Magia | Nomia | Attributed execution/validation projection; no closure or risk acceptance. |
+- `nomia_to_mago`: governance/readiness, no technical plan.
+- `mago_to_magia`: validated execution intent, no governance/runtime claim.
+- `magia_to_mago`: execution evidence/deviation, no planning rewrite.
+- `mago_to_nomia`: planning projection, no governance decision.
+- `magia_to_nomia`: execution projection, no closure/risk acceptance.
 
-## Failure semantics
+## Validation
 
-Malformed, stale, future-dated, conflicting, wrong-role, mixed-version, lineage-invalid, privacy-invalid, tampered, undeclared, or authority-violating envelopes fail closed with stable reason codes. A draft is transportable but non-actionable unless `--allow-draft` is used for inspection only.
-
-## Commands
-
-```text
-python -B scripts/ecosystem_handoff.py workflow-id --seed <non-sensitive-seed>
-python -B scripts/ecosystem_handoff.py contract
-python -B scripts/ecosystem_handoff.py build --direction <direction> --payload <payload.json> --privacy <privacy.json> --workflow-id <workflow-id> --source <artifact> --authority <authority> --evidence-ref <opaque-ref> --output <handoff.json>
-python -B scripts/ecosystem_handoff.py validate --input <handoff.json> --operation consume --json-output <validation.json>
-```
-
-The shared handoff ledger records lifecycle state (`created`, `accepted`, `consumed`, `superseded`, `replayed`) without changing domain authority.
+Malformed, stale, future, conflicting, wrong-role, mixed-version, lineage/privacy-invalid, tampered, undeclared, or authority-violating envelopes fail closed. Drafts are inspection-only with `--allow-draft`. Use `scripts/ecosystem_handoff.py`; the ledger stores transport state only.

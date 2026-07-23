@@ -130,3 +130,22 @@ links:
   mago: []
   magia: []
   external: []
+privacy:
+  classification: internal
+  contains_personal_data: false
+  contains_third_party_data: false
+  contains_confidential_data: false
+  contains_secrets: false
+  redactions_applied: []
+  redaction_method: none
+  intended_audience:
+  - governance-operator
+  allowed_destinations:
+  - local
+  purpose: governance-record
+  retention_days: 0
+  external_share_allowed: false
+  source_handoff_id: null
+  source_reference: fixture://11-governance-adapt-legacy/ops
+  transformations:
+  - synthetic-template

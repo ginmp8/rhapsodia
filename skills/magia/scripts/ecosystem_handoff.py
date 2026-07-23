@@ -21,7 +21,15 @@ FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SPEC_ID_RE = re.compile(r"^spec-(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$")
 HANDOFF_ID_RE = re.compile(r"^handoff-[0-9a-f]{16}$")
 WORKFLOW_ID_RE = re.compile(r"^workflow-[0-9a-f]{16}$")
-PRIVATE_REF_RE = re.compile(r"(?i)(?:/home/|/users/|\\\\|https?://(?:[^/]+\.)?(?:internal|corp|local)(?:[/:]|$)|(?:^|/)private(?:/|$))")
+PRIVATE_REF_RE = re.compile(r"(?i)(?:/home/|/users/|[A-Z]:\\|https?://(?:[^/]+\.)?(?:internal|corp|local)(?:[/:]|$)|(?:^|/)private(?:/|$))")
+EMAIL_RE = re.compile(r"(?i)\b[A-Z0-9._%+-]+@([A-Z0-9.-]+\.[A-Z]{2,})\b")
+CONFIDENTIAL_RE = re.compile(r"(?i)\b(?:confidential|internal[- ]only|do not share|restricted material)\b")
+SECRET_RES = (
+    re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    re.compile(r"(?i)\b(?:bearer\s+[A-Za-z0-9._~+/-]{16,}|(?:api[_-]?key|client[_-]?secret|password|token)\s*[:=]\s*[A-Za-z0-9._~+/-]{12,})"),
+    re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})\b"),
+)
+RESERVED_EMAIL_DOMAINS = {"example.com", "example.org", "example.net"}
 EXIT_CODES = {"accepted": 0, "error": 2, "draft": 3, "stale": 4, "conflicting": 5, "rejected": 6}
 
 
@@ -38,6 +46,10 @@ def reason_code(reason: str) -> str:
         ("invalid handoff_id", "HANDOFF_INVALID_ID"),
         ("invalid workflow_id", "HANDOFF_INVALID_WORKFLOW_ID"),
         ("invalid causation_id", "HANDOFF_INVALID_CAUSATION_ID"),
+        ("secret exposure", "HANDOFF_SECRET_EXPOSURE"),
+        ("direct personal identifier exposure", "HANDOFF_PRIVACY_CONTRADICTION_PERSONAL"),
+        ("private reference exposure", "HANDOFF_PRIVATE_REFERENCE_EXPOSURE"),
+        ("confidential content contradicts", "HANDOFF_PRIVACY_CONTRADICTION_CONFIDENTIAL"),
         ("contains_secrets", "HANDOFF_SECRET_EXPOSURE"),
         ("public destination", "HANDOFF_PUBLIC_DESTINATION_DENIED"),
         ("privacy_handling", "HANDOFF_INVALID_PRIVACY"),
@@ -217,7 +229,38 @@ def workflow_id_for(seed: str) -> str:
     return "workflow-" + hashlib.sha256(seed.encode()).hexdigest()[:16]
 
 
-def privacy_errors(value: Any, contract: dict[str, Any], evidence_refs: list[str]) -> list[str]:
+def _text_fields(value: Any, path: str):
+    if isinstance(value, str):
+        yield path, value
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from _text_fields(item, f"{path}[{index}]")
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield from _text_fields(item, f"{path}.{key}" if path else str(key))
+
+
+def _content_privacy_errors(envelope: dict[str, Any], privacy: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    surfaces = {key: envelope.get(key) for key in ("payload", "provenance", "unknowns", "conflicts")}
+    for path, raw in _text_fields(surfaces, ""):
+        value = raw.strip()
+        if not value:
+            continue
+        if any(pattern.search(value) for pattern in SECRET_RES):
+            errors.append(f"privacy_handling secret exposure at {path}")
+            continue
+        if PRIVATE_REF_RE.search(value):
+            errors.append(f"privacy_handling private reference exposure at {path}")
+        emails = list(EMAIL_RE.finditer(value))
+        if any(match.group(1).lower() not in RESERVED_EMAIL_DOMAINS for match in emails):
+            errors.append(f"privacy_handling direct personal identifier exposure at {path}")
+        if CONFIDENTIAL_RE.search(value) and privacy.get("contains_confidential_data") is not True:
+            errors.append(f"privacy_handling confidential content contradicts metadata at {path}")
+    return list(dict.fromkeys(errors))
+
+
+def privacy_errors(value: Any, contract: dict[str, Any], envelope: dict[str, Any]) -> list[str]:
     policy = ((contract.get("envelope") or {}).get("privacy_handling") or {})
     if not isinstance(value, dict): return ["invalid privacy_handling; expected object"]
     errors: list[str] = []
@@ -244,8 +287,8 @@ def privacy_errors(value: Any, contract: dict[str, Any], evidence_refs: list[str
         if value.get("evidence_ref_visibility") not in {"opaque", "public"}: errors.append("privacy_handling public classification requires opaque or public evidence refs")
     if "public" in (destinations or []) and (value.get("classification") != "public" or value.get("external_share_allowed") is not True): errors.append("privacy_handling public destination is denied")
     if value.get("external_share_allowed") is True and value.get("classification") != "public": errors.append("privacy_handling external_share_allowed requires public classification")
-    if value.get("evidence_ref_visibility") == "public" and any(PRIVATE_REF_RE.search(str(ref)) for ref in evidence_refs): errors.append("privacy_handling public evidence references contain private location")
-    return errors
+    errors.extend(_content_privacy_errors(envelope, value))
+    return list(dict.fromkeys(errors))
 
 
 def handoff_id_for(envelope: dict[str, Any]) -> str:
@@ -277,7 +320,11 @@ def validate_priority_objects(payload: dict[str, Any], direction: str, priority:
         if not isinstance(sequence, dict): errors.append("invalid payload.execution_sequence")
         else:
             if sequence.get("lane") not in ((concepts.get("execution_sequence") or {}).get("lanes") or []): errors.append("invalid payload.execution_sequence.lane")
-            if not isinstance(sequence.get("rank"), int) or sequence["rank"] < 0: errors.append("invalid payload.execution_sequence.rank")
+            rank = sequence.get("rank")
+            if rank is None:
+                if payload.get("readiness") == "ready": errors.append("invalid payload.execution_sequence.rank; ready handoff requires non-negative integer")
+            elif isinstance(rank, bool) or not isinstance(rank, int) or rank < 0:
+                errors.append("invalid payload.execution_sequence.rank")
             if sequence.get("owner") != "mago": errors.append("invalid payload.execution_sequence.owner")
             if sequence.get("rationale") in (None, "", []): errors.append("missing payload.execution_sequence.rationale")
     return errors
@@ -374,7 +421,7 @@ def validate_envelope(envelope: Any, *, as_of: datetime | None = None, role: str
         elif len(raw_refs) < min_refs or not all(isinstance(ref, str) and ref.strip() for ref in raw_refs): reasons.append(f"invalid provenance.evidence_refs; evidence_refs must contain at least {min_refs} non-empty item(s)")
         else: refs = raw_refs
         if producer and provenance.get("authority") != producer: reasons.append("invalid provenance.authority")
-    reasons.extend(privacy_errors(value.get("privacy_handling"), contract, refs))
+    reasons.extend(privacy_errors(value.get("privacy_handling"), contract, value))
     for field in ("unknowns", "conflicts"):
         entries = value.get(field)
         if not isinstance(entries, list): reasons.append(f"invalid {field}")

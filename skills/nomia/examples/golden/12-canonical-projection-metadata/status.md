@@ -7,6 +7,24 @@
 - Generated At: 2026-07-20T12:00:00Z
 - Evidence As Of: 2026-07-20T11:55:00Z
 
+## Privacy and Sharing
+
+- Classification: internal
+- Contains Personal Data: false
+- Contains Third-Party Data: false
+- Contains Confidential Data: false
+- Contains Secrets: false
+- Redactions Applied: []
+- Redaction Method: none
+- Intended Audience: [governance-operator]
+- Allowed Destinations: [local]
+- Purpose: status-projection
+- Retention Days: 0
+- External Share Allowed: false
+- Source Handoff ID: null
+- Source Reference: docs/boards/example/ops.yaml
+- Transformations: [synthetic-golden]
+
 ## Summary
 
 The demand remains in triage pending a documented governance decision.

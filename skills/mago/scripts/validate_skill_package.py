@@ -43,6 +43,8 @@ REQUIRED_FILES = (
     "references/priority-contract.json",
     "references/ecosystem-handoff-contract.md",
     "references/ecosystem-handoff-contract.json",
+        "scripts/validate_artifact_privacy.py",
+        "references/artifact-privacy-contract.json",
     "references/ecosystem-compatibility.json",
     "references/ecosystem-compatibility.md",
     "references/ecosystem-routing-contract.md",

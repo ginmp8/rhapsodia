@@ -11,6 +11,7 @@ spec.loader.exec_module(mod)
 class GovernanceViewV23Tests(unittest.TestCase):
     def record(self):
         return {
+            "privacy": {"classification":"internal","contains_personal_data":False,"contains_third_party_data":False,"contains_confidential_data":False,"contains_secrets":False,"redactions_applied":[],"redaction_method":"none","intended_audience":["governance"],"allowed_destinations":["local"],"purpose":"test","retention_days":0,"external_share_allowed":False,"source_handoff_id":None,"source_reference":"fixture://test","transformations":["synthetic"]},
             "spec_id": "spec-2026-07-21-governance-view",
             "request": {"title": "Governance view", "requester": "Ops", "context": "Need a decision"},
             "ownership": {"owner": "Delivery", "stakeholders": ["Risk"], "decision_maker": "Sponsor"},
@@ -51,9 +52,9 @@ class GovernanceViewV23Tests(unittest.TestCase):
     def test_external_partner_view_excludes_audit_and_technical_detail(self):
         views = mod.build_views(self.record(), "ops.yaml", "2026-07-21T12:00:00+00:00")
         external = views["audience_views"]["external_partner"]
-        self.assertNotIn("record", external)
-        self.assertNotIn("technical_state", external)
-        self.assertIn("intentionally excluded", external["confidentiality_note"])
+        self.assertEqual(external["status"], "blocked")
+        self.assertIn("not allowed", external["reason"])
+        self.assertNotIn("request", external)
 
     def test_engineering_view_keeps_boundary_visible(self):
         views = mod.build_views(self.record(), "ops.yaml", "2026-07-21T12:00:00+00:00")

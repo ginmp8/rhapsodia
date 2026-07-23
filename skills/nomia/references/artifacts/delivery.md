@@ -6,7 +6,7 @@ Placement: spec-scoped `ops.yaml`, `status.md`, `stakeholder-brief.md`, `replann
 
 ## Canonical version policy
 
-Create every new repository-facing `ops.yaml` as `schema_version: 2` and validate it with `scripts/validate_ops.py --require-canonical`. Schema version 1 remains read-only legacy input for validation or `governance-adapt`; it must not be used for a new canonical record or canonical projection. The retained v1 field reference below documents compatibility and extraction behavior, not the preferred authoring shape.
+Create every new repository-facing `ops.yaml` as `schema_version: 2` and validate it with `scripts/validate_ops.py`. Schema version 1 is rejected by normal validation and remains read-only input only for `governance-adapt`; it must not be used for a new canonical record or canonical projection. The retained v1 field reference below documents compatibility and extraction behavior, not the preferred authoring shape.
 Priority ownership follows `references/priority-contract.md`: Nomia owns `business_priority`; generic `priority` is unsupported.
 
 ## ops.yaml
@@ -94,7 +94,7 @@ New repository-facing `ops.yaml` files use `schema_version: 2`. In addition to t
 
 Planning, execution, validation, and release use the dimension-specific values in [../state-risk-and-handoffs.md](../state-risk-and-handoffs.md). A non-unknown technical state requires its attributed `source` and ISO-8601 `observed_at`. Canonical projection requires `provenance.updated_at`; missing evidence stays unknown and blocks completion claims.
 
-`schema_version: 1` remains accepted only as legacy validation/adaptation input. It is not eligible for canonical projection. Do not silently translate legacy `done` or `at_risk`; use `governance-adapt` with externally supplied current identities and explicit unresolved mappings.
+`schema_version: 1` is rejected by normal validation and accepted only by the explicit `governance-adapt` reader. It is not eligible for canonical projection. Do not silently translate legacy `done` or `at_risk`; use `governance-adapt` with externally supplied current identities and explicit unresolved mappings.
 
 Validate canonical records with:
 

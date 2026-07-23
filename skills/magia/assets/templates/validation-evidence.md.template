@@ -1,5 +1,23 @@
 # Validation Evidence
 
+## Privacy and Sharing
+
+- Classification: <public_internal_confidential_or_restricted>
+- Contains Personal Data: <true_or_false>
+- Contains Third-Party Data: <true_or_false>
+- Contains Confidential Data: <true_or_false>
+- Contains Secrets: false
+- Redactions Applied: [<redaction_or_empty>]
+- Redaction Method: <none_mask_pseudonymize_generalize_coarsen_synthesize_aggregate_or_remove>
+- Intended Audience: [<audience>]
+- Allowed Destinations: [<local_internal_approved-vendor_or_public>]
+- Purpose: <artifact_purpose>
+- Retention Days: <approved_non_negative_days>
+- External Share Allowed: <true_or_false>
+- Source Handoff ID: <handoff-id_or_null>
+- Source Reference: <immutable_source_reference>
+- Transformations: [<transformation_or_none>]
+
 ## Scope
 
 - Spec or task: `unknown`

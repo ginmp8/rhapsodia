@@ -6,6 +6,25 @@
 schema_version: 2
 spec_id: "<spec_id_or_null_for_off_repository_draft>"
 spec_id_provenance: "<spec_id_evidence_reference_or_null>"
+privacy:
+  classification: internal
+  contains_personal_data: false
+  contains_third_party_data: false
+  contains_confidential_data: false
+  contains_secrets: false
+  redactions_applied: []
+  redaction_method: none
+  intended_audience:
+    - governance-operator
+  allowed_destinations:
+    - local
+  purpose: governance-record
+  retention_days: 0
+  external_share_allowed: false
+  source_handoff_id: null
+  source_reference: template://ops.yaml
+  transformations:
+    - synthetic-template
 request:
   title: "<request_title_or_null>"
   requester: "<requester_or_null>"

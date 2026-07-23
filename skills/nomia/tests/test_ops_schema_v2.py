@@ -42,7 +42,7 @@ class OpsSchemaV2Tests(unittest.TestCase):
             path = Path(tmp) / "ops.yaml"
             path.write_text(text, encoding="utf-8")
             errors, _ = validate(path, require_canonical=True)
-        self.assertTrue(any("requires `schema_version: 2`" in error for error in errors))
+        self.assertTrue(any("normal path" in error for error in errors))
 
 
 if __name__ == "__main__":

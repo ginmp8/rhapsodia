@@ -248,6 +248,8 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/package-delivery.md",
         "references/ecosystem-handoff-contract.md",
         "references/ecosystem-handoff-contract.json",
+        "scripts/validate_artifact_privacy.py",
+        "references/artifact-privacy-contract.json",
         "references/ecosystem-compatibility.md",
         "references/ecosystem-compatibility.json",
         "references/ecosystem-routing-contract.md",

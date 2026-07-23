@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import sys
 from datetime import date, datetime, timezone
@@ -90,6 +91,7 @@ def validate_record(data: dict[str, Any]) -> tuple[list[str], list[str]]:
         "decision",
         "handoffs",
         "provenance",
+        "privacy",
     )
     for key in required_sections:
         if key not in data:
@@ -101,6 +103,8 @@ def validate_record(data: dict[str, Any]) -> tuple[list[str], list[str]]:
 
     if data.get("schema_version") != 2:
         errors.append("schema_version must be 2 for canonical projections; adapt legacy schema_version 1 first")
+    from validate_artifact_privacy import validate_block as validate_privacy_block
+    errors.extend(validate_privacy_block(data.get("privacy"), Path(__file__).resolve().parents[1]))
 
     spec_id = data.get("spec_id")
     if validate_spec_id_format(spec_id):
@@ -303,10 +307,18 @@ def build_audience_views(
             "decision_authority": dotted(data, "ownership.decision_maker") or "unknown",
         },
         "risk": {**minimal, "material_risks": risks, "blockers": blockers},
-        "external_partner": {
+        "external_partner": ({
             **minimal,
+            "privacy": common.get("privacy"),
             "confidentiality_note": "Audit records, internal notes, and technical detail are intentionally excluded.",
-        },
+        } if (common.get("privacy") or {}).get("external_share_allowed") is True
+          and set((common.get("privacy") or {}).get("allowed_destinations") or []) & {"approved-vendor", "public"}
+          else {
+            "status": "blocked",
+            "reason": "external sharing is not allowed by artifact privacy metadata",
+            "canonical_source": common["canonical_source"],
+            "privacy": common.get("privacy"),
+          }),
     }
 
 
@@ -353,6 +365,7 @@ def build_views(data: dict[str, Any], source: str, generated_at: str) -> dict[st
         "stale_fields": stale,
         "conflicting_fields": conflicts,
         "technical_state": completion,
+        "privacy": copy.deepcopy(data.get("privacy")),
     }
     operational = {
         **common,
