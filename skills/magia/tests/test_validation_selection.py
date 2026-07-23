@@ -19,6 +19,8 @@ def run_case(tmp_path: Path, data: dict, *, expect=0) -> dict:
 
 def test_code_only_selects_targeted_proof(tmp_path: Path):
     result = run_case(tmp_path, {"surfaces": ["code"], "available_checks": ["targeted-test"]})
+    assert result["kind"] == "magia-validation-selection"
+    assert result["selection_stage"] == "explicit-proof-category-selection"
     assert result["risk_profile"] == "standard"
     assert result["narrowest_proving_category"] == "targeted-test"
     assert result["blocked_required_checks"] == []

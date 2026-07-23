@@ -94,7 +94,7 @@ Select and state one governance profile (`quick`, `standard`, or `governed`), on
 - Specialized validators: `scripts/validate_ops.py`, `scripts/validate_roadmap.py`, `scripts/validate_reporting.py`, `scripts/validate_portfolio.py`, `scripts/validate_contracts.py`, `scripts/validate_human_artifacts.py`.
 - Scenario and package gates: `scripts/validate_activation_scenarios.py`, `scripts/validate_governance_scenarios.py`, `scripts/validate_skill_package.py`, `scripts/validate_golden_examples.py`.
 - Identity, evidence, and preservation gates: `scripts/validate_identity_contract.py`, `scripts/validate_release_contract.py`, `scripts/validate_contract_preservation.py`, `scripts/validate_documentation.py`, `scripts/validate_assurance_contract.py`, and the standard-library tests under `tests/`.
-- Reproducible ledger: run `python scripts/validate_all.py --target <skill-root> --json-output <report.json>`.
+- Reproducible local ledger: run `python scripts/validate_all.py --target <skill-root> --json-output <report.json>`. For a coordinated three-package release, run `scripts/validate_ecosystem_release.py` with explicit Mago, Magia, and Nomia roots and retain its external attestation ledger.
 - Package builder: run `python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it performs the required gates, rejects symlinks and high-confidence credential/private-key material, validates the completed archive, writes atomically, uses deterministic archive metadata, and excludes caches, generated evidence/reports, and old zips.
 - Shared helpers: `scripts/nomia_utils.py`.
 

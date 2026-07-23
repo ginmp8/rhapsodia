@@ -15,7 +15,7 @@ Use this reference whenever MAGIA executes from a MAGO package or updates contro
 | `notes.md` | MAGO planning notes | read-only planning context | Do not append new execution logs here. Use `implementation-notes.md`. |
 | `implementation-notes.md` | downstream execution evidence | MAGIA-owned | Record execution log, actual implementation facts, deviations, blockers, decisions, and handoffs. |
 | `manifest.yaml` | MAGO package identity and planning defaults | execution-state sync only | Update execution status, phase, and `last_execution` only from current truthful execution evidence. |
-| `registry/<spec_id>.yaml` | planning identity, dependencies, handoff, and planning status; nomia delivery status is separate | execution-state sync only | Update only evidence-backed technical execution `status`. Preserve identity, versions, dependencies, supersession, handoff, priority, order hint, and provenance. |
+| `registry/<spec_id>.yaml` | planning identity, dependencies, handoff, and planning status; nomia delivery status is separate | execution-state sync only | Update only evidence-backed technical execution `status`. Preserve identity, versions, dependencies, supersession, handoff, `business_priority`, `technical_criticality`, `execution_sequence`, and provenance. |
 
 Downstream evidence boundary: nomia may read MAGIA-owned evidence for feature reports, release notes, governance blockers, or delivery risk. MAGIA must keep the evidence factual and source-level; nomia owns the stakeholder-facing interpretation.
 

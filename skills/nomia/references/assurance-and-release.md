@@ -77,6 +77,11 @@ python scripts/validate_contract_preservation.py --target <skill-root>
 6. `validate_all.py` — canonical combined ledger and assurance support map.
 7. `package_skill.py` — rerun gates, build, inspect, attest, and hash the archive.
 
+
+## Coordinated Ecosystem Ledger
+
+Local `validate_all.py` remains Nomia's package ledger. A release of the three-package product additionally requires `scripts/validate_ecosystem_release.py` with explicit Mago, Magia, and Nomia roots. The external JSON binds candidate versions, contract hashes, local package/archive evidence, suite digests, positive/negative ecosystem harnesses, commands, and outcomes into one fail-closed decision. It is release tooling, not runtime coupling or governance authority.
+
 ## Change And Rollback Discipline
 
 - Freeze evaluator inputs before optimization. Do not edit scenarios, expected outputs, or benchmark baselines to improve a score.

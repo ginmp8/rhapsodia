@@ -72,6 +72,11 @@ def collect_errors() -> list[str]:
         obsolete_spec_key = "spec" + "NNN"
         if obsolete_spec_key in text:
             errors.append(f"{path.relative_to(ROOT)}: obsolete sequential spec identity")
+        if "contract-v1" in lowered:
+            errors.append(f"{path.relative_to(ROOT)}: obsolete handoff contract-v1 wording")
+        for alias in ("priority and order hint", "preserve priority", "preserve order hint"):
+            if alias in lowered:
+                errors.append(f"{path.relative_to(ROOT)}: unsupported generic priority alias wording: {alias}")
 
     for rel, markers in REQUIRED_SECTIONS.items():
         path = ROOT / rel

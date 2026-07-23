@@ -1,14 +1,12 @@
 interface:
   display_name: Nomia
-  short_description: >-
-    Product and delivery governance clerk for intake, status, roadmap bookkeeping,
-    and handoff records.
-  default_prompt: >-
-    Use $nomia to register, normalize, validate, or report on Nomia-owned
-    governance artifacts only. Resolve the current owner before mutation. For
-    multi-intent work, perform only the Nomia governance phase and hand technical
-    planning to Mago. Route technical design, ADRs, Mago technical planning, and
-    execution to Mago or Magia without transferring ownership.
+  short_description: Product and delivery governance clerk for intake, status, roadmap
+    bookkeeping, and handoff records.
+  default_prompt: Use $nomia to register, normalize, validate, or report on Nomia-owned
+    governance artifacts only. Resolve the current owner before mutation. For multi-intent
+    work, perform only the Nomia governance phase and hand technical planning to Mago.
+    Route technical design, ADRs, Mago technical planning, and execution to Mago or
+    Magia without transferring ownership.
   allow_implicit_invocation: true
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg

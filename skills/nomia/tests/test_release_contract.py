@@ -73,6 +73,23 @@ class ReleaseContractTests(unittest.TestCase):
             [],
         )
 
+    def test_current_release_uses_a_continuous_multi_step_migration_chain(self) -> None:
+        migrations = json.loads((self.skill_root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
+        chain = [item for item in migrations["migrations"] if item["path"] == "agents/openai.yaml"]
+        self.assertEqual(len(chain), 2)
+        self.assertEqual(chain[0]["to_sha256"], chain[1]["from_sha256"])
+        self.assertEqual(validate_release_contract(self.skill_root), [])
+
+    def test_discontinuous_multi_step_migration_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = self.copy_contract_fixture(Path(raw))
+            path = root / "tests" / "protected-file-migrations.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["migrations"][1]["from_sha256"] = "0" * 64
+            path.write_text(json.dumps(data) + "\n", encoding="utf-8")
+            errors = validate_release_contract(root)
+            self.assertTrue(any("does not continue" in error for error in errors))
+
     def test_missing_migration_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = self.copy_contract_fixture(Path(raw))
@@ -108,7 +125,7 @@ class ReleaseContractTests(unittest.TestCase):
             self.configure_agent_migration(root)
             migration = json.loads((root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
             self.assertEqual(migration["migrations"][0]["version"], "1.2.0")
-            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "1.7.0")
+            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "1.8.0")
             self.assertEqual(validate_release_contract(root), [])
 
     def test_future_protected_file_migration_fails_closed(self) -> None:

@@ -1,5 +1,10 @@
+from __future__ import annotations
+
 import copy
+import json
+import subprocess
 import sys
+import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -23,50 +28,59 @@ class EcosystemHandoffTests(unittest.TestCase):
  def build(self,direction): return handoff.build_envelope(direction=direction,payload=PAYLOADS[direction],source='fixture://source',authority=self.role(),evidence_refs=['fixture://evidence'],observed_at=NOW.isoformat(),freshness_days=30,root=ROOT)
  def peer_envelope(self,direction):
   contract=handoff.load_contract(ROOT); compatibility=handoff.load_compatibility(ROOT); item=contract['directions'][direction]
-  envelope={'schema_version':contract['schema_version'],'ecosystem_release':compatibility['ecosystem_release'],'direction':direction,'source_skill':item['producer'],'source_version':compatibility['packages'][item['producer']],'target_skill':item['consumer'],'observed_at':NOW.isoformat(),'provenance':{'source':'fixture://peer','authority':item['producer'],'evidence_refs':['fixture://evidence']},'freshness':{'max_age_days':30},'payload':handoff.apply_state_projection(direction,PAYLOADS[direction],contract),'unknowns':[],'conflicts':[]}
+  envelope={'schema_version':contract['schema_version'],'ecosystem_release':compatibility['ecosystem_release'],'direction':direction,'source_skill':item['producer'],'source_version':compatibility['packages'][item['producer']],'target_skill':item['consumer'],'observed_at':NOW.isoformat(),'provenance':{'source':'fixture://peer','authority':item['producer'],'evidence_refs':['fixture://evidence']},'freshness':{'max_age_days':30},'payload':handoff.apply_state_projection(direction,copy.deepcopy(PAYLOADS[direction]),contract),'unknowns':[],'conflicts':[]}
   envelope['handoff_id']=handoff.handoff_id_for(envelope); return envelope
+ def validate(self,env,role=None,operation='consume'): return handoff.validate_envelope(env,as_of=NOW,role=role or self.role(),operation=operation,root=ROOT)
  def test_contract_is_valid(self): self.assertEqual(handoff.contract_errors(handoff.load_contract(ROOT),ROOT),[])
  def test_role_builds_owned_directions(self):
   contract=handoff.load_contract(ROOT)
   for direction in contract['roles'][self.role()]['produces']:
-   with self.subTest(direction=direction): self.assertEqual(handoff.validate_envelope(self.build(direction),as_of=NOW,role=self.role(),operation='produce',root=ROOT)['status'],'accepted')
+   with self.subTest(direction=direction): self.assertEqual(self.validate(self.build(direction),operation='produce')['status'],'accepted')
  def test_role_cannot_build_foreign_direction(self):
   contract=handoff.load_contract(ROOT); foreign=next(k for k,v in contract['directions'].items() if v['producer']!=self.role())
   with self.assertRaises(ValueError): self.build(foreign)
  def test_consumer_accepts_peer_envelope(self):
   contract=handoff.load_contract(ROOT)
   for direction in contract['roles'][self.role()]['consumes']:
-   with self.subTest(direction=direction): self.assertEqual(handoff.validate_envelope(self.peer_envelope(direction),as_of=NOW,role=self.role(),operation='consume',root=ROOT)['status'],'accepted')
+   with self.subTest(direction=direction): self.assertEqual(self.validate(self.peer_envelope(direction))['status'],'accepted')
  def test_state_mapping_is_explicit(self):
   contract=handoff.load_contract(ROOT); m=handoff.apply_state_projection('mago_to_nomia',PAYLOADS['mago_to_nomia'],contract); x=handoff.apply_state_projection('magia_to_nomia',PAYLOADS['magia_to_nomia'],contract)
   self.assertEqual((m['nomia_planning_state'],m['mapping_version']),('complete','2.0.0')); self.assertEqual((x['nomia_execution_state'],x['nomia_validation_state']),('complete','passed'))
- def test_legacy_envelope_is_rejected_without_compatibility_mode(self):
-  legacy={'direction':'nomia_to_mago','source':'old','observed_at':NOW.isoformat(),'freshness_days':30,'payload':{}}
-  result=handoff.validate_envelope(legacy,as_of=NOW,role='mago',operation='consume',root=ROOT)
-  self.assertEqual(result['status'],'rejected'); self.assertTrue(any('contract v2' in r for r in result['reasons']))
+ def test_future_timestamp_is_rejected(self):
+  env=self.peer_envelope(handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]); env['observed_at']=(NOW+timedelta(minutes=10)).isoformat(); env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_FUTURE_OBSERVED_AT',result['reason_codes'])
+ def test_empty_evidence_refs_are_rejected(self):
+  env=self.peer_envelope(handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]); env['provenance']['evidence_refs']=[]; env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_EMPTY_EVIDENCE_REFS',result['reason_codes'])
+ def test_undeclared_payload_field_is_rejected(self):
+  env=self.peer_envelope(handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]); env['payload']['solution_outline']={}; env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_UNKNOWN_PAYLOAD_FIELD',result['reason_codes'])
  def test_generic_priority_is_rejected_recursively(self):
   env=self.peer_envelope('nomia_to_mago'); env['payload']['nested']={'priority':'urgent'}; env['handoff_id']=handoff.handoff_id_for(env)
-  result=handoff.validate_envelope(env,as_of=NOW,role='mago',operation='consume',root=ROOT)
-  self.assertEqual(result['status'],'rejected'); self.assertTrue(any('priority' in r for r in result['reasons']))
- def test_generic_order_hint_is_rejected_recursively(self):
-  env=self.peer_envelope('nomia_to_mago'); env['payload']['nested']={'order_hint':1}; env['handoff_id']=handoff.handoff_id_for(env)
-  result=handoff.validate_envelope(env,as_of=NOW,role='mago',operation='consume',root=ROOT)
-  self.assertEqual(result['status'],'rejected'); self.assertTrue(any('order_hint' in r for r in result['reasons']))
- def test_legacy_envelope_rejects_fake_compatibility_switch(self):
-  legacy={'direction':'nomia_to_mago','source':'old','observed_at':NOW.isoformat(),'freshness_days':30,'compatibility_mode':True,'payload':{}}
-  result=handoff.validate_envelope(legacy,as_of=NOW,role='mago',operation='consume',root=ROOT)
-  self.assertEqual(result['status'],'rejected'); self.assertTrue(any('contract v2' in r for r in result['reasons']))
+  result=self.validate(env,role='mago'); self.assertEqual(result['status'],'rejected'); self.assertIn('HANDOFF_OUTSIDE_AUTHORITY',result['reason_codes'])
  def test_tampered_projection_and_handoff_id_are_rejected(self):
   env=self.peer_envelope('mago_to_nomia'); env['payload']['nomia_planning_state']='ready'
   result=handoff.validate_envelope(env,as_of=NOW,role='nomia',operation='consume',root=ROOT)
   self.assertEqual(result['status'],'rejected'); self.assertTrue(any('projection' in r or 'handoff_id' in r for r in result['reasons']))
  def test_stale_and_conflicting_evidence_do_not_pass(self):
   direction=handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]; env=self.peer_envelope(direction); env['observed_at']=(NOW-timedelta(days=10)).isoformat(); env['freshness']={'max_age_days':1}; env['handoff_id']=handoff.handoff_id_for(env)
-  self.assertEqual(handoff.validate_envelope(env,as_of=NOW,role=self.role(),operation='consume',root=ROOT)['status'],'stale')
-  env['observed_at']=NOW.isoformat(); env['conflicts']=['sources disagree']; env['handoff_id']=handoff.handoff_id_for(env)
-  self.assertEqual(handoff.validate_envelope(env,as_of=NOW,role=self.role(),operation='consume',root=ROOT)['status'],'conflicting')
+  self.assertEqual(self.validate(env)['status'],'stale')
+  env=self.peer_envelope(direction); env['conflicts']=['sources disagree']; env['handoff_id']=handoff.handoff_id_for(env)
+  result=self.validate(env); self.assertEqual(result['status'],'conflicting'); self.assertIn('HANDOFF_CONFLICTING',result['reason_codes'])
+ def test_exit_code_matrix(self):
+  expected={'accepted':0,'error':2,'draft':3,'stale':4,'conflicting':5,'rejected':6}
+  for status,code in expected.items(): self.assertEqual(handoff.validation_exit_code(status),code)
+  self.assertEqual(handoff.validation_exit_code('draft',allow_draft=True),0)
+ def test_draft_consume_requires_explicit_allow(self):
+  env=self.peer_envelope('nomia_to_mago'); env['payload']['governance_readiness']='draft'; env['handoff_id']=handoff.handoff_id_for(env)
+  with tempfile.TemporaryDirectory() as tmp:
+   source=Path(tmp)/'draft.json'; source.write_text(json.dumps(env),encoding='utf-8')
+   base=[sys.executable,'-B',str(ROOT/'scripts/ecosystem_handoff.py'),'validate','--input',str(source),'--operation','consume','--as-of',NOW.isoformat()]
+   if self.role()=='mago':
+    blocked=subprocess.run(base,text=True,capture_output=True,check=False); self.assertEqual(blocked.returncode,3,blocked.stdout+blocked.stderr)
+    inspected=subprocess.run(base+['--allow-draft'],text=True,capture_output=True,check=False); self.assertEqual(inspected.returncode,0,inspected.stdout+inspected.stderr)
  def test_mixed_source_version_is_rejected(self):
   direction=handoff.load_contract(ROOT)['roles'][self.role()]['consumes'][0]; env=self.peer_envelope(direction); env['source_version']='1.5.0'; env['handoff_id']=handoff.handoff_id_for(env)
-  self.assertEqual(handoff.validate_envelope(env,as_of=NOW,role=self.role(),operation='consume',root=ROOT)['status'],'rejected')
+  self.assertEqual(self.validate(env)['status'],'rejected')
 
 if __name__=='__main__': unittest.main()

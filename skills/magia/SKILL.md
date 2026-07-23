@@ -84,6 +84,8 @@ MAGIA evidence is source material for downstream Mago planning reconciliation an
 11. Load [references/markdown-writing.md](references/markdown-writing.md) when creating or editing durable Markdown records.
 12. Load [references/package-delivery.md](references/package-delivery.md) only for validating, exporting, or packaging MAGIA itself.
 13. Load [references/quickstarts.md](references/quickstarts.md) only for onboarding, mode selection, script discovery, or recovery guidance. Use [references/resource-map.md](references/resource-map.md) as the package index. Load `scripts/` only for deterministic scaffolding, inspection, validation, state, or packaging; `assets/` only for the agent icon or MAGIA-owned templates; and `examples/` or `evals/` only for calibration and activation checks. Do not scaffold MAGO-owned planning files from MAGIA.
+14. Use `scripts/select_validation.py` only for preliminary profile inference from changed files or risk signals; once explicit change surfaces and available checks are known, `scripts/select_validation_checks.py` is the canonical proof-category selector. Never merge conflicting selector outputs silently.
+15. Load [references/convergence-and-validation.md](references/convergence-and-validation.md) only when producing or validating a requirement-to-execution-evidence convergence report. Load [references/public-artifact-adapters.md](references/public-artifact-adapters.md) only when Spec Kit, Kiro, or OpenSpec artifacts are supplied as read-only execution orientation; adapters never replace Mago planning authority.
 
 ## Execution Entry Contract
 
@@ -164,7 +166,7 @@ Do not claim completion without current validation evidence. When blocked, repor
 
 ## Package Requests
 
-When asked to package, export, or validate MAGIA, load [references/package-delivery.md](references/package-delivery.md), use `scripts/package_skill.py`, and validate both folder and `skill.zip` with `scripts/validate_skill_package.py` before claiming readiness.
+When asked to package, export, or validate MAGIA, load [references/package-delivery.md](references/package-delivery.md), use `scripts/package_skill.py`, and validate both folder and `skill.zip` with `scripts/validate_skill_package.py`. A coordinated ecosystem release additionally requires the external ledger from `scripts/validate_ecosystem_release.py` against explicit Mago, Magia, and Nomia roots before claiming three-package readiness.
 
 ## Validation Checklist
 

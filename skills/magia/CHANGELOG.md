@@ -1,6 +1,22 @@
 # Changelog
 
+## [1.8.0] - 2026-07-23
+
+- Declare PyYAML as a runtime dependency through `requirements.txt` and `release.json`, add runtime dependency validation, clean-environment YAML smoke coverage, and source/archive package gates.
+- Harden strict handoff v2 consumption with closed payloads, bounded freshness, future-timestamp rejection, non-empty evidence references, stable reason codes, and non-actionable draft exit semantics.
+- Remove residual `contract-v1`, generic `priority`, and `order_hint` guidance from current Magia instructions and extend semantic instruction validation.
+- Add the coordinated release attestation ledger and external live-routing evidence contract without runtime peer imports or ownership transfer.
+- Preserve ADHOC, RALPH, ADAPT, execution authority, current identifiers, and exact coordinated compatibility.
+
+### Compatibility
+
+- Coordinated exact ecosystem release `1.8.0`; all three packages must move together.
+- Handoff schema remains `2.0.0`; draft consumption now fails process control by default and requires explicit inspection allowance.
+
 ## [1.7.0] - 2026-07-22
+- Integrate convergence validation, public artifact adapters, and both validation selectors into the canonical load order and resource map.
+- Add a fail-closed resource-integration validator and distinguish preliminary risk inference from explicit proof-category selection.
+- Clarify independent one-owner context loading without introducing a cross-skill execution facade.
 
 - Execute the complete pytest suite inside the MAGIA package gate with collected/executed/pass/fail counts and a suite digest.
 - Replace obsolete positive activation paths with canonical board, cycle, and spec identities.

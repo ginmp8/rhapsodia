@@ -12,6 +12,12 @@ Load before choosing or reporting validation for non-trivial changes. This refer
 6. A passing narrow check does not replace mandatory governed checks.
 7. Local validation does not prove deployment or production behavior.
 
+## Selector routing
+
+- Use `scripts/select_validation.py` only at the preliminary orientation stage when the available evidence is a changed-file list and/or risk signals. Its output proposes a minimum execution profile and high-level proof families; it is not the closure selector.
+- Use `scripts/select_validation_checks.py` once explicit change surfaces and available checks are known. This output is canonical for required/recommended proof categories and blocked required checks.
+- When both inputs exist, explicit surfaces take precedence. Record any mismatch as a blocker or reclassification reason; never union or downgrade the two outputs silently.
+
 ## Deterministic Selector
 
 Provide a temporary JSON request outside canonical evidence:

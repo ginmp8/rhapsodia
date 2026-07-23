@@ -7,11 +7,18 @@
     "magia_to_nomia"
   ],
   "contract_id": "nomia-mago-magia-routing-v1",
-  "ecosystem_release": "1.7.0",
+  "ecosystem_release": "1.8.0",
   "evidence_status": "structural-contract; live-model-routing-not-measured",
   "forbidden_direct_handoffs": [
     "nomia_to_magia"
   ],
+  "live_measurement": {
+    "claim_policy": "precision and recall require complete attributed live-model results",
+    "corpus": "evals/ecosystem-routing-scenarios.json",
+    "harness": "scripts/live_routing_harness.py",
+    "result_schema": "references/live-routing-result-schema.json",
+    "status": "not_measured"
+  },
   "owner_resolution": {
     "ambiguous_rule": "preserve-unknowns-and-resolve-owner-before-mutation",
     "monolithic_router_required": false,

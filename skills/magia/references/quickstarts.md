@@ -56,6 +56,10 @@ A task checkbox is never evidence by itself.
 For non-trivial changes, use [validation selection](validation-selection.md). A temporary request can show required categories before concrete commands are mapped:
 
 ```text
+# Preliminary only, when you have changed files/risk signals but not explicit surfaces:
+python scripts/select_validation.py --input <change-descriptor.json>
+
+# Canonical once surfaces and available checks are explicit:
 python scripts/select_validation_checks.py --input <request.json> --format markdown
 ```
 
@@ -114,7 +118,10 @@ Continue with safe inspection but stop mutation when repository evidence proves 
 | Need | Script |
 |---|---|
 | Repository orientation | `scripts/inspect_repository_context.py` |
-| Validation-category selection | `scripts/select_validation_checks.py` |
+| Preliminary profile inference from changed files/risk signals | `scripts/select_validation.py` |
+| Canonical validation-category selection from explicit surfaces | `scripts/select_validation_checks.py` |
+| Requirement/evidence convergence validation | `scripts/validate_convergence.py` |
+| Read-only public SDD artifact orientation | `scripts/adapt_public_artifacts.py` |
 | Conservative execution waves | `scripts/analyze_execution_waves.py` |
 | RALPH readiness | `scripts/validate_execution_readiness.py` |
 | Board contract | `scripts/validate_board_contract.py` |

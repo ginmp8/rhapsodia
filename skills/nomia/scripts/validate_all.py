@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
 import os
+import re
 import subprocess
 import sys
 
@@ -17,6 +19,10 @@ from pathlib import Path
 from typing import Any
 
 from nomia_utils import atomic_write_text
+
+PROTECTED_HASH_RE = re.compile(
+    r"(?:current )?protected file hash changed for (?P<path>[^:]+):(?: expected [0-9a-f]{64}, got| historical [0-9a-f]{64}, current) (?P<actual>[0-9a-f]{64})"
+)
 
 
 @dataclass
@@ -56,6 +62,30 @@ def run(name: str, command: list[str], env: dict[str, str]) -> Gate:
     return Gate(name, command, completed.returncode, completed.stdout.strip(), completed.stderr.strip())
 
 
+def root_cause_id(gate: Gate) -> str | None:
+    if gate.returncode == 0:
+        return None
+    combined = f"{gate.stdout}\n{gate.stderr}"
+    match = PROTECTED_HASH_RE.search(combined)
+    if match:
+        return f"protected-file-hash-drift:{match.group('path')}:{match.group('actual')[:12]}"
+    normalized = " ".join(line.strip() for line in combined.splitlines() if line.strip())[:500]
+    digest = hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:12] if normalized else "no-output"
+    return f"independent-gate-failure:{gate.name}:{digest}"
+
+
+def summarize_root_causes(gates: list[Gate]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[str]] = {}
+    for gate in gates:
+        cause = root_cause_id(gate)
+        if cause:
+            grouped.setdefault(cause, []).append(gate.name)
+    return [
+        {"root_cause_id": cause, "impacted_gates": sorted(names), "gate_count": len(names)}
+        for cause, names in sorted(grouped.items())
+    ]
+
+
 def validate(root: Path) -> dict[str, Any]:
     root = root.resolve()
     env = environment(root)
@@ -80,11 +110,16 @@ def validate(root: Path) -> dict[str, Any]:
     ]
     gates = [run(name, command, env) for name, command in commands]
     assurance = summarize_assurance(root, gates)
+    gate_results = [asdict(gate) | {"status": gate.status, "root_cause_id": root_cause_id(gate)} for gate in gates]
+    root_causes = summarize_root_causes(gates)
     return {
         "target": str(root),
         "status": "pass" if all(gate.returncode == 0 for gate in gates) and assurance["status"] == "pass" else "fail",
         "gate_count": len(gates),
-        "gates": [asdict(gate) | {"status": gate.status} for gate in gates],
+        "failed_gate_count": sum(gate.returncode != 0 for gate in gates),
+        "root_cause_count": len(root_causes),
+        "root_causes": root_causes,
+        "gates": gate_results,
         "assurance": assurance,
     }
 

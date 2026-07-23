@@ -80,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
             "execution":{"state":x2n['payload']['nomia_execution_state'],"source":x2n['handoff_id'],"observed_at":NOW.isoformat()},
             "validation":{"state":x2n['payload']['nomia_validation_state'],"source":x2n['handoff_id'],"observed_at":NOW.isoformat()},
           },
-          "release":{"state":"closed","released_at":NOW.isoformat(),"evidence":["fixture://external-release/1.7.0"]}
+          "release":{"state":"closed","released_at":NOW.isoformat(),"evidence":[f"fixture://external-release/{(roots['mago']/'VERSION').read_text().strip()}"]}
         }
         with tempfile.TemporaryDirectory() as tmp:
             inp, out = Path(tmp)/'closure.json', Path(tmp)/'closure-result.json'
@@ -90,10 +90,10 @@ def main(argv: list[str] | None = None) -> int:
             if done.returncode != 0: raise RuntimeError(f"Nomia closure gate failed: {done.stdout} {done.stderr}")
             closure_result=json.loads(out.read_text(encoding='utf-8'))
         steps.append({'step':'nomia_closure','status':closure_result['status']})
-        result={'status':'pass','ecosystem_release':'1.7.0','scenario':'nomia-mago-magia-reconcile-close','steps':steps,'limitations':['Fixture evidence proves contract behavior only; it is not production release evidence.']}
+        result={'status':'pass','ecosystem_release':(roots['mago']/ 'VERSION').read_text().strip(),'scenario':'nomia-mago-magia-reconcile-close','steps':steps,'limitations':['Fixture evidence proves contract behavior only; it is not production release evidence.']}
         rc=0
     except Exception as exc:
-        result={'status':'fail','ecosystem_release':'1.7.0','scenario':'nomia-mago-magia-reconcile-close','steps':steps,'error':str(exc)}
+        result={'status':'fail','ecosystem_release':(roots['mago']/ 'VERSION').read_text().strip(),'scenario':'nomia-mago-magia-reconcile-close','steps':steps,'error':str(exc)}
         rc=1
     text=json.dumps(result,indent=2,sort_keys=True)+'\n'
     if args.json_output: Path(args.json_output).write_text(text,encoding='utf-8')

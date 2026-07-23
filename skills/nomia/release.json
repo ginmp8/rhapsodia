@@ -4,7 +4,7 @@
   "compatibility_policy": "references/assurance-and-release.md",
   "development_requirements": "requirements-dev.txt",
   "ecosystem_contract": "references/ecosystem-compatibility.json",
-  "ecosystem_release": "1.7.0",
+  "ecosystem_release": "1.8.0",
   "name": "nomia",
   "package_schema": "4",
   "products": [
@@ -15,7 +15,7 @@
   ],
   "provenance_contract": "references/ecosystem-contract-provenance.json",
   "python": ">=3.11",
-  "released_at": "2026-07-22",
+  "released_at": "2026-07-23",
   "routing_contract": "references/ecosystem-routing-contract.json",
   "runtime_dependencies": [
     {
@@ -25,5 +25,5 @@
     }
   ],
   "support_boundary": "product and delivery governance projections; no technical planning, implementation, or runtime validation ownership",
-  "version": "1.7.0"
+  "version": "1.8.0"
 }

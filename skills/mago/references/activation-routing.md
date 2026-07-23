@@ -27,3 +27,7 @@ The activation scenario suite must include positive, negative, ambiguous, edge, 
 ## Measurement Limits
 
 The deterministic scenario validator is a package gate, not a live model-routing benchmark. Treat its metrics as static oracle conformance: useful for catching package regressions, insufficient coverage, and unclear expected boundaries. For release-critical changes, supplement it with a live prompt review using the same scenario suite and record live results separately; do not mark live routing as measured unless prompts were actually executed.
+
+## Measured routing evidence
+
+Use the shared external contract in `scripts/live_routing_harness.py` and `references/live-routing-result-schema.json`. Structural scenarios are not live-model accuracy evidence.

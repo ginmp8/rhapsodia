@@ -8,9 +8,11 @@ Each package carries its own byte-equivalent copy of `references/ecosystem-hando
 
 A typed envelope transfers attributed evidence; it never transfers authority. The producer owns only its source facts. The consumer validates the envelope before using it and preserves the source skill, source version, provenance, observation time, freshness, unknowns, conflicts, and mapping version.
 
+Payload properties are closed by direction: required, typed, and explicitly optional fields are allowed; undeclared fields are rejected.
+
 ## Release contract
 
-- Ecosystem release: `1.7.0`.
+- Ecosystem release: `1.8.0`.
 - Handoff schema: `2.0.0`.
 - State mapping: `2.0.0`.
 - Compatibility: exact coordinated versions only.
@@ -28,39 +30,42 @@ A typed envelope transfers attributed evidence; it never transfers authority. Th
 
 `nomia_to_stakeholder` remains a Nomia-owned projection direction and does not grant stakeholder communication authority to Mago or Magia.
 
-## Required envelope
+## Required envelope and evidence integrity
 
-Current writers emit `schema_version`, `ecosystem_release`, `direction`, `source_skill`, `source_version`, `target_skill`, `observed_at`, `provenance`, `freshness`, `payload`, `unknowns`, `conflicts`, and deterministic `handoff_id`. `provenance` contains `source`, `authority`, and `evidence_refs`; `freshness` contains `max_age_days`.
+Current writers emit `schema_version`, `ecosystem_release`, `direction`, `source_skill`, `source_version`, `target_skill`, `observed_at`, `provenance`, `freshness`, `payload`, `unknowns`, `conflicts`, and deterministic `handoff_id`. `provenance.evidence_refs` contains at least one non-empty reference. `freshness.max_age_days` cannot exceed the machine-readable contract maximum. Timestamps beyond the allowed clock skew are rejected rather than treated as fresh.
 
-A stale, conflicting, malformed, wrong-role, wrong-version, tampered-id, mixed-version, or authority-violating envelope is rejected. There is no runtime compatibility switch for pre-v2 envelopes.
+A stale, future-dated, conflicting, malformed, wrong-role, wrong-version, tampered-id, mixed-version, undeclared-payload, or authority-violating envelope fails closed. There is no runtime compatibility switch for pre-v2 envelopes. Stable `reason_codes` accompany human-readable rejection reasons.
+
+## Draft and CLI exit semantics
+
+A `draft` envelope may be structurally valid and transported, but it is not actionable. `build` may create a draft. `validate --operation consume` succeeds only for `accepted` by default. Use `--allow-draft` only for explicit inspection or transport; it must not authorize mutation.
+
+| Status | Default exit code | With `--allow-draft` |
+|---|---:|---:|
+| `accepted` | 0 | 0 |
+| `error` | 2 | 2 |
+| `draft` | 3 | 0 |
+| `stale` | 4 | 4 |
+| `conflicting` | 5 | 5 |
+| `rejected` | 6 | 6 |
 
 ## State projections
 
-Source states remain authoritative in their source dimensions. Projections sent to Nomia use mapping version `2.0.0`:
-
-- Mago planning `done` projects to Nomia planning `complete`.
-- Magia execution `done` projects to Nomia execution `complete`.
-- Magia validation `passed` projects to Nomia validation `passed`.
+Source states remain authoritative in their source dimensions. Projections sent to Nomia use mapping version `2.0.0`: Mago planning `done` maps to planning `complete`; Magia execution `done` maps to execution `complete`; Magia validation `passed` remains validation `passed`. Mappings never let Nomia certify technical truth.
 
 Mappings do not let Nomia certify planning, execution, or validation. A projected state without source evidence, mapping version, or current provenance is rejected.
 
 ## Commands
 
 ```text
-python scripts/ecosystem_handoff.py contract
-python scripts/ecosystem_handoff.py build --direction <direction> --payload <payload.json> --source <artifact-or-record> --authority <authority> --evidence-ref <ref> --freshness-days 30 --output <handoff.json>
-python scripts/ecosystem_handoff.py validate --input <handoff.json> --operation consume --json-output <validation.json>
-python scripts/validate_ecosystem_handoff_contract.py --target <skill-root>
-python scripts/validate_ecosystem_compatibility.py --target <skill-root> --peer-root <peer-root> --peer-root <peer-root>
+python -B scripts/ecosystem_handoff.py contract
+python -B scripts/ecosystem_handoff.py build --direction <direction> --payload <payload.json> --source <artifact-or-record> --authority <authority> --evidence-ref <ref> --freshness-days 30 --output <handoff.json>
+python -B scripts/ecosystem_handoff.py validate --input <handoff.json> --operation consume --json-output <validation.json>
+python -B scripts/ecosystem_handoff.py validate --input <draft.json> --operation consume --allow-draft --json-output <inspection.json>
+python -B scripts/validate_ecosystem_handoff_contract.py --target <skill-root>
+python -B scripts/validate_ecosystem_compatibility.py --target <skill-root> --peer-root <peer-root> --peer-root <peer-root>
 ```
 
 ## Release gate
 
-A coordinated Mago/Magia/Nomia release must prove:
-
-1. the three local JSON contracts are byte-equivalent;
-2. every producer output is accepted by the declared consumer;
-3. positive, missing-field, stale, conflict, forbidden-content, wrong-producer, mixed-version, tampered-id, and state-mapping scenarios pass;
-4. package-local validators pass;
-5. the integrated Nomia-to-Mago-to-Magia reconciliation and closure harness passes;
-6. the SDD Ecosystem Change Gate reviews every changed package under strict policy.
+A coordinated release proves byte-equivalent shared contracts, producer/consumer acceptance, exact status and reason-code negative cases, package-local validation, positive lifecycle flow, fail-closed closure, and strict ecosystem change-gate review.

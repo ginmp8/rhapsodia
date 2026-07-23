@@ -72,7 +72,7 @@ def analyze(data: Any) -> dict[str, Any]:
     if unknown:
         errors.append(f"unknown surfaces: {', '.join(unknown)}")
     if errors:
-        return {"kind": "magia-validation-selection", "version": 1, "status": "blocked", "errors": errors}
+        return {"kind": "magia-validation-selection", "version": 1, "selection_stage": "explicit-proof-category-selection", "status": "blocked", "errors": errors}
 
     normalized = unique_order(surfaces)
     required = unique_order([check for surface in normalized for check in REQUIRED_BY_SURFACE[surface]])
@@ -84,6 +84,7 @@ def analyze(data: Any) -> dict[str, Any]:
     return {
         "kind": "magia-validation-selection",
         "version": 1,
+        "selection_stage": "explicit-proof-category-selection",
         "status": "blocked-required-checks" if blocked else "ready-to-execute-checks",
         "read_only": True,
         "checks_executed": [],

@@ -19,6 +19,44 @@ SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SPEC_ID_RE = re.compile(r"^spec-(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$")
 HANDOFF_ID_RE = re.compile(r"^handoff-[0-9a-f]{16}$")
+VALIDATION_EXIT_CODES = {"accepted": 0, "error": 2, "draft": 3, "stale": 4, "conflicting": 5, "rejected": 6}
+
+
+def validation_exit_code(status: str, *, allow_draft: bool = False) -> int:
+    if status == "draft" and allow_draft:
+        return 0
+    return VALIDATION_EXIT_CODES.get(status, 2)
+
+
+def reason_code(reason: str) -> str:
+    rules = (
+        ("invalid schema_version", "HANDOFF_INVALID_SCHEMA"),
+        ("invalid ecosystem_release", "HANDOFF_INVALID_ECOSYSTEM_RELEASE"),
+        ("incompatible source_version", "HANDOFF_INCOMPATIBLE_SOURCE_VERSION"),
+        ("invalid handoff_id", "HANDOFF_INVALID_ID"),
+        ("evidence is stale", "HANDOFF_STALE"),
+        ("timestamp is in the future", "HANDOFF_FUTURE_OBSERVED_AT"),
+        ("exceeds contract maximum", "HANDOFF_FRESHNESS_EXCEEDS_MAX"),
+        ("evidence_refs must contain", "HANDOFF_EMPTY_EVIDENCE_REFS"),
+        ("invalid provenance.authority", "HANDOFF_INVALID_PROVENANCE_AUTHORITY"),
+        ("outside producer authority", "HANDOFF_OUTSIDE_AUTHORITY"),
+        ("outside nomia authority", "HANDOFF_OUTSIDE_AUTHORITY"),
+        ("is not declared for", "HANDOFF_UNKNOWN_PAYLOAD_FIELD"),
+        ("invalid payload.candidate_spec_id", "HANDOFF_INVALID_CANDIDATE_SPEC_ID"),
+        ("conflicting evidence", "HANDOFF_CONFLICTING"),
+        ("invalid source_skill", "HANDOFF_INVALID_SOURCE_SKILL"),
+        ("invalid target_skill", "HANDOFF_INVALID_TARGET_SKILL"),
+        ("invalid producer role", "HANDOFF_INVALID_PRODUCER_ROLE"),
+        ("invalid consumer role", "HANDOFF_INVALID_CONSUMER_ROLE"),
+    )
+    for fragment, code in rules:
+        if fragment in reason:
+            return code
+    if reason.startswith("missing"):
+        return "HANDOFF_MISSING_FIELD"
+    if reason.startswith("invalid"):
+        return "HANDOFF_INVALID_FIELD"
+    return "HANDOFF_REJECTED"
 
 
 def root_for_script() -> Path:
@@ -146,6 +184,16 @@ def contract_errors(contract: dict[str, Any], root: Path | None = None) -> list[
     for field in ("schema_version","ecosystem_release","source_skill","source_version","target_skill","handoff_id","payload"):
         if field not in required:
             errors.append(f"envelope.required_fields missing {field}")
+    freshness_policy = envelope.get("freshness_policy")
+    if not isinstance(freshness_policy, dict):
+        errors.append("envelope.freshness_policy must be an object")
+    else:
+        if not isinstance(freshness_policy.get("max_age_days"), int) or freshness_policy.get("max_age_days", 0) <= 0:
+            errors.append("envelope.freshness_policy.max_age_days must be a positive integer")
+        if not isinstance(freshness_policy.get("max_future_skew_seconds"), int) or freshness_policy.get("max_future_skew_seconds", -1) < 0:
+            errors.append("envelope.freshness_policy.max_future_skew_seconds must be a non-negative integer")
+        if not isinstance(freshness_policy.get("min_evidence_refs"), int) or freshness_policy.get("min_evidence_refs", 0) < 1:
+            errors.append("envelope.freshness_policy.min_evidence_refs must be at least 1")
     if not isinstance(roles, dict):
         errors.append("contract roles must be an object")
         roles = {}
@@ -179,6 +227,8 @@ def contract_errors(contract: dict[str, Any], root: Path | None = None) -> list[
             errors.append(f"direction {direction} missing from consumer {consumer}")
         if not isinstance(item.get("required_payload"), list) or not item.get("required_payload"):
             errors.append(f"directions.{direction}.required_payload must be non-empty")
+        if not isinstance(item.get("optional_payload"), list):
+            errors.append(f"directions.{direction}.optional_payload must be a list")
     if priority.get("contract_id") != "nomia-mago-magia-priority-v2":
         errors.append("priority contract id mismatch")
     if priority.get("ecosystem_release") != compatibility.get("ecosystem_release"):
@@ -206,7 +256,7 @@ def handoff_id_for(envelope: dict[str, Any]) -> str:
     return "handoff-" + hashlib.sha256(canonical).hexdigest()[:16]
 
 
-def validate_priority_objects(payload: dict[str, Any], direction: str, priority: dict[str, Any]) -> list[str]:
+def validate_priority_objects(payload: dict[str, Any], direction: str, priority: dict[str, Any], *, as_of: datetime, future_skew_seconds: int) -> list[str]:
     errors: list[str] = []
     concepts = priority.get("concepts") or {}
     if direction == "nomia_to_mago":
@@ -221,8 +271,11 @@ def validate_priority_objects(payload: dict[str, Any], direction: str, priority:
         if item.get("level") != "unknown":
             if item.get("source") in (None, "", "unknown"):
                 errors.append("missing payload.business_priority.source")
-            if parse_time(item.get("observed_at")) is None:
+            priority_observed_at = parse_time(item.get("observed_at"))
+            if priority_observed_at is None:
                 errors.append("invalid payload.business_priority.observed_at")
+            elif (priority_observed_at - as_of).total_seconds() > future_skew_seconds:
+                errors.append("invalid payload.business_priority.observed_at; timestamp is in the future")
     if direction == "mago_to_magia":
         criticality = payload.get("technical_criticality")
         sequence = payload.get("execution_sequence")
@@ -257,7 +310,7 @@ def validate_envelope(envelope: Any, *, as_of: datetime | None = None, role: str
     priority = load_priority_contract(root)
     reasons: list[str] = []
     if not isinstance(envelope, dict):
-        return {"status":"rejected","direction":None,"reasons":["handoff envelope must be a mapping"],"warnings":[]}
+        return {"status":"rejected","direction":None,"reasons":["handoff envelope must be a mapping"],"reason_codes":["HANDOFF_INVALID_FIELD"],"warnings":[]}
     normalized = dict(envelope)
     if normalized.get("schema_version") != contract.get("schema_version"):
         reasons.append("invalid schema_version; contract v2 is required")
@@ -296,14 +349,23 @@ def validate_envelope(envelope: Any, *, as_of: datetime | None = None, role: str
         reasons.append("invalid observed_at")
     freshness = normalized.get("freshness")
     max_age_days = freshness.get("max_age_days") if isinstance(freshness, dict) else None
+    freshness_policy = (contract.get("envelope") or {}).get("freshness_policy") or {}
+    maximum_age_days = int(freshness_policy.get("max_age_days", 365))
+    future_skew_seconds = int(freshness_policy.get("max_future_skew_seconds", 300))
+    minimum_evidence_refs = int(freshness_policy.get("min_evidence_refs", 1))
     if not isinstance(max_age_days, int) or max_age_days < 0:
         reasons.append("invalid freshness.max_age_days")
+    elif max_age_days > maximum_age_days:
+        reasons.append(f"invalid freshness.max_age_days; exceeds contract maximum {maximum_age_days}")
     stale = False
     check_time = as_of or datetime.now(timezone.utc)
-    if observed_at is not None and isinstance(max_age_days, int):
-        stale = (check_time - observed_at).total_seconds() / 86400 > max_age_days
-        if stale:
-            reasons.append("evidence is stale")
+    if observed_at is not None:
+        if (observed_at - check_time).total_seconds() > future_skew_seconds:
+            reasons.append("invalid observed_at; timestamp is in the future")
+        elif isinstance(max_age_days, int):
+            stale = (check_time - observed_at).total_seconds() / 86400 > max_age_days
+            if stale:
+                reasons.append("evidence is stale")
     provenance = normalized.get("provenance")
     if not isinstance(provenance, dict):
         reasons.append("invalid provenance")
@@ -311,13 +373,19 @@ def validate_envelope(envelope: Any, *, as_of: datetime | None = None, role: str
         for field in (contract.get("envelope") or {}).get("provenance_required_fields", []):
             if field not in provenance or provenance.get(field) in (None, ""):
                 reasons.append(f"missing provenance.{field}")
-        if not isinstance(provenance.get("evidence_refs"), list):
+        evidence_refs = provenance.get("evidence_refs")
+        if not isinstance(evidence_refs, list):
             reasons.append("invalid provenance.evidence_refs")
+        elif len(evidence_refs) < minimum_evidence_refs or not all(isinstance(ref, str) and ref.strip() for ref in evidence_refs):
+            reasons.append(f"invalid provenance.evidence_refs; evidence_refs must contain at least {minimum_evidence_refs} non-empty item(s)")
         if producer and provenance.get("authority") != producer:
             reasons.append("invalid provenance.authority")
     for field in ("unknowns","conflicts"):
-        if not isinstance(normalized.get(field), list):
+        value = normalized.get(field)
+        if not isinstance(value, list):
             reasons.append(f"invalid {field}")
+        elif not all(isinstance(item, str) and item.strip() for item in value):
+            reasons.append(f"invalid {field}; entries must be non-empty strings")
     payload = normalized.get("payload")
     if not isinstance(payload, dict):
         reasons.append("invalid payload")
@@ -337,11 +405,18 @@ def validate_envelope(envelope: Any, *, as_of: datetime | None = None, role: str
     for field, allowed in (direction_contract.get("enum_payload") or {}).items():
         if field in payload and payload.get(field) not in allowed:
             reasons.append(f"invalid payload.{field}")
+    declared_payload_fields = set(direction_contract.get("required_payload") or [])
+    declared_payload_fields.update(direction_contract.get("optional_payload") or [])
+    for category in ("list_payload", "object_payload", "boolean_payload"):
+        declared_payload_fields.update(direction_contract.get(category) or [])
+    declared_payload_fields.update((direction_contract.get("enum_payload") or {}).keys())
+    for extra_field in sorted(set(payload) - declared_payload_fields):
+        reasons.append(f"invalid payload field: payload.{extra_field} is not declared for {direction}")
     forbidden = recursive_forbidden(payload, set(direction_contract.get("forbidden_payload_keys") or []))
     if direction == "nomia_to_mago":
         forbidden = [item.replace("outside producer authority", "outside nomia authority") for item in forbidden]
     reasons.extend(forbidden)
-    reasons.extend(validate_priority_objects(payload, str(direction), priority))
+    reasons.extend(validate_priority_objects(payload, str(direction), priority, as_of=check_time, future_skew_seconds=future_skew_seconds))
     spec_id = payload.get("spec_id")
     if spec_id is not None and not valid_spec_id(spec_id):
         reasons.append("invalid payload.spec_id")
@@ -390,7 +465,7 @@ def validate_envelope(envelope: Any, *, as_of: datetime | None = None, role: str
         status = "draft"
     else:
         status = "accepted"
-    return {"status":status,"direction":direction,"schema_version":normalized.get("schema_version"),"compatibility":"native-v2","reasons":reasons,"warnings":[],"source_skill":normalized.get("source_skill"),"target_skill":normalized.get("target_skill")}
+    return {"status":status,"direction":direction,"schema_version":normalized.get("schema_version"),"compatibility":"native-v2","reasons":reasons,"reason_codes":list(dict.fromkeys(reason_code(reason) for reason in reasons)),"warnings":[],"source_skill":normalized.get("source_skill"),"target_skill":normalized.get("target_skill")}
 
 
 def apply_state_projection(direction: str, payload: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any]:
@@ -464,6 +539,7 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--operation", choices=["any","produce","consume"], default="consume")
     validate.add_argument("--as-of", default=datetime.now(timezone.utc).replace(microsecond=0).isoformat())
     validate.add_argument("--json-output")
+    validate.add_argument("--allow-draft", action="store_true", help="Treat a structurally valid draft as successful inspection; never use this flag to authorize mutation.")
     contract = sub.add_parser("contract", help="Validate local handoff, priority, and compatibility contracts.")
     contract.add_argument("--json-output")
     args = parser.parse_args(argv)
@@ -481,7 +557,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise ValueError("--as-of must be ISO-8601")
             result = validate_envelope(envelope, as_of=as_of, role=package_role(root), operation=args.operation, root=root)
             emit_json(result, args.json_output)
-            return 0 if result["status"] in {"accepted","draft"} else 1
+            return validation_exit_code(result["status"], allow_draft=args.allow_draft)
         errors = contract_errors(load_contract(root), root)
         result = {"status":"pass" if not errors else "fail","errors":errors,"role":package_role(root)}
         emit_json(result, args.json_output)

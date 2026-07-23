@@ -3,7 +3,7 @@
     "classification": "breaking-no-legacy",
     "legacy_read_support": false,
     "mixed_package_versions_allowed": false,
-    "required_ecosystem_release": "1.7.0"
+    "required_ecosystem_release": "1.8.0"
   },
   "contract_id": "nomia-mago-magia-handoff-v2",
   "directions": {
@@ -39,6 +39,7 @@
       "list_payload": [
         "deviations"
       ],
+      "optional_payload": [],
       "producer": "magia",
       "required_payload": [
         "spec_id",
@@ -94,6 +95,7 @@
       "list_payload": [
         "delivery_impacts"
       ],
+      "optional_payload": [],
       "producer": "magia",
       "required_payload": [
         "spec_id",
@@ -142,6 +144,7 @@
         "technical_criticality",
         "execution_sequence"
       ],
+      "optional_payload": [],
       "producer": "mago",
       "required_payload": [
         "spec_id",
@@ -190,6 +193,7 @@
         "technical_risk_summary",
         "forecast_impact"
       ],
+      "optional_payload": [],
       "producer": "mago",
       "required_payload": [
         "spec_id",
@@ -234,6 +238,10 @@
       "object_payload": [
         "business_priority"
       ],
+      "optional_payload": [
+        "candidate_spec_id",
+        "candidate_spec_id_provenance"
+      ],
       "producer": "nomia",
       "required_payload": [
         "feature_key",
@@ -246,8 +254,13 @@
       ]
     }
   },
-  "ecosystem_release": "1.7.0",
+  "ecosystem_release": "1.8.0",
   "envelope": {
+    "freshness_policy": {
+      "max_age_days": 365,
+      "max_future_skew_seconds": 300,
+      "min_evidence_refs": 1
+    },
     "freshness_required_fields": [
       "max_age_days"
     ],

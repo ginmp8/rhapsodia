@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the current Nomia release contract and explicit protected-file migrations."""
+"""Validate the current Nomia release contract and explicit protected-file migration chains."""
 
 from __future__ import annotations
 
@@ -11,10 +11,11 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+HASH_RE = re.compile(r"^[0-9a-f]{64}$")
+
 
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
-
 
 
 def semantic_version(value: Any) -> tuple[int, int, int] | None:
@@ -29,14 +30,15 @@ def load_object(path: Path, label: str) -> dict[str, Any]:
     return data
 
 
-def migration_index(data: dict[str, Any]) -> tuple[dict[str, dict[str, Any]], list[str]]:
+def migration_index(data: dict[str, Any]) -> tuple[dict[str, list[dict[str, Any]]], list[str]]:
     errors: list[str] = []
     if data.get("schema_version") != 1:
         errors.append("protected-file migrations schema_version must be 1")
     raw = data.get("migrations")
     if not isinstance(raw, list):
         return {}, errors + ["protected-file migrations must contain a migrations list"]
-    result: dict[str, dict[str, Any]] = {}
+    result: dict[str, list[dict[str, Any]]] = {}
+    transitions: set[tuple[str, str, str]] = set()
     for index, item in enumerate(raw):
         if not isinstance(item, dict):
             errors.append(f"migration {index} must be an object")
@@ -45,11 +47,71 @@ def migration_index(data: dict[str, Any]) -> tuple[dict[str, dict[str, Any]], li
         if not isinstance(path, str) or not path:
             errors.append(f"migration {index} path is required")
             continue
-        if path in result:
-            errors.append(f"duplicate protected-file migration: {path}")
+        transition = (path, str(item.get("from_sha256") or ""), str(item.get("to_sha256") or ""))
+        if transition in transitions:
+            errors.append(f"duplicate protected-file migration transition: {path} {transition[1]} -> {transition[2]}")
             continue
-        result[path] = item
+        transitions.add(transition)
+        result.setdefault(path, []).append(item)
     return result, errors
+
+
+
+
+def validate_migration_metadata(path: str, migration: dict[str, Any]) -> list[str]:
+    """Validate the preserved authority, rationale, and date gates for one transition."""
+    errors: list[str] = []
+    if not isinstance(migration.get("authority"), str) or len(migration["authority"].strip()) < 8:
+        errors.append(f"migration authority is required for {path}")
+    if not isinstance(migration.get("reason"), str) or len(migration["reason"].strip()) < 40:
+        errors.append(f"migration reason is too short for {path}")
+    try:
+        date.fromisoformat(str(migration.get("recorded_at")))
+    except ValueError:
+        errors.append(f"migration recorded_at must be ISO date for {path}")
+    return errors
+
+
+def validate_migration_chain(
+    path: str,
+    historical_hash: str,
+    current_hash: str,
+    chain: list[dict[str, Any]],
+    current_version: str | None,
+) -> list[str]:
+    errors: list[str] = []
+    previous = historical_hash
+    previous_version: tuple[int, int, int] | None = None
+    release_version = semantic_version(current_version)
+    seen_hashes = {historical_hash}
+    for index, migration in enumerate(chain):
+        label = f"migration {path}[{index}]"
+        source = str(migration.get("from_sha256") or "")
+        target = str(migration.get("to_sha256") or "")
+        if not HASH_RE.fullmatch(source):
+            errors.append(f"{label} from_sha256 is invalid")
+        if not HASH_RE.fullmatch(target):
+            errors.append(f"{label} to_sha256 is invalid")
+        if source != previous:
+            errors.append(f"{label} from_sha256 does not continue the protected-file migration chain; expected {previous}, got {source}")
+        if target in seen_hashes:
+            errors.append(f"{label} creates a protected-file migration cycle")
+        seen_hashes.add(target)
+
+        migration_version = semantic_version(migration.get("version"))
+        if migration_version is None:
+            errors.append(f"{label} version is invalid")
+        else:
+            if release_version is None or migration_version > release_version:
+                errors.append(f"{label} version is newer than VERSION")
+            if previous_version is not None and migration_version < previous_version:
+                errors.append(f"{label} version is older than the previous migration")
+            previous_version = migration_version
+        errors.extend(validate_migration_metadata(path, migration))
+        previous = target
+    if previous != current_hash:
+        errors.append(f"protected-file migration chain for {path} ends at {previous}, expected {current_hash}")
+    return errors
 
 
 def validate_release_contract(
@@ -113,37 +175,20 @@ def validate_release_contract(
             errors.append(f"protected file is missing: {path}")
             continue
         actual = sha256_file(protected_path)
-        if not isinstance(current_expected, str) or len(current_expected) != 64:
+        if not isinstance(current_expected, str) or not HASH_RE.fullmatch(current_expected):
             errors.append(f"current protected hash is invalid for {path}")
         elif actual != current_expected:
             errors.append(f"current protected file hash changed for {path}: expected {current_expected}, got {actual}")
 
         historical_expected = historical.get(path)
         changed = historical_expected is not None and current_expected != historical_expected
-        migration = migration_by_path.get(path)
+        chain = migration_by_path.get(path, [])
         if changed:
-            if migration is None:
+            if not chain:
                 errors.append(f"protected-file migration is required for {path}")
                 continue
-            if migration.get("from_sha256") != historical_expected:
-                errors.append(f"migration from_sha256 does not match historical contract for {path}")
-            if migration.get("to_sha256") != current_expected:
-                errors.append(f"migration to_sha256 does not match current release contract for {path}")
-            migration_version = semantic_version(migration.get("version"))
-            release_version = semantic_version(current_version)
-            if migration_version is None:
-                errors.append(f"migration version is invalid for {path}")
-            elif release_version is None or migration_version > release_version:
-                errors.append(f"migration version is newer than VERSION for {path}")
-            if not isinstance(migration.get("authority"), str) or len(migration["authority"].strip()) < 8:
-                errors.append(f"migration authority is required for {path}")
-            if not isinstance(migration.get("reason"), str) or len(migration["reason"].strip()) < 40:
-                errors.append(f"migration reason is too short for {path}")
-            try:
-                date.fromisoformat(str(migration.get("recorded_at")))
-            except ValueError:
-                errors.append(f"migration recorded_at must be ISO date for {path}")
-        elif migration is not None:
+            errors.extend(validate_migration_chain(path, str(historical_expected), str(current_expected), chain, current_version))
+        elif chain:
             errors.append(f"unexpected migration for unchanged protected file: {path}")
 
     for path in sorted(set(migration_by_path) - known_paths):
@@ -169,7 +214,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"ERROR: {error}")
         print(f"FAILED: {len(errors)} release-contract errors")
         return 1
-    print("OK: current release contract and protected-file migrations are valid")
+    print("OK: current release contract and protected-file migration chains are valid")
     return 0
 
 

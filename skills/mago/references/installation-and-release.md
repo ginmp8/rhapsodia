@@ -40,14 +40,31 @@ The output directory must be outside the skill root. Reports, caches, credential
 - External SDD adapter versions are caller-supplied and explicit. Values such as `latest`, `current`, or `unknown` are rejected by executable adapters.
 - Python compatibility, runtime dependencies, and supported OpenAI products are declared in `release.json`; `requirements.txt`, importability, installed versions, and `agents/openai.yaml` are validated before packaging.
 
+## Coordinated three-package preflight
+
+Mago remains an independent package, but exact ecosystem compatibility requires the staged Mago, Magia, and Nomia candidates to be checked together before installation:
+
+Use the release-time coordinator as the canonical proof that the same three staged candidates, local suites, archives, contracts, and ecosystem harnesses passed together:
+
+```bash
+python -B scripts/validate_ecosystem_release.py \
+  --mago <mago-root> --magia <magia-root> --nomia <nomia-root> \
+  --output-dir <external-output>/coordinated-release \
+  --json-output <external-output>/coordinated-release-ledger.json
+```
+
+The command accepts explicit peer roots only at release time and never imports or executes peer internals during normal Mago planning. A passing package-local validator alone is not a coordinated-release attestation.
+
 ## Upgrade and rollback
 
-1. Validate the current archive and preserve its checksum.
+1. Validate the current three-package set and preserve all three archive checksums.
 2. Extract the candidate into a separate folder; never overlay a live package.
-3. Run release, package, activation, test, security, adapter, and recovery gates.
-4. Compare `CHANGELOG.md`, canonical contracts, and validator behavior.
-5. Switch the host to the candidate only after validation.
+   Apply this independently to all three package candidates in isolated staging folders.
+3. Run every package-local gate, then the coordinated compatibility, routing, provenance, positive-flow, and negative-flow gates.
+4. Verify that all three staged versions and shared contract hashes match before any live switch.
+5. Switch the host from the old set to the complete candidate set as one operational decision; do not intentionally run a mixed-version set.
 6. Roll back by restoring the prior validated folder; do not downgrade canonical planning artifacts without an explicit `adapt` or migration decision.
+   For a coordinated release failure, restore all three prior validated folders and checksums as one rollback decision.
 
 ## Support boundary
 

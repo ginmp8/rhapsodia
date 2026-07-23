@@ -9,7 +9,7 @@ python <skill-root>/scripts/validate_priority_contract.py --target <skill-root>
 python <skill-root>/scripts/validate_all.py --target <skill-root> --json-output <report.json>
 ```
 
-The ledger runs under an isolated local `PYTHONPATH`, disables bytecode writes, records every gate, and maps executed gate results to the machine-readable assurance claims.
+The ledger runs under an isolated local `PYTHONPATH`, disables bytecode writes, records every gate, maps executed gate results to the machine-readable assurance claims, and groups correlated failed gates under deterministic `root_cause_id` entries without hiding the individual gate results.
 
 ## Gates
 
@@ -43,7 +43,7 @@ The archive must be named `skill.zip`, contain one top-level `nomia/` directory,
 
 ## Protected Release Evidence
 
-`tests/original-contract.json` is immutable historical evidence. `tests/current-release-contract.json` locks the selected release, original-contract hash, and current protected-file hashes. `tests/protected-file-migrations.json` is mandatory when historical and current protected hashes differ.
+`tests/original-contract.json` is immutable historical evidence. `tests/current-release-contract.json` locks the selected release, original-contract hash, and current protected-file hashes. `tests/protected-file-migrations.json` is mandatory when historical and current protected hashes differ; multiple migrations for one protected path must form an ordered, gap-free, acyclic chain from the historical hash to the current hash.
 
 `agents/openai.yaml` remains byte-protected. Validate it before mutation, after mutation, and after archive extraction. Never update the historical contract merely to make a changed protected file pass. The icon remains a required package asset, but its bytes and SHA-256 are not release-protected.
 

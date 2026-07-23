@@ -86,7 +86,7 @@ Select exactly one write mode per mutation step; the public lifecycle may traver
 
 Templates under `assets/templates/` are structural inputs, not defaults to copy blindly. Use `scripts/create_planning_identity.py` for identity/registry creation and `scripts/write_artifact_scaffold.py` for supported scaffolds. `scripts/mago_utils.py` and `scripts/concurrent_model.py` are import-only helpers, not CLIs. Load branch guidance only when triggered: [activation routing](references/activation-routing.md), [brownfield discovery summary](references/brownfield-discovery-summary.md), [operating rules](references/operating-rules.md), [roadmap evidence](references/roadmap-evidence-input.md), [RFC quality](references/rfc-quality.md), [planning-to-execution handoff](references/planning-execution-handoff.md), [validation and packaging](references/validation-and-packaging.md), or [installation and release](references/installation-and-release.md).
 
-Ecosystem releases additionally require `scripts/validate_ecosystem_handoff_contract.py`, `scripts/validate_ecosystem_compatibility.py`, and `scripts/run_ecosystem_flow_harness.py` against resolved peer roots:
+Ecosystem releases require the canonical `scripts/validate_ecosystem_release.py` ledger against explicit Mago, Magia, and Nomia candidate roots; its mandatory gates include local package/archive validation, handoff/compatibility/routing/provenance/release metadata, and positive/negative ecosystem harnesses:
 
 Use the relevant validators:
 

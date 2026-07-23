@@ -18,6 +18,8 @@ from typing import Any
 from validate_ecosystem_routing_contract import validate as validate_routing_contract
 from validate_shared_contract_provenance import validate as validate_shared_provenance
 from validate_ecosystem_release_metadata import validate as validate_release_metadata
+from validate_resource_integration import validate as validate_resource_integration
+from validate_runtime_dependencies import validate as validate_runtime_dependencies
 
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
@@ -234,12 +236,15 @@ def validate_target(target: Path) -> dict[str, Any]:
         "agents/openai.yaml",
         "VERSION",
         "release.json",
+        "requirements.txt",
         "requirements-dev.txt",
         "CHANGELOG.md",
         "references/canonical-paths.md",
         "references/board-contract.md",
         "references/common-execution.md",
         "references/resource-map.md",
+        "references/convergence-and-validation.md",
+        "references/public-artifact-adapters.md",
         "references/package-delivery.md",
         "references/ecosystem-handoff-contract.md",
         "references/ecosystem-handoff-contract.json",
@@ -277,6 +282,12 @@ def validate_target(target: Path) -> dict[str, Any]:
         "scripts/run_test_suite.py",
         "scripts/validate_ecosystem_compatibility.py",
         "scripts/validate_priority_contract.py",
+        "scripts/select_validation.py",
+        "scripts/select_validation_checks.py",
+        "scripts/validate_convergence.py",
+        "scripts/adapt_public_artifacts.py",
+        "scripts/validate_resource_integration.py",
+        "scripts/validate_runtime_dependencies.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
@@ -346,6 +357,10 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(validate_shared_artifact_boundaries(target))
     checks.append("shared artifact boundaries")
 
+    resource_integration = validate_resource_integration(target)
+    errors.extend(resource_integration.get("errors", []))
+    checks.append(f"resource integration ({resource_integration.get('route_count', 0)} routes)")
+
     errors.extend(collect_instruction_contract_errors())
     checks.append("instruction contract preservation")
 
@@ -377,6 +392,10 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(release_metadata.get("errors", []))
     checks.append("coordinated ecosystem release metadata")
 
+    runtime_dependencies = validate_runtime_dependencies(target)
+    errors.extend(runtime_dependencies.get("errors", []))
+    checks.append("runtime dependency contract")
+
     if os.environ.get("MAGIA_TEST_SUITE_ACTIVE") == "1":
         checks.append("complete pytest suite (nested execution suppressed by active suite)")
     else:
@@ -404,9 +423,12 @@ def zip_required_resources() -> list[str]:
         "agents/openai.yaml",
         "VERSION",
         "release.json",
+        "requirements.txt",
         "requirements-dev.txt",
         "CHANGELOG.md",
         "references/resource-map.md",
+        "references/convergence-and-validation.md",
+        "references/public-artifact-adapters.md",
         "references/package-delivery.md",
         "references/ecosystem-handoff-contract.md",
         "references/ecosystem-handoff-contract.json",
@@ -436,6 +458,12 @@ def zip_required_resources() -> list[str]:
         "scripts/run_test_suite.py",
         "scripts/validate_ecosystem_compatibility.py",
         "scripts/validate_priority_contract.py",
+        "scripts/select_validation.py",
+        "scripts/select_validation_checks.py",
+        "scripts/validate_convergence.py",
+        "scripts/adapt_public_artifacts.py",
+        "scripts/validate_resource_integration.py",
+        "scripts/validate_runtime_dependencies.py",
         "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",

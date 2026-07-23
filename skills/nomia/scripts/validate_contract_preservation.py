@@ -86,9 +86,9 @@ def validate(root: Path, contract_path: Path) -> list[str]:
         if actual == str(historical_expected):
             continue
         current_expected = current_protected.get(rel)
-        migration = migration_by_path.get(rel)
-        if current_expected == actual and isinstance(migration, dict):
-            if migration.get("from_sha256") == str(historical_expected) and migration.get("to_sha256") == actual:
+        chain = migration_by_path.get(rel, [])
+        if current_expected == actual and chain:
+            if chain[0].get("from_sha256") == str(historical_expected) and chain[-1].get("to_sha256") == actual:
                 continue
         errors.append(
             f"protected file hash changed for {rel} without an accepted migration: "

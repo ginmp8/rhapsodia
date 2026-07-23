@@ -17,7 +17,9 @@ Use to locate MAGIA resources without loading every file.
 - `references/ecosystem-handoff-contract.md`: versioned producer/consumer envelope schema, state mappings, provenance, freshness, and compatibility rules.
 - `references/developer-artifact-standards.md`: implementation-doc taxonomy/templates.
 - `references/technical-documentation.md`: implementation ADR and doc rules.
-- `references/validation-selection.md`: risk-based proof-category selection with explicit unavailable-check handling.
+- `references/validation-selection.md`: canonical explicit-surface proof-category selection with explicit unavailable-check handling; it also defines when preliminary risk inference may be used.
+- `references/convergence-and-validation.md`: requirement-to-execution-evidence convergence reports and preliminary changed-file/risk-signal profile inference.
+- `references/public-artifact-adapters.md`: read-only Spec Kit, Kiro, and OpenSpec orientation that never becomes planning authority.
 - `references/validation-and-closure.md`: truthful validation/closure.
 - `references/execution-visibility-and-recovery.md`: non-authoritative execution-state projection and safe recovery decisions.
 - `references/markdown-writing.md`: durable Markdown quality.
@@ -55,7 +57,12 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 
 - `scripts/inspect_repository_context.py`: produce a deterministic read-only JSON or Markdown orientation view without executing repository commands.
 - `scripts/analyze_execution_waves.py`: conservatively classify explicit task graphs into parallel-safe or sequential waves without executing or mutating tasks.
+- `scripts/select_validation.py`: preliminary risk/profile inference when only changed files or risk signals are available; output kind is `magia-risk-profile-selection`.
 - `scripts/select_validation_checks.py`: map explicit change surfaces to required and recommended validation categories without running checks.
+- Selector precedence: this script is canonical once explicit change surfaces and available checks are known; output kind is `magia-validation-selection`.
+- `scripts/validate_convergence.py`: validate requirement-to-execution-evidence convergence reports.
+- `scripts/adapt_public_artifacts.py`: produce a read-only normalized execution view from supported public SDD artifacts.
+- `scripts/validate_resource_integration.py`: fail package validation when these operational resources are no longer reachable from the control plane and resource map.
 - `scripts/summarize_execution_state.py`: produce a read-only execution and recovery projection without mutating state or running recovery.
 - `scripts/write_artifact_scaffold.py`: copy a matching MAGIA-owned template only inside a validated `--board-root` or explicit ADHOC `--allowed-root`; it must not scaffold or update MAGO-owned planning files.
 - `scripts/write_execution_log.py`: write execution logs.
@@ -73,6 +80,7 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 - `scripts/magia_utils.py`: import-only helper module used by execution-state, boundary, board, and log scripts; it has no standalone CLI by design.
 - `scripts/package_policy.py`: import-only common archive candidate/exclusion and sensitive-name policy consumed by package validation and building.
 - `scripts/security_scan.py`: import-only fail-closed content scanner consumed by package validation and building.
+- `scripts/validate_runtime_dependencies.py`: verify `requirements.txt`, `release.json.runtime_dependencies`, installed distribution versions, and runtime imports.
 - `scripts/validate_skill_package.py`, `scripts/package_skill.py`: validate and package the same package-eligible candidate set.
 
 ## Ecosystem coordination
@@ -82,3 +90,5 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 - `evals/ecosystem-routing-scenarios.json`: frozen structural cross-skill corpus.
 - `references/ecosystem-contract-provenance.json`: release hash manifest for local shared copies.
 - `scripts/run_ecosystem_negative_harness.py`: fail-closed cross-package scenarios.
+
+- `scripts/live_routing_harness.py` and `references/live-routing-result-schema.json`: external, attributed live-model routing evidence contract; fixture execution is structural only.

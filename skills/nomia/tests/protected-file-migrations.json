@@ -8,6 +8,15 @@
       "recorded_at": "2026-07-22",
       "to_sha256": "7822af5ca36739adb5fd5803f5fbceab468d9506fc4ae4d1b812dd195a189832",
       "version": "1.7.0"
+    },
+    {
+      "authority": "user-authorized ecosystem repair owner",
+      "from_sha256": "7822af5ca36739adb5fd5803f5fbceab468d9506fc4ae4d1b812dd195a189832",
+      "path": "agents/openai.yaml",
+      "reason": "Preserve the current Nomia activation metadata that keeps governance ownership explicit while repairing the incomplete protected release chain.",
+      "recorded_at": "2026-07-22",
+      "to_sha256": "572ae00ea5403dc03bbf0453e1fed402da99868fd67d74331941bffcc134120e",
+      "version": "1.7.0"
     }
   ],
   "schema_version": 1,

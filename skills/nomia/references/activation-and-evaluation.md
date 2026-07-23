@@ -57,3 +57,7 @@ python <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root
 ```
 
 Prefer `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it reruns structural, activation, and golden gates before writing.
+
+## Live routing evidence
+
+Prepare and evaluate externally executed model observations with `scripts/live_routing_harness.py`. Validate results against the frozen corpus and `references/live-routing-result-schema.json`; do not convert fixture evidence into measured activation claims.

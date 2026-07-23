@@ -42,6 +42,12 @@ Folder and archive validators must pass before readiness is claimed.
 5. Scenario files keep planned fields null unless measured evidence exists.
 6. The archive is cache-free, blocked-path-free, symlink-free, scanned for secret-like names and content, and has one top-level skill directory; source validation may ignore only generated paths explicitly excluded by `scripts/package_policy.py`. Oversized, binary, or undecodable members fail closed unless an explicit future allowlist contract defines a safe scanner for that content class.
 7. No scaffold markers remain outside templates.
+8. `scripts/validate_resource_integration.py` confirms that active selectors, convergence validation, and public adapters remain reachable from `SKILL.md` and `references/resource-map.md` with non-overlapping ownership.
+
+
+## Coordinated Release Attestation
+
+After local folder/archive validation, run `scripts/validate_ecosystem_release.py` with explicit Mago, Magia, and Nomia roots. Its JSON ledger is the canonical coordinated release decision. This is release-time read-only coordination and does not permit runtime peer imports or ownership transfer.
 
 ## Evidence to Report
 
