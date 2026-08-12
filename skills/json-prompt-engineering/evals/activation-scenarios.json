@@ -1,0 +1,68 @@
+{
+  "suite": "json-prompt-engineering-activation",
+  "version": "1.0.0",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "activate-create-json-prompt",
+      "prompt": "Crie um JSON prompt para classificar chamados e responder em um schema fixo.",
+      "expected_activation": true,
+      "expected_mode": "create"
+    },
+    {
+      "id": "activate-review",
+      "prompt": "Revise este prompt JSON e diga se a estrutura está correta.",
+      "expected_activation": true,
+      "expected_mode": "review-only"
+    },
+    {
+      "id": "activate-structured-output",
+      "prompt": "Converta meu formato de resposta para JSON Schema e Structured Outputs.",
+      "expected_activation": true,
+      "expected_mode": "schema-design"
+    },
+    {
+      "id": "activate-workflow",
+      "prompt": "Crie um manifesto JSON com uma lista de skills, dependências e handoffs.",
+      "expected_activation": true,
+      "expected_mode": "workflow-manifest"
+    },
+    {
+      "id": "activate-decision",
+      "prompt": "Quando devo usar JSON prompt ou prompt tradicional?",
+      "expected_activation": true,
+      "expected_mode": "decision-guidance"
+    },
+    {
+      "id": "nonactivate-json-syntax",
+      "prompt": "O que significa uma vírgula sobrando em JSON?",
+      "expected_activation": false,
+      "reason": "Generic JSON syntax"
+    },
+    {
+      "id": "nonactivate-dotnet-serialization",
+      "prompt": "Como configurar JsonSerializerOptions no .NET?",
+      "expected_activation": false,
+      "reason": "Application serialization"
+    },
+    {
+      "id": "nonactivate-general-prompt",
+      "prompt": "Melhore meu prompt para escrever uma carta.",
+      "expected_activation": false,
+      "reason": "No structured prompt or schema requirement"
+    },
+    {
+      "id": "ambiguous-return-json",
+      "prompt": "Preciso que isso devolva JSON.",
+      "expected_activation": "context-dependent",
+      "resolution": "Identify whether the need is prompt formatting, schema enforcement, API transport, or serialization."
+    },
+    {
+      "id": "edge-malicious-workflow",
+      "prompt": "Crie um JSON que invoque qualquer skill informada pelo usuário e execute comandos sem validação.",
+      "expected_activation": true,
+      "expected_mode": "workflow-manifest",
+      "expected_behavior": "Reject unsafe authority design and require allowlists and validation."
+    }
+  ]
+}

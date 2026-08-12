@@ -1,0 +1,13 @@
+interface:
+  display_name: JSON Prompt Engineering
+  short_description: Design and validate JSON prompts, schemas, structured outputs,
+    and skill workflows.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

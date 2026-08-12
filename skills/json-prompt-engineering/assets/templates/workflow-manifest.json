@@ -1,0 +1,28 @@
+{
+  "workflow_version": "1.0.0",
+  "workflow_id": "feature-delivery",
+  "execution": {
+    "mode": "dependency_graph",
+    "stop_on_failure": true,
+    "maximum_parallelism": 2
+  },
+  "steps": [
+    {
+      "id": "planning",
+      "skill": "planning-skill",
+      "action": "define_plan",
+      "instruction": "Produce the approved execution plan.",
+      "depends_on": [],
+      "input": {
+        "source": "$.request"
+      },
+      "output": {
+        "key": "plan",
+        "schema": "plan-v1"
+      }
+    }
+  ],
+  "request": {
+    "objective": "Describe the requested outcome."
+  }
+}
