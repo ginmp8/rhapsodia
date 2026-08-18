@@ -1,0 +1,13 @@
+interface:
+  display_name: LLM Wiki Maintainer
+  short_description: Builds and maintains a persistent, source-grounded Markdown wiki
+    with LLMs.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

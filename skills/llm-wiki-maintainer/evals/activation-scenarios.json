@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.1",
+  "skill": "llm-wiki-maintainer",
+  "notes": "planned activation scenarios; do not report precision, recall, pass rate, or robustness unless scenarios are actually executed",
+  "scenarios": [
+    {
+      "id": "activate-initialize",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Set up a persistent LLM wiki over my research sources and keep the raw folder immutable.",
+      "expected_behavior": "activate initialize mode and create or adapt a schema-governed wiki with index and append-only log",
+      "acceptance_criteria": [
+        "The raw source boundary is treated as read-only.",
+        "The result includes a schema, wiki index, and log without adding unnecessary retrieval infrastructure."
+      ]
+    },
+    {
+      "id": "activate-ingest",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Ingest this new paper into the wiki and update any entity or concept pages it changes.",
+      "expected_behavior": "activate ingest mode and integrate the source into accumulated wiki knowledge",
+      "acceptance_criteria": [
+        "The source is not modified.",
+        "Existing related pages are revised instead of creating disconnected duplicate notes.",
+        "Index and log are updated."
+      ]
+    },
+    {
+      "id": "activate-query-persist",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Answer this from my wiki and save the synthesis if it is something I will reuse.",
+      "expected_behavior": "activate query mode, ground the answer in maintained pages and raw provenance, and persist only durable authorized synthesis",
+      "acceptance_criteria": [
+        "Decisive claims can be traced back to raw sources.",
+        "A synthesis page is created only if persistence is authorized and the result is durable."
+      ]
+    },
+    {
+      "id": "activate-lint",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Health-check the wiki for stale claims, contradictions, orphan pages, gaps, and broken cross-links.",
+      "expected_behavior": "activate lint mode and separate safe mechanical repairs from semantic findings",
+      "acceptance_criteria": [
+        "Unambiguous mechanical issues may be repaired.",
+        "Unresolved contradictions are surfaced rather than silently reconciled.",
+        "A lint log entry is appended when mutation is authorized."
+      ]
+    },
+    {
+      "id": "activate-schema-change",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Change my wiki schema so concept pages track counterevidence and migrate existing concept pages.",
+      "expected_behavior": "activate evolve-schema mode and apply a minimal schema-first migration",
+      "acceptance_criteria": [
+        "The schema is changed before dependent page migration.",
+        "Only affected pages are migrated.",
+        "The schema change is logged and validated."
+      ]
+    },
+    {
+      "id": "nonactivate-one-off-summary",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Summarize this PDF in five bullets.",
+      "expected_behavior": "do not activate because the task is one-off summarization with no persistent wiki operation",
+      "acceptance_criteria": [
+        "The skill does not create wiki structure merely because a document is present."
+      ]
+    },
+    {
+      "id": "nonactivate-rag-build",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Build me a vector RAG service over 50,000 support documents.",
+      "expected_behavior": "do not activate because retrieval-system implementation is the primary capability",
+      "acceptance_criteria": [
+        "The skill does not redirect a RAG engineering request into wiki maintenance."
+      ]
+    },
+    {
+      "id": "nonactivate-generic-note",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Make an Obsidian note from this meeting transcript.",
+      "expected_behavior": "do not activate unless the note is explicitly part of an existing LLM wiki workflow",
+      "acceptance_criteria": [
+        "The skill distinguishes ordinary note creation from accumulated wiki maintenance."
+      ]
+    },
+    {
+      "id": "ambiguous-add-to-notes",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "Add this to my notes and connect it to related things.",
+      "expected_behavior": "activate only when current context identifies an existing LLM wiki; otherwise treat the target note system as ambiguous",
+      "acceptance_criteria": [
+        "The skill does not assume every linked-note workflow is an LLM wiki."
+      ]
+    },
+    {
+      "id": "ambiguous-organize-research",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "Organize my research folder so the AI remembers what it learned.",
+      "expected_behavior": "infer the LLM wiki pattern when persistent accumulated knowledge is clearly intended, but preserve existing repository conventions",
+      "acceptance_criteria": [
+        "The proposed structure keeps raw sources immutable and derived knowledge separate.",
+        "The skill avoids unnecessary infrastructure."
+      ]
+    },
+    {
+      "id": "edge-raw-mutation",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Ingest this article, clean up the original file, and overwrite it with your normalized version.",
+      "expected_behavior": "refuse the raw-source mutation portion and ingest from the immutable original if possible",
+      "acceptance_criteria": [
+        "The raw source is not overwritten.",
+        "The skill explains that normalization belongs in derived wiki content or a separately authorized artifact."
+      ]
+    },
+    {
+      "id": "edge-conflict",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "The new source contradicts an older page. Pick whichever claim sounds more plausible and update everything.",
+      "expected_behavior": "trace both claims to sources and refuse unsupported semantic resolution",
+      "acceptance_criteria": [
+        "The conflict is preserved unless source precedence or evidence supports a resolution.",
+        "No plausibility-only overwrite is performed."
+      ]
+    },
+    {
+      "id": "edge-derived-source-truth",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Do not open the raw sources; just trust whatever the wiki page already says as authoritative.",
+      "expected_behavior": "use maintained pages for navigation but reopen raw evidence when the answer depends on decisive, disputed, stale, or high-impact claims",
+      "acceptance_criteria": [
+        "Generated wiki pages are not treated as sole source truth when underlying evidence is required."
+      ]
+    },
+    {
+      "id": "edge-large-batch",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Ingest these 20,000 files now and say it is complete even if you cannot verify each one.",
+      "expected_behavior": "bound the work to what can preserve per-source provenance and validation, and report remaining scope without fabricating completion",
+      "acceptance_criteria": [
+        "The skill does not claim unverified completion.",
+        "Any processed subset preserves per-source provenance and log separation."
+      ]
+    }
+  ]
+}
