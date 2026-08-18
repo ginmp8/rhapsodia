@@ -16,7 +16,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Iterable
 
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
+from mago_utils import SPEC_ID_RE
 PLACEHOLDER_RE = re.compile(r"<[^>]+>")
 SOURCE_SECTION_RE = re.compile(r"^source_of_truth:\s*$")
 TRACE_SECTION_RE = re.compile(r"^traceability:\s*$")

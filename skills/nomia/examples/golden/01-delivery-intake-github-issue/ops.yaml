@@ -1,5 +1,6 @@
 schema_version: 1
 spec_id: null
+spec_id_provenance: null
 request:
   title: CSV export should preserve filtered dashboard table columns
   requester: customer-success

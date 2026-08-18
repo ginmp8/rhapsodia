@@ -11,8 +11,8 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = SCRIPT_DIR.parent / "assets" / "templates"
-MAGO_OWNED_PLANNING_ARTIFACTS = {
-    "spec-catalog.yaml",
+PLANNING_OWNED_ARTIFACTS = {
+    "cycle.yaml",
     "manifest.yaml",
     "tasks.md",
     "notes.md",
@@ -29,7 +29,7 @@ def artifact_name_from_template(template_name: str) -> str:
 
 
 def infer_template_name(destination: Path) -> str | None:
-    if destination.name in MAGO_OWNED_PLANNING_ARTIFACTS:
+    if destination.name in PLANNING_OWNED_ARTIFACTS or destination.parent.name == "registry":
         return None
     candidate = f"{destination.name}.template"
     if (TEMPLATES_DIR / candidate).exists():
@@ -39,8 +39,8 @@ def infer_template_name(destination: Path) -> str | None:
 
 def planning_artifact_error(artifact_name: str) -> str:
     return (
-        f"`{artifact_name}` is a MAGO-owned planning artifact. MAGIA must not scaffold it. "
-        "Use MAGO to create or normalize the planning package, then use MAGIA execution-state "
+        f"`{artifact_name}` is a planning-owned artifact. MAGIA must not scaffold it. "
+        "Use the planning workflow to create or normalize the package, then use MAGIA execution-state "
         "scripts only to update existing records from truthful execution evidence."
     )
 
@@ -53,7 +53,7 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     destination = Path(args.path).resolve()
-    if destination.name in MAGO_OWNED_PLANNING_ARTIFACTS:
+    if destination.name in PLANNING_OWNED_ARTIFACTS or destination.parent.name == "registry":
         print(f"ERROR: {planning_artifact_error(destination.name)}")
         return 1
 
@@ -69,7 +69,7 @@ def main(argv: list[str]) -> int:
         return 1
 
     template_artifact = artifact_name_from_template(Path(template_name).name)
-    if template_artifact in MAGO_OWNED_PLANNING_ARTIFACTS:
+    if template_artifact in PLANNING_OWNED_ARTIFACTS:
         print(f"ERROR: {planning_artifact_error(template_artifact)}")
         return 1
 

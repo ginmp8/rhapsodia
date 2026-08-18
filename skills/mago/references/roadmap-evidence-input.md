@@ -18,14 +18,14 @@ A roadmap feature can become a Mago spec when the evidence is specific enough to
 
 Treat a feature map as a handoff index and a roadmap as structured source evidence.
 
-Use `candidate_spec_id` only when it is provided, matches the active catalog sequence, and does not conflict with existing specs. Otherwise, follow normal Mago ordering and id assignment rules.
+Use `candidate_spec_id` as an existing `spec_id` only when it is already canonical and matches a current registry record for the same capability. Otherwise preserve it only as source traceability and create identity through the normal atomic ordering flow.
 
 ## Field Mapping
 
 Apply these mappings conservatively:
 
 - `feature_key`: use as Mago `feature_key` when stable and aligned with the capability. Never use it as `spec_id`.
-- `candidate_spec_id`: use as `spec_id` only when it matches the active catalog sequence and does not conflict with existing specs.
+- `candidate_spec_id`: use as `spec_id` only when it is canonical and matches an existing registry record for the same capability; otherwise retain it as import/source traceability.
 - `title` or `name`: use as Mago `title`, adjusted only for clarity and consistency.
 - `dependencies`: map to `depends_on_features`; map to `depends_on_specs` only when the referenced feature already has a known spec id.
 - `business_outcome`, `outcome`, or `source_summary`: use as PRD problem, goal, impact, or success-context evidence. Do not turn it into delivery status.
@@ -46,7 +46,7 @@ Specifically:
 - Do not turn roadmap narrative into acceptance criteria without converting it into testable product behavior.
 - Do not turn MVP boundaries into tasks before product scope is coherent.
 - Do not turn risks or open questions into requirements unless evidence resolves them.
-- Do not use `candidate_spec_id` when it conflicts with the catalog or package layout.
+- Do not use `candidate_spec_id` when it conflicts with registry identity, capability mapping, or package layout.
 - Do not add implementation guesses, delivery promises, or validation claims without repository truth or planning evidence.
 
 ## Traceability

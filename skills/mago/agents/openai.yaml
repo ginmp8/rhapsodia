@@ -6,6 +6,8 @@ interface:
     artifacts, technical designs, task plans, validation plans, and architecture ADRs;
     never edit product code or runtime execution records.
   allow_implicit_invocation: true
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

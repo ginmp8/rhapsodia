@@ -6,6 +6,8 @@ interface:
     governance artifacts only; route technical design, ADRs, Mago technical planning,
     and execution to Mago or Magia.
   allow_implicit_invocation: true
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

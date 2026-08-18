@@ -9,6 +9,7 @@ features: []
 # - feature_key: lowercase-hyphen-key
 #   ready_for_spec: false
 #   candidate_spec_id: <spec_id_or_null>
+#   candidate_spec_id_provenance: <evidence_reference_or_null>
 #   title: <title_or_null>
 #   scope_summary: <scope_summary_or_null>
 #   dependencies: []

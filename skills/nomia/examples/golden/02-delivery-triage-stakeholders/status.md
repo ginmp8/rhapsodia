@@ -16,7 +16,7 @@ The delivery is triaged. Mago has a linked candidate spec path, but planning art
 ## Next Steps
 
 - Confirm export behavior decision.
-- Ask Mago to define `spec021` after scope is accepted.
+- Ask Mago to define `spec-2026-04-20-csv-export-filtered-columns` after scope is accepted.
 - Update stakeholder timing if target date or commitment changes.
 
 ## Unknowns
@@ -27,4 +27,4 @@ The delivery is triaged. Mago has a linked candidate spec path, but planning art
 ## Evidence
 
 - Delivery metadata: `ops.yaml`
-- Candidate Mago link: `docs/board/2026/specs/spec021/manifest.yaml`
+- Candidate Mago link: `docs/boards/workspace-admin/2026/cycles/cycle-2026-04-20-workspace-admin/specs/spec-2026-04-20-csv-export-filtered-columns/manifest.yaml`

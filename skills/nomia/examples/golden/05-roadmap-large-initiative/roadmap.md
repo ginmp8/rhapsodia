@@ -17,7 +17,7 @@ Saved-query sharing controls come first because the scope is narrow and ready fo
 ## Dependencies
 
 - Security input on inherited dashboard permissions.
-- Mago candidate `spec022` for saved-query sharing controls.
+- Mago candidate `spec-2026-04-20-saved-query-sharing-controls` for saved-query sharing controls.
 
 ## Risks
 
@@ -29,4 +29,4 @@ Saved-query sharing controls come first because the scope is narrow and ready fo
 
 ## Mago Handoff Candidates
 
-- `saved-query-sharing-controls` -> `spec022`
+- `saved-query-sharing-controls` -> `spec-2026-04-20-saved-query-sharing-controls`

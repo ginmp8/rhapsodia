@@ -191,6 +191,7 @@ def validate_folder(target: Path) -> list[str]:
     return errors
 
 
+
 def build_package(target: Path, output: Path) -> dict[str, Any]:
     files, excluded = iter_package_files(target)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -280,7 +281,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build and validate a ChatGPT skill package zip.")
     parser.add_argument("--target", help="Path to the target skill folder.")
     parser.add_argument("--output", help="Path to write skill.zip.")
-    parser.add_argument("--validate", action="store_true", help="Validate the folder before packaging and the zip after packaging.")
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Run structural folder and archive validation without executing scripts from the target package.",
+    )
     parser.add_argument("--validate-only", help="Validate an existing package zip without creating a new one.")
     parser.add_argument("--json-output", help="Optional JSON evidence output path.")
     args = parser.parse_args(argv)

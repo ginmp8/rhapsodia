@@ -4,7 +4,7 @@
     "category": "should_activate",
     "prompt": "Use nomia to create a stakeholder status brief for board alpha cycle 2026-04 from the supplied ops evidence.",
     "expected_activation": true,
-    "expected_behavior": "Activate nomia, select a delivery or reporting mode, require BOARD_ROOT, board_id, cycle_version, and supplied evidence, then create only nomia-owned governance artifacts and validate them.",
+    "expected_behavior": "Activate nomia, select a delivery or reporting mode, require BOARD_ROOT, board_id, year, cycle_id, and supplied evidence, then create only nomia-owned governance artifacts and validate them.",
     "actual_activation": null,
     "output_conforms": null,
     "quality_score": null,
@@ -124,7 +124,7 @@
     "category": "ambiguous",
     "prompt": "Update the status for the onboarding work.",
     "expected_activation": null,
-    "expected_behavior": "Clarify or infer from supplied context whether a nomia status artifact is requested; require board_id, cycle_version, BOARD_ROOT, and evidence before repository-facing writes.",
+    "expected_behavior": "Clarify or infer from supplied context whether a nomia status artifact is requested; require board_id, year, cycle_id, BOARD_ROOT, and evidence before repository-facing writes.",
     "actual_activation": null,
     "output_conforms": null,
     "quality_score": null,
@@ -182,9 +182,9 @@
   {
     "id": "E001",
     "category": "edge_case",
-    "prompt": "Create ops.yaml for board beta but I do not know the cycle_version yet.",
+    "prompt": "Create ops.yaml for board beta but I do not know the cycle_id or creation year yet.",
     "expected_activation": true,
-    "expected_behavior": "Activate nomia but stop before repository-facing artifact creation because cycle_version is required; report the missing input as a blocker.",
+    "expected_behavior": "Activate nomia but stop before repository-facing artifact creation because year and cycle_id are required; report the missing input as a blocker.",
     "actual_activation": null,
     "output_conforms": null,
     "quality_score": null,
@@ -238,5 +238,17 @@
     "quality_score": null,
     "needs_rework": null,
     "notes": "planned structural scenario for evidence-only cross-skill material"
+  },
+  {
+    "id": "E006",
+    "category": "edge_case",
+    "prompt": "Adapt governance notes from the previous ULID layout, but do not create replacement ids or registry entries.",
+    "expected_activation": true,
+    "expected_behavior": "Use governance-adapt with the old ids as read-only evidence only, preserve unknowns, require externally supplied canonical cycle_id and spec_id before canonical writes, record provenance, and leave registry and technical packages untouched.",
+    "actual_activation": null,
+    "output_conforms": null,
+    "quality_score": null,
+    "needs_rework": null,
+    "notes": "planned structural scenario for read-only legacy identity adaptation"
   }
 ]

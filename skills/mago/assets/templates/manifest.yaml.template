@@ -4,17 +4,19 @@
 # Never copy placeholder or example values blindly into generated files.
 # Keep all keys lowercase and preserve field order.
 
-schema_version: 1
+kind: mago-spec-manifest
 spec_id: "<spec_id>"
+cycle_id: "<cycle_id>"
 feature_key: "<feature_key>"
 title: "<title>"
 type: "<type>"
 classification: "<classification>"
 status: "<status>"
 phase: "<phase>"
-cycle_version: "<cycle_version>"
 feature_version: "<feature_version>"
+created_at: "<created_at>"
 source_of_truth:
+  registry: "../../registry/<spec_id>.yaml"
   prd: prd.md
   tasks: tasks.md
   validation: validation.md

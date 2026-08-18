@@ -8,6 +8,8 @@ import json
 import re
 import sys
 import zipfile
+
+sys.dont_write_bytecode = True
 from pathlib import Path
 from typing import Any
 
