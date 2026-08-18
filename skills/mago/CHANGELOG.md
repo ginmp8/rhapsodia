@@ -1,6 +1,30 @@
 # Changelog
 
 
+## [1.9.4] - 2026-08-18
+
+- Make the live-routing harness unit tests self-contained so the complete Mago test suite passes from the standalone skill package without sibling Magia/Nomia checkouts.
+- Preserve the runtime harness contract: real prepare/evaluate commands still require explicit Mago, Magia, and Nomia roots and verify byte-equivalent routing corpora.
+- Compatibility impact: compatible coordinated patch; no ownership, lifecycle, activation, handoff schema `3.0.0`, priority schema `2.0.0`, or routing-oracle semantic change. Live-model routing remains unmeasured.
+
+## [1.9.3] - 2026-08-18
+
+- Normalize native activation oracles with explicit `expected_owner`, tri-state `expected_activation`, and `diagnostic_entry_allowed`; unresolved ownership no longer uses the legacy `"ambiguous"` activation value.
+- Repair the stale `order` eval so registry records are authoritative and `spec-catalog.yaml` / `define-queue.yaml` remain external read-only projections.
+- Clarify that canonical planning intent may activate read-only blocker diagnosis before `BOARD_ROOT` is resolved, while writes still require canonical inputs.
+- Broaden the agent entry prompt to planning from governance intake, repository evidence, or existing canonical planning artifacts.
+- Add a shared adversarial routing case that rejects a forced Magia owner while lifecycle/current owner is unresolved.
+- Compatibility impact: compatible coordinated patch; ownership, lifecycle, handoff schema `3.0.0`, priority schema `2.0.0`, and exact-version policy are unchanged. Live-model routing remains unmeasured.
+
+## [1.9.2] - 2026-08-17
+
+- Fix `current_owner` routing so a current Nomia phase plus implementation intent inserts the mandatory Mago bridge instead of failing on a forbidden direct handoff.
+- Clarify same-owner phase semantics: consecutive intents coalesce into one owner phase while ordered intents and non-consecutive repeated owner phases remain preserved.
+- Make the 365-day durable-artifact cap explicitly stricter than the 3650-day handoff limit; persistence remains fail-closed when inherited retention exceeds the durable-artifact policy.
+- Strengthen artifact privacy lineage with canonical handoff references, source-handoff integrity verification when source evidence is supplied, and exact-inheritance checks. Structural lineage alone no longer implies source authenticity.
+- Keep routing activation evidence explicitly structural; live-model precision and recall remain unmeasured.
+- Compatibility impact: compatible coordinated patch; handoff schema `3.0.0`, priority schema `2.0.0`, ownership, and payload contracts are unchanged. Exact-version policy still requires upgrading or rolling back all three skills together.
+
 ## [1.9.1] - 2026-07-23
 
 - Preserve ordered and repeated lifecycle phases with a corpus-backed executable routing oracle.

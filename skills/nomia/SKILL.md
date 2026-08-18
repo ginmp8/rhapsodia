@@ -5,7 +5,7 @@ description: "use when asked to create, update, validate, audit, or report on no
 
 # nomia
 
-Nomia owns product/delivery governance and reporting, never technical design or validation. It writes `business_priority`; generic `priority` is unsupported.
+Nomia owns product/delivery governance and reporting. It never owns technical design or technical/runtime validation; it may validate Nomia-owned governance artifacts and ecosystem contracts. It writes `business_priority`; generic `priority` is unsupported.
 
 ## Distributed ecosystem routing
 
@@ -73,7 +73,7 @@ Return structured Markdown with profile/stage/mode; roots/identities/provenance;
 
 ## Acceptance Gates
 
-Require one profile/stage/mode; canonical identity/provenance; non-invention; schema v2; attributed technical/release states; strict v3 handoffs and exact versions; privacy metadata, minimization, content coherence, and durable lineage; no cross-owner writes; script-backed templates and atomic writes; non-authoritative projections; preserved unknowns; specialized/path/scenario/golden/identity/priority/contract/preservation/unit/package gates; and deterministic archives without symlinks, traversal, caches, reports, secrets, temporary files, or old zips.
+Require one profile/stage/mode; canonical identity/provenance; non-invention; schema v2; attributed technical/release states; strict v3 handoffs and exact versions; privacy metadata, minimization, content coherence, declared durable lineage, and verified source-handoff authenticity when claimed; no cross-owner writes; script-backed templates and atomic writes; non-authoritative projections; preserved unknowns; specialized/path/scenario/golden/identity/priority/contract/preservation/unit/package gates; and deterministic archives without symlinks, traversal, caches, reports, secrets, temporary files, or old zips.
 
 ## Stop Conditions
 

@@ -17,6 +17,15 @@
       "recorded_at": "2026-07-22",
       "to_sha256": "572ae00ea5403dc03bbf0453e1fed402da99868fd67d74331941bffcc134120e",
       "version": "1.7.0"
+    },
+    {
+      "authority": "user-authorized Skill Booster 1.9.3 calibration repair",
+      "from_sha256": "572ae00ea5403dc03bbf0453e1fed402da99868fd67d74331941bffcc134120e",
+      "path": "agents/openai.yaml",
+      "reason": "Broaden Nomia public activation metadata to its existing governance responsibilities without transferring technical planning, implementation, or runtime-validation ownership.",
+      "recorded_at": "2026-08-18",
+      "to_sha256": "615f6f9c9e9610c46d745fd78ec368c3e4edb472c6cfa537732d100d69f49fd5",
+      "version": "1.9.3"
     }
   ],
   "schema_version": 1,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate routing contracts and execute every routeable canonical scenario."""
+"""Validate structural routing contracts and executable intent fixtures; live model activation is not measured here."""
 import argparse,importlib.util,json,re
 from collections import Counter
 from pathlib import Path
@@ -70,6 +70,16 @@ def validate(root):
  for cat in CATS:
   if counts[cat]<4: err.append(f'routing category {cat} has {counts[cat]}; expected at least 4')
  if 'ecosystem-routing-contract.md' not in (root/'SKILL.md').read_text(): err.append('SKILL.md must reference the distributed routing contract')
+ if router:
+  try:
+   current=router.route(['implementation'],current_owner='nomia')
+   if current.get('owner_sequence')!=['nomia','mago','magia'] or current.get('handoff_sequence')!=['nomia_to_mago','mago_to_magia']:
+    err.append('current_owner routing must insert the Mago bridge before Nomia-to-Magia implementation')
+   same=router.route(['planning','requirements','design'])
+   if same.get('owner_sequence')!=['mago'] or same.get('intents')!=['planning','requirements','design']:
+    err.append('same-owner intents must coalesce into one owner phase while preserving ordered intents')
+  except Exception as exc:
+   err.append(f'router invariant probe failed: {exc}')
  err+=local_errors(root)
  return {'status':'pass' if not err else 'fail','errors':err,'warnings':[],'scenario_count':len(scenarios),'executed_route_count':executed,'counts':dict(counts),'measurement_kind':corpus.get('measurement_kind')}
 def main(argv=None):

@@ -25,7 +25,7 @@ REQUIRED_MODES = {
     "complexity-reduction",
     "reconcile",
 }
-REQUIRED_KEYS = {"id", "case_type", "prompt", "expected_activation", "expected_mode", "expected_boundary"}
+REQUIRED_KEYS = {"id", "case_type", "prompt", "expected_activation", "expected_owner", "diagnostic_entry_allowed", "expected_mode", "expected_boundary"}
 CASE_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
 NEGATED_EXECUTION_PATTERNS = (
     "without implement",
@@ -76,7 +76,7 @@ def has_execution_request(text: str) -> bool:
     return has_any(text, EXECUTION_TERMS) or bool(re.search(r"\bimplement\b", text))
 
 
-def classify_prompt(prompt: str) -> tuple[bool | str, str | None]:
+def classify_prompt(prompt: str) -> tuple[bool | None, str | None]:
     text = " ".join(prompt.lower().replace("-", " ").split())
     if has_execution_request(text) or has_any(text, GOVERNANCE_TERMS):
         return False, None
@@ -122,8 +122,8 @@ def classify_prompt(prompt: str) -> tuple[bool | str, str | None]:
     if "define" in text and ("spec" in text or "package" in text):
         return True, "define"
     if "docs" in text or "documentation" in text or "planning" in text or "package" in text or "roadmap" in text:
-        return "ambiguous", None
-    return "ambiguous", None
+        return None, None
+    return None, None
 
 
 
@@ -217,19 +217,37 @@ def validate(root: Path) -> dict[str, Any]:
             case_types[case_type] += 1
         prompt = scenario["prompt"]
         expected_activation = scenario["expected_activation"]
+        expected_owner = scenario["expected_owner"]
+        diagnostic_entry_allowed = scenario["diagnostic_entry_allowed"]
         expected_mode = scenario["expected_mode"]
         expected_boundary = scenario["expected_boundary"]
         if expected_mode is not None:
             expected_modes.add(expected_mode)
             mode_case_types.setdefault(str(expected_mode), set()).add(str(case_type))
+        if expected_owner not in {"mago", "magia", "nomia", "none"}:
+            errors.append(f"{scenario_id}: expected_owner must be mago, magia, nomia, or none")
+        if not isinstance(diagnostic_entry_allowed, bool):
+            errors.append(f"{scenario_id}: diagnostic_entry_allowed must be boolean")
         if expected_activation is True:
             boundary_cases["positive"] += 1
+            if expected_owner != "mago":
+                errors.append(f"{scenario_id}: activation true requires expected_owner=mago")
         elif expected_activation is False:
             boundary_cases["negative"] += 1
-        elif expected_activation == "ambiguous":
+            if expected_owner == "mago":
+                errors.append(f"{scenario_id}: activation false cannot name mago as expected_owner")
+            if diagnostic_entry_allowed is True:
+                errors.append(f"{scenario_id}: activation false cannot allow diagnostic entry")
+        elif expected_activation is None:
             boundary_cases["ambiguous"] += 1
+            if expected_owner != "none":
+                errors.append(f"{scenario_id}: activation null requires expected_owner=none")
+            if diagnostic_entry_allowed is not True:
+                errors.append(f"{scenario_id}: activation null requires diagnostic_entry_allowed=true")
         else:
-            errors.append(f"{scenario_id}: expected_activation must be true, false, or ambiguous")
+            errors.append(f"{scenario_id}: expected_activation must be true, false, or null")
+        if case_type == "ambiguous" and expected_activation is not None:
+            errors.append(f"{scenario_id}: ambiguous scenarios must use expected_activation=null")
         if not isinstance(expected_boundary, str) or len(expected_boundary.split()) < 4:
             errors.append(f"{scenario_id}: expected_boundary is too vague")
         errors.extend(validate_boundary_contract(str(scenario_id), expected_mode, scenario))
@@ -249,6 +267,8 @@ def validate(root: Path) -> dict[str, Any]:
                 "id": scenario_id,
                 "case_type": case_type,
                 "expected_activation": expected_activation,
+                "expected_owner": expected_owner,
+                "diagnostic_entry_allowed": diagnostic_entry_allowed,
                 "actual_activation": actual_activation,
                 "expected_mode": expected_mode,
                 "actual_mode": actual_mode,

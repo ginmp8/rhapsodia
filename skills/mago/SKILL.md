@@ -1,6 +1,6 @@
 ---
 name: mago
-description: use when asked to plan, normalize, audit, define, or refine tech-lead owned repository planning artifacts for a resolved board/spec package, including prd refinement from governance intake, technical design, complexity-reduction strategy, refactoring plans, architecture decisions, planned-decision records, execution handoff plans, tasks, validation plans, contract specs, migrations, observability, operations, security/risk notes, discovery, ordering, and define/refine workflows. do not use for execution work, delivery governance/status reporting, stakeholder communication, runtime testing, deployments, commits, pull requests, or magia execution records.
+description: use when asked to plan, normalize, audit, define, or refine tech-lead owned canonical repository planning artifacts, including in-scope requests whose board/spec inputs must be resolved before writes; covers prd refinement from governance intake or repository evidence, technical design, complexity-reduction strategy, refactoring plans, architecture decisions, planned-decision records, execution handoff plans, tasks, validation plans, contract specs, migrations, observability, operations, security/risk notes, discovery, ordering, and define/refine workflows. do not use for execution work, delivery governance/status reporting, stakeholder communication, runtime testing, deployments, commits, pull requests, or magia execution records.
 ---
 
 # MAGO
@@ -17,7 +17,7 @@ Use the [routing contract](references/ecosystem-routing-contract.md) and [lifecy
 - Mago writes requirements, design, planned decisions/tasks/validation, `technical_criticality`, `execution_sequence`, technical risk, and execution handoff.
 - Magia writes implementation, tests, runtime validation, execution decisions, and evidence.
 - Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `nomia_to_mago`/`magia_to_mago`; produce `mago_to_magia`/`mago_to_nomia`.
-- Reject mixed ecosystem versions before mutation, unsupported envelope schemas, content/privacy-metadata contradictions, absent durable-artifact privacy lineage, legacy switches, and wrong-owner fields.
+- Reject mixed ecosystem versions before mutation, unsupported envelope schemas, content/privacy-metadata contradictions, absent durable-artifact privacy lineage, unverified source-handoff authenticity when authenticity is claimed, legacy switches, and wrong-owner fields.
 - A Mago planning boundary is an authoring boundary; execution-required tasks are valid planning outputs when bounded, assigned to Magia, and linked to validation. Mago never executes them.
 
 Write only under a resolved `BOARD_ROOT` using [canonical paths](references/canonical-paths.md), [concurrent identity](references/concurrent-planning.md), and [shared ownership](references/shared-artifact-ownership.md). Registry/cycle/spec identity is authoritative; views are projections. Legacy planning enters only through `adapt`; legacy execution evidence must first be normalized by Magia.

@@ -114,6 +114,39 @@ REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambig
 REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
 
 
+def validate_native_activation_oracles(scenarios: Any) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(scenarios, list):
+        return ["activation scenario suite must contain a JSON list"]
+    allowed_owners = {"mago", "magia", "nomia", "none"}
+    for index, item in enumerate(scenarios):
+        if not isinstance(item, dict):
+            errors.append(f"activation scenario {index} must be an object")
+            continue
+        scenario_id = item.get("id", index)
+        category = item.get("category")
+        activation = item.get("expected_activation")
+        owner = item.get("expected_owner")
+        diagnostic = item.get("diagnostic_entry_allowed")
+        if activation not in (True, False, None):
+            errors.append(f"{scenario_id}: expected_activation must be true, false, or null")
+        if owner not in allowed_owners:
+            errors.append(f"{scenario_id}: expected_owner must be mago, magia, nomia, or none")
+        if not isinstance(diagnostic, bool):
+            errors.append(f"{scenario_id}: diagnostic_entry_allowed must be boolean")
+        if activation is True and owner != "magia":
+            errors.append(f"{scenario_id}: activation true requires expected_owner=magia")
+        if activation is False and owner == "magia":
+            errors.append(f"{scenario_id}: activation false cannot name magia as expected_owner")
+        if activation is False and diagnostic is True:
+            errors.append(f"{scenario_id}: activation false cannot allow diagnostic entry")
+        if activation is None and (owner != "none" or diagnostic is not True):
+            errors.append(f"{scenario_id}: activation null requires expected_owner=none and diagnostic_entry_allowed=true")
+        if category == "ambiguous" and activation is not None:
+            errors.append(f"{scenario_id}: ambiguous scenarios must use expected_activation=null")
+    return errors
+
+
 def validate_shared_artifact_boundaries(target: Path) -> list[str]:
     errors: list[str] = []
     planning_templates = {
@@ -357,6 +390,7 @@ def validate_target(target: Path) -> dict[str, Any]:
         missing_categories = expected_categories - categories
         if missing_categories:
             errors.append(f"activation scenario suite missing categories: {sorted(missing_categories)}")
+        errors.extend(validate_native_activation_oracles(scenarios))
     except Exception as exc:  # noqa: BLE001
         errors.append(f"activation scenario suite is invalid JSON: {exc}")
     checks.append("activation scenarios")

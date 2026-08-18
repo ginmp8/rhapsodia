@@ -118,6 +118,16 @@ class EcosystemHandoffTests(unittest.TestCase):
   env=self.peer_envelope('mago_to_magia'); env['payload']['readiness']='draft'; env['payload']['execution_sequence']['rank']=None; env['handoff_id']=handoff.handoff_id_for(env); self.assertEqual(handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT)['status'],'draft'); env['payload']['readiness']='ready'; env['handoff_id']=handoff.handoff_id_for(env); self.assertEqual(handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT)['status'],'rejected')
  def test_artifact_privacy_lineage(self):
   import validate_artifact_privacy as ap
-  env=self.peer_envelope('magia_to_mago'); block=ap.derive(env); self.assertEqual(block['source_handoff_id'],env['handoff_id']); self.assertEqual(ap.validate_block(block,ROOT),[]); block['allowed_destinations']=['public']; self.assertIn('privacy external destination denied',ap.validate_block(block,ROOT)); block=ap.derive(env); block['contains_personal_data']=True; self.assertIn('privacy sensitive content requires redaction',ap.validate_block(block,ROOT))
+  env=self.peer_envelope('magia_to_mago'); block=ap.derive(env); self.assertEqual(block['source_handoff_id'],env['handoff_id']); self.assertEqual(ap.validate_block(block,ROOT),[]); self.assertEqual(ap.verify_source_handoff(block,env),[])
+  block['allowed_destinations']=['public']; self.assertIn('privacy external destination denied',ap.validate_block(block,ROOT))
+  block=ap.derive(env); block['contains_personal_data']=True; self.assertIn('privacy sensitive content requires redaction',ap.validate_block(block,ROOT)); self.assertIn('privacy.contains_personal_data does not match exact inherited source metadata',ap.verify_source_handoff(block,env))
+ def test_artifact_privacy_rejects_inconsistent_or_unverified_source_evidence(self):
+  import validate_artifact_privacy as ap
+  env=self.peer_envelope('magia_to_mago'); block=ap.derive(env); block['source_reference']='handoff:handoff-deadbeefdeadbeef'; self.assertIn('privacy.source_reference must match source_handoff_id',ap.validate_block(block,ROOT))
+  block=ap.derive(env); block['source_handoff_id']='handoff-deadbeefdeadbeef'; block['source_reference']='handoff:handoff-deadbeefdeadbeef'; self.assertTrue(any('source handoff id does not match' in e or 'integrity check failed' in e for e in ap.verify_source_handoff(block,env)))
+ def test_durable_artifact_retention_uses_stricter_limit(self):
+  import validate_artifact_privacy as ap
+  env=self.peer_envelope('magia_to_mago'); env['privacy_handling']['retention_days']=1000; env['handoff_id']=handoff.handoff_id_for(env); self.assertEqual(handoff.validate_envelope(env,as_of=NOW,operation='any',root=ROOT)['status'],'accepted')
+  block=ap.derive(env); self.assertTrue(any('durable artifacts are capped at 365 days' in e for e in ap.validate_block(block,ROOT)))
 
 if __name__=='__main__': unittest.main()

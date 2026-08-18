@@ -1,10 +1,10 @@
 # Ecosystem compatibility
 
-Nomia, Mago, and Magia participate in coordinated exact ecosystem release `1.9.1`. Each package remains independently executable and carries local byte-equivalent copies of shared contracts. Runtime imports, script execution, or file reads from peer skill packages are forbidden.
+Nomia, Mago, and Magia participate in coordinated exact ecosystem release `1.9.4`. Each package remains independently executable and carries local byte-equivalent copies of shared contracts. Runtime imports, script execution, or file reads from peer skill packages are forbidden.
 
 ## Policy
 
-- Package versions must all equal `1.9.1`.
+- Package versions must all equal `1.9.4`.
 - Mixed package versions are rejected before mutation or handoff consumption.
 - Changelog entries are documentation and are not compatibility aliases or migration inputs.
 - The handoff, priority, routing, compatibility, and provenance contracts must be byte-equivalent across packages.

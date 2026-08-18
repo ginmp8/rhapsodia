@@ -13,7 +13,7 @@ Use the [routing contract](references/ecosystem-routing-contract.md) and [lifecy
 
 ## Ecosystem contracts
 
-Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `mago_to_magia`; produce `magia_to_mago` and `magia_to_nomia`. Apply [priority ownership](references/priority-contract.md) read-only. Reject mixed versions, generic priority, wrong-owner content, content/privacy-metadata contradictions, missing durable-artifact privacy lineage, and unsupported schemas.
+Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `mago_to_magia`; produce `magia_to_mago` and `magia_to_nomia`. Apply [priority ownership](references/priority-contract.md) read-only. Reject mixed versions, generic priority, wrong-owner content, content/privacy-metadata contradictions, missing durable-artifact privacy lineage, unverified source-handoff authenticity when authenticity is claimed, and unsupported schemas.
 
 ## Scope Boundary
 
@@ -80,11 +80,11 @@ Preserve unknowns; never invent behavior, ownership, state, branches/PRs/release
 
 ## Stop Conditions
 
-Stop/handoff when work belongs to planning/governance; repo/board/spec/task/scope or proof cannot be resolved; execution requires changing intent, acceptance, task definition/order, architecture, public contract, data/security, or user behavior beyond authority; simplification lacks equivalence/rollback; state conflicts cannot be mechanically healed; writes escape scope; privacy lineage is absent; or no truthful validation alternative exists.
+Stop/handoff when work belongs to planning/governance; inputs required by the selected mode cannot be resolved (ADHOC: repo/file scope, behavior, allowed/blocked paths, proving check; RALPH: board/cycle/spec/task linkage plus planned proof); execution requires changing intent, acceptance, task definition/order, architecture, public contract, data/security, or user behavior beyond authority; simplification lacks equivalence/rollback; state conflicts cannot be mechanically healed; writes escape scope; privacy lineage is absent; or no truthful validation alternative exists.
 
 ## Output Contract
 
-Include only applicable sections: mode/risk/scope; changes; technical artifacts; checks (`pass`, `fail`, `not-run` + reason); execution-record changes; decisions/assumptions/blockers/risks/trade-offs; structured downstream evidence. Never claim completion without current proof.
+Include only applicable sections: mode/risk/scope; changes; technical artifacts; checks (`pass`, `fail`, `blocked`, `skipped`, `not-run`, with a reason whenever status is not `pass`); execution-record changes; decisions/assumptions/blockers/risks/trade-offs; structured downstream evidence. Never claim completion without current proof.
 
 ## Package Requests
 
@@ -96,4 +96,4 @@ Confirm mode/ownership, authorized paths, required references, touched artifact 
 
 ## Activation Examples
 
-ADHOC: fix a failing parser test and run its targeted command. RALPH: execute one selected Mago task and sync evidence. Docs: record an implementation ADR forced by runtime evidence. Negative: PRD, roadmap, stakeholder status, release notes, governance decision. Ambiguous: resolve board/spec/task and the next safe action before mutation.
+ADHOC: fix a failing parser test and run its targeted command. RALPH: execute one selected Mago task and sync evidence. Docs: record an implementation ADR forced by runtime evidence. Negative: PRD, roadmap, stakeholder status, release notes, governance decision. Ambiguous: resolve owner and the next safe action before mutation. Native scenario oracles use `expected_owner: mago|magia|nomia|none`, `expected_activation: true|false|null`, and boolean `diagnostic_entry_allowed`; `null` means owner is unresolved, not that Magia owns the request.

@@ -12,7 +12,9 @@ Mago, Magia, and Nomia remain separate skills. This contract coordinates activat
 6. Governed work never shortcuts directly from Nomia to Magia.
 7. Ambiguous requests preserve unknowns and perform no mutation until the current phase is resolved.
 8. Shared contracts remain local byte-equivalent copies; runtime imports or execution of peer packages are forbidden.
-9. The shared corpus is structural/planned evidence; it is not live-model precision or recall evidence.
+9. Consecutive intents owned by the same skill form one owner phase, while the ordered `intents` list is preserved; an owner repeated after another owner remains a repeated lifecycle phase.
+10. When a supplied current owner would otherwise create `Nomia -> Magia`, insert the required Mago planning bridge before handoff construction.
+11. The shared corpus is structural/planned evidence; it is not live-model precision or recall evidence.
 
 ## Lifecycle
 

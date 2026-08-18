@@ -76,8 +76,9 @@ class ReleaseContractTests(unittest.TestCase):
     def test_current_release_uses_a_continuous_multi_step_migration_chain(self) -> None:
         migrations = json.loads((self.skill_root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
         chain = [item for item in migrations["migrations"] if item["path"] == "agents/openai.yaml"]
-        self.assertEqual(len(chain), 2)
-        self.assertEqual(chain[0]["to_sha256"], chain[1]["from_sha256"])
+        self.assertGreaterEqual(len(chain), 2)
+        for previous, current in zip(chain, chain[1:]):
+            self.assertEqual(previous["to_sha256"], current["from_sha256"])
         self.assertEqual(validate_release_contract(self.skill_root), [])
 
     def test_discontinuous_multi_step_migration_fails_closed(self) -> None:
@@ -125,7 +126,7 @@ class ReleaseContractTests(unittest.TestCase):
             self.configure_agent_migration(root)
             migration = json.loads((root / "tests" / "protected-file-migrations.json").read_text(encoding="utf-8"))
             self.assertEqual(migration["migrations"][0]["version"], "1.2.0")
-            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "1.9.1")
+            self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "1.9.4")
             self.assertEqual(validate_release_contract(root), [])
 
     def test_future_protected_file_migration_fails_closed(self) -> None:

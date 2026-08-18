@@ -6,7 +6,12 @@ ROOT=Path(__file__).resolve().parents[1]
 S=importlib.util.spec_from_file_location('live',ROOT/'scripts/live_routing_harness.py'); assert S and S.loader
 m=importlib.util.module_from_spec(S); S.loader.exec_module(m)
 class LiveRoutingHarnessTests(unittest.TestCase):
- def roots(self): return {r:ROOT.parent/r for r in m.ROLES}
+ def setUp(self):
+  self._tmp=tempfile.TemporaryDirectory(); self.addCleanup(self._tmp.cleanup)
+  base=Path(self._tmp.name); corpus=(ROOT/'evals/ecosystem-routing-scenarios.json').read_bytes(); self._roots={}
+  for role in m.ROLES:
+   root=base/role; path=root/'evals/ecosystem-routing-scenarios.json'; path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(corpus); self._roots[role]=root
+ def roots(self): return self._roots
  def observations(self,req,direct=False):
   rows=[]
   for s in req['scenarios']:

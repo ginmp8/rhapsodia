@@ -4,13 +4,13 @@ Applies to every Nomia/Mago/Magia transfer. [ecosystem-handoff-contract.json](ec
 
 ## Compatibility
 
-Release `1.9.1`; envelope `3.0.0`; mapping `2.0.0`; exact versions only. Legacy aliases and envelopes are rejected; adaptation must occur before a handoff is built. There is no runtime compatibility switch for pre-v3 envelopes.
+Release `1.9.4`; envelope `3.0.0`; mapping `2.0.0`; exact versions only. Legacy aliases and envelopes are rejected; adaptation must occur before a handoff is built. There is no runtime compatibility switch for pre-v3 envelopes.
 
 ## Envelope
 
 Require identity, direction, versions, provenance, freshness, payload, unknowns, conflicts, deterministic `handoff_id`, stable `workflow_id`, and `privacy_handling`; follow-ups reuse the workflow and set `causation_id`.
 
-Privacy covers classification, data categories, redactions, audience, destinations, purpose, retention, reference visibility, and external sharing. Validate declarations against all text-bearing envelope fields. Reject secrets, private locations, contradictory identifiers, and sensitive public output with masked reasons. Durable artifacts inherit [artifact privacy](artifact-privacy-contract.json); external projection fails closed.
+Privacy covers classification, data categories, redactions, audience, destinations, purpose, retention, reference visibility, and external sharing. Validate declarations against all text-bearing envelope fields. Reject secrets, private locations, contradictory identifiers, and sensitive public output with masked reasons. Handoffs may retain evidence for up to 3650 days, while durable artifacts are capped at 365 days; the stricter artifact/source limit governs persistence. Durable artifacts inherit [artifact privacy](artifact-privacy-contract.json); external projection fails closed. A declared `source_handoff_id` is structural lineage until the supplied source handoff is integrity-checked.
 
 ## Directions
 

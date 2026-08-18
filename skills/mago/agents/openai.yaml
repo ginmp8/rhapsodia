@@ -2,8 +2,9 @@ interface:
   display_name: Mago
   short_description: Tech-lead planning for specs, PRD refinement, technical design,
     tasks, validation, and architecture decisions.
-  default_prompt: Use $mago to refine governance intake into repository-aware planning
-    artifacts, technical designs, task plans, validation plans, and architecture ADRs;
+  default_prompt: Use $mago for repository-aware technical planning from governance intake,
+    repository evidence, or existing canonical planning artifacts; produce technical designs,
+    task plans, validation plans, and architecture ADRs;
     never edit product code or runtime execution records. Resolve the current owner
     before mutation. For multi-intent work, perform only the Mago planning or reconciliation
     phase and emit typed handoffs. Return the required Markdown planning report with
