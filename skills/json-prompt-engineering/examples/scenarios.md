@@ -2,7 +2,7 @@
 
 ## Create a hybrid prompt
 
-User: "Crie um prompt para revisar código C# em lote e devolver JSON para minha API."
+User: "Create a prompt to review C# code in batches and return JSON to my API."
 
 Expected behavior:
 
@@ -26,7 +26,7 @@ Expected behavior:
 
 ## Create a workflow manifest
 
-User: "Monte um JSON que execute Nomia, Mago e Magia em sequência."
+User: "Build a JSON manifest that runs Nomia, Mago, and Magia in sequence."
 
 Expected behavior:
 
@@ -38,12 +38,12 @@ Expected behavior:
 
 ## Do not activate
 
-User: "Como serializo um record C# usando System.Text.Json?"
+User: "How do I serialize a C# record using System.Text.Json?"
 
 Expected behavior: do not activate; this is ordinary JSON serialization and .NET implementation work.
 
 ## Ambiguous
 
-User: "Preciso devolver JSON."
+User: "I need this to return JSON."
 
 Expected behavior: determine whether this concerns response formatting, API transport, schema enforcement, or ordinary serialization. Proceed with an explicit assumption when context makes the intended layer clear; otherwise ask one focused question.
