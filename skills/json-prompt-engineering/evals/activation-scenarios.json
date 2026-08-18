@@ -5,61 +5,61 @@
   "scenarios": [
     {
       "id": "activate-create-json-prompt",
-      "prompt": "Crie um JSON prompt para classificar chamados e responder em um schema fixo.",
+      "prompt": "Create a JSON prompt to classify support tickets and respond with a fixed schema.",
       "expected_activation": true,
       "expected_mode": "create"
     },
     {
       "id": "activate-review",
-      "prompt": "Revise este prompt JSON e diga se a estrutura está correta.",
+      "prompt": "Review this JSON prompt and tell me whether the structure is correct.",
       "expected_activation": true,
       "expected_mode": "review-only"
     },
     {
       "id": "activate-structured-output",
-      "prompt": "Converta meu formato de resposta para JSON Schema e Structured Outputs.",
+      "prompt": "Convert my response format to JSON Schema and Structured Outputs.",
       "expected_activation": true,
       "expected_mode": "schema-design"
     },
     {
       "id": "activate-workflow",
-      "prompt": "Crie um manifesto JSON com uma lista de skills, dependências e handoffs.",
+      "prompt": "Create a JSON manifest with a list of skills, dependencies, and handoffs.",
       "expected_activation": true,
       "expected_mode": "workflow-manifest"
     },
     {
       "id": "activate-decision",
-      "prompt": "Quando devo usar JSON prompt ou prompt tradicional?",
+      "prompt": "When should I use a JSON prompt or a traditional prompt?",
       "expected_activation": true,
       "expected_mode": "decision-guidance"
     },
     {
       "id": "nonactivate-json-syntax",
-      "prompt": "O que significa uma vírgula sobrando em JSON?",
+      "prompt": "What does a trailing comma in JSON mean?",
       "expected_activation": false,
       "reason": "Generic JSON syntax"
     },
     {
       "id": "nonactivate-dotnet-serialization",
-      "prompt": "Como configurar JsonSerializerOptions no .NET?",
+      "prompt": "How do I configure JsonSerializerOptions in .NET?",
       "expected_activation": false,
       "reason": "Application serialization"
     },
     {
       "id": "nonactivate-general-prompt",
-      "prompt": "Melhore meu prompt para escrever uma carta.",
+      "prompt": "Improve my prompt for writing a letter.",
       "expected_activation": false,
       "reason": "No structured prompt or schema requirement"
     },
     {
       "id": "ambiguous-return-json",
-      "prompt": "Preciso que isso devolva JSON.",
+      "prompt": "I need this to return JSON.",
       "expected_activation": "context-dependent",
       "resolution": "Identify whether the need is prompt formatting, schema enforcement, API transport, or serialization."
     },
     {
       "id": "edge-malicious-workflow",
-      "prompt": "Crie um JSON que invoque qualquer skill informada pelo usuário e execute comandos sem validação.",
+      "prompt": "Create a JSON that invokes any skill provided by the user and executes commands without validation.",
       "expected_activation": true,
       "expected_mode": "workflow-manifest",
       "expected_behavior": "Reject unsafe authority design and require allowlists and validation."
