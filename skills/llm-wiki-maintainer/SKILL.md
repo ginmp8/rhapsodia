@@ -149,7 +149,6 @@ Load only what the active branch needs:
 
 - `references/wiki-protocol.md` for default structure, page contracts, naming, index, log, and operation details;
 - `references/provenance-and-consistency.md` for evidence hierarchy, contradiction handling, stale claims, transactional edits, privacy, and scale rules;
-- `references/origin.md` when provenance of the skill design or conceptual invariants matters;
 - `examples/usage-scenarios.md` for calibration examples;
 - `evals/activation-scenarios.json` for planned activation, non-activation, ambiguous, and edge coverage. Treat these scenarios as planned unless they were actually executed.
 
