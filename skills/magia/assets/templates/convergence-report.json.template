@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "profile": "governed",
+  "items": [
+    {
+      "id": "requirement-id",
+      "requirement": "approved requirement",
+      "acceptance_criteria": ["criterion"],
+      "tasks": ["task-id"],
+      "changed_files": ["relative/path"],
+      "checks": ["command or check id"],
+      "evidence": ["evidence reference"],
+      "status": "satisfied",
+      "notes": "concise rationale"
+    }
+  ]
+}

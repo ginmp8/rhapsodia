@@ -1,6 +1,12 @@
 # Validation Commands
 
-Run the canonical golden-example gate from the repository root. Replace `<skill-root>` with the root folder of this skill package, for example `skills/nomia`, `.github/skills/nomia`, or an extracted `nomia` package directory.
+Run the complete canonical validation ledger from the repository root:
+
+```bash
+python <skill-root>/scripts/validate_all.py --target <skill-root> --json-output nomia-validation.json
+```
+
+For golden examples only, run the command below. Replace `<skill-root>` with the root folder of this skill package, for example `skills/nomia`, `.github/skills/nomia`, or an extracted `nomia` package directory.
 
 ```bash
 python <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root>

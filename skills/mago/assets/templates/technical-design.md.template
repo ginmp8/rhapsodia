@@ -5,14 +5,13 @@ Keep architectural contracts high-level; do not include implementation code or C
 -->
 ---
 spec_id: "<spec_id>"
-order: "<order>"
 feature_key: "<feature_key>"
 title: "<title>"
 type: "<type>"
 classification: "<classification>"
 status: "<status>"
 phase: "<phase>"
-cycle_version: "<cycle_version>"
+cycle_id: "<cycle_id>"
 feature_version: "<feature_version>"
 project_size: "<small|medium|large|unknown>"
 project_types: []
@@ -54,7 +53,29 @@ depends_on_specs: []
 
 ## Architecture Decisions
 
+### DECISION-001 - <decision_title>
+
+- Requirements: REQ-001
+- Status: <proposed|accepted|superseded>
+- Selected option: OPTION-001
+- Rationale: <evidence_backed_rationale>
+- Consequences: <positive, negative, and operational consequences>
+
 ### Alternatives Considered
+
+### OPTION-001 - <option_title>
+
+- Benefits: <benefits>
+- Costs: <costs and trade-offs>
+- Failure modes: <failure behavior>
+- Operational impact: <support, monitoring, capacity, or rollout impact>
+
+### OPTION-002 - <option_title>
+
+- Benefits: <benefits>
+- Costs: <costs and trade-offs>
+- Failure modes: <failure behavior>
+- Operational impact: <support, monitoring, capacity, or rollout impact>
 
 ### Decision Criteria
 

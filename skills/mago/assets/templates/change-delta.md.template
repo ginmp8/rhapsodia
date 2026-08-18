@@ -1,0 +1,45 @@
+<!-- Generated non-authoritative comparison. Do not use as canonical planning state. -->
+---
+kind: mago-change-delta
+authoritative: false
+base_spec_id: "<base_spec_id>"
+target_spec_id: "<target_spec_id>"
+base_feature_version: "<base_feature_version>"
+target_feature_version: "<target_feature_version>"
+---
+
+# Change Delta - <title>
+
+## Added Behavior
+
+- <REQ_or_behavior_id>: <added_behavior_or_none_with_reason>
+
+## Modified Behavior
+
+- <REQ_or_behavior_id>: <modified_behavior_or_none_with_reason>
+
+## Removed Behavior
+
+- <REQ_or_behavior_id>: <removed_behavior_or_none_with_reason>
+
+## Preserved Behavior
+
+- <REQ_or_behavior_id>: <preserved_behavior_or_none_with_reason>
+
+## Compatibility Impact
+
+- <impact_or_none_with_reason>
+
+## Migration Impact
+
+- <impact_or_none_with_reason>
+
+## Rollback Assumptions
+
+- <assumption_or_irreversible_effect>
+
+## Merge and Retention
+
+- Canonical merge target: <canonical_mago_artifacts>
+- Post-merge action: <archive_or_delete>
+- Source of truth after merge: Mago registry and canonical package artifacts

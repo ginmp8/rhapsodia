@@ -12,6 +12,8 @@ import sys
 sys.dont_write_bytecode = True
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from nomia_utils import atomic_write_text
 from typing import Any, Callable
 
 
@@ -20,6 +22,7 @@ class CommandSpec:
     name: str
     module: str
     args: list[str]
+    allow_warnings: bool = False
 
     def as_command(self, skill_root: Path) -> list[str]:
         return [sys.executable, "-S", str(skill_root / "scripts" / f"{self.module}.py"), *self.args]
@@ -58,7 +61,7 @@ def ensure_import_paths(skill_root: Path) -> None:
 def specs(skill_root: Path) -> list[CommandSpec]:
     golden = skill_root / "examples" / "golden"
     return [
-        CommandSpec("golden-01-ops", "validate_ops", [str(golden / "01-delivery-intake-github-issue" / "ops.yaml")]),
+        CommandSpec("golden-01-ops", "validate_ops", [str(golden / "01-delivery-intake-github-issue" / "ops.yaml")], allow_warnings=True),
         CommandSpec("golden-02-ops", "validate_ops", [str(golden / "02-delivery-triage-stakeholders" / "ops.yaml")]),
         CommandSpec("golden-03-ops", "validate_ops", [str(golden / "03-replanned-demand-preserved-history" / "ops.yaml")]),
         CommandSpec(
@@ -69,6 +72,8 @@ def specs(skill_root: Path) -> list[CommandSpec]:
                 str(golden / "04-portfolio-multiple-specs" / "portfolio.yaml"),
                 "--portfolio-md",
                 str(golden / "04-portfolio-multiple-specs" / "portfolio.md"),
+                "--as-of",
+                "2026-04-24",
             ],
         ),
         CommandSpec(
@@ -138,6 +143,9 @@ def specs(skill_root: Path) -> list[CommandSpec]:
         ),
         CommandSpec("golden-09-rfc", "validate_artifact", [str(golden / "09-rfc-proposal-roadmap-handoff" / "rfc-proposals.md")]),
         CommandSpec("golden-10-governance-decision", "validate_artifact", [str(golden / "10-governance-decision-roadmap-decision" / "governance-decisions.md")]),
+        CommandSpec("golden-11-adapted-ops", "validate_ops", [str(golden / "11-governance-adapt-legacy" / "ops.yaml"), "--require-canonical"]),
+        CommandSpec("golden-12-human-artifact", "validate_human_artifacts", [str(golden / "12-canonical-projection-metadata" / "status.md")]),
+        CommandSpec("golden-12-projection-metadata", "validate_projection_metadata", [str(golden / "12-canonical-projection-metadata" / "status.md")]),
     ]
 
 
@@ -155,12 +163,17 @@ def run_spec(spec: CommandSpec, skill_root: Path) -> CommandResult:
     except Exception as exc:  # pragma: no cover - defensive CLI guard
         code = 1
         err.write(f"{type(exc).__name__}: {exc}\n")
+    stdout = out.getvalue().strip()
+    stderr = err.getvalue().strip()
+    if code == 0 and not spec.allow_warnings and any(line.startswith("WARNING:") for line in stdout.splitlines()):
+        code = 1
+        stderr = (stderr + "\n" if stderr else "") + "unexpected warning output is not allowlisted"
     return CommandResult(
         name=spec.name,
         command=spec.as_command(skill_root),
         returncode=code,
-        stdout=out.getvalue().strip(),
-        stderr=err.getvalue().strip(),
+        stdout=stdout,
+        stderr=stderr,
     )
 
 
@@ -190,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json_output:
         output = Path(args.json_output)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(output, json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
     print(f"status: {result.status}")
     print(f"target: {result.target}")

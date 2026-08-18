@@ -10,6 +10,17 @@ Handoff is bidirectional. Mago plans, Magia executes, and nomia interprets deliv
 
 MAGIA may fill safe implementation gaps Mago did not detail when repository evidence, technical design, execution-handoff-plan.md, tasks, validation plan, and acceptance criteria are sufficient. This is technical execution refinement, not PRD refinement.
 
+## Typed Envelope Handoff
+
+Validate `mago_to_magia` with local `scripts/ecosystem_handoff.py` before treating planning references as an execution entry. The envelope must identify the Mago package version, canonical `spec_id`, planning state, requirement and acceptance references, selected task ids, validation references, technical criticality, execution sequence, provenance, freshness, unknowns, and conflicts. It remains planning evidence, not runtime proof.
+
+After execution, build `magia_to_mago` when implementation findings require planning reconciliation and `magia_to_nomia` when current execution or validation evidence has delivery impact. The producer automatically adds contract-v3 state projections for Nomia. Do not freehand `complete` or `passed` governance-facing states, and do not use the envelope to close governance or accept business risk.
+
+```text
+python scripts/ecosystem_handoff.py validate --input <mago-handoff.json> --operation consume
+python scripts/ecosystem_handoff.py build --direction magia_to_mago --payload <payload.json> --source <validation-evidence> --authority magia --evidence-ref <ref> --output <handoff.json>
+```
+
 ## Non-Blockers
 
 Do not block merely because the task requires implementation; the package/PRD/task plan came from planning or governance; manifest is `planned` or phase `define`; roadmap/discovery/source-reference/governance traceability exists; product-language task maps to a small verifiable repo change; or Mago omitted low-level detail derivable from code and validation evidence.

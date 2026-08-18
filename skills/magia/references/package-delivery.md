@@ -6,9 +6,22 @@ Load only to validate, export, or package MAGIA itself.
 
 - Build `skill.zip` from the final MAGIA folder only.
 - Zip must contain exactly one top-level directory named after the skill folder.
-- Archived root must contain `SKILL.md`, `agents/`, `references/`, `scripts/`, `assets/`, `examples/`, and `evals/`.
+- Archived root must contain `SKILL.md`, `VERSION`, `CHANGELOG.md`, `agents/`, `references/`, `scripts/`, `assets/`, `examples/`, and `evals/`.
 - Exclude `.git`, caches, benchmark reports, test result folders, test-results.json, nested zips, temp outputs, secrets, credentials, private keys, tokens, and local env files.
-- Clean stale caches/reports/temp outputs/nested archives/blocked paths from the source folder before packaging; do not rely only on zip exclusions.
+- Remove stale generated noise when practical. `scripts/package_policy.py` is the single inclusion/exclusion contract: folder validation scans every package-eligible file and the packager archives that same candidate set, so known generated caches may remain after tests without entering or blocking the archive. Unknown or eligible binary/undecodable content still fails closed.
+
+## Release and Compatibility Discipline
+
+Treat a packaged MAGIA update as a versioned contract change, not only an archive operation.
+
+1. Classify the release impact before changing `VERSION`: `patch` for compatible corrections, `minor` for compatible capabilities or resources, and `major` for intentional incompatible contract changes. Do not infer compatibility from file count alone.
+2. Update `CHANGELOG.md` with the exact version/date, accepted hypotheses or repairs, compatibility impact, validation evidence, and any known migration or rollback requirement. Do not list rejected or unexecuted work as shipped.
+3. For changes to activation, authority, modes, artifact ownership, CLI behavior, schemas, package shape, or execution-state semantics, record affected consumers and whether behavior is preserved, added, modified, or removed.
+4. Require explicit migration/rollout and rollback/recovery evidence for incompatible or governed changes. A package must not be labeled ready when those gates are missing or failed.
+5. Keep baseline hashes, optimization reports, test output, and prior archives outside the skill folder. Retain enough external evidence to reproduce the package decision without shipping generated reports inside `skill.zip`.
+6. Validate the final folder, build the archive once from that validated state, validate the archive, and record its SHA-256. Any source change after packaging invalidates the readiness evidence and requires rebuilding.
+
+A version bump, changelog entry, or successful zip command is not evidence of behavioral compatibility by itself.
 
 ## Standard Commands
 
@@ -27,8 +40,14 @@ Folder and archive validators must pass before readiness is claimed.
 3. Required resources exist: agent metadata, references, scripts, MAGIA-owned templates, examples, evals.
 4. Python scripts compile.
 5. Scenario files keep planned fields null unless measured evidence exists.
-6. Source and zip are readable, cache-free, blocked-path-free, secret-path-free, and have one top-level skill directory.
+6. The archive is cache-free, blocked-path-free, symlink-free, scanned for secret-like names and content, and has one top-level skill directory; source validation may ignore only generated paths explicitly excluded by `scripts/package_policy.py`. Oversized, binary, or undecodable members fail closed unless an explicit future allowlist contract defines a safe scanner for that content class.
 7. No scaffold markers remain outside templates.
+8. `scripts/validate_resource_integration.py` confirms that active selectors, convergence validation, and public adapters remain reachable from `SKILL.md` and `references/resource-map.md` with non-overlapping ownership.
+
+
+## Coordinated Release Attestation
+
+After local folder/archive validation, run `scripts/validate_ecosystem_release.py` with explicit Mago, Magia, and Nomia roots. Its JSON ledger is the canonical coordinated release decision. This is release-time read-only coordination and does not permit runtime peer imports or ownership transfer.
 
 ## Evidence to Report
 

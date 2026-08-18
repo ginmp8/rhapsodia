@@ -1,8 +1,11 @@
 identity:
-  spec_id: spec022
-  candidate_spec_id: spec022
+  board_id: workspace-admin
+  year: "2026"
+  spec_id: spec-2026-04-20-saved-query-sharing-controls
+  spec_id_provenance: "supplied Magia execution evidence"
+  candidate_spec_id: spec-2026-04-20-saved-query-sharing-controls
   feature_key: saved-query-sharing-controls
-  cycle_version: 01.02.00
+  cycle_id: cycle-2026-04-20-workspace-admin
 summary:
   execution_status: completed
   validation_status: passed

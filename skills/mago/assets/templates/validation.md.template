@@ -10,17 +10,25 @@ Test case count and checklist items are examples, not mandatory fixed content.
 
 ## Validation Scope
 
-## Test Case 1 - <test_case_title>
+### VAL-001 - <validation_title>
 
-Expected:
+- Requirements: REQ-001
+- Acceptance: AC-001
+- Tasks: task001
+- Environment: <environment and fixture>
+- Command or procedure: <reproducible command or bounded manual procedure>
+- Expected: <observable_outcome>
+- Failure disposition: <block, rollback, replan, or explicit residual risk path>
 
-- <observable_outcome>
+### VAL-002 - <validation_title>
 
-## Test Case 2 - <test_case_title>
-
-Expected:
-
-- <observable_outcome>
+- Requirements: <REQ_ids>
+- Acceptance: <AC_ids>
+- Tasks: <task_ids>
+- Environment: <environment and fixture>
+- Command or procedure: <reproducible command or bounded manual procedure>
+- Expected: <observable_outcome>
+- Failure disposition: <block, rollback, replan, or explicit residual risk path>
 
 ## Performance Validation
 

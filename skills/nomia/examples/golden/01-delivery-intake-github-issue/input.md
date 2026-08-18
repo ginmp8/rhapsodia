@@ -1,6 +1,6 @@
 # Input
 
-Source: GitHub issue `https://github.com/example/redash/issues/4821`
+Source: GitHub issue `https://example.com/issues/4821`
 
 Title: CSV export should preserve filtered dashboard table columns
 

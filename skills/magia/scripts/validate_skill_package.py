@@ -5,21 +5,55 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import py_compile
 import re
+import subprocess
+import sys
 import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
 
+from validate_ecosystem_routing_contract import validate as validate_routing_contract
+from validate_shared_contract_provenance import validate as validate_shared_provenance
+from validate_ecosystem_release_metadata import validate as validate_release_metadata
+from validate_resource_integration import validate as validate_resource_integration
+from validate_runtime_dependencies import validate as validate_runtime_dependencies
+
+from validate_boundary import collect_errors as collect_boundary_errors
+from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
+from validate_ecosystem_handoff_contract import collect_errors as collect_ecosystem_handoff_errors
+from validate_priority_contract import collect_errors as collect_priority_errors
+from validate_ecosystem_compatibility import collect_errors as collect_compatibility_errors
+from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
+from security_scan import scan_bytes, scan_paths
+from package_policy import (
+    EXCLUDED_DIR_NAMES,
+    EXCLUDED_FILE_NAMES,
+    SECRET_NAME_RE,
+    blocked_zip_path,
+    is_sensitive_name,
+    iter_package_candidates,
+)
+
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with " + "actual|this is a " + "placeholder)", re.IGNORECASE)
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 INLINE_PATH_RE = re.compile(r"`([^`]+\.(?:md|py|sh|yaml|yml|json|template|txt))`")
-BLOCKED_ZIP_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "benchmark-reports", "test-results", "tmp", ".tmp"}
-BLOCKED_ZIP_NAMES = {"test-results.json"}
-SECRET_NAME_RE = re.compile(r"(secret|credential|private[_-]?key|\.env$|id_rsa|token)", re.IGNORECASE)
 
+
+
+
+def scan_package_candidates(target: Path) -> list[str]:
+    candidates, _ = iter_package_candidates(target)
+    errors = [
+        f"secret-like file name is not allowed in skill package: {path.relative_to(target).as_posix()}"
+        for path in candidates
+        if is_sensitive_name(path.name)
+    ]
+    errors.extend(scan_paths(candidates, target))
+    return errors
 
 def read_text(path: Path) -> str:
     try:
@@ -75,9 +109,42 @@ def rel(path: Path, root: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
-ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
+ALLOWED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
 REQUIRED_EVAL_FIELDS = {"id", "type", "category", "prompt", "expected_behavior", "acceptance_criteria"}
+
+
+def validate_native_activation_oracles(scenarios: Any) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(scenarios, list):
+        return ["activation scenario suite must contain a JSON list"]
+    allowed_owners = {"mago", "magia", "nomia", "none"}
+    for index, item in enumerate(scenarios):
+        if not isinstance(item, dict):
+            errors.append(f"activation scenario {index} must be an object")
+            continue
+        scenario_id = item.get("id", index)
+        category = item.get("category")
+        activation = item.get("expected_activation")
+        owner = item.get("expected_owner")
+        diagnostic = item.get("diagnostic_entry_allowed")
+        if activation not in (True, False, None):
+            errors.append(f"{scenario_id}: expected_activation must be true, false, or null")
+        if owner not in allowed_owners:
+            errors.append(f"{scenario_id}: expected_owner must be mago, magia, nomia, or none")
+        if not isinstance(diagnostic, bool):
+            errors.append(f"{scenario_id}: diagnostic_entry_allowed must be boolean")
+        if activation is True and owner != "magia":
+            errors.append(f"{scenario_id}: activation true requires expected_owner=magia")
+        if activation is False and owner == "magia":
+            errors.append(f"{scenario_id}: activation false cannot name magia as expected_owner")
+        if activation is False and diagnostic is True:
+            errors.append(f"{scenario_id}: activation false cannot allow diagnostic entry")
+        if activation is None and (owner != "none" or diagnostic is not True):
+            errors.append(f"{scenario_id}: activation null requires expected_owner=none and diagnostic_entry_allowed=true")
+        if category == "ambiguous" and activation is not None:
+            errors.append(f"{scenario_id}: ambiguous scenarios must use expected_activation=null")
+    return errors
 
 
 def validate_shared_artifact_boundaries(target: Path) -> list[str]:
@@ -200,10 +267,31 @@ def validate_target(target: Path) -> dict[str, Any]:
 
     required_paths = [
         "agents/openai.yaml",
+        "VERSION",
+        "release.json",
+        "requirements.txt",
+        "requirements-dev.txt",
+        "CHANGELOG.md",
         "references/canonical-paths.md",
+        "references/board-contract.md",
         "references/common-execution.md",
         "references/resource-map.md",
+        "references/convergence-and-validation.md",
+        "references/public-artifact-adapters.md",
         "references/package-delivery.md",
+        "references/ecosystem-handoff-contract.md",
+        "references/ecosystem-handoff-contract.json",
+        "scripts/validate_artifact_privacy.py",
+        "references/artifact-privacy-contract.json",
+        "references/ecosystem-compatibility.md",
+        "references/ecosystem-compatibility.json",
+        "references/ecosystem-routing-contract.md",
+        "references/ecosystem-routing-contract.json",
+        "references/ecosystem-lifecycle.md",
+        "references/ecosystem-contract-provenance.json",
+        "evals/ecosystem-routing-scenarios.json",
+        "references/priority-contract.json",
+        "references/priority-contract.md",
         "references/modes/adhoc.md",
         "references/modes/ralph.md",
         "references/artifacts/execution-records.md",
@@ -214,6 +302,36 @@ def validate_target(target: Path) -> dict[str, Any]:
         "assets/templates/technical-gap-note.md.template",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "scripts/board_contract.py",
+        "scripts/validate_board_contract.py",
+        "scripts/planning_traceability.py",
+        "scripts/validate_execution_readiness.py",
+        "scripts/validate_instruction_contract.py",
+        "scripts/ecosystem_handoff.py",
+    "scripts/handoff_ledger.py",
+    "scripts/route_ecosystem_request.py",
+    "references/handoff-ledger-contract.md",
+    "tests/test_handoff_ledger.py",
+    "tests/test_ecosystem_router.py",
+        "scripts/validate_ecosystem_handoff_contract.py",
+        "scripts/run_ecosystem_flow_harness.py",
+        "scripts/run_ecosystem_negative_harness.py",
+    "scripts/validate_reference_journeys.py",
+    "examples/reference-journeys.json",
+    "tests/test_reference_journeys.py",
+        "scripts/validate_ecosystem_routing_contract.py",
+        "scripts/validate_shared_contract_provenance.py",
+        "scripts/validate_ecosystem_release_metadata.py",
+        "scripts/run_test_suite.py",
+        "scripts/validate_ecosystem_compatibility.py",
+        "scripts/validate_priority_contract.py",
+        "scripts/select_validation.py",
+        "scripts/select_validation_checks.py",
+        "scripts/validate_convergence.py",
+        "scripts/adapt_public_artifacts.py",
+        "scripts/validate_resource_integration.py",
+        "scripts/validate_runtime_dependencies.py",
+        "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]
@@ -221,6 +339,13 @@ def validate_target(target: Path) -> dict[str, Any]:
         if not (target / required).exists():
             errors.append(f"missing required package resource: {required}")
     checks.append("required resources")
+
+    version_path = target / "VERSION"
+    if version_path.is_file():
+        version = read_text(version_path).strip()
+        if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+            errors.append(f"VERSION must contain semantic version X.Y.Z, got `{version}`")
+    checks.append("release version")
 
     agent_text = read_text(target / "agents/openai.yaml") if (target / "agents/openai.yaml").exists() else ""
     for token in ["display_name:", "short_description:", "default_prompt:", "allow_implicit_invocation:"]:
@@ -265,6 +390,7 @@ def validate_target(target: Path) -> dict[str, Any]:
         missing_categories = expected_categories - categories
         if missing_categories:
             errors.append(f"activation scenario suite missing categories: {sorted(missing_categories)}")
+        errors.extend(validate_native_activation_oracles(scenarios))
     except Exception as exc:  # noqa: BLE001
         errors.append(f"activation scenario suite is invalid JSON: {exc}")
     checks.append("activation scenarios")
@@ -275,6 +401,63 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(validate_shared_artifact_boundaries(target))
     checks.append("shared artifact boundaries")
 
+    resource_integration = validate_resource_integration(target)
+    errors.extend(resource_integration.get("errors", []))
+    checks.append(f"resource integration ({resource_integration.get('route_count', 0)} routes)")
+
+    errors.extend(collect_instruction_contract_errors())
+    checks.append("instruction contract preservation")
+
+    errors.extend(collect_planning_handoff_errors(target))
+    checks.append("planning handoff contract")
+
+    errors.extend(collect_ecosystem_handoff_errors(target))
+    checks.append("ecosystem handoff contract")
+
+    errors.extend(collect_priority_errors(target))
+    checks.append("ecosystem priority contract")
+
+    errors.extend(collect_compatibility_errors(target))
+    checks.append("ecosystem compatibility")
+
+    errors.extend(collect_boundary_errors())
+    checks.append("runtime independence and ownership boundary")
+
+    routing = validate_routing_contract(target)
+    errors.extend(routing.get("errors", []))
+    warnings.extend(routing.get("warnings", []))
+    checks.append("distributed ecosystem routing")
+
+    provenance = validate_shared_provenance(target)
+    errors.extend(provenance.get("errors", []))
+    checks.append("shared contract provenance")
+
+    release_metadata = validate_release_metadata(target)
+    errors.extend(release_metadata.get("errors", []))
+    checks.append("coordinated ecosystem release metadata")
+
+    runtime_dependencies = validate_runtime_dependencies(target)
+    errors.extend(runtime_dependencies.get("errors", []))
+    checks.append("runtime dependency contract")
+
+    if os.environ.get("MAGIA_TEST_SUITE_ACTIVE") == "1":
+        checks.append("complete pytest suite (nested execution suppressed by active suite)")
+    else:
+        with tempfile.TemporaryDirectory(prefix="magia-tests-") as tmp:
+            report_path = Path(tmp) / "pytest.json"
+            completed = subprocess.run([sys.executable, "-B", str(target / "scripts/run_test_suite.py"), "--target", str(target), "--output", str(report_path)], capture_output=True, text=True, check=False)
+            if completed.returncode != 0 or not report_path.exists():
+                errors.append(f"complete pytest suite failed: {completed.stdout} {completed.stderr}")
+            else:
+                test_report = json.loads(report_path.read_text(encoding="utf-8"))
+                if test_report.get("status") != "pass" or int(test_report.get("collected", 0)) == 0:
+                    errors.append(f"complete pytest suite attestation failed: {test_report.get('errors', [])}")
+                else:
+                    checks.append(f"complete pytest suite ({test_report.get('passed')} passed; digest {test_report.get('suite_digest')})")
+
+    errors.extend(scan_package_candidates(target))
+    checks.append("sensitive content and symlink scan")
+
     return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings, "checks": checks}
 
 
@@ -282,10 +465,58 @@ def zip_required_resources() -> list[str]:
     return [
         "SKILL.md",
         "agents/openai.yaml",
+        "VERSION",
+        "release.json",
+        "requirements.txt",
+        "requirements-dev.txt",
+        "CHANGELOG.md",
         "references/resource-map.md",
+        "references/convergence-and-validation.md",
+        "references/public-artifact-adapters.md",
         "references/package-delivery.md",
+        "references/ecosystem-handoff-contract.md",
+        "references/ecosystem-handoff-contract.json",
+        "references/ecosystem-compatibility.md",
+        "references/ecosystem-compatibility.json",
+        "references/ecosystem-routing-contract.md",
+        "references/ecosystem-routing-contract.json",
+        "references/ecosystem-lifecycle.md",
+        "references/ecosystem-contract-provenance.json",
+        "evals/ecosystem-routing-scenarios.json",
+        "references/priority-contract.json",
+        "references/priority-contract.md",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "scripts/board_contract.py",
+        "scripts/validate_board_contract.py",
+        "scripts/planning_traceability.py",
+        "scripts/validate_execution_readiness.py",
+        "scripts/validate_instruction_contract.py",
+        "scripts/ecosystem_handoff.py",
+    "scripts/handoff_ledger.py",
+    "scripts/route_ecosystem_request.py",
+    "references/handoff-ledger-contract.md",
+    "tests/test_handoff_ledger.py",
+    "tests/test_ecosystem_router.py",
+        "scripts/validate_ecosystem_handoff_contract.py",
+        "scripts/run_ecosystem_flow_harness.py",
+        "scripts/run_ecosystem_negative_harness.py",
+    "scripts/validate_reference_journeys.py",
+    "examples/reference-journeys.json",
+    "tests/test_reference_journeys.py",
+        "scripts/validate_ecosystem_routing_contract.py",
+        "scripts/validate_shared_contract_provenance.py",
+        "scripts/validate_ecosystem_release_metadata.py",
+        "scripts/run_test_suite.py",
+        "scripts/validate_ecosystem_compatibility.py",
+        "scripts/validate_priority_contract.py",
+        "scripts/select_validation.py",
+        "scripts/select_validation_checks.py",
+        "scripts/validate_convergence.py",
+        "scripts/adapt_public_artifacts.py",
+        "scripts/validate_resource_integration.py",
+        "scripts/validate_runtime_dependencies.py",
+        "scripts/package_policy.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]
@@ -322,12 +553,18 @@ def validate_zip(zip_path: Path) -> dict[str, Any]:
                 if normalized != name or ".." in Path(normalized).parts:
                     errors.append(f"unsafe zip path: {name}")
                 rel_parts = Path(name.split("/", 1)[1] if "/" in name else name).parts
-                if any(part in BLOCKED_ZIP_DIRS for part in rel_parts):
+                if blocked_zip_path(rel_parts):
                     errors.append(f"blocked path included in zip: {name}")
-                if Path(name).name in BLOCKED_ZIP_NAMES:
+                if Path(name).name in EXCLUDED_FILE_NAMES or Path(name).name.startswith(".coverage."):
                     errors.append(f"blocked file included in zip: {name}")
                 if SECRET_NAME_RE.search(Path(name).name):
                     errors.append(f"secret-like file name included in zip: {name}")
+                info = archive.getinfo(name)
+                unix_mode = (info.external_attr >> 16) & 0o170000
+                if unix_mode == 0o120000:
+                    errors.append(f"symlink included in zip: {name}")
+                else:
+                    errors.extend(scan_bytes(archive.read(name), label=name))
             for required in zip_required_resources():
                 if required not in normalized_names:
                     errors.append(f"zip missing required resource: {required}")

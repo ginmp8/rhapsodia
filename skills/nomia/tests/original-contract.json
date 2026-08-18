@@ -1,0 +1,680 @@
+{
+  "baseline": "nomia 2.0.1 optimization baseline captured 2026-07-21; exact protected bytes remain mandatory",
+  "required_files": [
+    "SKILL.md",
+    "agents/openai.yaml",
+    "assets/icon.svg",
+    "assets/templates/feature-map.yaml.template",
+    "assets/templates/feature-report.md.template",
+    "assets/templates/governance-decisions.md.template",
+    "assets/templates/internal-notes.md.template",
+    "assets/templates/ops.yaml.template",
+    "assets/templates/portfolio.md.template",
+    "assets/templates/portfolio.yaml.template",
+    "assets/templates/release-notes.md.template",
+    "assets/templates/replanning.md.template",
+    "assets/templates/rfc-proposals.md.template",
+    "assets/templates/roadmap.md.template",
+    "assets/templates/roadmap.yaml.template",
+    "assets/templates/stakeholder-brief.md.template",
+    "assets/templates/status.md.template",
+    "evals/activation-boundary-scenarios.json",
+    "examples/activation-scenarios.json",
+    "examples/golden/01-delivery-intake-github-issue/expectations.md",
+    "examples/golden/01-delivery-intake-github-issue/input.md",
+    "examples/golden/01-delivery-intake-github-issue/ops.yaml",
+    "examples/golden/01-delivery-intake-github-issue/status.md",
+    "examples/golden/02-delivery-triage-stakeholders/expectations.md",
+    "examples/golden/02-delivery-triage-stakeholders/input.md",
+    "examples/golden/02-delivery-triage-stakeholders/ops.yaml",
+    "examples/golden/02-delivery-triage-stakeholders/stakeholder-brief.md",
+    "examples/golden/02-delivery-triage-stakeholders/status.md",
+    "examples/golden/03-replanned-demand-preserved-history/expectations.md",
+    "examples/golden/03-replanned-demand-preserved-history/input.md",
+    "examples/golden/03-replanned-demand-preserved-history/ops.yaml",
+    "examples/golden/03-replanned-demand-preserved-history/replanning.md",
+    "examples/golden/03-replanned-demand-preserved-history/status.md",
+    "examples/golden/04-portfolio-multiple-specs/expectations.md",
+    "examples/golden/04-portfolio-multiple-specs/input.md",
+    "examples/golden/04-portfolio-multiple-specs/portfolio.md",
+    "examples/golden/04-portfolio-multiple-specs/portfolio.yaml",
+    "examples/golden/05-roadmap-large-initiative/expectations.md",
+    "examples/golden/05-roadmap-large-initiative/feature-map.yaml",
+    "examples/golden/05-roadmap-large-initiative/governance-decisions.md",
+    "examples/golden/05-roadmap-large-initiative/input.md",
+    "examples/golden/05-roadmap-large-initiative/roadmap.md",
+    "examples/golden/05-roadmap-large-initiative/roadmap.yaml",
+    "examples/golden/06-roadmap-to-spec-handoff-mago/expectations.md",
+    "examples/golden/06-roadmap-to-spec-handoff-mago/feature-map.yaml",
+    "examples/golden/06-roadmap-to-spec-handoff-mago/input.md",
+    "examples/golden/06-roadmap-to-spec-handoff-mago/roadmap.yaml",
+    "examples/golden/07-feature-report-after-delivery/expectations.md",
+    "examples/golden/07-feature-report-after-delivery/feature-report.md",
+    "examples/golden/07-feature-report-after-delivery/input-magia-execution-evidence.yaml",
+    "examples/golden/07-feature-report-after-delivery/input.md",
+    "examples/golden/07-feature-report-after-delivery/internal-notes.md",
+    "examples/golden/08-release-notes-stakeholders/expectations.md",
+    "examples/golden/08-release-notes-stakeholders/input.md",
+    "examples/golden/08-release-notes-stakeholders/internal-notes.md",
+    "examples/golden/08-release-notes-stakeholders/release-notes.md",
+    "examples/golden/09-rfc-proposal-roadmap-handoff/expectations.md",
+    "examples/golden/09-rfc-proposal-roadmap-handoff/input.md",
+    "examples/golden/09-rfc-proposal-roadmap-handoff/rfc-proposals.md",
+    "examples/golden/10-governance-decision-roadmap-decision/expectations.md",
+    "examples/golden/10-governance-decision-roadmap-decision/governance-decisions.md",
+    "examples/golden/10-governance-decision-roadmap-decision/input.md",
+    "examples/golden/index.md",
+    "examples/golden/validation-commands.md",
+    "examples/hardening-scenarios.json",
+    "references/activation-and-evaluation.md",
+    "references/artifacts/delivery.md",
+    "references/artifacts/governance-decision.md",
+    "references/artifacts/reporting.md",
+    "references/artifacts/rfc.md",
+    "references/artifacts/roadmap.md",
+    "references/canonical-paths.md",
+    "references/common-governance.md",
+    "references/contracts.md",
+    "references/modes/delivery.md",
+    "references/modes/governance-decision.md",
+    "references/modes/reporting.md",
+    "references/modes/rfc.md",
+    "references/modes/roadmap.md",
+    "references/modes/validation.md",
+    "references/package-validation.md",
+    "references/roadmap-to-mago-contract.md",
+    "references/template-integration.md",
+    "scripts/append_governance_decision_entry.py",
+    "scripts/nomia_utils.py",
+    "scripts/normalize_human_artifacts.py",
+    "scripts/package_skill.py",
+    "scripts/update_template_lists.py",
+    "scripts/upsert_rfc_entry.py",
+    "scripts/validate_activation_scenarios.py",
+    "scripts/validate_artifact.py",
+    "scripts/validate_board_paths.py",
+    "scripts/validate_contract_preservation.py",
+    "scripts/validate_contracts.py",
+    "scripts/validate_golden_examples.py",
+    "scripts/validate_human_artifacts.py",
+    "scripts/validate_identity_contract.py",
+    "scripts/validate_ops.py",
+    "scripts/validate_portfolio.py",
+    "scripts/validate_reporting.py",
+    "scripts/validate_roadmap.py",
+    "scripts/validate_skill_package.py",
+    "scripts/write_artifact_scaffold.py",
+    "scripts/write_ops_scaffold.py",
+    "tests/original-contract.json",
+    "tests/test_identity_model.py"
+  ],
+  "required_headings": {
+    "SKILL.md": [
+      "nomia",
+      "Scope and Ownership",
+      "Required Inputs",
+      "Mode Selection Matrix",
+      "Progressive Loading",
+      "Execution Workflow",
+      "Script Routing",
+      "Output Contract",
+      "Acceptance Gates",
+      "Stop Conditions",
+      "Owned Artifact Families"
+    ],
+    "examples/golden/01-delivery-intake-github-issue/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/01-delivery-intake-github-issue/input.md": [
+      "Input"
+    ],
+    "examples/golden/01-delivery-intake-github-issue/status.md": [
+      "Status",
+      "Summary",
+      "Current State",
+      "Risks And Blockers",
+      "Next Steps",
+      "Unknowns",
+      "Evidence"
+    ],
+    "examples/golden/02-delivery-triage-stakeholders/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/02-delivery-triage-stakeholders/input.md": [
+      "Input"
+    ],
+    "examples/golden/02-delivery-triage-stakeholders/stakeholder-brief.md": [
+      "Stakeholder Brief",
+      "Summary",
+      "Decision Needed",
+      "Impact",
+      "Timing",
+      "Risks",
+      "Audience",
+      "Dependencies"
+    ],
+    "examples/golden/02-delivery-triage-stakeholders/status.md": [
+      "Status",
+      "Summary",
+      "Current State",
+      "Risks And Blockers",
+      "Next Steps",
+      "Unknowns",
+      "Evidence"
+    ],
+    "examples/golden/03-replanned-demand-preserved-history/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/03-replanned-demand-preserved-history/input.md": [
+      "Input"
+    ],
+    "examples/golden/03-replanned-demand-preserved-history/replanning.md": [
+      "Replanning",
+      "Entries",
+      "2026-04-24 - Include scheduled exports in MVP"
+    ],
+    "examples/golden/03-replanned-demand-preserved-history/status.md": [
+      "Status",
+      "Summary",
+      "Current State",
+      "Risks And Blockers",
+      "Next Steps",
+      "Unknowns",
+      "Recent Changes",
+      "Evidence"
+    ],
+    "examples/golden/04-portfolio-multiple-specs/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/04-portfolio-multiple-specs/input.md": [
+      "Input"
+    ],
+    "examples/golden/04-portfolio-multiple-specs/portfolio.md": [
+      "Portfolio",
+      "Summary",
+      "Items",
+      "Blocked",
+      "Risks",
+      "Replans",
+      "Upcoming Decisions"
+    ],
+    "examples/golden/05-roadmap-large-initiative/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/05-roadmap-large-initiative/governance-decisions.md": [
+      "Governance Decisions",
+      "Entries",
+      "2026-04-24 - Prioritize saved-query controls before dashboard preview"
+    ],
+    "examples/golden/05-roadmap-large-initiative/input.md": [
+      "Input"
+    ],
+    "examples/golden/05-roadmap-large-initiative/roadmap.md": [
+      "Roadmap",
+      "Context",
+      "Themes",
+      "Sequencing",
+      "Dependencies",
+      "Risks",
+      "Open Decisions",
+      "Mago Handoff Candidates"
+    ],
+    "examples/golden/06-roadmap-to-spec-handoff-mago/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/06-roadmap-to-spec-handoff-mago/input.md": [
+      "Input"
+    ],
+    "examples/golden/07-feature-report-after-delivery/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/07-feature-report-after-delivery/feature-report.md": [
+      "Feature Report",
+      "Audience",
+      "Summary",
+      "Business Context",
+      "Delivered Scope",
+      "Impacted Systems",
+      "Changed Behavior",
+      "Evidence",
+      "Validation Evidence",
+      "Operational Impact",
+      "Rollout And Rollback",
+      "Risks And Limitations",
+      "Follow-ups"
+    ],
+    "examples/golden/07-feature-report-after-delivery/input.md": [
+      "Input"
+    ],
+    "examples/golden/07-feature-report-after-delivery/internal-notes.md": [
+      "Internal Notes",
+      "Summary",
+      "Internal Details",
+      "Follow-ups"
+    ],
+    "examples/golden/08-release-notes-stakeholders/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/08-release-notes-stakeholders/input.md": [
+      "Input"
+    ],
+    "examples/golden/08-release-notes-stakeholders/internal-notes.md": [
+      "Internal Notes",
+      "Summary",
+      "Internal Details",
+      "Follow-ups"
+    ],
+    "examples/golden/08-release-notes-stakeholders/release-notes.md": [
+      "Release Notes",
+      "Audience",
+      "Summary",
+      "User Impact",
+      "Changes",
+      "Availability And Rollout",
+      "Validation Status",
+      "Known Limitations",
+      "Support Notes"
+    ],
+    "examples/golden/09-rfc-proposal-roadmap-handoff/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/09-rfc-proposal-roadmap-handoff/input.md": [
+      "Input"
+    ],
+    "examples/golden/09-rfc-proposal-roadmap-handoff/rfc-proposals.md": [
+      "RFC Proposals",
+      "Entries",
+      "staged-roadmap-handoff - Adopt staged roadmap handoff"
+    ],
+    "examples/golden/10-governance-decision-roadmap-decision/expectations.md": [
+      "Expectations"
+    ],
+    "examples/golden/10-governance-decision-roadmap-decision/governance-decisions.md": [
+      "Governance Decisions",
+      "Entries",
+      "2026-04-25 - Adopt staged roadmap handoff"
+    ],
+    "examples/golden/10-governance-decision-roadmap-decision/input.md": [
+      "Input"
+    ],
+    "examples/golden/index.md": [
+      "nomia Golden Examples",
+      "Directory Structure",
+      "What Each Example Proves",
+      "Validation",
+      "Common Rules Shown"
+    ],
+    "examples/golden/validation-commands.md": [
+      "Validation Commands",
+      "Expanded Command Contract"
+    ],
+    "references/activation-and-evaluation.md": [
+      "Activation and Evaluation",
+      "Activation Decision",
+      "Skill Root Convention",
+      "Routing Ladder",
+      "Scenario Assets",
+      "Scenario Categories",
+      "Scenario Validation Rules",
+      "Structural Metrics",
+      "Maintenance Protocol",
+      "Packaging Gate"
+    ],
+    "references/artifacts/delivery.md": [
+      "Delivery Artifacts",
+      "ops.yaml",
+      "status.md",
+      "stakeholder-brief.md",
+      "replanning.md",
+      "portfolio.yaml",
+      "portfolio.md"
+    ],
+    "references/artifacts/governance-decision.md": [
+      "Governance Decision Log Artifact",
+      "Ownership",
+      "File",
+      "Entry Fields",
+      "Boundary Examples"
+    ],
+    "references/artifacts/reporting.md": [
+      "Reporting Artifacts",
+      "Evidence Provenance",
+      "feature-report.md",
+      "release-notes.md",
+      "internal-notes.md"
+    ],
+    "references/artifacts/rfc.md": [
+      "RFC Artifacts",
+      "rfc-proposals.md"
+    ],
+    "references/artifacts/roadmap.md": [
+      "Roadmap Artifacts",
+      "roadmap.yaml",
+      "roadmap.md",
+      "feature-map.yaml"
+    ],
+    "references/canonical-paths.md": [
+      "Canonical Paths",
+      "Defaults",
+      "Resolution",
+      "Dynamic Inputs"
+    ],
+    "references/common-governance.md": [
+      "Common Governance",
+      "Roots",
+      "Evidence Rules",
+      "Artifact Sources",
+      "Template Script Gate"
+    ],
+    "references/contracts.md": [
+      "Contracts",
+      "Role Contract",
+      "Actor Write Boundaries",
+      "Output Directories",
+      "nomia-Owned Artifacts",
+      "RFC and Reporting Boundaries"
+    ],
+    "references/modes/delivery.md": [
+      "Delivery Modes",
+      "Canonical Rules",
+      "delivery-intake / delivery-triage",
+      "delivery-status",
+      "delivery-replan",
+      "delivery-portfolio",
+      "Boundaries"
+    ],
+    "references/modes/governance-decision.md": [
+      "Governance Decision Mode",
+      "Canonical Rules",
+      "Entry Meaning"
+    ],
+    "references/modes/reporting.md": [
+      "Reporting Mode",
+      "Canonical Rules",
+      "feature-report",
+      "release-notes",
+      "Evidence Rules"
+    ],
+    "references/modes/rfc.md": [
+      "RFC Mode",
+      "Rules",
+      "Required Entry Meaning"
+    ],
+    "references/modes/roadmap.md": [
+      "Roadmap Mode",
+      "Canonical Rules",
+      "roadmap-define",
+      "roadmap-refine",
+      "roadmap-to-specs"
+    ],
+    "references/modes/validation.md": [
+      "Validation",
+      "Canonical Rules",
+      "Skill Root Convention",
+      "Scripts",
+      "Rules",
+      "Exit Behavior",
+      "Commands",
+      "Validator Coverage"
+    ],
+    "references/package-validation.md": [
+      "Package Validation",
+      "Gates",
+      "Packaging Rules",
+      "Readiness Rule"
+    ],
+    "references/roadmap-to-mago-contract.md": [
+      "Roadmap to Mago Contract",
+      "Handoff Preconditions",
+      "nomia May Do",
+      "nomia Must Not Do",
+      "Downstream Feedback",
+      "Validation"
+    ],
+    "references/template-integration.md": [
+      "Template Integration",
+      "Rule",
+      "Writers",
+      "Validators",
+      "Manual Edit Boundary"
+    ]
+  },
+  "required_public_symbols": {
+    "scripts/append_governance_decision_entry.py": [
+      "normalize_multivalue",
+      "ensure_scaffold",
+      "build_entry",
+      "append_entry",
+      "main"
+    ],
+    "scripts/nomia_utils.py": [
+      "compact_yaml_exception",
+      "load_yaml_mapping",
+      "normalize_path",
+      "resolve_runtime_path",
+      "parse_cycle_id",
+      "parse_spec_id",
+      "validate_spec_id_format",
+      "validate_cycle_id_format",
+      "infer_year_from_cycle_id",
+      "board_root",
+      "resolve_board_root",
+      "parse_canonical_board_root",
+      "read_normalized_lines",
+      "unique",
+      "find_unresolved_template_tokens_in_text",
+      "has_unresolved_template_token",
+      "scan_unresolved_template_tokens",
+      "is_missing",
+      "is_iso_date",
+      "parse_iso_date",
+      "main"
+    ],
+    "scripts/normalize_human_artifacts.py": [
+      "normalize_value",
+      "normalize_enums",
+      "normalize_yaml",
+      "normalize_markdown",
+      "main"
+    ],
+    "scripts/package_skill.py": [
+      "GateResult",
+      "PackageResult",
+      "python_env",
+      "command",
+      "run_gate",
+      "should_package",
+      "zip_skill",
+      "validate_and_package",
+      "to_jsonable",
+      "main"
+    ],
+    "scripts/update_template_lists.py": [
+      "ListRule",
+      "artifact_name",
+      "fail",
+      "load_payload",
+      "load_artifact",
+      "write_artifact",
+      "get_parent",
+      "has_template_token",
+      "validate_string",
+      "validate_nested_list",
+      "is_nullish",
+      "validate_mapping_item",
+      "validate_list",
+      "apply_updates",
+      "print_schema",
+      "main"
+    ],
+    "scripts/upsert_rfc_entry.py": [
+      "normalize_multivalue",
+      "ensure_scaffold",
+      "validate_due_date",
+      "build_entry",
+      "upsert_entry",
+      "main"
+    ],
+    "scripts/validate_activation_scenarios.py": [
+      "load_json",
+      "has_boundary",
+      "validate",
+      "main"
+    ],
+    "scripts/validate_artifact.py": [
+      "existing_sibling",
+      "validate_one",
+      "main"
+    ],
+    "scripts/validate_board_paths.py": [
+      "path_parts",
+      "has_skill_package_anchor",
+      "is_skill_package_path",
+      "is_nomia_artifact",
+      "is_under_canonical_root",
+      "validate_slug",
+      "validate_spec_id",
+      "validate_path",
+      "main"
+    ],
+    "scripts/validate_contract_preservation.py": [
+      "public_symbols",
+      "load_contract",
+      "validate",
+      "main"
+    ],
+    "scripts/validate_contracts.py": [
+      "normalize_repo_path",
+      "path_parts",
+      "has_skill_package_anchor",
+      "is_under_skill",
+      "is_nomia_owned",
+      "is_registry_file",
+      "is_mago_owned",
+      "is_magia_owned",
+      "is_spec_package_file",
+      "is_repository_code",
+      "validate_actor",
+      "validate_spec_id",
+      "validate_feature_key",
+      "validate_cycle_id",
+      "validate_year",
+      "roadmap_contract_index",
+      "feature_map_contract_index",
+      "execution_evidence_identity",
+      "validate_contract_files",
+      "main"
+    ],
+    "scripts/validate_golden_examples.py": [
+      "CommandSpec",
+      "CommandResult",
+      "ValidationResult",
+      "ensure_import_paths",
+      "specs",
+      "run_spec",
+      "validate",
+      "to_jsonable",
+      "main"
+    ],
+    "scripts/validate_human_artifacts.py": [
+      "parse_entry_fields",
+      "validate_required_fields",
+      "validate_governance_decision_entries",
+      "validate_rfc_entries",
+      "validate",
+      "main"
+    ],
+    "scripts/validate_identity_contract.py": [
+      "scan_text_files",
+      "validate",
+      "main"
+    ],
+    "scripts/validate_ops.py": [
+      "path_name",
+      "get_path",
+      "as_map",
+      "validate_enum",
+      "validate_non_empty_string",
+      "validate_string_list",
+      "validate_list_path",
+      "scan_for_forbidden_keys",
+      "validate_replanning",
+      "validate_blockers_and_risks",
+      "validate",
+      "qualify",
+      "main"
+    ],
+    "scripts/validate_portfolio.py": [
+      "validate_enum",
+      "item_key",
+      "flag_values",
+      "validate_spec_id",
+      "validate_yaml",
+      "validate_markdown",
+      "main"
+    ],
+    "scripts/validate_reporting.py": [
+      "has_heading",
+      "has_any_heading",
+      "heading_label",
+      "heading_level",
+      "section_body",
+      "first_section_body",
+      "is_empty_or_unknown",
+      "validate_markdown",
+      "validate_audience",
+      "validate_evidence_section",
+      "validate_rollout_evidence",
+      "validate_feature_report",
+      "validate_release_notes",
+      "validate_internal_notes",
+      "required_by_mode",
+      "main"
+    ],
+    "scripts/validate_roadmap.py": [
+      "validate_enum",
+      "validate_required_keys",
+      "validate_list",
+      "validate_spec_id",
+      "scan_for_forbidden_keys",
+      "validate_roadmap",
+      "validate_feature_map",
+      "main"
+    ],
+    "scripts/validate_skill_package.py": [
+      "read_text",
+      "parse_frontmatter",
+      "normalize_ref",
+      "referenced_paths",
+      "validate_skill_md",
+      "validate_required_files",
+      "validate_no_markers",
+      "validate_scenarios",
+      "validate_harness_scenarios",
+      "validate_package_hygiene",
+      "validate_package",
+      "main"
+    ],
+    "scripts/write_artifact_scaffold.py": [
+      "available_templates",
+      "infer_template_name",
+      "copy_template",
+      "main"
+    ],
+    "scripts/write_ops_scaffold.py": [
+      "render",
+      "main"
+    ],
+    "tests/test_identity_model.py": [
+      "IdentityModelTests"
+    ]
+  },
+  "allowed_symbol_replacements": {
+    "scripts/validate_contracts.py": {
+      "validate_cycle_version": "validate_cycle_id"
+    }
+  },
+  "protected_files": {
+    "agents/openai.yaml": "192d64f29d3095b05660761e23217f5e89501e092de99780cd15760fcc2d0e3b"
+  }
+}

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -191,6 +192,21 @@ def validate_folder(target: Path) -> list[str]:
     return errors
 
 
+
+def run_target_validator(target: Path) -> list[str]:
+    script = target / "scripts" / "validate_skill_package.py"
+    if not script.is_file():
+        return ["target validator missing: scripts/validate_skill_package.py"]
+    completed = subprocess.run(
+        [sys.executable, "-B", str(script), str(target)],
+        cwd=str(target), text=True, capture_output=True, check=False,
+    )
+    if completed.returncode == 0:
+        return []
+    detail = (completed.stderr or completed.stdout).strip()
+    return [f"target skill validator failed: {detail[-2000:]}"]
+
+
 def build_package(target: Path, output: Path) -> dict[str, Any]:
     files, excluded = iter_package_files(target)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -298,6 +314,8 @@ def main(argv: list[str] | None = None) -> int:
         target = Path(args.target).resolve()
         output = Path(args.output).resolve()
         folder_errors = validate_folder(target) if args.validate else []
+        if args.validate and not folder_errors:
+            folder_errors.extend(run_target_validator(target))
         if folder_errors:
             result = {"mode": "package", "status": "fail", "folder_errors": folder_errors, "target": str(target), "output": str(output)}
             status = "fail"

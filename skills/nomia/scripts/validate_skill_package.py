@@ -10,11 +10,20 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from nomia_utils import atomic_write_text, sensitive_package_reason
+from validate_contract_semantics import collect_errors as collect_contract_semantic_errors
+from validate_ecosystem_release_metadata import validate as validate_release_metadata
+
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
-REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals"]
+REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals", "tests"]
 REQUIRED_FILES = [
     "SKILL.md",
+    "VERSION",
+    "CHANGELOG.md",
+    "requirements.txt",
+    "requirements-dev.txt",
+    "release.json",
     "agents/openai.yaml",
     "references/canonical-paths.md",
     "references/common-governance.md",
@@ -22,12 +31,32 @@ REQUIRED_FILES = [
     "references/roadmap-to-mago-contract.md",
     "references/activation-and-evaluation.md",
     "references/package-validation.md",
+    "references/priority-contract.md",
+    "references/ecosystem-handoff-contract.md",
+    "references/ecosystem-handoff-contract.json",
+        "scripts/validate_artifact_privacy.py",
+        "references/artifact-privacy-contract.json",
+    "references/ecosystem-compatibility.json",
+    "references/ecosystem-compatibility.md",
+    "references/ecosystem-routing-contract.md",
+    "references/ecosystem-routing-contract.json",
+    "references/ecosystem-lifecycle.md",
+    "references/ecosystem-contract-provenance.json",
+    "evals/ecosystem-routing-scenarios.json",
+    "references/priority-contract.json",
+    "references/assurance-contract.json",
+    "references/assurance-and-release.md",
     "references/modes/delivery.md",
     "references/modes/roadmap.md",
     "references/modes/rfc.md",
     "references/modes/governance-decision.md",
     "references/modes/reporting.md",
     "references/modes/validation.md",
+    "references/modes/governance-adapt.md",
+    "references/governance-profiles-and-lifecycle.md",
+    "references/state-risk-and-handoffs.md",
+    "references/canonical-governance-and-projections.md",
+    "references/guided-intake-and-discovery.md",
     "references/artifacts/delivery.md",
     "references/artifacts/roadmap.md",
     "references/artifacts/rfc.md",
@@ -38,11 +67,64 @@ REQUIRED_FILES = [
     "scripts/write_artifact_scaffold.py",
     "scripts/update_template_lists.py",
     "scripts/validate_skill_package.py",
+    "scripts/validate_contract_semantics.py",
+    "scripts/validate_priority_contract.py",
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_golden_examples.py",
+    "scripts/validate_governance_scenarios.py",
+    "scripts/governance_contract.py",
+    "scripts/ecosystem_handoff.py",
+    "scripts/handoff_ledger.py",
+    "scripts/route_ecosystem_request.py",
+    "references/handoff-ledger-contract.md",
+    "tests/test_handoff_ledger.py",
+    "tests/test_ecosystem_router.py",
+    "scripts/validate_ecosystem_handoff_contract.py",
+    "scripts/validate_ecosystem_compatibility.py",
+    "scripts/run_ecosystem_flow_harness.py",
+    "scripts/run_ecosystem_negative_harness.py",
+    "scripts/validate_reference_journeys.py",
+    "examples/reference-journeys.json",
+    "tests/test_reference_journeys.py",
+    "scripts/validate_ecosystem_routing_contract.py",
+    "scripts/validate_shared_contract_provenance.py",
+    "scripts/validate_ecosystem_release_metadata.py",
+    "scripts/validate_governance_closure.py",
+    "scripts/guide_intake.py",
+    "scripts/adapt_governance.py",
+    "scripts/project_governance_views.py",
+    "scripts/project_lifecycle_status.py",
+    "references/lifecycle-status-projection.md",
+    "tests/test_lifecycle_status_projection.py",
+    "scripts/validate_projection_metadata.py",
+    "scripts/evaluate_governance.py",
+    "scripts/validate_all.py",
+    "scripts/validate_identity_contract.py",
+    "scripts/validate_contract_preservation.py",
+    "scripts/validate_release_contract.py",
+    "scripts/validate_documentation.py",
+    "scripts/validate_assurance_contract.py",
     "scripts/package_skill.py",
+    "tests/original-contract.json",
+    "tests/current-release-contract.json",
+    "tests/protected-file-migrations.json",
+    "tests/test_release_contract.py",
+    "tests/test_documentation_validation.py",
+    "tests/test_assurance_contract.py",
+    "tests/test_package_attestation.py",
+    "tests/test_identity_model.py",
+    "tests/test_ecosystem_handoff.py",
+    "tests/test_ecosystem_compatibility.py",
+    "tests/test_governance_closure.py",
+    "tests/test_guided_intake.py",
+    "tests/test_governance_views_v23.py",
+    "tests/test_priority_contract.py",
+    "tests/test_handoff_diagnostics.py",
+    "tests/test_contract_semantics.py",
+    "assets/icon.svg",
     "examples/activation-scenarios.json",
     "evals/activation-boundary-scenarios.json",
+    "evals/booster-activation-scenarios.json",
 ]
 REQUIRED_TEMPLATE_NAMES = {
     "ops.yaml.template",
@@ -73,18 +155,16 @@ SCENARIO_CATEGORY_PREFIXES = {
     "regression": "R",
     "adversarial": "X",
 }
+EPHEMERAL_CACHE_DIR_NAMES = {"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
+EPHEMERAL_CACHE_SUFFIXES = {".pyc", ".pyo"}
 GENERATED_OR_BLOCKED_DIR_NAMES = {
     ".git",
-    "__pycache__",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".ruff_cache",
     "docs/skill-benchmark",
     "reports",
     "generated-evidence",
     "evidence",
 }
-BLOCKED_FILE_SUFFIXES = {".pyc", ".pyo", ".tmp", ".zip"}
+BLOCKED_FILE_SUFFIXES = {".tmp", ".zip"}
 BLOCKED_FILE_NAMES = {".DS_Store"}
 
 
@@ -163,6 +243,16 @@ def validate_skill_md(root: Path, errors: list[str]) -> None:
         "scripts/validate_skill_package.py",
         "scripts/validate_activation_scenarios.py",
         "scripts/validate_golden_examples.py",
+    "scripts/validate_governance_scenarios.py",
+    "scripts/governance_contract.py",
+    "scripts/guide_intake.py",
+    "scripts/adapt_governance.py",
+    "scripts/project_governance_views.py",
+    "scripts/validate_projection_metadata.py",
+    "scripts/evaluate_governance.py",
+    "scripts/validate_all.py",
+        "scripts/validate_identity_contract.py",
+        "scripts/validate_contract_preservation.py",
         "scripts/package_skill.py",
         "references/package-validation.md",
     ]
@@ -336,8 +426,16 @@ def validate_harness_scenarios(root: Path, errors: list[str]) -> None:
 def validate_package_hygiene(root: Path, errors: list[str]) -> None:
     for path in sorted(root.rglob("*")):
         rel = path.relative_to(root).as_posix()
+        if any(part in EPHEMERAL_CACHE_DIR_NAMES for part in path.relative_to(root).parts):
+            continue
+        if path.is_file() and path.suffix.lower() in EPHEMERAL_CACHE_SUFFIXES:
+            continue
+        reason = sensitive_package_reason(path)
+        if reason:
+            errors.append(f"unsafe package path {rel}: {reason}")
+            continue
         if any(rel == name or rel.startswith(name + "/") for name in GENERATED_OR_BLOCKED_DIR_NAMES):
-            errors.append(f"blocked generated/cache path present: {rel}")
+            errors.append(f"blocked generated path present: {rel}")
             continue
         if path.is_file() and path.name in BLOCKED_FILE_NAMES:
             errors.append(f"blocked generated/system file present: {rel}")
@@ -355,6 +453,8 @@ def validate_package(root: Path) -> list[str]:
     validate_no_markers(root, errors)
     validate_scenarios(root, errors)
     validate_harness_scenarios(root, errors)
+    errors.extend(collect_contract_semantic_errors(root))
+    errors.extend(validate_release_metadata(root).get("errors", []))
     validate_package_hygiene(root, errors)
     return errors
 
@@ -372,7 +472,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json_output:
         output_path = Path(args.json_output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(output_path, json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(f"status: {status}")
     if errors:
         for error in errors:

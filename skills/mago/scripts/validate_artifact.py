@@ -11,23 +11,24 @@ from pathlib import Path
 SPEC_ARTIFACTS = {"manifest.yaml", "prd.md", "technical-design.md", "tasks.md", "notes.md", "validation.md", "architecture-decisions.md", "execution-handoff-plan.md", "contract-spec.md", "migration-strategy.md", "observability-design.md", "operational-requirements.md", "security-and-risk-considerations.md", "open-questions.md"}
 
 
-def infer_board_context(path: Path) -> tuple[Path, Path | None, str | None]:
-    parts = list(path.parts)
-    lower_parts = [part.lower() for part in parts]
-    try:
-        docs_index = lower_parts.index("docs")
-    except ValueError as exc:
-        raise ValueError(f"{path}: path is outside docs/boards/") from exc
-
-    if len(parts) <= docs_index + 3 or lower_parts[docs_index + 1] != "boards":
-        raise ValueError(f"{path}: path is outside docs/boards/<board_id>/<cycle_version>/")
-
-    repo_root = Path(*parts[:docs_index])
-    board_root = Path(*parts[: docs_index + 4])
-    spec_id: str | None = None
-    if len(parts) > docs_index + 5 and lower_parts[docs_index + 4] == "specs":
-        spec_id = parts[docs_index + 5]
-    return repo_root, board_root, spec_id
+def infer_board_context(path: Path) -> tuple[Path, Path, str | None]:
+    resolved = path.resolve()
+    for parent in (resolved.parent, *resolved.parents):
+        if not (parent / "cycle.yaml").is_file():
+            continue
+        parts = list(parent.parts)
+        lower_parts = [part.lower() for part in parts]
+        try:
+            docs_index = lower_parts.index("docs")
+        except ValueError as exc:
+            raise ValueError(f"{path}: canonical cycle root is outside docs/boards/") from exc
+        repo_root = Path(*parts[:docs_index])
+        spec_id = None
+        relative = resolved.relative_to(parent)
+        if len(relative.parts) >= 3 and relative.parts[0] == "specs":
+            spec_id = relative.parts[1]
+        return repo_root, parent, spec_id
+    raise ValueError(f"{path}: no canonical MAGO cycle root containing cycle.yaml was found")
 
 
 def validate_one(path: Path) -> int:

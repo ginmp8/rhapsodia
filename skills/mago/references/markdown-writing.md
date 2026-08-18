@@ -15,7 +15,7 @@ Apply these rules to generated or updated prd.md, technical-design.md, tasks.md,
 - use fenced code blocks for multi-line snippets and add a language tag when useful
 - use tables only for genuinely tabular comparisons
 - mark examples clearly as examples, not repository truth
-- use repository-relative POSIX paths such as docs/boards/core/01.00.00/specs/spec001/tasks.md; avoid backslashes, Windows paths, and absolute machine-local paths unless documenting an unavoidable external literal
+- use repository-relative POSIX paths such as docs/boards/core/2026/cycles/cycle-2026-07-22-core/specs/spec-2026-07-22-observability/tasks.md; avoid backslashes, Windows paths, and absolute machine-local paths unless documenting an unavoidable external literal
 - prefer plain, direct language; explain non-obvious jargon briefly; preserve factual nuance
 - avoid decorative emoji and noisy emphasis
 - preserve canonical headings, front matter keys, field labels, and checklist/task ordering when the file already follows the expected template or mode

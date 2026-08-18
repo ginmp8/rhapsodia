@@ -21,7 +21,7 @@
 - do not define backlog, execution order, implementation phases, dependencies, rollout work, or execution status
 - do not infer implementation progress, completion, or blocker state
 - do not select specialists for future execution unless an existing document already requires a purely documentary metadata field
-- do not create manifest.yaml or spec-catalog.yaml unless repository truth makes that registration indispensable and the needed values already exist
+- do not create manifest.yaml or alter registry identity unless repository truth makes package registration indispensable and the needed values already exist; never hand-edit generated catalog/queue views
 - if current docs already contain task or execution sections, leave them unchanged in this mode
 
 ## Document Focus

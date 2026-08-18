@@ -8,8 +8,8 @@ Prefer scripts over manual template copying. Templates define shape; writers and
 
 ## Writers
 
-- General artifacts: `scripts/write_artifact_scaffold.py <path> [--spec-id specNNN]`.
-- Ops: `scripts/write_ops_scaffold.py <path> --spec-id specNNN`.
+- General artifacts: `scripts/write_artifact_scaffold.py <path> [--spec-id spec-YYYY-MM-DD-feature-key --spec-id-provenance <evidence>]`.
+- Ops: `scripts/write_ops_scaffold.py <path> --spec-id spec-YYYY-MM-DD-feature-key --spec-id-provenance <evidence>`.
 - RFC entries: `scripts/upsert_rfc_entry.py`.
 - Governance decisions: `scripts/append_governance_decision_entry.py` as governance decision writer.
 - Mechanical lists: `scripts/update_template_lists.py <path> --data <payload.yaml>`; inspect schema with `scripts/update_template_lists.py --schema --artifact-name <name>`.

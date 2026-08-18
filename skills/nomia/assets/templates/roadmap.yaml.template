@@ -28,6 +28,7 @@ features: []
 #   dependencies: []
 #   ready_for_spec: false
 #   candidate_spec_id: <spec_id_or_null>
+#   candidate_spec_id_provenance: <evidence_reference_or_null>
 #   scope_summary: <scope_summary_or_null>
 #   mvp_boundary: []
 #   later_phases: []

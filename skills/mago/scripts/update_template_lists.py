@@ -18,7 +18,8 @@ except Exception:  # pragma: no cover
 
 
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
+from mago_utils import SPEC_ID_RE
+
 TASK_ID_RE = re.compile(r"^task\d{3}$")
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
 
@@ -42,7 +43,7 @@ class ListRule:
 
 
 VALID_CYCLE_STATUS = {"planned", "in_progress", "done", "cancelled"}
-VALID_SPEC_STATUS = {"planned", "in_progress", "blocked", "done", "cancelled"}
+VALID_SPEC_STATUS = {"planned", "in_progress", "blocked", "done", "cancelled", "superseded"}
 VALID_PHASE = {"define", "execute", "done"}
 VALID_HANDOFF_STATUS = {"ready_for_prepare_define", "blocked", "needs_discovery"}
 VALID_DOWNSTREAM_MODE = {"define", "define-product", "define-tasks"}
@@ -54,7 +55,18 @@ VALID_CONFIDENCE = {"low", "medium", "high"}
 VALID_FRONTIER_STATUS = {"updated", "blocked", "completed"}
 
 
+GENERATED_VIEW_NAMES = {"spec-catalog.yaml", "define-queue.yaml"}
+
+
 RULES: dict[str, dict[str, ListRule]] = {
+    "spec-registry-entry.yaml": {
+        "depends_on_features": ListRule("depends_on_features", "string"),
+        "depends_on_specs": ListRule("depends_on_specs", "spec_id"),
+        "supersedes": ListRule("supersedes", "spec_id"),
+        "handoff.source_candidates": ListRule("handoff.source_candidates", "string"),
+        "handoff.seed_artifacts": ListRule("handoff.seed_artifacts", "seed_artifact"),
+        "handoff.blockers": ListRule("handoff.blockers", "string"),
+    },
     "define-queue.yaml": {
         "entries": ListRule(
             "entries",
@@ -108,7 +120,7 @@ RULES: dict[str, dict[str, ListRule]] = {
         "specs": ListRule(
             "specs",
             "mapping",
-            required=("order", "spec_id", "feature_key", "title", "type", "classification", "depends_on_features", "depends_on_specs", "status", "feature_version"),
+            required=("order", "business_priority", "technical_criticality", "execution_lane", "execution_rank", "spec_id", "feature_key", "title", "type", "classification", "depends_on_features", "depends_on_specs", "status", "feature_version"),
             regex_fields={"spec_id": SPEC_ID_RE, "feature_key": FEATURE_KEY_RE},
             enum_fields={"status": VALID_SPEC_STATUS},
             list_fields={"depends_on_features": "string", "depends_on_specs": "spec_id"},
@@ -120,6 +132,8 @@ RULES: dict[str, dict[str, ListRule]] = {
 
 def artifact_name(path: Path) -> str:
     name = path.name
+    if path.parent.name == "registry" and name.endswith(".yaml"):
+        return "spec-registry-entry.yaml"
     return name[:-9] if name.endswith(".template") else name
 
 
@@ -221,7 +235,7 @@ def validate_scalar(label: str, value: Any, item_type: str) -> None:
         return
     if item_type == "spec_id":
         if not isinstance(value, str) or not SPEC_ID_RE.fullmatch(value):
-            fail(f"{label} must use specNNN format")
+            fail(f"{label} must use canonical spec-YYYY-MM-DD-feature-key format")
         return
     if item_type == "task_id":
         if not isinstance(value, str) or not TASK_ID_RE.fullmatch(value):
@@ -290,6 +304,8 @@ def validate_list(rule: ListRule, value: Any) -> None:
 
 def apply_updates(artifact_path: Path, updates: dict[str, Any]) -> None:
     name = artifact_name(artifact_path)
+    if name in GENERATED_VIEW_NAMES:
+        fail(f"`{name}` is a generated projection; use render_registry_views.py instead of mutating it")
     rules = RULES.get(name)
     if not rules:
         fail(f"unsupported MAGO template-backed artifact `{name}`")

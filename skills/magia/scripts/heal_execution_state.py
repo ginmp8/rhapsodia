@@ -4,11 +4,22 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
 
-from magia_utils import BOARD_ROOT_TEMPLATE, load_local_module, print_errors, read_lines, spec_package_path, spec_package_path_error
+from magia_utils import (
+    BOARD_ROOT_TEMPLATE,
+    load_local_module,
+    print_errors,
+    read_lines,
+    replace_top_level_scalar,
+    spec_package_path,
+    spec_package_path_error,
+    spec_registry_path,
+    write_text,
+)
 
 
 NOTES_TASK_RE = re.compile(r"^###\s+(?P<task_id>task\d{3})\s+-\s+.+$")
@@ -17,6 +28,7 @@ NOTES_SUMMARY_RE = re.compile(r"^-\s+Summary:\s*(?P<summary>.+?)\s*$")
 FIELD_RE = re.compile(r"^-\s+(?P<field>Changes|Context Docs|Decisions|Follow-Ups|Blockers):\s*(?P<value>.*)$")
 LIST_ITEM_RE = re.compile(r"^\s*-\s+(?P<value>.+?)\s*$")
 VALIDATION_RUN_RE = re.compile(r"^##\s+Execution Run -\s+(?P<task_id>task\d{3})(?:\s+\((?P<date>\d{4}-\d{2}-\d{2})\))?")
+TOP_LEVEL_KEY_RE = re.compile(r"^[a-z_]+:")
 HEALABLE_ERROR_PATTERNS = (
     re.compile(r"^implementation-notes\.md marks `task\d{3}` done but tasks\.md leaves the checkbox unchecked\.$"),
     re.compile(r"^implementation-notes\.md records executed tasks but manifest\.yaml omits last_execution\.$"),
@@ -137,7 +149,7 @@ def update_manifest_file(sync_module, manifest_path: Path, task_id: str, executi
         if skipping:
             if line.startswith(" ") or line.startswith("\t") or not line:
                 continue
-            if sync_module.TOP_LEVEL_KEY_RE.match(line):
+            if TOP_LEVEL_KEY_RE.match(line):
                 skipping = False
             else:
                 continue
@@ -168,7 +180,7 @@ def main(argv: list[str]) -> int:
         description="Repair narrow MAGIA execution-state drift using implementation-notes.md and validation-evidence.md."
     )
     parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
+    parser.add_argument("--spec-id", required=True, help="Selected canonical spec id.")
     args = parser.parse_args(argv)
 
     board_root = Path(args.board_root).resolve()
@@ -182,9 +194,10 @@ def main(argv: list[str]) -> int:
     notes_path = spec_package / "implementation-notes.md"
     validation_path = spec_package / "validation-evidence.md"
     manifest_path = spec_package / "manifest.yaml"
+    registry_path = spec_registry_path(board_root, args.spec_id)
 
-    sync_module = _load_local_module("sync_execution_state.py")
-    validate_module = _load_local_module("validate_execution_state.py")
+    sync_module = load_local_module(__file__, "sync_execution_state.py")
+    validate_module = load_local_module(__file__, "validate_execution_state.py")
 
     errors = validate_module.collect_errors(spec_package)
     unhealable_errors = collect_unhealable_errors(errors)
@@ -196,7 +209,7 @@ def main(argv: list[str]) -> int:
     task_order = list(tasks.keys())
     notes_records = parse_notes_records(notes_path)
     validation_dates, validation_order = parse_validation_runs(validation_path)
-    _, _, _, last_execution_task_id = validate_module.parse_manifest(manifest_path)
+    _, last_execution_task_id = validate_module.parse_manifest(manifest_path)
 
     if any(task_id not in tasks for task_id in notes_records):
         print_failed(["execution log references a task missing from tasks.md"])
@@ -222,9 +235,16 @@ def main(argv: list[str]) -> int:
         return 0
 
     updated_tasks: list[str] = []
+    original_bytes = {
+        tasks_path: tasks_path.read_bytes(),
+        manifest_path: manifest_path.read_bytes(),
+        registry_path: registry_path.read_bytes(),
+    }
+    tasks_content = original_bytes[tasks_path].decode("utf-8-sig")
+    refreshed_tasks = dict(tasks)
     for task_id in task_order:
-        if task_id in done_candidates and not tasks[task_id]:
-            sync_module.update_tasks_file(tasks_path, task_id, "done")
+        if task_id in done_candidates and not refreshed_tasks[task_id]:
+            tasks_content, refreshed_tasks = sync_module.render_tasks_text(tasks_content, task_id, "done")
             updated_tasks.append(task_id)
 
     latest_task_id = done_candidates[-1]
@@ -235,8 +255,56 @@ def main(argv: list[str]) -> int:
     assert isinstance(changes, list)
     execution_date = validation_dates.get(latest_task_id)
 
-    if last_execution_task_id != latest_task_id or updated_tasks:
-        update_manifest_file(sync_module, manifest_path, latest_task_id, execution_date, summary, [str(change) for change in changes])
+    latest_status = str(latest_record.get("status") or "in_progress")
+    all_done = bool(refreshed_tasks) and all(refreshed_tasks.values())
+    if latest_status == "blocked":
+        spec_status, phase = "blocked", "execute"
+    elif all_done:
+        spec_status, phase = "done", "done"
+    else:
+        spec_status, phase = "in_progress", "execute"
+
+    manifest_lines = original_bytes[manifest_path].decode("utf-8-sig").splitlines()
+    replace_top_level_scalar(manifest_lines, "status", spec_status)
+    replace_top_level_scalar(manifest_lines, "phase", phase)
+    manifest_lines = sync_module.remove_last_execution(manifest_lines)
+    manifest_lines.append("")
+    manifest_lines.extend(
+        build_last_execution_block(
+            sync_module,
+            latest_task_id,
+            execution_date,
+            summary,
+            [str(change) for change in changes],
+        )
+    )
+    manifest_content = "\n".join(manifest_lines) + "\n"
+    registry_content = sync_module.render_registry_text(
+        original_bytes[registry_path].decode("utf-8-sig"), spec_status
+    )
+    candidate_changes = {
+        tasks_path: tasks_content,
+        manifest_path: manifest_content,
+        registry_path: registry_content,
+    }
+    candidate_errors = sync_module.validate_candidate_snapshot(
+        board_root, args.spec_id, candidate_changes, validate_module
+    )
+    if candidate_errors:
+        print_failed(candidate_errors)
+        return 1
+
+    fail_after = os.environ.get("MAGIA_TEST_FAIL_AFTER_REPLACE")
+    try:
+        sync_module.atomic_write_many(
+            candidate_changes,
+            spec_package,
+            fail_after_replace=int(fail_after) if fail_after else None,
+            expected_originals=original_bytes,
+        )
+    except (RuntimeError, ValueError) as exc:
+        print_failed([str(exc)])
+        return 1
 
     remaining_errors = validate_module.collect_errors(spec_package)
     if remaining_errors:

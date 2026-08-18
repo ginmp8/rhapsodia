@@ -1,0 +1,1 @@
+{"kind":"mago-plan-envelope","spec_id":"spec-2026-04-20-export","requirements":[{"id":"REQ-001","behavior":"preserve selected column order"}],"acceptance":[{"id":"AC-001"}],"tasks":[{"id":"task001"}]}

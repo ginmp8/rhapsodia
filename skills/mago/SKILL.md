@@ -1,95 +1,68 @@
 ---
 name: mago
-description: use when asked to plan, normalize, audit, define, or refine tech-lead owned repository planning artifacts for a resolved board/spec package, including prd refinement from governance intake, technical design, complexity-reduction strategy, refactoring plans, architecture decisions, planned-decision records, execution handoff plans, tasks, validation plans, contract specs, migrations, observability, operations, security/risk notes, discovery, ordering, and define/refine workflows. do not use for execution work, delivery governance/status reporting, stakeholder communication, runtime testing, deployments, commits, pull requests, or magia execution records.
+description: use when asked to plan, normalize, audit, define, or refine tech-lead owned canonical repository planning artifacts, including in-scope requests whose board/spec inputs must be resolved before writes; covers prd refinement from governance intake or repository evidence, technical design, complexity-reduction strategy, refactoring plans, architecture decisions, planned-decision records, execution handoff plans, tasks, validation plans, contract specs, migrations, observability, operations, security/risk notes, discovery, ordering, and define/refine workflows. do not use for execution work, delivery governance/status reporting, stakeholder communication, runtime testing, deployments, commits, pull requests, or magia execution records.
 ---
 
 # MAGO
 
-Tech-lead planning skill. Convert nomia delivery intake plus repository evidence into canonical board/spec planning artifacts. MAGO plans intended design; it does not implement code, collect runtime evidence, deploy, commit, open PRs, or act as PO governance clerk.
+Mago owns intended technical planning from Nomia intake and repository evidence. It never changes product code, runs tests/deployments, owns delivery governance, accepts business risk, or fabricates runtime proof.
 
-## Scope and Ownership
+## Distributed ecosystem routing
 
-Use only when output belongs under a resolved `BOARD_ROOT` for concrete `board_id` and `cycle_version`; package-scoped work also needs `spec_id` under `BOARD_ROOT/specs/<spec_id>/`.
+Use the [routing contract](references/ecosystem-routing-contract.md) and [lifecycle](references/ecosystem-lifecycle.md). Perform only the current Mago phase, preserve repeated phases, then hand off; never absorb Nomia or Magia authority. `scripts/route_ecosystem_request.py` is read-only; `scripts/handoff_ledger.py` stores transport state only.
 
-MAGO writes only canonical planning artifacts: discovery state/index/candidate docs, spec catalog, define queue, manifest, PRD, tasks, notes, validation, technical design, complexity-reduction plan, architecture decisions/ADRs, execution handoff plan, contract spec, migration strategy, observability design, operational requirements, security/risk considerations, and open questions. Legacy planning artifacts are normalized through `adapt`; legacy execution logs are not preserved in MAGO planning files and must be converted to current MAGIA-owned artifacts by MAGIA ADAPT before use as execution evidence.
+## Authority and canonical state
 
-MAGO must not write governance/status, stakeholder comms, release notes, roadmap bookkeeping, product-code diffs, runtime proof, execution notes/runbooks, migration execution notes, contract change notes, troubleshooting guides, Magia execution records, tests, commits, PRs, deployments, or noncanonical files. Decision artifacts created by MAGO are planned architecture or planned technical decisions only; execution-handoff artifacts are plans, not implementation evidence.
+- Nomia writes requester/owner/dates, `business_priority`, stakeholders, roadmap, governance decisions/status, closure, and release communication.
+- Mago writes requirements, design, planned decisions/tasks/validation, `technical_criticality`, `execution_sequence`, technical risk, and execution handoff.
+- Magia writes implementation, tests, runtime validation, execution decisions, and evidence.
+- Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: consume `nomia_to_mago`/`magia_to_mago`; produce `mago_to_magia`/`mago_to_nomia`.
+- Reject mixed ecosystem versions before mutation, unsupported envelope schemas, content/privacy-metadata contradictions, absent durable-artifact privacy lineage, unverified source-handoff authenticity when authenticity is claimed, legacy switches, and wrong-owner fields.
+- A Mago planning boundary is an authoring boundary; execution-required tasks are valid planning outputs when bounded, assigned to Magia, and linked to validation. Mago never executes them.
 
-Routing: nomia owns request/governance facts; MAGO owns intended technical planning; Magia handles execution reality and execution-grounded docs. For mixed prompts, keep only the MAGO planning portion and hand off execution to Magia or governance/status work to nomia. Record unknowns as assumptions/blockers; never invent repository truth.
+Write only under a resolved `BOARD_ROOT` using [canonical paths](references/canonical-paths.md), [concurrent identity](references/concurrent-planning.md), and [shared ownership](references/shared-artifact-ownership.md). Registry/cycle/spec identity is authoritative; views are projections. Legacy planning enters only through `adapt`; legacy execution evidence must first be normalized by Magia.
 
-Governance RFC proposals, delivery status, stakeholder communication, release notes, portfolio reporting, and accepted business risk belong to nomia. MAGO may use RFC-style reasoning inside planning artifacts, but it must not create or update nomia governance RFC proposal logs or claim governance approval.
+## Required inputs and evidence
 
-MAGO consumes Magia-owned execution evidence such as technical gap notes, implementation notes, validation evidence, or implementation ADRs only as read-only input for planning reconciliation. MAGO must not rewrite Magia evidence or turn it into runtime proof authored by MAGO.
+Before writes resolve `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, evidence source, profile, lifecycle stage, one mode, and payload. `order` may atomically create a deduplicated `spec_id`; package modes require an existing registry-backed ID. Prefer current registry/package, typed handoff, repository, and validated planning evidence. Preserve unknowns; never invent technical, validation, or privacy truth. Apply [evidence rules](references/evidence-contract.md).
 
-A MAGO planning boundary is an authoring boundary, not an execution prohibition; execution-required tasks are valid planning outputs when they are bounded, evidence-backed, and explicitly require downstream Magia implementation plus a credible validation path.
+## Public workflow
 
-For artifacts shared with MAGIA, load [references/shared-artifact-ownership.md](references/shared-artifact-ownership.md). MAGO owns planning definitions, validation plans, package intent, and canonical planning templates; MAGIA-created records cover execution evidence, implementation notes, task checkbox completion, and technical execution-state sync on generated artifacts. MAGO must preserve truthful MAGIA evidence and must not fabricate runtime results or completion state.
+For unclear entrypoints load [getting started](references/getting-started.md). Sequence: `clarify -> define -> analyze -> handoff -> reconcile`. Select [profile/lifecycle](references/profiles-and-lifecycle.md): `quick` only for bounded reversible low-risk work; `standard` normally; `governed` for regulatory, privacy/security, contract/schema, migration, irreversible data, operational, cross-service, or multi-repository impact. Standard/governed work applies [requirements/traceability](references/requirements-and-traceability.md), [clarification readiness](references/clarification-readiness.md), and [clarification prioritization](references/clarification-prioritization.md), preserving `REQ -> AC -> DECISION -> TASK -> VALIDATION`.
 
-## Activation Policy
+## Internal mode router
 
-Activate only for creating, normalizing, auditing, or refining canonical repository planning artifacts. Strong triggers: refine nomia intake into a spec package; discover repository candidates; order backlog into define queue; adapt legacy planning docs; prepare define-ready package shells; define/refine a package; write spec-scoped technical design; record planned ADRs; plan complexity reduction, simplification, de-abstraction, or refactoring; reshape tasks; define validation plans; split product-only from task-only planning.
+| Intent | Mode |
+|---|---|
+| discovery | [discovery](references/modes/discovery.md) |
+| deduplicate/register/order | [order](references/modes/order.md) |
+| legacy/drift normalization | [adapt](references/modes/adapt.md) |
+| seed/full package | [prepare-define](references/modes/prepare-define.md), [define](references/modes/define.md), [refine](references/modes/refine.md) |
+| product/task only | [define-product](references/modes/define-product.md), [refine-product](references/modes/refine-product.md), [define-tasks](references/modes/define-tasks.md), [refine-tasks](references/modes/refine-tasks.md) |
+| architecture/contracts/migration/ops/security | [technical-design](references/modes/technical-design.md) |
+| behavior-preserving simplification | [complexity-reduction](references/modes/complexity-reduction.md) |
+| planned ADR | [architecture decisions](references/architecture-decisions.md) |
+| reshape/reconcile | [reshape-tasks](references/modes/reshape-tasks.md), [reconcile](references/modes/reconcile.md) |
 
-Do not activate for code implementation, code edits, runtime tests, deployments, operational evidence, delivery governance, release notes, stakeholder status, portfolio reporting, or general docs outside `BOARD_ROOT`. If likely MAGO but `BOARD_ROOT`, `board_id`, `cycle_version`, or required `spec_id` is missing, stop before writing and ask for the smallest missing input.
+## Planning sequence
 
-## Required Inputs and Evidence
+1. Route non-Mago work; resolve identity/registry, profile, stage, and exactly one mode.
+2. Load [common planning](references/common-planning.md), then only triggered references.
+3. Select artifacts with the [decision matrix](references/artifact-decision-matrix.md); templates do not trigger writes.
+4. Apply [technical standards](references/technical-artifact-standards.md), [ADR quality](references/adr-quality.md), and [security-risk v2](references/security-risk-contract.md) only when triggered.
+5. For existing specs produce a [change delta](references/change-delta.md). External formats use [interoperability](references/interoperability-and-reconciliation.md) and the [adapter contract](references/adapter-development-contract.md), disclose loss; remain non-authoritative.
+6. Multi-file writes use the [transaction/resume contract](references/mutation-transaction-and-resume.md) and `scripts/mutation_transaction.py`: stage, validate, atomically promote, detect drift, and verify rollback.
+7. Optional read-only outputs: [planning compass](references/planning-compass.md) via `scripts/render_planning_compass.py`, [execution waves](references/execution-wave-projection.md) via `scripts/render_execution_waves.py`, and [brownfield summary](references/brownfield-discovery-summary.md).
+8. Handoff only validated intent; reconcile Magia evidence read-only with provenance.
 
-Resolve before writes: `BOARD_ROOT`, `board_id`, `cycle_version`, required `spec_id`, evidence source, primary mode, and evidence payload. Derive paths through `references/canonical-paths.md`; never create parallel planning trees.
+## Tools and validation
 
-Truth sources: repository contents, existing planning artifacts, nomia/roadmap handoff evidence, user context, and validated package state. Treat missing facts as assumptions/blockers. Load `references/evidence-contract.md` when claims depend on repository truth, execution/validation/dependency state, or traceability.
+Use `scripts/create_planning_identity.py` and `scripts/write_artifact_scaffold.py`. Load only needed guidance: [activation](references/activation-routing.md), [operating rules](references/operating-rules.md), [roadmap evidence](references/roadmap-evidence-input.md), [RFC quality](references/rfc-quality.md), [planning-execution handoff](references/planning-execution-handoff.md), [validation/packaging](references/validation-and-packaging.md), [installation/release](references/installation-and-release.md). Run narrow validators. Governed work requires current traceability/quality and security v2 when triggered; ecosystem release requires explicit Mago/Magia/Nomia roots. Package only after local, contract, provenance, routing, lifecycle, recovery, privacy, and distribution gates pass.
 
-## Modes
+## Output contract
 
-Select exactly one primary mode before loading mode detail.
+Return: `Planning context`, `Artifact decisions`, `Traceability`, `Risk and compatibility`, `Validation`, `Handoff or reconciliation`, `Blockers`. Include profile/stage/mode, identity, evidence/assumptions, paths changed/skipped, rationale, traceability, compatibility/migration/security/operations/rollback/privacy impacts, exact command outcomes, downstream handoff, and remaining work. Separate executed evidence from planned validation.
 
-| Mode | Owns | Key validation |
-|---|---|---|
-| `discovery` | repository candidates and discovery state/index/candidate docs | `scripts/validate_artifact.py`, then `scripts/validate_repo_board.py` |
-| `order` | spec catalog and define queue from discovery/governance evidence | `scripts/validate_artifact.py`, then `scripts/validate_repo_board.py` |
-| `adapt` | normalize drifted/legacy board/package artifacts | `scripts/validate_artifact.py` plus package/repo validators as applicable |
-| `prepare-define` | seed define-ready package shells | `scripts/validate_package.py`, `scripts/validate_repo_board.py` |
-| `define` | full package: manifest, PRD, tasks, notes, validation, technical planning | `scripts/validate_package.py` |
-| `refine` | update a full package without crossing mode boundaries | optional `scripts/normalize_package.py`, then `scripts/validate_package.py` |
-| `technical-design` | architecture/contracts/ADRs/technical planning for one spec | `scripts/validate_technical_design.py` or `scripts/validate_artifact.py` |
-| `complexity-reduction` | evidence-backed simplification/refactoring plan, task slices, validation expectations, ADRs for material trade-offs | `scripts/validate_artifact.py`, `scripts/validate_package.py`, static simplification-evidence review |
-| `architecture-decision` | planned architecture decision/ADR | `scripts/validate_artifact.py` or static ADR review |
-| `reshape-tasks` | task-plan reshaping/status alignment | `scripts/validate_artifact.py`, `scripts/validate_package.py` |
-| `define-product` / `refine-product` | product docs only | `scripts/validate_artifact.py`, `scripts/validate_package.py` |
-| `define-tasks` / `refine-tasks` | task plan only | `scripts/validate_artifact.py`; refine also runs normalization when useful, then package validation |
+## Stop conditions
 
-## Workflow and Progressive Loading
-
-1. Select one primary mode; refuse primary-mode mixing.
-2. Open `references/canonical-paths.md` and resolve `BOARD_ROOT` before writes.
-3. Open `references/common-planning.md`.
-4. Open `references/technical-artifact-standards.md` for technical planning artifacts.
-5. Open `references/complexity-reduction-planning.md` for simplification, de-abstraction, complexity reduction, or refactoring.
-6. Open `references/architecture-decisions.md` and `references/adr-quality.md` for ADRs, planned decisions, or trade-offs.
-7. Open exactly one primary mode file: `references/modes/discovery.md`, `references/modes/order.md`, `references/modes/adapt.md`, `references/modes/prepare-define.md`, `references/modes/define.md`, `references/modes/refine.md`, `references/modes/technical-design.md`, `references/modes/complexity-reduction.md`; architecture-decision uses `references/architecture-decisions.md`, `references/modes/reshape-tasks.md`, `references/modes/define-product.md`, `references/modes/refine-product.md`, `references/modes/define-tasks.md`, or `references/modes/refine-tasks.md`.
-8. Open conditional refs only when triggered: `references/artifacts/discovery-order.md`, `references/artifacts/templates-and-status.md`, `references/artifacts/technical-design.md`, `references/markdown-writing.md`, `references/rfc-quality.md`, `references/specialist-spellbook.md`, `references/roadmap-evidence-input.md`, `references/operating-rules.md`, `references/activation-routing.md`, `references/planning-execution-handoff.md`, `references/shared-artifact-ownership.md`, `references/evidence-contract.md`, and `references/validation-and-packaging.md`.
-9. Use scripts for scaffolding, list updates, normalization, validation, boundary checks, and package-level skill validation.
-10. Use `assets/flows/discovery-order-prepare-define-loop.md` only for explicit multi-step discovery/order/prepare-define loops.
-11. Review `examples/activation-scenarios.json` for activation/refusal evidence and `examples/hardening-scenarios.json` for package hardening boundary regression when needed.
-
-## Template and Script Contract
-
-Create/normalize template-backed artifacts through scripts. Prefer `scripts/write_artifact_scaffold.py`; inspect `scripts/update_template_lists.py` with `--schema` before using it for supported list fields. Use these templates through scripts when their artifact is in scope: `assets/templates/manifest.yaml.template`, `assets/templates/prd.md.template`, `assets/templates/tasks.md.template`, `assets/templates/notes.md.template`, `assets/templates/validation.md.template`, `assets/templates/technical-design.md.template`, `assets/templates/complexity-reduction-plan.md.template`, `assets/templates/adr.md.template`, `assets/templates/contract-spec.md.template`, `assets/templates/migration-strategy.md.template`, `assets/templates/observability-design.md.template`, `assets/templates/operational-requirements.md.template`, `assets/templates/security-and-risk-considerations.md.template`, `assets/templates/open-questions.md.template`, `assets/templates/discovery-state.json.template`, `assets/templates/discovery-index.yaml.template`, `assets/templates/discovery-candidate.md.template`, `assets/templates/spec-catalog.yaml.template`, `assets/templates/execution-handoff-plan.md.template`, and `assets/templates/define-queue.yaml.template`.
-
-Package MAGO with `scripts/package_skill.py` after package gates pass. Script routing: artifact validation `scripts/validate_artifact.py`; package validation `scripts/validate_package.py`; board validation `scripts/validate_repo_board.py`; technical design validation `scripts/validate_technical_design.py`; legacy normalization `scripts/normalize_package.py`; planning/execution handoff validation `scripts/validate_planning_execution_handoff.py`; source-truth claims `scripts/validate_evidence_contract.py`; blurred boundaries `scripts/validate_boundary.py`; activation routing `scripts/validate_activation_scenarios.py`; MAGO integrity `scripts/validate_skill_package.py`. Shared helpers are import-only in `scripts/mago_utils.py`; consuming validators provide CLI entrypoints and syntax checks cover helper changes.
-
-Do not leave placeholders in completed artifacts unless creating a scaffold; replace dynamic fields with evidence-backed values or record assumptions, blockers, or open questions.
-
-## Validation Gates
-
-A run is incomplete until every touched artifact family has a validator outcome. Required gates: one primary mode; resolved `BOARD_ROOT`, `board_id`, `cycle_version`; `spec_id` for package work; writes stay under board/package path; supported templates are handled by scripts; planning facts are evidence-backed or unresolved; source-truth/traceability checks run when claims depend on repository truth; activation and boundary behavior are covered by examples during hardening/packaging. If a validator fails and cannot be fixed within MAGO planning scope, stop and report the blocker.
-
-## Output Contract
-
-Final responses include: selected mode and why it was the only primary mode; resolved `BOARD_ROOT`, `board_id`, `cycle_version`, and package `spec_id` when applicable; touched artifacts grouped by canonical board/package path; scaffold/normalization/update/validator commands with pass/fail; relevant complexity diagnosis, simplification hypotheses, planned decisions, ADRs, assumptions, trade-offs, unresolved questions; inputs/blockers recorded rather than invented; and handoff notes for requested execution/governance outside MAGO scope. Do not include product-code diffs, runtime proof, or noncanonical planning files.
-
-## Stop Conditions
-
-Stop before editing when mode selection requires mixing primary modes; required path identifiers are missing and cannot be derived; requested path is outside `BOARD_ROOT` or would duplicate a board tree; the user asks for code implementation, task execution, runtime evidence, delivery governance, stakeholder comms, or release notes; simplification lacks repository evidence or explicit assumptions; technical decisions require current code/runtime evidence only Magia can produce; required template script/validator is unavailable and freehand structure would be needed; or validation fails and cannot be fixed in planning scope.
-
-## Finalization Checklist
-
-Before claiming completion: writes are under `BOARD_ROOT` or selected package path; dynamic ids/status/dependencies/design/order decisions are evidence-backed or unresolved; template-backed artifacts used scripts when supported; validators passed or blockers are reported; final response states commands, touched files, assumptions, decisions, and handoff boundaries.
+Stop before write/readiness when root/identity is unresolved; registry truth conflicts; evidence cannot support intent; another owner is required; required escalation is rejected; a second source of truth or editable generated view would result; Magia evidence would be rewritten; runtime proof would be fabricated; required traceability, dependency, security, migration, compatibility, transaction, privacy, package, or rollback gates fail; protected fixtures/evaluators/reports/secrets are targeted; or packaging fails.
