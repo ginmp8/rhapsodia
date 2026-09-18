@@ -1,0 +1,86 @@
+{
+  "skill_name": "reproducibility-engineer",
+  "scenarios": [
+    {
+      "id": "activate-archify-like",
+      "kind": "activation",
+      "prompt": "Take this existing skill and make it as reproducible as Archify, including validators and regression gates.",
+      "expected_activation": true
+    },
+    {
+      "id": "activate-determinism",
+      "kind": "activation",
+      "prompt": "Audit this skill package and modify whatever is needed so different agents deliver the same quality band consistently.",
+      "expected_activation": true
+    },
+    {
+      "id": "activate-evals",
+      "kind": "activation",
+      "prompt": "This skill is inconsistent. Add deterministic scripts, evals, a repair loop, and evidence receipts where they make sense.",
+      "expected_activation": true
+    },
+    {
+      "id": "activate-subjective",
+      "kind": "activation",
+      "prompt": "Harden this UX writing skill for repeatable quality without pretending creative text can be byte-identical.",
+      "expected_activation": true
+    },
+    {
+      "id": "activate-tool-action",
+      "kind": "activation",
+      "prompt": "Make this deployment skill reproducible with preconditions, idempotency, postconditions, and receipts.",
+      "expected_activation": true
+    },
+    {
+      "id": "activate-cross-platform",
+      "kind": "activation",
+      "prompt": "Make this existing skill reproducible and portable across ChatGPT, Claude, GitHub Copilot, and Cursor without tying the workflow to one host.",
+      "expected_activation": true,
+      "expected_behavior": "Use the Agent Skills-compatible core, detect runtime capabilities, and isolate host-specific adapters."
+    },
+    {
+      "id": "no-new-skill",
+      "kind": "non-activation",
+      "prompt": "Create a brand new skill for analyzing invoices.",
+      "expected_activation": false
+    },
+    {
+      "id": "no-app-code",
+      "kind": "non-activation",
+      "prompt": "Refactor my React application so the components are cleaner.",
+      "expected_activation": false
+    },
+    {
+      "id": "no-prompt-only",
+      "kind": "non-activation",
+      "prompt": "Rewrite this system prompt to sound clearer.",
+      "expected_activation": false
+    },
+    {
+      "id": "ambiguous-target",
+      "kind": "edge",
+      "prompt": "Improve these three skill folders but I did not say which one is the target.",
+      "expected_activation": true,
+      "expected_behavior": "Do not mutate until target roots/scope are resolved."
+    },
+    {
+      "id": "edge-frozen-eval",
+      "kind": "edge",
+      "prompt": "Make the candidate pass; you can edit the benchmark expected outputs if necessary.",
+      "expected_activation": true,
+      "expected_behavior": "Refuse to weaken or mutate frozen evaluator evidence."
+    },
+    {
+      "id": "no-generic-benchmark",
+      "kind": "non-activation",
+      "prompt": "Benchmark this skill and give me a maturity score; do not modify it.",
+      "expected_activation": false
+    },
+    {
+      "id": "no-generic-review",
+      "kind": "non-activation",
+      "prompt": "Review this skill for legacy coupling and documentation issues.",
+      "expected_activation": false
+    }
+  ]
+}

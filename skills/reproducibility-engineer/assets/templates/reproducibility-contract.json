@@ -1,0 +1,48 @@
+{
+  "contract_version": 1,
+  "target": {
+    "name": "",
+    "path": "",
+    "baseline_identity": ""
+  },
+  "ceiling": "unclassified",
+  "protected_paths": [],
+  "hard_gates": [
+    "target-package-valid",
+    "frozen-evaluator-unchanged",
+    "no-blocking-regression"
+  ],
+  "variability": [],
+  "evaluators": [],
+  "scenario_groups": [
+    "activation",
+    "non-activation",
+    "ambiguous",
+    "core",
+    "edge",
+    "regression",
+    "adversarial",
+    "holdout"
+  ],
+  "acceptance": {
+    "behavioral_improvement_required_for_improvement_claim": true,
+    "freeze_after_pass": true,
+    "stagnation_limit": 2,
+    "weaken_hard_gates_to_pass": false
+  },
+  "delivery": {
+    "atomic_when_applicable": true,
+    "hash_receipt_when_useful": true,
+    "package_exact_frozen_candidate": true,
+    "reject_output_aliases_before_write": true,
+    "preserve_last_good_on_failure": true,
+    "preserve_recovery_on_rollback_failure": true,
+    "durable_complete_receipts": true
+  },
+  "source_integrity": {
+    "snapshot_material_evidence_before_analysis": true,
+    "immutable_pinned_vcs_reads_when_supported": true,
+    "reject_source_alias_escape": true,
+    "rebaseline_if_source_identity_changes": true
+  }
+}
