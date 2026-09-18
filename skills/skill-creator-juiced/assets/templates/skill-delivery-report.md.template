@@ -5,21 +5,39 @@
 - Path:
 - Mode:
 - Architecture decision:
+- Portability profile:
+- Hosts/capabilities in scope:
 
 ## Changes
 - Created/changed files:
-- Specialist passes:
-- Accepted hypotheses:
-- Rejected or deferred hypotheses:
+- Preserved compatibility:
+- Host adapters:
+
+## Specialist Ledger
+| Specialist | Status | Reason / owned concern | Evidence |
+|---|---|---|---|
+
+## Reproducibility
+- Decision:
+- Ceiling:
+- Variability controls added:
+- Remaining irreducible nondeterminism:
 
 ## Evidence
-| Check | Status | Evidence |
-|---|---|---|
+| Layer | Check | Status | Evidence |
+|---|---|---|---|
+
+## Change Acceptance
+- Gate status:
+- Blocking regressions:
+- Accepted trade-offs:
 
 ## Package
-- skill.zip path:
+- `skill.zip` path:
+- Profile:
+- SHA-256:
 - Package validation:
 
-## Risks and Next Step
+## Residual Risks
+- Unsupported/not-run capabilities:
 - Remaining risks:
-- Next recommended quality pass:

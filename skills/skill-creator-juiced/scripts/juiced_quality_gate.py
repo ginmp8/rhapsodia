@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
-"""Structural quality gate for skill packages created with skill-creator-juiced."""
-
+"""Structural and portability quality gate for Skill Creator Juiced packages."""
 from __future__ import annotations
 
 import argparse
+import sys
+sys.dont_write_bytecode = True
 import json
 import re
-import sys
 from pathlib import Path
 
-try:
-    import yaml
-except Exception:  # pragma: no cover
-    yaml = None
+from skill_spec import read_text, validate_agent_skill
 
 PLACEHOLDER_PATTERNS = [
     "TO" + "DO",
@@ -22,156 +19,114 @@ PLACEHOLDER_PATTERNS = [
     "example" + " asset",
     "api_" + "reference.md",
 ]
-
-REQUIRED_BODY_TERMS = [
-    "workflow",
-    "output contract",
-    "stop condition",
-]
-
+REQUIRED_BODY_TERMS = ["workflow", "output contract", "stop condition"]
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+TEXT_SUFFIXES = {".md", ".txt", ".py", ".yaml", ".yml", ".json", ".template", ".sh"}
 
 
-def read_frontmatter(text: str):
-    if not text.startswith("---\n"):
-        return None, "missing yaml frontmatter"
-    match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
-    if not match:
-        return None, "invalid yaml frontmatter block"
-    raw = match.group(1)
-    if yaml is None:
-        return None, "pyyaml is unavailable"
-    try:
-        data = yaml.safe_load(raw)
-    except Exception as exc:
-        return None, f"invalid yaml: {exc}"
-    if not isinstance(data, dict):
-        return None, "frontmatter is not a mapping"
-    return data, None
-
-
-def local_markdown_links(skill_root: Path, markdown_file: Path):
-    text = markdown_file.read_text(encoding="utf-8")
-    for target in MARKDOWN_LINK_RE.findall(text):
-        if "://" in target or target.startswith("#") or target.startswith("mailto:"):
+def local_markdown_links(target: Path, markdown_file: Path):
+    text = read_text(markdown_file)
+    for raw in MARKDOWN_LINK_RE.findall(text):
+        ref = raw.split("#", 1)[0].strip()
+        if not ref or "://" in ref or ref.startswith(("#", "/", "mailto:")):
             continue
-        path_part = target.split("#", 1)[0]
-        if not path_part:
-            continue
-        yield markdown_file, path_part, (markdown_file.parent / path_part).resolve()
+        yield markdown_file, ref, (markdown_file.parent / ref).resolve()
 
 
-def run_gate(target: Path):
-    errors = []
-    warnings = []
-    inspected = []
+def run_gate(target: Path, profile: str) -> dict:
+    errors: list[str] = []
+    warnings: list[str] = []
+    inspected: list[str] = []
 
-    if not target.exists() or not target.is_dir():
-        return {"status": "fail", "errors": [f"target is not a directory: {target}"], "warnings": [], "inspected": []}
+    if not target.is_dir():
+        return {"status": "fail", "profile": profile, "errors": [f"target is not a directory: {target}"], "warnings": [], "inspected": []}
 
     skill_files = [p for p in target.rglob("SKILL.md") if ".git" not in p.parts]
-    if len(skill_files) != 1:
-        errors.append(f"expected exactly one SKILL.md, found {len(skill_files)}")
-        return {"status": "fail", "errors": errors, "warnings": warnings, "inspected": [str(p) for p in skill_files]}
+    if skill_files != [target / "SKILL.md"]:
+        errors.append(f"expected exactly one root SKILL.md, found {len(skill_files)}")
+        return {"status": "fail", "profile": profile, "errors": errors, "warnings": warnings, "inspected": [str(p) for p in skill_files]}
 
-    skill_md = skill_files[0]
+    portability = validate_agent_skill(target, profile)
+    errors.extend(portability["errors"])
+    warnings.extend(portability["warnings"])
+
+    skill_md = target / "SKILL.md"
     inspected.append(str(skill_md))
-    text = skill_md.read_text(encoding="utf-8")
-    fm, fm_error = read_frontmatter(text)
-    if fm_error:
-        errors.append(fm_error)
-    else:
-        name = str(fm.get("name", "")).strip()
-        description = str(fm.get("description", "")).strip()
-        if not name:
-            errors.append("frontmatter.name is required")
-        elif not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name):
-            errors.append("frontmatter.name must be lowercase hyphen-case")
-        if not description:
-            errors.append("frontmatter.description is required")
-        elif len(description) < 80:
-            warnings.append("description may be too short to trigger accurately")
-        if len(description) > 1024:
-            errors.append("description exceeds 1024 characters")
-        if set(fm.keys()) - {"name", "description"}:
-            warnings.append("frontmatter has extra keys; chatgpt skills usually need only name and description")
-
+    text = read_text(skill_md)
     lower_text = text.lower()
     for term in REQUIRED_BODY_TERMS:
         if term not in lower_text:
             warnings.append(f"SKILL.md does not visibly include '{term}'")
 
-    agents = target / "agents" / "openai.yaml"
-    if agents.exists():
-        inspected.append(str(agents))
-    else:
-        warnings.append("agents/openai.yaml is missing")
-
-    for file_path in target.rglob("*"):
-        if ".git" in file_path.parts:
+    for path in target.rglob("*"):
+        if ".git" in path.parts:
             continue
-        rel = file_path.relative_to(target)
-        if "__pycache__" in file_path.parts or file_path.suffix in {".pyc", ".pyo"}:
+        rel = path.relative_to(target)
+        if "__pycache__" in path.parts or path.suffix in {".pyc", ".pyo"}:
             errors.append(f"cache/generated bytecode must not be packaged: {rel}")
             continue
-        if not file_path.is_file():
+        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
-        if rel.suffix.lower() in {".md", ".txt", ".py", ".yaml", ".yml", ".json"}:
-            content = file_path.read_text(encoding="utf-8", errors="ignore")
-            for pattern in PLACEHOLDER_PATTERNS:
-                if pattern.lower() in content.lower() or pattern.lower() in str(rel).lower():
-                    errors.append(f"placeholder/scaffold marker '{pattern}' found in {rel}")
-                    break
+        content = read_text(path)
+        if str(rel).startswith("assets/templates/"):
+            continue
+        for pattern in PLACEHOLDER_PATTERNS:
+            if pattern.lower() in content.lower() or pattern.lower() in str(rel).lower():
+                errors.append(f"placeholder/scaffold marker '{pattern}' found in {rel}")
+                break
 
     for md in target.rglob("*.md"):
         inspected.append(str(md))
         for source, link, resolved in local_markdown_links(target, md):
             if not str(resolved).startswith(str(target.resolve())):
-                warnings.append(f"local link leaves package: {source.relative_to(target)} -> {link}")
+                errors.append(f"local link leaves package: {source.relative_to(target)} -> {link}")
             elif not resolved.exists():
                 errors.append(f"broken local link: {source.relative_to(target)} -> {link}")
 
-    referenced = set()
-    for md in target.rglob("*.md"):
-        content = md.read_text(encoding="utf-8", errors="ignore")
-        for file_path in target.rglob("*"):
-            if file_path.is_file() and file_path != md:
-                rel = str(file_path.relative_to(target))
-                if rel in content:
-                    referenced.add(rel)
+    referenced: set[str] = set()
+    markdown_text = "\n".join(read_text(md) for md in target.rglob("*.md"))
+    for file_path in target.rglob("*"):
+        if file_path.is_file():
+            rel = file_path.relative_to(target).as_posix()
+            if rel in markdown_text:
+                referenced.add(rel)
 
-    for folder in ["references", "scripts", "examples", "evals"]:
+    for folder in ("references", "scripts"):
         dir_path = target / folder
         if not dir_path.exists():
             continue
         for file_path in dir_path.rglob("*"):
-            if file_path.is_file():
-                rel = str(file_path.relative_to(target))
-                if rel not in referenced and folder in {"references", "scripts"}:
-                    warnings.append(f"support file may be unreferenced: {rel}")
+            if not file_path.is_file():
+                continue
+            rel = file_path.relative_to(target).as_posix()
+            if rel not in referenced and file_path.name != "skill_spec.py":
+                warnings.append(f"support file may be unreferenced: {rel}")
 
-    status = "pass" if not errors else "fail"
     return {
-        "status": status,
+        "status": "pass" if not errors else "fail",
+        "profile": profile,
         "errors": sorted(set(errors)),
         "warnings": sorted(set(warnings)),
         "inspected": sorted(set(inspected)),
+        "portability": portability,
     }
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run structural quality gates for a skill package.")
+    parser = argparse.ArgumentParser(description="Run structural and portability gates for a skill package.")
     parser.add_argument("target", help="Path to a skill folder")
-    parser.add_argument("--json", dest="json_path", help="Optional path to write JSON report")
+    parser.add_argument("--profile", choices=["portable", "openai"], default="portable")
+    parser.add_argument("--json", dest="json_path", help="Optional JSON output path")
     args = parser.parse_args()
 
-    report = run_gate(Path(args.target).resolve())
+    report = run_gate(Path(args.target).resolve(), args.profile)
     if args.json_path:
-        Path(args.json_path).write_text(json.dumps(report, indent=2), encoding="utf-8")
-
-    print(json.dumps(report, indent=2))
+        out = Path(args.json_path)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["status"] == "pass" else 1
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

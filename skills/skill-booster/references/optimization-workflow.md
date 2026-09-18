@@ -4,57 +4,95 @@ Use this ordered workflow for every target skill. If a stop condition applies, r
 
 ## Phase 0: Intake
 
-Capture target path/zip, mode, final artifact, writable scope, blocked paths, known failures, evaluator, language/output conventions, and user-declared read-only files. For “full optimization”, use `apply-optimization`, then validation and package when gates pass.
+Capture target path/zip, mode, final artifact, writable scope, blocked paths, known failures, evaluator, language/output conventions, requested hosts, and user-declared read-only files. Resolve host capabilities from `references/host-compatibility.md` instead of assuming a vendor runtime. For `full optimization`, use `apply-optimization`, then validation and package when gates pass.
 
 ## Phase 1: Preflight and inventory
 
 Run:
 
-```bash
-python scripts/validate_skill_booster.py --target <TARGET_SKILL_PATH>
+```text
+<PYTHON> scripts/validate_skill_booster.py --target <TARGET_SKILL_PATH>
 ```
 
-Inventory `SKILL.md`, `agents/`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, reports, generated files, and packages. Record risks and unavailable resources.
+When portability is requested or will be claimed:
+
+```text
+<PYTHON> scripts/validate_portability.py --target <TARGET_SKILL_PATH> --hosts <HOSTS>
+```
+
+Inventory `SKILL.md`, optional host adapters such as `agents/`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, reports, generated files, and packages. Host adapters may enhance one platform but cannot be required by the portable core. Record risks and unavailable resources.
 
 ## Phase 2: Baseline and freeze
 
-Use the strongest available evaluator: target validator/CI, `skill-benchmark`, harness, static validator, then planned evaluator. Freeze scenarios, expected outputs, benchmark inputs, scoring config, validator scripts, fixtures, generated baseline reports, and blocked paths. When activation scenarios are present and compatible, run `scripts/run_activation_harness.py` as deterministic schema/coverage evidence, not as live activation precision. Record score, gates, warnings, command, timestamp, hashes when practical.
+Use the strongest available evaluator: target validator/CI, `skill-benchmark`, harness, static validator, then planned evaluator. Freeze scenarios, expected outputs, benchmark inputs, scoring config, validator scripts, fixtures, generated baseline reports, and blocked paths. When external files or repository evidence materially determine hypotheses or acceptance, capture exact source bytes before analysis with `scripts/snapshot_sources.py`; prefer immutable revision/object reads for pinned VCS evidence. When activation scenarios are present and compatible, run `scripts/run_activation_harness.py` as deterministic schema/coverage evidence, not as live activation precision. Record score, gates, warnings, command, timestamp, source identity, and hashes when practical.
 
-## Phase 3: Specialist passes
+## Phase 3: Specialist passes and reproducibility routing
 
-Run or account for the passbook sequence, including `skill-hypothesis-discovery` for evidence-based hypothesis selection and `skill-change-gate` for candidate acceptance and final regression checks. If the user supplies an explicit required specialist sequence, invocation is mandatory for every available listed specialist; checklist-only is allowed only when the specialist is unavailable, blocked, unsafe, or not-applicable. Key order constraints:
+Run or account for the passbook sequence using the host-native dispatch mechanism. Specialist names are logical capabilities; do not embed or assume a vendor-private skill API. Key order constraints:
 
-1. `skill-creator-juiced` and architecture decisions before broad text rewrites.
-2. Run `skill-benchmark` and `skill-harness` before `skill-hypothesis-discovery` whenever possible, so discovery uses actual score, scenario, and gate evidence instead of speculation.
-3. `skill-hypothesis-discovery` produces a deduplicated, ranked backlog and recommends the next 1-3 hypotheses; do not let it mutate target files.
-4. `skill-improver` tests selected bounded hypotheses, then `skill-change-gate` reviews candidate acceptance risk before broader conclusions are treated as accepted.
-5. `skill-prompt-and-activation-review` and `prompt-architect` before consistency/doc/code/security passes.
-6. `skill-testing-and-validation` before cleanup or compression.
-7. `skill-token-efficient` only after behavior, safety, architecture, docs, consistency, validation, and candidate gates are stable; closure checks total, file, and matching-section deltas.
-8. Revalidate after compression, then harden, rerun final `skill-change-gate`, benchmark, close with `skill-improver`, and finish with final token-efficiency audit/validate.
+1. `skill-creator-juiced` and architecture-governance decisions precede broad rewrites.
+2. Run initial `skill-benchmark` and `skill-harness` before the reproducibility gate whenever possible.
+3. Evaluate `references/reproducibility-routing.md` and write one routing decision before hypothesis discovery. Validate it:
+
+```text
+<PYTHON> scripts/validate_reproducibility_decision.py <DECISION_JSON>
+```
+
+4. If the state is `invoke-audit`, invoke `reproducibility-engineer` in `audit-only`; its ceiling/variability/control findings feed `skill-hypothesis-discovery`. If the state is `invoke-apply`, invoke it in `apply` only for the explicit bounded reproducibility batch, then run `skill-change-gate` before acceptance. `not-applicable`, `blocked`, and `unavailable` require evidence and do not count as invocation.
+5. `skill-hypothesis-discovery` produces a deduplicated ranked backlog from benchmark, harness, reproducibility findings when applicable, and the remaining specialist evidence; it does not mutate target files.
+6. `skill-improver` tests selected bounded hypotheses not already owned by an `invoke-apply` reproducibility batch; `skill-change-gate` reviews candidate acceptance before broader conclusions are accepted.
+7. Run prompt/activation, consistency, docs, code/security/testing, cleanup, and token passes in passbook order. Revalidate after compression, then harden, run final `skill-change-gate`, benchmark, improver closure, and final token-efficiency closure.
+
+If the user supplies an explicit required specialist sequence, actual invocation is mandatory for every available listed specialist; checklist-only is allowed only when unavailable, blocked, unsafe, or not-applicable. Reconcile before completion/package claims.
 
 ## Phase 4: Patch discipline
 
-Apply one bounded hypothesis per patch batch, selected from the discovery backlog or supplied by the user. Keep `SKILL.md` compact; move branch details to references; use scripts only for deterministic validation/packaging; keep templates/assets only when operational or intentionally retained. Do not alter frozen evaluator inputs, fixtures, expected outputs, generated evidence, secrets, old zips, or unrelated files.
+Apply one bounded hypothesis per patch batch. Keep `SKILL.md` compact; move branch details to references; use scripts only for deterministic validation/packaging; keep templates/assets only when operational or intentionally retained. Do not alter frozen evaluator inputs, fixtures, expected outputs, generated evidence, secrets, old zips, or unrelated files.
 
-## Phase 5: Validate, package, and close
+For reproducibility-owned work:
 
-After each material change, rerun the frozen evaluator, affected validators, and `skill-change-gate` or local checklist. Before final report or packaging, build the required specialist ledger and run `python scripts/validate_specialist_reconciliation.py --ledger <LEDGER_JSON>` when the user provided a sequence. If discovery finds no viable mutation, report no-mutation unless required repairs exist. After cleanup/compression, rerun validators, script syntax/smoke checks, link/package checks, final `skill-change-gate`, final benchmark, and token audit with local-regression review.
+- `audit-only` does not mutate; route findings into the normal backlog.
+- `apply` owns only the selected reproducibility transformation batch.
+- Do not duplicate the same patch under both `reproducibility-engineer` and `skill-improver`.
+- After a reproducibility `apply` batch, run the same target validators and candidate `skill-change-gate` used for other material patches.
 
-Package only when validation passes. `scripts/package_skill.py` must use the booster-owned validator, not require every target skill to carry booster scripts, and must exclude generated evidence, reports, caches, old zips, and control artifacts from the archive.
+## Phase 5: Validate, freeze, package, and close
 
-Package command:
+After each material change, rerun the frozen evaluator, affected validators, and `skill-change-gate` or local checklist. Before final report or packaging, validate any explicit specialist reconciliation ledger and reverify any material source snapshot. If the live source changed, evaluate only the captured snapshot or explicitly invalidate/re-baseline the experiment. If discovery finds no viable mutation, report no-mutation unless required repairs exist. After cleanup/compression, rerun validators, script syntax/smoke checks, link/package checks, final `skill-change-gate`, final benchmark, and token audit with local-regression review.
 
-```bash
-python scripts/package_skill.py --target <TARGET_SKILL_PATH> --output <OUTPUT_DIR>/skill.zip --report <REPORT_DIR>/package-validation.json
+After the last passing final gate, freeze the candidate outside the target folder:
+
+```text
+<PYTHON> scripts/freeze_candidate.py freeze \
+  --target <TARGET_SKILL_PATH> \
+  --out <WORK_DIR>/candidate-manifest.json
 ```
 
-When an explicit required sequence was supplied, package with the reconciliation gate:
+Any later target edit invalidates the freeze. Immediately before packaging:
 
-```bash
-python scripts/package_skill.py --target <TARGET_SKILL_PATH> --output <OUTPUT_DIR>/skill.zip --report <REPORT_DIR>/package-validation.json --reconciliation-ledger <LEDGER_JSON>
+```text
+<PYTHON> scripts/freeze_candidate.py verify \
+  --target <TARGET_SKILL_PATH> \
+  --manifest <WORK_DIR>/candidate-manifest.json
 ```
 
-Use an equivalent specialist packager only when the target lacks one. The archive must be named `skill.zip`, written outside the target folder, exclude caches/reports/secrets/old zips, and contain the final skill folder only.
+Package only when verification passes. `scripts/package_skill.py` validates/canonicalizes archive and receipt destinations before writing, rejects aliases, validates the target, excludes generated evidence/reports/caches/old zips/control artifacts, writes and verifies deterministic staged outputs, computes candidate/archive hashes, then commits `skill.zip` plus the success receipt as one recovery-aware transaction. A failed attempt must leave the previous archive and previous successful receipt untouched; incomplete rollback must preserve explicit recovery paths.
 
-Final closure reports baseline vs final, backlog summary, deltas, accepted/rejected hypotheses, commands, pass ledger, reconciliation counts/finalization decision, candidate/final `skill-change-gate`, package path, risks, next hypothesis, and token closure. If the final token pass mutates files, rerun affected validation/package gates; if local growth remains, document the semantic trade-off or do not close token-efficiency.
+```text
+<PYTHON> scripts/package_skill.py \
+  --target <TARGET_SKILL_PATH> \
+  --output <OUTPUT_DIR>/skill.zip \
+  --report <REPORT_DIR>/package-validation.json
+```
+
+When an explicit required sequence was supplied:
+
+```text
+<PYTHON> scripts/package_skill.py \
+  --target <TARGET_SKILL_PATH> \
+  --output <OUTPUT_DIR>/skill.zip \
+  --report <REPORT_DIR>/package-validation.json \
+  --reconciliation-ledger <LEDGER_JSON>
+```
+
+For a portability objective, add `--portability-hosts <HOSTS>` to packaging so the delivered candidate is rechecked before replacement. Final closure reports baseline vs final, source-snapshot/provenance verification when material, host capability/portability evidence, reproducibility decision/evidence, backlog summary, deltas, accepted/rejected hypotheses, commands, pass ledger, reconciliation counts/finalization decision, candidate/final `skill-change-gate`, candidate manifest hash, package hash, receipt version/stage, last-known-good/recovery status, risks, next hypothesis, and token closure. If any post-freeze target mutation occurs, invalidate closure evidence and rerun affected gates before packaging.
