@@ -19,7 +19,7 @@ Use `<skill-root>` for the root folder of this skill package. In this repository
 1. Identify the requested outcome, not just the nouns.
 2. Classify owner: nomia = governance/readiness; Mago = planning/spec/task decomposition; Magia = execution/repository work.
 3. Split mixed requests: do the nomia part; mark Mago, Magia, implementation, deployment, source-control, test, runner, branch, commit, and PR parts untouched.
-4. Before repository-facing writes require `BOARD_ROOT`, `board_id`, `cycle_version`; require `SPEC_PACKAGE_PATH` when a selected spec package matters.
+4. Before repository-facing writes require `BOARD_ROOT`, `board_id`, `year`, `cycle_id`; require `SPEC_PACKAGE_PATH` when a selected spec package matters.
 5. Preserve owners, dates, deployment/review/validation/release facts as unknown unless supplied by user evidence or existing nomia artifacts.
 6. Select exactly one mode; defer other artifacts as not touched.
 
@@ -56,4 +56,4 @@ python <skill-root>/scripts/validate_skill_package.py --target <skill-root>
 python <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root>
 ```
 
-Prefer `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it reruns structural, activation, and golden gates before writing.
+After the gates pass in an isolated runner, record their exact outputs and the target-tree digest in external JSON evidence. Invoke a trusted protected copy of `scripts/package_skill.py --target <skill-root> --validation-evidence <evidence.json> --output <output-dir>/skill.zip`; the packager verifies the digest and never executes target validators.

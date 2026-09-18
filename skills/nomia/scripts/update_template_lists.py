@@ -11,6 +11,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from nomia_utils import SPEC_ID_RE
+
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover
@@ -18,7 +20,6 @@ except Exception:  # pragma: no cover
 
 
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:[-_./:][a-z0-9]+)*$")
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
 

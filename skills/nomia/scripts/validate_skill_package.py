@@ -12,7 +12,7 @@ from typing import Any
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
-REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals"]
+REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals", "tests"]
 REQUIRED_FILES = [
     "SKILL.md",
     "agents/openai.yaml",
@@ -40,7 +40,12 @@ REQUIRED_FILES = [
     "scripts/validate_skill_package.py",
     "scripts/validate_activation_scenarios.py",
     "scripts/validate_golden_examples.py",
+    "scripts/validate_identity_contract.py",
+    "scripts/validate_contract_preservation.py",
     "scripts/package_skill.py",
+    "tests/original-contract.json",
+    "tests/test_identity_model.py",
+    "assets/icon.svg",
     "examples/activation-scenarios.json",
     "evals/activation-boundary-scenarios.json",
 ]
@@ -163,6 +168,8 @@ def validate_skill_md(root: Path, errors: list[str]) -> None:
         "scripts/validate_skill_package.py",
         "scripts/validate_activation_scenarios.py",
         "scripts/validate_golden_examples.py",
+        "scripts/validate_identity_contract.py",
+        "scripts/validate_contract_preservation.py",
         "scripts/package_skill.py",
         "references/package-validation.md",
     ]
@@ -336,6 +343,9 @@ def validate_harness_scenarios(root: Path, errors: list[str]) -> None:
 def validate_package_hygiene(root: Path, errors: list[str]) -> None:
     for path in sorted(root.rglob("*")):
         rel = path.relative_to(root).as_posix()
+        if path.is_symlink():
+            errors.append(f"symbolic link is not allowed in the skill package: {rel}")
+            continue
         if any(rel == name or rel.startswith(name + "/") for name in GENERATED_OR_BLOCKED_DIR_NAMES):
             errors.append(f"blocked generated/cache path present: {rel}")
             continue

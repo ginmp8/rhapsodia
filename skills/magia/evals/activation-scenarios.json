@@ -32,7 +32,7 @@
       "id": "a003",
       "type": "should_activate",
       "category": "should_activate",
-      "prompt": "validate the board docs for board_id onboarding and cycle_version v1 after the current task execution",
+      "prompt": "validate the board docs for board_id onboarding and cycle_id v1 after the current task execution",
       "expected_behavior": "Use MAGIA validation tooling for the concrete board and report pass/fail evidence without changing planning intent.",
       "acceptance_criteria": [
         "selects MAGIA",
@@ -254,7 +254,7 @@
       "id": "e004",
       "type": "edge_case",
       "category": "edge_case",
-      "prompt": "use existing validation evidence to mark a task done, but the manifest and catalog disagree",
+      "prompt": "use existing validation evidence to mark a task done, but the manifest and registry disagree",
       "expected_behavior": "Attempt only narrow mechanical healing if evidence supports it; otherwise stop and report execution-state drift.",
       "acceptance_criteria": [
         "stops or blocks before unsafe mutation",

@@ -5,6 +5,7 @@
 
 schema_version: 1
 spec_id: "<spec_id_or_null_for_off_repository_draft>"
+spec_id_provenance: "<spec_id_evidence_reference_or_null>"
 request:
   title: "<request_title_or_null>"
   requester: "<requester_or_null>"

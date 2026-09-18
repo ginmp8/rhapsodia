@@ -1,17 +1,18 @@
-﻿# Discovery Mode
+# Discovery Mode
 
 ## Canonical Rules
 
-- `BOARD_ROOT` is required for discovery artifacts.
-- Use prompt-provided `BOARD_ROOT` when present; otherwise derive it from canonical-paths.md.
-- No spec package path is active in `discovery`.
+- `BOARD_ROOT` is required for discovery artifacts and must contain `cycle.yaml`.
+- Use prompt-provided `BOARD_ROOT` when present; otherwise derive it from canonical-paths.md with concrete `board_id`, `year`, and `cycle_id`.
+- No spec package path or registry identity is active in `discovery`.
 - Keep discovery-state.json, discovery-index.yaml, and `candidates/` under `BOARD_ROOT` only.
+- Old layouts are read-only inputs to `adapt`, never discovery write targets.
 
 Use this mode for iterative repository scanning. It is the upstream evidence stage that feeds `order`; it is not a loose brainstorming pass.
 
 ## Discovery Workflow
 
-1. Select or create the resolved `BOARD_ROOT` from `references/canonical-paths.md`, containing discovery-state.json, discovery-index.yaml, and candidate docs under `candidates/`.
+1. Select or create the resolved `BOARD_ROOT` from `references/canonical-paths.md`, containing cycle.yaml, discovery-state.json, discovery-index.yaml, and candidate docs under `candidates/`.
 2. Load only the current frontier batch, existing discovery artifacts, and repository facts needed to classify what those files reveal.
 3. Update discovery-state.json with frontier progress, file coverage, and next-frontier decisions.
 4. Update discovery-index.yaml with stable candidate entries and candidate status transitions.
@@ -30,14 +31,14 @@ Discovery is authoritative only for upstream evidence such as:
 Discovery must not assign:
 
 - `spec_id`
-- `order`
-- `cycle_version`
+- `cycle_id`
 - `feature_version`
+- priority, dependency order, or `order_hint`
 
 Discovery must not create:
 
-- spec-catalog.yaml
-- define-queue.yaml
+- registry records
+- generated spec-catalog.yaml or define-queue.yaml projections
 - define package artifacts such as manifest.yaml, prd.md, technical-design.md, tasks.md, notes.md, or validation.md
 
 ## Provisional Identity
@@ -48,7 +49,7 @@ When a likely capability boundary exists, prefer a provisional `feature_key` tha
 - kebab-case
 - stable enough to survive ordering
 
-Do not force a provisional id when the boundary is still ambiguous.
+Do not force a provisional id when the boundary is still ambiguous. Discovery records capability evidence; `order` creates immutable spec identity.
 
 ## Discovery Artifacts
 
@@ -76,8 +77,8 @@ Use discovery to decide whether work should stay upstream or move downstream.
 Hand off downstream only when the evidence is strong enough:
 
 - stay in discovery if boundaries are still ambiguous
-- move to `order` when discovery can support sequencing and dependency judgment for new work
-- move to `refine` only when an already-defined package stays valid and needs bounded documentation updates
+- move to `order` when discovery can support identity, dependency, priority, and package-shape judgment for new work
+- move to `refine` only when an already-defined registry-backed package stays valid and needs bounded documentation updates
 
 Do not skip `order` for new package creation, and do not use discovery to fake certainty that belongs to later phases.
 
@@ -87,6 +88,6 @@ If the frontier is blocked:
 
 - record the blocker explicitly
 - preserve the evidence gathered so far
-- avoid inventing boundaries or sequence facts to keep momentum
+- avoid inventing boundaries, identities, dependencies, or ordering facts to keep momentum
 
 Truthful ambiguity is better than unstable structure.

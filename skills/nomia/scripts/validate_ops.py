@@ -4,15 +4,21 @@
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 from typing import Any
 
-from nomia_utils import has_unresolved_template_token, is_iso_date, is_missing, load_yaml_mapping, scan_unresolved_template_tokens, unique
+from nomia_utils import (
+    has_unresolved_template_token,
+    is_iso_date,
+    is_missing,
+    load_yaml_mapping,
+    scan_unresolved_template_tokens,
+    unique,
+    validate_id_provenance,
+    validate_spec_id_format,
+)
 
-
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
 VALID_SOURCES = {
     "unknown",
     "github_issue",
@@ -284,8 +290,14 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
         errors.append("`schema_version` must be 1")
 
     spec_id = data.get("spec_id")
-    if spec_id not in (None, "") and not has_unresolved_template_token(spec_id) and not SPEC_ID_RE.match(str(spec_id)):
-        errors.append("`spec_id` must be null or use `specNNN` format")
+    spec_id_error = validate_spec_id_format(spec_id)
+    if spec_id_error:
+        errors.append("`spec_id` must be null for an off-repository draft or use spec-YYYY-MM-DD-feature-key format")
+    provenance_error = validate_id_provenance(
+        data.get("spec_id_provenance"), id_value=spec_id, field_name="spec_id_provenance"
+    )
+    if provenance_error:
+        errors.append(f"`{provenance_error}`")
 
     request = as_map(data, "request", errors)
     ownership = as_map(data, "ownership", errors)

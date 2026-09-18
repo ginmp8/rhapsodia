@@ -29,8 +29,8 @@ Admin users have a beta workflow for reviewing and adjusting saved-query visibil
 
 Evidence status: completed.
 
-- Delivery evidence: `ops.yaml` marks `spec022` done for beta scope.
-- Mago traceability: feature key `saved-query-sharing-controls`, candidate spec `spec022`.
+- Delivery evidence: `ops.yaml` marks `spec-2026-04-20-saved-query-sharing-controls` done for beta scope.
+- Mago traceability: feature key `saved-query-sharing-controls`, candidate spec `spec-2026-04-20-saved-query-sharing-controls`.
 - Execution evidence: `input-magia-execution-evidence.yaml` reports completed execution and passed validation.
 - Release evidence: not recorded.
 

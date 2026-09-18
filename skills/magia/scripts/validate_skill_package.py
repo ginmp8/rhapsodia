@@ -12,6 +12,10 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+from validate_boundary import collect_errors as collect_boundary_errors
+from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
+from validate_planning_handoff_contract import collect_errors as collect_planning_handoff_errors
+
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 SCAFFOLD_RE = re.compile(r"(\[" + "TO" + "DO" + r"\b|\b" + "TO" + "DO" + r"\s*:|replace with " + "actual|this is a " + "placeholder)", re.IGNORECASE)
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -201,6 +205,7 @@ def validate_target(target: Path) -> dict[str, Any]:
     required_paths = [
         "agents/openai.yaml",
         "references/canonical-paths.md",
+        "references/board-contract.md",
         "references/common-execution.md",
         "references/resource-map.md",
         "references/package-delivery.md",
@@ -214,6 +219,10 @@ def validate_target(target: Path) -> dict[str, Any]:
         "assets/templates/technical-gap-note.md.template",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "scripts/board_contract.py",
+        "scripts/validate_board_contract.py",
+        "scripts/validate_execution_readiness.py",
+        "scripts/validate_instruction_contract.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]
@@ -275,6 +284,15 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(validate_shared_artifact_boundaries(target))
     checks.append("shared artifact boundaries")
 
+    errors.extend(collect_instruction_contract_errors())
+    checks.append("instruction contract preservation")
+
+    errors.extend(collect_planning_handoff_errors(target))
+    checks.append("planning handoff contract")
+
+    errors.extend(collect_boundary_errors())
+    checks.append("runtime independence and ownership boundary")
+
     return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings, "checks": checks}
 
 
@@ -286,6 +304,10 @@ def zip_required_resources() -> list[str]:
         "references/package-delivery.md",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "scripts/board_contract.py",
+        "scripts/validate_board_contract.py",
+        "scripts/validate_execution_readiness.py",
+        "scripts/validate_instruction_contract.py",
         "scripts/package_skill.py",
         "scripts/validate_skill_package.py",
     ]

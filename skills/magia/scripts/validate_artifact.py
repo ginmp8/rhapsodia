@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dispatch MAGIA artifact validation without relying on manual validator selection."""
+"""Dispatch canonical MAGIA artifact validation."""
 
 from __future__ import annotations
 
@@ -7,58 +7,58 @@ import argparse
 import sys
 from pathlib import Path
 
+from magia_utils import parse_spec_id
 
-SPEC_ARTIFACTS = {"manifest.yaml", "prd.md", "tasks.md", "validation.md", "notes.md", "implementation-notes.md", "validation-evidence.md"}
+EXECUTION_ARTIFACTS = {"implementation-notes.md", "validation-evidence.md"}
+SHARED_SPEC_ARTIFACTS = {"manifest.yaml", "prd.md", "tasks.md", "validation.md", "notes.md", "technical-design.md"}
 
 
 def infer_board_context(path: Path) -> tuple[Path, Path, str | None]:
-    parts = list(path.parts)
-    lower_parts = [part.lower() for part in parts]
+    parts = list(path.resolve().parts)
     try:
-        docs_index = lower_parts.index("docs")
+        docs_index = [part.lower() for part in parts].index("docs")
     except ValueError as exc:
         raise ValueError(f"{path}: path is outside docs/boards/") from exc
-
-    if len(parts) <= docs_index + 3 or lower_parts[docs_index + 1] != "boards":
-        raise ValueError(f"{path}: path is outside docs/boards/<board_id>/<cycle_version>/")
-
+    expected = ["docs", "boards"]
+    if [part.lower() for part in parts[docs_index : docs_index + 2]] != expected or len(parts) <= docs_index + 5:
+        raise ValueError(f"{path}: path is outside docs/boards/<board_id>/<year>/cycles/<cycle_id>/")
+    if parts[docs_index + 4].lower() != "cycles":
+        raise ValueError(f"{path}: path is outside docs/boards/<board_id>/<year>/cycles/<cycle_id>/")
     repo_root = Path(*parts[:docs_index])
-    board_root = Path(*parts[: docs_index + 4])
+    board_root = Path(*parts[: docs_index + 6])
     spec_id: str | None = None
-    if len(parts) > docs_index + 5 and lower_parts[docs_index + 4] == "specs":
-        spec_id = parts[docs_index + 5]
+    if len(parts) > docs_index + 7 and parts[docs_index + 6].lower() == "specs":
+        spec_id = parts[docs_index + 7]
+        parse_spec_id(spec_id)
     return repo_root, board_root, spec_id
 
 
 def validate_one(path: Path) -> int:
-    from validate_execution_state import main as validate_execution_state_main
-    from validate_repo_board import main as validate_repo_board_main
-
+    from validate_execution_state import main as validate_execution_state
+    from validate_repo_board import main as validate_repo_board
     repo_root, board_root, spec_id = infer_board_context(path)
-    board_result = validate_repo_board_main([str(repo_root), "--board-root", str(board_root)])
-    if board_result != 0:
-        return board_result
-
-    if path.name in SPEC_ARTIFACTS:
+    rc = validate_repo_board([str(repo_root), "--board-root", str(board_root)])
+    if rc:
+        return rc
+    if path.name in EXECUTION_ARTIFACTS:
         if not spec_id:
-            print(f"ERROR: {path}: could not infer spec_id from path")
+            print(f"ERROR: {path}: could not infer canonical spec_id")
             return 1
-        return validate_execution_state_main([str(board_root), "--spec-id", spec_id])
-
+        return validate_execution_state([str(board_root), "--spec-id", spec_id])
+    if path.name in SHARED_SPEC_ARTIFACTS and not spec_id:
+        print(f"ERROR: {path}: shared spec artifact is outside a canonical spec package")
+        return 1
     return 0
 
 
-def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Validate a MAGIA artifact with the canonical validator for its template family.")
-    parser.add_argument("paths", nargs="+", help="Artifact path(s) to validate.")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Validate MAGIA artifacts through canonical board/state validators.")
+    parser.add_argument("paths", nargs="+")
     args = parser.parse_args(argv)
-
-    exit_code = 0
-    for raw_path in args.paths:
-        result = validate_one(Path(raw_path).resolve())
-        if result != 0:
-            exit_code = result
-    return exit_code
+    result = 0
+    for raw in args.paths:
+        result = max(result, validate_one(Path(raw).resolve()))
+    return result
 
 
 if __name__ == "__main__":

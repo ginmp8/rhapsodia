@@ -15,7 +15,7 @@ Use this reference whenever MAGIA executes from a MAGO package or updates contro
 | `notes.md` | MAGO planning notes | read-only planning context | Do not append new execution logs here. Use `implementation-notes.md`. |
 | `implementation-notes.md` | downstream execution evidence | MAGIA-owned | Record execution log, actual implementation facts, deviations, blockers, decisions, and handoffs. |
 | `manifest.yaml` | MAGO package identity and planning defaults | execution-state sync only | Update execution status, phase, and `last_execution` only from current truthful execution evidence. |
-| `spec-catalog.yaml` | MAGO catalog and planning order; nomia delivery status is separate | execution-state sync only | Sync only technical execution status. Do not set delivery/governance/release status. |
+| `registry/<spec_id>.yaml` | planning identity, dependencies, handoff, and planning status; nomia delivery status is separate | execution-state sync only | Update only evidence-backed technical execution `status`. Preserve identity, versions, dependencies, supersession, handoff, priority, order hint, and provenance. |
 
 Downstream evidence boundary: nomia may read MAGIA-owned evidence for feature reports, release notes, governance blockers, or delivery risk. MAGIA must keep the evidence factual and source-level; nomia owns the stakeholder-facing interpretation.
 
@@ -25,14 +25,14 @@ Downstream evidence boundary: nomia may read MAGIA-owned evidence for feature re
 - Keep task definitions stable; completion is represented by toggling an existing checkbox only after validation proves done.
 - Write validation outcomes to `validation-evidence.md`, not `validation.md`.
 - Write execution history to `implementation-notes.md`, not `notes.md`.
-- Update `manifest.yaml` and `spec-catalog.yaml` only for technical execution state backed by current evidence.
+- Update `manifest.yaml` and the matching `registry/<spec_id>.yaml` only for technical execution state backed by current evidence.
 - Stop and hand off to MAGO when safe execution requires changing PRD, acceptance criteria, architecture intent, task definitions, ordering, dependencies, or metadata.
 - Hand off to nomia for delivery commitments, release posture, stakeholder communications, roadmap status, owner, or accepted business risk.
 - Do not create governance RFCs, release notes, portfolio reports, stakeholder briefs, roadmap updates, or delivery status records; write execution evidence that nomia can consume instead.
 
 ## Template Boundary
 
-MAGIA intentionally does not carry planning templates for `spec-catalog.yaml`, `manifest.yaml`, `tasks.md`, `notes.md`, or `validation.md`. Those templates belong to MAGO. MAGIA may read those generated files and may update only the narrow execution-state fields allowed above. Use `scripts/write_artifact_scaffold.py` only for MAGIA-owned artifacts such as `implementation-notes.md`, `validation-evidence.md`, `technical-gap-note.md`, and implementation/runtime notes.
+MAGIA intentionally does not carry planning templates for `cycle.yaml`, `registry/<spec_id>.yaml`, `manifest.yaml`, `tasks.md`, `notes.md`, or `validation.md`. Those templates belong to MAGO. MAGIA may read those generated files and may update only the narrow execution-state fields allowed above. Use `scripts/write_artifact_scaffold.py` only for MAGIA-owned artifacts such as `implementation-notes.md`, `validation-evidence.md`, `technical-gap-note.md`, and implementation/runtime notes.
 
 ## Legacy Adapt Policy
 

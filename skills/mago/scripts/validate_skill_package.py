@@ -20,6 +20,7 @@ REQUIRED_FILES = (
     "agents/openai.yaml",
     "references/canonical-paths.md",
     "references/common-planning.md",
+    "references/concurrent-planning.md",
     "references/evidence-contract.md",
     "references/operating-rules.md",
     "references/validation-and-packaging.md",
@@ -30,11 +31,21 @@ REQUIRED_FILES = (
     "scripts/validate_evidence_contract.py",
     "scripts/validate_package.py",
     "scripts/validate_repo_board.py",
+    "scripts/validate_concurrent_board.py",
+    "scripts/validate_planning_execution_handoff.py",
+    "scripts/validate_generated_view_contract.py",
+    "scripts/create_planning_identity.py",
+    "scripts/render_registry_views.py",
+    "scripts/concurrent_model.py",
     "scripts/validate_skill_package.py",
     "scripts/write_artifact_scaffold.py",
+    "assets/templates/cycle.yaml.template",
+    "assets/templates/spec-registry-entry.yaml.template",
     "assets/templates/manifest.yaml.template",
     "assets/templates/tasks.md.template",
     "examples/activation-scenarios.json",
+    "tests/test_concurrency_model.py",
+    "tests/test_packaging_safety.py",
 )
 MODE_REFERENCES = (
     "adapt",
@@ -295,6 +306,22 @@ def validate_planning_template_boundaries(root: Path, result: ValidationResult) 
         if term in text:
             result.fail(f"notes.md.template must remain planning-only and must not contain `{term}`")
 
+
+def validate_semantic_contracts(root: Path, result: ValidationResult) -> None:
+    for script_name, label in (
+        ("validate_planning_execution_handoff.py", "planning-execution handoff"),
+        ("validate_generated_view_contract.py", "generated-view contract"),
+        ("validate_boundary.py", "boundary contract"),
+    ):
+        completed = subprocess.run(
+            [sys.executable, "-B", str(root / "scripts" / script_name), str(root)],
+            cwd=str(root), text=True, capture_output=True, check=False,
+        )
+        if completed.returncode != 0:
+            detail = (completed.stderr or completed.stdout).strip()
+            result.fail(f"{label} gate failed: {detail[-1200:]}")
+
+
 def compile_scripts(root: Path, result: ValidationResult) -> None:
     for path in sorted((root / "scripts").glob("*.py")):
         try:
@@ -303,6 +330,19 @@ def compile_scripts(root: Path, result: ValidationResult) -> None:
             result.compiled_scripts += 1
         except SyntaxError as exc:
             result.fail(f"python syntax validation failed for {path.relative_to(root).as_posix()}: {exc}")
+
+
+def validate_concurrency_tests(root: Path, result: ValidationResult) -> None:
+    completed = subprocess.run(
+        [sys.executable, "-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"],
+        cwd=str(root),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout).strip()
+        result.fail(f"concurrency model tests failed: {detail[-1000:]}")
 
 
 def validate_no_caches(root: Path, result: ValidationResult) -> None:
@@ -329,7 +369,9 @@ def run(root: Path) -> ValidationResult:
     validate_activation_metrics(root, result)
     validate_evidence_controls(root, result)
     validate_planning_template_boundaries(root, result)
+    validate_semantic_contracts(root, result)
     compile_scripts(root, result)
+    validate_concurrency_tests(root, result)
     validate_no_caches(root, result)
     return result
 

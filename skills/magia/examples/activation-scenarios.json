@@ -26,7 +26,7 @@
   {
     "id": "A003",
     "category": "should_activate",
-    "prompt": "validate the board docs for board_id onboarding and cycle_version v1 after the current task execution",
+    "prompt": "validate the board docs for board_id onboarding and cycle_id v1 after the current task execution",
     "expected_activation": true,
     "expected_behavior": "Use MAGIA validation tooling for the concrete board and report pass/fail evidence without changing planning intent.",
     "actual_activation": null,
@@ -230,7 +230,7 @@
   {
     "id": "E004",
     "category": "edge_case",
-    "prompt": "use existing validation evidence to mark a task done, but the manifest and catalog disagree",
+    "prompt": "use existing validation evidence to mark a task done, but the manifest and registry disagree",
     "expected_activation": true,
     "expected_behavior": "Attempt only narrow mechanical healing if evidence supports it; otherwise stop and report execution-state drift.",
     "actual_activation": null,

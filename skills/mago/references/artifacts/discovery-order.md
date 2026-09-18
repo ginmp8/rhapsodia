@@ -8,6 +8,7 @@ All layouts below derive from `BOARD_ROOT` in `references/canonical-paths.md`.
 
 ```text
 BOARD_ROOT/
+  cycle.yaml
   discovery-state.json
   discovery-index.yaml
   candidates/
@@ -41,28 +42,61 @@ BOARD_ROOT/
 
 ## Order Outputs
 
+Canonical order output is one independent registry record per spec. Aggregate catalog and queue files are generated projections only.
+
+### Order Source of Truth
+
 ```text
 BOARD_ROOT/
-  spec-catalog.yaml
-  define-queue.yaml
+  registry/
+    <spec_id>.yaml
 ```
 
-## define-queue.yaml
+Each registry file owns one ordered spec. Create new identities atomically through `scripts/create_planning_identity.py spec`; do not coordinate through a shared counter or central mutable list.
 
-- purpose: explicit handoff from `order` to downstream define preparation
-- required keys: `schema_version`, `cycle_version`, `entries`
-- each entry needs `spec_id`, `feature_key`, `title`, `handoff_status`, `downstream_mode`, `package_shape`, `source_candidates`, `seed_artifacts`, `define_target`, and `blockers`
-- populate `entries` with `scripts/update_template_lists.py <define-queue.yaml> --data <payload.yaml>`; do not hand-shape queue entries
-- set `define_target` to the repository-relative package path under `BOARD_ROOT/specs/<spec_id>/`
-- use `handoff_status` only from `ready_for_prepare_define`, `blocked`, or `needs_discovery`
+## registry/<spec_id>.yaml
+
+- purpose: canonical registration and define handoff for one planning item
+- required identity fields: `kind`, `spec_id`, `cycle_id`, `feature_key`, `created_at`
+- required planning fields: `feature_version`, `title`, `type`, `classification`, `status`, `priority`, `order_hint`
+- required dependency fields: `depends_on_features`, `depends_on_specs`
+- required lifecycle fields: `supersedes`, `superseded_by`
+- required handoff mapping: `status`, `downstream_mode`, `package_shape`, `source_candidates`, `seed_artifacts`, `blockers`
+- optional import traceability: `imported_from`
+- source candidates must resolve under the active `BOARD_ROOT/candidates/`
+- package target is derived as `BOARD_ROOT/specs/<spec_id>/`; do not store a second mutable identity
+- use handoff `status` only from `ready_for_prepare_define`, `blocked`, or `needs_discovery`
 - use `downstream_mode` only from `define`, `define-product`, or `define-tasks`
 - use `package_shape` only from `full`, `product_only`, or `tasks_only`
 - use `seed_artifacts` only from canonical package files: manifest.yaml, prd.md, technical-design.md, tasks.md, notes.md, validation.md
+
+## define-queue.yaml
+
+`define-queue.yaml` is a generated read-only view of registry handoff fields, not a writable queue source.
+
+## Generated Views
+
+`scripts/render_registry_views.py` creates external inspection/CI projections:
+
+```text
+<output>/spec-catalog.yaml
+<output>/define-queue.yaml
+```
+
+- templates document the complete generated schemas
+- generated views include `cycle_id` and a registry digest
+- ordering is deterministic from dependency topology, priority, order hint, creation timestamp, and spec id
+- never write generated views under `BOARD_ROOT`
+- never hand-edit generated views or synchronize their values back into registry/package state
 
 ## Cross-Stage Invariants
 
 - every `candidate_id` in discovery-index.yaml must be unique
 - every `candidate_doc` listed in discovery-index.yaml must exist under `BOARD_ROOT`
-- every `source_candidates` path in define-queue.yaml must exist and point to a discovery candidate doc under `BOARD_ROOT`
-- every `spec_id` in define-queue.yaml must exist in spec-catalog.yaml
-- never let define-queue.yaml claim a downstream mode or seed artifact set that the linked discovery evidence cannot already justify
+- every registry `source_candidates` path must exist and point to a discovery candidate doc under `BOARD_ROOT`
+- every registry filename and `spec_id` must agree with canonical identity format, and `feature_key` must agree with the ID feature segment
+- every package directory must have a matching registry record and matching manifest identity
+- every `feature_key` must be unique; distinct specs require distinct feature keys
+- every `depends_on_specs` value must resolve to a registry record and the dependency graph must be acyclic
+- never let a registry handoff claim a downstream mode or seed artifact set that linked discovery evidence cannot justify
+- generated catalog/queue views must reproduce registry state deterministically but remain noncanonical

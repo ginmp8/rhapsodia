@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Nomia</title>
+  <desc id="desc">Símbolo abstrato de governança inspirado no gorro de um gnomo, integrado a um painel de gestão com status e validação.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#173127"/><stop offset="1" stop-color="#090d1d"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fbbf24"/><stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#1d4034"/><stop offset="1" stop-color="#0d211c"/>
+    </linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="200%">
+      <feDropShadow dx="0" dy="14" stdDeviation="13" flood-color="#000" flood-opacity=".42"/>
+    </filter>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)" stroke="#34d399" stroke-width="12"/>
+
+  <!-- governance orbit -->
+  <path d="M89 301C59 179 144 73 264 72c119-1 203 106 171 228" fill="none" stroke="#34d399" stroke-opacity=".2" stroke-width="8" stroke-dasharray="14 20"/>
+  <circle cx="102" cy="180" r="13" fill="#60a5fa" stroke="#dbeafe" stroke-width="5" filter="url(#glow)"/>
+  <circle cx="260" cy="72" r="13" fill="#fbbf24" stroke="#fef3c7" stroke-width="5" filter="url(#glow)"/>
+  <circle cx="410" cy="180" r="13" fill="#fb7185" stroke="#ffe4e6" stroke-width="5" filter="url(#glow)"/>
+
+  <!-- abstract gnome-cap N: identity without a literal character -->
+  <g filter="url(#shadow)">
+    <path d="M107 293C145 208 177 128 241 65c12-12 33-5 35 12 8 59 60 98 115 158-76-18-189 5-284 58Z" fill="url(#cap)" stroke="#7c2d12" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M136 286c59-30 132-49 205-49 31 0 56 8 76 23-87 5-169 27-244 69-19 11-43 4-54-15-7-12 0-22 17-28Z" fill="#c2410c" stroke="#fed7aa" stroke-width="9" stroke-linejoin="round"/>
+    <!-- negative-line N -->
+    <path d="M177 256v-71l83 54v-97" fill="none" stroke="#fff7d6" stroke-width="19" stroke-linecap="round" stroke-linejoin="round" opacity=".96"/>
+  </g>
+
+  <!-- management board -->
+  <g transform="translate(117 294)" filter="url(#shadow)">
+    <rect width="278" height="143" rx="28" fill="url(#panel)" stroke="#6ee7b7" stroke-width="9"/>
+    <path d="M94 1v141M183 1v141" stroke="#34d399" stroke-opacity=".28" stroke-width="5"/>
+
+    <!-- intake / backlog -->
+    <circle cx="47" cy="45" r="15" fill="#60a5fa" stroke="#dbeafe" stroke-width="5"/>
+    <path d="M26 89h42M26 111h58" stroke="#d1fae5" stroke-width="10" stroke-linecap="round"/>
+
+    <!-- roadmap / owner -->
+    <circle cx="139" cy="45" r="15" fill="#fbbf24" stroke="#fef3c7" stroke-width="5"/>
+    <path d="M116 89h46M116 111h31" stroke="#d1fae5" stroke-width="10" stroke-linecap="round"/>
+
+    <!-- governed / ready -->
+    <circle cx="229" cy="45" r="22" fill="#14532d" stroke="#86efac" stroke-width="6"/>
+    <path d="m218 45 8 9 17-20" fill="none" stroke="#bbf7d0" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M207 89h44M207 111h32" stroke="#d1fae5" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>
