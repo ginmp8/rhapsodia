@@ -11,12 +11,36 @@
 - Secondary: {{secondary_objective}}
 - Assumptions: {{assumptions}}
 
+## Host Compatibility
+- Requested hosts: {{requested_hosts}}
+- Resolved capabilities: {{host_capabilities}}
+- Python launcher: {{python_launcher}}
+- Portable-core validation: {{portable_core_validation}}
+- Host adapter validation: {{host_adapter_validation}}
+- Blocked/unavailable capabilities: {{host_capability_blocks}}
+
 ## Baseline
 - Evaluator: {{baseline_evaluator}}
 - Score: {{baseline_score}}
 - Gates: {{baseline_gates}}
 - Frozen inputs: {{frozen_inputs}}
 - Blocked paths: {{blocked_paths}}
+
+## Source Integrity
+- Snapshot manifest: {{source_snapshot_manifest}}
+- Snapshot identity SHA-256: {{source_snapshot_sha256}}
+- Pinned revision/path: {{source_pinned_revision}}
+- Final verification: {{source_snapshot_verification}}
+- Re-baselined: {{source_rebaselined}}
+
+## Reproducibility Routing
+- State: {{reproducibility_state}}
+- Selected mode: {{reproducibility_mode}}
+- Specialist status: {{reproducibility_specialist_status}}
+- Downstream owner: {{reproducibility_downstream_owner}}
+- Material signals: {{reproducibility_material_signals}}
+- Decision validator: {{reproducibility_decision_validation}}
+- Ceiling/findings: {{reproducibility_findings}}
 
 ## Specialist Pass Ledger
 | Pass | Status | Execution type | Evidence | Notes |
@@ -65,6 +89,11 @@
 ## Changes Applied
 {{changes_applied}}
 
+## Portability Evidence
+| Host/profile | Status | Adapter | Evidence/limitations |
+|---|---|---|---|
+{{portability_rows}}
+
 ## Validation Evidence
 | Command or check | Status | Output or report |
 |---|---|---|
@@ -82,9 +111,21 @@
 - Final token-efficiency closure: {{final_token_efficiency_closure}}
 - Gates: {{final_gates}}
 
+## Final Freeze
+- Manifest: {{candidate_manifest}}
+- Freeze verification: {{candidate_freeze_verification}}
+- Candidate SHA-256: {{candidate_sha256}}
+- Edited after freeze: {{edited_after_freeze}}
+
 ## Package
 - Archive: {{archive_path}}
 - Size: {{archive_size}}
+- Candidate SHA-256: {{candidate_sha256}}
+- Archive SHA-256: {{archive_sha256}}
+- Receipt version/stage: {{package_receipt_identity}}
+- Atomic replace: {{archive_atomic_replace}}
+- Last-known-good preserved on failure: {{last_good_preserved}}
+- Recovery paths: {{package_recovery_paths}}
 - Validation: {{archive_validation}}
 
 ## Remaining Risks

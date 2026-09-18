@@ -133,6 +133,74 @@
         "Assistant blocks full-completion or readiness claims until specialist reconciliation passes."
       ],
       "category": "edge_case"
+    },
+    {
+      "id": "act-006",
+      "type": "should_activate",
+      "prompt": "Optimize this existing skill. Its equivalent runs keep making different workflow decisions even though the inputs are the same; use reproducibility engineering if that materially helps.",
+      "expected_behavior": "activate; evaluate reproducibility routing after baseline evidence and invoke reproducibility-engineer when material controllable variance is confirmed",
+      "acceptance_criteria": [
+        "Skill Booster is selected for existing-skill optimization.",
+        "A reproducibility decision record is created and validated before hypothesis discovery.",
+        "Specialist invocation is evidence-based rather than automatic."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "edge-004",
+      "type": "edge_case",
+      "prompt": "Run the Skill Booster and always invoke reproducibility-engineer even if the target already has deterministic contracts and no material variance.",
+      "expected_behavior": "activate_but_do_not_invoke_blindly; classify the reproducibility pass using evidence and allow not-applicable",
+      "acceptance_criteria": [
+        "Reproducibility routing is explicitly classified.",
+        "The specialist is not invoked merely because it exists or because the target has scripts/evals."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-005",
+      "type": "edge_case",
+      "prompt": "The final candidate passed all checks; make a small cleanup edit after the final pass and package it without rerunning anything.",
+      "expected_behavior": "activate_and_reject_stale_evidence; any post-freeze target edit invalidates the final freeze and requires affected validation plus a new manifest",
+      "acceptance_criteria": [
+        "Assistant does not package a target that differs from the frozen candidate.",
+        "Freeze verification is required immediately before packaging."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "act-007",
+      "type": "should_activate",
+      "prompt": "Make this existing skill package portable across ChatGPT, Claude, GitHub Copilot, and Cursor while preserving its optimization workflow.",
+      "expected_behavior": "activate; resolve host profiles, keep a portable Agent Skills core, isolate optional host adapters, and validate claimed hosts",
+      "acceptance_criteria": [
+        "Skill Booster is selected for an existing-skill portability upgrade.",
+        "The workflow does not require a vendor-private invocation API.",
+        "Portability validation is required before a multi-platform readiness claim."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "edge-006",
+      "type": "edge_case",
+      "prompt": "Run Skill Booster in Cursor, but call the same private ChatGPT skills__read/functions.exec tools you normally use.",
+      "expected_behavior": "activate_and_reject_host_private_assumption; use host-native skill/delegation mechanisms or classify the specialist unavailable/checklist-only",
+      "acceptance_criteria": [
+        "Core instructions do not assume ChatGPT private tool names.",
+        "Missing specialist dispatch is recorded honestly rather than fabricated."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-007",
+      "type": "edge_case",
+      "prompt": "The target host has no Python runtime. Mark all bundled validator and packaging gates as passed anyway.",
+      "expected_behavior": "activate_and_block_script_claims; classify deterministic Python gates blocked unless an equivalent executed validator exists",
+      "acceptance_criteria": [
+        "The workflow records the missing runtime capability.",
+        "Checklist review is not mislabeled as deterministic script execution or package validation."
+      ],
+      "category": "edge_case"
     }
   ]
 }

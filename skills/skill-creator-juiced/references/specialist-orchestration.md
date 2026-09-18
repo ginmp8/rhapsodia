@@ -1,62 +1,72 @@
 # Specialist Orchestration
 
-Use this reference to coordinate specialist skills during creation, upgrade, and finalization of a skill package.
-
-## Principle
-
-Specialists are not decorative. Call or apply a specialist only when it owns a real risk, artifact, or gate in the package. When multiple specialists apply, use them in the order below so early design defects do not pollute later validation.
+Use this reference to select and sequence specialist passes. Specialists are owners of bounded concerns, not decorative checklist items.
 
 ## Specialist Map
 
-| Phase | Specialist | Use when | Output expected |
+| Phase | Specialist | Use when | Ownership |
 |---|---|---|---|
-| requirement shaping | `prompt-architect` | the user's idea is a rough prompt, reusable instruction set, or ambiguous behavior specification | refined prompt/instruction contract, success criteria, scenarios |
-| repository context | `context-architect` | the skill depends on a repo, codebase, package, existing scripts, or implementation patterns | context map, source truth, impacted files, validation plan |
-| code discipline | `karpathy-guidelines` | writing or reviewing bundled scripts, validators, examples, or technical implementation guidance | minimal code, evidence labels, validation plan, anti-overengineering checks |
-| package architecture | `skill-package-architecture-review` | deciding one skill vs modes vs router vs split, resource layout, progressive loading | architecture decision and resource map |
-| activation | `skill-prompt-and-activation-review` | frontmatter description, boundaries, stop conditions, activation/non-activation cases | improved trigger text, negative cases, ambiguity findings |
-| documentation | `documentation-quality` | writing or reviewing references, readmes, script docs, examples, templates | clearer docs, verified claims, link/file checks |
-| testing | `skill-testing-and-validation` | bundled code, validators, packaging scripts, eval files, command discovery | baseline, commands, pass/fail evidence, minimal fixes |
-| security | `security-and-governance-review` | scripts, tool authority, sensitive data, dependencies, governance, compliance, responsible-ai risk | findings, severity, safe remediation plan, residual risk |
-| consistency | `skill-consistency-repair` | contradictions, orphaned resources, stale scaffold, broken links, unsupported claims | repaired contract and validation evidence |
-| cleanup | `skill-cleanup-and-simplification` | placeholder files, duplicate guidance, caches, old zips, unintegrated resources | classified cleanup and package hygiene |
-| token efficiency | `skill-token-efficient` | instructions are bloated or repeated after behavior is stable | reduced token cost with preserved semantics |
-| harness | `skill-harness` | repeatable gate, scenario suite, evaluator, package evidence, or audit harness is needed | harness map, scenarios, validators, package gates |
-| benchmark | `skill-benchmark` | user wants scorecard, maturity report, comparison, or publish-readiness | benchmark report, score, measured/planned distinction |
-| hypothesis discovery | `skill-hypothesis-discovery` | redesign, quality-upgrade, saturated evidence, unclear next experiment, or no bounded hypothesis supplied before measured improvement | evidence-backed hypothesis backlog, top 3-5 candidates, next 1-3 tests, no-mutation or gather-evidence recommendation |
-| measured improvement | `skill-improver` | an evaluator is frozen and a bounded hypothesis can be tested | baseline/final metric, accepted/rejected hypothesis |
-| change acceptance | `skill-change-gate` | a material update, redesign, cleanup, hardening, or token-efficiency candidate must be accepted without regression | pass/pass-with-warnings/fail decision, blocking regressions, accepted trade-offs |
-| final hardening | `skill-hardening` | existing generated package needs maturity upgrade, validation, and uploadable delivery | hardening changes, gates, package readiness |
+| requirement shaping | `prompt-architect` | behavior/specification is ambiguous | prompt/instruction contract and success criteria |
+| repository context | `context-architect` | skill depends on a codebase or existing implementation | source-truth and impact map |
+| code discipline | `karpathy-guidelines` | writing/reviewing bundled technical code | minimal implementation and validation discipline |
+| package architecture | `skill-package-architecture-review` | cohesion, modes/router/split, resource layout | package architecture decision |
+| activation | `skill-prompt-and-activation-review` | trigger, boundaries, stop conditions, output contract | activation/boundary quality |
+| reproducibility | `reproducibility-engineer` | material controllable variance exists | contracts, deterministic controls, validators, freeze/receipt mechanisms |
+| documentation | `documentation-quality` | references, examples, usage docs need quality review | human-readable documentation |
+| testing | `skill-testing-and-validation` | scripts, validators, packagers, eval files need execution evidence | test/validator evidence and minimal repairs |
+| security | `security-and-governance-review` | scripts, tool authority, data, dependencies, or governance risk | security/governance findings |
+| consistency | `skill-consistency-repair` | contradictions, broken links, orphaned resources, ownership drift | package consistency |
+| cleanup | `skill-cleanup-and-simplification` | stale scaffold, duplicate guidance, caches, obsolete files | package hygiene |
+| token efficiency | `skill-token-efficient` | stabilized instructions remain bloated/repetitive | context reduction with semantics preserved |
+| harness | `skill-harness` | repeatable scenario execution, baseline arms, holdouts, or evidence capture are needed | harness and evidence capture |
+| benchmark | `skill-benchmark` | scorecard, baseline comparison, generalization evidence, or readiness measurement is requested | benchmark report and evidence classification |
+| hypothesis discovery | `skill-hypothesis-discovery` | multiple candidate improvements compete | non-mutating prioritized hypothesis backlog |
+| measured improvement | `skill-improver` | evaluator frozen and bounded hypothesis selected | measured candidate experiment |
+| change acceptance | `skill-change-gate` | existing skill was materially modified | accept/reject decision |
+| final hardening | `skill-hardening` | broad maturity/readiness pass is requested or justified | final maturity hardening |
 
 ## Default Path
 
-For ordinary new skills, apply:
+For ordinary new skills:
 
-1. `prompt-architect` if the behavior is under-specified.
-2. `skill-package-architecture-review` for cohesion and resource layout.
-3. `skill-prompt-and-activation-review` for description and boundaries.
-4. `documentation-quality` for references/examples.
-5. `skill-testing-and-validation` for scripts and validators.
-6. `security-and-governance-review` when scripts, tools, connectors, or sensitive data are involved.
-7. `skill-consistency-repair` and `skill-cleanup-and-simplification` before packaging.
-8. `skill-token-efficient` after content stabilizes.
-9. `skill-hypothesis-discovery` for redesign or quality-upgrade work when several candidate improvement directions exist; skip routine net-new creation unless the user asks for a post-creation backlog.
-10. `skill-change-gate` for existing-skill updates or redesigns before final acceptance; use advisory mode for net-new skills without before/after evidence.
+1. requirement shaping only when underspecified;
+2. package architecture;
+3. activation/boundary review;
+4. draft the package and define a small realistic evaluation set;
+5. reproducibility decision gate from `reproducibility-routing.md`;
+6. use `evaluation-and-generalization.md` to select `without-skill` baseline when meaningful, separate objective from subjective evaluation, and protect against eval-specific fixes;
+7. documentation, testing, security, consistency, cleanup, and token efficiency only as applicable;
+8. expand to held-out scenarios before strong behavioral or activation-improvement claims;
+9. advisory change gate only when useful for a net-new package.
 
-## Full Juiced Path
+Do not run `reproducibility-engineer` automatically on every new skill.
 
-For production-ready, publish-ready, or high-risk skills, add:
+## Existing-skill Redesign / Quality Upgrade
 
-1. `skill-harness` to define scenarios, metrics, gates, and evidence capture.
-2. `skill-benchmark` for a maturity score and readiness report.
-3. `skill-hypothesis-discovery` to convert benchmark, harness, validation, activation, architecture, consistency, security, cleanup, hardening, or token-efficiency findings into a prioritized backlog.
-4. `skill-improver` for one measured improvement loop when a frozen evaluator exists and a bounded hypothesis is selected.
-5. `skill-change-gate` after material candidate changes and again before final delivery when the package was modified from an existing baseline.
-6. `skill-hardening` for final package maturity and delivery validation.
+Recommended order:
 
-## Handoff Rules
+1. immutable prior-version baseline and target-owned validators;
+2. architecture and activation review;
+3. reproducibility decision gate;
+4. `reproducibility-engineer` in the selected mode when applicable;
+5. code/documentation/testing/security/consistency/cleanup/token passes as needed;
+6. harness and benchmark when paired baseline/candidate execution, holdouts, or measurement are requested;
+7. use `evaluation-and-generalization.md` to reject eval-specific fixes and separate objective from subjective evidence;
+8. hypothesis discovery and measured improvement only when a real optimization loop is warranted;
+9. `skill-change-gate` before acceptance;
+10. hardening/final validation when requested or material.
 
-- If a specialist is unavailable, apply the local checklist from this skill and mark the specialist pass as not run.
-- If a specialist reports a blocking issue, fix it before proceeding to later gates. Treat `skill-hypothesis-discovery` `gather-evidence` or `no-mutation-recommended` as a planning outcome, not a failure. Treat `skill-change-gate` `fail` as blocking for existing-skill updates unless the user explicitly narrows the work to advisory review.
-- If a requested pass would require fabricated metrics, report planned scenarios instead of measured results.
-- Do not let a downstream specialist expand the target skill beyond its original role without evidence and user intent.
+## Reproducibility Handoff Rules
+
+- Read `reproducibility-routing.md` before invoking `reproducibility-engineer`.
+- `audit-only` findings can feed hypothesis discovery; they do not authorize mutation by themselves.
+- When `apply` owns a reproducibility patch, other specialists review or validate that patch rather than independently reimplementing it.
+- Do not claim behavioral improvement from structural hardening alone.
+- Respect cycle guards. Record `cycle-prevented` instead of recursively invoking the current owner.
+
+## General Handoff Rules
+
+- If a specialist is unavailable, apply a local checklist when possible and record `checklist-only` or `unavailable`; do not pretend it ran.
+- A blocking specialist finding must be repaired or explicitly left as a blocker before downstream readiness claims.
+- A downstream specialist must not expand the target skill's operational role without evidence and user intent.
+- When two specialists overlap, assign a single mutation owner and use the other as reviewer/validator.

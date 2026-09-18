@@ -1,8 +1,6 @@
 # Reporting Contract
 
-Use this final report shape. Keep measured facts separate from design judgment.
-
-## Required sections
+Use this final report shape. Omit only sections that are truly not applicable, and state why when omission could be mistaken for an unrun gate.
 
 ```markdown
 # Skill Booster Optimization Report
@@ -11,31 +9,61 @@ Use this final report shape. Keep measured facts separate from design judgment.
 - Skill:
 - Path:
 - Mode:
+- Objective:
 - Final artifact:
 
-## Objective
-- Primary:
-- Secondary:
-- Assumptions:
+## Host Compatibility
+- Requested hosts:
+- Resolved capabilities:
+- Python launcher:
+- Portable-core validation:
+- Host adapter validation:
+- Blocked/unavailable capabilities:
 
 ## Baseline
 - Evaluator:
 - Score:
 - Gates:
-- Main findings:
 - Frozen inputs:
 - Blocked paths:
 
+## Source Integrity
+- Snapshot manifest:
+- Snapshot identity SHA-256:
+- Pinned repository revision/path when applicable:
+- Final source verification:
+- Re-baselined: yes/no
+
+## Reproducibility Routing
+- State: invoke-audit | invoke-apply | not-applicable | blocked | unavailable
+- Selected mode: audit-only | apply | none
+- Specialist status:
+- Downstream owner:
+- Material signals:
+- Decision validator:
+- Reproducibility ceiling/findings when invoked:
+
 ## Specialist Pass Ledger
-| Pass | Status | Evidence | Notes |
-|---|---|---|---|
+| Pass | Status | Execution type | Evidence | Notes |
+|---|---|---|---|---|
+
+## Required Specialist Sequence Reconciliation
+- Required specialists:
+- Actually invoked:
+- Checklist-only:
+- Blocked:
+- Unavailable:
+- Not applicable:
+- Not run:
+- Full sequence satisfied:
+- Finalization allowed:
 
 ## Hypothesis Discovery
 - Policy:
 - Status:
-- Generated hypotheses:
-- Selected for current cycle:
-- Deferred hypotheses:
+- Generated:
+- Selected:
+- Deferred:
 - No-mutation rationale:
 
 ## Change Gate
@@ -62,6 +90,10 @@ Use this final report shape. Keep measured facts separate from design judgment.
 - `evals/`:
 - package/validation:
 
+## Portability Evidence
+| Host/profile | Status | Adapter | Evidence/limitations |
+|---|---|---|---|
+
 ## Validation Evidence
 | Command or check | Status | Output or report |
 |---|---|---|
@@ -78,9 +110,21 @@ Use this final report shape. Keep measured facts separate from design judgment.
 - Final token-efficiency closure:
 - Gates:
 
+## Final Freeze
+- Manifest:
+- Freeze verification:
+- Candidate SHA-256:
+- Edited after freeze: yes/no
+
 ## Package
 - Archive:
 - Size:
+- Candidate SHA-256:
+- Archive SHA-256:
+- Receipt version/stage:
+- Atomic replace:
+- Last-known-good preserved on failure:
+- Recovery paths:
 - Validation:
 
 ## Remaining Risks
@@ -89,15 +133,14 @@ Use this final report shape. Keep measured facts separate from design judgment.
 
 ## Evidence language
 
-Use `measured` for executed commands/scenario results/validators/package checks, `observed` for file inspection, `inferred` for reasoned conclusions from files, `planned` for unexecuted checks, and `blocked` for missing tools/permissions/safe scope. Use `invoked-skill` only when the skill was actually invoked; use `checklist-only` for manual application. Do not say `production-ready`, `secure`, `benchmark improved`, `full specialist sequence executed`, or behavioral precision/recall unless corresponding checks passed.
+Use `measured` for executed commands/scenario results/validators/package checks, including portability validators; `observed` for file inspection, `inferred` for reasoned conclusions from files, `planned` for unexecuted checks, and `blocked` for missing tools/permissions/safe scope. Use `invoked-skill` only when the skill was actually invoked; use `checklist-only` for manual application. Do not say `production-ready`, `secure`, `benchmark improved`, `reproducibility-engineer invoked`, `full specialist sequence executed`, or behavioral precision/recall unless corresponding evidence exists.
 
 ## Pass ledger example
 
 ```markdown
-| skill-harness | pass | validation report | scenarios valid; execution planned |
-| skill-hypothesis-discovery | pass | backlog report | top hypotheses selected for improver |
-| skill-token-efficient | pass | token audit | validation rerun after compression |
-| skill-change-gate | pass | gate report or checklist | no blocking regression before accepting candidate |
-| final skill-change-gate | pass | final gate report | no blocking regression after hardening/compression |
-| final skill-token-efficient closure | pass | audit-only token check | no mutation; no validation rerun required |
+| skill-harness | pass | invoked-skill | validation report | scenarios valid; execution planned |
+| reproducibility decision + optional reproducibility-engineer | not-applicable | not-applicable | validated decision JSON | no material controllable variance |
+| skill-hypothesis-discovery | pass | invoked-skill | backlog report | top hypotheses selected for improver |
+| skill-change-gate | pass | invoked-skill | gate report | no blocking regression before accepting candidate |
+| final skill-change-gate | pass | invoked-skill | final gate report | no blocking regression after hardening/compression |
 ```

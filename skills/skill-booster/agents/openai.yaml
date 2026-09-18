@@ -1,13 +1,15 @@
 interface:
   display_name: Skill Booster
-  short_description: Optimize existing skill packages through a full specialist workflow
-    with evidence, validation, token reduction, and hardening.
-  icon: "\u26A1"
-  color: '#6D5DF7'
+  short_description: Optimize existing Agent Skills packages with evidence, optional
+    reproducibility engineering, portability checks, validation, freeze, and deterministic
+    packaging.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+  brand_color: '#6D5DF7'
 policy:
+  allow_implicit_invocation: true
   products:
   - chatgpt
   - codex
   - api
   - atlas
-  allow_implicit_invocation: true

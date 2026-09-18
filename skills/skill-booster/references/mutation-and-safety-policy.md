@@ -2,7 +2,7 @@
 
 ## Allowed scope
 
-Default writable scope is the target skill folder only. Common allowed files: `SKILL.md`, `agents/openai.yaml`, Markdown files under `references/`, deterministic scripts, templates used by the workflow, examples/evals only when benchmark/evaluator design or compatibility is explicitly in scope.
+Default writable scope is the target skill folder only. Common allowed files: `SKILL.md`, Markdown under `references/`, deterministic scripts, templates used by the workflow, examples/evals when benchmark/evaluator design or compatibility is explicitly in scope, and optional host adapters such as `agents/openai.yaml` only when relevant. Portable-core behavior must never depend on a host adapter.
 
 ## Blocked paths
 
@@ -10,12 +10,23 @@ Do not edit or package `.git/`, secrets, credentials, keys, private certs, gener
 
 ## Patch discipline
 
-Use one bounded hypothesis per batch. Safe examples: refine activation, add output contract, repair local links, add deterministic validator/packager, improve script errors, move branch detail to references, compress after validation. Unsafe examples: edit expected outputs to pass, remove safety/validation for tokens, delete unknown resources without classification, package reports/credentials, or claim benchmark improvement without evidence.
+Use one bounded hypothesis per batch. Safe examples: refine activation, add output contract, repair local links, add deterministic validator/packager, improve script diagnostics, move branch detail to references, compress after validation. Unsafe examples: edit expected outputs to pass, remove safety/validation for tokens, delete unknown resources without classification, package reports/credentials, or claim benchmark improvement without evidence.
 
-## Rollback and boundaries
+When `reproducibility-engineer` runs in `audit-only`, it does not own target mutation; route findings through hypothesis discovery. When it runs in `apply`, it owns only the explicitly selected reproducibility batch. Do not let `skill-improver` independently mutate the same batch.
 
-Preserve enough state to revert, record changed files, reject failed gates, and keep rejected notes. Use connectors/source truth when optimization depends on repository or Drive facts; otherwise mark assumptions or stop.
+## Rollback, freeze, and boundaries
+
+Preserve enough state to revert, record changed files, reject failed gates, and keep rejected notes. When optimization depends on external files or repository evidence, snapshot/pin the exact source bytes before analysis and verify their identity before acceptance. Use connectors/source truth when optimization depends on repository or Drive facts; otherwise mark assumptions or stop. After final acceptance, freeze the candidate. Any later target edit invalidates the freeze and requires affected validation plus a new manifest.
+
+## Delivery integrity
+
+Package from the verified frozen candidate only. Canonicalize package and receipt paths first; reject aliases, outputs inside the target, invalid resolved filenames/extensions, and symbolic-link cycles before mutation. Build and test temporary outputs first, calculate candidate/package hashes, then commit archive and success receipt as one recovery-aware transaction. A failed attempt must preserve the previous `skill.zip` and previous successful receipt. If rollback is incomplete, preserve and report recovery paths instead of deleting evidence.
 
 ## Security floor
 
 Every optimized skill preserves secret boundaries, scoped filesystem writes, no fabricated validation/benchmark claims, no unsafe shell guidance, explicit package exclusions, and stop conditions for missing evidence.
+
+
+## Cross-host safety
+
+Do not pre-approve shell/process execution in portable frontmatter. Permission models differ by host; leave tool authorization to the host/user. Keep validators offline and standard-library-only. Do not hard-code vendor-private tool calls, `/home/...` sandbox paths, or platform-specific skill installation paths in core instructions.

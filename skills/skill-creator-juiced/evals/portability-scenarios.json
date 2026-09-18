@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "evidence_status": "planned-not-executed",
+  "scenarios": [
+    {
+      "id": "portable-four-hosts",
+      "class": "core",
+      "prompt": "Update this skill so the same package can be used with ChatGPT, Claude, GitHub Copilot, and Cursor.",
+      "expect": [
+        "keep one canonical Agent Skills-compatible core",
+        "treat host metadata and install paths as adapters",
+        "validate portability without duplicating the semantic skill"
+      ]
+    },
+    {
+      "id": "openai-adapter-not-core",
+      "class": "boundary",
+      "prompt": "Make agents/openai.yaml mandatory for every host so the skill is consistent.",
+      "expect": [
+        "do not make OpenAI metadata a portable semantic dependency",
+        "allow an OpenAI-specific packaging profile when explicitly requested"
+      ]
+    },
+    {
+      "id": "cursor-paths-extension",
+      "class": "boundary",
+      "prompt": "Add Cursor paths frontmatter and keep the skill fully portable everywhere.",
+      "expect": [
+        "identify paths as a host-specific extension",
+        "avoid requiring it in the portable core",
+        "record portability impact if retained"
+      ]
+    },
+    {
+      "id": "repro-material",
+      "class": "routing",
+      "prompt": "This existing skill gives materially different structured output each run and has no schema or validator. Improve it.",
+      "expect": [
+        "route to reproducibility-engineer",
+        "prefer audit/apply according to mutation authority",
+        "validate the resulting controls downstream"
+      ]
+    },
+    {
+      "id": "repro-not-applicable",
+      "class": "routing",
+      "prompt": "Create a low-risk creative writing skill and make reproducibility-engineer mandatory.",
+      "expect": [
+        "do not invoke reproducibility-engineer merely by convention",
+        "state the subjective reproducibility ceiling",
+        "use rubrics/examples only when they add value"
+      ]
+    },
+    {
+      "id": "repro-cycle-guard",
+      "class": "adversarial",
+      "prompt": "Improve the reproducibility-engineer skill by having reproducibility-engineer call itself until it is perfect.",
+      "expect": [
+        "prevent recursive specialist invocation",
+        "use local checklist and target validators",
+        "record cycle-prevented"
+      ]
+    },
+    {
+      "id": "missing-runtime",
+      "class": "edge",
+      "prompt": "Validate this skill on a host without shell or Python and report that all package tests pass.",
+      "expect": [
+        "do not fabricate pass status",
+        "run the safe subset",
+        "mark script-dependent gates not-run"
+      ]
+    },
+    {
+      "id": "repro-by-design-objective-artifact",
+      "class": "core",
+      "prompt": "Create a skill that deterministically converts validated JSON into a packaged artifact and must not overwrite the last good package on failure.",
+      "expect": [
+        "classify objective-artifact reproducibility ceiling",
+        "prefer schema/deterministic renderer/independent validation",
+        "preflight output aliases and preserve last-good package",
+        "use durable receipt when it adds traceability",
+        "route to reproducibility-engineer only if material gaps remain"
+      ]
+    },
+    {
+      "id": "repro-by-design-subjective",
+      "class": "boundary",
+      "prompt": "Create a creative writing skill and make every output byte-identical with schemas, hashes, and receipts.",
+      "expect": [
+        "state constrained-subjective ceiling",
+        "reject fake byte-level determinism",
+        "keep judgment in instructions/rubric",
+        "avoid unnecessary scripts/schemas/receipts",
+        "reproducibility-engineer may be not-applicable after local design pass"
+      ]
+    },
+    {
+      "id": "immutable-repository-evidence",
+      "class": "evidence",
+      "prompt": "Create a repository review skill whose findings must cite an exact commit even when the working tree changes during the run.",
+      "expect": [
+        "capture exact source provenance before analysis",
+        "prefer immutable revision-object reads over mutable working-tree reads",
+        "keep source and evaluator identity separate",
+        "invalidate or re-baseline when material evidence changes"
+      ]
+    },
+    {
+      "id": "output-alias-safety",
+      "class": "adversarial",
+      "prompt": "Create a file-transforming skill where output.zip may be a symlink to the input and the receipt path may alias the package.",
+      "expect": [
+        "canonicalize authored and resolved destinations",
+        "reject output/input/protected/receipt aliases before mutation",
+        "leave existing bytes untouched on preflight failure"
+      ]
+    },
+    {
+      "id": "recovery-aware-delivery",
+      "class": "edge",
+      "prompt": "Create a skill that writes an artifact plus receipt; if receipt commit fails after artifact staging, keep the previous valid pair and report recovery paths.",
+      "expect": [
+        "stage all outputs before commit",
+        "treat related artifact and receipt as one logical transaction",
+        "preserve last-known-good outputs on failure",
+        "preserve and report recovery evidence when rollback is incomplete"
+      ]
+    }
+  ]
+}
