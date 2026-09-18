@@ -11,6 +11,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from nomia_utils import atomic_write_text
+
 REQUIRED_CATEGORIES = [
     "should_activate",
     "should_not_activate",
@@ -81,6 +83,8 @@ def validate(path: Path) -> dict[str, Any]:
         category = item.get("category")
         prompt = item.get("prompt")
         expected_activation = item.get("expected_activation")
+        expected_owner = item.get("expected_owner")
+        diagnostic_entry_allowed = item.get("diagnostic_entry_allowed")
         expected_behavior = item.get("expected_behavior")
         notes = item.get("notes")
 
@@ -115,6 +119,18 @@ def validate(path: Path) -> dict[str, Any]:
             errors.append(f"scenario {scenario_id or index} expected_activation must be true, false, or null")
         else:
             labels[str(expected_activation).lower() if expected_activation is not None else "null"] += 1
+        if expected_owner not in {"mago", "magia", "nomia", "none"}:
+            errors.append(f"scenario {scenario_id or index} expected_owner must be mago, magia, nomia, or none")
+        if not isinstance(diagnostic_entry_allowed, bool):
+            errors.append(f"scenario {scenario_id or index} diagnostic_entry_allowed must be boolean")
+        if expected_activation is True and expected_owner != "nomia":
+            errors.append(f"scenario {scenario_id or index} activation true requires expected_owner=nomia")
+        if expected_activation is False and expected_owner == "nomia":
+            errors.append(f"scenario {scenario_id or index} activation false cannot name nomia as expected_owner")
+        if expected_activation is False and diagnostic_entry_allowed is True:
+            errors.append(f"scenario {scenario_id or index} activation false cannot allow diagnostic entry")
+        if expected_activation is None and (expected_owner != "none" or diagnostic_entry_allowed is not True):
+            errors.append(f"scenario {scenario_id or index} activation null requires expected_owner=none and diagnostic_entry_allowed=true")
 
         if category == "should_activate" and expected_activation is not True:
             errors.append(f"scenario {scenario_id or index} should_activate must expect activation true")
@@ -122,7 +138,9 @@ def validate(path: Path) -> dict[str, Any]:
             errors.append(f"scenario {scenario_id or index} should_not_activate must expect activation false")
         if category == "ambiguous" and expected_activation is not None:
             errors.append(f"scenario {scenario_id or index} ambiguous must expect activation null")
-        if category in {"edge_case", "regression", "adversarial"} and expected_activation is False:
+        if category == "ambiguous" and (expected_owner != "none" or diagnostic_entry_allowed is not True):
+            errors.append(f"scenario {scenario_id or index} ambiguous must keep owner unresolved and allow diagnostic entry")
+        if category in {"edge_case", "adversarial"} and expected_activation is False:
             warnings.append(f"scenario {scenario_id or index} is {category} with false activation; confirm it is not a should_not_activate case")
 
         boundary_blob_parts.extend(str(value) for value in [prompt, expected_behavior, notes] if isinstance(value, str))
@@ -172,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json_output:
         output = Path(args.json_output)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        atomic_write_text(output, json.dumps(result, indent=2, sort_keys=True) + "\n")
 
     print(f"status: {result['status']}")
     print(f"scenario_count: {result.get('scenario_count', 0)}")

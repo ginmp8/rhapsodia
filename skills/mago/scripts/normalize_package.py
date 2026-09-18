@@ -210,7 +210,7 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         description="Conservatively normalize MAGO package structure without inventing content."
     )
-    parser.add_argument("board_root", help="Path to the active BOARD_ROOT under docs/boards/<board_id>/<cycle_version>/.")
+    parser.add_argument("board_root", help="Path to the canonical BOARD_ROOT.")
     parser.add_argument(
         "--spec-id",
         action="append",

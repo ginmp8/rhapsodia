@@ -33,6 +33,11 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     destination = Path(args.path).resolve()
+    if destination.name in {"spec-catalog.yaml", "define-queue.yaml"}:
+        for parent in destination.parents:
+            if (parent / "cycle.yaml").is_file():
+                print(f"ERROR: {destination.name} is a generated view; render it outside BOARD_ROOT")
+                return 1
     if destination.exists() and not args.force:
         print(f"ERROR: destination already exists: {destination}")
         print("Use --force to overwrite.")

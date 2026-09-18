@@ -1,0 +1,22 @@
+{
+  "canonical_spec_id": "spec-2026-07-20-legacy-demand",
+  "copied_sections": [
+    "blockers",
+    "links",
+    "ownership",
+    "planning",
+    "business_priority",
+    "replanning",
+    "request",
+    "tags"
+  ],
+  "ignored_sections": [
+    "technical_state"
+  ],
+  "legacy_spec_id": "spec-2026-04-20-legacy-demand--01arz3ndektsv4rrffq69g5fav",
+  "observed_at": "2026-07-20T12:00:00Z",
+  "release_state_policy": "unknown-until-current-release-evidence",
+  "source": "legacy-ops.yaml",
+  "status": "adapted",
+  "technical_state_policy": "unknown-until-current-attributed-evidence"
+}

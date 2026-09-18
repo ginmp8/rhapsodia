@@ -1,0 +1,18 @@
+{
+  "kind": "mago-sdd-adapter-report",
+  "authoritative": false,
+  "direction": "<import|export|round-trip>",
+  "source": {"format": "<mago|spec-kit|kiro|openspec>", "version": "<version_or_unknown>"},
+  "target": {"format": "<mago|spec-kit|kiro|openspec>", "version": "<version_or_unknown>"},
+  "source_spec_id": "<spec_id_or_unknown>",
+  "generated_files": [],
+  "mapped_fields": [],
+  "omitted_fields": [],
+  "lossy_mappings": [
+    {"source_field": "<field>", "target_field": "<field_or_none>", "severity": "<low|medium|high|blocking>", "reason": "<reason>"}
+  ],
+  "unsupported_target_concepts": [],
+  "source_only_concepts": [],
+  "round_trip": {"status": "<not_run|lossless|lossy_reported|fail>", "differences": []},
+  "validation": []
+}

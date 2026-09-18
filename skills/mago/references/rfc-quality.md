@@ -13,4 +13,5 @@ Mago may use RFC-style thinking to improve planning documents, compare options, 
 - Keep unresolved approval or stakeholder alignment questions in `Open Questions`; do not pretend they are decided.
 
 Do not create governance RFCs from Mago. For material roadmap, priority, stakeholder, ownership, budget, accepted business risk, go/no-go, or governance handoff proposals, use nomia `rfc-proposal`. For execution-discovered runtime decisions, consume or request Magia implementation ADRs rather than converting them into a Mago RFC.
+Priority terminology in this file follows `references/priority-contract.md`: Nomia-owned business priority remains read-only; Mago owns technical criticality and execution sequence.
 

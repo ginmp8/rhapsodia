@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Mago</title>
+  <desc id="desc">Ícone de chapéu de mago com estrela e planta técnica, representando planejamento e arquitetura.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#171033"/><stop offset="1" stop-color="#090d1d"/>
+    </linearGradient>
+    <linearGradient id="hat" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#5b21b6"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)" stroke="#8b5cf6" stroke-width="12"/>
+  <path d="M183 311c43-58 69-119 91-198 5-18 29-22 40-7 18 25 14 71 56 97 23 14 34 42 22 66-20 40-137 68-209 42Z" fill="url(#hat)"/>
+  <path d="M288 115c2 79-22 143-77 202 53 10 128-3 169-38-74 5-76-86-92-164Z" fill="#312e81" opacity=".72"/>
+  <path d="M148 304c76 24 177 24 259-2 18-6 38 4 43 22 5 19-6 38-26 44-94 28-210 27-296-4-19-7-28-28-18-45 8-13 23-20 38-15Z" fill="#6d28d9" stroke="#ddd6fe" stroke-width="10"/>
+  <path d="m327 191 10 25 27 2-21 18 7 27-23-15-24 15 7-27-21-18 28-2Z" fill="#fff7cc" filter="url(#glow)"/>
+  <g transform="translate(150 377)">
+    <rect width="212" height="64" rx="18" fill="#171a34" stroke="#a78bfa" stroke-width="8"/>
+    <path d="M33 18v28M57 20h69M57 42h104" stroke="#ddd6fe" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="33" cy="32" r="17" fill="#312e81" stroke="#c4b5fd" stroke-width="5"/>
+  </g>
+</svg>

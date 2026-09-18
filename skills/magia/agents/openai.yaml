@@ -1,11 +1,18 @@
 interface:
   display_name: Magia
-  short_description: Senior engineering execution for bounded implementation, validation,
-    hardening, technical docs, and implementation ADRs.
+  short_description: Senior engineering execution with bounded implementation, canonical
+    traceability, validation, hardening, technical docs, and implementation ADRs.
   default_prompt: Use $magia to implement, validate, debug, harden, document, and
-    synchronize execution from current code and Mago specs without rewriting PRDs
-    or governance artifacts.
+    synchronize bounded execution from current code and Mago specs. Start non-trivial
+    work with a compact execution card and orient unfamiliar repositories read-only.
+    For RALPH require selected-task linkage and canonical closure evidence; for ADHOC
+    require bounded repository/file scope, preserved behavior, and a proving check. Never
+    rewrite PRDs or governance artifacts. Resolve the current owner before mutation. For multi-intent
+    work, perform only the MAGIA execution phase and emit typed evidence handoffs
+    to the next owner.
   allow_implicit_invocation: true
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

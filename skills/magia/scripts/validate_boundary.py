@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate that MAGIA remains self-contained."""
+"""Validate that MAGIA remains self-contained and respects execution/governance boundaries."""
 
 from __future__ import annotations
 
@@ -9,19 +9,24 @@ from pathlib import Path
 
 from magia_utils import dedupe_preserve_order, posix_rel, print_errors
 
-
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 THIS_FILE = Path(__file__).resolve()
+TEXT_SUFFIXES = {".md", ".py", ".yaml", ".yml", ".json", ".template", ".txt"}
 
-TEXT_SUFFIXES = {".md", ".py", ".yaml", ".yml", ".template", ".txt"}
-
-HARD_PATTERNS = [
-    ("external skill URI", re.compile(r"skills://nomia", re.IGNORECASE)),
-    ("external skill path", re.compile(r"\.github[/\\]skills[/\\]nomia", re.IGNORECASE)),
-    ("relative external skill path", re.compile(r"\.\.[/\\]nomia", re.IGNORECASE)),
-    ("external script import", re.compile(r"^\s*(?:from|import)\s+.*nomia", re.IGNORECASE | re.MULTILINE)),
-    ("external script execution", re.compile(r"(?:python|python3|py)\s+.*nomia[/\\].*\.py", re.IGNORECASE)),
-]
+# Conceptual references and handoffs are allowed. Runtime imports, direct skill paths,
+# and execution of another skill's scripts are not.
+EXTERNAL_SKILLS = ("mago", "nomia")
+HARD_PATTERNS: list[tuple[str, re.Pattern[str]]] = []
+for skill_name in EXTERNAL_SKILLS:
+    HARD_PATTERNS.extend(
+        [
+            (f"external {skill_name} skill URI", re.compile(rf"skills://{skill_name}(?:/|\b)", re.IGNORECASE)),
+            (f"external {skill_name} skill path", re.compile(rf"\.github[/\\]skills[/\\]{skill_name}(?:[/\\]|\b)", re.IGNORECASE)),
+            (f"relative external {skill_name} path", re.compile(rf"\.\.[/\\]{skill_name}(?:[/\\]|\b)", re.IGNORECASE)),
+            (f"external {skill_name} script import", re.compile(rf"^\s*(?:from|import)\s+.*\b{skill_name}\b", re.IGNORECASE | re.MULTILINE)),
+            (f"external {skill_name} script execution", re.compile(rf"(?:python|python3|py)\s+.*{skill_name}[/\\].*\.py", re.IGNORECASE)),
+        ]
+    )
 
 DOWNSTREAM_ARTIFACTS = [
     "ops.yaml",
@@ -67,14 +72,11 @@ INVALID_CLAIMS = [
 def iter_skill_files() -> list[Path]:
     paths: list[Path] = []
     for path in SKILL_ROOT.rglob("*"):
-        if not path.is_file():
+        if not path.is_file() or "__pycache__" in path.parts:
             continue
-        if "__pycache__" in path.parts:
+        if path.resolve() == THIS_FILE or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
-        if path.resolve() == THIS_FILE:
-            continue
-        if path.suffix.lower() in TEXT_SUFFIXES:
-            paths.append(path)
+        paths.append(path)
     return sorted(paths)
 
 
@@ -84,7 +86,6 @@ def rel(path: Path) -> str:
 
 def collect_errors() -> list[str]:
     errors: list[str] = []
-    files = iter_skill_files()
     artifact_patterns = [
         (name, re.compile(rf"(?<![\w.-]){re.escape(name)}(?![\w.-])", re.IGNORECASE))
         for name in DOWNSTREAM_ARTIFACTS
@@ -93,13 +94,15 @@ def collect_errors() -> list[str]:
         (name, re.compile(rf"(?<![\w.-]){re.escape(name)}(?![\w.-])", re.IGNORECASE))
         for name in DOWNSTREAM_MODES
     ]
-    claim_patterns = [
-        (claim, re.compile(re.escape(claim), re.IGNORECASE))
-        for claim in INVALID_CLAIMS
-    ]
+    claim_patterns = [(claim, re.compile(re.escape(claim), re.IGNORECASE)) for claim in INVALID_CLAIMS]
+    retired_name = "magi" + "arca"
 
-    for path in files:
-        text = path.read_text(encoding="utf-8")
+    for path in iter_skill_files():
+        text = path.read_text(encoding="utf-8-sig")
+        lowered = text.lower()
+        if retired_name in lowered:
+            line_no = lowered[: lowered.index(retired_name)].count("\n") + 1
+            errors.append(f"{rel(path)}:{line_no}: retired governance identifier")
 
         for label, pattern in HARD_PATTERNS:
             for match in pattern.finditer(text):
@@ -121,15 +124,14 @@ def collect_errors() -> list[str]:
                 line_no = text.count("\n", 0, match.start()) + 1
                 errors.append(f"{rel(path)}:{line_no}: invalid evidence claim: {claim}")
 
-    return errors
+    return dedupe_preserve_order(errors)
 
 
 def main() -> int:
-    errors = dedupe_preserve_order(collect_errors())
+    errors = collect_errors()
     if errors:
         print_errors(errors)
         return 1
-
     print("OK: boundary checks passed")
     return 0
 

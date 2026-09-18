@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate MAGIA repository-board artifact placement and package quality."""
+"""Validate MAGIA repository-board placement, canonical contract, and package quality."""
 
 from __future__ import annotations
 
@@ -8,19 +8,30 @@ import re
 import sys
 from pathlib import Path
 
-from magia_utils import BOARD_ROOT_TEMPLATE, dedupe_preserve_order, is_relative_to, posix_rel, print_errors, resolve_board_root, validate_concrete_segment
+from board_contract import validate_board
+from magia_utils import (
+    BOARD_ROOT_TEMPLATE,
+    SPEC_ID_RE,
+    dedupe_preserve_order,
+    is_relative_to,
+    posix_rel,
+    print_errors,
+    resolve_board_root,
+    validate_concrete_segment,
+)
 
 CANONICAL_ARTIFACT_NAMES = {
-    "spec-catalog.yaml",
+    "cycle.yaml",
     "manifest.yaml",
     "prd.md",
     "tasks.md",
     "validation.md",
     "notes.md",
+    "implementation-notes.md",
+    "validation-evidence.md",
 }
 REQUIRED_SPEC_FILES = {"manifest.yaml", "prd.md", "tasks.md", "validation.md", "notes.md"}
 PLACEHOLDER_RE = re.compile(r"<[^>]+>")
-SPEC_DIR_RE = re.compile(r"^spec\d{3}$")
 
 
 def iter_files(root: Path) -> list[Path]:
@@ -29,9 +40,9 @@ def iter_files(root: Path) -> list[Path]:
     return sorted(path for path in root.rglob("*") if path.is_file() and "__pycache__" not in path.parts)
 
 
-def validate_canonical_segments(board_id: str, cycle_version: str) -> list[str]:
+def validate_canonical_segments(board_id: str, year: str, cycle_id: str) -> list[str]:
     errors: list[str] = []
-    for label, value in (("board_id", board_id), ("cycle_version", cycle_version)):
+    for label, value in (("board_id", board_id), ("year", year), ("cycle_id", cycle_id)):
         error = validate_concrete_segment(label, value)
         if error:
             errors.append(error)
@@ -45,37 +56,44 @@ def collect_artifact_placement_errors(repo_root: Path, canonical_root: Path) -> 
 
     for path in iter_files(boards_root):
         if path.name in CANONICAL_ARTIFACT_NAMES and not is_relative_to(path, canonical_root):
-            errors.append(
-                f"{posix_rel(path, repo_root)} is a MAGIA artifact outside {BOARD_ROOT_TEMPLATE.rstrip('/')}."
-            )
+            errors.append(f"{posix_rel(path, repo_root)} is a MAGIA/planning artifact outside the selected {BOARD_ROOT_TEMPLATE.rstrip('/')}.")
 
     for path in iter_files(docs_root):
         if path.name in CANONICAL_ARTIFACT_NAMES and not is_relative_to(path, boards_root):
-            errors.append(f"{posix_rel(path, repo_root)} is a MAGIA artifact outside docs/boards/.")
+            errors.append(f"{posix_rel(path, repo_root)} is a MAGIA/planning artifact outside docs/boards/.")
 
     return errors
 
 
 def collect_package_shape_errors(repo_root: Path, canonical_root: Path) -> list[str]:
     errors: list[str] = []
-    spec_catalog = canonical_root / "spec-catalog.yaml"
     specs_root = canonical_root / "specs"
+    registry_root = canonical_root / "registry"
 
     if not canonical_root.exists():
         return [f"missing BOARD_ROOT: {posix_rel(canonical_root, repo_root)}"]
-    if not spec_catalog.exists():
-        errors.append(f"missing required artifact: {posix_rel(spec_catalog, repo_root)}")
+    if not (canonical_root / "cycle.yaml").is_file():
+        errors.append(f"missing required artifact: {posix_rel(canonical_root / 'cycle.yaml', repo_root)}")
+    if not registry_root.is_dir():
+        errors.append(f"missing required registry directory: {posix_rel(registry_root, repo_root)}")
+    if (canonical_root / "spec-catalog.yaml").exists():
+        errors.append("spec-catalog.yaml is a generated projection and must not be an active board artifact")
+    if (canonical_root / "define-queue.yaml").exists():
+        errors.append("define-queue.yaml is a generated projection and must not be an active board artifact")
 
     if specs_root.exists():
         for child in sorted(specs_root.iterdir()):
             if not child.is_dir():
                 continue
-            if not SPEC_DIR_RE.match(child.name):
+            if not SPEC_ID_RE.fullmatch(child.name):
                 errors.append(f"invalid spec directory name: {posix_rel(child, repo_root)}")
                 continue
             present = {path.name for path in child.iterdir() if path.is_file()}
             for missing in sorted(REQUIRED_SPEC_FILES - present):
                 errors.append(f"missing required spec artifact: {posix_rel(child / missing, repo_root)}")
+            registry_path = registry_root / f"{child.name}.yaml"
+            if not registry_path.is_file():
+                errors.append(f"missing matching registry entry: {posix_rel(registry_path, repo_root)}")
 
     return errors
 
@@ -85,7 +103,7 @@ def collect_placeholder_errors(repo_root: Path, canonical_root: Path) -> list[st
     for path in iter_files(canonical_root):
         if path.suffix.lower() not in {".md", ".yaml", ".yml"}:
             continue
-        text = path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8-sig")
         for match in PLACEHOLDER_RE.finditer(text):
             line_no = text.count("\n", 0, match.start()) + 1
             errors.append(f"{posix_rel(path, repo_root)}:{line_no}: unresolved placeholder `{match.group(0)}`")
@@ -95,14 +113,14 @@ def collect_placeholder_errors(repo_root: Path, canonical_root: Path) -> list[st
 def collect_errors(
     repo_root: Path,
     board_id: str | None,
-    cycle_version: str | None,
+    year: str | None,
+    cycle_id: str | None,
     board_root_override: str | None,
 ) -> list[str]:
     errors: list[str] = []
     if board_root_override is None:
-        assert board_id is not None
-        assert cycle_version is not None
-        errors = validate_canonical_segments(board_id, cycle_version)
+        assert board_id is not None and year is not None and cycle_id is not None
+        errors.extend(validate_canonical_segments(board_id, year, cycle_id))
         if errors:
             return errors
 
@@ -111,7 +129,8 @@ def collect_errors(
             repo_root,
             board_root_override=board_root_override,
             board_id=board_id,
-            cycle_version=cycle_version,
+            year=year,
+            cycle_id=cycle_id,
         )
     except ValueError as exc:
         return [str(exc)]
@@ -119,33 +138,34 @@ def collect_errors(
     errors.extend(collect_artifact_placement_errors(repo_root, canonical_root))
     errors.extend(collect_package_shape_errors(repo_root, canonical_root))
     errors.extend(collect_placeholder_errors(repo_root, canonical_root))
+    if canonical_root.exists():
+        errors.extend(validate_board(canonical_root))
     return dedupe_preserve_order(errors)
 
 
-def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(
-        description=f"Validate MAGIA artifacts under {BOARD_ROOT_TEMPLATE.rstrip('/')}."
-    )
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=f"Validate MAGIA artifacts under {BOARD_ROOT_TEMPLATE.rstrip('/')}.")
     parser.add_argument("repo_root", help="Repository root to inspect.")
-    parser.add_argument("--board-root", help="Explicit BOARD_ROOT override. When omitted, derive it from --board_id and --cycle_version.")
-    parser.add_argument("--board_id", help="Concrete dynamic board id segment when --board-root is omitted.")
-    parser.add_argument("--cycle_version", help="Concrete dynamic cycle version segment when --board-root is omitted.")
+    parser.add_argument("--board-root", help="Explicit canonical BOARD_ROOT override.")
+    parser.add_argument("--board_id", help="Concrete board id when --board-root is omitted.")
+    parser.add_argument("--year", help="Concrete year when --board-root is omitted.")
+    parser.add_argument("--cycle-id", dest="cycle_id", help="Concrete canonical cycle id when --board-root is omitted.")
     args = parser.parse_args(argv)
 
-    if args.board_root is None and (not args.board_id or not args.cycle_version):
-        parser.error("either --board-root or both --board_id and --cycle_version are required")
+    if args.board_root is None and (not args.board_id or not args.year or not args.cycle_id):
+        parser.error("either --board-root or --board_id, --year, and --cycle-id are required")
 
     repo_root = Path(args.repo_root).resolve()
     if not repo_root.exists():
         print_errors([f"repository root does not exist: {repo_root}"])
         return 1
 
-    errors = collect_errors(repo_root, args.board_id, args.cycle_version, args.board_root)
+    errors = collect_errors(repo_root, args.board_id, args.year, args.cycle_id, args.board_root)
     if errors:
         print_errors(errors)
         return 1
 
-    print("OK: board artifacts use BOARD_ROOT")
+    print("OK: board artifacts use the canonical BOARD_ROOT and registry contract")
     return 0
 
 

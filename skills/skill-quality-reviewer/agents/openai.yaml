@@ -1,0 +1,10 @@
+interface:
+  display_name: Skill Quality Reviewer
+  short_description: Audits skill quality, legacy coupling, obsolete compatibility, and prompt-ready remediation.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

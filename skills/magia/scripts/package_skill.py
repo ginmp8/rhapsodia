@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 import zipfile
+
+sys.dont_write_bytecode = True
 from pathlib import Path
 from typing import Any
 
@@ -16,42 +17,12 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import validate_skill_package  # noqa: E402
-
-EXCLUDED_DIR_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "benchmark-reports", "test-results", "tmp", ".tmp"}
-EXCLUDED_FILE_NAMES = {".DS_Store", "test-results.json"}
-SECRET_NAME_RE = re.compile(r"(secret|credential|private[_-]?key|\.env$|id_rsa|token)", re.IGNORECASE)
-
-
-def is_sensitive_name(name: str) -> bool:
-    return bool(SECRET_NAME_RE.search(name))
-
-
-def should_exclude(rel_path: str) -> tuple[bool, str | None]:
-    parts = Path(rel_path).parts
-    if any(part in EXCLUDED_DIR_NAMES for part in parts[:-1]):
-        return True, "excluded directory"
-    name = parts[-1]
-    if name in EXCLUDED_FILE_NAMES or name.endswith(("~", ".swp", ".swo")):
-        return True, "excluded file"
-    if name.endswith(".zip"):
-        return True, "nested zip"
-    if is_sensitive_name(name):
-        return True, "sensitive-looking file name"
-    return False, None
+from package_policy import iter_package_candidates  # noqa: E402
 
 
 def iter_package_files(target: Path) -> tuple[list[Path], list[dict[str, str]]]:
-    files: list[Path] = []
-    excluded: list[dict[str, str]] = []
-    for path in sorted(target.rglob("*")):
-        if not path.is_file():
-            continue
-        rel = path.relative_to(target).as_posix()
-        skip, reason = should_exclude(rel)
-        if skip:
-            excluded.append({"path": rel, "reason": reason or "excluded"})
-            continue
-        files.append(path)
+    candidates, excluded = iter_package_candidates(target)
+    files = [path for path in candidates if path.is_file() and not path.is_symlink()]
     return files, excluded
 
 
@@ -84,6 +55,15 @@ def main(argv: list[str] | None = None) -> int:
     target = Path(args.target).resolve()
     output = Path(args.output).resolve()
     result: dict[str, Any] = {"target": str(target), "output": str(output)}
+
+    security_errors = validate_skill_package.scan_package_candidates(target)
+    if security_errors:
+        result["status"] = "fail"
+        result["security_errors"] = security_errors
+        if args.json_output:
+            Path(args.json_output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 1
 
     if args.validate:
         folder = validate_skill_package.validate_target(target)

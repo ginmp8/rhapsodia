@@ -24,6 +24,8 @@ Rules: content is understandable without repository context; do not claim availa
 
 ## internal-notes.md
 
+Require `## Privacy Handling` with classification, role-based audience, personal-data flag, retention policy, redaction record, and `External Share Allowed: false`. Use opaque references, reserved example domains, summaries instead of raw logs, and no secrets.
+
 Optional board-scoped companion for details excluded from `release-notes.md`, directly under `BOARD_ROOT`.
 
 Required sections when present: `# Internal Notes`, `## Summary`, `## Internal Details`, `## Follow-ups`.

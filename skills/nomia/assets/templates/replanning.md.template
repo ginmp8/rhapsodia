@@ -4,6 +4,13 @@ Replace every <...> token with repository-truth values.
 Use the empty-state line only while no entries exist.
 -->
 
+## Projection Metadata
+
+- Authority: <nomia-projection_or_non-authoritative-draft>
+- Generated From: <canonical_source_reference>
+- Generated At: <ISO-8601_generation_timestamp>
+- Evidence As Of: <ISO-8601_evidence_timestamp>
+
 # Replanning
 
 ## Entries

@@ -1,31 +1,79 @@
-# Use this file as a structural reference when creating or reconciling
-# {BOARD_ROOT}/specs/<spec_id>/manifest.yaml.
-# Replace every <...> token with repository-truth values.
-# Never copy placeholder or example values blindly into generated files.
+# Structural reference for {BOARD_ROOT}/specs/<spec_id>/manifest.yaml.
+# Replace every <...> token with repository-truth values before validation.
 # Keep all keys lowercase and preserve field order.
 
-schema_version: 1
+kind: mago-spec-manifest
 spec_id: "<spec_id>"
+cycle_id: "<cycle_id>"
 feature_key: "<feature_key>"
 title: "<title>"
 type: "<type>"
 classification: "<classification>"
+profile: "<quick|standard|governed>"
 status: "<status>"
 phase: "<phase>"
-cycle_version: "<cycle_version>"
 feature_version: "<feature_version>"
+created_at: "<created_at>"
 source_of_truth:
+  registry: "../../registry/<spec_id>.yaml"
   prd: prd.md
   tasks: tasks.md
   validation: validation.md
   notes: notes.md
+
+# Standard and governed packages must decide every conditional artifact.
+# Quick packages record only conditional artifacts that are actually used.
+# `required` means the file must exist. `not_applicable` means it must not exist.
+artifact_decisions:
+  technical-design.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  complexity-reduction-plan.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  adr.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  execution-handoff-plan.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  contract-spec.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  migration-strategy.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  observability-design.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  operational-requirements.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  security-and-risk-considerations.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+  open-questions.md:
+    status: "<required|not_applicable>"
+    rationale: "<evidence-backed trigger or omission rationale>"
+
 traceability:
   primary_discovery_file: "<primary_discovery_file_or_empty>"
   supporting_discovery_files: []
   discovery_frontier: "<discovery_frontier_or_empty>"
 
-# Omit `last_execution` until a task has truthfully executed.
-# Canonical shape:
+# Mutation state is a readiness gate, not runtime execution evidence.
+# Any non-clean state blocks handoff until drift checks and rollback/recovery complete.
+mutation_state:
+  status: clean
+  transaction_id: null
+  inspected_digest: null
+  planned_writes: []
+  completed_writes: []
+  checkpoint: null
+  cancellation_requested: false
+  rollback_required: false
+
+# Omit `last_execution` until Magia supplies truthful execution evidence.
 # last_execution:
 #   task_id: "<taskNNN>"
 #   date: "<YYYY-MM-DD>"

@@ -8,6 +8,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+from nomia_utils import atomic_write_text
+
 
 VALID_STATUSES = {"accepted", "superseded", "deprecated", "corrected"}
 REQUIRED_FIELDS = (
@@ -34,7 +36,7 @@ def ensure_scaffold(path: Path) -> None:
     if path.exists():
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("# Governance Decisions\n\n## Entries\n\nNo governance decisions recorded.\n", encoding="utf-8")
+    atomic_write_text(path, "# Governance Decisions\n\n## Entries\n\nNo governance decisions recorded.\n")
 
 
 def build_entry(args: argparse.Namespace) -> str:
@@ -81,7 +83,7 @@ def append_entry(path: Path, entry: str) -> None:
 
     text = text.replace("\nNo governance decisions recorded.\n", "\n")
     rendered = text.rstrip() + "\n\n" + entry
-    path.write_text(rendered, encoding="utf-8")
+    atomic_write_text(path, rendered)
 
 
 def main(argv: list[str]) -> int:
