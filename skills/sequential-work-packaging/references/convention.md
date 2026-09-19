@@ -966,3 +966,26 @@ The final standardized model is:
 ## 23. Canonical Summary Statement
 
 Use `cycle_version` as the macro grouping container, `spec_id` as the sequential execution unit, `feature_key` as the stable functional identity, and `feature_version` as the semantic technical evolution of the feature or fix. Use `spec-catalog.yaml` as the source of truth for ordering, make `manifest.yaml` mandatory inside each spec, store every work package under `specs/specNNN/`, model dependencies at feature, spec, and task level, require explicit reasoning guidance in tasks, and finish every spec with a mandatory final review.
+
+---
+
+## 24. Reproducibility and transaction extension
+
+The canonical semantic model above remains authoritative. For reproducible mutation and recovery, also apply `references/reproducibility-contract.md`.
+
+Additional mandatory rules:
+
+- canonicalize paths before mutation and reject path/symlink escapes;
+- preserve unknown files unless their ownership and change are explicit;
+- require expected-before hashes for updates and `ABSENT` for creates;
+- use stable explicit `taskNNN` identities for new tasks without renumbering legacy tasks;
+- reject duplicate `(feature_key, feature_version)` ownership inside one cycle;
+- preserve existing `spec_id` and `order` unless an explicitly authorized transition says otherwise;
+- validate dependency cycles and dependency ordering before commit;
+- stage and post-validate multi-file updates as one recovery-aware transaction;
+- make repeated equivalent writes idempotent;
+- preserve last-known-good bytes on failure;
+- emit machine-readable validation and change receipts tied to exact hashes;
+- freeze the accepted final state after validation.
+
+These rules strengthen execution reproducibility without changing ownership of `cycle_version`, `spec_id`, `feature_key`, `feature_version`, or the six primary modes.

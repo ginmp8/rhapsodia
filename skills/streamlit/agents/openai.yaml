@@ -1,10 +1,12 @@
 interface:
-  display_name: "Streamlit"
-  short_description: "Build, debug, test, and deploy Streamlit Python apps."
+  display_name: Streamlit
+  short_description: Build, debug, test, and deploy Streamlit Python apps.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
-    - "chatgpt"
-    - "codex"
-    - "api"
-    - "atlas"
+  - chatgpt
+  - codex
+  - api
+  - atlas
   allow_implicit_invocation: true

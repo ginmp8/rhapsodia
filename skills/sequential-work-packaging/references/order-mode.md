@@ -34,6 +34,7 @@ Each `specs` entry must include:
 - keep `order` sortable and usually increment by 10
 - allow gaps
 - do not casually renumber existing specs
+- changing any existing `order` requires explicit operation authorization (`allow_order_change: true`); `order` mode alone is not authorization
 - keep `depends_on_features` and `depends_on_specs` separate
 - use `type: fix` only for bugfix-style work
 - otherwise default to `type: feature`
@@ -45,3 +46,7 @@ Before finishing, verify that:
 - sequence and dependency summary are explicit
 - `spec_id` and `feature_key` are not mixed
 - no spec folder was created during a pure order pass
+
+## Reproducibility gates
+
+Apply `references/reproducibility-contract.md` before mutation. Resolve canonical paths, preserve stable identities, require expected-before hashes, stage candidates outside live targets, validate before/after invariants where applicable, commit atomically, and emit a machine-readable receipt. Unknown files are preserved. A repeated equivalent pass must be `no_change`, not a formatting rewrite.

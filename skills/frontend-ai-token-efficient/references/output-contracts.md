@@ -261,14 +261,44 @@ When creating docs, either provide a file list plus content or a concise patch p
 - risks if assumptions are wrong
 ```
 
+## Stable finding schema
+
+For code, architecture, security, and UX findings, keep this conceptual schema even when rendering prose:
+
+```text
+severity
+code/category
+subject/location
+evidence_label
+evidence
+impact
+smallest_fix
+validation
+```
+
+Order findings by severity, then dependency/root-cause order, then stable path/name order for ties. Merge duplicate symptoms that share one root cause.
+
 ## Evidence language
 
 Use precise evidence labels:
 
-- **Executed**: a command, test, browser check, or script was run in this conversation.
-- **Observed**: based on files, diff, screenshots, logs, or repo content that was inspected.
-- **Inferred**: reasoned from common patterns or partial evidence.
-- **Assumed**: not verified; state the assumption clearly.
-- **Recommended**: a next validation step, not a claim that it passed.
+- **Measured**: a command, test, scanner, browser check, or deterministic calculation was executed in the current run.
+- **Observed**: based on files, diff, screenshots, logs, or repository content that was directly inspected.
+- **Supplied**: the user/tool provided a result that was not independently rerun.
+- **Inferred**: reasoned from partial evidence or established patterns.
+- **Assumed**: unverified premise needed to proceed.
+- **Planned**: validation or change proposed but not executed.
+- **Blocked**: required evidence or action could not be obtained.
 
-Never claim validation, benchmark, readiness, security assurance, or browser behavior without evidence.
+When the user's requested wording uses `Executed`/`Recommended`, keep those headings but map the underlying evidence to `Measured`/`Planned`. Never claim validation, benchmark, readiness, security assurance, repository-wide correctness, or browser behavior without corresponding evidence.
+
+## Evidence layers
+
+Keep these independent:
+
+1. structural/static;
+2. build/test;
+3. runtime/browser;
+4. perceptual/editorial.
+
+A pass in one layer does not imply a pass in the next.

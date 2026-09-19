@@ -1,17 +1,28 @@
 # Investigation Hypothesis Record
 
-## Hypothesis
+## Identity
 
 - ID:
-- Severity:
+- Target identity/revision:
+- Mode:
+- Priority:
+- Fingerprint:
+
+## Hypothesis
+
+- Candidate severity:
 - Statement:
 - Target artifact/flow:
-
-## Mechanism
-
 - Trigger:
 - Expected failure:
 - Side effect/security impact:
+
+## Evidence
+
+- Status: measured | observed | supplied | inferred | planned | blocked | out-of-scope
+- Confidence: confirmed | likely | needs-verification | not-applicable
+- Evidence references:
+- Missing confirmation point:
 
 ## Experiment
 
@@ -19,10 +30,11 @@
 - Fault injection:
 - Required evidence:
 - Safety constraints:
+- Stop condition:
 
 ## Decision
 
-- Status: planned | confirmed | rejected | needs verification
+- Status: planned | confirmed | rejected | needs-verification | merged-duplicate | blocked
 - Evidence:
 - Smallest fix:
 - Regression gate:

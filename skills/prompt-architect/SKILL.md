@@ -1,138 +1,272 @@
 ---
 name: prompt-architect
-description: use when asked to create, rewrite, improve, validate, benchmark, harden, or package prompts, system prompts, chat modes, github copilot agent prompts, custom instructions, agent instructions, or reusable skill instructions. especially use for prompt engineering requests that require source research, preserving user intent, resolving ambiguity, defining success criteria, adding examples, choosing output format, testing prompt behavior, and producing a final prompt plus validation notes. do not use to execute the user's task directly when the request is to improve the prompt itself.
+description: use when asked to create, rewrite, improve, review, validate, benchmark, harden, or package prompts, system prompts, chat modes, github copilot agent prompts, custom instructions, agent instructions, or reusable skill instructions. especially use for prompt engineering requests that require preserving user intent, resolving conflicting requirements, integrating sources, defining testable output contracts, adding examples, designing evaluation scenarios, or producing validation evidence. do not use merely to execute a task described by a prompt when the user is not asking to design or assess the prompt itself.
 ---
 
 # Prompt Architect
 
-## Purpose
+Turn rough prompt ideas or existing prompt artifacts into bounded, testable prompt contracts. Preserve legitimate semantic freedom, but make activation, requirements, conflicts, output shape, validation claims, and repair decisions reproducible enough that repeated reviews are materially comparable.
 
-Use this skill to turn rough instructions, prompt ideas, existing prompts, agent definitions, chat modes, or skill instructions into high-quality prompts with explicit scope, source-grounded requirements, output contracts, examples, and validation evidence.
+## Reproducibility ceiling
 
-The skill combines two roles:
+Prompt design is a **constrained-subjective** task. Structure, requirement preservation, evidence handling, scenario shape, mechanical lint, and claim rules can be enforced. Wording quality, decomposition, and some trade-offs remain model judgment.
 
-1. **Prompt Architect**: analyzes the target prompt, researches sources, designs or revises the prompt, and resolves conflicts.
-2. **Prompt Tester**: simulates literal execution of the draft prompt against representative scenarios and reports ambiguity, gaps, conflicts, and output risks.
+Do not claim byte-identical outputs, universal prompt quality, or behavioral improvement from static inspection alone.
 
-Default to Prompt Architect. Activate Prompt Tester only when the workflow reaches validation or the user explicitly asks for testing.
+## Activation contract
 
-## Core Rules
+Activate for requests to:
 
-- Treat the user's request as prompt-design work, not as a request to complete the task described inside the prompt, unless the user clearly asks for both.
-- Preserve user-provided goals, constraints, examples, variables, terminology, and required style unless they conflict with higher-priority instructions or safety requirements.
-- Use imperative, actionable instructions in generated prompts.
-- Keep reasoning or analysis before conclusions in prompt structures; conclusions, classifications, recommendations, and final answers should appear after required analysis steps.
-- Define success criteria and output format explicitly.
-- Add examples only when they improve consistency. Use placeholders for complex or user-specific values.
-- Avoid unnecessary verbosity, generic advice, and untestable claims.
-- Do not expose hidden chain-of-thought. When analysis is requested, provide a concise visible rationale, checklist, or assessment.
-- Never claim a prompt was tested, benchmarked, or validated unless a validation step was actually performed or supplied as evidence.
+- create a reusable prompt, system prompt, agent prompt, chat mode, custom instruction, or prompt template;
+- improve, rewrite, harden, simplify, compress, or restructure an existing prompt;
+- review or score prompt quality without executing the prompt's task;
+- test or validate prompt behavior, activation, ambiguity, output compliance, or safety boundaries;
+- build reusable prompt assets, scenario suites, or prompt specifications.
 
-## Required Inputs
+Do **not** activate merely because a prompt is present when the user asks to execute, summarize, translate, or extract information from it.
 
-Resolve or infer these inputs before producing a final prompt:
+When intent is ambiguous, prefer the user's explicit verb. If the target artifact itself is missing and cannot be recovered from context, ask for that artifact rather than inventing it.
 
-1. Target prompt or prompt idea.
-2. Intended model, assistant, agent, or chat mode that will execute the prompt.
-3. Expected inputs available to that executor.
-4. Required output format, length, language, and citation style.
-5. Tools, connectors, files, repositories, or source materials the executor may use.
-6. Constraints, prohibited behavior, safety boundaries, and stop conditions.
-7. Success criteria or validation scenarios.
+## Modes and routing
 
-When these inputs are incomplete, proceed with explicit assumptions unless the gap changes the prompt's purpose, scope, tools, or output contract.
+Choose exactly one primary mode before drafting:
 
-## Mode Selection
-
-Choose one primary mode:
-
-| User intent | Mode | Primary output |
+| Mode | Trigger | Primary output |
 |---|---|---|
-| create a new prompt from an idea or task | `create` | final prompt plus concise design notes |
-| improve an existing prompt | `improve` | revised prompt plus change summary and validation notes |
-| review a prompt without rewriting it | `review-only` | scorecard, risks, and prioritized fixes |
-| test a prompt | `validation-only` | Prompt Tester execution notes, defects, and verdict |
-| build prompt assets for reuse | `package-guidance` | prompt spec, examples, scenarios, and reusable templates |
+| `create` | create a new prompt from a task or idea | final prompt + optional design/validation notes |
+| `improve` | modify an existing prompt | revised prompt + change ledger + validation evidence |
+| `review-only` | evaluate without rewriting | findings + rubric + prioritized fixes |
+| `validation-only` | test an existing prompt | scenario results + defects + evidence label |
+| `package-guidance` | build reusable prompt assets | prompt spec/templates/scenarios |
 
-If the user requests only the final prompt, return only the final prompt after doing the necessary analysis privately. If they request evidence, include concise analysis, source notes, test scenarios, and validation results.
+Routing precedence when multiple intents appear:
+
+1. obey explicit prohibitions such as "review only" or "do not rewrite";
+2. if the user requests both rewrite and validation, use `improve` and include validation;
+3. if the user requests only execution of the prompt's task, do not enter prompt-design mode;
+4. otherwise choose the narrowest mode that satisfies the request.
+
+Never silently switch modes after evidence collection. If a later requirement changes the mode materially, state the switch and why.
+
+## Core invariants
+
+Preserve these across all modes:
+
+- user-provided goals, domain terminology, variables, constants, examples, language, required style, and explicit constraints unless higher-priority instructions or safety rules require otherwise;
+- protected examples or quoted text exactly when the user marks them immutable;
+- source-required semantics when the prompt is derived from authoritative documentation;
+- safety, privacy, legal, compliance, evidence, and validation requirements;
+- tool availability boundaries of the intended executor;
+- output contracts that downstream consumers rely on.
+
+Do not remove semantic content merely to shorten, beautify, or make a validator pass.
+
+Do not expose hidden chain-of-thought. When the prompt needs visible reasoning, request concise rationale, evidence, checks, calculations, or decision criteria instead.
+
+## Input normalization
+
+Before producing a final prompt, resolve or explicitly mark assumptions for:
+
+1. target prompt or task idea;
+2. intended executor/model/agent;
+3. available inputs and context;
+4. tools, connectors, repositories, files, or web access;
+5. output format, language, length, syntax, and citation rules;
+6. constraints, prohibited behavior, safety boundaries, and stop conditions;
+7. success criteria and validation method;
+8. compatibility commitments, protected regions, and examples that must not change.
+
+Ask one focused question only when a missing fact changes purpose, authority, tool access, safety, or the output contract. Otherwise proceed with labeled assumptions.
+
+For complex work, build a requirement ledger using [prompt-contract.md](references/prompt-contract.md). Distinguish `explicit`, `source-required`, `inferred`, and `optional` requirements, and mark protected items as immutable.
 
 ## Workflow
 
-1. **Clarify intent without stalling**
-   - Identify the target task, target user/model, inputs, output format, constraints, examples, and success criteria.
-   - Ask a follow-up only when a missing detail materially changes the prompt. Otherwise proceed with stated assumptions.
+### 1. Establish target identity and baseline
 
-2. **Collect and integrate sources**
-   - Use user-provided docs, files, URLs, repositories, or examples as primary evidence.
-   - Prioritize authoritative and current sources over community or inferred practice.
-   - Extract requirements, command sequences, domain terms, constraints, examples, and anti-patterns.
-   - Load [source-integration.md](references/source-integration.md) when the request depends on external docs, repos, standards, or multiple sources.
+For `improve`, `review-only`, and `validation-only`:
 
-3. **Audit the prompt or requirement**
-   - Check objective, audience, context, constraints, tools, examples, output format, evaluation criteria, ambiguity, conflicts, and safety.
-   - Load [prompt-quality-rubric.md](references/prompt-quality-rubric.md) for scoring, review-only mode, or complex rewrites.
+- identify the exact target prompt/version;
+- preserve the original before rewriting;
+- record protected regions and compatibility commitments;
+- if behavioral comparison will be claimed, freeze the scenarios/evaluator **before** editing the prompt.
 
-4. **Design or revise the prompt**
-   - Use a concise opening instruction as the first line.
-   - Add sections only when they improve execution: context, steps, tool rules, constraints, output format, examples, notes, stop conditions.
-   - Preserve existing structure for complex prompts unless structural defects cause ambiguity or conflict.
-   - Load [prompt-architecture-workflow.md](references/prompt-architecture-workflow.md) for detailed creation and improvement patterns.
+A scenario suite authored after seeing candidate failures may be useful for regression coverage, but it cannot retroactively prove the original improvement claim. Any **baseline vs candidate** comparison must use the same frozen evaluation basis.
 
-5. **Validate with Prompt Tester**
-   - Create at least one realistic scenario that exercises the most important requirements, unless the user explicitly forbids validation or asks for prompt-only output.
-   - Simulate literal execution of the prompt and identify ambiguity, missing instructions, conflicts, likely failure modes, and output-format drift.
-   - Iterate up to three cycles when defects are material.
-   - Load [validation-scenarios.md](references/validation-scenarios.md) for scenario design and defect taxonomy.
+### 2. Collect sources and provenance
 
-6. **Deliver**
-   - Provide the final prompt in the requested format.
-   - When not prompt-only, include concise notes: what changed, sources used, validation outcome, unresolved assumptions, and next improvement if needed.
+Use user-provided files, docs, URLs, repositories, and examples as primary evidence. Load [source-integration.md](references/source-integration.md) when external or multiple sources affect the prompt.
 
-## Output Contracts
+Record which requirements come from which sources. When sources conflict, apply the authority rules in that reference rather than silently blending them.
 
-For `create` or `improve`, use this default response shape unless the user requests otherwise:
+Do not copy source text wholesale when concise prompt rules are sufficient. Do not fabricate unavailable source requirements or citations.
 
-1. **Prompt**: the complete final prompt, ready to copy.
-2. **Design notes**: brief bullets explaining important choices.
-3. **Validation**: scenario tested, defects found, iteration result, and remaining risks.
+### 3. Audit before rewriting
 
-For `review-only`, use:
+Audit in execution order:
 
-1. **Verdict**: approve, approve with reservations, or reject.
-2. **Scorecard**: objective, specificity, structure, examples, output format, constraints, safety, validation readiness.
-3. **Critical fixes**: prioritized list.
-4. **Suggested rewrite strategy**.
+`objective -> audience/executor -> inputs -> authority/conflicts -> tools/sources -> workflow -> output contract -> examples -> safety/privacy -> validation readiness`
 
-For `validation-only`, use:
+Use [prompt-quality-rubric.md](references/prompt-quality-rubric.md) for complex rewrites or `review-only` mode.
 
-1. **Scenario**.
-2. **Literal execution summary**.
-3. **Ambiguities and conflicts**.
-4. **Output-format compliance**.
-5. **Verdict and required fixes**.
+Separate:
 
-## Bundled Resources
+- **observation**: directly present in the prompt/source;
+- **inference**: likely intent not explicitly stated;
+- **recommendation**: proposed design choice;
+- **blocking conflict**: cannot be resolved without authority or clarification.
 
-- [prompt-architecture-workflow.md](references/prompt-architecture-workflow.md): detailed prompt creation, improvement, and preservation workflow.
-- [prompt-quality-rubric.md](references/prompt-quality-rubric.md): scoring rubric and review checklist.
-- [source-integration.md](references/source-integration.md): source handling, research integration, conflict resolution, and citation expectations.
-- [validation-scenarios.md](references/validation-scenarios.md): Prompt Tester scenario design, validation loop, and defect taxonomy.
-- [assets/templates/final-prompt.md.template](assets/templates/final-prompt.md.template): reusable final prompt skeleton.
-- [assets/templates/prompt-review-report.md.template](assets/templates/prompt-review-report.md.template): reusable review report skeleton.
-- [assets/templates/scenario-suite.json.template](assets/templates/scenario-suite.json.template): reusable behavioral scenario suite skeleton.
-- [scripts/prompt_lint.py](scripts/prompt_lint.py): deterministic text lint for prompt files, hidden characters, unresolved scaffold markers, and missing output-format cues.
-- [scripts/package_skill.py](scripts/package_skill.py): local package builder for this skill when deterministic zip creation is needed outside the platform packager.
-- [evals/activation-scenarios.json](evals/activation-scenarios.json): planned activation, non-activation, ambiguous, and edge-case scenarios for regression review.
-- [examples/prompt-architect-scenarios.md](examples/prompt-architect-scenarios.md): human-readable examples for common use cases.
+### 4. Design or revise with bounded freedom
 
-Use `scripts/prompt_lint.py` when the prompt is available as a file, when packaging reusable prompt assets, or when the user asks for validation evidence that benefits from deterministic checks. Use `evals/activation-scenarios.json` and `examples/prompt-architect-scenarios.md` when validating activation behavior or planning regression coverage.
+Use [prompt-architecture-workflow.md](references/prompt-architecture-workflow.md).
 
-## Stop Conditions
+Prefer this canonical order when sections are needed:
 
-Stop and report a blocker when:
+`task -> context -> inputs/assumptions -> workflow -> tool/source rules -> constraints -> output contract -> examples -> edge cases/stop conditions`
 
-- the user asks for a measured benchmark but no executable scenarios, expected outputs, or evaluation method are available;
-- required source material is inaccessible and cannot be reasonably summarized from provided context;
-- the requested rewrite would remove safety, legal, compliance, or security constraints from the original prompt;
-- the prompt requires secrets, private credentials, or hidden chain-of-thought disclosure;
-- multiple conflicting requirements cannot be reconciled without user or source authority.
+Omit sections that add no execution value. Preserve an existing governed structure when changing it would create compatibility risk without fixing a concrete defect.
+
+Use imperative, testable instructions. Define defaults and tie-breakers where repeated interpretations would otherwise diverge.
+
+### 5. Apply deterministic checks where available
+
+When the prompt is available as a file, run:
+
+```text
+<PYTHON> scripts/prompt_lint.py <PROMPT_FILE> --json --require-output-format --require-success-criteria
+```
+
+For a reusable prompt contract:
+
+```text
+<PYTHON> scripts/validate_prompt_contract.py <CONTRACT_JSON>
+```
+
+For scenario assets:
+
+```text
+<PYTHON> scripts/validate_scenario_suite.py <SCENARIO_JSON>
+```
+
+These checks prove only the properties they inspect. A lint pass is not a behavioral benchmark.
+
+### 6. Validate with frozen scenarios
+
+Load [validation-scenarios.md](references/validation-scenarios.md).
+
+Use the same scenarios for baseline and candidate when making a comparison. Include the smallest set that covers the material risk: core, boundary, ambiguity, conflict, regression, adversarial, or runtime/tool behavior.
+
+Keep authoring scenarios separate from genuine holdouts. A scenario bundled with the skill is visible to the authoring process and therefore is not a true holdout by itself.
+
+### 7. Repair by diagnosis
+
+For each material failure:
+
+1. identify the exact scenario/criterion that failed;
+2. identify one causal prompt defect;
+3. apply the smallest change that addresses that defect;
+4. rerun the same check/scenario;
+5. then run adjacent regression checks.
+
+Stop after three validation cycles, or earlier after two consecutive cycles without improvement on the same material defect set. Report unresolved defects instead of random-searching wording.
+
+Never weaken safety, evidence, required semantics, frozen scenarios, or acceptance criteria merely to obtain a pass.
+
+### 8. Freeze after pass
+
+Once the declared checks pass, the **frozen candidate** must not receive unvalidated semantic edits. Any later semantic edit invalidates the affected validation evidence and requires rerunning the relevant checks.
+
+For reusable files, package only the frozen bytes. Use **atomic delivery** where possible: canonicalize output destinations first, reject any output alias with the input skill tree or sibling outputs, stage/validate before replacement, preserve the **last-good** artifact, and rollback on a failed multi-output commit. Emit a durable receipt tied to the committed bytes with SHA-256 when packaging is material evidence.
+
+## Evidence and claim rules
+
+Label validation evidence accurately:
+
+- `measured`: an actual command, scenario executor, model run, or evaluator was executed;
+- `observed`: direct inspection of prompt/source/output;
+- `derived`: deterministic calculation from measured/observed evidence;
+- `supplied`: result provided by the user or another system but not independently run here;
+- `planned`: scenario or validator exists but was not executed;
+- `blocked`: required evidence could not be obtained.
+
+A manual "literal simulation" is `observed` or `planned`, not `measured runtime behavior`. Keep **structural evidence**, **behavioral evidence**, and **runtime evidence** separate; perceptual/editorial evidence is a fourth layer when subjective review is material.
+
+Use these claim boundaries:
+
+- **structurally hardened**: contracts/rules/checks improved and applicable deterministic gates pass;
+- **validation-ready**: evaluation assets exist but were not executed;
+- **behaviorally improved**: baseline and candidate were actually compared with a frozen evaluator and predeclared acceptance rule;
+- **runtime validated**: the intended executor/tools actually ran successfully.
+
+Do not upgrade one evidence layer into another.
+
+## Output contracts
+
+### `create` / `improve`
+
+Default shape when the user does not request prompt-only output:
+
+1. **Prompt** — complete copy-ready prompt.
+2. **Change ledger** — only material additions/removals/behavior changes; omit for new prompts when unnecessary.
+3. **Validation** — scenarios/checks actually run, evidence labels, result, and residual risks.
+4. **Assumptions/conflicts** — only unresolved items that materially affect execution.
+
+If the user requests only the final prompt, return only the final prompt after performing any feasible checks privately.
+
+### `review-only`
+
+1. **Findings** — severity, location/subject, evidence, impact, recommended fix.
+2. **Rubric** — versioned criteria from [prompt-quality-rubric.md](references/prompt-quality-rubric.md).
+3. **Critical gates** — pass/fail/blocked.
+4. **Rewrite strategy** — bounded plan only; do not rewrite unless requested.
+
+Do not report a synthetic overall score unless the user explicitly asks for one and the rubric defines how to calculate it.
+
+### `validation-only`
+
+1. **Target identity**.
+2. **Scenario/evaluator identity and freeze state**.
+3. **Results by scenario**.
+4. **Defects with stable severity**.
+5. **Evidence label**.
+6. **Verdict**: `pass`, `pass-with-reservations`, `fail`, or `blocked`.
+
+### `package-guidance`
+
+Return only the reusable assets needed: prompt contract/spec, templates, scenarios, and validation instructions. Keep package-specific host adapters optional unless the user requests one.
+
+## Progressive references
+
+Load only what the active mode needs:
+
+- [prompt-architecture-workflow.md](references/prompt-architecture-workflow.md): requirement ledger, rewrite patterns, conflict resolution, and deterministic defaults.
+- [prompt-contract.md](references/prompt-contract.md): machine-readable contract semantics and protected requirements.
+- [prompt-quality-rubric.md](references/prompt-quality-rubric.md): versioned review rubric, critical gates, scoring anchors, and severities.
+- [source-integration.md](references/source-integration.md): source hierarchy, provenance, conflicts, and citation/evidence rules.
+- [validation-scenarios.md](references/validation-scenarios.md): frozen scenario design, defect taxonomy, claim boundaries, and repair loop.
+- [assets/templates/final-prompt.md.template](assets/templates/final-prompt.md.template): default prompt skeleton.
+- [assets/templates/prompt-contract.json.template](assets/templates/prompt-contract.json.template): reusable contract scaffold.
+- [assets/templates/prompt-review-report.md.template](assets/templates/prompt-review-report.md.template): review report scaffold.
+- [assets/templates/scenario-suite.json.template](assets/templates/scenario-suite.json.template): scenario suite scaffold.
+- [evals/activation-scenarios-v2.json](evals/activation-scenarios-v2.json): canonical v2 authoring/regression scenarios; planned until actually executed.
+- [evals/activation-scenarios.json](evals/activation-scenarios.json): legacy v1 compatibility suite; preserve for existing consumers until migrated.
+- [examples/prompt-architect-scenarios.md](examples/prompt-architect-scenarios.md): human-readable usage examples.
+
+## Portability
+
+Keep the core host-neutral. Do not make prompt semantics depend on ChatGPT, Claude, GitHub Copilot, Cursor, or another host unless the user targets that host explicitly.
+
+Treat `agents/openai.yaml` as an optional OpenAI adapter. For host-specific prompts, isolate host-specific tool names, file conventions, and invocation rules in clearly labeled sections so the semantic core remains portable when possible.
+
+## Stop conditions
+
+Stop or return a bounded partial result when:
+
+- the target prompt/artifact is required but unavailable;
+- authority between conflicting requirements cannot be determined safely;
+- required source material is inaccessible and guessing would change semantics;
+- the requested rewrite would remove protected safety, compliance, privacy, evidence, or compatibility constraints;
+- the only way to pass validation is to edit frozen scenarios/evaluators or weaken acceptance criteria;
+- a measured benchmark is requested but no executable evaluator/harness is available;
+- the intended executor's tool capabilities are unknown and materially change prompt behavior;
+- requested hidden chain-of-thought disclosure is essential to the proposed design.

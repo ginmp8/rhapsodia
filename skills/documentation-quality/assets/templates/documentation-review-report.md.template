@@ -1,44 +1,58 @@
 # Documentation review report: {{target_name}}
 
-## Mode
+## Review contract
 
-{{selected_modes}}
-
-## Scope
-
-- Target path or files: {{target_paths}}
+- Primary mode: {{primary_mode}}
+- Secondary modes: {{secondary_modes}}
+- Review contract: {{review_contract_identity}}
+- Rubric: {{rubric_identity}}
 - Audience: {{audience}}
 - Requested outcome: {{requested_outcome}}
 
-## Evidence inspected
+## Scope and evidence
 
-| Evidence | Status | Notes |
-|---|---|---|
-| {{evidence_item}} | {{inspected_or_gap}} | {{evidence_notes}} |
+- Target path or files: {{target_paths}}
+- Source-truth files inspected: {{source_truth_files}}
+- Baseline identity or snapshot: {{baseline_identity_or_not_applicable}}
 
-## Changes made or recommended
-
-| Area | Change | Rationale | Risk |
+| Evidence | Label | Status | Notes |
 |---|---|---|---|
-| Clarity | {{clarity_change}} | {{clarity_rationale}} | {{clarity_risk}} |
-| Structure | {{structure_change}} | {{structure_rationale}} | {{structure_risk}} |
-| Accuracy | {{accuracy_change}} | {{accuracy_rationale}} | {{accuracy_risk}} |
-| Accessibility | {{accessibility_change}} | {{accessibility_rationale}} | {{accessibility_risk}} |
-| Examples | {{examples_change}} | {{examples_rationale}} | {{examples_risk}} |
-| Context economy | {{context_change}} | {{context_rationale}} | {{context_risk}} |
+| {{evidence_item}} | {{evidence_label}} | {{inspected_measured_supplied_blocked}} | {{evidence_notes}} |
 
-## Verification
+## Findings or changes
 
-- Local links checked: {{local_links_checked}}
-- Referenced files checked: {{referenced_files_checked}}
-- Scripts or validators checked: {{scripts_validators_checked}}
-- Commands run: {{commands_run}}
-- Claims not verified: {{unverified_claims}}
+| Severity | Criterion | Subject | Observation or change | Evidence | Impact | Verification |
+|---|---|---|---|---|---|---|
+| {{severity}} | {{criterion_id}} | {{subject}} | {{observation_or_change}} | {{evidence_summary}} | {{impact}} | {{verification}} |
 
-## Remaining gaps
+## Verification layers
 
-{{remaining_gaps}}
+### Mechanical
 
-## Recommendation
+{{mechanical_evidence}}
+
+### Semantic and source fidelity
+
+{{semantic_evidence}}
+
+### Runtime
+
+{{runtime_evidence}}
+
+### Editorial
+
+{{editorial_evidence}}
+
+## Commands
+
+| Command | Status | Evidence |
+|---|---|---|
+| {{command}} | {{pass_fail_not_run}} | {{command_evidence}} |
+
+## Remaining gaps and risks
+
+{{remaining_gaps_and_risks}}
+
+## Next highest-value change
 
 {{recommendation}}

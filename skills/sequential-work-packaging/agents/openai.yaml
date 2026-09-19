@@ -1,6 +1,8 @@
 interface:
   display_name: Sequential Work Packaging
   short_description: Create and review sequential planning specs
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

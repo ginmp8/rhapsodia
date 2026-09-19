@@ -2,6 +2,8 @@ interface:
   display_name: Agent Design
   short_description: Design and review custom agents, routers, governance controls,
     and handoffs.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

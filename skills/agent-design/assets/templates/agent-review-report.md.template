@@ -1,54 +1,63 @@
 # Agent Review Report: {{agent_name}}
 
+- rubric: `agent-design-rubric/v2`
+- contract: `agent-design-contract/v1`
+- operating surface: {{platform}}
+- reviewed artifact/path: {{agent_path}}
+- evidence status: {{evidence_status}}
+
 ## Verdict
 
-{{approve_or_reject}}
+{{approve_approve_with_changes_reject_or_blocked}}
+
+Verdict must follow critical-gate rules; aggregate score is advisory only.
 
 ## Scope Reviewed
 
-- agent or prompt path: {{agent_path}}
-- operating surface: {{platform}}
 - reviewed materials: {{reviewed_materials}}
-- evidence status: {{evidence_status}}
+- assumptions: {{assumptions}}
+- uninspected/blocked surfaces: {{blocked_surfaces}}
 
-## Executive Summary
+## Critical Gates
 
-{{summary}}
+| Gate | 0-3 / N/A | Evidence label | Evidence | Required action |
+|---|---:|---|---|---|
+| mission/ownership | {{mission_gate}} | {{mission_evidence_label}} | {{mission_evidence}} | {{mission_action}} |
+| authority | {{authority_gate}} | {{authority_evidence_label}} | {{authority_evidence}} | {{authority_action}} |
+| tool least authority | {{tool_gate}} | {{tool_evidence_label}} | {{tool_evidence}} | {{tool_action}} |
+| stop/escalation | {{stop_gate}} | {{stop_evidence_label}} | {{stop_evidence}} | {{stop_action}} |
+| state/termination | {{state_gate}} | {{state_evidence_label}} | {{state_evidence}} | {{state_action}} |
+| evidence truthfulness | {{evidence_gate}} | {{evidence_evidence_label}} | {{evidence_evidence}} | {{evidence_action}} |
 
 ## Findings
 
-| Severity | Area | Finding | Evidence | Required fix |
-|---|---|---|---|---|
-| {{severity}} | {{area}} | {{finding}} | {{evidence}} | {{required_fix}} |
+| ID | Severity | Criterion | Finding | Evidence label | Evidence | Required fix |
+|---|---|---|---|---|---|---|
+| {{finding_id}} | {{severity}} | {{criterion}} | {{finding}} | {{finding_evidence_label}} | {{finding_evidence}} | {{required_fix}} |
 
-## Skill vs Agent Fit
+## Advisory Quality Score
 
-{{skill_vs_agent_assessment}}
+| Dimension | Score 0-3 / N/A | Rationale |
+|---|---:|---|
+| mission | {{score_mission}} | {{score_mission_rationale}} |
+| responsibilities | {{score_responsibilities}} | {{score_responsibilities_rationale}} |
+| non-responsibilities | {{score_non_responsibilities}} | {{score_non_responsibilities_rationale}} |
+| inputs/context | {{score_inputs}} | {{score_inputs_rationale}} |
+| outputs | {{score_outputs}} | {{score_outputs_rationale}} |
+| authority | {{score_authority}} | {{score_authority_rationale}} |
+| tools | {{score_tools}} | {{score_tools_rationale}} |
+| handoffs | {{score_handoffs}} | {{score_handoffs_rationale}} |
+| state/termination | {{score_state}} | {{score_state_rationale}} |
+| validation/evidence | {{score_validation}} | {{score_validation_rationale}} |
 
-## Role and Authority Assessment
-
-- mission clarity: {{mission_clarity}}
-- responsibilities: {{responsibilities_assessment}}
-- non-responsibilities: {{non_responsibilities_assessment}}
-- authority boundary: {{authority_assessment}}
-
-## Tool Contract Assessment
-
-| Tool or capability | Assessment | Risk | Recommendation |
-|---|---|---|---|
-| {{tool_name}} | {{tool_assessment}} | {{tool_risk}} | {{tool_recommendation}} |
-
-## Governance and Safety Assessment
-
-- stop conditions: {{stop_condition_assessment}}
-- escalation: {{escalation_assessment}}
-- auditability: {{auditability_assessment}}
-- controlled execution: {{controlled_execution_assessment}}
-- sensitive data or secrets: {{sensitive_data_assessment}}
+Do not compare aggregate totals across reviews with materially different `N/A` dimensions.
 
 ## Routing and Handoff Assessment
 
-{{routing_and_handoff_assessment}}
+- ownership/routing decision: {{routing_decision}}
+- `handoff/v1` completeness: {{handoff_assessment}}
+- cycle/re-entry safety: {{cycle_assessment}}
+- fallback/escalation: {{fallback_assessment}}
 
 ## Required Changes
 
@@ -58,16 +67,15 @@
 
 ## Validation Plan
 
-| Scenario | Category | Expected behavior | Acceptance criteria | Evidence status |
+| Scenario | Group | Expected behavior | Acceptance criteria | Evidence status |
 |---|---|---|---|---|
-| {{scenario_name}} | {{scenario_category}} | {{expected_behavior}} | {{acceptance_criteria}} | {{evidence_status}} |
+| {{scenario_name}} | {{scenario_group}} | {{expected_behavior}} | {{acceptance_criteria}} | {{scenario_evidence_status}} |
 
 ## Residual Risks
 
 - {{residual_risk_1}}
 - {{residual_risk_2}}
 
-## Next Steps
+## Not Measured
 
-- {{next_step_1}}
-- {{next_step_2}}
+- {{not_measured_1}}

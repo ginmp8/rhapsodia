@@ -26,8 +26,7 @@ Use these exact user-facing labels in every PR finding and suggested comment:
 - 🔵 `NIT`: small style, naming, formatting, or consistency detail only.
 - 🟣 `QUESTION`: approval-relevant missing context or suspicious but unconfirmed signal.
 
-For each PR finding include: file/line, security confidence when applicable, evidence, problem, impact, smallest fix, validation, blocks merge, expected treatment, and future issue when applicable.
-
+For each PR finding include: finding id, file/line or subject, security confidence when applicable, evidence status, evidence, problem, impact, severity rationale, smallest fix, validation, blocks merge, expected treatment, and future issue when applicable. Deduplicate observations that share the same root cause, affected subject, failure mechanism, and material impact.
 
 Use this reference for PRs, diffs, snippets, and repository areas. Review objectively, proportionally to risk, and from inspected evidence. Do not create findings from personal style preference alone.
 
@@ -38,7 +37,7 @@ Use this reference for PRs, diffs, snippets, and repository areas. Review object
 3. Trace each changed entry point to state changes, external calls, events, logs, permissions, transactions, retries, and error handling.
 4. Compare old and new behavior for regressions, broadened permissions, changed defaults, changed contracts, and changed failure modes.
 5. Inspect tests and manual validation for meaningful coverage of new behavior, edge cases, permissions, failure paths, migrations, logs, and rollback.
-6. Classify each material issue by severity, evidence confidence, merge-blocking status, and expected treatment.
+6. Classify each material issue by severity, evidence status, confidence, merge-blocking status, and expected treatment. Apply the hard floors and tie-breakers in `reproducible-review-contract.md`, then sort canonically before assigning finding IDs.
 
 ## Review dimensions adapted from PR review discipline
 
@@ -104,7 +103,7 @@ Review source, configuration, IaC, CI/CD, scripts, Dockerfiles, manifests, tests
 
 ## Severity, verdict, and expected treatment
 
-Severity is not the same as the merge verdict. Severity describes risk. The merge verdict describes whether the PR can merge. Expected treatment describes what should happen next.
+Severity is not the same as the merge verdict. Severity describes risk. The merge verdict describes whether the PR can merge. Expected treatment describes what should happen next. The canonical hard floors, tie-breakers, and verdict derivation rules live in `reproducible-review-contract.md`; this file provides domain examples rather than a second competing rubric.
 
 Severity guidance:
 

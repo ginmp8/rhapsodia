@@ -1,24 +1,32 @@
 {
-  "suite_name": "[suite-name]",
-  "target_prompt": "[prompt-name-or-path]",
+  "schema_version": 2,
+  "suite_id": "[suite-id]",
+  "target_identity": "[prompt-name-or-hash]",
+  "status": "planned",
   "scenarios": [
     {
-      "id": "activation-001",
-      "type": "activation",
+      "id": "core-001",
+      "group": "core",
       "priority": "high",
-      "user_input": "[representative request]",
-      "required_behavior": "[what the prompt must do]",
-      "expected_output_traits": ["[trait]"],
-      "failure_signals": ["[failure signal]"]
+      "input": "[representative request]",
+      "expected": {
+        "activation": "yes",
+        "hard_gates": ["[gate]"],
+        "observables": ["[observable behavior]"],
+        "forbidden": ["[forbidden behavior]"]
+      }
     },
     {
-      "id": "negative-001",
-      "type": "negative",
+      "id": "non-activation-001",
+      "group": "non-activation",
       "priority": "medium",
-      "user_input": "[out-of-scope request]",
-      "required_behavior": "[refuse, redirect, or clarify]",
-      "expected_output_traits": ["[trait]"],
-      "failure_signals": ["[failure signal]"]
+      "input": "[adjacent request outside scope]",
+      "expected": {
+        "activation": "no",
+        "hard_gates": ["[gate]"],
+        "observables": ["[observable behavior]"],
+        "forbidden": []
+      }
     }
   ]
 }

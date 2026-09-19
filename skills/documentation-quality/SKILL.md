@@ -7,26 +7,22 @@ description: use when asked to create, review, reorganize, evaluate, or improve 
 
 ## Core rule
 
-Improve documentation against inspectable evidence. Treat target files, scripts, validators, examples, READMEs, and existing contracts as the source of truth. Do not invent behavior, commands, validation results, or ownership boundaries.
+Improve documentation against inspectable evidence. Treat target files, scripts, validators, examples, READMEs, contracts, and executed command output as source truth. Never invent behavior, commands, validation results, ownership boundaries, or visual details.
 
+Reproducibility means repeated reviews of the same target, evidence, mode, and rubric version should produce materially comparable findings and validation decisions. Editorial wording may still vary.
 
 ## Required inputs
 
-Before editing or reviewing documentation, resolve or infer:
+Resolve or infer before material edits:
 
-- target files or directories to inspect;
-- selected documentation mode;
-- intended audience and requested output format;
-- source truth available for verification, such as adjacent Skill files, README files, scripts, validators, examples, or repository files;
-- whether the user expects direct edits, a review report, or both.
+- target files or directories;
+- primary documentation mode and any secondary modes;
+- intended audience;
+- requested outcome: review, direct edits, or both;
+- source truth available for verification;
+- whether a durable report or machine-readable receipt is required.
 
-## Verification helpers
-
-Use `scripts/check_documentation_references.py` when filesystem access is available and the task needs local Markdown link checks or optional file-like code-span checks. Treat its output as structural evidence only; semantic accuracy still requires document review.
-
-Use `scripts/package_skill.py` only as a maintenance utility for validating and packaging a skill folder as `skill.zip`; do not treat it as part of the documentation-review workflow.
-
-Use `evals/activation-scenarios.json` as planned activation and boundary coverage for this Skill. Do not report scenario metrics as measured unless the scenarios were actually executed and results were captured.
+If target, audience, or outcome ambiguity would materially change the work, resolve it before broad rewriting.
 
 ## Mode selection
 
@@ -37,53 +33,81 @@ Use `evals/activation-scenarios.json` as planned activation and boundary coverag
 | Document scripts, commands, parameters, outputs, errors, or validator behavior | `script-documentation` |
 | Improve examples, before/after cases, tutorials, or usage scenarios | `example-improvement` |
 | Improve Markdown headings, links, lists, tables, alt text, and scanability | `markdown-accessibility` |
-| Evaluate technical accuracy, completeness, flow, and reader task success | `technical-content-evaluation` |
+| Evaluate accuracy, completeness, flow, and reader task success | `technical-content-evaluation` |
 | Propose a cleaner documentation layout without duplication | `documentation-restructure` |
 | Produce a durable review report with changes, rationale, risks, and gaps | `documentation-report` |
 
-Use multiple modes only when the user request clearly spans them. Name the selected mode in the final report.
+Use multiple modes only when the request genuinely spans them. Keep one primary mode for ordering criteria and reporting.
+
+## Progressive loading
+
+Load only what the active mode needs:
+
+- [`references/review-contract.md`](references/review-contract.md): evidence labels, finding schema, severity, ordering, completion gates, before/after fairness, and bounded repair.
+- [`references/documentation-quality-rubric.md`](references/documentation-quality-rubric.md): versioned quality criteria and mode mapping.
+- [`references/markdown-accessibility-checklist.md`](references/markdown-accessibility-checklist.md): Markdown accessibility and readability.
+- [`references/reference-file-patterns.md`](references/reference-file-patterns.md): Skill reference files, context economy, and restructure patterns.
+- [`assets/templates/documentation-review-report.md.template`](assets/templates/documentation-review-report.md.template): durable human-readable review report.
+- [`examples/skill-documentation-before-after.md`](examples/skill-documentation-before-after.md): compact rewrite calibration.
+
+Load `review-contract.md` for substantive reviews, validated direct edits, or durable reports.
+
+## Verification helpers
+
+- `scripts/check_documentation_references.py`: local Markdown links and optional file-like code-span paths. Emits stable machine-readable diagnostics and retains legacy `missing`/`skipped` fields.
+- `scripts/check_markdown_structure.py`: objective Markdown structure checks including H1 count, heading-level jumps, ambiguous link text, fenced-code closure, and missing fence language tags.
+- `scripts/package_skill.py`: maintenance-only skill validation and packaging; not part of normal documentation review.
+
+Helper output is mechanical evidence only. It cannot prove semantic accuracy, runtime behavior, reader success, or editorial quality.
+
+`evals/activation-scenarios.json` is planned coverage. Do not report scenario metrics as measured unless those scenarios were executed and captured.
 
 ## Workflow
 
-1. Identify the documentation target and intended audience. Infer the mode from the request when not explicit.
-2. Inspect relevant source truth before editing: target docs, adjacent `SKILL.md`, referenced files, scripts, validators, examples, commands, configs, or repository files.
-3. Load only the needed supporting resource:
-   - `references/documentation-quality-rubric.md` for clarity, precision, completeness, examples, script docs, and technical-content evaluation.
-   - `references/markdown-accessibility-checklist.md` for Markdown accessibility and readability passes.
-   - `references/reference-file-patterns.md` for Skill reference files, context economy, and documentation restructure.
-   - `assets/templates/documentation-review-report.md.template` when a durable report is requested.
-   - `examples/skill-documentation-before-after.md` when examples or rewrite patterns are needed.
-4. Apply the smallest documentation change that improves execution, comprehension, or trust. Preserve domain terminology, public contracts, file names, command names, and validator semantics.
-5. Verify documentation claims against files that exist. When a claim cannot be verified, mark it as a gap instead of presenting it as fact.
-6. Report changes, rationale, risks, remaining gaps, and validation evidence.
+1. **Freeze the review contract.** Record target, primary mode, audience, requested outcome, rubric identity, source set, and applicable mechanical checks. Before/after comparisons must use the same target scope and criteria.
+2. **Inspect source truth.** Read the target docs and the smallest adjacent source set needed to verify claims: scripts, validators, examples, configs, commands, contracts, or repository files.
+3. **Run applicable mechanical checks.** Capture exact commands and results when execution is available. Missing execution is `not-run`, never a pass.
+4. **Create findings against stable criteria.** Use the finding schema, evidence labels, severity rules, deduplication, and ordering from `review-contract.md`. Separate factual observation from editorial judgment.
+5. **Apply the smallest coherent edit.** Preserve public contracts, terminology, file names, command names, validator semantics, and ownership boundaries.
+6. **Re-run the same applicable checks on the edited bytes.** Repair the diagnosed cause before adjacent cleanup.
+7. **Bound repair.** Stop after two consecutive rounds that do not reduce the same objective error set and report the unresolved diagnostic.
+8. **Report evidence by layer.** Keep mechanical, semantic/source-fidelity, runtime, and editorial evidence distinct.
+
+Use only these evidence labels when the review contract applies: `measured`, `observed`, `supplied`, `inferred`, `planned`, and `blocked`. A pass in one evidence layer never implies another layer passed.
 
 ## Boundaries
 
-- Do not depend on MCP. Use normal file, repository, connector, or web access available in the current environment.
-- Do not take ownership of full target-skill activation, boundaries, hardening, benchmark scoring, or package repair. Hand off to a dedicated skill-hardening, benchmark, harness, improver, or consistency workflow when the user asks for those deliverables.
-- Do not move detailed rubrics, long examples, schemas, or exhaustive explanations into the target `SKILL.md`. Keep `SKILL.md` as a compact control plane and put conditional detail in `references/`.
-- Do not create documentation volume that worsens context economy. Prefer concise docs that help the next execution step.
-- Do not document scripts or validators as present unless they exist. If missing, record the missing artifact as a documentation gap.
-- Do not rewrite code while performing documentation quality work unless the user explicitly requests code edits separately.
-
+- Do not depend on MCP. Use file, repository, connector, or web access available in the environment.
+- Do not take ownership of full target-skill activation, hardening, benchmark scoring, package repair, or code implementation.
+- Keep target `SKILL.md` files compact; put branch-specific rubrics, examples, schemas, and long procedures in conditional resources.
+- Do not add documentation volume that worsens context economy.
+- Do not document scripts or validators as present unless they exist and were inspected.
+- Do not rewrite implementation code during documentation-only work unless explicitly requested.
+- Do not lower criteria, omit findings, delete semantic content, or relabel unavailable evidence to make a review appear cleaner.
 
 ## Stop conditions
 
 Stop and report a blocker or gap when:
 
-- the target documentation is unavailable or unreadable;
-- a requested edit requires source truth that is not present and cannot be inspected;
-- a document claims a script, validator, command, example, or output exists but the artifact cannot be found;
-- the user asks for full skill hardening, benchmark scoring, package repair, or code implementation rather than documentation quality work;
-- the requested change would add broad reference material that does not improve execution or reader success.
+- target documentation is unavailable or unreadable;
+- required source truth cannot be inspected;
+- a claimed script, validator, command, example, output, or visual detail cannot be found or verified;
+- conflicting source-truth artifacts cannot be resolved within scope;
+- the requested work is actually full skill hardening, benchmarking, package repair, or implementation;
+- a restructure would remove content whose ownership or consumers are unknown;
+- passing would require weakening selected criteria or hiding unavailable evidence.
 
 ## Output contract
 
-For reviews or edits, include:
+For substantive reviews or edits, include:
 
-1. selected mode or modes;
-2. files inspected and files changed;
-3. key improvements grouped by clarity, structure, accuracy, accessibility, examples, and context economy when applicable;
-4. verification performed, including file-existence checks for mentioned scripts, validators, examples, commands, and local links;
-5. risks, assumptions, and unresolved gaps;
-6. follow-up recommendations limited to the next highest-value documentation change.
+1. primary and secondary mode(s);
+2. review-contract and rubric identity when loaded;
+3. files inspected and changed;
+4. material findings or improvements tied to criteria and evidence labels;
+5. verification commands with `pass`, `fail`, or `not-run` status;
+6. mechanical, semantic/source-fidelity, runtime, and editorial evidence kept separate;
+7. risks, assumptions, unresolved gaps, and blocked evidence;
+8. only the next highest-value follow-up recommendation.
+
+For direct edits, completion requires that the final edited bytes pass every applicable executed mechanical check. Any later edit invalidates affected checks and requires revalidation.

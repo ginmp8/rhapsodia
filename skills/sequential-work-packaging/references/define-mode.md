@@ -84,3 +84,7 @@ Review in this order:
 3. `validation.md`
 4. `notes.md`
 5. architecture impact when relevant
+
+## Reproducibility gates
+
+Apply `references/reproducibility-contract.md` before mutation. Resolve canonical paths, preserve stable identities, require expected-before hashes, stage candidates outside live targets, validate before/after invariants where applicable, commit atomically, and emit a machine-readable receipt. Unknown files are preserved. A repeated equivalent pass must be `no_change`, not a formatting rewrite.

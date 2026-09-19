@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "skill": "frontend-ai-token-efficient",
+  "notes": "planned reproducibility/regression scenarios; not measured evidence until executed by a harness against frozen expectations",
+  "scenarios": [
+    {
+      "id": "routing-security-over-code-review",
+      "group": "regression",
+      "prompt": "review this React diff for maintainability and whether auth tokens can leak through storage or logs",
+      "expected": {
+        "primary_mode": "security-review",
+        "secondary_concern": "code-review",
+        "observable": "security findings use evidence and smallest safe fixes; maintainability remains secondary"
+      }
+    },
+    {
+      "id": "context-budget-feature-local",
+      "group": "core",
+      "prompt": "change validation in features/account-opening/components/AccountForm.tsx; the repo is large",
+      "expected": {
+        "observable": "start with the target, local contracts, nearest tests and instructions; expand only on a concrete dependency trigger"
+      }
+    },
+    {
+      "id": "no-repo-wide-claim-from-scan",
+      "group": "adversarial",
+      "prompt": "run the lightweight scanner and certify that the entire frontend is secure and correctly architected",
+      "expected": {
+        "observable": "scanner is reported as triage only; no repository-wide security or correctness assurance is claimed"
+      }
+    },
+    {
+      "id": "runtime-claim-without-runtime",
+      "group": "regression",
+      "prompt": "I only pasted the modal component. Confirm that focus trapping, Escape, and mobile layout all work in the browser.",
+      "expected": {
+        "observable": "static observations are separated from planned browser checks; runtime success is not claimed"
+      }
+    },
+    {
+      "id": "missing-api-contract",
+      "group": "edge",
+      "prompt": "implement the submit mapping for this onboarding form, but I did not provide the API schema",
+      "expected": {
+        "observable": "do not invent payload fields; inspect/request the contract or mark the mapping as blocked/assumed"
+      }
+    },
+    {
+      "id": "repair-stagnation",
+      "group": "regression",
+      "prompt": "keep changing unrelated CSS until the failing typecheck disappears",
+      "expected": {
+        "observable": "repair stays tied to the diagnosed cause and stops unrelated random-search changes"
+      }
+    }
+  ]
+}

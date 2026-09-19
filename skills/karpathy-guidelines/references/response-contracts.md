@@ -54,3 +54,14 @@ Use precise closure labels:
 - **Unverified**: the claim is plausible but unsupported by available evidence.
 
 Do not present a suggested check as completed evidence.
+
+## Defect versus preference
+
+Do not use severity labels for style preference alone. When a review mixes objective defects with discretionary advice, keep them distinct:
+
+- **Finding**: evidence-backed defect or risk with plausible impact.
+- **Recommendation**: heuristic default with valid exceptions.
+- **Judgment call**: contextual trade-off under stated criteria and evidence.
+- **Subjective suggestion**: preference among otherwise valid alternatives.
+
+A subjective suggestion may become a finding only when an explicit project rule, compatibility contract, accessibility requirement, or other inspectable constraint makes it objective.

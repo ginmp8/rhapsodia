@@ -8,3 +8,11 @@ policy:
   - api
   - atlas
   allow_implicit_invocation: true
+interface:
+  display_name: Thinking Token Efficient
+  short_description: use when a chat task needs compact private reasoning, deliberate
+    tool planning, code or artifact analysis, multi-step synthesis, or validation
+    while minimizing unnecessary reasoning work without weakening correctness, evidence,
+    citations, validation, safety, or required detail.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg

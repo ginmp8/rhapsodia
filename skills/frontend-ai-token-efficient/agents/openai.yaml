@@ -1,6 +1,8 @@
 interface:
   display_name: Frontend AI Token Efficient
   short_description: low-context frontend standards for AI-assisted coding
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

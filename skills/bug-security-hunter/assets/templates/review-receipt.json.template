@@ -1,0 +1,23 @@
+{
+  "receipt_version": 1,
+  "target": {
+    "kind": "pull-request",
+    "identity": "<stable target identity>",
+    "revision": null,
+    "environment": null
+  },
+  "mode": "pr-risk-review",
+  "scope": {
+    "reviewed": [],
+    "assumptions": [],
+    "uninspected": []
+  },
+  "findings": [],
+  "validation_gaps": [],
+  "validation": [],
+  "coverage": {
+    "status": "partial",
+    "notes": []
+  },
+  "verdict": "NEEDS_MORE_CONTEXT"
+}

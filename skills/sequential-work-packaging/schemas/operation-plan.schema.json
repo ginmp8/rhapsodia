@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sequential-work-packaging/operation-plan.schema.json",
+  "title": "Sequential work operation plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan_version",
+    "mode",
+    "cycle_root",
+    "writes"
+  ],
+  "properties": {
+    "plan_version": {
+      "const": 1
+    },
+    "mode": {
+      "enum": [
+        "order",
+        "define",
+        "refine",
+        "decompose",
+        "normalize"
+      ]
+    },
+    "cycle_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "protected_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "post_validate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "order",
+            "define",
+            "refine",
+            "decompose",
+            "audit",
+            "normalize"
+          ]
+        },
+        "spec_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "writes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "source",
+          "expected_before_sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_before_sha256": {
+            "type": "string",
+            "pattern": "^(ABSENT|[0-9a-f]{64})$"
+          }
+        }
+      }
+    },
+    "allow_order_change": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

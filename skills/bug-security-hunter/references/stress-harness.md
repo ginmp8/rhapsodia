@@ -11,7 +11,6 @@ Use this reference to design reproducible validation for bugs, side effects, reg
 5. **Assertions**: validate invariants across database, broker, DLQ, logs, external mocks, and audit records.
 6. **Regression gate**: rerun baseline and high-risk negative cases after fixes.
 
-
 ## Hypothesis stress loop
 
 Use one bounded hypothesis per validation cycle when the user asks to prove, replay, fuzz, load, or harden a flow. Do not bundle unrelated risks into a single pass/fail result.

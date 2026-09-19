@@ -4,14 +4,25 @@
 
 - platform: {{platform}}
 - file path, if applicable: {{agent_file_path}}
-- intended users: {{intended_users}}
+- intended users/callers: {{intended_users}}
 - related Skills or agents: {{related_skills_or_agents}}
 
-## 2. Mission
+## 2. Contract Identity
+
+- contract: `agent-design-contract/v1`
+- design identity/version: {{design_identity}}
+- owned artifact/outcome: {{owned_outcome}}
+- evidence status: {{evidence_status}}
+
+## 3. Mission
 
 {{mission}}
 
-## 3. Inputs and Context
+Success criteria:
+- {{success_criterion_1}}
+- {{success_criterion_2}}
+
+## 4. Inputs and Context
 
 - required inputs:
   - {{required_input_1}}
@@ -21,11 +32,14 @@
 - unavailable or assumed context:
   - {{assumption_1}}
 
-## 4. Outputs
+## 5. Outputs
 
 {{expected_outputs}}
 
-## 5. Authority Boundary
+Acceptance bar:
+- {{output_acceptance_1}}
+
+## 6. Authority Boundary
 
 - may decide:
   - {{may_decide}}
@@ -38,31 +52,42 @@
 - must escalate:
   - {{must_escalate}}
 
-## 6. Tool Contract
+## 7. Tool Contract
 
-| Tool or capability | Required, optional, conditional, or forbidden | Why | Fallback |
+| Capability/tool | required / optional / conditional / forbidden | Why | Gate or fallback |
 |---|---|---|---|
 | {{tool_name}} | {{tool_status}} | {{tool_reason}} | {{tool_fallback}} |
 
-## 7. Workflow
+## 8. Workflow
 
 1. {{workflow_step_1}}
 2. {{workflow_step_2}}
 3. {{workflow_step_3}}
 
-## 8. Handoffs
+## 9. Handoffs
 
-| Trigger | Target | Payload | Stop or continue |
+Use `handoff/v1` for structured handoffs.
+
+| Trigger | Target | Objective/payload | Stop or continue |
 |---|---|---|---|
 | {{handoff_trigger}} | {{handoff_target}} | {{handoff_payload}} | {{handoff_action}} |
 
-## 9. Stop Conditions
+## 10. State and Termination
+
+- initial state: {{initial_state}}
+- allowed transitions: {{allowed_transitions}}
+- completion state: {{completion_state}}
+- blocked/escalated state: {{blocked_state}}
+- retry/re-entry rule: {{reentry_rule}}
+- cycle/iteration limit or terminating predicate: {{termination_rule}}
+
+## 11. Stop Conditions
 
 - {{stop_condition_1}}
 - {{stop_condition_2}}
 - {{stop_condition_3}}
 
-## 10. Prompt or Agent File
+## 12. Prompt or Agent File
 
 ```markdown
 ---
@@ -92,17 +117,17 @@ tools: [{{tools}}]
 {{stop_conditions}}
 ```
 
-## 11. Validation Scenarios
+## 13. Validation Scenarios
 
-| Scenario | Category | Expected behavior | Acceptance criteria | Evidence status |
+| Scenario | Group | Expected behavior | Acceptance criteria | Evidence status |
 |---|---|---|---|---|
-| {{scenario_name}} | {{scenario_category}} | {{expected_behavior}} | {{acceptance_criteria}} | planned |
+| {{scenario_name}} | {{scenario_group}} | {{expected_behavior}} | {{acceptance_criteria}} | planned |
 
-## 12. Risks and Trade-offs
+## 14. Risks and Trade-offs
 
 - {{risk_or_tradeoff_1}}
 - {{risk_or_tradeoff_2}}
 
-## 13. Open Questions
+## 15. Open Questions
 
 - {{open_question_1}}

@@ -1,6 +1,6 @@
 ---
 name: bug-security-hunter
-description: use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, pull requests, repositories, infrastructure, configs, event-driven flows, integrations, or technical process chains across any programming language. use for cross-language code review and language-neutral bug/security analysis; apply c#/.net hotspots only when the target is c#/.net. include visual severity labels, merge verdicts, and pr comments when reviewing pull requests. do not use for implementation, generic tutorials, product planning, or non-technical writing.
+description: use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, pull requests, repositories, infrastructure, configs, event-driven flows, integrations, or technical process chains across any programming language. use for cross-language code review and language-neutral bug/security analysis; apply c#/.net hotspots only when the target is c#/.net. include visual severity labels, merge verdicts, and pr comments when reviewing pull requests. do not use for implementation, generic tutorials, product planning, or non-technical writing. (requires code execution)
 ---
 
 # Bug Security Hunter
@@ -19,10 +19,12 @@ Find correctness bugs, negative side effects, regressions, reliability hazards, 
 - Review high-impact dimensions before style: security, functional correctness, data integrity, contracts, migrations, reliability, performance, observability, and operational rollback.
 - When a flow is named, review the causal path: entry point, validation, authorization, state changes, events/messages, consumers, retries, side effects, logs, DLQs, reprocessing, and final state.
 - Stay language-neutral by default. Identify the target stack from the artifact; use language-neutral invariants for any language, and apply `references/csharp-dotnet-hotspots.md` only when the target is C#/.NET. Do not assume .NET when the language or framework is unknown.
-- Separate confirmed findings, likely risks, validation gaps, and test ideas. Label evidence as confirmed, likely, needs verification, planned, or out of scope whenever uncertainty matters.
+- Separate conclusion confidence from evidence status. Use `confirmed`/`likely`/`needs-verification` for confidence and `measured`/`observed`/`supplied`/`inferred`/`planned`/`blocked`/`out-of-scope` for evidence provenance; never call static inspection `measured`.
 - Recommend the smallest safe fix, mitigation, or test. Avoid unrelated rewrites, new frameworks, speculative abstractions, and preference-only comments.
 - Never reproduce secrets, private keys, tokens, session IDs, full connection strings, certificates, cookies, JWTs, or sensitive personal data. Mask evidence, flag exposure, and recommend rotation, revocation, log cleanup, audit, and least privilege.
 - Stop or switch to a safe plan for destructive execution, production access, exploitation outside authorized systems, credentials, or sensitive data handling beyond the supplied scope.
+- For substantive reviews, follow `references/reproducible-review-contract.md`: establish target identity, deduplicate findings by root-cause fingerprint, apply stable severity floors/tie-breakers, sort deterministically, and derive PR verdicts from the final finding/gap set.
+- Do not turn bug hunting into random search: keep a bounded hypothesis set, validate the highest-value branch first, and stop a branch after repeated attempts add no discriminating evidence.
 
 ## Modes
 
@@ -55,7 +57,8 @@ If details are missing but the target is clear, proceed with explicit assumption
 
 Load only references needed for the selected mode:
 
-- `references/review-workflow.md`: investigation loop, severity, evidence rules, closure.
+- `references/review-workflow.md`: investigation loop, evidence discipline, hypothesis control, and closure.
+- `references/reproducible-review-contract.md`: target identity, evidence provenance, canonical finding record, deduplication, severity floors/tie-breakers, deterministic ordering, verdict derivation, and machine-readable receipts.
 - `references/pr-and-code-rubric.md`: PR/diff review, review dimensions, severity/verdict/treatment discipline, and language-neutral bug patterns.
 - `references/async-flow-analysis.md`: SNS/SQS/Kafka/event chain mapping, replay, retries, DLQs, loops, idempotency, side effects.
 - `references/security-threat-model.md`: authorization, tenant isolation, data exposure, secrets, broker permissions, abuse cases.
@@ -65,23 +68,29 @@ Load only references needed for the selected mode:
 - `examples/review-scenarios.md`: calibration examples.
 - `evals/activation-scenarios.json`: planned activation/non-activation/ambiguous/edge coverage; not measured unless executed.
 - `evals/behavioral-scenarios.json`: concrete cross-language behavioral scenarios for manual or harness-driven evaluation; not measured unless executed.
+- `evals/reproducibility-scenarios.json`: planned evidence/severity/dedup/verdict stability scenarios; not measured unless executed by an external harness.
 - `assets/templates/bug-hunt-report.md.template`: formal report skeleton.
 - `assets/templates/hypothesis-record.md.template`: iterative hypothesis/test record.
+- `assets/templates/review-receipt.json.template`: machine-readable audit receipt scaffold.
+- `schemas/review-receipt.schema.json`: receipt contract for durable/automated review evidence.
+- `scripts/validate_review_receipt.py`: deterministic receipt, ordering, dedup, redaction, and verdict consistency checks.
+- `scripts/freeze_evaluators.py`: hash-based freeze/verify helper for evaluation assets.
+- `scripts/self_test_reproducibility.py`: deterministic smoke tests for the receipt validator.
 - `scripts/validate_skill_package.py`: structural validation.
 - `scripts/package_skill.py`: deterministic validated packaging.
 
 ## Workflow
 
 1. Classify target and mode: PR, flow, repo/process, incident symptom, or audit.
-2. Set scope, assumptions, sensitive-data limits, and uninspected surfaces.
+2. Establish review identity: source/revision or supplied artifact identity, inspected paths/ranges, environment/version when material, assumptions, sensitive-data limits, and uninspected surfaces.
 3. Map the causal surface: changed entry points, dependencies, state, side effects, tests, ops paths, producers/brokers/consumers/storage/external calls, retries, DLQs, reprocessing, final states, actors, trust boundaries, assets, and permissions.
 4. Define correctness, security, reliability, and observability invariants.
-5. Generate bounded bug/security hypotheses ordered by severity and likelihood, with trigger, expected failure, evidence needed, and rollback/safety constraint when relevant.
-6. Select one high-value hypothesis for stress validation when the goal includes proof, replay, load, fuzzing, or regression prevention; define the invariant, injected fault, evidence source, pass/fail gate, and rollback/safety boundary before running it.
-7. Inspect code/config/logs/traces first. Run deterministic validation only within authorized scope; otherwise label checks as planned or suggested.
-8. Stress weak points: duplication, concurrency, out-of-order delivery, replay, stale events, crash points, dependency failures, malicious payloads, tenant crossing, schema abuse, DLQ/redrive, and loops. Accept, reject, or defer each hypothesis from observed evidence instead of mixing multiple unproven risks into one finding.
-9. Report severity-ranked findings separately from unverified risks, with smallest fix, validation, merge-blocking status, and expected treatment when reviewing a PR.
-10. Close with coverage, gaps, next checks, and merge/release verdict when requested.
+5. Generate a bounded set of falsifiable bug/security hypotheses; deduplicate by root-cause fingerprint and order by severity-floor potential, changed-path relevance, evidence availability, and falsifiability.
+6. Select one high-value hypothesis for stress validation when the goal includes proof, replay, load, fuzzing, or regression prevention; freeze the relevant baseline inputs and define the invariant, injected fault, evidence source, pass/fail gate, and rollback/safety boundary before running it.
+7. Inspect code/config/logs/traces first. Label source inspection `observed`; label executed checks `measured`; user-provided results `supplied`; unexecuted checks `planned`; inaccessible checks `blocked`.
+8. Stress weak points: duplication, concurrency, out-of-order delivery, replay, stale events, crash points, dependency failures, malicious payloads, tenant crossing, schema abuse, DLQ/redrive, and loops. Confirm, reject, merge, or defer each hypothesis from evidence; stop non-improving branches instead of random-searching.
+9. Convert only evidenced hypotheses into findings. Deduplicate, apply severity floors/tie-breakers, sort canonically, then assign stable review-local finding IDs.
+10. Derive PR verdict from the final findings and essential gaps. Close with coverage, uninspected surfaces, blocked evidence, next checks, and merge/release verdict when requested.
 
 ## Severity model
 
@@ -100,13 +109,13 @@ Use the visual severity label in user-facing findings. Treat the classic risk le
 For reviews, use `references/output-contracts.md`. For short review, quick check, or first-pass scan requests, use the compact quick-triage contract from `references/output-contracts.md` instead of expanding the full PR template. Every substantive answer must include:
 
 1. scope reviewed and assumptions;
-2. findings ordered by severity, each with evidence, impact, smallest fix, validation, and confidence/evidence label;
+2. findings ordered canonically, each with finding ID, evidence status, confidence, impact, severity rationale, smallest fix, validation, and merge effect when applicable;
 3. validation gaps and uninspected surfaces;
 4. recommended next step or merge/release verdict when requested.
 
 For PR reviews, also include an executive summary, security summary, merge verdict using ✅ `APPROVED`, 🟡 `APPROVED_WITH_COMMENTS`, 🔴 `CHANGES_REQUESTED`, or 🟣 `NEEDS_MORE_CONTEXT`, merge-blocking status per material finding, expected treatment, questions that affect approval, and concise comments to post when useful. Use the severity emoji in every finding and suggested PR comment.
 
-For flow or harness work, also include causal map, invariants, stress matrix, and closure criteria.
+For flow or harness work, also include causal map, invariants, stress matrix, and closure criteria. For durable audits, automation, or comparisons, emit a receipt conforming to `schemas/review-receipt.schema.json` and validate it with `scripts/validate_review_receipt.py`.
 
 ## Stop conditions
 
@@ -118,7 +127,10 @@ When editing this skill package:
 
 1. mutate only files under `bug-security-hunter`;
 2. keep `SKILL.md` compact and move branch detail into `references/`;
-3. run `python scripts/validate_skill_package.py <skill-folder>`;
-4. package with `python scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
-5. ensure the archive has one top-level `bug-security-hunter/` folder and no caches, generated reports, old zips, secrets, or symlinks;
-6. do not claim readiness unless validation passes and the archive exists.
+3. run `scripts/self_test_reproducibility.py` with Python;
+4. validate the valid receipt fixture with `python scripts/validate_review_receipt.py <receipt>` using `evals/fixtures/review-receipt-valid.json`;
+5. run `python scripts/validate_skill_package.py <skill-folder>`;
+6. package with `python scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
+7. ensure the archive has one top-level `bug-security-hunter/` folder and no caches, generated reports, old zips, secrets, or symlinks;
+8. freeze evaluator assets before comparative behavioral claims and do not edit frozen evaluator files to make a candidate pass;
+9. do not claim behavioral improvement unless the same scenarios/rubric were actually executed for baseline and candidate; otherwise claim structural hardening only.

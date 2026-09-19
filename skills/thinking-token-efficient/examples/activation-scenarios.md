@@ -1,30 +1,34 @@
 # Activation Scenarios
 
+These examples are explanatory only. `evals/activation-scenarios.json` is the planned machine-readable suite; neither file is measured evidence until executed by a frozen evaluator.
+
 ## Should activate
 
-- "think through the smallest safe fix for this failing workflow and report validation gaps"
-- "optimize your reasoning tokens while analyzing this pull request"
-- "use compact thinking, but keep citations and checks intact"
-- "plan the minimum tool calls needed to answer this multi-step question"
-- "review this design for hidden assumptions without overexplaining"
+- "optimize internal reasoning tokens while reviewing this diff; preserve validation evidence"
+- "plan the minimum tool calls for this multi-step research question"
+- "use compact thinking to analyze this artifact with the same result quality"
+- "analyze this repository issue efficiently, but inspect the files that determine correctness"
 
 ## Should not activate
 
 - "rewrite this email to be more formal"
 - "translate this paragraph"
 - "what is 2 + 2"
-- "make this answer shorter for the user"
+- "make this visible answer shorter for the user"
 - "generate an image of a dashboard"
 
 ## Ambiguous
 
-- "be concise" means shorten visible output unless the task is complex enough to need private reasoning discipline.
-- "think less" means reduce wasted reasoning, not skip checks.
-- "use caveman" means use filler-free compression only if the user also accepts professional readability; do not use comedy or broken language by default.
+- "be concise" means shorten visible output unless the underlying task actually needs private reasoning control.
+- "think less" means remove wasted branches, not required checks.
+- A request for a reasoning budget is a preference, not permission to weaken hard obligations.
 
-## Edge cases
+## Boundary and regression cases
 
-- If citations are required, keep enough reasoning to verify source support.
-- If code validation cannot run, label checks as not executed.
-- If the user asks for raw chain of thought, provide a concise rationale instead.
-- If over-compression would hide uncertainty, expand the internal ledger.
+- High-stakes security, legal, medical, financial, destructive, or identity-sensitive work must use readable reasoning and preserve verification duties.
+- Citations, file paths, exact commands, versions, and numeric limits remain when they affect correctness.
+- If validation cannot run, label it not executed instead of implying a pass.
+- If asked for raw chain of thought, provide concise rationale and evidence instead.
+- Static package size may support a control-plane footprint claim; it does not prove private reasoning-token savings.
+- Baseline and candidate token comparisons must use the same declared tokenization method.
+- Never edit a frozen evaluator or remove safety/evidence rules to obtain a smaller candidate.

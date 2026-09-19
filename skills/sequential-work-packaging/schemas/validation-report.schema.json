@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sequential-work-packaging/validation-report.schema.json",
+  "title": "Sequential work validation report",
+  "type": "object",
+  "required": ["report_version", "status", "mode", "diagnostics"],
+  "properties": {
+    "report_version": {"const": 1},
+    "status": {"enum": ["pass", "fail"]},
+    "mode": {"enum": ["order", "define", "refine", "decompose", "audit", "normalize"]},
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "subject", "evidence", "severity", "supported_fixes"],
+        "properties": {
+          "code": {"type": "string"},
+          "subject": {"type": "string"},
+          "severity": {"enum": ["error", "warning"]},
+          "supported_fixes": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

@@ -1,119 +1,129 @@
 # Routing and Handoff Patterns
 
-Use this reference when designing agent routers, Skill-Agent coordination, governance handoffs, and repository agentic structures.
+Use this reference for router agents, supervisor/worker systems, Skill-Agent coordination, governance handoffs, and repository agentic structures. The portable routing core uses `agent-design-contract/v1` and `handoff/v1`.
 
 ## Routing Principles
 
-- Keep routers thin: classify intent, select target, produce a compact handoff payload, and stop.
-- Do not copy specialist instructions into the router. Store expertise in specialist agents or Skills.
-- Use explicit routing criteria rather than broad persona descriptions.
-- Include fallback behavior for low confidence, missing context, conflicting targets, or unavailable tools.
-- Make Skill-vs-Agent selection explicit.
+- Keep routers thin: classify, select, emit a compact handoff, and stop.
+- Route by owned artifact/outcome and authority fit, not persona similarity.
+- Do not copy specialist prompts or capability instructions into the router.
+- Prefer least authority when multiple targets can satisfy the request.
+- Make low-confidence and unavailable-target behavior explicit.
+- Keep the core catalog-independent: specialist names are configuration, not routing logic.
+
+## Routing Decision Order
+
+When more than one target appears eligible, apply this order:
+
+1. **Exact output ownership**: which target owns the requested deliverable or decision?
+2. **Authority fit**: which target can complete it without broader authority than necessary?
+3. **Required context/capabilities**: which target has or can receive the required inputs and tools?
+4. **Operating-surface compatibility**: which target is valid for the current host/repository/workflow?
+5. **Explicit organization/user rule**: apply configured ownership when it does not conflict with higher-level constraints.
+6. **Escalation**: if a material tie remains, do not route randomly; ask a bounded question or escalate to the owning human/supervisor.
+
+### Confidence vocabulary
+
+Use qualitative confidence only:
+
+- `high`: one target uniquely satisfies ownership, authority, and required context.
+- `medium`: one target is best supported but a non-safety-critical assumption or fallback is required.
+- `low`: multiple material targets remain, ownership/authority is unresolved, or required context is missing.
+
+`low` confidence must not dispatch a high-impact action. Do not invent numeric probabilities.
 
 ## Skill vs Agent Routing
 
-Route to a Skill when:
+Route to a Skill workflow when the request is primarily a reusable competency, fixed validator/template, or Skill-package lifecycle task.
 
-- the request is a repeatable competency or packaged workflow;
-- the output depends on fixed templates, rubrics, validators, or references;
-- the goal is consistency rather than autonomous operation;
-- the user asks to create, repair, harden, benchmark, package, or improve a Skill package.
+Route to an Agent when the request needs mission ownership, state, routing, supervision, governance, or controlled multi-step execution.
 
-Route to an Agent when:
+Route to a human/supervisor when authority, ownership, approval, or a material routing tie remains unresolved.
 
-- the request needs a mission-oriented operator;
-- there is multi-step coordination, state, or delegation;
-- the agent must choose between tools, paths, or handoffs;
-- governance, review, routing, or controlled execution is the primary role.
-
-Route to a human when:
-
-- authority is unclear;
-- risk is high-impact;
-- required approval is missing;
-- the router cannot classify confidently;
-- the requested action would violate stop conditions.
-
-## Routing Matrix Template
-
-| Intent signal | Target | Confidence rule | Required context | Handoff payload | Fallback |
-|---|---|---|---|---|---|
-| create or package ChatGPT Skill | `skill-creator` | high when artifact is `SKILL.md`/`skill.zip` | objective, inputs, outputs | skill request summary | ask for missing inputs |
-| design custom agent | `agent-design` | high when artifact is agent prompt or `.agent.md` | role, tools, boundaries | agent design intake | run conservative intake |
-| plan repository architecture | `mago` or repository architect agent | high when planning artifacts are requested | spec, repo, constraints | planning scope | request resolved spec |
-| execute bounded repo work | `magia` or executor agent | high when implementation is requested | plan, allowed paths, tests | execution package | stop if authority missing |
-| delivery governance/status | `nomia` or governance agent | high when roadmap/status/owner data is requested | demand, owner, due date | governance record | stop if ownership missing |
-
-Adapt target names to the user's actual ecosystem.
+For mixed systems, the Agent owns coordination and the Skill owns its reusable capability. Do not duplicate the Skill inside the Agent prompt.
 
 ## Handoff Payload Pattern
 
-A good handoff is compact and complete:
+Use `handoff/v1` when a structured handoff is useful:
 
 ```markdown
 ## Handoff
-- source: router or previous agent
+- contract: handoff/v1
+- source: router or previous actor
 - target: selected agent, Skill, or human
-- objective: what the target should accomplish
-- context: only the relevant facts and constraints
-- inputs: files, links, artifacts, or text to inspect
-- authority: what the target may and may not do
+- objective: single owned outcome
+- context: only relevant facts and constraints
+- inputs: files, links, artifacts, or identifiers
+- authority: recipient may / must-not / escalate summary
 - expected output: exact deliverable
-- stop conditions: when to pause or escalate
-- validation: checks or acceptance criteria
+- stop conditions: blockers or escalation triggers
+- validation: acceptance checks
+- route trace: prior route identifiers/roles when cycle detection is needed
 ```
 
-Avoid sending full transcripts, hidden reasoning, irrelevant source material, secrets, or copied specialist prompts.
+Avoid full transcripts, hidden reasoning, secrets, unrelated source material, or copied specialist instructions.
 
-## Router Agent Prompt Pattern
+## Cycle and Re-entry Safety
+
+A routing topology must have an observable termination rule.
+
+- Do not allow unbounded A -> B -> A loops.
+- Workers should not delegate to other workers unless the topology explicitly grants that responsibility.
+- Re-entry to a prior target requires a material state change: new evidence, a changed artifact, an explicit repair result, or a new authorization decision.
+- A repeated handoff with materially identical state is a stop/escalation condition.
+- If intentional loops exist, define a finite hop/iteration budget or an equivalent terminating predicate.
+- If no loop rule is provided, default to **no cyclic re-entry**.
+- When runtime state exists, track route/handoff identity and visited roles. When it does not, include a compact route trace in `handoff/v1`.
+
+## Router Agent Pattern
 
 ```markdown
 # Router Agent
 
 ## Role
-You classify user requests and route them to the correct agent, Skill, or human. You do not execute specialist work.
+Classify requests and route them to the configured owner. Do not execute specialist work.
 
 ## Routing Workflow
-1. Identify the user's intended artifact and outcome.
-2. Classify the request as Skill, Agent, repository planning, repository execution, governance, review, or human escalation.
-3. Select one target and state confidence.
-4. Build a compact handoff payload.
-5. Stop after routing unless the user asked for a routing matrix.
+1. Identify the requested artifact/outcome.
+2. Determine Skill, Agent, human, or configured specialist ownership.
+3. Apply the routing decision order.
+4. Emit route, confidence, reason, and `handoff/v1` payload.
+5. Stop after handoff or escalation.
 
 ## Output Contract
 - route:
 - confidence: high | medium | low
-- reason:
+- ownership reason:
 - required context:
-- handoff payload:
-- fallback or escalation:
+- handoff:
+- fallback/escalation:
 
 ## Stop Conditions
-Stop when confidence is low, when authority is unclear, or when the request asks the router to perform specialist execution.
+Stop on low confidence, unresolved authority/ownership, unavailable required capability, repeated identical handoff, or a request to perform specialist execution.
 ```
 
-## nomia/Mago/Magia Integration
+## Optional Ecosystem Adapter: nomia / Mago / Magia
 
-Use these boundaries when designing agents for the user's ecosystem:
+Use these names only when the user's configured ecosystem contains them; they are not portable core dependencies.
 
-- nomia: product/delivery governance, demand intake, owners, stakeholders, roadmap bookkeeping, portfolio, release notes, status, replanning, and governance decision logs.
-- Mago: tech-lead planning artifacts, PRD refinement, architecture decisions, technical design, implementation plans, validation plans, migrations, observability, and security considerations.
-- Magia: bounded implementation, debugging, tests, validation, hardening, documentation, execution notes, runbooks, and execution-grounded decisions.
+- **nomia**: product/delivery governance, intake, owners, stakeholders, roadmap/status, releases, and governance records.
+- **Mago**: technical planning, PRD refinement, architecture/design, implementation and validation plans, migrations, observability, and security planning.
+- **Magia**: bounded implementation, debugging, tests, validation, hardening, documentation, runbooks, and execution-grounded decisions.
 
-Recommended agent structure:
+A typical hub-and-spoke topology is:
 
-1. Governance router: classifies whether a request belongs to nomia, Mago, Magia, skill optimization, or human escalation.
-2. nomia agent: manages delivery metadata and stakeholder-facing governance artifacts only.
-3. Mago agent: plans and refines technical work, but does not implement.
-4. Magia agent: executes bounded work from current code and selected planning artifacts.
-5. Governance reviewer agent: reviews authority, auditability, stop conditions, and handoffs across the system.
-6. Skill optimizer agents or Skills: use skill-consistency-repair, skill-harness, skill-hardening, skill-improver, and skill-benchmark for Skill-package lifecycle work.
+1. lightweight router/supervisor owns classification and handoff;
+2. nomia owns delivery-governance outputs;
+3. Mago owns technical planning outputs;
+4. Magia owns bounded implementation outputs;
+5. a governance reviewer may independently review authority and auditability;
+6. Skill-package lifecycle work routes to the configured Skill workflow/router rather than hard-coding the full Skill catalog here.
 
-Do not let one mega-agent own all layers. Use routing plus explicit handoff contracts.
+Do not let workers recursively delegate across layers unless the user explicitly designs that topology.
 
 ## Repository Structure Pattern
 
-For GitHub Copilot/VS Code-oriented repositories, review or propose structures like:
+For GitHub Copilot/VS Code-oriented repositories, a common separation is:
 
 ```text
 .github/
@@ -134,9 +144,9 @@ For GitHub Copilot/VS Code-oriented repositories, review or propose structures l
 Review for:
 
 - lowercase-with-hyphens filenames;
-- `.agent.md`, `.prompt.md`, `.instructions.md`, and `SKILL.md` extensions;
-- separation between foundation instructions, specialist agents, reusable prompts, file-specific instructions, and Skills;
-- no circular handoffs;
+- correct host-specific extensions/frontmatter;
+- separation of foundation instructions, specialist agents, reusable prompts, file-specific instructions, and Skills;
+- no unbounded circular handoffs;
 - no duplicated specialist content in routers;
-- no write-capable tools in review-only agents;
-- no missing description/frontmatter in agent and prompt files.
+- no unjustified write-capable tools in review/router agents;
+- explicit termination and handoff ownership.

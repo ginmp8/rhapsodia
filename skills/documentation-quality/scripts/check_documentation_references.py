@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Check Markdown local links and optional code-span file references.
+"""Check local Markdown references with stable machine-readable diagnostics.
 
-This helper is intentionally narrow: it verifies whether documentation points to
-files that exist. It does not validate external URLs, anchors, command behavior,
+This helper verifies local Markdown links and, optionally, file-like paths inside
+inline code spans. It does not validate external URLs, anchors, command behavior,
 or semantic accuracy.
 """
 
@@ -12,10 +12,12 @@ import argparse
 import json
 import re
 import sys
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
 
+RECEIPT_VERSION = 1
+STAGE = "documentation-reference-check"
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 CODE_SPAN_PATTERN = re.compile(r"`([^`]+)`")
 FILE_LIKE_PATTERN = re.compile(
@@ -24,7 +26,7 @@ FILE_LIKE_PATTERN = re.compile(
 EXTERNAL_PREFIXES = ("http://", "https://", "mailto:", "#")
 
 
-@dataclass
+@dataclass(frozen=True)
 class MissingReference:
     source_file: str
     reference: str
@@ -32,7 +34,7 @@ class MissingReference:
     kind: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class SkippedReference:
     source_file: str
     reference: str
@@ -51,8 +53,7 @@ def iter_markdown_files(paths: list[Path]) -> Iterable[Path]:
 
 def normalize_reference(reference: str) -> str:
     ref = reference.strip().split("#", 1)[0]
-    ref = ref.strip("'\" ")
-    return ref
+    return ref.strip("'\" ")
 
 
 def is_external(reference: str) -> bool:
@@ -96,16 +97,89 @@ def check_code_spans(md_file: Path, root: Path | None) -> tuple[list[MissingRefe
                 skipped.append(SkippedReference(str(md_file), raw, "illustrative_or_pattern"))
                 continue
             resolved = resolve_reference(md_file, raw, root)
+            if not resolved.exists() and root is not None:
+                root_candidate = (root / normalize_reference(raw)).resolve()
+                if root_candidate.exists():
+                    resolved = root_candidate
             if not resolved.exists():
                 missing.append(MissingReference(str(md_file), raw, str(resolved), "code_span_path"))
     return missing, skipped
+
+
+def _diagnostic_for_missing(item: MissingReference) -> dict[str, object]:
+    code = (
+        "docs/ref/missing-markdown-link"
+        if item.kind == "markdown_link"
+        else "docs/ref/missing-code-span-path"
+    )
+    return {
+        "code": code,
+        "status": "fail",
+        "severity": "error",
+        "subject": item.source_file,
+        "evidence": {
+            "reference": item.reference,
+            "resolved_path": item.resolved_path,
+            "kind": item.kind,
+        },
+        "supported_fixes": [
+            "correct the reference",
+            "add the missing local artifact if it is required",
+            "mark the path as illustrative when it is intentionally not local",
+        ],
+    }
+
+
+def _diagnostic_for_skipped(item: SkippedReference) -> dict[str, object]:
+    return {
+        "code": f"docs/ref/skipped-{item.reason.replace('_', '-')}",
+        "status": "skip",
+        "severity": "info",
+        "subject": item.source_file,
+        "evidence": {"reference": item.reference, "reason": item.reason},
+        "supported_fixes": [],
+    }
+
+
+def build_receipt(
+    files: list[Path],
+    missing: list[MissingReference],
+    skipped: list[SkippedReference],
+) -> dict[str, object]:
+    missing = sorted(missing, key=lambda x: (x.source_file, x.kind, x.reference, x.resolved_path))
+    skipped = sorted(skipped, key=lambda x: (x.source_file, x.reason, x.reference))
+    checks = [_diagnostic_for_missing(item) for item in missing]
+    checks.extend(_diagnostic_for_skipped(item) for item in skipped)
+    errors = len(missing)
+    return {
+        "receipt_version": RECEIPT_VERSION,
+        "status": "fail" if errors else "pass",
+        "stage": STAGE,
+        "checks": checks,
+        "errors": errors,
+        "warnings": 0,
+        "metrics": {
+            "files_checked": len(files),
+            "missing_references": len(missing),
+            "skipped_references": len(skipped),
+        },
+        # Backward-compatible fields retained for existing consumers.
+        "files_checked": [str(p) for p in files],
+        "missing_count": len(missing),
+        "missing": [asdict(item) for item in missing],
+        "skipped": [asdict(item) for item in skipped],
+    }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check local documentation references in Markdown files.")
     parser.add_argument("paths", nargs="+", help="Markdown files or directories to inspect")
     parser.add_argument("--root", help="Optional project or skill root used for root-relative references")
-    parser.add_argument("--check-code-spans", action="store_true", help="Also check file-like paths inside inline code spans")
+    parser.add_argument(
+        "--check-code-spans",
+        action="store_true",
+        help="Also check file-like paths inside inline code spans",
+    )
     parser.add_argument("--json-output", help="Optional path to write JSON results")
     args = parser.parse_args()
 
@@ -124,18 +198,14 @@ def main() -> int:
             missing.extend(code_missing)
             skipped.extend(code_skipped)
 
-    result = {
-        "files_checked": [str(p) for p in files],
-        "missing_count": len(missing),
-        "missing": [asdict(item) for item in missing],
-        "skipped": [asdict(item) for item in skipped],
-    }
-
+    result = build_receipt(files, missing, skipped)
     output = json.dumps(result, indent=2, sort_keys=True)
     if args.json_output:
-        Path(args.json_output).write_text(output + "\n", encoding="utf-8")
+        output_path = Path(args.json_output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(output + "\n", encoding="utf-8")
     print(output)
-    return 1 if missing else 0
+    return 1 if result["errors"] else 0
 
 
 if __name__ == "__main__":

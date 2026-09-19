@@ -1,0 +1,42 @@
+{
+  "contract_version": 1,
+  "target": {
+    "name": "[prompt-name]",
+    "kind": "[system-prompt|agent-prompt|chat-mode|custom-instructions|template|other]",
+    "executor": "[model-or-agent]",
+    "language": "[language]"
+  },
+  "mode": "[create|improve|review-only|validation-only|package-guidance]",
+  "inputs": {
+    "available": ["[input]"],
+    "tools": ["[tool]"],
+    "sources": ["[source-id]"]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "text": "[semantic requirement]",
+      "authority": "explicit",
+      "protected": true,
+      "source": "user",
+      "status": "preserve",
+      "reason": ""
+    }
+  ],
+  "output": {
+    "format": "[markdown|json|text|other]",
+    "sections": ["[section]"],
+    "language": "[language]",
+    "citations": "[required|optional|forbidden|not-applicable]",
+    "ordering": "[ordering rule]",
+    "unknown_or_error_behavior": "[rule]"
+  },
+  "success_criteria": ["[observable criterion]"],
+  "assumptions": [],
+  "unresolved_conflicts": [],
+  "validation": {
+    "suite_id": "[suite-id-or-empty]",
+    "freeze_state": "planned",
+    "claim_level": "structural"
+  }
+}

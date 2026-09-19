@@ -31,10 +31,10 @@
 ## Example finding
 
 ```markdown
-1. 🔴 `BLOCKER` - Retry can duplicate external notification
+1. BSH-001 - 🔴 `BLOCKER` - Retry can duplicate external notification
    - File/line: `src/Notifications/SendNotificationHandler.cs:L42-L58`
-   - Security confidence: Not applicable
-   - Evidence label: confirmed
+   - Evidence status: observed
+   - Confidence: confirmed
    - Evidence: `SendNotificationAsync` runs before message acknowledgement, and no idempotency key is passed to the provider.
    - Impact: a crash after provider success can resend the notification on retry.
    - Smallest fix: persist/send an idempotency key based on business operation before calling the provider, or use an outbox-backed notification command.
@@ -42,7 +42,6 @@
    - Blocks merge: Yes
    - Expected treatment: Fix in this PR
 ```
-
 
 ## Example suggested PR comment
 

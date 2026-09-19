@@ -1,42 +1,47 @@
 # Bug and Security Hunt Report
 
-## Scope
+## Review identity
 
 - Target:
+- Target identity/revision:
 - Mode:
+- Environment/version if material:
 - Reviewed artifacts:
 - Assumptions:
-- Out of scope:
+- Uninspected/out of scope:
 
 ## Executive summary
 
 - Overall verdict:
 - Critical/high blockers:
+- Coverage status: complete-for-scope | partial | blocked
 - Residual risk:
 
 ## Causal or hotspot map
 
-| Area/step | Artifact | Side effect | Risk | Evidence |
-|---|---|---|---|---|
+| Area/step | Artifact | Side effect | Risk | Evidence status | Evidence |
+|---|---|---|---|---|---|
 
 ## Findings
 
-| Severity | Issue | Evidence | Impact | Smallest fix | Validation |
-|---|---|---|---|---|---|
+| ID | Severity | Issue | Evidence status | Confidence | Evidence | Impact | Smallest fix | Validation |
+|---|---|---|---|---|---|---|---|---|
 
 ## Stress and security matrix
 
-| Scenario | Hypothesis | Input/fault | Expected result | Status | Evidence |
-|---|---|---|---|---|---|
+| Scenario | Hypothesis | Input/fault | Expected result | Status | Evidence status | Evidence |
+|---|---|---|---|---|---|---|
 
 ## Validation evidence
 
-- Executed:
-- Suggested:
-- Not run:
+- Measured/executed:
+- Supplied:
+- Planned:
+- Blocked/not run:
 
 ## Closure decision
 
 - Merge/release verdict:
 - Required next action:
 - Accepted residual risks:
+- Receipt path, if requested:

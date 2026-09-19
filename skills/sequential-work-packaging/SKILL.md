@@ -1,33 +1,17 @@
 ---
 name: sequential-work-packaging
-description: enforce a planning-first convention for sequential work packaging and adapt mago-style planning modes to the canonical cycle_version/spec_id/feature_key/feature_version model. use when chatgpt needs to order work, define a spec package, refine an existing spec package, decompose broad remaining work, audit planning artifacts, or normalize legacy planning requests into spec-catalog.yaml plus specs/specnnn/manifest.yaml, prd.md, tasks.md, notes.md, and validation.md.
+description: Create, refine, decompose, audit, order, or normalize canonical sequential work packages using cycle_version, stable spec_id and feature identities, deterministic validation, guarded writes, recovery, and machine-readable receipts. Use for planning-first work packaging and MAGO-compatible planning handoffs; do not use for implementation execution.
 ---
 
-# sequential-work-packaging
+# Sequential Work Packaging
 
-## Overview
-Use this skill to create, revise, audit, or normalize planning artifacts under the canonical sequential work packaging convention. Treat `cycle_version` as the macro container, `spec_id` as the stable execution identifier, `feature_key` as the stable functional identity, and `feature_version` as semantic technical evolution.
+Create and maintain planning-first work packages under one canonical convention. Preserve `cycle_version` as the macro container, `spec_id` as the stable execution identity, `feature_key` as the stable functional identity, and `feature_version` as semantic technical evolution.
 
-This skill also adapts MAGO-style planning requests into the canonical structure. When a request refers to `mago-define`, `mago-refine`, or `mago-decompose`, keep the planning intent of that mode but operate only on the canonical artifact set and directory layout.
+## Authority boundary
 
-## Mode selection
-Choose exactly one primary mode for each run unless the caller explicitly asks for a combined pass.
-
-- `order`: maintain or extend `spec-catalog.yaml`
-- `define`: create or revise one execution-ready spec package
-- `refine`: minimally update one existing spec package while preserving correct history
-- `decompose`: split broad remaining work inside one existing spec package into smaller dependency-safe tasks
-- `audit`: inspect existing artifacts for convention violations and produce corrections or a remediation plan
-- `normalize`: convert legacy or mixed planning input into the canonical structure without preserving legacy filenames as authoritative artifacts
-
-If a prompt mentions MAGO naming directly, map it as follows:
-
-- `mago-define` -> `order` or `define`, depending on whether the request is catalog ordering or per-spec definition
-- `mago-refine` -> `refine`
-- `mago-decompose` -> `decompose`
+This skill owns planning package structure, ordering, identity validation, planning-mode behavior, transition validation, and safe writes of the canonical artifacts. It does not own implementation, delivery governance, deployment, or MAGIA execution evidence. Current MAGO boards use a different canonical registry/identity model: compatibility is adapter-only, MAGO remains authoritative, and this skill must not rewrite a MAGO BOARD_ROOT into the specNNN convention.
 
 ## Canonical structure
-Always treat this structure as authoritative:
 
 ```text
 <cycle_version>/
@@ -41,93 +25,145 @@ Always treat this structure as authoritative:
       validation.md
 ```
 
-Never treat any legacy structure as canonical. In particular, do not write or preserve as source-of-truth:
+Only these names are canonical. Legacy names are input aliases, never authoritative outputs.
 
-- `docs/current`
-- `MANIFESTO.yaml`
-- `PRD.md`
-- `TASKS.md`
-- `VALIDATION.md`
-- `NOTES.md`
-- `FEATURE_ORDER.yaml`
+## Mode selection
 
-If a request or legacy prompt references these names, reinterpret them into the canonical equivalents:
+Select exactly one primary mode unless the caller explicitly requests a combined pass. Apply this precedence:
 
-- `MANIFESTO.yaml` -> `manifest.yaml`
-- `PRD.md` -> `prd.md`
-- `TASKS.md` -> `tasks.md`
-- `VALIDATION.md` -> `validation.md`
-- `NOTES.md` -> `notes.md`
-- `FEATURE_ORDER.yaml` or equivalent ordering file -> `spec-catalog.yaml`
-- `DOCS_ROOT = docs/current` -> `<cycle_version>/specs/<spec_id>/`
+1. explicit `order|define|refine|decompose|audit|normalize`;
+2. explicit MAGO alias using `references/mago-adaptation.md`;
+3. legacy-to-canonical conversion -> `normalize`;
+4. read-only conformance/review -> `audit`;
+5. catalog sequence/dependency maintenance -> `order`;
+6. creation or full definition of exactly one cataloged spec -> `define`;
+7. minimal revision of one existing spec -> `refine`;
+8. split broad remaining work inside one existing spec -> `decompose`.
 
-## Core workflow
-1. Determine the primary mode.
-2. Identify the active `cycle_version`.
-3. Determine whether the request targets the catalog or exactly one `spec_id`.
-4. Read only the minimum necessary artifacts:
-   - always the active `spec-catalog.yaml` when a cycle already exists
-   - the selected spec package when the mode is `define`, `refine`, or `decompose`
-   - directly relevant discovery evidence, code, tests, contracts, schemas, or docs needed for safe planning
-5. Apply the mode rules from the matching reference file:
-   - `references/order-mode.md`
-   - `references/define-mode.md`
-   - `references/refine-mode.md`
-   - `references/decompose-mode.md`
-6. Run the mandatory final review.
-7. Return only canonical artifacts and canonical terminology.
+If more than one mode remains equally valid, do not mutate. Return `MODE_AMBIGUOUS` and use read-only `audit` behavior until intent is resolved.
 
-## Non-negotiable rules
-- create or update `spec-catalog.yaml` before introducing a new spec
-- keep `spec_id` stable once created
-- do not use `feature_key` as the execution identifier
-- keep `depends_on_features`, `depends_on_specs`, and task-level `Dependencies` separate
-- keep lowercase everywhere for directory names, file names, ids, enum values, and yaml keys
-- use `order` as an integer and usually increment by 10
-- preserve truthful content and done history during refinement
-- prefer decomposition over broad umbrella tasks
-- keep acceptance criteria and validation concrete and testable
-- finish every spec pass with a final review over manifest, prd, validation, notes, and architecture impact when relevant
 
-## Identity and versioning
-Use these rules consistently:
+## Output contract
 
-- new capability -> new `feature_key`
-- compatible improvement -> same `feature_key`, increment minor version
-- correction -> same `feature_key`, increment patch version
-- conceptual redesign or materially different capability -> new `feature_key`
-- first functional implementation -> `v0.1.0`
-- first stable production release -> `v1.0.0`
-- breaking change -> increment major version
+For mutation modes, return canonical artifacts plus a machine-readable validation report and change receipt when execution capability exists. For `audit`, return diagnostics/remediation only and do not write. Report structural evidence, behavioral evidence, runtime evidence, and perceptual evidence separately; this skill normally has no perceptual gate. Never present an unexecuted scenario as behavioral evidence.
 
-Use semantic versioning for feature evolution only. Never use it to define execution order.
+## Stop conditions
 
-## Reasoning guidance
-Every actionable task in `tasks.md` must declare one of:
+Fail closed and stop mutation on ambiguous mode, unresolved identity/version classification, source/output alias, protected path, active transaction lock, unresolved recovery state, hash/snapshot precondition mismatch, duplicate canonical identity, dependency cycle, frozen evaluator drift, or validator failure.
 
-- `low`
-- `medium`
-- `high`
-- `xhigh`
+## Evidence and freeze discipline
 
-Default to `low` or `medium`. Use `high` only for durable architectural or contract trade-offs. Use `xhigh` only for truth-critical or recovery-critical planning boundaries.
+Snapshot exact source bytes or equivalent hashes before comparison when source state materially determines the change. The packaged regression scenarios and acceptance contract are a frozen evaluator set; verify `evals/frozen-manifest.json` before final acceptance. Freeze after pass: once the candidate passes final validation, do not edit it afterward without restarting the affected validation gates.
 
-## Operating style
-- stay planning-only unless the caller explicitly requests implementation
-- make explicit assumptions when needed, but keep them bounded and visible
-- preserve internal consistency across all artifacts
-- normalize legacy requests into canonical artifacts rather than mixing systems
-- when adapting MAGO prompts, preserve their planning intent but not their legacy filesystem or artifact casing
-- if ordering, do not create spec folders
-- if defining, refining, or decomposing, work on exactly one spec package unless the caller explicitly requests multiple specs
+## Run protocol
+
+1. Resolve the authored cycle/spec paths to canonical paths before reading or writing. Reject path escape, symlink escape, input/output aliasing, protected paths, receipt paths inside the canonical cycle, and duplicate output targets.
+2. Inventory the current cycle and selected spec. Record hashes for every file that may be updated. Unknown files are evidence: preserve them unless the caller explicitly owns and authorizes their change.
+3. Read `spec-catalog.yaml` whenever the cycle exists. For `define`, `refine`, or `decompose`, read the complete selected canonical spec package before planning changes.
+4. Normalize identity inputs using `references/reproducibility-contract.md`. Never derive identity from prose when the catalog already defines it.
+5. Apply the selected mode reference. Preserve existing stable ids and done history. Existing `order` values may change only when the operation explicitly records `allow_order_change: true` in `order` mode.
+6. Build candidate files outside the live targets. Do not mutate source files while deciding the change.
+7. Commit only through an exclusive, hash-guarded transaction or an equivalent host mechanism. The transaction must lock the cycle, reject unresolved recovery state, snapshot the exact before-tree, stage all candidate bytes, validate the full candidate and transition invariants before live mutation, re-check the snapshot immediately before commit, preserve last-good bytes, and commit atomically. `scripts/apply_transaction.py` is the portable reference implementation.
+8. Re-run structural and transition validation on the committed bytes and verify the committed tree hash equals the prevalidated candidate tree hash. A failed postcondition must restore the last-known-good targets or preserve explicit recovery evidence.
+9. Emit the durable receipt outside the canonical cycle tree. The receipt must bind before, candidate, and committed hashes to the same transaction identity.
+10. Freeze the accepted state: any later content change invalidates its validation evidence and requires revalidation.
+
+## Identity and creation/update rules
+
+- `cycle_version` must be a quoted semantic container string such as `"01.00.00"`; it is not an execution id.
+- `spec_id` is stable once created. New ids use `specNNN`. If the caller does not provide one, derive the next id only from the locked catalog as `max(existing numeric id)+1`; never fill a gap implicitly and never derive it from `feature_key`.
+- `order` is sortable state, not identity. Preserve existing order. Appending defaults to `max(order)+10`. An insertion may use an unused integer between explicit anchors. If no free integer exists, block with `ORDER_REBALANCE_REQUIRED`; do not silently renumber.
+- `feature_key` is lowercase kebab-case and may recur across specs as the same capability evolves.
+- `(feature_key, feature_version)` is a unique functional release identity inside one cycle. Duplicate ownership blocks.
+- Repeated `feature_key` entries must increase `feature_version`, execute later, and depend on the immediately preceding spec for that feature.
+- Version classification remains semantic judgment; once classified, mapping is deterministic: new capability `v0.1.0`, compatible improvement minor, correction patch, breaking change major. If evidence cannot distinguish the class, block with `FEATURE_VERSION_UNRESOLVED` rather than guessing.
+- New actionable tasks must carry an explicit stable `Task ID: taskNNN`. Existing explicit task ids never change. Legacy `Task N` labels may remain for compatibility, but refinement must not renumber them merely to modernize formatting.
+
+## Create versus update
+
+- `order`: may create or update only the catalog unless a combined pass was explicitly requested.
+- `define`: may create the canonical spec folder only after its catalog identity exists; on an existing spec it may complete or revise the definition without changing stable identity.
+- `refine`: requires an existing canonical spec; update only material future planning gaps and preserve correct history.
+- `decompose`: requires an existing canonical spec; preserve the initiative boundary and stable task identities while splitting remaining work.
+- `audit`: read-only.
+- `normalize`: reads legacy/mixed inputs and writes canonical outputs to a non-aliasing destination. Never delete the legacy source or unknown files by default.
+
+Every update requires an `expected_before_sha256` precondition for each target or the explicit sentinel `ABSENT` for a new file. If the current bytes differ, block rather than overwrite.
+
+## Conflicts and dependencies
+
+Fail closed on:
+
+- duplicate `spec_id`;
+- duplicate `order`;
+- duplicate `(feature_key, feature_version)`;
+- manifest/catalog identity mismatch;
+- missing spec/feature/task dependency;
+- self-dependency or dependency cycle;
+- dependency ordered at or after its dependent spec/task;
+- stable id removal or unauthorized renumbering;
+- partially applied update whose preconditions no longer match.
+
+Cancelled specs keep their ids. Do not recycle them.
+
+## Protected and unknown paths
+
+Never mutate `.git`, secrets, `.env`, private keys, evaluator/baseline evidence, or paths outside the resolved cycle root. Unknown files inside a cycle/spec are preserved and reported as `UNKNOWN_FILE_PRESERVED`; lack of recognition is never deletion authority.
+
+## Idempotency and recovery
+
+A repeated run with equivalent normalized input must preserve the same identities, ordering decisions, material structure, and semantic transaction identity. Absolute staging-source paths are not part of transaction identity; target paths, preconditions, candidate hashes, mode, and authorization are. If candidate bytes already equal target bytes, return `no_change` and do not rewrite them.
+
+Only one compliant mutation transaction may operate on a cycle at a time. An active lock or preserved recovery workspace blocks a new mutation until the prior state is resolved. Transaction workspaces must live outside the canonical cycle tree so validation hashes describe only canonical/unknown cycle evidence, not temporary backup files.
+
+For multi-file updates use:
+
+`lock -> preflight -> exact before snapshot -> stage -> candidate validate -> transition validate -> precommit recheck -> preserve last-good -> commit -> post-validate -> exact candidate/committed hash check -> receipt`
+
+On failure after any commit, restore all prior target bytes and verify the restoration. If rollback is incomplete, keep recovery material and report exact recovery paths. Do not emit success before committed bytes and postconditions are verified.
+
+## Machine-readable validation
+
+When Python 3.10+ execution is available:
+
+```text
+<PYTHON> scripts/validate_sequential.py --cycle-root <cycle> --mode <mode> [--spec-id <specNNN>] --json <validation.json>
+<PYTHON> scripts/validate_transition.py --before <before-snapshot> --after <candidate-snapshot> --mode <mode> --json <transition.json>
+<PYTHON> scripts/apply_transaction.py --plan <operation-plan.json> --receipt <change-receipt.json>
+<PYTHON> scripts/verify_evals.py
+<PYTHON> scripts/package_skill.py --target <skill-root> --output <skill.zip> --receipt <package-receipt.json>
+```
+
+Diagnostics use stable `code + subject + evidence + severity + supported_fixes`. A missing execution capability is `not-run`, not a pass.
+
+## Mandatory postconditions
+
+Before handoff:
+
+- canonical paths and required artifacts validate;
+- catalog and manifest identities agree;
+- dependencies are acyclic and ordered;
+- stable task ids are unique and dependency-safe;
+- unknown files were preserved unless explicitly authorized;
+- changed targets match candidate hashes;
+- the committed tree hash equals the exact prevalidated candidate tree hash;
+- transition invariants pass both before commit and on committed bytes;
+- no protected or aliased path was written;
+- receipt is outside the canonical cycle tree, parseable, and tied to before/candidate/committed hashes;
+- no unresolved transaction/recovery workspace remains after success;
+- final state is frozen after its last successful validation.
 
 ## References
-Use these bundled references as the source of truth for mode behavior and templates:
 
-- `references/convention.md`
-- `references/templates.md`
-- `references/order-mode.md`
-- `references/define-mode.md`
-- `references/refine-mode.md`
-- `references/decompose-mode.md`
-- `references/mago-adaptation.md`
+Read only what the active mode needs:
+
+- `references/convention.md` — full canonical convention and ownership precedence;
+- `references/reproducibility-contract.md` — normalization, deterministic identity/order, protected paths, transaction, recovery, receipts, legacy and partial-update rules;
+- `references/templates.md` — canonical templates;
+- `references/order-mode.md`;
+- `references/define-mode.md`;
+- `references/refine-mode.md`;
+- `references/decompose-mode.md`;
+- `references/mago-adaptation.md`.
+
+Host-specific metadata such as `agents/openai.yaml` is optional. The semantic workflow and scripts are host-neutral Agent Skills core.

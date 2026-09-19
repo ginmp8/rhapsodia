@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sequential-work-packaging/change-receipt.schema.json",
+  "title": "Sequential work change receipt",
+  "type": "object",
+  "required": [
+    "receipt_version",
+    "status",
+    "stage"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "applied",
+        "no_change",
+        "blocked",
+        "failed_recovered",
+        "failed_recovery_required"
+      ]
+    },
+    "stage": {
+      "enum": [
+        "preflight",
+        "postcondition",
+        "committed",
+        "rollback"
+      ]
+    },
+    "transaction_id": {
+      "type": "string"
+    },
+    "cycle_root": {
+      "type": "string"
+    },
+    "recovery_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "writes": {
+      "type": "array"
+    },
+    "after": {
+      "type": "array"
+    },
+    "before_tree_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "candidate_tree_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "after_tree_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "candidate_validation": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "candidate_transition_validation": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "validation": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "transition_validation": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "code": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "evidence": {},
+    "failure": {
+      "type": "string"
+    },
+    "rollback_errors": {
+      "type": "array"
+    }
+  }
+}
