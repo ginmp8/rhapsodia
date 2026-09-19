@@ -37,7 +37,8 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Write a nomia artifact scaffold from the canonical template workflow.")
     parser.add_argument("path", help="Destination artifact path.")
     parser.add_argument("--template", help="Explicit template file name, for example `roadmap.md.template`.")
-    parser.add_argument("--spec-id", help="Concrete spec id for ops.yaml generation. Used only when the resolved template is ops.yaml.template.")
+    parser.add_argument("--spec-id", help="Externally supplied spec id for ops.yaml generation. Used only when the resolved template is ops.yaml.template.")
+    parser.add_argument("--spec-id-provenance", help="Evidence reference for --spec-id. Used only for ops.yaml.template.")
     parser.add_argument("--list-data", help="YAML or JSON payload for scripts/update_template_lists.py.")
     parser.add_argument("--force", action="store_true", help="Overwrite the destination file if it already exists.")
     args = parser.parse_args(argv)
@@ -60,6 +61,8 @@ def main(argv: list[str]) -> int:
         forwarded: list[str] = [str(destination)]
         if args.spec_id:
             forwarded.extend(["--spec-id", args.spec_id])
+        if args.spec_id_provenance:
+            forwarded.extend(["--spec-id-provenance", args.spec_id_provenance])
         if args.list_data:
             forwarded.extend(["--list-data", args.list_data])
         if args.force:

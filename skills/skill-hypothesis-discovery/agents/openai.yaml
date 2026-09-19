@@ -1,6 +1,9 @@
 interface:
   display_name: Skill Hypothesis Discovery
-  short_description: Discovers and ranks testable skill-improvement hypotheses before mutation.
+  short_description: Discovers and ranks testable skill-improvement hypotheses before
+    mutation.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

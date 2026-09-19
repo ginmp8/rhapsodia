@@ -1,59 +1,96 @@
 # Hypothesis Discovery Examples
 
-## Example 1: saturated benchmark
+These examples show classification and decision behavior. They are not executed benchmark evidence.
 
-Input signal:
+## 1. Saturated metric
+
+Evidence:
 
 - static benchmark is 100/100;
-- no executed activation or non-activation prompt results;
-- `evals/` has only planned scenarios.
+- no executed holdout/ambiguous-activation result exists;
+- planned scenarios exist but were not run.
 
-Good output:
+Classification:
 
-| id | hypothesis | evidence signal | expected effect | validation | recommendation |
-|---|---|---|---|---|---|
-| H001 | Add holdout activation prompts | score is saturated without behavioral coverage | turns saturated score into a gate and adds auxiliary evidence | harness scenario schema plus execution when available | gather-evidence |
-| H002 | Add adjacent non-activation prompts | no negative prompts are measured | tests activation precision before frontmatter mutation | activation review or prompt suite | test-now |
+- benchmark score -> `saturated` primary metric and regression gate;
+- missing holdout behavior -> `evidence-gap`;
+- rewriting `SKILL.md` merely to chase 100/100 -> `unsupported-speculation`.
 
-Decision: gather evidence first if no runner exists; do not rewrite `SKILL.md` merely to chase a saturated score.
+Correct decision: gather an active auxiliary metric (for example holdout failures or ambiguous activation) before selecting another mutation hypothesis.
 
-## Example 2: weak activation description
+## 2. Weak activation boundary with measured false positives
 
-Input signal:
+Evidence source `E001` records executed false activations on generic code-review prompts. The frontmatter is observed to lack adjacent non-use boundaries.
 
-- user reports false activations on generic code review prompts;
-- frontmatter lacks non-use boundaries.
-
-Good hypothesis:
+A valid hypothesis can be:
 
 ```text
-H001 - Add negative activation boundaries
-If the frontmatter description names adjacent non-goals, activation precision should improve because generic code review and repository refactor prompts can be routed away.
-Validation: non-activation prompt suite plus no regression on should-activate prompts.
-Recommendation: test-now.
+H001 — testable-hypothesis
+Evidence: E001 + direct frontmatter observation
+Mechanism: explicit adjacent non-goals should reduce routing ambiguity
+Expected effect: false-positive activations decrease on a frozen non-activation suite
+Evaluator: existing activation evaluator
+Acceptance: fewer false positives with no regression on should-activate cases
+Recommendation: test-now
 ```
 
-## Example 3: no mutation recommended
+The same wording without `E001` or an evaluator is not `test-now`.
 
-Input signal:
+## 3. Evidence gap, not a hypothesis
 
-- activation, non-activation, edge, and output-contract scenarios are executed and passing;
-- validators and package checks pass;
-- token audit shows no avoidable duplication.
+Evidence:
 
-Good output:
+- package has `evals/activation-scenarios.json`;
+- there is no record that the scenarios were executed.
+
+Correct item:
+
+```text
+kind: evidence-gap
+statement: behavioral activation evidence is missing
+recommendation: gather-evidence
+```
+
+Do not infer that activation is poor merely because execution evidence is absent.
+
+## 4. Duplicate hypotheses
+
+Candidates:
+
+- "Require evaluator before selecting test-now."
+- "Prevent selected experiments without a validator."
+
+If subject, mechanism, and effect are the same, normalize them to the same `dedupe_key`, merge evidence refs, and keep one backlog item. Do not preserve both to inflate backlog size.
+
+## 5. Conflicting hypotheses
+
+If `H001` proposes consolidating two references and `H002` proposes splitting the same reference into modes, record symmetric `conflicts_with` edges. They may both remain in the backlog when evidence supports both alternatives, but they cannot be selected in the same experiment shortlist.
+
+## 6. Missing evaluator
+
+A strongly evidenced idea with no evaluator is still not ready:
+
+```text
+kind: testable-hypothesis
+recommendation: gather-evidence
+Evaluator status: missing
+```
+
+Define/freeze the evaluator first; then re-run discovery or update the same backlog from new evidence.
+
+## 7. No measurable effect
+
+"Make the skill instructions clearer" is a recommendation, not a testable hypothesis, until an observable effect and acceptance rule are specified (for example fewer ambiguous-routing failures on a frozen suite).
+
+## 8. Ranking tie
+
+If two ready hypotheses have equal priority score, do not choose arbitrarily. Apply the fixed chain: gate effect -> testability -> confidence -> lower risk -> lower cost -> lexical id.
+
+## 9. No mutation recommended
+
+When activation/non-activation/edge/output scenarios are executed and passing, validators/package checks pass, no material token duplication exists, and no active non-saturated metric shows a problem, return:
 
 ```text
 recommendation: no-mutation-recommended
-reason: no high-confidence, measurable, low-risk mutation is visible. next best work is monitoring real failures or adding new holdout prompts from future usage.
+reason: no evidence-backed, measurable, low-risk mutation is visible from the current snapshot.
 ```
-
-## Example 4: reject random mutation
-
-Bad hypothesis:
-
-```text
-Rename all sections and reorganize references to see whether the score improves.
-```
-
-Reject it because there is no observed signal, mechanism, validation method, or bounded rollback plan.

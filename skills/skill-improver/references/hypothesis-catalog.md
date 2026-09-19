@@ -101,3 +101,35 @@ Evidence: robustness score improves.
 Mechanism: long-running loops are safer when cancellation is explicit and preserves accepted target changes.
 Changes: add stop-file checks between iterations, document cancellation commands, and state what happens to accepted, rejected, and in-flight candidates.
 Evidence: cancellation path is documented, helper script compiles, runner accepts the stop-file option, and package validation still passes.
+
+## Reproducibility and evidence integrity
+
+### H053 - Material source snapshot integrity
+Mechanism: comparisons become trustworthy when mutable external evidence is captured as exact bytes before analysis and verified before acceptance.
+Changes: add source snapshot/manifest support, immutable revision reads when applicable, verification before final decision, and explicit re-baseline behavior.
+Evidence: candidate acceptance fails when a locked material source changes; snapshot manifest contains stable hashes/provenance; live and snapshot bytes verify.
+
+### H054 - Canonical output and alias preflight
+Mechanism: delivery corruption is prevented when authored and resolved destinations are checked before any mutation.
+Changes: canonicalize output/report/receipt paths; reject aliases with inputs, evaluators, protected files, sibling outputs, escaping paths, and invalid resolved extensions.
+Evidence: alias/symlink collision tests fail closed without altering existing bytes; valid destinations still package successfully.
+
+### H055 - Recovery-aware atomic delivery and durable receipts
+Mechanism: validated work remains trustworthy when output commit failures preserve the last-good artifact and receipts describe only committed bytes.
+Changes: stage privately; validate/hash before commit; preserve/restore last-good outputs; keep recovery paths on incomplete rollback; emit atomic parseable receipts with artifact hash and stage-aware status.
+Evidence: normal packaging produces matching artifact/receipt hashes; forced commit failure restores or exposes recovery evidence; no success receipt is emitted for uncommitted bytes.
+
+### H056 - Freeze after final pass
+Mechanism: final evidence stays valid when no unvalidated cleanup changes occur after the last pass.
+Changes: compute candidate identity after validation; mark it frozen; require revalidation after any later edit; package only the frozen identity.
+Evidence: final report records candidate hash/tree identity; package hash maps to the frozen candidate; post-pass edits invalidate the previous evidence.
+
+### H057 - Host-neutral semantic core
+Mechanism: cross-host reliability improves when semantics branch on capabilities and host-specific adapters are isolated at the edges.
+Changes: keep `SKILL.md`/relative resources as portable core; treat vendor metadata and CLIs as optional adapters; add capability detection and a generic command/native-host path; avoid shell/OS assumptions in required scripts.
+Evidence: package remains understandable without vendor metadata; deterministic helpers use standard-library Python/pathlib; unavailable capabilities are reported `not-run`/`blocked`; host-specific adapters do not change the semantic acceptance contract.
+
+### H058 - Diagnostic-driven bounded repair
+Mechanism: repair consistency improves when each failing gate maps to one causal change and the branch stops instead of random-searching.
+Changes: require stable diagnostic subject/evidence, smallest supported repair, rerun of the same gate, and a two-round non-improvement stop rule.
+Evidence: repair logs show causal diagnostic -> fix -> same-gate rerun; repeated non-improving branches terminate without threshold weakening or broad unrelated cleanup.

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:security-and-governance-review:security-review-report:1",
+  "title": "Security and Governance Review machine-readable report",
+  "type": "object",
+  "required": ["report_version", "rubric_version", "target", "mode", "review_status", "evidence_snapshot", "critical_evidence_gaps", "findings", "commands", "evidence_layers", "limitations"],
+  "properties": {
+    "report_version": {"const": "security-review-report-1"},
+    "rubric_version": {"const": "SGR-2.0"},
+    "review_status": {"enum": ["complete", "partial", "blocked-critical-evidence"]},
+    "critical_evidence_gaps": {"type": "array", "items": {"type": "string"}},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "classification", "severity", "confidence", "location", "evidence", "risk", "recommendation", "validation", "residual_risk"],
+        "properties": {
+          "classification": {"enum": ["confirmed", "suspicious-pattern", "governance-risk", "needs-verification", "not-applicable"]},
+          "severity": {"enum": ["critical", "high", "medium", "low", "informational"]},
+          "confidence": {"enum": ["high", "medium", "low"]}
+        }
+      }
+    }
+  }
+}

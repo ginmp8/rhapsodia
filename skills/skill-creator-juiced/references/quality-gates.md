@@ -18,9 +18,11 @@ Use these gates before claiming a skill is ready.
 - `agents/openai.yaml` is optional in the portable profile and required only when the OpenAI profile contract says so;
 - host-only metadata is classified as adapter, optimization, required capability, or blocker;
 - missing host capabilities produce `not-run` evidence instead of false passes;
-- multi-host support does not duplicate the semantic skill without a lifecycle reason.
+- multi-host support does not duplicate the semantic skill without a lifecycle reason;
+- portability/redesign emits an explicit matrix for `portable-core,openai,codex,claude,copilot,cursor` unless the user deliberately narrows scope;
+- structural compatibility and runtime validation are reported separately.
 
-Run `../scripts/validate_portability.py <target> --profile portable` when filesystem execution is available.
+Run `../scripts/validate_portability.py <target> --hosts portable-core,openai,codex,claude,copilot,cursor` when filesystem execution is available.
 
 ## Activation Gates
 

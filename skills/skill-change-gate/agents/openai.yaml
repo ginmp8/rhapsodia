@@ -1,6 +1,8 @@
 interface:
   display_name: Skill Change Gate
-  short_description: Gates candidate skill changes for regressions before acceptance.
+  short_description: Gates portable Agent Skill changes for regressions before acceptance.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

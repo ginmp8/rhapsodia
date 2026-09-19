@@ -7,140 +7,232 @@ description: use when asked to create, improve, validate, run, lint, debug, or m
 
 ## Mission
 
-Operate as an evidence-first testing and validation workflow for skill packages, auxiliary scripts, validators, runners, linters, benchmark tools, packagers, and small multi-language technical projects. Prefer local, repeatable commands and minimal patches over broad rewrites.
+Operate as an evidence-first testing and validation workflow. Given the same target bytes, supported environment, scope, and evidence, converge on the same relevant commands, failure categories, gate states, and conclusion wherever objective mechanisms can decide them.
 
-This skill does not depend on MCP. Use the filesystem and available terminal/container tools directly. If commands cannot be executed, return a plan and limitations; do not claim validation.
+Remain a testing/validation skill. Do not become a generic implementation workflow: production behavior changes are out of scope unless they are strictly test/validator/build/lint plumbing required to restore an observed gate.
 
-## Core rules
+## Portable core and capabilities
 
-- Establish a baseline before any fix: inspect files, identify commands, run the relevant failing command when possible, and preserve the original failure evidence.
-- Never state that build, tests, lint, validators, or packaging passed unless command output or supplied evidence proves it.
-- Classify failures before fixing: `build`, `test`, `lint`, `environment`, `configuration`, `packaging`, `validator`, or `unknown`.
-- Apply the smallest safe patch that addresses the observed failure. Do not improve unrelated code opportunistically.
-- Do not edit `.git`, secrets, credentials, locked paths, benchmark evidence, generated baseline reports, fixtures, golden files, snapshots, expected outputs, or user-declared read-only files unless the user explicitly authorizes that exact path category.
-- Do not convert this workflow into generic feature implementation. Stay within tests, validation, command discovery, runners, linters, build/test plumbing, and failure repair.
-- Keep measured evidence separate from recommendations and unexecuted plans.
+The semantic core is host-neutral Agent Skills content. `agents/openai.yaml` is an optional OpenAI adapter, not a correctness dependency.
+
+Before execution, detect capabilities rather than branching on host name:
+
+- filesystem read;
+- filesystem write for baseline/candidate evidence;
+- command execution;
+- Python 3.10+ for bundled deterministic helpers;
+- required project runtimes/tools;
+- artifact delivery when a ZIP/report is requested.
+
+Load [`references/host-portability.md`](references/host-portability.md) when host/runtime assumptions affect execution. If a required capability is absent, mark the affected gate `blocked` or `not-run`; never infer a pass.
+
+## Core invariants
+
+- Preserve a baseline before every repair. No repair without baseline evidence.
+- Never claim build, test, lint, validator, or packaging success without executed or supplied evidence.
+- Preserve exact target-command exit codes in receipts; do not replace them with the runner's exit code.
+- Classify failures only as: `build`, `test`, `lint`, `validator`, `environment`, `configuration`, `packaging`, or `unknown`.
+- Gate states are only: `pass`, `fail`, `blocked`, or `not-run`.
+- Protect `.git`, secrets, credentials, fixtures, snapshots, expected outputs, golden files, benchmark evidence, baseline evidence, and user-declared read-only paths unless the user explicitly authorizes the exact protected category/path.
+- Repair from diagnostics, not taste. Apply the smallest supported patch and rerun the exact failing gate before adjacent gates.
+- Do not weaken validators, tests, thresholds, fixtures, or expected outputs to manufacture a pass.
+- Once the final applicable gates pass, freeze the candidate. Any later edit invalidates affected evidence and requires rerun.
 
 ## Mode router
 
-Choose one primary mode, then stage supporting modes only when required by the user's request.
+Choose one primary mode.
 
 | Mode | Use for | Primary output |
 |---|---|---|
-| `research-testability` | Analyze structure, languages, test patterns, commands, risks, and gaps | Testability research with command candidates and priorities |
-| `plan-tests` | Turn research into phased test/validator work | Phase plan with risks, gates, and priority |
-| `generate-tests` | Generate tests, cases, scenario suites, or validator cases | Test/case artifacts or patch plan with assumptions |
-| `implement-test-phase` | Implement one named phase from a plan | Minimal file changes plus build/test/lint evidence |
-| `run-build` | Discover and execute build/compile command | Build status with command and output summary |
-| `run-tests` | Discover and execute test/validator command | Test status with command and failure details |
-| `run-lint` | Discover and execute lint/format check | Lint status with command, changed files, or failures |
-| `fix-failures` | Repair build/test/lint/validator failures | Baseline, classification, patch, rerun evidence |
-| `validation-report` | Summarize evidence after validation work | Command log, results, changed files, residual risk |
+| `research-testability` | Inspect structure, runtimes, commands, risks, and gaps | Testability research plus deterministic command candidates |
+| `plan-tests` | Turn research into bounded test/validator phases | Phase plan with gates and risks |
+| `generate-tests` | Generate tests/cases/validator scenarios | Test artifacts or a patch plan |
+| `implement-test-phase` | Implement one named test/validator phase | Minimal changes plus gate evidence |
+| `run-build` | Select and execute build/compile gate | Build receipt |
+| `run-tests` | Select and execute test gate | Test receipt |
+| `run-lint` | Select and execute check-only lint gate | Lint receipt |
+| `fix-failures` | Repair observed build/test/lint/validator/package failures | Baseline, diagnosis, minimal patch, same-gate rerun |
+| `validation-report` | Summarize completed validation evidence | Deterministic gate/report summary |
 
-## Required inputs
+## Input normalization
 
-Resolve or conservatively infer these before mutating files:
+Before mutation, normalize and record:
 
-1. Target root and requested scope.
-2. Primary mode from the mode router.
-3. Writable paths and blocked paths.
-4. Baseline evidence source: command output, supplied log, or static inspection when execution is unavailable.
-5. Candidate build, test, lint, validation, and packaging commands.
-6. Acceptance gates and final artifact expectation.
+1. one canonical target root;
+2. mode;
+3. requested scope and required gates;
+4. writable paths and protected paths;
+5. baseline source: executed command, supplied log, or static evidence;
+6. explicit user-provided commands, if any;
+7. final artifact/report expectation;
+8. detected capabilities and environment fingerprint.
 
-Use [`examples/prompt-scenarios.md`](examples/prompt-scenarios.md) for activation, non-activation, ambiguous, and failure examples when behavior is unclear. Use [`evals/activation-scenarios.json`](evals/activation-scenarios.json) as planned activation coverage; do not report scenario metrics unless those prompts were actually executed.
+Use canonical resolved paths. If multiple target roots remain plausible and choosing one changes what is executed or mutated, stop as `blocked` rather than guessing.
 
-## Workflow
+## Deterministic workflow
 
-### 1. Resolve target and scope
+### 1. Discover target and environment
 
-Identify the target root, requested scope, writable paths, blocked paths, language/runtime hints, and final artifact expectation. If the user gave a specific phase, file, command, or package, restrict work to that scope.
+Inspect package/project markers, existing tests/validators, scripts, CI/task files, and command documentation. For executable work, capture:
 
-### 2. Inspect before editing
+```text
+<PYTHON> scripts/environment_fingerprint.py <TARGET> --format json
+```
 
-For `research-testability`, `plan-tests`, `generate-tests`, `implement-test-phase`, and `fix-failures`, inspect the target before writing files:
+The fingerprint intentionally contains no timestamp. It records relevant platform, Python, tool availability, paths, and versions when obtainable.
 
-- project markers: `SKILL.md`, package.json, pyproject.toml, pytest.ini, tox.ini, Makefile, *.sln, *.csproj, go.mod, Cargo.toml, pom.xml, build.gradle, deno.json, bun.lockb;
-- source and tests: tests/, test/, spec/, __tests__/, *.test.*, *.spec.*, *_test.go, test_*.py, *_test.py;
-- validators and runners: files under `scripts/`, `bin/`, `tools/`, `evals/`, `benchmarks/`, `validators/`;
-- existing command documentation in `README*`, Makefile, package scripts, CI workflows, and skill references.
+### 2. Establish baseline before repair
 
-Use [`scripts/discover_commands.py`](scripts/discover_commands.py) when command discovery needs to be repeatable or reported as JSON.
+Before any fix:
 
-### 3. Establish baseline evidence
+1. preserve the original target state or equivalent immutable snapshot when mutation is planned;
+2. identify the narrowest relevant command;
+3. execute it when safe/available, or preserve supplied failure evidence;
+4. record command, canonical working directory, environment fingerprint, exit code, output evidence, gate state, and classification.
 
-Before applying fixes, run the narrowest relevant command that reproduces the issue. If no command exists, record that the baseline is static inspection only.
+Static inspection alone may establish a non-executable baseline, but it cannot prove a runtime gate passed.
 
-Capture:
+### 3. Discover and select commands deterministically
 
-- exact command;
-- working directory;
-- exit status;
-- relevant stdout/stderr excerpt;
-- timestamp if available;
-- failure classification.
+Use:
 
-Use [`scripts/classify_failure.py`](scripts/classify_failure.py) when failure output is long or ambiguous.
+```text
+<PYTHON> scripts/discover_commands.py <TARGET> --format json
+```
 
-### 4. Plan or generate tests
+Load [`references/command-selection.md`](references/command-selection.md) for precedence. The helper emits all candidates plus exactly one selected command per discoverable gate using fixed ranks and tie-breakers.
 
-For test generation, follow a research-plan-implement sequence:
+Precedence outside the helper is:
 
-1. research structure, commands, existing patterns, testability, and gaps;
-2. plan phases by priority, dependency order, complexity, and risk;
-3. generate or implement one phase at a time;
-4. run build/test/lint gates after each implemented phase when possible.
+1. exact user-provided command;
+2. command frozen in an approved research/plan artifact for this target;
+3. helper-selected project command.
 
-Load [`references/testability-strategy.md`](references/testability-strategy.md) and [`references/acceptance-criteria.md`](references/acceptance-criteria.md) for detailed planning rules. Use [`assets/templates/testability-research.md.template`](assets/templates/testability-research.md.template) and [`assets/templates/test-plan.md.template`](assets/templates/test-plan.md.template) only when a durable artifact is useful.
+Never replace a higher-precedence command merely because a lower-precedence command is easier to pass.
 
-### 5. Run commands safely
+### 4. Execute gates with receipts
 
-Prefer project-declared commands over guessed commands. Prefer scoped commands over whole-repository commands when the user requested a narrow scope. Do not install dependencies, alter lockfiles, or run destructive scripts unless explicitly authorized.
+For safe argv-based commands, use:
 
-Load [`references/command-selection.md`](references/command-selection.md) for command priority, language heuristics, and safe fallbacks.
+```text
+<PYTHON> scripts/run_gate.py --target <TARGET> --gate <build|test|lint|validator|packaging> --execute --format json
+```
 
-### 6. Fix failures minimally
+For an explicit command, pass a JSON argv array with `--argv-json`. Without `--execute`, the runner must return `not-run` and must not execute the command.
 
-For `fix-failures`:
+Every receipt must contain at least:
 
-1. baseline the failure;
-2. classify it using [`references/failure-classification.md`](references/failure-classification.md);
-3. identify the smallest target file set;
-4. patch only files needed to address the observed failure;
-5. rerun the same command;
-6. optionally run adjacent gates, such as lint after test changes or tests after build repair;
-7. report accepted, partial, or blocked status.
+- `receipt_version`;
+- target and canonical working directory;
+- gate;
+- relevant environment fingerprint;
+- exact argv/display command and source;
+- gate state;
+- failure classification when applicable;
+- exact target-command exit code, or `null` when no process started;
+- bounded stdout/stderr evidence and hashes.
 
-If a failure indicates missing dependencies, unavailable runtime, permission denial, network restriction, incompatible toolchain, or missing secret/configuration, report `environment` or `configuration` and avoid fabricating a code fix.
+Machine-readable receipt shape is authoritative over prose summary.
 
-### 7. Report evidence
+### 5. Classify failures formally
 
-When the requested deliverable is a packaged skill archive, use [`scripts/package_skill.py`](scripts/package_skill.py) only after validation gates pass.
+Use [`references/failure-classification.md`](references/failure-classification.md) and, when useful:
 
+```text
+<PYTHON> scripts/classify_failure.py --gate <GATE> --exit-code <CODE> --format json < log.txt
+```
 
-For `validation-report`, use [`assets/templates/validation-report.md.template`](assets/templates/validation-report.md.template) as the default shape. Always include command outcomes and clearly identify not-run gates.
+Precedence is fixed: environment evidence overrides configuration; configuration overrides gate classification; otherwise an explicit gate classifies opaque non-zero failures; without gate context, fixed pattern priority is used. `unknown` means evidence is insufficient, not permission to guess.
+
+### 6. Repair minimally and protect evidence
+
+For `fix-failures` or implementation phases:
+
+1. identify one causal diagnostic/root-cause hypothesis;
+2. identify the smallest candidate file set;
+3. reject protected evidence mutations unless specifically authorized;
+4. patch only test/validator/build/lint/packaging plumbing needed for the observed failure;
+5. do not change unrelated production behavior.
+
+Before accepting a repair against a preserved baseline, use when applicable:
+
+```text
+<PYTHON> scripts/validate_protected_paths.py --baseline <BASELINE> --candidate <CANDIDATE> --format json
+```
+
+If two consecutive repair rounds do not improve the same objective failure set, stop that repair branch and report the unresolved diagnostic.
+
+### 7. Rerun the exact failed gate
+
+After repair, rerun the same gate with the same selected command/argv and canonical working directory first. Only after that gate passes may adjacent gates run.
+
+Do not substitute a different command to convert a failure into a pass unless the original selection was proven invalid by higher-precedence evidence; record that as a configuration/command-selection correction.
+
+### 8. Validate idempotency where relevant
+
+Read-only validators should produce the same machine-readable result for the same target bytes and environment. Run deterministic validators twice when idempotency is part of acceptance. Volatile timestamps or random IDs are forbidden in validator evidence unless explicitly excluded by a normalization contract.
+
+### 9. Compute final gate conclusion
+
+For required gates only, use fixed precedence:
+
+1. any `fail` -> overall `fail`;
+2. otherwise any `blocked` -> overall `blocked`;
+3. otherwise at least one required `pass` and all other required gates `pass` -> overall `pass`;
+4. otherwise -> overall `not-run`.
+
+Optional gates may be reported `not-run` without downgrading an otherwise passing required set.
+
+### 10. Freeze and report
+
+After the last applicable pass:
+
+- do not make cleanup/cosmetic edits;
+- if any file changes, rerun affected gates;
+- preserve receipts and exact command evidence;
+- package only the frozen candidate when packaging is requested.
+
+For skill packaging, use [`scripts/package_skill.py`](scripts/package_skill.py) only after required validation passes. It stages the archive before atomic replacement and emits its SHA-256 receipt.
+
+## Progressive references
+
+- [`references/command-selection.md`](references/command-selection.md): precedence, ranks, tie-breakers, canonical working directory.
+- [`references/failure-classification.md`](references/failure-classification.md): formal categories and state mapping.
+- [`references/acceptance-criteria.md`](references/acceptance-criteria.md): hard gates and final acceptance.
+- [`references/testability-strategy.md`](references/testability-strategy.md): research/plan/test-generation guidance.
+- [`references/host-portability.md`](references/host-portability.md): capability-based cross-host behavior.
+- [`examples/prompt-scenarios.md`](examples/prompt-scenarios.md): activation and boundary examples.
+- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned prompt coverage only; never report it as executed behavioral evidence unless a harness actually runs it.
 
 ## Output contract
 
-Every final response for validation work must include applicable sections:
+Every validation response/report must identify, when applicable:
 
-1. Mode and target path.
-2. Scope and blocked paths protected.
-3. Baseline evidence before fixes.
-4. Commands executed with pass/fail/not-run status.
-5. Failure classification and root cause hypothesis.
-6. Files created or changed.
-7. Validation after changes.
-8. Remaining risks and limitations.
-9. Next recommended action, if any.
+1. mode, target, scope, and protected paths;
+2. baseline identity/evidence before fixes;
+3. environment fingerprint relevant to executed gates;
+4. discovered candidates and selected commands;
+5. exact commands, working directories, exit codes, and states;
+6. failure classification plus root-cause hypothesis;
+7. files changed;
+8. same-gate rerun evidence;
+9. adjacent/final gates;
+10. overall state using the fixed conclusion rule;
+11. not-run/blocked items and residual risk;
+12. which evidence is executed, supplied, static, or planned.
+
+Use [`assets/templates/validation-report.md.template`](assets/templates/validation-report.md.template) for durable reports.
 
 ## Stop conditions
 
-Stop and report a blocker when:
+Stop as `blocked` or return a bounded partial result when:
 
-- target root cannot be identified;
-- the requested repair requires editing blocked paths without explicit authorization;
-- command execution requires missing credentials, destructive operations, network access, or dependency installation not authorized by the user;
-- validation cannot be reproduced and no failure evidence is supplied;
-- the fix would require changing production behavior outside test/validator/build/lint plumbing;
-- generated tests would require inventing domain facts not present in source, existing tests, docs, or user-provided evidence.
+- target identity is ambiguous;
+- repair is requested but no baseline evidence can be preserved;
+- a required command needs missing credentials, destructive actions, unapproved dependency installation, or unavailable runtime/network;
+- the only repair requires modifying protected evidence without exact authorization;
+- the fix requires production behavior changes outside testing/validation plumbing;
+- the selected gate cannot be reproduced and no supplied failure evidence exists;
+- generated tests require inventing domain facts absent from source/tests/docs/user evidence;
+- the only way to pass is weakening a validator, test, threshold, or expected result;
+- two consecutive repair rounds fail to improve the same objective diagnostic set.

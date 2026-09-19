@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from nomia_utils import compact_yaml_exception, unique
+from nomia_utils import atomic_write_text, compact_yaml_exception, unique
 
 try:
     import yaml  # type: ignore
@@ -82,7 +82,7 @@ def normalize_yaml(path: Path, check: bool) -> bool:
     rendered = yaml.safe_dump(normalized, sort_keys=False, allow_unicode=False)
     if rendered != original:
         if not check:
-            path.write_text(rendered, encoding="utf-8")
+            atomic_write_text(path, rendered)
         return True
     return False
 
@@ -102,7 +102,7 @@ def normalize_markdown(path: Path, check: bool) -> bool:
     rendered = "\n".join(lines).rstrip() + "\n"
     if rendered != original:
         if not check:
-            path.write_text(rendered, encoding="utf-8")
+            atomic_write_text(path, rendered)
         return True
     return False
 

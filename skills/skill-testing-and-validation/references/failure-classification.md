@@ -1,81 +1,49 @@
-# Failure classification
+# Formal failure classification
 
-Use this reference when a command fails or when the user supplies logs.
+Failure category and gate state are separate dimensions.
 
-## Categories
+## Allowed categories
 
-### `build`
+- `build`: compile, type-check, import, bundling, or syntax failure before test assertions.
+- `test`: an executed test gate failed assertions/setup/runtime behavior.
+- `lint`: lint, formatting-check, or static-quality gate failure.
+- `validator`: custom validator/schema/integrity contract failure.
+- `environment`: required executable/runtime/dependency/network/permission/capability unavailable.
+- `configuration`: malformed/missing non-secret project configuration, invalid paths, workspace/config mismatch.
+- `packaging`: archive creation/shape/size/package-validation failure.
+- `unknown`: insufficient evidence.
 
-Compile, type-check, import, bundling, or syntax failures before test assertions run.
+## Fixed precedence
 
-Signals:
+When classifying non-zero command evidence:
 
-- C#: `CS0246`, `CS0103`, `CS1061`, `MSB`, `NETSDK`;
-- TypeScript: `TS2304`, `TS2322`, `TS2339`, `tsc` errors;
-- Python: `SyntaxError`, import failure during collection, `py_compile` failure;
-- Go/Rust/Java compile errors;
-- bundler/transpiler failures.
+1. environment signatures;
+2. configuration signatures;
+3. explicit gate context (`build`, `test`, `lint`, `validator`, `packaging`);
+4. without gate context: packaging, validator, build, lint, test pattern priority;
+5. `unknown`.
 
-Repair pattern: fix missing imports, names, signatures, syntax, type mismatches, or project references. Rerun build before tests.
+This prevents an absent test runner from being mislabeled as a test defect and prevents opaque test failures from drifting into `unknown` when the executed gate is known.
 
-### `test`
+Use `scripts/classify_failure.py` for stable codes/evidence. Its machine-readable output includes `classification_version`, `category`, `code`, `gate`, `exit_code`, `evidence`, and a bounded summary.
 
-The project builds, but assertions, setup, fixtures, or test runtime fail.
+## Gate states
 
-Signals: assertion diffs, expected/actual mismatch, failed test names, stack traces inside test execution, non-zero test summary.
+- `pass`: the required command executed and exited successfully, or equivalent supplied evidence explicitly proves success.
+- `fail`: the command executed and returned an in-scope failure.
+- `blocked`: the gate could not meaningfully execute because of environment/authorization/capability/input constraints.
+- `not-run`: intentionally not executed by scope, no applicable command exists, or execution was not requested.
 
-Repair pattern: determine whether code, test, or fixture is wrong. Do not edit expected outputs, golden files, snapshots, or fixtures unless explicitly authorized. Prefer correcting generated tests that misunderstood existing behavior.
+A non-zero target command classified `environment` is normally `blocked`; other non-zero executed gates are normally `fail`. Preserve the original target exit code even when the wrapper returns its own process status.
 
-### `lint`
+## Diagnostic-driven repair
 
-Formatting, style, static analysis, or quality gate failures.
+For every unresolved failure keep these distinct:
 
-Signals: ESLint, Prettier, Ruff, Black, dotnet format, gofmt, rustfmt, shellcheck, markdownlint, yamllint.
+1. observed evidence;
+2. formal category/code;
+3. probable root cause;
+4. smallest repair hypothesis;
+5. exact rerun command.
 
-Repair pattern: run check-only first when validating. Apply format/fix only when asked to fix. Avoid broad formatting of unrelated files.
-
-### `environment`
-
-The command cannot run because the runtime, dependency, binary, network, permission, or file system capability is unavailable.
-
-Signals: `command not found`, missing interpreter, missing package manager, permission denied, read-only filesystem, network/DNS failure, timeout, out-of-memory, unavailable service.
-
-Repair pattern: report the missing environment and provide exact setup or alternate static validation. Do not claim project failure.
-
-### `configuration`
-
-The project command or settings are wrong or incomplete.
-
-Signals: missing config files, incompatible versions, invalid paths, malformed JSON/YAML/TOML, missing env var, unresolved workspace references, invalid package script.
-
-Repair pattern: fix config only when within scope and not secret-dependent. Otherwise report required configuration.
-
-### `validator`
-
-A custom validation script fails because artifact structure, schema, local links, placeholders, or package hygiene violate the validator contract.
-
-Repair pattern: fix the artifact unless the validator is clearly wrong. Do not weaken validators to pass.
-
-### `packaging`
-
-Archive creation or package validation fails.
-
-Signals: missing entrypoint, wrong zip structure, oversized archive, forbidden files included, invalid frontmatter, package validator failure.
-
-Repair pattern: fix structure or exclusions, then rebuild and validate archive.
-
-### `unknown`
-
-Insufficient evidence to classify. Request or run a narrower command if possible.
-
-## Root-cause discipline
-
-Always separate:
-
-- observed failure text;
-- classification;
-- probable root cause;
-- patch hypothesis;
-- validation command.
-
-Do not collapse environment/configuration failures into code failures. Do not change tests to match broken behavior without explicit product evidence.
+Do not change fixtures, snapshots, golden files, expected outputs, benchmark evidence, or validator thresholds to fit broken behavior.

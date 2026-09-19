@@ -1,51 +1,87 @@
-# Migration Conflict Report Contract
+# Migration Conflict Report Contract v2
 
-Use this structure for final answers and generated markdown reports.
+## Machine-readable report
 
-## 1. Scope
+JSON is the canonical report for reproducible comparison. The semantic schema is documented in `../schemas/analysis-report.schema.json`.
 
-- mode: file, directory, PR, diff, or manual review;
-- files analyzed;
-- base branch or base files inspected, if any;
-- excluded files such as designer/snapshot files;
-- provider and DbContext if known.
+Required identity fields:
 
-## 2. Executive summary
+- `schema_version`;
+- `analysis_version`;
+- stable `analysis_id`;
+- `heuristic_set.name/version/sha256`;
+- `input_identity.digest` plus file/support/runtime/generated-SQL identities;
+- `git_identity` when Git mode is used;
+- provider/DbContext/deployment context when supplied.
 
-Include:
+Required evidence fields:
 
-- total findings;
-- count by severity;
-- merge/apply recommendation: block, request changes, approve with reservations, or no blockers found;
-- one sentence explaining the dominant risk.
+- canonical migration metadata;
+- deterministic operation records with stable operation IDs;
+- findings with stable finding/rule IDs, severity, confidence, evidence status, gate, hazard type, remediation, validation, and uncertainty;
+- expand/contract pattern signals when detected;
+- gate list;
+- summary;
+- explicit limitations;
+- inline `analysis_receipt`.
 
-## 3. Findings
+## Decision vocabulary
 
-For each finding:
+- `block`
+- `changes-required`
+- `review-required`
+- `no-static-blocker`
 
-```markdown
-### [Severity] [Title]
+The decision is a deterministic projection of the frozen heuristic set over supplied evidence. It must not be described as a guarantee of runtime migration safety.
 
-- Evidence: file, migration, operation, table/column/object.
-- Why it matters: execution failure, data loss, ordering conflict, runtime deployment risk, or snapshot divergence.
-- Smallest fix: concrete code or workflow change.
-- Validation: command or check.
+## Finding contract
+
+Every finding must preserve:
+
+```json
+{
+  "id": "mca:<rule-id>:<stable-hash>",
+  "rule_id": "...",
+  "severity": "critical|high|medium|low|info",
+  "confidence": "high|medium|low",
+  "evidence_status": "observed|derived|inferred|supplied|blocked",
+  "gate": "block|review-required|manual-review|none",
+  "hazard_type": "...",
+  "files": [],
+  "operation_ids": [],
+  "evidence": "...",
+  "why": "...",
+  "recommendation": "...",
+  "validation": "...",
+  "uncertainty": "..."
+}
 ```
 
-## 4. Safe deployment notes
+Do not omit uncertainty from heuristic findings.
 
-Mention when applicable:
+## Analysis receipt
 
-- prefer generated SQL scripts or migration bundles for production;
-- avoid applying migrations from every application instance at startup;
-- use expand-contract for rolling deployments;
-- test against a database copy with representative data.
+The inline receipt binds:
 
-## 5. Validation and limits
+- analysis ID;
+- canonical analysis-core hash;
+- input digest;
+- heuristic-set hash;
+- emitted finding IDs;
+- severity counts.
 
-State exactly what was executed and what was not:
+When `--receipt` is requested, a standalone delivery receipt additionally records the exact serialized report artifact SHA-256 and destination.
 
-- analyzer command;
-- parser limitations;
-- generated SQL not inspected unless it was actually inspected;
-- provider-specific behavior unknown unless provider was supplied.
+## Markdown report
+
+Markdown is a presentation of the same analysis contract. It must show identity, summary, finding IDs/rules, confidence/evidence, uncertainty, and limitations. JSON remains preferred for regression comparison.
+
+## Claims and limits
+
+State exactly what was executed. Never imply:
+
+- generated SQL was executed when it was only hashed/read;
+- production data was inspected when it was not;
+- provider-specific runtime behavior is proven from static C# parsing;
+- a runtime failure is guaranteed from a heuristic signal;
+- a lack of findings proves migration safety.

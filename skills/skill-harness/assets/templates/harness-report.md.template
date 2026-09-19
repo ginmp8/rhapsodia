@@ -7,6 +7,8 @@
 - Mode: {{mode}}
 - Mutation mode: {{mutation_mode}}
 - Target path: {{target_path}}
+- Portability profile: {{portability_profile}}
+- Runtime capabilities: {{runtime_capabilities}}
 
 ## Decision Statement
 {{decision_statement}}
@@ -15,7 +17,10 @@
 {{evidence_sources}}
 
 ## Baseline
+- Snapshot: {{baseline_snapshot}}
+- Snapshot/tree identity: {{baseline_identity}}
 - Inventory: {{inventory_path}}
+- Portability: {{baseline_portability}}
 - Audit: {{baseline_audit_path}}
 - Baseline score: {{baseline_score}}
 - Baseline gates: {{baseline_gates}}
@@ -48,6 +53,12 @@
 
 ## Recommendation
 {{recommendation}}
+
+## Delivery Integrity
+- Final candidate hash: {{final_candidate_hash}}
+- Package hash: {{package_hash}}
+- Receipt: {{package_receipt}}
+- Recovery/last-good status: {{recovery_status}}
 
 ## Package Artifact
 {{package_artifact}}

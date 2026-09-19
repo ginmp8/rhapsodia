@@ -1,8 +1,10 @@
 interface:
   display_name: Skill Consistency Repair
   short_description: Audit and repair inconsistent skill packages.
-  icon: "\U0001F9ED"
+  icon: 🧭
   theme_color: '#4B5563'
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

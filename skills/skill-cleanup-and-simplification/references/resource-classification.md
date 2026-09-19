@@ -1,51 +1,95 @@
 # Resource Classification
 
-Classify each candidate before deletion, consolidation, or retention.
+Classify every candidate before deletion, consolidation, or retention. The classification is evidence, not permission by itself; mutation must also pass the canonical deletion gate.
 
-## Status taxonomy
+## Canonical state taxonomy
 
-| Status | Meaning | Default action |
+| State | Meaning | Default action |
 |---|---|---|
-| `used` | Referenced by `SKILL.md`, local links, scripts, templates, validators, examples, or package metadata. | Preserve. |
-| `integrable` | Useful and aligned with the skill, but not currently wired into the workflow. | Integrate before considering deletion. |
-| `obsolete` | Replaced, stale, contradicted, or outside current scope with evidence. | Remove or archive only after validation plan. |
-| `duplicated` | Same purpose and overlapping content as another resource. | Consolidate, then update links. |
-| `generated` | Build output, cache, local report, temporary file, or package residue. | Remove if not protected evidence. |
-| `placeholder` | Unadapted scaffold, to-do marker only file, fake example, or template residue. | Remove or replace. |
-| `blocked` | Protected by policy, user instruction, or safety uncertainty. | Do not change. |
-| `unknown` | Evidence is insufficient. | Retain and recommend review. |
+| `used` | Reachable from `SKILL.md`, a host adapter, a referenced resource, local link, script import/path, template/validator/example/eval consumer, or package metadata. | Preserve. |
+| `integrable` | Useful support resource that is not currently reachable, but is aligned with the skill and may be intentionally dormant. | Integrate or explicitly retain. |
+| `duplicate` | Exact duplicate with mechanically identical content and a known canonical copy. | Consolidate only after consumer tracing and validation. |
+| `obsolete` | Replaced or no longer valid, proven by explicit target/user/migration/validator evidence. | Remove only after explicit approval, rollback, and validation. |
+| `generated` | Cache, build output, temporary/local report, generated package residue, or other reproducible artifact not used by the package. | Eligible for cleanup after preflight. |
+| `blocked` | Protected by policy, evidence role, archive protection, secret-like identity, symlink/path risk, user instruction, or safety boundary. | Do not mutate. |
+| `unknown` | Evidence is insufficient or conflicting. | Retain. Never auto-delete. |
 
-## Evidence checklist
+Do not create extra top-level states such as `placeholder` or `duplicated`. Scaffold/placeholder markers and similarity scores are evidence signals attached to one of the canonical states.
 
-Use at least one strong evidence source before classifying as removable:
+## Classification precedence
 
-- direct local link or import graph;
-- script usage or command references;
+Use this fail-closed precedence when multiple signals apply:
+
+1. `blocked` — protection or unsafe path wins.
+2. `used` — reachable/consumed resource wins over cleanup heuristics.
+3. `generated` — only when not reachable or protected.
+4. `duplicate` — only exact duplicates that are not required consumers themselves.
+5. `integrable` — unreferenced support resource with plausible package role.
+6. `obsolete` — only when explicit evidence establishes replacement/removal intent.
+7. `unknown` — default when evidence is insufficient.
+
+`obsolete` is normally reviewer- or user-established rather than inferred by the inventory script.
+
+## Usage and reference tracing
+
+Before declaring a resource unused, trace at least:
+
+- `SKILL.md` references and local Markdown links;
+- transitive links from referenced resources;
+- host adapter paths such as icon/assets metadata;
+- script imports and explicit local paths;
+- template, validator, example, eval, packaging, and report-template consumers;
+- replacement/migration notes and compatibility aliases;
+- exact external references when the user provides them.
+
+A resource indirectly referenced through another reference is `used`.
+
+Absence from a shallow grep, import list, or one mode does not prove obsolescence.
+
+## Duplicate rules
+
+Exact byte/hash equality may establish an exact duplicate mechanically. Choose a canonical copy deterministically, preferring an already-used/reachable copy and then canonical path ordering.
+
+Partial similarity is only a review candidate. Before consolidation compare:
+
+- mode and audience;
+- unique constraints and examples;
+- activation/scope implications;
+- validator or migration role;
+- external compatibility references.
+
+A partial duplicate must not be automatically classified `duplicate` or deleted.
+
+## Scaffold and template guard
+
+A file containing `TODO`, placeholders, example tokens, or template variables may be legitimate. If it is referenced by the workflow or copied/filled at runtime, classify it `used` even if it looks like scaffold.
+
+Only explicit evidence can establish that scaffold is obsolete.
+
+## Generated artifact guard
+
+Generated/cache/build artifacts may be classified `generated` only when they are not reachable/required by the package and are not protected evidence. Empty build/cache directories are not meaningful package content by themselves.
+
+## Protected evidence guard
+
+Fixtures, expected outputs, golden files, snapshots, benchmark reports, evaluator evidence, receipts used for comparison, secrets/credentials, archives, and user-declared protected files are `blocked` unless the user explicitly changes the protection policy for a non-destructive purpose.
+
+## Classification evidence
+
+Strong evidence includes:
+
+- deterministic reference/consumer graph;
+- file hash proving exact duplication;
 - package metadata or manifest references;
-- comments or documentation naming the resource;
-- file hash or content comparison proving duplication;
-- validation output showing generated/cache status;
-- user instruction naming the file as obsolete;
-- replacement file with updated references.
+- target documentation naming a replacement or deprecation;
+- user instruction explicitly marking a resource obsolete;
+- validator/test evidence;
+- migration completion evidence with updated consumers.
 
-Absence of evidence is not evidence of absence.
+Weak signals such as naming, age, TODO text, apparent lack of imports, or similarity alone cannot justify deletion.
 
-## Progressive-loading guard
+## Report shape
 
-Skill resources may be intentionally dormant until a branch needs them. Preserve a file when it provides:
-
-- mode-specific instructions too long for `SKILL.md`;
-- validation or report templates;
-- examples or scenario suites;
-- schemas, rubrics, policy references, or command contracts;
-- assets copied or filled during a workflow.
-
-If useful but unreferenced, mark `integrable` and add a loading rule or workflow reference.
-
-## Classification output shape
-
-Use this table shape in reports:
-
-| Path | Status | Evidence | Decision | Risk | Validation |
+| Path | State | Evidence | Decision | Risk | Validation |
 |---|---|---|---|---|---|
-| `path/to/file` | `used` | Linked from `SKILL.md` | Preserve | Low | Link check |
+| `path/to/file` | `used` | Reachable from `SKILL.md` through `references/index.md` | Preserve | Low | Reference graph |

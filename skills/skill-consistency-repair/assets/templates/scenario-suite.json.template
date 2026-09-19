@@ -1,14 +1,21 @@
-[
-  {
-    "id": "A001",
-    "category": "should_activate",
-    "prompt": "Audit the uploaded skill for internal inconsistencies and propose a repair plan.",
-    "expected_activation": true,
-    "expected_behavior": "Inspects the target skill, runs baseline consistency audit, and returns findings grouped by severity.",
-    "actual_activation": null,
-    "output_conforms": null,
-    "quality_score": null,
-    "needs_rework": null,
-    "notes": "planned"
-  }
-]
+{
+  "status": "planned-not-executed",
+  "evaluator_contract_version": 1,
+  "scenarios": [
+    {
+      "id": "A001",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Audit the target skill for internal inconsistencies and produce an evidence-grounded repair plan.",
+      "expected_activation": true,
+      "expected_behavior": "Preserves baseline, traces authority and consumers, classifies resources conservatively, and maps each repair to a gate.",
+      "acceptance_criteria": [
+        "Activation matches expected_activation.",
+        "Destructive changes require complete trace evidence.",
+        "Planned scenarios are not reported as executed results."
+      ],
+      "status": "planned",
+      "notes": "planned"
+    }
+  ]
+}

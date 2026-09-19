@@ -1,0 +1,14 @@
+kind: mago-spec-manifest
+spec_id: spec-2026-04-20-export
+cycle_id: cycle-2026-04-20-q2-delivery
+feature_key: export
+profile: governed
+mutation_state:
+  status: clean
+  transaction_id: null
+  inspected_digest: null
+  planned_writes: []
+  completed_writes: []
+  checkpoint: null
+  cancellation_requested: false
+  rollback_required: false

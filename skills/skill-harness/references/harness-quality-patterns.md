@@ -40,6 +40,9 @@ Useful auxiliary metrics when static scores are saturated:
 - blocked-path/adversarial coverage;
 - number of deterministic gates added or preserved;
 - package validation status and exclusion correctness;
+- portable-core violations and host-specific core dependencies;
+- immutable baseline/evaluator identity checks;
+- output-alias preflight, last-good preservation, recovery, and receipt integrity;
 - unresolved risks or unknowns count.
 
 ## Anti-Patterns
@@ -55,3 +58,7 @@ Avoid these harness failures:
 | Heavy or noisy validators | Slow, brittle validation hides signal | keep deterministic gates focused and concise |
 | Editing fixtures to pass | Invalidates evaluator freeze | treat evaluator changes as a separate hypothesis |
 | Package claims without archive check | User receives unverified artifact | run package validator and report path only on pass |
+| Mutable baseline/evaluator | Before/after comparison can change underneath the run | snapshot source bytes and freeze evaluator evidence before mutation |
+| Host adapter as core semantics | Skill works only where a vendor extension is understood | keep Agent Skills semantics in SKILL.md/references/scripts; isolate adapters |
+| Output aliases input/report | Delivery can overwrite evidence or itself | canonicalize targets and reject aliases before writing |
+| Destructive failed packaging | Last-good artifact/report is lost | stage, validate, commit atomically, restore/preserve recovery |

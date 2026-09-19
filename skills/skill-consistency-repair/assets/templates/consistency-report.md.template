@@ -1,35 +1,45 @@
 # Skill Consistency Report
 
-## Target
+## Target and Mode
 
-- Skill name: {{skill_name}}
-- Target path: {{target_path}}
-- Generated at: {{generated_at}}
+- Skill: {{skill_name}}
+- Target: {{target_path}}
 - Mode: {{mode}}
+- Baseline identity: {{baseline_identity}}
+- Candidate identity: {{candidate_identity}}
+- Evaluator manifest: {{evaluator_manifest}}
 
 ## Decision
 
 {{decision}}
 
-## Inventory Summary
+## Inventory and Trace Summary
 
 {{inventory_summary}}
 
-## Findings
+## Resource Classification
 
-{{findings}}
+{{resource_classification}}
 
-## Resource Integration Map
+## Authority and Ownership Findings
 
-{{resource_integration_map}}
+{{authority_findings}}
+
+## Repairs
+
+{{repairs}}
 
 ## Validation Gates
 
 {{validation_gates}}
 
-## Repair Plan or Changes Applied
+## Recovery / Last-Known-Good
 
-{{repair_plan_or_changes}}
+{{recovery}}
+
+## Receipt
+
+{{receipt}}
 
 ## Remaining Risks
 

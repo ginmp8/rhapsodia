@@ -28,11 +28,11 @@ Use `evals/skill-improver-scenarios.json` as the frozen planned suite. A measure
 
 ## Evaluators
 
-- Structural: inventory and audit package structure, references, placeholders, scenarios, validation, maintainability.
+- Structural: inventory and audit package structure, references, placeholders, scenarios, validation, maintainability, source-integrity controls, freeze-after-pass, and delivery/receipt integrity.
 - Activation: review planned/measured scenarios; calculate precision/recall only when actual activation decisions are captured.
 - Output conformance: final report includes baseline, final score, evaluator hash, accepted/rejected hypotheses, files changed, gates, package result, risks.
 - Safety/scope: blocked paths unchanged, mutation scope respected, sandbox stated, no unsupported persistence claims.
-- Packaging: run `scripts/validate_skill_improver_package.py`; verify archive excludes evidence, caches, secrets, transient state; verify `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template` are consumed by `scripts/skill_improver_loop.py`. For other skills, templates must be script-consumed, workflow-filled/copied, explicitly referenced, or validator-gated before counting as integrated.
+- Packaging: run `scripts/validate_skill_improver_package.py`; verify archive excludes evidence, caches, secrets, transient state; use `scripts/evidence_snapshot.py hash-tree` to identify the frozen candidate; exercise `scripts/package_skill.py` path preflight/receipt support; verify `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template` are consumed by `scripts/skill_improver_loop.py`. For other skills, templates must be script-consumed, workflow-filled/copied, explicitly referenced, or validator-gated before counting as integrated.
 
 ## Metrics
 
@@ -54,3 +54,7 @@ Informational: no extra research needed; package applies only to current runtime
 ## Evidence record
 
 Record baseline inventory/audit/static score/evaluator hashes; source summary split by supplied context, target contents, and researched sources; harness map and hypotheses; changed files by control plane, references, scripts, templates/assets, scenarios, validation, packaging; commands and pass/fail outputs; before/after comparison; package path/exclusions; residual risks and next hypotheses.
+
+## Reproducibility hardening gates
+
+When applicable, also require: material source manifest captured before analysis and verified before acceptance; candidate not edited after final pass; canonical output/receipt paths do not alias inputs/protected files; package hash matches the committed artifact; receipt describes the same bytes; last-good/recovery evidence is preserved when a simulated delivery failure is tested.

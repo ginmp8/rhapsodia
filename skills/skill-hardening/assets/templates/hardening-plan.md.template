@@ -3,16 +3,25 @@
 ## Target
 
 - Target path: {{target_skill_path}}
+- Baseline tree SHA-256: {{baseline_tree_sha256}}
 - Baseline audit: {{baseline_audit_path}}
 - Mutation mode: {{mode}}
 - Allowed scope: {{allowed_scope}}
 - Blocked paths: {{blocked_paths}}
+- Reproducibility ceiling: {{reproducibility_ceiling}}
+- Frozen evaluator manifest: {{evaluator_manifest_path}}
 
 ## Executive Summary
 
 {{summary}}
 
 ## Hardening Map
+
+### variability
+
+| ID | Surface | Class | Evidence | Control | Validation |
+|---|---|---|---|---|---|
+| V1 | {{variance_surface}} | {{variance_class}} | {{variance_evidence}} | {{variance_control}} | {{variance_validation}} |
 
 ### control_plane
 
@@ -61,6 +70,13 @@
 - {{validation_step_1}}
 - {{validation_step_2}}
 - {{validation_step_3}}
+
+## Acceptance and Freeze
+
+- Hard gates: {{hard_gates}}
+- Evaluator verification: {{evaluator_verification}}
+- Stagnation limit: {{stagnation_limit}}
+- Freeze-after-pass rule: {{freeze_after_pass_rule}}
 
 ## Rollback Plan
 

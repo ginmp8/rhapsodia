@@ -3,6 +3,11 @@
 ## Mode
 {{mode}}
 
+## Portability and Runtime
+- Profile: {{portability_profile}}
+- Capabilities: {{runtime_capabilities}}
+- Host adapters: {{host_adapters}}
+
 ## Decision Statement
 After this harness runs, we need to decide whether {{target_name}} can {{decision}}.
 
@@ -13,6 +18,8 @@ After this harness runs, we need to decide whether {{target_name}} can {{decisio
 
 ## Baseline Summary
 - Target path: {{target_path}}
+- Baseline snapshot: {{baseline_snapshot}}
+- Baseline tree hash: {{baseline_tree_hash}}
 - Inventory path: {{inventory_path}}
 - Audit path: {{audit_path}}
 - Baseline score: {{baseline_score}}
@@ -50,8 +57,11 @@ After this harness runs, we need to decide whether {{target_name}} can {{decisio
 ### Validation
 {{validation_plan}}
 
-### Packaging
+### Packaging and Recovery
 {{packaging_plan}}
+- Output alias preflight: {{output_alias_plan}}
+- Last-good/recovery policy: {{recovery_plan}}
+- Receipt/hash policy: {{receipt_policy}}
 
 ## Implementation Sequence
 1. {{step_1}}

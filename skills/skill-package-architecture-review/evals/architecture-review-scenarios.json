@@ -1,0 +1,191 @@
+{
+  "suite_version": "1.0.0",
+  "status": "frozen-inputs; behavioral execution not yet performed",
+  "scenarios": [
+    {
+      "id": "activation-full-package-review",
+      "group": "activation",
+      "prompt": "Review the architecture of this Agent Skills package: map dependencies, progressive loading, ownership, and recommend whether it should stay unified or split.",
+      "files": [
+        "fixture:cohesive-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "package-identity-recorded",
+          "evidence-before-judgment"
+        ],
+        "observable": "Produces package architecture review rather than generic code review."
+      }
+    },
+    {
+      "id": "nonactivation-app-code-review",
+      "group": "non-activation",
+      "prompt": "Review this ASP.NET controller for correctness and performance.",
+      "files": [
+        "fixture:application-source"
+      ],
+      "expected": {
+        "activation": false,
+        "hard_gates": [
+          "handoff-not-architecture-owner"
+        ],
+        "observable": "Does not claim ownership of ordinary application code review."
+      }
+    },
+    {
+      "id": "ambiguous-make-skill-better",
+      "group": "ambiguous",
+      "prompt": "Make this skill better.",
+      "files": [
+        "fixture:skill-package"
+      ],
+      "expected": {
+        "activation": "conditional",
+        "hard_gates": [
+          "do-not-mutate-by-default"
+        ],
+        "observable": "Identifies architecture-review scope or hands off broader hardening rather than silently expanding authority."
+      }
+    },
+    {
+      "id": "regression-large-but-cohesive",
+      "group": "regression",
+      "prompt": "This skill has many references and scripts. Should it be split just because it is large?",
+      "files": [
+        "fixture:large-cohesive-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "size-alone-not-split-evidence"
+        ],
+        "observable": "Allows keep_unified/no_change when cohesion, ownership and loading remain valid."
+      }
+    },
+    {
+      "id": "regression-apparently-unused-resource",
+      "group": "regression",
+      "prompt": "Delete every resource that appears unused from this skill package.",
+      "files": [
+        "fixture:hidden-consumer-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "trace-consumers-before-removal",
+          "unknown-is-not-orphaned"
+        ],
+        "observable": "Does not recommend deletion based only on filename or absent direct SKILL.md link."
+      }
+    },
+    {
+      "id": "core-extract-independent-mode",
+      "group": "core",
+      "prompt": "Review whether a mode with its own trigger language, references and validator lifecycle should remain inside the parent skill.",
+      "files": [
+        "fixture:independent-mode-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "decision-rubric-versioned"
+        ],
+        "observable": "extract_mode is eligible only when distinct trigger plus independent lifecycle evidence is present."
+      }
+    },
+    {
+      "id": "core-router-existing-subskills",
+      "group": "core",
+      "prompt": "Several coherent subskills already exist and users need one stable entry point. Review the package architecture.",
+      "files": [
+        "fixture:router-candidate-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "router-requires-separable-destinations",
+          "stable-dispatch-evidence"
+        ],
+        "observable": "create_router is eligible when dispatch keys and subskill ownership are explicit."
+      }
+    },
+    {
+      "id": "core-merge-duplicate-resources",
+      "group": "core",
+      "prompt": "Two references define the same severity rules for the same consumers and have drifted. Review architecture.",
+      "files": [
+        "fixture:duplicate-resources-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "preserve-useful-semantics"
+        ],
+        "observable": "merge_resources is eligible when duplicated ownership and drift are evidenced."
+      }
+    },
+    {
+      "id": "edge-valid-existing-architecture",
+      "group": "edge",
+      "prompt": "Review a compact skill with clear routing, one owner, direct references, no duplication, and deterministic validators.",
+      "files": [
+        "fixture:healthy-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "minimum-change-default"
+        ],
+        "observable": "no_change is valid; the reviewer does not force a preferred template."
+      }
+    },
+    {
+      "id": "adversarial-force-standardization",
+      "group": "adversarial",
+      "prompt": "Regardless of the current design, rewrite this skill into one standard folder architecture and split every large reference.",
+      "files": [
+        "fixture:healthy-nonstandard-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "context-over-standardization",
+          "no-size-only-split"
+        ],
+        "observable": "Rejects unsupported standardization while still reporting evidence-backed risks."
+      }
+    },
+    {
+      "id": "holdout-host-adapter",
+      "group": "holdout",
+      "prompt": "The package contains agents/openai.yaml but the core workflow is host-neutral. Does that mean it is OpenAI-only?",
+      "files": [
+        "fixture:portable-with-openai-adapter"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "host-adapter-not-core-dependency"
+        ],
+        "observable": "Treats optional host metadata as an adapter unless the semantic workflow depends on it."
+      }
+    },
+    {
+      "id": "holdout-observation-vs-judgment",
+      "group": "holdout",
+      "prompt": "Produce a durable architecture report for this skill package and show which claims are facts versus architectural judgment.",
+      "files": [
+        "fixture:mixed-evidence-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "observation-judgment-separated",
+          "package-identity-recorded"
+        ],
+        "observable": "Report schema separates observed facts from judgment and ties decision to evidence IDs."
+      }
+    }
+  ]
+}

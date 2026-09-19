@@ -5,78 +5,80 @@ description: use when asked to audit, refactor, compress, validate, compare, or 
 
 # Skill Token Efficient
 
-## Purpose
-
-Reduce skill/instruction tokens without semantic loss. Preserve role, triggers/exclusions, authority, workflow, tool rules, safety, validation, packaging, outputs, readability, and evidence/citation traceability.
+Reduce skill/instruction tokens without semantic loss. Token reduction is a cost metric, not proof of improvement.
 
 ## Inputs
 
 Resolve before edits:
 
-1. `TARGET`: folder, zip, installed skill, or supplied text.
-2. Mode: `audit`, `plan`, `apply`, `validate`, `package`.
-3. Level: `readable` default, `dense`, `max-safe`.
-4. Scope: target skill only.
-5. Blocked: `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old zips, read-only files, unrelated repos.
-6. Goal: lower `SKILL.md` plus referenced-instruction cost without loss.
-7. Gates: lower total tokens; no unjustified file/section growth; equivalent semantics; links, evidence/citation rules, protected regions, touched scripts, and package validation pass.
+- `TARGET`: exactly one skill/instruction package.
+- Mode: `audit`, `plan`, `apply`, `validate`, `package`.
+- Level: `readable` default, `dense`, `max-safe`.
+- Scope: target only. Block `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old archives, read-only files, and unrelated repos.
+- Tokenizer: pin one method for both arms. Default portable method: `estimator-v1`; model-specific tokenizers are optional and must be identified/versioned.
+- Token scope: `instructions` default for prompt/instruction cost; use `entrypoint` or `all-text` only when that is the declared comparison target.
+- Contract: explicit semantic invariants and protected surfaces, frozen before mutation.
 
-Proceed unless target identity, write scope, or semantic authority is unclear.
+## Stop Conditions
+
+Stop without mutation when target identity, write scope, semantic authority, safe baseline/rollback, or required tokenizer is unresolved; when the only path to a pass weakens a hard gate; or when required validation cannot be run and the requested claim depends on it.
 
 ## Modes
 
-- `audit`: measure cost/waste; no edits.
-- `plan`: propose compression; no edits.
-- `apply`: refactor allowed files.
-- `validate`: verify refactor; no edits except reports.
-- `package`: validate and deliver `skill.zip`.
-
-Broad runs: inspect -> baseline -> semantic map -> plan -> refactor -> validate -> package.
-
-## Skill Root Convention
-
-Use `<skill-root>` for the root folder of this skill package. In this repository that is usually `skills/skill-token-efficient`; when installed under GitHub/Copilot conventions it may be `.github/skills/skill-token-efficient`; when extracted from a package it may be `skill-token-efficient`.
+- `audit`: measure only.
+- `plan`: propose only.
+- `apply`: mutate a staged candidate, never the immutable baseline.
+- `validate`: compare baseline vs candidate; reports only.
+- `package`: package only the frozen passing candidate.
 
 ## Load When Needed
 
 - `references/compression-playbook.md`: tactics, levels, protected regions, anti-patterns.
-- `references/semantic-preservation.md`: invariants, equivalence, deletion rules, evidence/citation guardrails, risk.
-- `references/validation-and-reporting.md`: metrics, gates, commands, report contract.
-- `scripts/refactor_audit.py`: count/compare/link/protected/traceability audit.
-- `scripts/package_skill.py`: deterministic `skill.zip` creation/validation.
-- `assets/templates/refactor-report.md.template`: report skeleton.
+- `references/semantic-preservation.md`: invariant categories, equivalence, readability, evidence/citation guardrails.
+- `references/reproducibility-controls.md`: baseline, tokenizer, contract, freeze, rollback, receipts, evidence layers.
+- `references/validation-and-reporting.md`: commands, gates, metrics, report contract.
+- `assets/templates/refactor-contract.json`: copy/fill before `apply`; validate against `assets/schemas/refactor-contract.schema.json` with `scripts/validate_refactor_contract.py`.
+- `assets/templates/refactor-report.md.template`: final report skeleton when a durable report artifact is useful.
+- `scripts/refactor_audit.py`: deterministic token/reference/preservation comparison.
+- `scripts/validate_eval_suite.py`: regression-suite coverage validator.
+- `scripts/package_skill.py`: deterministic staged packaging with optional durable receipt.
+- `evals/activation-scenarios.json`: frozen activation/scope/protected/output/rollback scenarios; behavioral evidence requires an actual runner.
 - `examples/refactor-examples.md`: compact transformations.
-- `evals/activation-scenarios.json`: planned activation, negative, ambiguous, edge, regression, output-contract coverage.
 
-## Workflow
+## Apply Workflow
 
-1. **Inspect**: read target `SKILL.md`; confirm one root; inventory support dirs, validators, packages.
-2. **Baseline**:
-   ```bash
-   python -S <skill-root>/scripts/refactor_audit.py --target <TARGET> --output <REPORT_DIR>/baseline.json --markdown <REPORT_DIR>/baseline.md
+1. **Inspect and baseline**: read target `SKILL.md` and relevant refs; inventory files/validators. Preserve exact baseline bytes and hash before mutation. Run target-owned checks first.
+2. **Stage candidate**: copy the baseline to a separate candidate workspace. If staging or reliable restore is impossible, do not mutate.
+3. **Freeze contract/evaluators**: copy `assets/templates/refactor-contract.json`, identify tokenizer, enumerate semantic invariants and protected surfaces, validate the contract, then freeze scenarios/evaluators used for acceptance. Do not edit them to make a candidate pass.
+4. **Baseline metrics**:
+   ```text
+   <PYTHON> -S <skill-root>/scripts/refactor_audit.py --target <BASELINE> --tokenizer estimator-v1 --token-scope instructions --output <REPORT_DIR>/baseline.json
    ```
-3. **Map semantics**: purpose, owner, triggers/non-triggers, inputs/defaults, modes, order, tool/filesystem rules, blocked paths, safety, validation, packaging, output, stop, resources, and evidence/citation/source/path/line duties as separate invariants.
-4. **Choose level**: `readable` for `SKILL.md`/activation; `dense` for low-risk refs/examples; `max-safe` only after semantic/readability gates pass. Do not max-compress activation or evidence/citation rules unless equivalent.
-5. **Refactor**: remove filler/duplicates; consolidate rules; use imperative bullets/key-values; keep useful matrices; shorten examples; move branch detail to refs; compress frontmatter last.
-6. **Protect exact regions**: code blocks, inline code, commands, URLs, links, paths, env vars, proper nouns, versions/dates/numbers, schemas, JSON/YAML keys, CLI flags, required output sections, and paired terms encoding separate duties such as `evidence/citation`.
-7. **Repair narrowly**: on failure, patch only broken spans. Do not recompress all files unless the first pass is semantically invalid.
-8. **Validate**: rerun audit; compare total, file, and Markdown-section deltas; check semantics, links, protected regions, evidence/citation traceability, scripts, validators, packaging. Reject unjustified local growth or weakened safety, boundaries, validation, citations/references, or outputs.
-9. **Package**: only after gates pass; report counts, reduction, changed files, invariants, protected-region/traceability status, commands, failed gates, rollback, risks, package path.
+5. **Refactor**: use `readable` for `SKILL.md`/activation, `dense` for low-risk refs/examples, and `max-safe` only after preservation/readability gates pass. Prefer deduplication and progressive loading over deleting semantic content.
+6. **Compare**:
+   ```text
+   <PYTHON> -S <skill-root>/scripts/refactor_audit.py --before <BASELINE> --after <CANDIDATE> --contract <CONTRACT> --tokenizer estimator-v1 --token-scope instructions --output <REPORT_DIR>/comparison.json --fail-on-preservation-loss
+   ```
+   Use the same tokenizer method/version for both arms. Report token delta separately from semantic preservation.
+7. **Semantic review**: independently resolve every invariant marked `manual` or `scenario`. Reject candidates that save tokens by weakening activation, scope, safety, evidence/citation, validation, compatibility, output contract, progressive loading, or minimum readable execution.
+8. **Regression gates**: validate scenario coverage, target scripts/tests, local refs, package rules, and any target-owned validators. Activation or other behavioral claims require executed scenario evidence; static files are only planned coverage.
+9. **Freeze after pass**: rerun audit, record candidate tree identity, and make no further edits. Any edit invalidates the affected evidence and requires revalidation.
+10. **Package/deliver**: package the exact frozen candidate and emit a receipt containing candidate/package identities. Promote only after all applicable gates pass. On failure, keep the installed/last-good target unchanged and retain baseline/recovery evidence.
 
-## Preservation Rules
+## Hard Gates
 
-Use concise professional English. Merge repeated negatives, but keep negatives preventing false activation, unsafe edits, fabricated validation, lost citations/references, or scope drift. Never delete safety, compliance, stop, validation, authority, evidence/citation, or output-contract rules for brevity.
+Pass only when:
 
-Do not collapse traceability concepts into one generic word. If the source requires `evidence/citation`, `citation`, `source`, `file path`, `line range`, command output, or report reference, preserve the obligation or use an explicitly equivalent phrase.
+- token counts use one identified method and before/after are both reported;
+- semantic invariants are explicit and all mechanical checks pass; manual/scenario invariants have real review evidence;
+- protected URLs, paths, commands, env vars, schemas, flags, proper nouns, versions, and numbers are preserved or an authorized equivalent is documented;
+- safety, validation, evidence/citation, compatibility, activation/scope, output contract, and readability do not regress;
+- baseline-reachable local references remain reachable and progressive loading still works;
+- target-owned checks and package validation pass;
+- final candidate matches the frozen identity and receipt.
 
-## Gates
-
-Pass only when total tokens decrease and changed prose files/sections shrink or have an explicit semantic trade-off. Triggers/exclusions stay visible; safety, authority, validation, package, stop, output, and evidence/citation boundaries remain; refs resolve; protected regions and traceability losses are preserved, explained, or reverted; touched scripts and package validation pass; report counts, local regressions, assumptions, risks, rollback.
-
-## Stop Conditions
-
-Stop when target root is ambiguous; semantic preservation cannot be assessed; requested edits touch blocked/unrelated paths; reduction requires removing safety, compliance, stop, validation, evidence/citation, or output-contract rules; exact token counts are mandatory but unavailable; validation or packaging fails outside scope.
+Never accept a candidate solely because total tokens decreased. Never weaken a gate, edit frozen evidence, or compress a critical region without demonstrated equivalence.
 
 ## Output Contract
 
-Include: mode/target; total/local token deltas; changed files/sections; invariants; level/tactics; protected-region and evidence/citation validation; commands/status; blocked paths; accepted local trade-offs; rollback; risks; `skill.zip` only when validated.
+Report separately: mode/target/baseline identity; tokenizer method and count kind; before/after counts and deltas; semantic-preservation status; protected-surface status; activation/scope/output regression evidence; progressive-loading/local-reference status; changed files/sections; validators/commands and outcomes; manual/scenario evidence; accepted/rejected transformations; rollback; residual risks; frozen candidate identity; package/receipt paths only when validated.

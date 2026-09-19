@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static audit for a target ChatGPT or Agent skill package used by skill-harness."""
+"""Static audit for a target Agent Skills-compatible skill package used by skill-harness."""
 import argparse
 import importlib.util
 import json
@@ -143,6 +143,22 @@ def score_target(inv):
         scenarios_score += 20
     scores["scenario_readiness"] = min(scenarios_score, 100)
 
+    portability_integrity = {
+        "portable_core_language": has_section(text, ["agent skills", "portable core", "host portability"]),
+        "capability_detection": has_section(text, ["runtime capabilities", "capability", "filesystem read/write"]),
+        "immutable_baseline": has_section(text, ["immutable baseline", "baseline snapshot", "snapshot"]),
+        "frozen_evidence": has_section(text, ["frozen evaluator", "freeze evidence", "protected evidence"]),
+        "output_alias_preflight": has_section(text, ["output aliases", "alias", "canonical"]),
+        "atomic_delivery": has_section(text, ["package atomically", "atomic", "last-good"]),
+        "durable_receipts": has_section(text, ["receipt", "source_tree_sha256", "package_sha256"]),
+        "host_adapter_isolation": has_section(text, ["host adapters", "host-specific adapters", "optional adapters"]),
+    }
+    auxiliary_metrics = {
+        "portability_integrity_controls": sum(1 for value in portability_integrity.values() if value),
+        "portability_integrity_controls_max": len(portability_integrity),
+        "portability_integrity_signals": portability_integrity,
+    }
+
     maintainability_score = 100
     if len(text.splitlines()) > 500:
         maintainability_score -= 20
@@ -166,6 +182,12 @@ def score_target(inv):
         findings.append("unresolved placeholders or scaffold content remain")
     if inv.get("missing_references"):
         findings.append("some referenced resources are missing")
+    if any("package" in path for path in paths) and not portability_integrity["output_alias_preflight"]:
+        findings.append("packaging exists without explicit output-alias preflight")
+    if any("package" in path for path in paths) and not portability_integrity["atomic_delivery"]:
+        findings.append("packaging exists without explicit last-good/atomic delivery semantics")
+    if has_section(text, ["baseline", "compare"]) and not portability_integrity["immutable_baseline"]:
+        findings.append("baseline/comparison workflow lacks explicit immutable source snapshot semantics")
 
     weights = {
         "scope_and_trigger": 15,
@@ -181,7 +203,7 @@ def score_target(inv):
     blocker_failures = [g for g in gates if not g["passed"] and g["severity"] == "blocker"]
     major_failures = [g for g in gates if not g["passed"] and g["severity"] == "major"]
     verdict = "reject" if blocker_failures else ("accept with risks" if major_failures or total < 85 or findings else "accept")
-    return {"score": round(total, 1), "dimension_scores": scores, "gates": gates, "findings": findings, "verdict": verdict}
+    return {"score": round(total, 1), "dimension_scores": scores, "auxiliary_metrics": auxiliary_metrics, "gates": gates, "findings": findings, "verdict": verdict}
 
 
 def markdown(inv, audit):
@@ -199,6 +221,12 @@ def markdown(inv, audit):
     lines.append("## Dimension Scores")
     for name, score in audit["dimension_scores"].items():
         lines.append(f"- {name}: {score}/100")
+    lines.append("")
+    lines.append("## Auxiliary Metrics")
+    aux = audit.get("auxiliary_metrics", {})
+    lines.append(f"- portability/integrity controls: {aux.get('portability_integrity_controls', 0)}/{aux.get('portability_integrity_controls_max', 0)}")
+    for name, value in aux.get("portability_integrity_signals", {}).items():
+        lines.append(f"- {name}: {'yes' if value else 'no'}")
     lines.append("")
     lines.append("## Gates")
     for gate in audit["gates"]:
@@ -218,7 +246,7 @@ def markdown(inv, audit):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Audit a target ChatGPT or Agent skill package for harness readiness.")
+    parser = argparse.ArgumentParser(description="Audit a target Agent Skills-compatible skill package for harness readiness.")
     parser.add_argument("--target", required=True, help="Path to target skill folder")
     parser.add_argument("--output", help="Path to write Markdown audit report")
     parser.add_argument("--json-output", help="Path to write JSON audit report")

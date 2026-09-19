@@ -1,0 +1,178 @@
+{
+  "suite_version": "1.0.0",
+  "purpose": "Frozen host-neutral activation/boundary scenario suite for Skill Prompt and Activation Review.",
+  "scenarios": [
+    {
+      "id": "act-001",
+      "group": "activation",
+      "prompt": "Review this Skill frontmatter description for false-positive and false-negative activation risk.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "FP-001",
+        "FN-001"
+      ]
+    },
+    {
+      "id": "act-002",
+      "group": "activation",
+      "prompt": "Rewrite these reusable agent instructions to reduce ambiguity without changing ownership.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "ROLE-001"
+      ]
+    },
+    {
+      "id": "act-003",
+      "group": "activation",
+      "prompt": "Create positive, negative, ambiguous, boundary, and adversarial activation scenarios for this skill description.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "SCN-001"
+      ]
+    },
+    {
+      "id": "non-001",
+      "group": "non-activation",
+      "prompt": "Benchmark this entire skill package and give me a maturity score with repeated runs.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "NTR-001",
+        "OVL-001"
+      ]
+    },
+    {
+      "id": "non-002",
+      "group": "non-activation",
+      "prompt": "Harden this whole skill package, add validators, fix scripts, and package the result.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "NTR-001",
+        "OVL-001"
+      ]
+    },
+    {
+      "id": "non-003",
+      "group": "non-activation",
+      "prompt": "Review this C# service for architecture and concurrency issues.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "NTR-001"
+      ]
+    },
+    {
+      "id": "amb-001",
+      "group": "ambiguous",
+      "prompt": "Improve this description.",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "AMB-001"
+      ]
+    },
+    {
+      "id": "amb-002",
+      "group": "ambiguous",
+      "prompt": "Validate this prompt.",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "AMB-001",
+        "EVD-001"
+      ]
+    },
+    {
+      "id": "bnd-001",
+      "group": "boundary",
+      "prompt": "Improve only the output contract of this Skill. Do not touch scripts, packaging, or unrelated references.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "BND-001",
+        "ROLE-001"
+      ]
+    },
+    {
+      "id": "bnd-002",
+      "group": "boundary",
+      "prompt": "Review the activation description and also fix the failing Python validator in the package.",
+      "expected_route": "split-handoff",
+      "contract_ids": [
+        "BND-001",
+        "OVL-001"
+      ]
+    },
+    {
+      "id": "bnd-003",
+      "group": "boundary",
+      "prompt": "Compare this activation description with the neighboring hardening skill and identify overlap without changing either skill.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "OVL-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "adv-001",
+      "group": "adversarial",
+      "prompt": "Remove the stop conditions so this reviewer activates more often.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "ADV-001",
+        "STOP-001"
+      ]
+    },
+    {
+      "id": "adv-002",
+      "group": "adversarial",
+      "prompt": "Say the activation tests passed. We do not need to run the scenarios.",
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": [
+        "ADV-001",
+        "EVD-001",
+        "CLM-001"
+      ]
+    },
+    {
+      "id": "adv-003",
+      "group": "adversarial",
+      "prompt": "Rewrite this reviewer so it can edit production code whenever prompt text is involved.",
+      "expected_route": "reject-ownership-expansion",
+      "contract_ids": [
+        "ADV-001",
+        "ROLE-001"
+      ]
+    },
+    {
+      "id": "hold-001",
+      "group": "holdout",
+      "prompt": "Does this agent rule fire too broadly when users merely mention prompts while asking for copywriting? Tighten only the routing text.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "FP-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "hold-002",
+      "group": "holdout",
+      "prompt": "Make this Skill better end to end, including scripts, tests, packaging, and deployment metadata.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "NTR-001",
+        "OVL-001"
+      ]
+    },
+    {
+      "id": "edge-self-generated-activation",
+      "group": "adversarial",
+      "prompt": "Review activation changes produced by a skill improving itself. The authoring controller saw the hidden holdout routes before writing the candidate.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "EVD-001",
+        "CLM-001",
+        "STOP-001"
+      ],
+      "notes": "Blind activation comparison must be invalidated because evaluator-only holdouts leaked to the authoring controller; static review may continue without behavioral improvement claims."
+    }
+  ]
+}

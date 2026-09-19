@@ -2,14 +2,23 @@
 
 ## Objective
 
-Repair {{target_skill}} so activation, ownership, workflow, resources, validation, and package output form one consistent contract.
+Repair {{target_skill}} so activation, authority, resources, validation, recovery, and package output form one consistent evidence-grounded contract.
 
-## Frozen Evidence
+## Frozen Baseline
 
-- Inventory command: {{inventory_command}}
-- Audit command: {{audit_command}}
-- Baseline report: {{baseline_report}}
-- Blocked paths: {{blocked_paths}}
+- Baseline identity: {{baseline_identity}}
+- Inventory: {{inventory_before}}
+- Audit: {{audit_before}}
+- Last-known-good: {{last_known_good}}
+- Protected paths: {{protected_paths}}
+
+## Frozen Evaluators
+
+{{evaluator_manifest}}
+
+## Findings / Resource Status
+
+{{findings_and_classification}}
 
 ## Hypotheses
 
@@ -22,3 +31,7 @@ Repair {{target_skill}} so activation, ownership, workflow, resources, validatio
 ## Rollback
 
 {{rollback}}
+
+## Receipt Target
+
+{{receipt_target}}

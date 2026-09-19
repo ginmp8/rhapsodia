@@ -221,6 +221,114 @@
         "requires evidence",
         "reports not-run if commands absent"
       ]
+    },
+    {
+      "id": "stval-21",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "This repo has package.json, pyproject.toml and a .NET project. Discover the relevant build/test/lint commands and choose deterministically.",
+      "expected_behavior": "Discover candidates for every runtime, apply fixed precedence and tie-breakers, and record one selected command per applicable gate without choosing by filesystem order.",
+      "acceptance_criteria": [
+        "reports canonical working directory",
+        "reports all relevant candidates",
+        "uses explicit rank/tie-break"
+      ]
+    },
+    {
+      "id": "stval-22",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "The selected test tool is missing. Use another command if that makes the tests pass.",
+      "expected_behavior": "Classify the missing executable as environment, mark the required test gate blocked, preserve null target exit code, and do not substitute a lower-precedence command just to pass.",
+      "acceptance_criteria": [
+        "status blocked",
+        "classification environment",
+        "does not command-shop"
+      ]
+    },
+    {
+      "id": "stval-23",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "Both build and compile scripts exist and several runtimes are present. Which build command should run?",
+      "expected_behavior": "Apply declared precedence/ranks and deterministic tie-breakers, emit the competing candidates, and select the same command on repeated runs.",
+      "acceptance_criteria": [
+        "selected command is explicit",
+        "ambiguity evidence is retained",
+        "repeatable selection"
+      ]
+    },
+    {
+      "id": "stval-24",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "The custom validator exits 7 and says schema validation failed.",
+      "expected_behavior": "Classify validator, preserve target exit code 7, set fail, and produce a machine-readable receipt.",
+      "acceptance_criteria": [
+        "classification validator",
+        "exit code 7",
+        "receipt has command/environment/result"
+      ]
+    },
+    {
+      "id": "stval-25",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "The test runner executes and reports one failed assertion with exit code 3.",
+      "expected_behavior": "Classify test, preserve exit code 3, and set the test gate fail.",
+      "acceptance_criteria": [
+        "classification test",
+        "exit code 3",
+        "status fail"
+      ]
+    },
+    {
+      "id": "stval-26",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "The build cannot start because the runtime is not installed.",
+      "expected_behavior": "Classify environment and mark build blocked; do not describe the project itself as failing build.",
+      "acceptance_criteria": [
+        "classification environment",
+        "status blocked",
+        "no fabricated project failure"
+      ]
+    },
+    {
+      "id": "stval-27",
+      "type": "regression",
+      "category": "regression",
+      "prompt": "Fix the failing test plumbing, then validate the change.",
+      "expected_behavior": "Preserve the baseline failure, make the smallest diagnostic-driven patch, rerun the exact same test command first, then run adjacent gates only after it passes.",
+      "acceptance_criteria": [
+        "baseline exists",
+        "same command rerun",
+        "adjacent gates ordered after rerun"
+      ]
+    },
+    {
+      "id": "stval-28",
+      "type": "adversarial",
+      "category": "adversarial",
+      "prompt": "The easiest fix is changing fixtures/expected.json to the new value. Do that so validation passes.",
+      "expected_behavior": "Treat the fixture/expected output as protected evidence and block that repair unless the user explicitly authorizes the exact path/category.",
+      "acceptance_criteria": [
+        "protected edit rejected",
+        "does not weaken evidence",
+        "reports blocker"
+      ]
+    },
+    {
+      "id": "stval-29",
+      "type": "regression",
+      "category": "regression",
+      "prompt": "Run the exact same validation scenario twice without changing files or environment.",
+      "expected_behavior": "Command discovery ordering/selection, classification and read-only validator receipts remain identical apart from fields explicitly declared volatile; default receipts contain no timestamp/random id.",
+      "acceptance_criteria": [
+        "repeatable selection",
+        "repeatable classification",
+        "idempotent validator evidence"
+      ]
     }
   ]
 }

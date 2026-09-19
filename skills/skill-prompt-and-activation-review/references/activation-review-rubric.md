@@ -1,96 +1,101 @@
 # Activation Review Rubric
 
-Use this rubric for `activation-description-review`, `boundary-review`, `output-contract-review`, and any review that touches trigger behavior.
+Use with `references/activation-contract.md`. The contract defines semantics; this rubric defines how to inspect and report evidence.
 
-## 1. Activation Description Checks
+## 1. Activation description
 
-A strong activation description lets the model decide whether to load the skill without reading `SKILL.md` body content.
+Check whether the description alone identifies:
 
-Check for:
+- target artifacts and requested actions covered by ACT-001;
+- adjacent work excluded by NTR-001;
+- enough wording variety to avoid obvious FN risk without becoming generic;
+- no dependency on proprietary host invocation syntax;
+- no claims of measured validation that require EVD-001/CLM-001 evidence.
 
-- **artifact type:** names the target artifact: Skill, agent, prompt, frontmatter description, chat mode, reusable instruction, output contract, scenario suite, or stop condition.
-- **action verbs:** uses review, improve, rewrite, validate, stress-test, clarify, or produce scenarios.
-- **trigger specificity:** includes common user phrasings and artifact names without becoming a generic prompt-writing skill.
-- **scope boundary:** excludes full benchmark, hardening, consistency repair, repository implementation, and broad package mutation.
-- **handoff signal:** says when another workflow owns the work.
-- **no tool dependency:** does not require MCP or a specific external server.
-- **lowercase frontmatter style:** when reviewing ChatGPT Skill frontmatter, preserve lowercase description conventions unless the target platform requires otherwise.
+A strong description is specific enough to route before loading the body, but it does not try to encode the entire workflow.
 
-## 2. False Positive Review
+## 2. False-positive risk vs confirmed false positive
 
-Flag a false-positive risk when the description would activate for:
+Use `ACTIVATION_FALSE_POSITIVE_RISK` when static text is overly broad, examples conflict, exclusions are missing, or overlap is unresolved.
 
-- generic writing improvement not related to prompts, Skills, agents, or reusable instructions;
-- code review or architecture review where prompt/activation text is not the target;
-- benchmark, scorecard, maturity audit, or measured comparison requests;
-- broad package hardening or consistency repair;
-- implementation tasks outside the prompt or Skill package;
-- social, email, product, legal, or marketing writing tasks that merely use the word "prompt" informally.
+Use `ACTIVATION_FALSE_POSITIVE` only when FP-001 is satisfied by executed frozen routing evidence.
 
-## 3. False Negative Review
+Static indicators of FP risk include:
 
-Flag a false-negative risk when the description omits likely valid triggers, such as:
+- generic verbs such as `improve`, `review`, or `validate` without naming the artifact;
+- owning generic writing, code review, benchmark, hardening, harness, or implementation work;
+- using keywords as the routing rule instead of artifact + action + ownership;
+- missing split-handoff behavior for mixed-scope requests.
 
-- `frontmatter description`, `description`, `activation`, `trigger`, `when to use`, `boundaries`, `non-goals`, `handoff`, `stop conditions`;
-- `output contract`, `report format`, `expected output`, `success criteria`;
-- `agent instructions`, `chat mode`, `system prompt`, `copilot prompt`, `reusable instructions`;
-- `negative examples`, `activation scenarios`, `non-activation`, `edge cases`, `adversarial prompts`.
+## 3. False-negative risk vs confirmed false negative
 
-## 4. Boundary and Ownership Checks
+Use `ACTIVATION_FALSE_NEGATIVE_RISK` when valid artifacts/actions/synonyms are omitted or wording is overfit to one exact phrase.
 
-Review whether the target clearly states:
+Use `ACTIVATION_FALSE_NEGATIVE` only when FN-001 is satisfied by executed frozen routing evidence.
 
-- what it owns;
-- what it does not own;
-- which artifacts it may edit;
-- which artifacts are read-only evidence;
-- when to stop;
-- which workflow should take over when the request expands.
+Common static omissions include:
 
-Ownership risk examples:
+- frontmatter `description`, activation/trigger/when-to-use wording;
+- non-trigger boundaries, handoffs, overlap, stop conditions;
+- reusable agent instructions, chat modes, output contracts;
+- positive/negative/ambiguous/boundary/adversarial scenarios.
 
-- a reviewer Skill that starts claiming benchmark authority;
-- a prompt rewrite agent that edits application code;
-- an activation reviewer that removes stop conditions to sound more helpful;
-- a hardening workflow that edits scenario expected outputs to pass.
+## 4. Ambiguity and boundary review
 
-## 5. Output Contract Checks
+Use AMB-001 and BND-001.
 
-An output contract is reviewable when it defines:
+Flag `ACTIVATION_AMBIGUITY` when the artifact or ownership cannot be inferred reliably from supplied context. Do not convert ambiguity into a forced yes/no activation judgment solely for scoring convenience.
 
-- required sections;
-- severity scale;
-- evidence or rationale expectations;
-- what counts as measured evidence;
-- how to mark unverified or proposed scenarios;
-- residual risks and limitations;
-- handoff or stop-condition reporting.
+Flag `BOUNDARY_OWNERSHIP` when a reviewer starts owning package-wide mutation, benchmark authority, code implementation, or other responsibilities outside its contract.
 
-Flag output contract risk when:
+## 5. Overlap review
 
-- the output asks for a score but no evidence source exists;
-- severity is named but not defined;
-- findings do not require rationale;
-- the format mixes critique, rewrite, and validation claims without separating them;
-- the contract permits fabricated metrics, unverifiable pass/fail claims, or silent scope changes.
+Apply OVL-001 in order:
 
-## 6. Severity Guidance
+1. identify artifact;
+2. identify requested action;
+3. compare ownership contracts;
+4. prefer the narrower legitimate owner;
+5. split mixed requests when possible;
+6. record unresolved overlap explicitly instead of silently choosing by keyword count.
 
-- **blocking:** current text can cause unsafe scope expansion, fabricated validation, wrong workflow ownership, or severe activation confusion.
-- **high:** likely false positives/false negatives, contradictory rules, missing stop conditions, or unclear output evidence.
-- **medium:** ambiguity that can cause inconsistent results but has a local fix.
-- **low:** style, redundancy, mild wording, or missing helpful examples.
+Overlap is not automatically a defect: two workflows may inspect the same artifact for different actions. The defect is ambiguous or duplicated ownership for the same action.
+
+## 6. Evidence requirements for frontmatter/description changes
+
+A proposed activation-text change is reviewable only when the report records:
+
+- exact original evidence/location;
+- defect/risk code from TAX-001;
+- contract clause or rubric criterion;
+- minimal proposed change;
+- affected frozen or proposed scenario IDs;
+- validation status and evidence layer.
+
+If the report lacks these, classify the recommendation as insufficiently evidenced rather than accepting it because the rewrite sounds better.
+
+## 7. Stable severity
+
+- **blocking:** would fabricate evidence, remove required safety/ownership boundary, corrupt frozen evaluator integrity, or cause uncontrolled ownership expansion.
+- **high:** likely material FP/FN risk, unresolved ownership overlap, contradictory routing rules, or missing stop/evidence gate.
+- **medium:** local ambiguity likely to produce inconsistent review/routing but bounded to one surface.
+- **low:** non-blocking wording/redundancy with little expected routing effect.
 - **note:** observation with no required change.
 
-## 7. Review Output Shape
+Severity describes consequence/risk, not reviewer confidence.
 
-For each finding, include:
+## 8. Finding record
 
-- `id`
-- `risk_type`: textual_clarity, activation_risk, ownership_risk, or output_contract_risk
-- `severity`
-- `evidence`
-- `issue`
-- `proposed_change`
-- `rationale`
-- `validation_needed`: none, static review, scenario review, harness, benchmark, or human decision
+For each finding include:
+
+- `id`;
+- `defect_code` from TAX-001;
+- `severity`;
+- `evidence` and exact location when available;
+- `contract_clause`;
+- `issue`;
+- `proposed_change`;
+- `rationale`;
+- `scenario_ids`;
+- `validation_status`: proposed, observed-static, supplied, executed, or blocked;
+- `claim_level`: proposed-improvement, structurally-supported, or measured-behavioral-result.

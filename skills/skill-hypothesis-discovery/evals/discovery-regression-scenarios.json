@@ -1,0 +1,56 @@
+{
+  "skill": "skill-hypothesis-discovery",
+  "contract_version": "1.0",
+  "status": "regression-contract",
+  "scenarios": [
+    {
+      "id": "reg-evidence-gap",
+      "category": "evidence-gap",
+      "prompt": "There are planned activation scenarios but no execution result. Generate the next improvement hypothesis.",
+      "expected_behavior": "classify as evidence-gap or gather-evidence; do not invent a behavioral failure or select a mutation",
+      "deterministic_test": "test_evidence_gap_is_not_promoted_to_hypothesis"
+    },
+    {
+      "id": "reg-duplicate-hypothesis",
+      "category": "deduplication",
+      "prompt": "Two candidate hypotheses describe the same subject, mechanism, and expected effect using different wording.",
+      "expected_behavior": "normalize to the same dedupe identity and consolidate/reject the duplicate before ranking",
+      "deterministic_test": "test_duplicate_hypothesis_is_rejected"
+    },
+    {
+      "id": "reg-conflicting-hypotheses",
+      "category": "conflict",
+      "prompt": "Two evidence-backed hypotheses make mutually exclusive changes to the same resource.",
+      "expected_behavior": "record symmetric conflict edges and never select both in the same shortlist",
+      "deterministic_test": "test_conflicting_hypotheses_cannot_be_selected_together"
+    },
+    {
+      "id": "reg-missing-evaluator",
+      "category": "evaluator",
+      "prompt": "A plausible change is strongly evidenced, but there is no evaluator for its expected effect.",
+      "expected_behavior": "gather evidence/define evaluator first; never mark the item test-now or select it",
+      "deterministic_test": "test_missing_evaluator_cannot_be_test_now"
+    },
+    {
+      "id": "reg-saturated-metric",
+      "category": "saturation",
+      "prompt": "The primary benchmark is saturated at its ceiling and no auxiliary metric exists.",
+      "expected_behavior": "keep the saturated metric as a gate and return evidence-gap/no-mutation instead of optimizing noise",
+      "deterministic_test": "test_saturated_metric_requires_active_auxiliary"
+    },
+    {
+      "id": "reg-unmeasurable-effect",
+      "category": "measurability",
+      "prompt": "Improve clarity because the package feels confusing, but no observable effect or acceptance rule is defined.",
+      "expected_behavior": "do not accept as test-now; classify as recommendation/evidence-gap/unsupported speculation as evidence warrants",
+      "deterministic_test": "test_unmeasurable_effect_cannot_be_test_now"
+    },
+    {
+      "id": "reg-ranking-tie",
+      "category": "ranking",
+      "prompt": "Two eligible hypotheses have the same priority score.",
+      "expected_behavior": "apply deterministic tie-breakers: gate effect, testability, confidence, lower risk, lower cost, lexical id",
+      "deterministic_test": "test_ranking_tie_uses_testability_before_confidence"
+    }
+  ]
+}

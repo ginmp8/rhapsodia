@@ -24,7 +24,7 @@ Package from the verified frozen candidate only. Canonicalize package and receip
 
 ## Security floor
 
-Every optimized skill preserves secret boundaries, scoped filesystem writes, no fabricated validation/benchmark claims, no unsafe shell guidance, explicit package exclusions, and stop conditions for missing evidence.
+Every optimized skill preserves secret boundaries, scoped filesystem writes, no fabricated validation/benchmark claims, no unsafe shell guidance, explicit package exclusions, and stop conditions for missing evidence. Third-party/downloaded skills are `external-untrusted-skill` until the external intake passes; do not execute their scripts, installers, hooks, binaries, or package-manager commands during quarantine.
 
 
 ## Cross-host safety

@@ -1,89 +1,54 @@
 # Prompt Rewrite Patterns
 
-Use this reference for `prompt-rewrite` and `instruction-clarity-review`.
+Use for `prompt-rewrite` and `instruction-clarity-review`. Apply `references/activation-contract.md` whenever the rewrite can affect routing, scope, evidence, or ownership.
 
-## Rewrite Principles
+## Rewrite principles
 
-1. **Preserve intent first.** Do not add new capabilities, tools, audiences, or authority that the original prompt did not imply.
-2. **Reduce ambiguity before adding detail.** Replace vague words with concrete triggers, constraints, inputs, and outputs.
-3. **Keep order executable.** Put prerequisite checks before actions, actions before validation, and validation before final reporting.
-4. **Prefer local edits.** Rewrite the smallest section that solves the issue unless the whole prompt structure is broken.
-5. **Keep boundaries strong.** A fluent prompt that silently expands scope is worse than a stricter prompt.
-6. **Use examples when behavior is hard to infer.** Examples should calibrate activation and output, not restate obvious rules.
-7. **Separate analysis from output.** Ask for concise rationale or review findings, not hidden chain-of-thought.
-8. **Avoid fake validation.** A prompt may propose scenario tests, but it must not claim measured success without execution evidence.
+1. Preserve role, intent, safety, and ownership before optimizing wording.
+2. Reduce a specific observed ambiguity; do not add text merely for detail.
+3. Keep prerequisite checks before actions, actions before validation, and validation before claims.
+4. Prefer the smallest local edit that satisfies the identified contract clause.
+5. Do not weaken non-trigger boundaries, handoffs, or stop conditions to increase activation.
+6. Use examples only when they calibrate a real ambiguity or boundary.
+7. Ask for concise rationale/evidence, never hidden chain-of-thought.
+8. Do not convert static review into measured validation.
 
-## Common Rewrites
+## Activation-text rewrite evidence
 
-### Vague trigger to precise trigger
+For frontmatter descriptions, trigger text, boundaries, handoffs, or stop conditions, record:
 
-Weak:
+1. original text/location;
+2. defect/risk code;
+3. contract clause;
+4. minimal rewritten text;
+5. scenarios affected or added;
+6. expected effect stated as a hypothesis;
+7. validation status.
 
-> use this skill to improve prompts.
+Use `proposed improvement` until evidence justifies a stronger label.
 
-Better:
+## Common patterns
 
-> use this skill when asked to review, improve, rewrite, or validate prompt text, skill activation descriptions, agent instructions, boundaries, stop conditions, scenarios, or output contracts.
+### Vague trigger -> artifact + action
 
-Why it works: the better version names artifacts and actions while avoiding generic writing tasks.
+Weak: `use this skill to improve prompts.`
 
-### Broad scope to explicit boundary
+Better: `use when asked to review or rewrite existing skill activation descriptions, reusable agent instructions, boundaries, scenarios, or output contracts.`
 
-Weak:
+### Broad ownership -> explicit non-trigger
 
-> use this skill to improve any skill package.
+Weak: `use this skill to improve any skill package.`
 
-Better:
+Better: `review prompt/activation surfaces only; hand off full package hardening, benchmarking, harness execution, consistency repair, and implementation.`
 
-> use this skill only for prompt, activation, boundary, stop-condition, scenario, and output-contract surfaces. hand off full package hardening, benchmark, consistency repair, or implementation work.
+### Fake validation -> evidence-aware wording
 
-Why it works: the better version protects ownership and prevents over-activation.
+Weak: `validate that the prompt works.`
 
-### Unclear validation to truthful validation
+Better: `perform static review and define frozen scenarios; report behavioral validation only when those scenarios were actually executed with preserved evaluator identity.`
 
-Weak:
+### Overlap -> ownership rule
 
-> validate that the prompt works.
+Weak: `if the request mentions prompts, use this skill.`
 
-Better:
-
-> perform a static review and propose activation, non-activation, ambiguous, and adversarial scenarios. report scenario results as measured only when outputs were actually executed or supplied.
-
-Why it works: the better version separates review from measurement.
-
-### More text to more precise text
-
-Weak:
-
-> add more detailed instructions so the model understands everything.
-
-Better:
-
-> add only the missing constraint, input, stop condition, or output requirement that reduces a specific observed ambiguity.
-
-Why it works: the better version avoids verbosity as a proxy for quality.
-
-## Prompt Review Checklist
-
-Ask these questions before rewriting:
-
-- What is the target role?
-- What should trigger the artifact?
-- What should not trigger it?
-- What are the required inputs?
-- What is the allowed mutation scope?
-- What output is expected?
-- What evidence is required before claiming validation?
-- Which handoff is required when the request expands?
-- Which examples would catch false positives and false negatives?
-
-## Rewrite Output Pattern
-
-When returning a rewrite, include:
-
-1. `rewritten_text`
-2. `changed_because`
-3. `preserved_intent`
-4. `scope_not_expanded`
-5. `negative_scenarios_to_add`
-6. `validation_status`
+Better: `route by requested artifact + action + ownership; use a generic prompt-authoring workflow for new prompt creation and this reviewer for existing activation/boundary surfaces.`

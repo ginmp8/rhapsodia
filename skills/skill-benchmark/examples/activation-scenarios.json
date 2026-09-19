@@ -1,6 +1,24 @@
-[
-  {"id":"ex-a1","type":"should_activate","category":"should_activate","prompt":"Benchmark this skill package and produce a scorecard.","expected_activation":true},
-  {"id":"ex-n1","type":"should_not_activate","category":"should_not_activate","prompt":"Rewrite this email professionally.","expected_activation":false},
-  {"id":"ex-m1","type":"ambiguous","category":"ambiguous","prompt":"Can you review this skill?","expected_activation":true},
-  {"id":"ex-e1","type":"edge_case","category":"edge_case","prompt":"Benchmark a folder with no SKILL.md.","expected_activation":true}
-]
+{
+  "examples": [
+    {
+      "prompt": "Benchmark this skill package and score its maturity.",
+      "decision": "activate",
+      "reason": "explicit reusable-skill benchmark request"
+    },
+    {
+      "prompt": "Check whether this skill is portable across Claude, Copilot, Cursor, and ChatGPT.",
+      "decision": "activate",
+      "reason": "portability benchmark is in scope"
+    },
+    {
+      "prompt": "Improve this skill and return a new ZIP.",
+      "decision": "do-not-own",
+      "reason": "mutation belongs to a skill improvement workflow; benchmark may provide evidence only"
+    },
+    {
+      "prompt": "Compare these two skill versions; the old report used a different rubric hash.",
+      "decision": "activate-with-noncomparability-warning",
+      "reason": "standalone results may be reviewed but strict deltas require the same evaluator identity"
+    }
+  ]
+}

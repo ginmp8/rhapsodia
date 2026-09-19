@@ -1,30 +1,26 @@
 #!/usr/bin/env python3
-"""Create a simple structural inventory for a skill package.
+"""Create deterministic structural evidence for an Agent Skills package.
 
-The output is mechanical evidence only. It does not decide whether the
-architecture is good, cohesive, or ready to publish.
+The output is mechanical evidence only. It records files, identity, declared
+resource relationships, consumer evidence, ownership-role taxonomy, and
+progressive-loading declarations. It never labels a resource orphaned or makes
+an architectural recommendation.
 """
 
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
-import os
 import re
 from pathlib import Path
 from typing import Any
 
-TOP_LEVEL_AREAS = [
-    "agents",
-    "references",
-    "scripts",
-    "assets",
-    "examples",
-    "evals",
-]
-
+SCHEMA_VERSION = "2.0.0"
+TOP_LEVEL_AREAS = ["agents", "references", "scripts", "assets", "examples", "evals"]
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+EXCLUDED_PARTS = {".git", "__pycache__"}
 
 
 def sha256_file(path: Path) -> str:
@@ -37,13 +33,17 @@ def sha256_file(path: Path) -> str:
 
 def is_text_file(path: Path) -> bool:
     try:
-        with path.open("rb") as f:
-            data = f.read(4096)
-        if b"\x00" in data:
-            return False
+        data = path.read_bytes()[:4096]
+        return b"\x00" not in data and _is_utf8(data)
+    except OSError:
+        return False
+
+
+def _is_utf8(data: bytes) -> bool:
+    try:
         data.decode("utf-8")
         return True
-    except Exception:
+    except UnicodeDecodeError:
         return False
 
 
@@ -52,7 +52,7 @@ def count_lines(path: Path) -> int | None:
         return None
     try:
         return len(path.read_text(encoding="utf-8").splitlines())
-    except Exception:
+    except OSError:
         return None
 
 
@@ -74,79 +74,221 @@ def extract_frontmatter(skill_md: Path) -> dict[str, Any]:
     return result
 
 
+def _included_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for path in root.rglob("*"):
+        if any(part in EXCLUDED_PARTS for part in path.parts):
+            continue
+        if path.is_file():
+            files.append(path)
+    return sorted(files, key=lambda p: p.relative_to(root).as_posix())
+
+
+def _resource_taxonomy(rel: str) -> tuple[str, str]:
+    p = Path(rel)
+    parts = p.parts
+    if rel == "SKILL.md":
+        return "control-plane", "control-plane"
+    if parts and parts[0] == "agents":
+        return "host-adapter", "host-adapter"
+    if parts and parts[0] == "references":
+        return "reference", "review-guidance"
+    if parts and parts[0] == "scripts":
+        return "script", "deterministic-mechanics"
+    if len(parts) >= 2 and parts[0] == "assets" and parts[1] == "templates":
+        return "template-asset", "output-contract"
+    if parts and parts[0] == "assets":
+        return "runtime-asset", "runtime-asset"
+    if parts and parts[0] == "examples":
+        return "example", "example-evidence"
+    if parts and parts[0] == "evals":
+        return "eval", "evaluation-evidence"
+    return "package-resource", "unknown"
+
+
 def markdown_links(path: Path, root: Path) -> list[dict[str, str]]:
     if path.suffix.lower() != ".md" or not is_text_file(path):
         return []
     text = path.read_text(encoding="utf-8", errors="replace")
-    links = []
+    links: list[dict[str, str]] = []
     for match in LINK_RE.finditer(text):
         target = match.group(1).strip()
         if "://" in target or target.startswith("mailto:") or target.startswith("#"):
-            kind = "external-or-anchor"
-            exists = "not-checked"
-        else:
-            clean = target.split("#", 1)[0]
-            target_path = (path.parent / clean).resolve()
-            try:
-                target_path.relative_to(root.resolve())
-                in_root = True
-            except ValueError:
-                in_root = False
-            kind = "local" if in_root else "outside-root"
+            links.append({"source": path.relative_to(root).as_posix(), "target": target, "kind": "external-or-anchor", "exists": "not-checked"})
+            continue
+        clean = target.split("#", 1)[0]
+        target_path = (path.parent / clean).resolve()
+        try:
+            rel = target_path.relative_to(root.resolve()).as_posix()
+            kind = "local"
             exists = str(target_path.exists())
-        links.append({"source": str(path.relative_to(root)), "target": target, "kind": kind, "exists": exists})
+            normalized_target = rel
+        except ValueError:
+            kind = "outside-root"
+            exists = str(target_path.exists())
+            normalized_target = target
+        links.append({"source": path.relative_to(root).as_posix(), "target": target, "normalized_target": normalized_target, "kind": kind, "exists": exists})
     return links
+
+
+def _text_by_rel(files: list[Path], root: Path) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for path in files:
+        if is_text_file(path):
+            out[path.relative_to(root).as_posix()] = path.read_text(encoding="utf-8", errors="replace")
+    return out
+
+
+def _consumer_evidence(rel: str, texts: dict[str, str], links: list[dict[str, str]]) -> list[str]:
+    consumers: set[str] = set()
+    for link in links:
+        if link.get("kind") == "local" and link.get("normalized_target") == rel:
+            consumers.add(link["source"])
+    for source, text in texts.items():
+        if source == rel:
+            continue
+        if rel in text:
+            consumers.add(source)
+    return sorted(consumers)
+
+
+def _python_import_edges(files: list[Path], root: Path) -> list[dict[str, str]]:
+    available = {p.relative_to(root).as_posix(): p for p in files}
+    module_to_path: dict[str, str] = {}
+    for rel in available:
+        if not rel.endswith(".py"):
+            continue
+        module = rel[:-3].replace("/", ".")
+        if module.endswith(".__init__"):
+            module = module[:-9]
+        module_to_path[module] = rel
+    edges: list[dict[str, str]] = []
+    for rel, path in available.items():
+        if not rel.endswith(".py") or not is_text_file(path):
+            continue
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=rel)
+        except SyntaxError:
+            continue
+        modules: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                modules.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                modules.add(node.module)
+        for module in sorted(modules):
+            target = module_to_path.get(module)
+            if target:
+                edges.append({"source": rel, "target": target, "kind": "python-import"})
+    return edges
+
+
+def _package_identity(files: list[dict[str, Any]]) -> str:
+    h = hashlib.sha256()
+    for item in files:
+        h.update(item["path"].encode("utf-8"))
+        h.update(b"\0")
+        h.update(item["sha256"].encode("ascii"))
+        h.update(b"\n")
+    return h.hexdigest()
 
 
 def inventory(root: Path) -> dict[str, Any]:
     root = root.resolve()
-    files = []
+    paths = _included_files(root)
+    files: list[dict[str, Any]] = []
     area_counts = {area: 0 for area in TOP_LEVEL_AREAS}
-    links = []
-    skill_md_files = []
+    links: list[dict[str, str]] = []
+    skill_md_files: list[str] = []
 
-    for path in sorted(root.rglob("*")):
-        if ".git" in path.parts or "__pycache__" in path.parts:
-            continue
-        if not path.is_file():
-            continue
-        rel = path.relative_to(root)
+    for path in paths:
+        rel = path.relative_to(root).as_posix()
         if path.name == "SKILL.md":
-            skill_md_files.append(str(rel))
-        area = rel.parts[0] if rel.parts else "root"
+            skill_md_files.append(rel)
+        area = Path(rel).parts[0] if Path(rel).parts else "root"
         if area in area_counts:
             area_counts[area] += 1
+        taxonomy, owner_role = _resource_taxonomy(rel)
         info = {
-            "path": str(rel),
+            "path": rel,
             "area": area,
             "suffix": path.suffix,
             "size_bytes": path.stat().st_size,
             "line_count": count_lines(path),
             "sha256": sha256_file(path),
             "is_text": is_text_file(path),
+            "taxonomy": taxonomy,
+            "owner_role": owner_role,
         }
         files.append(info)
         links.extend(markdown_links(path, root))
 
-    skill_md = root / "SKILL.md"
-    total_size = sum(item["size_bytes"] for item in files)
+    texts = _text_by_rel(paths, root)
+    resource_map: list[dict[str, Any]] = []
+    ownership_map: list[dict[str, str]] = []
+    dependency_edges: list[dict[str, str]] = []
+
+    for item in files:
+        rel = item["path"]
+        consumers = _consumer_evidence(rel, texts, links)
+        resource_map.append({
+            "path": rel,
+            "taxonomy": item["taxonomy"],
+            "owner_role": item["owner_role"],
+            "consumer_evidence": consumers,
+            "consumer_status": "observed-consumer-evidence" if consumers else "unresolved-no-evidence",
+        })
+        ownership_map.append({
+            "path": rel,
+            "owner_role": item["owner_role"],
+            "basis": "deterministic-path-role-taxonomy" if item["owner_role"] != "unknown" else "unresolved",
+        })
+        for source in consumers:
+            dependency_edges.append({"source": source, "target": rel, "kind": "path-or-link-evidence"})
+
+    dependency_edges.extend(_python_import_edges(paths, root))
+    dependency_edges = sorted(
+        {json.dumps(edge, sort_keys=True): edge for edge in dependency_edges}.values(),
+        key=lambda e: (e["source"], e["target"], e["kind"]),
+    )
+
+    skill_text = texts.get("SKILL.md", "")
+    declared_resources: list[dict[str, str]] = []
+    for item in resource_map:
+        rel = item["path"]
+        if rel == "SKILL.md":
+            continue
+        if rel in skill_text or any(
+            link.get("source") == "SKILL.md" and link.get("kind") == "local" and link.get("normalized_target") == rel
+            for link in links
+        ):
+            declared_resources.append({"target": rel, "evidence": "direct-SKILL.md-reference"})
+
     local_links = [link for link in links if link["kind"] == "local"]
     broken_local_links = [link for link in local_links if link["exists"] == "False"]
+    skill_md = root / "SKILL.md"
 
     return {
+        "schema_version": SCHEMA_VERSION,
         "target": str(root),
-        "skill_md_files": skill_md_files,
+        "package_identity_sha256": _package_identity(files),
+        "skill_md_files": sorted(skill_md_files),
         "root_skill_md_present": skill_md.exists(),
         "frontmatter": extract_frontmatter(skill_md),
         "file_count": len(files),
-        "total_size_bytes": total_size,
+        "total_size_bytes": sum(item["size_bytes"] for item in files),
         "area_counts": area_counts,
         "files": files,
-        "markdown_links": links,
+        "resource_map": sorted(resource_map, key=lambda x: x["path"]),
+        "ownership_map": sorted(ownership_map, key=lambda x: x["path"]),
+        "dependency_map": {"edges": dependency_edges},
+        "progressive_loading_map": {"skill_md_declared_resources": sorted(declared_resources, key=lambda x: x["target"])},
+        "markdown_links": sorted(links, key=lambda x: (x["source"], x["target"], x["kind"])),
         "broken_local_links": broken_local_links,
         "notes": [
             "inventory is mechanical evidence only",
-            "architectural judgment requires reading the package contract and resources",
+            "consumer_status unresolved-no-evidence is not an orphan classification",
+            "architectural judgment requires the versioned rubric and package context",
         ],
     }
 
@@ -154,6 +296,11 @@ def inventory(root: Path) -> dict[str, Any]:
 def render_markdown(data: dict[str, Any]) -> str:
     lines = [
         f"# Skill Package Inventory: {data['target']}",
+        "",
+        "## Identity",
+        "",
+        f"- schema: `{data['schema_version']}`",
+        f"- package SHA-256: `{data['package_identity_sha256']}`",
         "",
         "## Summary",
         "",
@@ -163,25 +310,18 @@ def render_markdown(data: dict[str, Any]) -> str:
         f"- total size bytes: {data['total_size_bytes']}",
         f"- broken local markdown links: {len(data['broken_local_links'])}",
         "",
-        "## Area counts",
+        "## Resource map",
         "",
     ]
-    for area, count in data["area_counts"].items():
-        lines.append(f"- {area}: {count}")
-    lines.extend(["", "## Files", ""])
-    for item in data["files"]:
-        line_count = item["line_count"] if item["line_count"] is not None else "binary-or-unreadable"
-        lines.append(f"- `{item['path']}` ({item['size_bytes']} bytes, {line_count} lines)")
-    if data["broken_local_links"]:
-        lines.extend(["", "## Broken local links", ""])
-        for link in data["broken_local_links"]:
-            lines.append(f"- `{link['source']}` -> `{link['target']}`")
-    lines.extend(["", "> This inventory is mechanical evidence only; it is not an architecture verdict."])
+    for item in data["resource_map"]:
+        consumers = ", ".join(item["consumer_evidence"]) or "none observed"
+        lines.append(f"- `{item['path']}` — {item['taxonomy']} / {item['owner_role']}; consumers: {consumers}; status: {item['consumer_status']}")
+    lines.extend(["", "> Mechanical evidence only. Absence of consumer evidence is not deletion evidence."])
     return "\n".join(lines) + "\n"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="inventory a skill package")
+    parser = argparse.ArgumentParser(description="inventory a skill package deterministically")
     parser.add_argument("--target", required=True, help="path to skill package root")
     parser.add_argument("--json-output", help="optional json output path")
     parser.add_argument("--markdown-output", help="optional markdown output path")
@@ -199,12 +339,10 @@ def main() -> int:
         out = Path(args.json_output)
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(text + "\n", encoding="utf-8")
-
     if args.markdown_output:
         out = Path(args.markdown_output)
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(render_markdown(data), encoding="utf-8")
-
     return 0
 
 

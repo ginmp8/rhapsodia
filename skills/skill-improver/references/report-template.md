@@ -1,72 +1,74 @@
 # Skill Improvement Report Template
 
-Use for manual, automated, self-improvement, and package/install runs. Mark evidence as measured only when commands or captured scenario outputs exist.
+Use for manual, automated, self-improvement, and package/install runs. Mark evidence as measured only when commands or captured outputs exist.
 
 ```markdown
 # Skill Improvement Report: <target>
 
-## Summary
-- Target skill: `<target>`
+## 1. Target and scope
 - Mode: `<benchmark-only | manual-patch | automated-loop | package-install | self-improvement>`
-- Baseline score: `<score>`
-- Final score: `<score>`
-- Auxiliary metric: `<metric and result, or not used>`
-- Delta: `<delta>`
-- Iterations: `<count>`
-- Hypothesis source: `<supplied | discovery-backlog | built-in-catalog | fallback>`
-- Discovery result: `<not-run | candidates/top/deferred | gather-evidence | no-mutation-recommended>`
-- Accepted patches: `<count>`
-- Rejected patches: `<count>`
-- Verdict: `<improved | unchanged | failed | packaged>`
+- Objective: `<...>`
+- Target/baseline identity: `<...>`
+- Runtime capabilities: `<filesystem-read/write, python, command execution, evaluator, artifact delivery>`
+- Allowed/protected paths: `<...>`
+- Self-improvement generation: `<not-applicable | generation_id>`
+- Controller / baseline / candidate identity: `<...>`
+- Max self-recursion depth / last-known-good: `<...>`
 
-## Evaluator and freeze contract
-- Evaluator mode: `<skill-benchmark | hybrid | command | generated-first>`
-- Benchmark lock or hash: `<hash/path>`
-- Required gates: `<gates>`
-- Blocked paths: `<paths>`
-- Safety mode: `<manual review | isolated container | ci | disposable sandbox>`
+## 2. Evaluator and source freeze
+- Evaluator: `<...>`
+- Evaluator hash/locks: `<...>`
+- Material source manifest: `<path/not-required>`
+- Source verification: `<pass/fail/not-run>`
+- Primary metric and direction: `<...>`
+- Auxiliary metric when saturated: `<...>`
 
-## Hypothesis discovery
-- Backlog source: `<path/report/not-run>`
-- Candidates generated: `<count>`
-- Top hypotheses selected: `<ids>`
-- Deferred hypotheses: `<ids/reasons>`
-- Selection rationale: `<why this hypothesis was tested first>`
+## 3. Baseline
+- Score/status/gates: `<...>`
+- Structural evidence: `<...>`
+- Behavioral evidence: `<...>`
+- Runtime/perceptual evidence: `<...>`
 
-## Accepted hypotheses
-| Iteration | Hypothesis | Score before | Score after | Files changed | Rationale |
-|---:|---|---:|---:|---|---|
+## 4. Hypothesis discovery and selection
+- Source: `<supplied | backlog | discovery | built-in fallback>`
+- Candidates: `<...>`
+- Selected hypothesis/mechanism: `<...>`
+- Expected effect: `<...>`
+- Accept/reject rule: `<...>`
 
-## Rejected hypotheses
-| Iteration | Hypothesis | Score before | Score after | Reason rejected |
-|---:|---|---:|---:|---|
+## 5. Candidate changes
+- Files changed: `<...>`
+- Mechanical controls moved into scripts/schemas/validators: `<...>`
+- Repair rounds and diagnostics: `<...>`
+- Deferred/rejected changes: `<...>`
 
-## Final changed files
-```text
-<changed file list or diff stat>
+## 6. Evaluation and structural change gate
+- Final score/status/gates: `<...>`
+- Delta: `<...>`
+- Source/evaluator identities unchanged: `<pass/fail>`
+- Change gate: `<pass | pass-with-warnings | fail | not-run>`
+- Blocking regressions/material concerns: `<...>`
+
+## 7. Final freeze and delivery
+- Frozen candidate tree hash/identity: `<...>`
+- Edited after final pass: `<no; otherwise validation invalid>`
+- Package validation: `<pass/fail/not-run>`
+- Authored/canonical output: `<...>`
+- Artifact SHA-256: `<...>`
+- Receipt: `<path/status>`
+- Last-good/recovery result: `<...>`
+- Self-improvement promotion decision/receipt: `<not-applicable | promote/reject/hold + receipt validation>`
+
+## 8. Commands and evidence
+| Command/check | Status | Evidence layer | Notes |
+|---|---|---|---|
+| `<...>` | `<pass/fail/not-run/blocked>` | `<structural/behavioral/runtime/perceptual>` | `<...>` |
+
+## 9. Residual risks
+- `<irreducible nondeterminism, unexecuted checks, portability caveats, subjective review gaps>`
+
+## 10. Final status
+`<reproducibility-hardened | validated-with-limitations | partial | blocked>`
 ```
 
-## Commands executed
-```text
-<important commands and pass/fail outcome>
-```
-
-## Structural change gate
-- Policy: `<disabled | advisory | required>`
-- Status: `<pass | pass-with-warnings | fail | not-run>`
-- Blocking regressions: `<none or list>`
-- Material concerns: `<none or list>`
-- Accepted trade-offs: `<none or list>`
-- Decision impact: `<accepted | rejected | advisory only>`
-
-## Validation and package gates
-| Gate | Result | Evidence |
-|---|---|---|
-| Target validator | `<pass/fail>` | `<command/output>` |
-| Hardening validator | `<pass/fail>` | `<command/output>` |
-| Package creation | `<pass/fail/not requested>` | `<path>` |
-| Blocked paths unchanged | `<pass/fail>` | `<hash or diff evidence>` |
-
-## Risks and follow-ups
-1. `<risk or next hypothesis>`
-```
+Do not use `behaviorally improved` unless paired behavioral evidence actually ran or was supplied and met the predeclared acceptance rule.

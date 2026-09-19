@@ -2,24 +2,36 @@
 
 ## Pass
 
-User asks: "Gate this patch before accepting the skill-improver candidate. The benchmark improved from 88 to 91 and validators passed."
+User: "Gate this candidate before acceptance. Baseline and candidate hashes match the frozen manifests, protected eval files did not change, validators passed, and the package receipt points to the candidate hash."
 
-Expected result: status `pass` when the diff keeps activation, references, safety boundaries, validation claims, and output contract intact.
+Expected: `pass` if semantic review also finds activation, safety, scope, portability, and output behavior intact.
 
 ## Pass with warnings
 
-User asks: "Review this token-reduction patch. It removes two examples but keeps the output contract and validators pass."
+User: "Review this token-reduction patch. It removes two optional examples, keeps the output contract, and validators pass."
 
-Expected result: status `pass-with-warnings` if the examples were optional and the report records the trade-off plus a follow-up activation-suite hypothesis.
+Expected: `pass-with-warnings` under normal policy when evidence is sufficient and the lost examples are a documented trade-off rather than a regression.
 
-## Fail
+## Fail: protected evaluator drift
 
-User asks: "The benchmark improved, but the patch removed the non-activation boundaries and deleted a referenced validation file. Can we accept it?"
+User: "The benchmark improved, but the candidate also changed evals/golden.json after baseline measurement. Can we accept it?"
 
-Expected result: status `fail`; decision `repair-before-accept` or `reject` because benchmark improvement does not override blocking quality regression.
+Expected: `fail` under a measured experiment. The evaluator changed after freeze; restart the experiment if the evaluator change is legitimate.
+
+## Fail: artifact mismatch
+
+User: "All tests passed. The package receipt source_tree_sha256 is different from the candidate tree hash."
+
+Expected: `fail`; the delivered artifact is not proven to come from the gated candidate.
+
+## Fail under strict portability
+
+User: "Make this skill work in ChatGPT, Claude, Copilot and Cursor. The new SKILL.md requires a private tool URI that only one host exposes."
+
+Expected: `fail` under strict portable policy unless that dependency is moved to an optional host adapter or replaced with a capability-based portable mechanism.
 
 ## Insufficient evidence
 
-User asks: "Can I accept the change? It should be better."
+User: "Can I accept this change? It should be better."
 
-Expected result: status `insufficient-evidence`; request target evidence, candidate evidence, and validation or benchmark output. Do not infer success.
+Expected: `insufficient-evidence`; request/inspect target and candidate evidence plus the validation/evaluator evidence required by the caller's policy.

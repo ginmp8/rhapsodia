@@ -2,22 +2,17 @@
 
 ## Local setup
 
-Recommended repository layout when using this with GitHub Copilot locally:
+Recommended repository layout:
 
 ```text
 repo/
-├── .github/
-│   └── instructions/
-│       └── nuget-package-updater.instructions.md
-├── tools/
-│   └── nuget-updater/
-│       └── nuget_update.py
-├── docs/
-│   └── pkgs-versions/
+├── .github/instructions/nuget-package-updater.instructions.md
+├── tools/nuget-updater/nuget_update.py
+├── docs/pkgs-versions/
 └── Directory.Packages.props
 ```
 
-Copy files from the skill:
+Copy the portable pieces:
 
 ```bash
 mkdir -p tools/nuget-updater .github/instructions docs/pkgs-versions
@@ -25,104 +20,115 @@ cp scripts/nuget_update.py tools/nuget-updater/nuget_update.py
 cp assets/copilot/nuget-package-updater.instructions.md .github/instructions/nuget-package-updater.instructions.md
 ```
 
-## Non-negotiable execution rule
+## Non-negotiable rule
 
-Never use MCP for NuGet package updates. The script is the only source of truth for selecting, validating, and writing versions. Copilot should call the script, read the report, and summarize the result.
+The script is the version-selection authority. Do not manually choose a package version when the script can decide, and do not bypass missing/untrusted metadata by editing `Directory.Packages.props` directly.
 
-## Common commands
+## Commands
 
-Scan package declarations and lock status:
+### Scan
 
 ```bash
 python tools/nuget-updater/nuget_update.py scan \
   --file Directory.Packages.props \
+  --target-framework net10.0 \
   --report-format markdown
 ```
 
-Check safe update plan for .NET 10 without writing, and generate a decision document:
+### Check with reproducibility evidence
 
 ```bash
 python tools/nuget-updater/nuget_update.py check \
   --file Directory.Packages.props \
   --target-framework net10.0 \
   --report-format markdown \
-  --write-decision-doc
+  --write-decision-doc \
+  --write-evidence
 ```
 
-Apply latest stable compatible patch or minor updates and generate a decision document:
+This creates under `docs/pkgs-versions/` by default:
+
+- `nuget-package-update-decisions-<decision-id>.md`;
+- `nuget-metadata-snapshot-<snapshot-id>.json`;
+- `nuget-decision-receipt-<decision-id>.json`.
+
+### Reproducible write from the checked decision
+
+Use both the checked decision receipt and exact metadata snapshot when available:
 
 ```bash
 python tools/nuget-updater/nuget_update.py update \
   --file Directory.Packages.props \
   --target-framework net10.0 \
   --write \
-  --report-format markdown \
-  --report nuget-update-report.md \
-  --write-decision-doc
+  --write-decision-doc \
+  --write-evidence \
+  --expected-decision-receipt docs/pkgs-versions/nuget-decision-receipt-<decision-id>.json \
+  --metadata-snapshot-input docs/pkgs-versions/nuget-metadata-snapshot-<snapshot-id>.json \
+  --validate-repository \
+  --report-format markdown
 ```
 
-Allow major upgrades explicitly:
+`--metadata-snapshot-input` fails closed if the snapshot lacks a required URL. It never silently returns to live network access.
+
+If you intentionally want fresh metadata, omit snapshot replay but keep `--expected-decision-receipt`; any decision drift blocks the write.
+
+### Custom repository validation
 
 ```bash
 python tools/nuget-updater/nuget_update.py update \
   --file Directory.Packages.props \
   --target-framework net10.0 \
-  --allow-major \
   --write \
-  --write-decision-doc
+  --write-evidence \
+  --validation-command "restore::dotnet restore My.sln" \
+  --validation-command "build::dotnet build My.sln --no-restore" \
+  --validation-command "test::dotnet test tests/My.Tests/My.Tests.csproj --no-build"
 ```
 
-Only update one package:
+Validation commands run without a shell, in the `Directory.Packages.props` directory, in the exact order supplied. The first failure stops validation and rolls the package file back to its last-known-good bytes.
+
+### Pin the expected package-file baseline
 
 ```bash
-python tools/nuget-updater/nuget_update.py update \
-  --file Directory.Packages.props \
-  --target-framework net10.0 \
-  --package Newtonsoft.Json \
-  --write \
-  --write-decision-doc
+--expected-baseline-sha256 <sha256>
 ```
 
-Use a private or custom source in addition to nuget.org:
+This rejects an unexpected starting file before package analysis proceeds.
+
+### Multiple feeds
 
 ```bash
-python tools/nuget-updater/nuget_update.py check \
-  --file Directory.Packages.props \
-  --target-framework net10.0 \
-  --source https://api.nuget.org/v3/index.json \
-  --source https://example.test/nuget/v3/index.json \
-  --write-decision-doc
+--source https://api.nuget.org/v3/index.json \
+--source https://packages.example.test/v3/index.json
 ```
 
-## NuGet API checks
+Feed order is identity-bearing. For the same exact package version, the first configured feed is authoritative for that version.
 
-The script uses NuGet V3 resources discovered from the service index:
+## NuGet metadata policy
 
-- `SearchAutocompleteService`: stable listed version discovery with `prerelease=false` and `semVerLevel=2.0.0`.
-- `RegistrationsBaseUrl`: package metadata, listed state, deprecation metadata, and registration vulnerabilities.
-- `VulnerabilityInfo`: vulnerability index/pages used to cross-check vulnerable version ranges locally.
+The script discovers V3 resources from each service index:
 
-A candidate version is rejected when any trusted NuGet metadata indicates it is unlisted, deprecated, or vulnerable at or above the configured severity threshold.
-
-## Safety policy
+- `SearchAutocompleteService`: version enumeration with `prerelease=false` and `semVerLevel=2.0.0`;
+- `RegistrationsBaseUrl`: listed state, deprecation metadata, package metadata, and registration vulnerabilities;
+- `VulnerabilityInfo`: vulnerability index/page ranges.
 
 Default policy:
 
-- stable versions only;
-- no prerelease labels;
+- stable only;
 - no major upgrades;
-- patch and minor upgrades allowed;
-- no downgrades;
-- reject unlisted versions;
-- reject deprecated versions;
-- reject versions with known vulnerabilities from Registration metadata or VulnerabilityInfo ranges;
-- require trusted NuGet registration metadata;
-- restore validation enabled;
-- locked packages are never changed.
+- patch/minor upgrades allowed;
+- no downgrade;
+- reject unlisted;
+- reject deprecated;
+- reject known vulnerabilities at/above threshold;
+- require trusted metadata;
+- validate TFM compatibility;
+- never mutate locked/pinned entries.
 
-Use these override flags only for explicit troubleshooting or tests:
+Diagnostic/test-only overrides remain available:
 
-```bash
+```text
 --allow-deprecated
 --allow-vulnerable
 --allow-unlisted
@@ -131,85 +137,79 @@ Use these override flags only for explicit troubleshooting or tests:
 --disable-restore-validation
 ```
 
-Do not use those override flags for normal local update work.
+Do not use these flags for a normal production repository upgrade unless the user explicitly requested that altered risk policy.
 
-## Decision document
+## Evidence options
 
-For real checks and updates, always pass:
+| Option | Meaning |
+|---|---|
+| `--write-evidence` | write metadata snapshot plus decision/package receipts |
+| `--metadata-snapshot-output <path>` | override metadata snapshot path |
+| `--metadata-snapshot-input <path>` | strict replay from captured metadata |
+| `--decision-receipt <path>` | override decision receipt path |
+| `--expected-decision-receipt <path>` | require current decision identity to match prior receipt |
+| `--package-update-receipt <path>` | override package-update receipt path |
+| `--last-known-good-dir <path>` | override LKG directory |
+| `--expected-baseline-sha256 <hash>` | pin exact package-file baseline |
+| `--validate-repository` | run default restore/build/test after write |
+| `--validation-command label::command` | custom ordered validation |
 
-```bash
---write-decision-doc
-```
+## Write semantics
 
-The default output directory is:
+A changed update uses:
+
+1. pre-write baseline recheck;
+2. LKG preservation;
+3. same-directory temp file;
+4. fsync;
+5. atomic replace;
+6. post-write hash verification;
+7. requested repository validation;
+8. rollback on validation failure.
+
+A second run after a successful update should converge to `writeStatus: no-change` when no newer safe candidate exists.
+
+## Reason codes
+
+Automation should inspect `reason_code`, not free-form `reason` text. Common values:
 
 ```text
-docs/pkgs-versions/
+package-locked
+current-version-nonliteral
+metadata-unavailable
+candidate-metadata-missing
+candidate-metadata-untrusted
+candidate-unlisted
+candidate-deprecated
+candidate-vulnerable
+no-safe-candidate
+no-policy-allowed-newer-version
+safe-update-selected
+safe-compatible-update
+already-selected
+no-compatible-candidate
 ```
-
-The generated file name is timestamped by default:
-
-```text
-nuget-package-update-decisions-YYYYMMDD-HHMMSSZ.md
-```
-
-Use a deterministic name when needed:
-
-```bash
---decision-doc-name nuget-package-update-decisions.md
-```
-
-See `references/decision-document.md` for the required structure.
-
-## Locking packages in Directory.Packages.props
-
-The updater skips entries with explicit lock metadata:
-
-```xml
-<PackageVersion Include="Example.Package" Version="1.2.3" Locked="true" />
-<PackageVersion Include="Example.Package" Version="1.2.3" Pin="true" />
-<PackageVersion Include="Example.Package" Version="1.2.3" Pinned="true" />
-<PackageVersion Include="Example.Package" Version="1.2.3" NoUpdate="true" />
-<PackageVersion Include="Example.Package" Version="1.2.3" UpdatePolicy="manual" />
-<PackageVersion Include="Example.Package" Version="1.2.3" UpdatePolicy="locked" />
-```
-
-It also skips entries with adjacent lock comments:
-
-```xml
-<!-- nuget-updater: lock -->
-<PackageVersion Include="Example.Package" Version="1.2.3" />
-```
-
-Supported comment intent includes `nuget-updater: lock`, `nuget-updater: ignore`, `pinned`, `locked`, `travado`, `fixado`, and `no-update`.
 
 ## Exit codes
 
-- `0`: script completed successfully.
-- `1`: technical failure, such as missing file, feed access error, malformed version data, or restore execution problem.
-- `2`: policy failure when `--fail-on-incompatible` or `--fail-on-outdated` is enabled.
+- `0`: successful run, including a successful no-change rerun;
+- `1`: technical/precondition failure, including metadata snapshot mismatch/miss or atomic-write failure;
+- `2`: policy failure, including requested post-write validation that failed and was rolled back, or explicit `--fail-on-*` conditions.
 
-## Offline smoke test mode
+## Offline test mode
 
-Offline tests are intentionally explicit because they cannot validate NuGet deprecation or vulnerability metadata.
+`--versions-file` remains intentionally limited to parser/write tests. It does not prove deprecation, listed state, vulnerability status, or live feed provenance.
 
 ```json
 {
-  "Newtonsoft.Json": ["13.0.1", "13.0.4", "14.0.0-beta.1"],
-  "Serilog": ["2.12.0", "2.12.1"]
+  "Newtonsoft.Json": ["13.0.1", "13.0.4", "14.0.0-beta.1"]
 }
 ```
 
-Run:
+Use with:
 
 ```bash
-python tools/nuget-updater/nuget_update.py update \
-  --file Directory.Packages.props \
-  --versions-file versions.json \
-  --allow-untrusted-versions-file \
-  --disable-restore-validation \
-  --write \
-  --write-decision-doc
+--allow-untrusted-versions-file --disable-restore-validation
 ```
 
-Use this only for testing parser and write behavior. Do not use offline version files for real update decisions.
+Never use an offline versions file as a substitute for trusted live/snapshotted NuGet metadata in a real update decision.

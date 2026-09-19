@@ -19,13 +19,13 @@ Use `<skill-root>` for the root folder of this skill package. In this repository
 1. Identify the requested outcome, not just the nouns.
 2. Classify owner: nomia = governance/readiness; Mago = planning/spec/task decomposition; Magia = execution/repository work.
 3. Split mixed requests: do the nomia part; mark Mago, Magia, implementation, deployment, source-control, test, runner, branch, commit, and PR parts untouched.
-4. Before repository-facing writes require `BOARD_ROOT`, `board_id`, `cycle_version`; require `SPEC_PACKAGE_PATH` when a selected spec package matters.
+4. Before repository-facing writes require `BOARD_ROOT`, `board_id`, `year`, `cycle_id`; require `SPEC_PACKAGE_PATH` when a selected spec package matters.
 5. Preserve owners, dates, deployment/review/validation/release facts as unknown unless supplied by user evidence or existing nomia artifacts.
 6. Select exactly one mode; defer other artifacts as not touched.
 
 ## Scenario Assets
 
-- `examples/activation-scenarios.json`: native package gate with `category`, `expected_activation`, `expected_behavior`, `notes`; validated by `scripts/validate_activation_scenarios.py`.
+- `examples/activation-scenarios.json`: native package gate with `category`, `expected_owner`, `expected_activation`, `diagnostic_entry_allowed`, `expected_behavior`, and `notes`; validated by `scripts/validate_activation_scenarios.py`.
 - `evals/activation-boundary-scenarios.json`: harness suite with prompt-level `type` and `acceptance_criteria` for activation, non-activation, ambiguous, edge, regression, and adversarial review.
 
 Keep both aligned when boundaries change. They prove schema/coverage only; behavior is measured only after prompts are executed and reviewed.
@@ -36,7 +36,7 @@ Each category needs at least five cases: `should_activate` for direct governance
 
 ## Scenario Validation Rules
 
-Each scenario requires stable id prefix (`A`, `N`, `B`, `E`, `R`, `X`), valid `category`, unique realistic `prompt`, `expected_activation` as `true`, `false`, or `null`, concrete `expected_behavior`, and `notes` naming the risk or capability tested.
+Each scenario requires stable id prefix (`A`, `N`, `B`, `E`, `R`, `X`), valid `category`, unique realistic `prompt`, `expected_owner` as `mago|magia|nomia|none`, `expected_activation` as `true|false|null`, boolean `diagnostic_entry_allowed`, concrete `expected_behavior`, and `notes` naming the risk or capability tested. `true` means Nomia is the resolved owner; `false` means Nomia must not be selected; `null` means owner resolution remains open and therefore requires `expected_owner: none` plus diagnostic-only entry before mutation.
 
 Do not report activation precision, recall, robustness, or output conformance as measured unless prompts were executed and results captured.
 
@@ -57,3 +57,7 @@ python <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root
 ```
 
 Prefer `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it reruns structural, activation, and golden gates before writing.
+
+## Live routing evidence
+
+Prepare and evaluate externally executed model observations with `scripts/live_routing_harness.py`. Validate results against the frozen corpus and `references/live-routing-result-schema.json`; do not convert fixture evidence into measured activation claims.

@@ -4,7 +4,7 @@ Use this mode when MAGO must plan simplification, de-abstraction, refactoring st
 
 ## Required Inputs
 
-- `BOARD_ROOT`, `board_id`, `cycle_version`, and `spec_id`.
+- `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and `spec_id`.
 - Repository evidence or explicitly marked assumptions about the complex area.
 - Behavior, contracts, or invariants that must be preserved.
 - Complexity symptoms: unnecessary abstraction, layer explosion, genericity, configuration surface, leaky abstraction, false DRY, or validation gap.

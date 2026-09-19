@@ -1,28 +1,83 @@
 # Security and Risk Considerations
 
+- Contract version: 2
+
 ## Scope
 
-- Spec: `unknown`
-- Domain: `auth | authorization | pii | secrets | encryption | compliance | other`
+- Spec: `<spec_id>`
+- Security domains: `<authorization | identity | sensitive_data | secrets | compliance | fraud | other>`
+- In-scope components and consumers: `<explicit boundaries>`
+
+## Assets and Data Classification
+
+### ASSET-001 - <asset_title>
+
+- Classification: `<public | internal | confidential | restricted>`
+- Sensitive data or secrets: `<fields, credentials, or none with rationale>`
+- Retention and logging constraints: `<constraints>`
+
+## Trust Boundaries
+
+### BOUNDARY-001 - <boundary_title>
+
+- Source: `<source component or actor>`
+- Destination: `<destination component>`
+- Authentication: `<mechanism or not applicable with rationale>`
+- Authorization: `<decision and enforcement point>`
+
+## Threats
+
+### THREAT-001 - <threat_title>
+
+- Assets: ASSET-001
+- Trust boundaries: BOUNDARY-001
+- Threat actor: `<internal, external, compromised dependency, or other>`
+- Likelihood: `<low | medium | high | critical>`
+- Impact: `<low | medium | high | critical>`
+- Security domains: `<authorization, identity, sensitive_data, secrets, compliance, fraud, or other>`
+
+## Misuse and Abuse Cases
+
+### ABUSE-001 - <abuse_title>
+
+- Threats: THREAT-001
+- Observable misuse: `<observable misuse scenario>`
+- Expected prevention or detection: `<planned behavior>`
 
 ## Planned Controls
 
-- Authentication: `unknown`
-- Authorization: `unknown`
-- Data handling: `unknown`
-- Secret handling: `unknown`
-- Logging constraints: `unknown`
+### CONTROL-001 - <control_title>
 
-## Risks
+- Threats: THREAT-001
+- Abuse cases: ABUSE-001
+- Owner: `<downstream technical owner>`
+- Validation: SECVAL-001
+- Failure behavior: `<fail_closed | deny | quarantine | alert | rate_limit | isolate>`
 
-- `unknown`
+## Risks and Residual Risk
+
+### RISK-001 - <risk_title>
+
+- Threats: THREAT-001
+- Controls: CONTROL-001
+- Residual likelihood: `<low | medium | high | critical>`
+- Residual impact: `<low | medium | high | critical>`
+- Risk authority: `<Nomia, security, compliance, or named business authority; never Mago>`
+- Status: `<unresolved | review_required | accepted_by_authority | mitigated>`
+- Acceptance evidence: `<evidence reference or none while not accepted>`
 
 ## Validation Expectations for Magia
 
-- `unknown`
+### SECVAL-001 - <security_validation_title>
+
+- Controls: CONTROL-001
+- Threats: THREAT-001
+- Test type: `<negative | abuse | authorization | secret | privacy | compliance | logging>`
+- Expected evidence: `<command, test result, review record, or other downstream evidence>`
+- Sensitive logging check: `<check and expected evidence, or not applicable with rationale>`
 
 ## Required Review
 
-- Security review: `unknown`
-- Compliance review: `unknown`
-
+- Security reviewer: `<role or owner>`
+- Compliance reviewer: `<role, owner, or not applicable with rationale>`
+- Review evidence required before handoff closure: `<evidence>`

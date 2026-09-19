@@ -2,11 +2,11 @@
 
 Use for final responses or durable reports.
 
-Required sections: mode/target; decision; evidence policy/sources; baseline inventory; baseline audit score/gates; harness plan with hypotheses, scenarios, metrics, evaluators, gates; changes; validation commands/outcomes; before/after comparison; auxiliary metrics when static score is saturated; residual risks/assumptions; recommendation; package/artifact path when produced.
+Required sections: mode/target; portability profile/runtime capabilities; decision; evidence policy/source identities; immutable baseline snapshot identity; baseline inventory/audit/portability gates; harness plan with hypotheses, scenarios, metrics, evaluators, gates; evaluator freeze status; changes; validation commands/outcomes; before/after comparison; auxiliary metrics when static score is saturated; final candidate/package hashes; recovery/last-good status; residual risks/assumptions; recommendation; package/artifact path when produced.
 
 Evidence labels: `measured` = command/test/validator/package/scenario executed; `derived` = inferred from target/context; `researched` = cited research; `proposed` = planned only; `unknown` = unavailable. Scenario pass rates, activation precision/recall, and behavioral conformance are measured only after prompts execute and evaluator results are captured.
 
-File change groups: `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `examples/evals/`, `agents/`, `packaging`.
+File change groups: `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `examples/evals/`, optional host adapters (`agents/` or host extensions), and `packaging`.
 
 Command format:
 

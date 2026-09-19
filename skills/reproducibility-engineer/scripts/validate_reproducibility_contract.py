@@ -32,8 +32,8 @@ def main() -> int:
         if key not in data:
             errors.append(f'missing key: {key}')
 
-    if data.get('contract_version') != 1:
-        errors.append('contract_version must be 1')
+    if data.get('contract_version') not in {1, 2}:
+        errors.append('contract_version must be 1 or 2')
     ceiling = data.get('ceiling')
     if ceiling not in ALLOWED_CEILINGS:
         errors.append(f'unsupported ceiling: {ceiling!r}')
@@ -91,6 +91,32 @@ def main() -> int:
         limit = acceptance.get('stagnation_limit')
         if not isinstance(limit, int) or limit < 1:
             errors.append('stagnation_limit must be an integer >= 1')
+
+    self_hosting = data.get('self_hosting')
+    if self_hosting is not None:
+        if not isinstance(self_hosting, dict):
+            errors.append('self_hosting must be an object when present')
+        else:
+            enabled = self_hosting.get('enabled')
+            if not isinstance(enabled, bool):
+                errors.append('self_hosting.enabled must be boolean')
+            if enabled is True:
+                for key in ['generation_id','controller_identity','baseline_identity','candidate_identity','last_known_good_identity']:
+                    value = self_hosting.get(key)
+                    if not isinstance(value, str) or not value.strip():
+                        errors.append(f'self_hosting.{key} must be a non-empty string when enabled')
+                depth = self_hosting.get('max_self_recursion_depth')
+                if not isinstance(depth, int) or isinstance(depth, bool) or depth < 1:
+                    errors.append('self_hosting.max_self_recursion_depth must be an integer >= 1')
+                elif depth > 1:
+                    warnings.append('self_hosting.max_self_recursion_depth > 1 requires explicit justification; default is 1')
+                for key in ['controller_read_only','evaluator_outside_candidate_surface','promotion_external_to_candidate']:
+                    if self_hosting.get(key) is not True:
+                        errors.append(f'self_hosting.{key} must be true when enabled')
+                if self_hosting.get('controller_identity') == self_hosting.get('candidate_identity') and self_hosting.get('controller_identity'):
+                    errors.append('self_hosting controller_identity must differ from candidate_identity')
+    elif data.get('contract_version') == 2 and args.strict:
+        warnings.append('strict validation: contract_version 2 has no self_hosting section; declare enabled=false when not applicable')
 
     source_integrity = data.get('source_integrity')
     source_keys = [

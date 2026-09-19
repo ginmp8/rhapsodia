@@ -2,6 +2,8 @@ interface:
   display_name: Skill Package Architecture Review
   short_description: Reviews skill package architecture, boundaries, resources, and
     progressive loading.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

@@ -1,48 +1,80 @@
 ---
 name: llm-wiki-maintainer
-description: 'use when the user wants to build or operate a persistent llm-maintained markdown wiki that compounds knowledge across sources over time: initialize the workspace, ingest immutable source material, update entity, concept, source-summary, or synthesis pages, maintain index.md and log.md, answer cross-source questions with provenance, persist durable syntheses, or lint the wiki for contradictions, stale claims, orphans, gaps, and broken cross-links. do not use for one-off document summarization, ordinary rag or search, generic note-taking, or workflows that mutate raw sources or treat generated wiki pages as source truth.'
+description: 'use when the user wants to build or operate a persistent llm-maintained markdown wiki that compounds knowledge across sources over time: initialize the workspace, ingest immutable source material, update entity, concept, source-summary, or synthesis pages, maintain index.md and log.md, answer cross-source questions with provenance, persist durable syntheses, lint for contradictions/stale claims/orphans/broken links, or evolve the wiki schema. do not use for one-off summarization, ordinary rag/search, generic note-taking, source-document mutation, or workflows that treat generated wiki pages as source truth.'
 ---
 
 # LLM Wiki Maintainer
 
 ## Mission
 
-Build and maintain a persistent Markdown knowledge base in which raw sources remain immutable source truth and the LLM incrementally maintains a structured, interlinked wiki derived from those sources. Make knowledge compound across ingests and queries instead of reconstructing the same synthesis from scratch each time.
+Build and maintain a persistent Markdown knowledge base in which raw sources remain immutable source truth and the LLM maintains a structured, interlinked wiki derived from those sources. Make knowledge compound across ingests and queries instead of rebuilding the same synthesis from scratch.
+
+The workflow is reproducible at the integrity/process layer while preserving bounded semantic/editorial judgment where meaning cannot be reduced safely to code.
 
 ## Scope
 
 Use this skill to:
 
 - initialize a new LLM-maintained wiki;
-- ingest one or more sources into an existing wiki;
+- ingest one or more immutable sources into an existing wiki;
 - answer questions across accumulated wiki knowledge with traceable provenance;
-- persist durable cross-source analyses back into the wiki when authorized;
+- persist durable cross-source analyses when authorized;
 - lint and repair wiki health;
-- evolve the wiki schema when the user explicitly asks to change conventions or structure.
+- evolve the wiki schema when explicitly requested or required for an authorized operation;
+- recover or roll back derived wiki mutations using recorded last-known-good evidence.
 
-Do not use this skill for one-off summaries, ordinary retrieval-only Q&A, generic Obsidian editing, unrelated documentation work, or any task whose primary goal is to modify source documents.
+Do not use this skill for one-off summaries, retrieval-only Q&A, generic Obsidian editing, unrelated documentation, RAG-system implementation, or any task whose primary goal is to modify source documents.
 
-## Core Invariants
+## Core invariants
 
-1. **Raw sources are immutable.** Read them; never rewrite, normalize in place, delete, or silently replace them.
-2. **The wiki is derived state.** The LLM may create and update wiki pages, but generated pages do not become source truth merely because they exist.
-3. **The schema governs the wiki.** Follow the existing schema first. For a new wiki, create WIKI_SCHEMA.md and make its conventions explicit.
-4. **Knowledge must compound.** Reuse and revise existing pages, links, and syntheses rather than generating disconnected summaries for every source.
-5. **Preserve provenance.** Important claims must remain traceable to raw source paths, source identifiers, or externally captured source records.
-6. **Do not hide disagreement.** When sources conflict, record the conflict and evidence. Resolve it only when source precedence or newer evidence makes the resolution supportable.
-7. **Keep navigation and history current.** Update wiki/index.md after material wiki changes and append to wiki/log.md for ingest, query-persist, lint, or schema-change operations.
-8. **Prefer simple infrastructure.** Use the index and ordinary file search before introducing embeddings, vector databases, or extra services.
+1. **Raw sources are immutable source truth.** Read/hash/snapshot them; never rewrite, normalize in place, delete, or silently replace them.
+2. **The wiki is derived state.** Generated pages never become source truth merely because they exist or cite each other.
+3. **Provenance terminates in source evidence.** Important factual claims must remain traceable to exact source IDs/paths/snapshots when the runtime permits it.
+4. **The schema governs the wiki.** Follow the active schema first. Never silently reinterpret old pages under a new schema.
+5. **Knowledge compounds.** Reuse and revise canonical pages instead of creating disconnected summaries for every source.
+6. **Conflicts are lossless.** Never discard or silently reconcile disagreement without evidence supporting supersession or scope distinction.
+7. **Manual derived-state edits are preserved.** Hash drift blocks overwrite until the current page is re-read and reconciled.
+8. **Mutations are recovery-aware.** Stage, validate, use expected-before hashes, preserve last-known-good bytes, emit receipts, and freeze after pass.
+9. **Structural evidence and semantic judgment stay separate.** Hash/schema/link checks do not prove truth; semantic/editorial conclusions require source review.
+10. **Prefer simple infrastructure.** Use index/file search before adding embeddings, vector stores, or services.
 
-## Required Inputs and Defaults
+## Reproducibility ceiling
 
-Resolve from the active workspace before writing:
+Classify this skill as `research-analytic` with tool-action integrity controls.
 
-- wiki root;
+Use mechanics for:
+
+- exact source SHA-256 identity;
+- duplicate-content detection and aliases;
+- immutable source snapshots;
+- stable page IDs after a semantic canonical key is chosen;
+- deterministic frontmatter rendering for the default schema;
+- path/precondition validation, atomic per-file replacement, recovery and rollback;
+- machine-readable ingest/mutation/lint receipts;
+- final candidate/package identity.
+
+Keep model/human judgment for:
+
+- claim extraction and importance;
+- entity/concept identity and canonical keys;
+- deciding which pages a source affects;
+- interpreting source authority/scope;
+- deciding whether claims conflict, supersede, or remain unresolved;
+- cross-source synthesis and editorial wording.
+
+Never replace those semantic decisions with arbitrary filename, keyword, recency, or hash heuristics.
+
+## Required inputs and defaults
+
+Resolve before writing:
+
+- exactly one wiki root;
 - requested mode;
-- source path or source set when ingesting;
-- existing schema and link conventions;
-- writable wiki boundary;
-- whether the user authorized persistence for query results.
+- active `WIKI_SCHEMA.md` and schema identity when present;
+- source path/set and immutable source boundary for ingest;
+- writable derived-state boundary;
+- whether query persistence is authorized;
+- runtime capability for filesystem writes, hashing, Python 3.10+, and command execution.
 
 For a new wiki, default to:
 
@@ -58,138 +90,221 @@ wiki/
   syntheses/
 ```
 
-Create `raw/assets/` only when local attachments are part of the source workflow. Preserve an existing coherent structure instead of forcing this default onto it.
+When reproducibility helpers are available, create `.llm-wiki/` only for derived operational manifests, source snapshots, receipts, and recovery evidence. Preserve an existing coherent structure instead of forcing this default.
 
-## Mode Selection
+## Mode selection
 
 | Mode | Use when | Primary result |
 |---|---|---|
-| `initialize` | no usable wiki structure or schema exists | baseline directories, schema, index, and log |
-| `ingest` | new raw source material must become accumulated wiki knowledge | source summary plus updates to relevant wiki pages, index, and log |
-| `query` | the user asks a question against the accumulated knowledge | grounded answer; optional durable synthesis page when authorized |
-| `lint` | the user asks to health-check, reconcile, or maintain the wiki | findings plus safe repairs and a logged lint result |
-| `evolve-schema` | the user explicitly asks to change page types, metadata, conventions, or workflow rules | minimal schema change plus any required migration and log entry |
+| `initialize` | no usable wiki structure/schema exists | baseline directories, schema, index, log, optional operational state |
+| `ingest` | new source material must become accumulated wiki knowledge | source identity/receipt plus source summary and affected page updates |
+| `query` | user asks a question against accumulated knowledge | grounded answer; optional durable synthesis when authorized |
+| `lint` | health-check/reconcile/maintain the wiki | structural receipt, semantic findings, safe repairs when unambiguous |
+| `evolve-schema` | user explicitly requests schema change or current schema cannot support an authorized task | versioned schema change, bounded migration, receipt and rollback point |
 
 ## Workflow
 
-### 1. Inspect before acting
+### 1. Inspect and bind identity
 
-1. Resolve the wiki root and writable boundary.
-2. Read WIKI_SCHEMA.md when present.
-3. Read wiki/index.md before broad wiki traversal when it exists.
-4. Read the recent portion of wiki/log.md when recent operations may affect the task.
-5. Inspect only the pages and raw sources needed for the active mode; expand when evidence requires it.
-6. Never infer unseen source content.
+1. Resolve exactly one wiki root and writable boundary.
+2. Read `WIKI_SCHEMA.md` when present and record its schema version/identity.
+3. Read `wiki/index.md` before broad traversal.
+4. Read the recent `wiki/log.md` portion when prior operations matter.
+5. Inspect `.llm-wiki/` manifests/receipts when present; they are operational evidence, not semantic source truth.
+6. Inspect only source/pages needed for the mode, expanding when evidence requires it.
+7. Never infer unseen source content.
 
 ### 2. Initialize
 
-1. Inspect for an existing compatible structure; do not overwrite it.
-2. Create missing baseline directories and files.
-3. Write WIKI_SCHEMA.md using the contracts in `references/wiki-protocol.md`.
-4. Create a content-oriented wiki/index.md grouped by page type or domain.
-5. Create an append-only wiki/log.md with the initialization entry.
-6. Validate links and writable/read-only boundaries.
+1. Inspect for an existing compatible structure; never overwrite one blindly.
+2. Create only missing baseline directories/files.
+3. For a new default schema, write `WIKI_SCHEMA.md` with `schema_version: llm-wiki/2` and the contracts in `references/wiki-protocol.md`.
+4. Create content-oriented `wiki/index.md` and append-only `wiki/log.md`.
+5. If reproducibility helpers are available, initialize operational state only as needed by first source capture/mutation.
+6. Validate links and source/writable boundaries before completion.
 
 ### 3. Ingest
 
-1. Verify the source is inside `raw/` or another explicitly read-only source location.
-2. Read enough of the source to capture its actual claims, context, date, and limitations.
-3. Use wiki/index.md to identify existing entities, concepts, source summaries, and syntheses that may be affected.
-4. Create or update one source-summary page for the source.
-5. Update existing entity and concept pages instead of creating duplicates when the subject already exists.
-6. Add new pages only when the information is durable enough to deserve its own maintained page.
-7. Record contradictions, superseded claims, uncertainty, and open questions rather than flattening them into one confident statement.
-8. Update cross-links in both directions where useful.
-9. Update wiki/index.md for every created, renamed, or materially changed page.
-10. Append one ingest entry per source to wiki/log.md, even during batch ingest.
-11. Validate the mutation set against the schema and provenance rules before reporting completion.
+For every source, preserve a one-source identity and receipt even during batch work.
 
-Default to one-source-at-a-time ingestion when the user has not requested a batch. For batch work, keep source provenance and log entries separable so one source cannot silently inherit claims from another.
+1. Verify the source is inside the declared immutable source boundary.
+2. When filesystem execution is available, capture its exact identity/snapshot before semantic reading:
+
+```text
+<PYTHON> scripts/source_identity.py capture --workspace <ROOT> --source <ROOT>/raw/<SOURCE> --json <INGEST_RECEIPT>
+```
+
+3. Handle intake classification before semantic mutation:
+   - `first-ingest`: proceed;
+   - `already-ingested`: do not rewrite derived pages unless some independent dependency changed;
+   - `duplicate-content-alias`: preserve one source identity and add the alias; do not create a duplicate source-summary identity;
+   - `source-modified`: block automatic reingestion; preserve old source ID/snapshot and require explicit authorization before registering the new bytes as a new source version.
+4. Read the raw source or exact captured snapshot; extract actual claims, context, dates, scope, limitations, entities, concepts, and relationships.
+5. Use index plus canonical page identity to locate existing pages. Reuse the same page when semantic identity is the same.
+6. Create/update one source-summary page for the canonical source ID.
+7. Update existing entity/concept/synthesis pages only when the new evidence materially affects them.
+8. Preserve contradictions, superseded claims, uncertainty, and open questions explicitly.
+9. Record source-to-page and page-to-source provenance with source IDs.
+10. Render the complete derived mutation into staging; include index/log changes.
+11. Validate staged structure/provenance and record expected-before hashes for every existing target.
+12. Commit using the recovery-aware transaction helper when available:
+
+```text
+<PYTHON> scripts/wiki_transaction.py commit --workspace <ROOT> --staging <STAGE> --plan <PLAN.json> --json <MUTATION_RECEIPT>
+```
+
+13. Run strict structural validation:
+
+```text
+<PYTHON> scripts/wiki_validate.py --workspace <ROOT> --strict --json <LINT_RECEIPT>
+```
+
+14. If a post-commit hard validation fails, roll back with the committed mutation receipt when safe, preserve failure/recovery evidence, and do not claim completion.
+15. Freeze the successful operation. Any later edit reopens validation.
+
+If helpers cannot run, preserve the same invariants using available host tools and mark unexecuted hash/snapshot/transaction gates explicitly. Do not claim equivalent mechanical reproducibility without equivalent evidence.
 
 ### 4. Query
 
-1. Read wiki/index.md first to locate candidate pages.
-2. Read the most relevant wiki pages and follow their source references.
-3. Re-open raw sources for decisive, disputed, stale, or high-impact claims instead of trusting a derived page alone.
-4. Answer with source-grounded synthesis and expose material uncertainty or disagreement.
-5. Persist the answer under `wiki/syntheses/` only when it adds durable cross-source knowledge and the user has authorized wiki mutation.
-6. If persisted, link the synthesis from relevant pages, update wiki/index.md, and append a `query-persist` entry to wiki/log.md.
+1. Read `wiki/index.md` first.
+2. Read the most relevant maintained pages and follow their source IDs/locators.
+3. Re-open raw source evidence for decisive, disputed, stale, high-impact, or migration-sensitive claims.
+4. Answer with source-grounded synthesis and expose material disagreement/uncertainty.
+5. Persist only when the synthesis is durable and mutation is authorized.
+6. If persisted, use the same staged/validated/receipt-backed mutation path as ingest.
 
 ### 5. Lint
 
-Check at least:
+Mechanically check at least:
 
-- broken or missing internal links;
-- index entries that point nowhere or pages missing from the index;
-- orphan pages with no useful inbound relationship;
-- duplicate entity or concept pages;
-- stale claims superseded by newer raw sources;
+- source manifest/snapshot integrity when operational state exists;
+- changed/missing registered raw paths;
+- schema-version/frontmatter consistency;
+- duplicate/missing page IDs;
+- page-to-source provenance IDs;
+- broken/missing internal links;
+- index entries that point nowhere or maintained pages missing from the index;
+- append-only log structure;
+- path/boundary violations.
+
+Semantically inspect at least:
+
+- stale-claim candidates;
 - contradictions represented as settled facts;
-- important claims with weak or missing provenance;
-- missing cross-links between clearly related maintained pages;
-- repeatedly mentioned durable concepts that lack a maintained page;
-- unanswered gaps that deserve a new source or targeted research.
+- source authority/scope changes;
+- duplicate entities/concepts that may or may not be semantically equivalent;
+- important claims with weak/missing provenance;
+- missing cross-links and durable gaps.
 
-Repair mechanical issues automatically when write authority exists and the fix is unambiguous. For semantic contradictions or uncertain merges, record a finding instead of inventing a resolution. Append a lint entry to wiki/log.md describing checks and repairs.
+Repair only unambiguous mechanical issues automatically. Record semantic issues as `needs-review` until source evidence supports a specific repair.
 
-### 6. Evolve the schema
+The lint receipt must keep `structural_evidence` separate from `semantic_editorial_judgment`.
 
-Use only on explicit request or when the current task cannot be completed coherently under the existing schema.
+### 6. Evolve schema
 
-1. Identify the recurring problem the schema change solves.
-2. Prefer the smallest backward-compatible change.
-3. Update WIKI_SCHEMA.md before migrating affected wiki pages.
-4. Migrate only pages that require the new rule.
-5. Validate links, provenance, index coverage, and log consistency.
-6. Append a `schema-change` entry to wiki/log.md with the reason and affected page types.
+Use only with explicit authorization or when the requested operation cannot be represented coherently under the active schema.
 
-## Resource Loading
+1. Record current schema identity and a last-known-good wiki state.
+2. Define target schema identity, compatibility statement, affected page types/fields, deterministic transforms, semantic-review requirements, rollback point, and validation gates.
+3. Update `WIKI_SCHEMA.md` in staging before dependent page migration.
+4. Migrate only affected derived pages; never mutate raw sources.
+5. Validate staged schema/provenance/links/index/log.
+6. Commit with precondition hashes and recovery evidence.
+7. Append `schema-change` log entry with old/new version and mutation receipt.
+8. Run strict lint and freeze the new state.
 
-Load only what the active branch needs:
+Never silently reinterpret old pages under a new version.
 
-- `references/wiki-protocol.md` for default structure, page contracts, naming, index, log, and operation details;
-- `references/provenance-and-consistency.md` for evidence hierarchy, contradiction handling, stale claims, transactional edits, privacy, and scale rules;
-- `examples/usage-scenarios.md` for calibration examples;
-- `evals/activation-scenarios.json` for planned activation, non-activation, ambiguous, and edge coverage. Treat these scenarios as planned unless they were actually executed.
+## Idempotency, drift, failure and rollback rules
+
+- Same exact source + same schema + no independent dependency change => no semantic rewrite required.
+- Same source bytes at another filename => one source ID, multiple aliases, one source-summary identity.
+- Known source path with changed bytes => integrity event; block until explicitly versioned/replaced.
+- Registered source path removed => preserve source ID/snapshot and derived knowledge; report missing raw path.
+- Manual/concurrent edit to a target page => expected-before hash mismatch; preserve current page, re-read/merge, then regenerate from the new hash.
+- Mid-commit failure => restore touched files when possible; preserve recovery artifacts if rollback is incomplete.
+- Rerun of the exact committed mutation => classify `already-applied`; do not duplicate log/page changes.
+- Rollback => allowed only from a valid receipt/recovery snapshot and only when current bytes still match the committed post-state.
+
+## Canonical page/frontmatter rules
+
+For the default schema, use `references/wiki-protocol.md` and `references/reproducibility-protocol.md`.
+
+When Python helpers are available:
+
+```text
+<PYTHON> scripts/page_identity.py id --type <source|entity|concept|synthesis> --key <CANONICAL_KEY>
+<PYTHON> scripts/page_identity.py render-frontmatter --metadata <META.json> --body <BODY.md> --out <STAGED_PAGE.md>
+```
+
+The helper canonicalizes mechanics only. The semantic canonical key for entity/concept/synthesis pages remains a judgment decision and must not be derived from mere spelling similarity.
+
+## Resource loading
+
+Load only the active branch:
+
+- `references/wiki-protocol.md` — default structure, page contracts, canonical frontmatter, index/log, ingest/query/batch rules;
+- `references/provenance-and-consistency.md` — evidence hierarchy, conflicts, staleness, source drift/removal, manual edits, privacy, scale;
+- `references/reproducibility-protocol.md` — identities, snapshots, transactions, receipts, recovery, schema migration, final freeze;
+- `references/origin.md` — conceptual provenance of the skill;
+- `examples/usage-scenarios.md` — calibration examples;
+- `evals/activation-scenarios.json` — frozen evaluator baseline for activation/non-activation scope; preserve its evaluator hash and do not treat it as executed behavioral evidence;
+- `evals/reproducibility-scenarios.json` — planned lifecycle/regression scenarios; do not report pass rates without actual execution;
+- `schemas/*.schema.json` — machine-readable state/receipt/plan contracts;
+- `scripts/*.py` — optional stdlib helpers for objective mechanics; they are not a semantic evaluator.
+
+Treat Agent Skills Markdown as the portable core. The package must not semantically depend on OpenAI, Claude, Copilot, Cursor, or another host-specific invocation mechanism. `agents/openai.yaml` remains an optional OpenAI adapter.
 
 ## Validation
 
-Before reporting a mutating operation as complete, verify:
+Before reporting a mutating operation complete, verify applicable gates:
 
-- no raw source file was modified;
-- every changed page follows the active schema;
-- important new factual claims have traceable provenance;
-- generated wiki pages are not the sole evidence for claims that should trace to raw sources;
-- internal links added or changed resolve;
-- wiki/index.md reflects created, renamed, or materially changed pages;
-- wiki/log.md contains the required append-only operation entry;
-- unresolved contradictions, missing evidence, and partial reads are reported rather than hidden.
+- source bytes were not modified by the skill;
+- source identity/snapshot receipt corresponds to the bytes actually analyzed;
+- same-content duplicates did not create duplicate source identities;
+- every changed page follows the active schema/version;
+- important factual claims trace to source IDs/evidence;
+- generated pages are not sole evidence where raw evidence exists;
+- conflicts/supersession remain explicit;
+- current target hashes matched mutation preconditions or drift was reconciled before commit;
+- internal links and index coverage are valid;
+- `wiki/log.md` has the required append-only entry for a real mutation;
+- mutation/lint receipts describe the exact committed bytes;
+- receipt/output paths are canonicalized and rejected when they alias raw inputs, staged inputs, maintained wiki targets, or sibling outputs;
+- no hard structural lint failure remains;
+- unresolved semantic findings/partial reads remain visible;
+- no post-validation edit occurred.
 
-If the workspace is version-controlled, inspect the final diff when available and confirm source files are unchanged.
+If version control exists, also inspect the final diff and verify `raw/**` is unchanged.
 
-## Output Contract
+## Output contract
 
 For mutating operations, report:
 
-1. mode used;
-2. raw sources read;
-3. wiki pages created, updated, renamed, or removed;
-4. index and log status;
-5. contradictions, stale claims, or gaps surfaced;
-6. validation performed and any checks not run;
-7. remaining limitations or follow-up work.
+1. mode and active schema identity;
+2. raw sources read plus source IDs/intake classifications;
+3. derived pages created/updated/renamed/removed;
+4. index/log status;
+5. conflicts, stale candidates, manual drift, source drift/removal, or evidence gaps;
+6. structural evidence separately from semantic/editorial judgment;
+7. ingest/mutation/lint/rollback receipt paths or IDs when produced;
+8. exact validation performed plus `not-run` checks;
+9. remaining limitations.
 
-For query-only operations, provide the grounded answer first, then concise provenance and uncertainty. If a durable synthesis was persisted, include its wiki path and the index/log updates.
+For query-only operations, answer first, then concise provenance and uncertainty. If a durable synthesis was persisted, include its page path plus mutation/index/log/receipt status.
 
-## Stop Conditions
+## Stop conditions
 
-Stop or narrow the task when:
+Stop or narrow the operation when:
 
-- the wiki root is ambiguous and multiple candidates could be mutated;
-- the requested action would modify or delete raw sources;
-- the source content needed for a claim is unavailable, incomplete, or unreadable and proceeding would require guessing;
-- the existing schema conflicts with the requested mutation and the user did not authorize schema evolution;
-- a contradiction cannot be resolved from source precedence or evidence;
-- the requested write would escape the selected wiki boundary;
-- the user asks to treat an LLM-generated page as authoritative source truth when raw evidence is required;
-- a batch is too large to preserve per-source provenance and validation within the available context or tooling. In that case, process a bounded subset and report the remaining scope without fabricating completion.
+- zero or multiple plausible wiki roots could be mutated;
+- requested action would modify/delete raw source bytes;
+- source bytes needed for a claim are unavailable and proceeding would require guessing;
+- a known source path changed bytes and replacement/versioning is not explicitly authorized;
+- an existing target page changed after it was read and semantic reconciliation has not occurred;
+- the active schema conflicts with the requested mutation and migration is not authorized;
+- a conflict cannot be resolved from evidence; preserve it instead of inventing resolution;
+- a write escapes the selected derived-state boundary;
+- the user asks to treat generated wiki prose as authoritative source truth where source evidence is required;
+- required structural validation fails and safe rollback/repair cannot restore a coherent state;
+- a batch is too large to preserve per-source identity, provenance, validation, and recovery evidence within available tooling/context.

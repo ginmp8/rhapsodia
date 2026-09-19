@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nuget-package-updater/package-update-receipt.schema.json",
+  "title": "NuGet package update receipt",
+  "type": "object",
+  "required": ["receiptVersion", "receiptType", "toolContractVersion", "status", "decisionIdentity", "metadataSnapshotSha256", "baselineSha256", "previewOutputSha256", "finalFileSha256", "validationEvidence", "payloadSha256"],
+  "properties": {
+    "receiptVersion": {"const": 1},
+    "receiptType": {"const": "nuget-package-update"},
+    "toolContractVersion": {"type": "integer", "minimum": 1},
+    "status": {"enum": ["committed", "no-change", "rolled-back-validation-failure"]},
+    "decisionIdentity": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "metadataSnapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "baselineSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "previewOutputSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "finalFileSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "validationEvidence": {"type": "array"},
+    "payloadSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

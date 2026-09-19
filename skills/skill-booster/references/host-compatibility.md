@@ -19,7 +19,8 @@ Keep the core frontmatter on the common denominator. `name` must be lowercase hy
 
 | Profile | Discovery/distribution notes | Adapter policy | Important constraints |
 |---|---|---|---|
-| `openai` | ChatGPT accepts reusable skills/plug-ins; Codex discovers repository/user skills in `.agents/skills` and supports uploaded/packaged skills. | `agents/openai.yaml` is optional and may define UI/policy/tool metadata. The core must still work without it. | Do not put OpenAI-private tool names or sandbox paths in `SKILL.md`. |
+| `openai` | ChatGPT/OpenAI skill surfaces consume the same Agent Skills-compatible package. | `agents/openai.yaml` is optional and may define OpenAI UI/policy/tool metadata. The core must still work without it. | Do not put OpenAI-private tool names or sandbox paths in `SKILL.md`. |
+| `codex` | Codex consumes Agent Skills-compatible directories; repository/user discovery location is a host concern. | No separate semantic fork is required. OpenAI metadata remains optional. | Do not make Codex-specific discovery paths or tool names a semantic dependency. |
 | `claude` | Claude Code discovers `.claude/skills/` and `~/.claude/skills/`; claude.ai/API can accept custom skill packages. | No OpenAI adapter is required. | Claude API skill containers may have no network and no runtime package installation; keep bundled helpers self-contained. Claude reserves `anthropic` and `claude` in skill names. |
 | `copilot` | GitHub Copilot supports project skills in `.github/skills`, `.claude/skills`, or `.agents/skills`, and personal skills in `~/.copilot/skills` or `~/.agents/skills`. | No extra package file is required. | `allowed-tools` can pre-approve shell access; omit it from this portable skill so permissions remain host/user controlled. |
 | `cursor` | Cursor discovers `.agents/skills`, `.cursor/skills`, user equivalents, and compatibility locations including `.claude/skills` and `.codex/skills`. | Cursor-specific fields such as `paths` or `disable-model-invocation` are optional host extensions and should not be required by the portable core. | Cloud/remote agents do not necessarily inherit unsynced local user skills. |
@@ -66,6 +67,8 @@ Host-specific metadata may coexist with the portable package when it is optional
 
 The deterministic packager normalizes ZIP timestamps and permission bits, avoiding archive drift caused only by Unix/Windows mode metadata. Candidate file bytes are not rewritten; runtime behavior and checkout line-ending transformations remain separate concerns.
 
+For `complete optimization`, the default structural matrix is `portable-core,openai,codex,claude,copilot,cursor`. Individual runtime behavior may still be `not-run` or capability-limited.
+
 A multi-platform claim requires:
 
 1. structural validation passes;
@@ -75,7 +78,7 @@ A multi-platform claim requires:
 5. required runtime capabilities are available or explicitly reported as blocked;
 6. runtime/behavioral claims remain separate from structural portability.
 
-## Sources verified 2026-09-18
+## Sources verified 2026-09-19
 
 - Agent Skills specification: https://agentskills.io/specification
 - OpenAI skills: https://developers.openai.com/docs/build-skills

@@ -4,6 +4,8 @@
 
 - Mode: {{mode}}
 - Target: {{target_path}}
+- Canonical target: {{canonical_target}}
+- Baseline identity: {{baseline_identity}}
 - Allowed mutation scope: {{allowed_scope}}
 - Blocked paths: {{blocked_paths}}
 
@@ -13,21 +15,29 @@
 
 ## Resource classification summary
 
-| Path | Status | Evidence | Proposed decision | Risk | Validation |
+| Path | State | Reference/consumer evidence | Proposed decision | Risk | Validation |
 |---|---|---|---|---|---|
 {{classification_rows}}
 
-## Proposed changes
+## Planned mutations
 
-| Change | Files | Rationale | Behavior risk | Rollback | Validation gate |
-|---|---|---|---|---|---|
+| Path | Action | State | Evidence kind | Expected SHA-256 | Rollback source | Validation gate |
+|---|---|---|---|---|---|---|
 {{change_rows}}
+
+## Dry-run
+
+- Plan JSON: {{plan_json}}
+- Receipt: {{dry_run_receipt}}
+- Result: {{dry_run_result}}
 
 ## Execution order
 
-1. {{step_1}}
-2. {{step_2}}
-3. {{step_3}}
+1. Preserve baseline / last-known-good evidence.
+2. Generate current inventory and reference graph.
+3. Dry-run the exact machine-readable plan.
+4. Apply only if dry-run passes.
+5. Validate and freeze; roll back on failure.
 
 ## Stop conditions
 

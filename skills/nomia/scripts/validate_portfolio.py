@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -19,10 +18,10 @@ from nomia_utils import (
     parse_iso_date,
     scan_unresolved_template_tokens,
     unique,
+    validate_id_provenance,
+    validate_spec_id_format,
 )
 
-
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
 VALID_PRIORITY = {"unknown", "low", "medium", "high", "urgent"}
 VALID_URGENCY = {"unknown", "low", "medium", "high", "immediate"}
 VALID_IMPACT = {"unknown", "low", "medium", "high", "critical"}
@@ -68,13 +67,15 @@ def flag_values(flags: dict[str, Any], key: str) -> set[str]:
 
 
 def validate_spec_id(label: str, value: Any, errors: list[str]) -> None:
-    if value not in (None, "") and not has_unresolved_template_token(value) and not SPEC_ID_RE.match(str(value)):
-        errors.append(f"`{label}` must use `specNNN` format")
+    error = validate_spec_id_format(value)
+    if error:
+        errors.append(f"`{label}` {error}")
 
 
-def validate_yaml(path: Path) -> tuple[list[str], list[str]]:
+def validate_yaml(path: Path, as_of: date | None = None) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
+    effective_as_of = as_of or date.today()
 
     if not path.exists():
         return [f"missing required file: {path}"], warnings
@@ -131,13 +132,18 @@ def validate_yaml(path: Path) -> tuple[list[str], list[str]]:
         current_key = item_key(item, index)
         spec_id = item.get("spec_id")
         validate_spec_id(f"items[{index}].spec_id", spec_id, errors)
+        provenance_error = validate_id_provenance(
+            item.get("source"), id_value=spec_id, field_name=f"items[{index}].source"
+        )
+        if provenance_error:
+            errors.append(f"{path}: `{provenance_error}`")
         if spec_id not in (None, ""):
             if str(spec_id) in seen_specs:
                 warnings.append(f"{path}: duplicate portfolio item for `{spec_id}`")
             seen_specs.add(str(spec_id))
 
         validate_enum(f"items[{index}].state", item.get("state"), VALID_STATE, errors)
-        validate_enum(f"items[{index}].priority", item.get("priority"), VALID_PRIORITY, errors)
+        validate_enum(f"items[{index}].business_priority", item.get("business_priority"), VALID_PRIORITY, errors)
         validate_enum(f"items[{index}].urgency", item.get("urgency"), VALID_URGENCY, errors)
         validate_enum(f"items[{index}].impact", item.get("impact"), VALID_IMPACT, errors)
         validate_enum(f"items[{index}].risk", item.get("risk"), VALID_RISK, errors)
@@ -159,7 +165,7 @@ def validate_yaml(path: Path) -> tuple[list[str], list[str]]:
         if not is_iso_date(target_date):
             errors.append(f"{path}: `items[{index}].target_date` must use YYYY-MM-DD format")
         target = parse_iso_date(target_date)
-        if target and target < date.today() and str(item.get("state", "")) not in TERMINAL_STATES:
+        if target and target < effective_as_of and str(item.get("state", "")) not in TERMINAL_STATES:
             warnings.append(f"{path}: `items[{index}]` appears overdue")
             if current_key not in flag_values(flags, "overdue"):
                 warnings.append(f"{path}: `{current_key}` should appear in `flags.overdue`")
@@ -219,9 +225,17 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate nomia portfolio artifacts.")
     parser.add_argument("--portfolio-yaml", default="portfolio.yaml")
     parser.add_argument("--portfolio-md", default="portfolio.md")
+    parser.add_argument("--as-of", help="Deterministic YYYY-MM-DD observation date. Defaults to today.")
     args = parser.parse_args(argv)
 
-    errors, warnings = validate_yaml(Path(args.portfolio_yaml).resolve())
+    as_of = None
+    if args.as_of:
+        try:
+            as_of = date.fromisoformat(args.as_of)
+        except ValueError:
+            print("ERROR: --as-of must use YYYY-MM-DD")
+            return 2
+    errors, warnings = validate_yaml(Path(args.portfolio_yaml).resolve(), as_of=as_of)
     md_errors, md_warnings = validate_markdown(Path(args.portfolio_md).resolve())
     errors.extend(md_errors)
     warnings.extend(md_warnings)

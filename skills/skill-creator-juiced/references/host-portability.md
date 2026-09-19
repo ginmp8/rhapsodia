@@ -28,11 +28,32 @@ The portable core must not depend semantically on a single vendor's UI metadata,
 7. Keep install locations outside the semantic contract. A skill folder should be movable without rewriting its instructions.
 8. Do not duplicate the skill merely because hosts use different discovery directories.
 
+## Default portability matrix
+
+When portability is the objective, validate these profiles unless the user explicitly narrows scope:
+
+`portable-core,openai,codex,claude,copilot,cursor`
+
+Use one canonical package. Host-specific installation locations and metadata are adapters, not forks. Report each host as one of:
+
+- `validated`: host-specific/runtime evidence actually executed and passed;
+- `structurally-compatible`: static package/profile checks passed, runtime not executed;
+- `adapter-required`: core is portable but optional host metadata/adapter is required for the requested integration surface;
+- `capability-limited`: the host lacks a capability and the skill has an explicit safe degradation;
+- `not-run`: relevant verification could not execute;
+- `unsupported`: no safe equivalent/degradation exists for a required capability.
+
+Never promote `structurally-compatible` to `validated` without runtime evidence.
+
 ## Host adapters
 
-### OpenAI / ChatGPT / Codex
+### OpenAI / ChatGPT
 
-OpenAI documents support for the Agent Skills standard. `agents/openai.yaml` may be included as OpenAI-specific UI/dependency metadata, but portable behavior must not depend on it. Hosted/API packaging may use a zip archive; keep the archive rooted at one skill directory.
+OpenAI documents Agent Skills-compatible packages. `agents/openai.yaml` may be included as OpenAI-specific UI/dependency metadata, but portable behavior must not depend on it. Hosted/API packaging may use a zip archive; keep the archive rooted at one skill directory.
+
+### Codex
+
+Treat Codex as its own support-matrix profile even when it shares OpenAI ecosystem metadata. The semantic core remains identical; Codex-specific discovery paths or private tool names must not be required by the package.
 
 ### Claude
 
@@ -61,7 +82,7 @@ Do not silently convert a portable skill into a single-host skill.
 
 ### `portable`
 
-Default. Validate the Agent Skills core, relative references, package hygiene, and host-neutral semantics. Do not require `agents/openai.yaml`.
+Canonical package profile and hard gate for portable-core. Validate the Agent Skills core, relative references, package hygiene, and host-neutral semantics. Do not require `agents/openai.yaml`.
 
 ### `openai`
 
@@ -71,7 +92,7 @@ Other hosts normally consume the same portable folder in their supported discove
 
 ## Current source anchors
 
-Rules in this reference were aligned on 2026-09-18 with:
+Rules in this reference were aligned on 2026-09-19 with:
 
 - Agent Skills specification: `https://agentskills.io/specification`
 - OpenAI Skills guide: `https://developers.openai.com/api/docs/guides/tools-skills`
@@ -82,3 +103,11 @@ Rules in this reference were aligned on 2026-09-18 with:
 - Anthropic Skills repository: `https://github.com/anthropics/skills`
 
 Host behavior can change. Recheck authoritative host documentation when a platform-specific feature is material to correctness.
+
+## Validation command
+
+```text
+<PYTHON> scripts/validate_portability.py <target> --hosts portable-core,openai,codex,claude,copilot,cursor
+```
+
+The validator provides structural evidence. Runtime compatibility remains a separate evidence layer.

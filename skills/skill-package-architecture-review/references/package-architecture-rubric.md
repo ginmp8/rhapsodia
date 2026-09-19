@@ -1,65 +1,164 @@
 # Package Architecture Rubric
 
-Use this rubric when a review requires architectural judgment, not only structural inventory.
+**Rubric version:** 2.0.0
 
-## Evidence classes
+Use this rubric for architectural judgment. It is a decision contract, not a substitute for context.
 
-- Mechanical evidence: file tree, line counts, local links, references, script arguments, template locations, eval files, package size, validator output.
-- Declared contract: activation description, mode table, workflow, resource map, output contract, stop conditions, handoff rules.
-- Behavioral evidence: executed scenario outputs, supplied benchmark results, harness reports, prior failures, user feedback.
-- Reviewer judgment: cohesion, coupling, ownership fit, maintainability, cognitive load, and risk interpretation.
+## Evidence discipline
 
-Never mix these classes silently. Label findings as mechanical, behavioral, or judgment.
+Separate:
 
-## Scoring dimensions
+- mechanical observation;
+- declared package contract;
+- executed behavioral evidence;
+- supplied external evidence;
+- derived evidence;
+- reviewer judgment.
 
-Score each dimension from 0 to 4 when the user asks for a score. Otherwise use the criteria qualitatively.
+Every material judgment must reference evidence. A static rubric score is structural judgment, not measured behavioral quality.
+
+## Dimensions
+
+Score 0-4 only when the user asks for scoring. Otherwise apply qualitatively.
 
 | Dimension | 0 | 2 | 4 |
 |---|---|---|---|
-| Control-plane clarity | no usable `SKILL.md` contract | basic workflow, weak routing | compact router with modes, loading map, stop conditions, and output contract |
-| Cohesion | unrelated responsibilities | related but overlapping or ambiguous | one clear domain with coherent activation and owner model |
-| Resource integration | resources unexplained or misleading | many resources referenced but weakly consumed | resources are loaded, consumed, filled, validated, or intentionally asset-only |
-| Progressive loading | knowledge dump or hidden dependencies | some references but unclear loading | conditional references and scripts are discoverable only when needed |
-| Boundary governance | no authority or handoff rules | partial boundaries | explicit ownership, handoffs, stop conditions, and adjacent-skill boundaries |
-| Validation architecture | claims without evidence | basic validators or planned scenarios | deterministic checks and measured claims are tied to commands or evidence |
-| Package hygiene | scaffold remnants, stale outputs, caches | mostly clean with minor debris | clean tree, no placeholders, no generated noise, packageable layout |
-| Maintainability | changes are brittle and cross-cutting | maintainable with known hotspots | modular, testable, and easy to evolve without domain drift |
+| Control-plane clarity | unusable or contradictory | basic workflow, weak routing | compact modes/routing/loading/stop/output contract |
+| Cohesion | unrelated domains/responsibilities | related but ambiguous overlap | one coherent domain/workflow family |
+| Resource integration | misleading/unowned resources | mixed integration | declared, consumed, validated, or intentionally asset-only resources |
+| Progressive loading | knowledge dump/hidden dependencies | partial conditional loading | branch-specific resources loaded only when needed |
+| Boundary governance | unclear authority | partial ownership/handoffs | explicit authority, stop conditions, adjacent-skill handoffs |
+| Validation architecture | claims without evidence | basic validators/planned scenarios | independent deterministic gates and executed evidence where claimed |
+| Package hygiene | stale/generated/scaffold noise | mostly clean | packageable, intentional tree |
+| Maintainability | changes require broad coupled edits | manageable hotspots | modular evolution without domain drift |
 
-## Cohesion versus size
+## Primary architecture decision enum
 
-A large skill is not automatically a bad skill. Treat size as healthy when:
+Choose exactly one when a primary decision is requested:
 
-- one domain or workflow family explains most modes;
-- `SKILL.md` remains a control plane, not a knowledge dump;
-- branch-specific detail lives in references;
-- resources have declared consumers or loading rules;
-- validation burden is proportionate to risk;
-- one ownership model can maintain the package.
+- `keep_unified`
+- `split`
+- `extract_mode`
+- `create_router`
+- `merge_resources`
+- `no_change`
 
-Treat size as a risk only when it creates evidence of low cohesion, wrong activation, hidden dependencies, repeated mode logic, conflicting authority, maintenance difficulty, or excessive context loading.
+A handoff is a follow-up action, not an architecture decision.
 
-## Architecture recommendation rules
+## Minimum evidence by decision
 
-Recommend `keep unified` when the package has high cohesion, one owner model, one activation surface, and manageable progressive loading.
+### `keep_unified`
 
-Recommend `extract mode` when one mode has distinct trigger language, separate resources, independent validators, different user expectations, or different release cadence.
+Eligible when evidence supports one coherent domain/workflow family and no hard separation signal exists. Prefer when:
 
-Recommend `fragment into skills` when there are multiple domains, conflicting owners, incompatible evidence policies, activation collisions, or repeated conditional routing that hides the real task.
+- one activation surface can route the package without persistent ambiguity;
+- one authority/owner model is coherent;
+- mode evidence/validation lifecycles are compatible;
+- progressive loading contains context cost;
+- resources can remain integrated without duplicated ownership.
 
-Recommend `merge resources` when two references, templates, or scripts serve the same decision with duplicated instructions and no useful separation.
+Do not require small package size.
 
-Recommend `create router` when several coherent subpackages need a shared dispatch layer and stable handoff protocol.
+### `split`
 
-Recommend `handoff` when the next action is better owned by an adjacent workflow: consistency repair, hardening, harness, improver, benchmark, code review, or secure review.
+Eligible only with either:
 
-## Severity model
+- one hard incompatibility: conflicting authority/safety/evidence policies that cannot safely coexist; **or**
+- at least two independent separation signals from different categories below.
 
-- Critical: architecture can trigger wrong skill use, unsafe authority, fabricated measured claims, or broken package delivery.
-- High: architecture blocks reliable use, hides required resources, or causes conflicting handoffs.
-- Medium: maintainability or context-efficiency issue with clear operational impact.
-- Low: naming, organization, or clarity issue that does not block correct execution.
+Separation signals:
+
+1. distinct domains/activation surfaces with recurring collisions;
+2. conflicting ownership or authority models;
+3. incompatible evidence/validation policies;
+4. independent release/maintenance lifecycle with cross-cutting change burden;
+5. repeated routing branches that effectively hide separate products/workflows;
+6. progressive-loading failure that cannot be repaired by routing/reference extraction.
+
+File count, line count, number of references, or stylistic preference are never separation signals by themselves.
+
+### `extract_mode`
+
+Eligible when both are true:
+
+1. the mode has meaningfully distinct trigger/user intent; and
+2. at least one independent lifecycle signal exists: dedicated resources, validators/evals, owner/authority, release cadence, or separate user expectation.
+
+Prefer extraction over full split when the rest of the package remains cohesive and the mode is the localized source of independence.
+
+### `create_router`
+
+Eligible when all are true:
+
+- two or more destinations are already coherent or should remain separately owned;
+- stable dispatch evidence exists: explicit user intent, artifact type, domain, mode, or other deterministic key;
+- one shared entry point materially reduces activation ambiguity or user burden;
+- router authority can remain narrow: dispatch, not duplicate subskill semantics.
+
+Do not create a router only because a package has many modes.
+
+### `merge_resources`
+
+Eligible when resources share the same decision ownership/consumer set and one of these is evidenced:
+
+- duplicated rules have drifted or conflict;
+- resources are always loaded together and separation adds no independent lifecycle value;
+- two resources represent one canonical contract split by historical accident.
+
+Do not merge when different audiences, modes, validation cycles, or ownership justify separation.
+
+### `no_change`
+
+Eligible when:
+
+- no evidenced architectural defect requires mutation; or
+- several architectures are reasonable but the existing design satisfies current boundaries, loading, validation, and maintainability needs; or
+- evidence is insufficient for a safe structural recommendation.
+
+`no_change` is a valid positive conclusion, not a failure to decide.
+
+## Tie-breakers
+
+When more than one decision remains eligible, apply in this order:
+
+1. **Safety/authority**: choose the option that resolves unsafe or conflicting authority without weakening controls.
+2. **Activation clarity**: prefer the option that removes persistent activation ambiguity with the least duplicated semantics.
+3. **Ownership/evidence lifecycle**: preserve independently owned or independently validated behavior when evidence shows real independence.
+4. **Progressive-loading repairability**: prefer routing/reference extraction over structural fragmentation when loading alone is the issue.
+5. **Change radius**: prefer the smallest structural change that fully addresses the evidenced problem.
+6. **Minimum-change default**: when still tied or evidence is incomplete, choose `no_change` and state what evidence would justify a different decision.
+
+Record the tie-breaker used in the report.
+
+## Observation versus judgment
+
+Examples:
+
+- Observation: "`mode-x` has a dedicated validator and three mode-only references."  
+  Judgment: "This creates an independent validation lifecycle."
+- Observation: "The package has 24 reference files."  
+  Invalid judgment: "It should be split." Size alone has no architectural conclusion.
+- Observation: "No deterministic consumer signal was found for `legacy.md`."  
+  Invalid judgment: "`legacy.md` is orphaned." Consumer tracing is incomplete until dynamic/external/intentional retention paths are checked.
+
+## Severity
+
+- `critical`: wrong activation/authority, unsafe ownership, fabricated measured claims, or broken delivery can result.
+- `high`: architecture blocks reliable use, hides mandatory resources, or creates conflicting handoffs.
+- `medium`: maintainability/context/load issue with concrete operational impact.
+- `low`: organization/clarity issue without correctness impact.
+
+Severity never substitutes for decision evidence.
 
 ## Claim discipline
 
-A benchmark score, validator pass rate, scenario metric, package-readiness claim, or before/after improvement is measured only when supported by supplied evidence or commands executed in the current run. Otherwise mark it as planned, assumed, inferred, or not measured.
+Use:
+
+- `measured`: current-run executed command/scenario evidence;
+- `observed`: direct package/output inspection;
+- `derived`: deterministic calculation from evidence;
+- `supplied`: user/external evidence not independently executed;
+- `planned`: not executed;
+- `blocked`: could not be obtained.
+
+Do not claim architecture precision, reviewer consistency, behavioral improvement, regression reduction, or scenario pass rate unless the relevant scenarios were actually executed.

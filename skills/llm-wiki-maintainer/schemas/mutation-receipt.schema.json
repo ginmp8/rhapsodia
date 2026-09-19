@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:llm-wiki-maintainer:mutation-receipt:1",
+  "title": "LLM Wiki mutation receipt",
+  "type": "object",
+  "required": ["receipt_version", "stage", "transaction_id", "status", "classification"],
+  "properties": {
+    "receipt_version": {"const": 1},
+    "stage": {"const": "mutation"},
+    "transaction_id": {"type": "string"},
+    "status": {"enum": ["pass", "blocked", "failed"]},
+    "classification": {"type": "string"},
+    "changes": {"type": "array"},
+    "recovery": {"type": "array"}
+  },
+  "additionalProperties": true
+}

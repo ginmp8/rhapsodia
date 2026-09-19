@@ -1,6 +1,6 @@
 # Creation Workflow
 
-Use this workflow for net-new skills, updates, portability work, and major redesigns. Enter at the target's current lifecycle state rather than restarting completed work.
+Use this workflow for net-new skills, updates, portability work, and major redesigns. Enter at the target's current lifecycle state rather than restarting completed work. When invoked by Skill Booster on an external skill, consume Booster's trust/intake evidence; Creator Juiced owns portability redesign, not quarantine/security intake.
 
 ## Phase 1: Lifecycle, context, identity, baseline, and capabilities
 
@@ -14,7 +14,7 @@ Capture only what changes execution:
 - concrete prompts that should and should not activate it;
 - expected inputs and outputs;
 - required evidence, tools, files, repositories, scripts, or assets;
-- target hosts or portability expectation;
+- target hosts or portability expectation; portability work defaults to `portable-core,openai,codex,claude,copilot,cursor` unless explicitly narrowed;
 - runtime capabilities: filesystem read/write, command execution, Python or other runtimes, network, connectors, subagents, browser, artifact delivery;
 - blocked paths, secrets, fixtures, expected outputs, evaluator assets, and validation expectations.
 
@@ -114,7 +114,7 @@ If two consecutive repair rounds do not improve the best objective diagnostic co
 When command execution is available:
 
 ```text
-<PYTHON> scripts/validate_portability.py <target-skill-folder> --profile portable
+<PYTHON> scripts/validate_portability.py <target-skill-folder> --hosts portable-core,openai,codex,claude,copilot,cursor
 <PYTHON> scripts/juiced_quality_gate.py <target-skill-folder> --profile portable
 <PYTHON> scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --profile portable --validate --json-output <output-dir>/package-receipt.json
 ```

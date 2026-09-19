@@ -1,27 +1,34 @@
 ## Skill Hypothesis Discovery Result
 
 - target: {{target}}
+- baseline identity: {{baseline_identity}}
 - mode: {{mode}}
 - caller context: {{caller_context}}
+- evidence snapshot: {{evidence_snapshot_id}}
 - evidence status: {{evidence_status}}
 - recommendation: {{recommendation}}
 
 ### Evidence inspected
-- target evidence: {{target_evidence}}
-- benchmark/harness/validation evidence: {{benchmark_harness_validation_evidence}}
-- reviewer or user feedback: {{reviewer_or_user_feedback}}
+{{evidence_rows}}
+
 - missing evidence: {{missing_evidence}}
 
-### Hypothesis backlog
-| id | hypothesis | evidence signal | expected effect | validation | impact | confidence | testability | risk | recommendation |
-|---|---|---|---|---|---:|---:|---:|---:|---|
-{{hypothesis_rows}}
+### Metrics and evaluators
+- primary metric / saturation: {{primary_metric}}
+- active auxiliary metrics: {{auxiliary_metrics}}
+- available evaluators: {{available_evaluators}}
 
-### Top hypotheses for this cycle
-{{top_hypotheses}}
+### Backlog
+| id | kind | hypothesis / gap | evidence | expected effect | evaluator | priority | recommendation |
+|---|---|---|---|---|---|---:|---|
+{{backlog_rows}}
 
-### Deferred or rejected hypotheses
-{{deferred_or_rejected}}
+### Selected for testing
+- next hypothesis: {{next_hypothesis_id}}
+- shortlist: {{selected_for_testing}}
+
+### Deferred / rejected / evidence gaps
+{{deferred_rejected_gaps}}
 
 ### Handoff
 - to skill-improver: {{skill_improver_handoff}}

@@ -1,84 +1,298 @@
 ---
 name: migration-conflict-analyzer
-description: use when asked to analyze entity framework core dotnet migration files or pull request migration changes for schema conflicts, ordering hazards, data-loss risks, duplicate operations, runtime migration deployment hazards, model snapshot divergence signals, raw sql risks, and expand-contract compatibility issues. use for uploaded migration .cs files, repository paths, git diffs, pull requests, or pasted migration code. do not use for generic ef core tutorials, normal database design, or application code review unless migration conflict analysis is requested.
+description: Analyze EF Core migration files and diffs for reproducible conflict, ordering, destructive-change, snapshot, raw-SQL, and deployment hazards with exact input identity, stable findings, bounded heuristics, and machine-readable receipts.
 ---
 
 # Migration Conflict Analyzer
 
 ## Purpose
 
-Analyze Entity Framework Core migration files for conflicts and deployment hazards before they are merged or applied. Prefer evidence from migration source files, diffs, generated SQL, repository context, and official EF Core guidance over assumptions.
+Analyze Entity Framework Core migration files, diffs, and pull-request migration changes for schema conflicts, ordering hazards, data-loss signals, snapshot divergence, raw-SQL risks, and runtime migration deployment hazards.
 
-## Core workflow
+Use the installed analyzer as an evidence-producing static analysis tool. Prefer exact migration bytes, immutable Git revision identity, generated SQL when supplied, and explicit deployment evidence over assumptions.
 
-1. Determine the mode:
-   - **file mode**: user provides one or more migration `.cs` files, pasted code, or a local path.
-   - **pr mode**: user asks to analyze all migrations in a pull request, branch, or diff.
-   - **review mode**: user wants reasoning about a specific flagged migration or conflict.
-2. Gather migration inputs.
-   - For uploaded files, use the uploaded files directly.
-   - For repository paths or PRs, inspect changed migration files. Exclude `*.Designer.cs` and `*ModelSnapshot.cs` from operation analysis unless snapshot divergence is part of the request.
-   - When connectors are available for PRs, use the GitHub/Drive/search tools to fetch changed files or diffs. If local repository access exists, prefer the script's `--git-base` mode.
-3. Run deterministic analysis when files are available:
-   ```bash
-   python3 -S scripts/migration_conflict_analyzer.py <paths> --format markdown --output migration-conflict-report.md
-   ```
-   For local PR analysis:
-   ```bash
-   python3 -S scripts/migration_conflict_analyzer.py . --git-base origin/main --format markdown --output migration-conflict-report.md
-   ```
-4. Load `references/conflict-heuristics.md` when explaining findings, severity, or coverage.
-5. Load `references/pr-workflow.md` for PR-specific collection, base-branch comparison, and review comments.
-6. Use `references/report-contract.md` for the final report shape.
+Do not use this skill for generic EF Core tutorials, normal database design, or ordinary application-code review unless migration conflict/risk analysis is the requested task.
 
-## What to flag
+## Reproducibility contract
 
-Flag both deterministic conflicts and operational risks. Important categories include:
+This skill is a `research-analytic` workflow with deterministic mechanics and bounded heuristic judgment.
 
-- duplicate `AddColumn`, `CreateTable`, `CreateIndex`, constraint, or foreign-key names across migrations in the same PR;
-- one migration dropping or renaming a table or column while another migration touches the same object;
-- multiple migrations altering the same table or column in ways that depend on order;
-- `DropColumn` plus `AddColumn` patterns that look like unsafe renames;
-- `NOT NULL` column additions to existing tables without default, computed value, or explicit backfill;
-- raw `migrationBuilder.Sql(...)` statements that perform DDL, mutate data, depend on newly added columns, or are not obviously idempotent;
-- divergent migration history signals such as duplicate timestamps, duplicate class names, deleted migrations, edited old migrations, or snapshot changes that do not correspond to changed migrations;
-- runtime application of migrations hazards, especially when the app calls `Database.Migrate()` or `MigrateAsync()` during startup and multiple instances may start concurrently.
+Mechanically reproducible surfaces:
 
-## Severity rules
+- input file SHA-256 identities;
+- resolved Git base/head/merge-base identities in PR mode;
+- ModelSnapshot and generated-SQL identities when supplied/discovered;
+- canonical migration ordering and operation extraction;
+- versioned heuristic-set identity and hash;
+- stable rule IDs, finding IDs, severity, gate, and confidence fields;
+- machine-readable report and analysis receipt;
+- same-input rerun identity for supported static inputs.
 
-Use this default severity model unless the user supplies team-specific rules:
+Judgment that remains bounded rather than deterministic:
 
-- **Critical**: likely to fail migration execution or corrupt migration history, e.g. duplicate migration identifiers, duplicate object creation, drop/rename combined with dependent operations, or conflicting table recreation.
-- **High**: likely data loss, deployment failure on populated databases, or unsafe ordering, e.g. non-null column without default/backfill on an existing table, raw destructive SQL, unsafe rename generated as drop/add.
-- **Medium**: plausible production or PR integration risk, e.g. multiple migrations touch the same table, multiple `AlterColumn` operations on one column, opaque raw SQL, snapshot divergence signals.
-- **Low**: review attention or maintainability issue, e.g. naming inconsistencies, empty `Down()`, missing explicit recommendation, or operations that are safe but should be validated with generated SQL.
+- whether drop/add represents an intended rename;
+- whether destructive operations actually lose required data;
+- provider-specific SQL/locking/transaction behavior;
+- whether raw SQL is semantically safe beyond recognized patterns;
+- whether rolling deployment topology creates an actual runtime failure.
+
+Never convert those unknowns into certainty. Findings must preserve `confidence`, `evidence_status`, and `uncertainty`.
+
+The frozen heuristic contract is `references/heuristic-set.json`. The current contract version is `2.0.0`. Do not silently reinterpret a rule ID, severity, or gate. Incompatible heuristic changes require a version change plus regression re-baseline.
+
+## Modes
+
+Choose exactly one primary mode:
+
+1. **file/directory mode** — one or more migration files/directories are available.
+2. **PR/Git mode** — a repository plus base ref/commit is available.
+3. **manual review mode** — only pasted snippets or incomplete evidence are available; apply the same taxonomy manually and label script gates `not-run`.
+
+PR/Git mode is preferred when the question is about branch conflicts because it binds analysis to exact base/head identities and can compare changed migration identities with base history.
+
+## Deterministic analyzer
+
+### File/directory mode
+
+```bash
+python3 -S scripts/migration_conflict_analyzer.py <paths> \
+  --format json \
+  --output migration-conflict-report.json \
+  --receipt migration-conflict-analysis-receipt.json
+```
+
+Include supporting snapshots found under directory inputs when relevant:
+
+```bash
+python3 -S scripts/migration_conflict_analyzer.py <path> \
+  --include-support-files \
+  --format json
+```
+
+### PR/Git mode
+
+```bash
+python3 -S scripts/migration_conflict_analyzer.py . \
+  --git-base origin/main \
+  --format json \
+  --output migration-conflict-report.json \
+  --receipt migration-conflict-analysis-receipt.json
+```
+
+The report must record:
+
+- requested Git base;
+- resolved base SHA;
+- HEAD SHA;
+- merge-base SHA;
+- changed-file identities;
+- changed migration hashes;
+- relevant snapshot identities;
+- base migration-history identities used for collision checks.
+
+Do not call working-tree bytes immutable Git evidence. File hashes are the identity of analyzed working bytes; Git SHAs identify repository revisions.
+
+### Optional evidence
+
+Bind generated SQL without claiming it was executed:
+
+```bash
+python3 -S scripts/migration_conflict_analyzer.py <path> \
+  --generated-sql migration.sql \
+  --format json
+```
+
+Supply runtime migration code only when runtime deployment analysis is requested:
+
+```bash
+python3 -S scripts/migration_conflict_analyzer.py <path> \
+  --runtime-code Program.cs \
+  --deployment-instances multiple \
+  --format json
+```
+
+A runtime concurrency finding requires explicit startup-migration code evidence plus supplied `multiple` deployment-instance evidence. Without that evidence, do not claim a concurrent runtime failure.
+
+## Analysis order
+
+1. Resolve input mode and exact scope.
+2. Capture migration/support/runtime/generated-SQL file hashes.
+3. In Git mode, resolve immutable base/head/merge-base identities before interpreting conflicts.
+4. Parse main migration `Up`/`Down` operations into canonical operation records.
+5. Sort `Up` operations by migration timestamp/file order, then source invocation order.
+6. Load `references/heuristic-set.json`; record version and SHA-256.
+7. Apply only the frozen rule taxonomy.
+8. Emit stable finding IDs from rule ID + canonical operation/evidence subjects.
+9. Separate observed/derived evidence from inferred intent.
+10. Emit gates, summary, explicit limitations, and `analysis_receipt`.
+11. If writing artifacts, use output-path preflight and preserve last-good outputs on commit failure.
+
+## Required risk coverage
+
+Load `references/conflict-heuristics.md` when explaining findings. Coverage includes:
+
+- duplicate AddColumn/CreateTable/named-object operations;
+- conflicting index definitions;
+- conflicting foreign-key definitions;
+- DropColumn/DropTable destructive-operation review gates;
+- rename vs drop/add heuristic with explicit uncertainty;
+- ordering after drop/rename;
+- required-column additions without default/backfill evidence;
+- branch/base migration-history collisions;
+- ModelSnapshot divergence signals;
+- raw SQL mutation, narrow non-idempotency patterns, and transaction suppression;
+- runtime startup-migration hazards only from supplied evidence;
+- unknown/custom migrationBuilder operations as manual-review coverage gaps;
+- expand/backfill/contract sequence detection as a low-confidence pattern, never proof of safe rolling compatibility.
+
+## Stable severity and gate rules
+
+Severity and gate come from `references/heuristic-set.json`, not free-form reviewer judgment.
+
+- `critical` / `block`: deterministic identity/schema conflicts that should not be merged/applied without resolution.
+- `high` / `review-required`: destructive operations or strong deployment/order hazards needing explicit remediation/evidence.
+- `medium` / `review-required`: plausible integration/upgrade hazards whose actual impact depends on data/provider/context.
+- `low` / `manual-review`: coverage gaps or review signals that are not themselves merge blockers.
+- `info` / `none`: non-blocking structural observations when present.
+
+Do not promote severity because a finding sounds alarming. Do not downgrade it to make a candidate pass. Change the versioned heuristic contract only through an explicit re-baseline.
+
+## Evidence and confidence
+
+Every finding must include:
+
+- stable `id`;
+- stable `rule_id`;
+- `severity`;
+- `confidence`;
+- `evidence_status`;
+- `gate`;
+- `hazard_type`;
+- exact files/operation IDs or supporting evidence identity;
+- why it matters;
+- smallest safe remediation;
+- validation step;
+- explicit `uncertainty`.
+
+Use these evidence meanings:
+
+- `observed`: directly present in analyzed bytes/options;
+- `derived`: deterministic calculation from observed evidence;
+- `inferred`: bounded heuristic interpretation;
+- `supplied`: contextual evidence explicitly supplied by the user/tooling;
+- `blocked`: semantics cannot be established by the analyzer.
+
+## ModelSnapshot handling
+
+ModelSnapshot is supporting evidence, not a replacement for migration operations.
+
+In Git mode:
+
+- record changed snapshot identity;
+- record base snapshot identity when available;
+- flag snapshot-only changes as divergence signals;
+- flag changed migrations without a changed snapshot only as a review signal, because some legitimate migrations may not alter snapshot state;
+- never claim future migration corruption from snapshot divergence alone.
+
+## Raw SQL handling
+
+Raw SQL is intentionally bounded:
+
+- hash/bind the migration file containing it;
+- identify schema/data mutation keywords;
+- identify only narrow rerun-sensitive patterns such as self-increment or unguarded insert;
+- detect `suppressTransaction: true` when present;
+- keep confidence and uncertainty explicit;
+- require generated/provider-specific SQL execution for runtime conclusions.
+
+Do not claim a raw SQL statement is safe merely because no rule matched.
+
+## Runtime deployment hazard taxonomy
+
+Runtime findings describe evidence-backed hazard classes, not predicted failures:
+
+- `runtime-deployment`: application startup applies migrations;
+- `runtime-concurrency`: startup migration plus explicit multi-instance deployment evidence;
+- `transaction`: raw SQL intentionally bypasses the migration transaction;
+- `data-migration`: rerun-sensitive data mutation pattern;
+- `ordering`: later migration operations depend on objects already dropped/renamed;
+- `destructive-schema`: contract step removes schema objects.
+
+Prefer migration bundles/scripts or a single deployment migration job when runtime startup application is a relevant risk, but tie the recommendation to the observed deployment evidence.
 
 ## Output contract
 
-Return a concise but complete report:
+The output contract is defined by `references/report-contract.md`; JSON is the canonical machine-readable form.
 
-1. Scope analyzed: files, PR/diff source, base branch if any, and excluded files.
-2. Executive summary: count by severity and whether merge/apply is blocked.
-3. Findings: severity, migration file, operation evidence, why it can conflict, and smallest safe fix.
-4. Safe deployment guidance: use scripts/bundles or a single migration job instead of every app instance applying migrations at startup when relevant.
-5. Validation performed: script command, parsing limits, generated report path, and checks not executed.
-6. Residual risks: provider-specific behavior, data volume, lock duration, and raw SQL not fully interpreted.
 
-## Handling PR mode
+Use `references/report-contract.md` for prose and machine-readable output requirements. JSON output must conform to the semantic contract documented by `schemas/analysis-report.schema.json`.
 
-For PR review, compare only files changed in the PR when possible, then optionally compare against existing base migrations to detect duplicate timestamps, duplicate class names, or object additions already present in base. Do not claim a base conflict unless base files were inspected.
+A `no-static-blocker` result means only that the frozen static heuristic set emitted no blocking/high/medium finding for the supplied evidence. It is not a production-safety guarantee.
 
-If the PR includes `*ModelSnapshot.cs`, inspect it as a signal but do not rely only on it. Migrations include both operations and a snapshot, so snapshot divergence can corrupt future migrations even when current migrations apply.
+## Validation and frozen scenarios
 
-## Script notes
+Package-owned validation:
 
-The bundled analyzer is intentionally conservative. It uses regex and brace matching, not a full C# compiler. Treat script findings as evidence-backed heuristics and use human review for provider-specific SQL, custom helpers, conditional code, or unusual formatting.
+```bash
+python3 -S scripts/validate_contracts.py --skill-root .
+```
+
+Executable regression suite:
+
+```bash
+python3 -S evals/run_analyzer_regressions.py \
+  --analyzer scripts/migration_conflict_analyzer.py \
+  --scenarios evals/analyzer-regression-scenarios.json \
+  --expected-heuristics evals/expected-heuristics.json
+```
+
+The frozen regression contract covers:
+
+- duplicate AddColumn;
+- DropColumn;
+- rename vs drop/add;
+- conflicting indexes;
+- conflicting FKs;
+- migration ordering;
+- branch divergence/base collision;
+- snapshot divergence;
+- raw SQL;
+- non-idempotent data migration;
+- concurrent deploy hazard;
+- harmless migration;
+- unknown operation;
+- same-diff rerun stability.
+
+Do not edit frozen expected outcomes to make analyzer changes pass. A legitimate evaluator correction requires a new baseline/freeze before accepting analyzer behavior.
+
+
+## Release and evaluator freeze discipline
+
+When this skill package itself is changed, preserve an immutable baseline/source snapshot of the exact prior bytes before mutation. Freeze evaluator inputs and expected outcomes before evaluating the candidate; do not edit frozen evaluator assets to make a candidate pass.
+
+Compare baseline vs candidate with the same frozen regression inputs before making a behavioral-improvement claim. After the final pass, freeze the candidate and do not make unvalidated edits; any post-pass change restarts the affected validation gates.
+
+Keep evidence layers separate:
+
+- **structural evidence**: package shape, schema/contract validity, hashes;
+- **behavioral evidence**: executed regression scenarios and stable rerun identities;
+- **runtime evidence**: actual provider/database/deployment execution;
+- **perceptual evidence**: not applicable to this analyzer.
+
+The target package does not need to own its own archive builder. Packaging may be performed by the host/meta-skill, but the package must represent the exact frozen candidate and include a package receipt that binds the delivered archive to that candidate.
+
+## PR workflow
+
+Load `references/pr-workflow.md` for collection and review sequencing. Base conflict claims require the base migration history to have been inspected from the resolved base SHA.
 
 ## Stop conditions
 
-Stop or report a partial result when:
+Stop or return a bounded partial analysis when:
 
-- no migration files or diffs are available;
-- PR mode is requested but the changed migration files cannot be retrieved;
-- a repository uses custom migration helpers that the script cannot parse and no generated SQL is available;
-- the user asks for certainty about production safety without database provider, current schema, data volume, and generated SQL.
+- no migration/diff/snapshot evidence is available;
+- PR mode is requested but the repository/base revision cannot be resolved;
+- custom helper methods hide material migration behavior and no generated SQL is available;
+- a runtime safety conclusion is requested without deployment topology/provider/generated SQL/data evidence needed for that conclusion;
+- heuristic/evaluator identity cannot be established;
+- output aliases an analyzed input, evaluator, or receipt path;
+- the only way to produce a passing result is to weaken a frozen severity/gate/evaluator.

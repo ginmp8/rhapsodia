@@ -12,7 +12,7 @@ from pathlib import Path
 
 from validate_skill_booster import find_skill_roots, parse_frontmatter, read_text, validate as validate_structure
 
-KNOWN_HOSTS = {"portable-core", "openai", "claude", "copilot", "cursor"}
+KNOWN_HOSTS = {"portable-core", "openai", "codex", "claude", "copilot", "cursor"}
 HOST_PRIVATE_TOKENS = {
     "skills__read": "OpenAI/ChatGPT private skill tool name",
     "tools.skills__": "OpenAI/ChatGPT private skill tool namespace",
@@ -32,7 +32,7 @@ def normalize_hosts(raw: str) -> list[str]:
     if not requested:
         requested = ["portable-core"]
     if "all" in requested:
-        requested = ["portable-core", "openai", "claude", "copilot", "cursor"]
+        requested = ["portable-core", "openai", "codex", "claude", "copilot", "cursor"]
     if "portable-core" not in requested:
         requested.insert(0, "portable-core")
     unknown = sorted(set(requested) - KNOWN_HOSTS)
@@ -143,6 +143,9 @@ def validate(root: Path, hosts: list[str]) -> dict:
     core_errors = [f for f in findings if f["severity"] == "error"]
     host_results["portable-core"] = {"status": "fail" if core_errors else "pass", "adapter": "none-required"}
 
+    if "codex" in hosts:
+        host_results["codex"] = {"status": "fail" if core_errors else "pass", "adapter": "none-required"}
+
     if "claude" in hosts:
         claude_findings: list[dict] = []
         name_tokens = str(fm.get("name", "")).split("-")
@@ -185,7 +188,7 @@ def validate(root: Path, hosts: list[str]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Agent Skills portability across requested hosts.")
     parser.add_argument("--target", required=True)
-    parser.add_argument("--hosts", default="portable-core", help="Comma-separated: portable-core,openai,claude,copilot,cursor,all")
+    parser.add_argument("--hosts", default="portable-core", help="Comma-separated: portable-core,openai,codex,claude,copilot,cursor,all")
     parser.add_argument("--json", dest="json_output")
     args = parser.parse_args()
     try:

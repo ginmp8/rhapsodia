@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:llm-wiki-maintainer:schema-migration-plan:1",
+  "title": "LLM Wiki schema migration plan",
+  "type": "object",
+  "required": ["migration_version", "from_schema", "to_schema", "compatibility", "affected_page_types", "mechanical_transforms", "semantic_review", "rollback_identity", "validation"],
+  "properties": {
+    "migration_version": {"const": 1},
+    "from_schema": {"type": "string", "minLength": 1},
+    "to_schema": {"type": "string", "minLength": 1},
+    "compatibility": {"enum": ["backward-compatible", "incompatible"]},
+    "affected_page_types": {"type": "array", "items": {"enum": ["source", "entity", "concept", "synthesis", "index", "log", "schema"]}, "uniqueItems": true},
+    "mechanical_transforms": {"type": "array", "items": {"type": "string"}},
+    "semantic_review": {"type": "array", "items": {"type": "string"}},
+    "rollback_identity": {"type": "string", "minLength": 1},
+    "validation": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "additionalProperties": false
+}

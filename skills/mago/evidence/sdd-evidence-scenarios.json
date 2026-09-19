@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "measurement_kind": "deterministic_executable_evidence",
+  "scenarios": [
+    {
+      "id": "quality-governed-positive",
+      "area": "requirements-design-validation",
+      "command": [
+        "{python}",
+        "-B",
+        "scripts/validate_plan_quality.py",
+        "examples/golden/governed-quality"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "quality-negative-cases",
+      "area": "requirements-design-validation",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_plan_quality"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "quality-v2-governed-positive",
+      "area": "requirements-design-validation",
+      "command": [
+        "{python}",
+        "-B",
+        "scripts/validate_plan_quality.py",
+        "examples/golden/governed-quality-v2",
+        "--require-v2"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "quality-v2-negative-cases",
+      "area": "requirements-design-validation",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_plan_quality_v2"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "security-v2-positive",
+      "area": "security-risk",
+      "command": [
+        "{python}",
+        "-B",
+        "scripts/validate_security_risk.py",
+        "examples/golden/security-v2/security-and-risk-considerations.md",
+        "--require-v2"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "security-v2-negative-cases",
+      "area": "security-risk",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_security_risk_v2"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "mutation-interruption-drift-rollback",
+      "area": "execution-resume",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_mutation_transaction"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "spec-kit-round-trip",
+      "area": "interoperability",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_sdd_adapter_roundtrip.SddAdapterRoundTripTests.test_spec_kit_round_trip_preserves_core_planning_files"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "openspec-round-trip",
+      "area": "interoperability",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_sdd_adapter_roundtrip.SddAdapterRoundTripTests.test_openspec_round_trip_preserves_core_and_delta_files"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "kiro-round-trip",
+      "area": "interoperability",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_kiro_adapter_v2.KiroAdapterV2Tests.test_kiro_round_trip_preserves_core_planning_files"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "external-adapter-edit-disclosure",
+      "area": "interoperability",
+      "command": [
+        "{python}",
+        "-B",
+        "-m",
+        "unittest",
+        "tests.test_sdd_adapter_roundtrip.SddAdapterRoundTripTests.test_external_edit_is_disclosed_on_import"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "release-metadata",
+      "area": "product-ecosystem",
+      "command": [
+        "{python}",
+        "-B",
+        "scripts/validate_release_metadata.py",
+        "."
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "activation-static-oracle",
+      "area": "activation-boundary",
+      "command": [
+        "{python}",
+        "-B",
+        "scripts/validate_activation_scenarios.py",
+        "."
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "clarification-v2-handoff-positive",
+      "area": "requirements-design-validation",
+      "command": [
+        "{python}",
+        "-B",
+        "scripts/validate_clarification_readiness.py",
+        "examples/golden/clarification-v2/notes.md",
+        "--require-v2",
+        "--handoff"
+      ],
+      "expected_exit": 0
+    },
+    {
+      "id": "clarification-v2-open-blocker-negative",
+      "area": "requirements-design-validation",
+      "command": [
+        "{python}",
+        "-B",
+        "scripts/validate_clarification_readiness.py",
+        "examples/negative/clarification-v2-open-blocker.md",
+        "--require-v2",
+        "--handoff"
+      ],
+      "expected_exit": 1
+    }
+  ]
+}

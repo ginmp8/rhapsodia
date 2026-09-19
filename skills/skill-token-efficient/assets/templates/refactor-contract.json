@@ -1,0 +1,83 @@
+{
+  "contract_version": "1.0",
+  "tokenization": {
+    "method": "estimator-v1",
+    "scope": "instructions"
+  },
+  "semantic_invariants": [
+    {
+      "id": "activation-boundary",
+      "category": "activation",
+      "statement": "Replace with the target's required activation/non-activation invariant.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md frontmatter"]
+    },
+    {
+      "id": "scope-boundary",
+      "category": "scope",
+      "statement": "Replace with the target's scope/authority invariant.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md"]
+    },
+    {
+      "id": "safety-boundary",
+      "category": "safety",
+      "statement": "Replace with the target's safety invariant.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md"]
+    },
+    {
+      "id": "validation-boundary",
+      "category": "validation",
+      "statement": "Replace with the target's validation invariant.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md"]
+    },
+    {
+      "id": "evidence-boundary",
+      "category": "evidence",
+      "statement": "Replace with the target's evidence/citation invariant.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md"]
+    },
+    {
+      "id": "compatibility-boundary",
+      "category": "compatibility",
+      "statement": "Replace with compatibility/version commitments that must survive compression.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md"]
+    },
+    {
+      "id": "output-contract",
+      "category": "output_contract",
+      "statement": "Replace with the target's required output contract.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md"]
+    },
+    {
+      "id": "readability-floor",
+      "category": "readability",
+      "statement": "Candidate remains directly executable without reconstructing omitted critical rules.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md"]
+    },
+    {
+      "id": "progressive-loading",
+      "category": "progressive_loading",
+      "statement": "Required branch detail remains reachable from SKILL.md only when needed.",
+      "verification": "manual",
+      "evidence_refs": ["SKILL.md", "references/"]
+    }
+  ],
+  "protected": {
+    "urls": [],
+    "paths": [],
+    "commands": [],
+    "env_vars": [],
+    "schemas": [],
+    "flags": [],
+    "proper_nouns": [],
+    "versions": [],
+    "numbers": []
+  }
+}

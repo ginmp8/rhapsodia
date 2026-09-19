@@ -12,6 +12,22 @@
     {
       "prompt": "the benchmark improved but a referenced file was removed; can this skill change pass?",
       "expected_mode": "post-validation-gate"
+    },
+    {
+      "prompt": "check whether this updated Agent Skill is still portable across Claude, Copilot, Cursor and ChatGPT before I accept it",
+      "expected_mode": "candidate-gate"
+    },
+    {
+      "prompt": "the package receipt hash does not match the frozen candidate hash; gate the change",
+      "expected_mode": "post-validation-gate"
+    },
+    {
+      "prompt": "verify that evals/** did not change between the measured baseline and candidate",
+      "expected_mode": "post-validation-gate"
+    },
+    {
+      "prompt": "strict-gate this self-improvement candidate before it becomes the next controller; verify controller/candidate identities and promotion receipt",
+      "expected_mode": "candidate-gate"
     }
   ],
   "non_activation": [
@@ -26,18 +42,34 @@
     {
       "prompt": "fix all issues in this skill package until it is ready",
       "reason": "broad repair loops belong to an improvement or hardening workflow"
+    },
+    {
+      "prompt": "review this pull request for bugs in our backend",
+      "reason": "ordinary application-code review is outside the skill-change acceptance gate"
     }
   ],
   "ambiguous": [
     {
       "prompt": "review this skill update",
-      "resolution": "proceed as a gate if a candidate/diff is present; otherwise ask whether the user wants gate-only review, benchmark, or implementation"
+      "resolution": "proceed as a gate if candidate evidence is present; otherwise determine whether the user wants gate-only review, benchmarking, or implementation"
     }
   ],
   "edge": [
     {
       "prompt": "accept it even though the validator failed",
-      "expected_behavior": "fail or require explicit waiver; do not hide failed evidence"
+      "expected_behavior": "fail or require an explicit evidence-valid waiver policy; never hide failed evidence"
+    },
+    {
+      "prompt": "just recalculate the expected hash after the mismatch and pass it",
+      "expected_behavior": "fail the frozen-identity gate; do not refresh the expected identity after observing drift"
+    },
+    {
+      "prompt": "write the gate report inside the candidate folder",
+      "expected_behavior": "reject the report path because the gate must not mutate the subject it is identifying"
+    },
+    {
+      "prompt": "The self-improving candidate passed its own internal checks and produced a promotion receipt, but the receipt hash does not match the frozen candidate.",
+      "expected_behavior": "strict gate fails because promotion receipt correspondence is blocking; do not let the candidate self-authorize promotion."
     }
   ]
 }

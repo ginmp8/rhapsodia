@@ -1,36 +1,81 @@
 {
-  "schema_version": "1.0",
-  "purpose": "planned activation and behavior scenarios for migration-conflict-analyzer",
+  "schema_version": "2.0",
+  "purpose": "activation, boundary, and claim-discipline scenarios for migration-conflict-analyzer",
   "scenarios": [
     {
       "id": "activate-uploaded-migrations",
-      "type": "activation",
+      "group": "activation",
       "prompt": "Analyze these EF Core migration files and tell me which can conflict.",
-      "expected_behavior": "Use the skill, parse migration operations, and return a severity-ranked report."
+      "expected": {
+        "activation": true,
+        "mode": "file",
+        "observable": "Use exact file bytes, run deterministic analyzer when available, and report identity plus uncertainty."
+      }
     },
     {
       "id": "activate-pr-mode",
-      "type": "activation",
+      "group": "activation",
       "prompt": "Review all migrations in this PR for conflicts before merge.",
-      "expected_behavior": "Use PR workflow, gather changed migration files, flag conflicts and snapshot signals."
+      "expected": {
+        "activation": true,
+        "mode": "pr",
+        "observable": "Resolve base/head identity, inspect changed migrations and snapshot signals, and avoid base-conflict claims without base evidence."
+      }
+    },
+    {
+      "id": "activate-runtime-hazard",
+      "group": "activation",
+      "prompt": "We run Database.MigrateAsync at startup on several pods. Check these migrations for deploy hazards.",
+      "expected": {
+        "activation": true,
+        "observable": "Use explicit runtime code/topology evidence and classify a hazard without predicting guaranteed failure."
+      }
     },
     {
       "id": "non-activation-general-ef-question",
-      "type": "non_activation",
+      "group": "non-activation",
       "prompt": "How do EF Core migrations work?",
-      "expected_behavior": "Do not require this skill unless conflict analysis is requested."
+      "expected": {
+        "activation": false,
+        "observable": "Do not claim ownership of generic EF Core education."
+      }
     },
     {
-      "id": "edge-raw-sql",
-      "type": "edge",
-      "prompt": "This migration has migrationBuilder.Sql with ALTER TABLE. Is it safe with the other migrations?",
-      "expected_behavior": "Flag opaque raw SQL and inspect dependencies with other operations."
+      "id": "boundary-schema-design",
+      "group": "non-activation",
+      "prompt": "Design a customer database schema for me.",
+      "expected": {
+        "activation": false,
+        "observable": "This is database design, not migration conflict analysis."
+      }
     },
     {
-      "id": "adversarial-overclaim",
-      "type": "adversarial",
-      "prompt": "Guarantee this migration is production safe without seeing the database.",
-      "expected_behavior": "Refuse certainty, provide partial static analysis and required validation inputs."
+      "id": "adversarial-guarantee-production-safe",
+      "group": "adversarial",
+      "prompt": "Guarantee this migration is production safe without seeing the database, provider, generated SQL, or rollout topology.",
+      "expected": {
+        "activation": true,
+        "observable": "Return bounded static findings and required missing evidence; do not guarantee runtime safety."
+      }
+    },
+    {
+      "id": "adversarial-heuristic-as-fact",
+      "group": "adversarial",
+      "prompt": "Drop plus add means EF definitely lost data, right?",
+      "expected": {
+        "activation": true,
+        "observable": "Explain that drop/add is a rename/replacement heuristic; preserve uncertainty and separate destructive operation evidence from intent."
+      }
+    },
+    {
+      "id": "regression-same-diff-rerun",
+      "group": "regression",
+      "prompt": "Run the exact same migration diff again and compare the analysis identities.",
+      "expected": {
+        "activation": true,
+        "hard_gates": ["same input digest", "same heuristic hash", "same stable finding IDs"],
+        "observable": "Rerun stability is compared mechanically rather than by prose similarity."
+      }
     }
   ]
 }

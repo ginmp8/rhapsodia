@@ -15,7 +15,7 @@
 | Supporting resources | 10 | {{resources_score}} | {{resources_evidence}} | {{resources_improvement}} |
 | Validation and acceptance criteria | 10 | {{validation_score}} | {{validation_evidence}} | {{validation_improvement}} |
 | Context efficiency | 10 | {{context_score}} | {{context_evidence}} | {{context_improvement}} |
-| Maintainability | 10 | {{maintainability_score}} | {{maintainability_evidence}} | {{maintainability_improvement}} |
+| Maintainability and portability | 10 | {{maintainability_score}} | {{maintainability_evidence}} | {{maintainability_improvement}} |
 | **Total** | **100** | **{{total_score}}** |  |  |
 
 ## 3. Gate evaluation

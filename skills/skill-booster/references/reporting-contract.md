@@ -12,6 +12,14 @@ Use this final report shape. Omit only sections that are truly not applicable, a
 - Objective:
 - Final artifact:
 
+## Source Trust Intake
+- Source class:
+- External intake receipt:
+- Source/archive SHA-256:
+- Target code executed during intake: no
+- Blocking findings:
+- Review findings:
+
 ## Host Compatibility
 - Requested hosts:
 - Resolved capabilities:

@@ -1,5 +1,5 @@
 {
-  "contract_version": 1,
+  "contract_version": 2,
   "target": {
     "name": "",
     "path": "",
@@ -44,5 +44,17 @@
     "immutable_pinned_vcs_reads_when_supported": true,
     "reject_source_alias_escape": true,
     "rebaseline_if_source_identity_changes": true
+  },
+  "self_hosting": {
+    "enabled": false,
+    "generation_id": "",
+    "controller_identity": "",
+    "baseline_identity": "",
+    "candidate_identity": "",
+    "max_self_recursion_depth": 1,
+    "controller_read_only": true,
+    "evaluator_outside_candidate_surface": true,
+    "promotion_external_to_candidate": true,
+    "last_known_good_identity": ""
   }
 }

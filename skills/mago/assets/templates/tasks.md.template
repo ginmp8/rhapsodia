@@ -31,6 +31,10 @@ Exit Criteria: <how_to_know_foundation_is_sufficient_for_later_phases>
   - Optional LOAD: <specialist_refs_or_none>
   - Selection Hint: <why_this_selection_is_sufficient_or_none>
   - Dependencies: <dependency_ids_or_none>
+  - Requirements: <REQ_ids>
+  - Acceptance: <AC_ids>
+  - Decisions: <DECISION_ids_or_none>
+  - Validations: <VAL_ids>
   - Validation: <how_to_prove_required_context_and_prerequisites_were_checked>
   - Expected result: <foundation_context_ready_for_core_implementation>
 
@@ -50,6 +54,10 @@ Exit Criteria: <how_to_know_core_behavior_is_built>
   - Optional LOAD: <specialist_refs_or_none>
   - Selection Hint: <why_this_selection_is_sufficient_or_none>
   - Dependencies: <dependency_ids>
+  - Requirements: <REQ_ids>
+  - Acceptance: <AC_ids>
+  - Decisions: <DECISION_ids_or_none>
+  - Validations: <VAL_ids>
   - Validation: <validation_approach>
   - Expected result: <expected_result>
 
@@ -69,6 +77,10 @@ Exit Criteria: <how_to_know_integration_work_is_sufficient>
   - Optional LOAD: <specialist_refs_or_none>
   - Selection Hint: <why_this_selection_is_sufficient_or_none>
   - Dependencies: <dependency_ids>
+  - Requirements: <REQ_ids>
+  - Acceptance: <AC_ids>
+  - Decisions: <DECISION_ids_or_none>
+  - Validations: <VAL_ids>
   - Validation: <how_to_prove_integration_work_or_confirmation_is_complete>
   - Expected result: <integration_path_is_complete_or_truthfully_confirmed_unnecessary>
 
@@ -88,6 +100,10 @@ Exit Criteria: <how_to_know_validation_and_hardening_are_sufficient>
   - Optional LOAD: <specialist_refs_or_none>
   - Selection Hint: <why_this_selection_is_sufficient_or_none>
   - Dependencies: <dependency_ids>
+  - Requirements: <REQ_ids>
+  - Acceptance: <AC_ids>
+  - Decisions: <DECISION_ids_or_none>
+  - Validations: <VAL_ids>
   - Validation: <validation_approach>
   - Expected result: <expected_result>
 
@@ -107,5 +123,9 @@ Exit Criteria: <how_to_know_migration_or_rollout_work_is_sufficient>
   - Optional LOAD: <specialist_refs_or_none>
   - Selection Hint: <why_this_selection_is_sufficient_or_none>
   - Dependencies: <dependency_ids>
+  - Requirements: <REQ_ids>
+  - Acceptance: <AC_ids>
+  - Decisions: <DECISION_ids_or_none>
+  - Validations: <VAL_ids>
   - Validation: <how_to_prove_rollout_requirements_or_noop_confirmation>
   - Expected result: <migration_and_rollout_work_complete_or_truthfully_confirmed_unnecessary>

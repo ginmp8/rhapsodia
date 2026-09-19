@@ -4,6 +4,14 @@
 
 {{executive_summary}}
 
+## Identity and Scope
+
+- Baseline tree SHA-256: {{baseline_tree_sha256}}
+- Candidate tree SHA-256: {{candidate_tree_sha256}}
+- Reproducibility ceiling: {{reproducibility_ceiling}}
+- Remaining nondeterminism: {{remaining_nondeterminism}}
+- Frozen evaluator verification: {{frozen_evaluator_verification}}
+
 ## Scorecard
 
 | Layer | Score | Evidence |
@@ -39,6 +47,20 @@
 ```text
 {{commands_executed}}
 ```
+
+## Evidence Layers
+
+- Structural: {{structural_evidence}}
+- Behavioral: {{behavioral_evidence}}
+- Runtime: {{runtime_evidence}}
+- Perceptual: {{perceptual_evidence}}
+
+## Package Receipt
+
+- Archive SHA-256: {{archive_sha256}}
+- File count: {{archive_file_count}}
+- Atomic replacement: {{atomic_replacement}}
+- Archive validation: {{archive_validation}}
 
 ## Verdict
 

@@ -1,81 +1,50 @@
 # Package version decision document standard
 
-Every real package update check or write operation must create a Markdown decision document under:
+Every real `check` or `update` should pass:
 
 ```text
-docs/pkgs-versions/
+--write-decision-doc --write-evidence
 ```
 
-Use the script flag:
+The default decision document lives under `docs/pkgs-versions/` and uses the stable decision identity:
 
-```bash
---write-decision-doc
+```text
+nuget-package-update-decisions-<decision-id>.md
 ```
 
-Optional overrides:
+## Required evidence context
 
-```bash
---decision-doc-dir docs/pkgs-versions
---decision-doc-name nuget-package-update-decisions-YYYYMMDD.md
+The machine-readable report/receipts are authoritative for hashes and automation. The Markdown decision document is the human review surface and should be interpreted together with:
+
+- `Directory.Packages.props` baseline SHA-256;
+- target framework;
+- ordered NuGet sources;
+- metadata snapshot SHA-256;
+- decision identity;
+- write preview;
+- package decisions and stable `reason_code` values;
+- final package-file hash when a write occurred;
+- repository validation status when commands were executed;
+- rollback status when applicable.
+
+## Package decision meanings
+
+- `update`: the deterministic script selected a newer policy-allowed candidate.
+- `unchanged`: current version already converged or no newer policy-allowed candidate exists.
+- `locked`: lock/pin intent forbids mutation.
+- `skipped`: a candidate path existed but safety/compatibility policy prevented selection.
+- `error`: trusted decision evidence could not be established; do not update manually.
+
+Free-form `reason` exists for human context. Prefer `reason_code` for repeatable automation/comparison.
+
+## Evidence files
+
+`--write-evidence` produces content-addressed sidecars under the same default directory:
+
+```text
+nuget-metadata-snapshot-<snapshot-id>.json
+nuget-decision-receipt-<decision-id>.json
+nuget-package-update-receipt-<decision-id>.json   # update --write only
 ```
 
-## Required sections
-
-The generated document must follow this structure:
-
-```markdown
-# NuGet package version decisions
-
-- Generated at: `<UTC timestamp>`
-- Source file: `<Directory.Packages.props path>`
-- Target framework: `<TFM>`
-- Wrote package file: `<true|false>`
-- Restore validation: `<true|false>`
-- Safety validation: `<true|false>`
-
-## Decision policy
-
-- Use only stable NuGet versions.
-- Reject prerelease, unlisted, deprecated, and vulnerable candidate versions.
-- Validate candidate package metadata through NuGet Registration API.
-- Cross-check vulnerability ranges through NuGet VulnerabilityInfo API when the source exposes it.
-- Respect locks and pins declared in Directory.Packages.props.
-- Do not use MCP or manual version selection for this package update workflow.
-
-## Summary
-
-- Package declarations analyzed: `<count>`
-- Updated: `<count>`
-- Unchanged: `<count>`
-- Locked: `<count>`
-- Skipped: `<count>`
-- Errors: `<count>`
-
-## Package decisions
-
-| Package | Current | Current safety | Latest stable | Selected | Decision | Compatibility | Reason |
-|---|---:|---|---:|---:|---|---|---|
-
-## Details
-
-### `<PackageId>`
-
-- Line: `<line>`
-- Current version: `<version>`
-- Latest stable version considered: `<version>`
-- Selected version: `<version>`
-- Action: `<update|unchanged|locked|skipped|error>`
-- Reason: `<reason>`
-- Candidate count: `<count>`
-- Safe candidate count: `<count>`
-- Validated candidate count: `<count>`
-- Source: `<NuGet source>`
-```
-
-## Interpretation rules
-
-- `update`: the script found a safe compatible version and write mode may update it.
-- `unchanged`: the current version is already the selected safe version, or no policy-allowed newer version exists.
-- `locked`: the package is pinned or locked in `Directory.Packages.props`; do not change it.
-- `skipped`: a newer candidate exists but was rejected by policy, metadata, vulnerability, deprecation, or compatibility rules.
-- `error`: the script could not make a trusted decision; do not update manually.
+The package-update receipt status, final file hash, validation evidence, and rollback evidence determine whether a write remains applied. A planned decision receipt alone does not prove mutation.

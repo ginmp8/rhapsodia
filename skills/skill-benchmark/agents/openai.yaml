@@ -1,6 +1,8 @@
 interface:
   display_name: Skill Benchmark
-  short_description: Generate standardized, measurable skill benchmark reports.
+  short_description: Benchmark reusable agent skills with reproducible evidence.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

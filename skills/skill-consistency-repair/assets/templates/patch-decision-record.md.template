@@ -1,20 +1,39 @@
 # Patch Decision Record
 
-## Inconsistency
+## Finding
 
-{{inconsistency_id}} - {{summary}}
+{{finding_id}} - {{summary}}
 
-## Hypothesis
+## Diagnosis and Authority
+
+{{diagnosis}}
+{{authority_owner}}
+
+## Evidence / Trace
+
+{{evidence_trace}}
+
+## Bounded Hypothesis
 
 {{hypothesis}}
 
-## Files Changed
+## Allowed / Protected Files
 
-{{files_changed}}
+{{allowed_files}}
+{{protected_files}}
+
+## Minimal Repair
+
+{{repair}}
+
+## Rollback / Last-Known-Good
+
+{{rollback}}
 
 ## Validation
 
-{{validation}}
+{{same_gate}}
+{{adjacent_gates}}
 
 ## Decision
 

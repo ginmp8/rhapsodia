@@ -1,159 +1,194 @@
 # Evaluation Contract
 
+Use this contract whenever a candidate mutation can be accepted or rejected.
+
 ## Lifecycle
 
-Do not start improvement until a benchmark exists and is frozen.
-
 ```text
-prepare benchmark -> run baseline -> freeze evaluator inputs -> discover or load hypothesis backlog -> test selected hypotheses
+identify target -> preserve baseline -> detect capabilities -> freeze evaluator
+-> snapshot material sources -> run baseline -> select one hypothesis -> patch
+-> verify sources -> rerun same evaluator -> structural change gate
+-> accept/reject -> freeze final candidate -> validate/package/deliver
 ```
 
-A benchmark may be created immediately before the loop, but candidate changes must use the same frozen benchmark. Do not alter tests, expected outputs, evaluator scripts, scenario results, scoring weights, or gate definitions during an improvement iteration. Hypothesis discovery may inspect benchmark/harness evidence, but it must not change evaluator inputs or claim measured improvement.
+Do not change evaluator inputs, thresholds, fixtures, or expected outputs after observing candidate results.
 
-## Custom evaluator output
+## Evaluator result contract
 
-Preferred stdout is JSON:
+A custom evaluator should emit JSON with a numeric `score` and preferably `status`, `gates`, and stable diagnostics:
 
 ```json
 {
-  "score": 87.5,
-  "max_score": 100,
-  "direction": "higher-is-better",
+  "score": 84.5,
   "status": "pass",
   "gates": {
-    "frontmatter": "pass",
-    "packaging": "pass",
-    "activation_suite": "pass"
+    "activation": "pass",
+    "packaging": "pass"
   },
-  "report_path": "docs/skill-benchmark/example/skill-benchmark.md",
-  "notes": ["short explanation"]
-}
-```
-
-Only `score` is mandatory for backward compatibility. Autonomous runs should include `status` and `gates`; `--score-regex` is allowed but JSON is safer.
-
-## Built-in `skill-benchmark`
-
-With `--evaluator skill-benchmark`, the runner calls the installed report generator, parses Markdown, and converts it to:
-
-```json
-{
-  "score": 93,
-  "status": "pass",
-  "gates": {
-    "Valid SKILL.md exists": "pass",
-    "Frontmatter has name and description": "pass",
-    "Expected output is clear": "pass"
-  },
-  "verdict": "approve with reservations",
-  "report_path": ".skill-improver/skill-benchmark-reports/target/skill-benchmark.md"
-}
-```
-
-`approve` and `approve with reservations` pass; `reject` fails. Blocker gates are enforced by default.
-
-
-
-
-
-## Hypothesis discovery contract
-
-Use a supplied bounded hypothesis first. When none is supplied, when the evaluator score is saturated, or when findings point to multiple possible candidate patches, load a hypothesis backlog from `skill-hypothesis-discovery` or a compatible JSON file before mutation. Discovery is planning evidence, not an accepted improvement.
-
-Preferred JSON backlog shape:
-
-```json
-{
-  "hypotheses": [
+  "diagnostics": [
     {
-      "id": "H001",
-      "name": "Improve activation boundaries",
-      "statement": "If negative activation boundaries are added, false positives should decrease without reducing target recall.",
-      "evidence_signal": "ambiguous or adjacent prompts trigger the skill",
-      "target_area": "activation",
-      "files": ["SKILL.md"],
-      "expected_effect": "lower false-positive rate",
-      "validation": "activation and non-activation scenario suite",
-      "constraints": ["do not weaken positive triggers"],
-      "risk": 2,
-      "confidence": 4,
-      "testability": 5,
-      "recommendation": "test-next"
+      "code": "activation/ambiguous-route",
+      "severity": "major",
+      "subject": "prompt:A17",
+      "evidence": {"expected": "manual-patch", "actual": "benchmark-only"},
+      "supported_fixes": ["tighten mode router"]
     }
   ]
 }
 ```
 
-Use only hypotheses with a clear mechanism, evidence signal, bounded file scope, validation method, and rollback/gate expectation. Reject or defer cosmetic, duplicate, random, or low-evidence hypotheses. If discovery returns `no mutation recommended` or `gather evidence`, do not force a patch; report the blocker or create the requested evidence first.
+When only free text exists, use `--score-regex`; treat that as weaker evidence because gates and diagnostics are less structured.
+
+## Built-in `skill-benchmark`
+
+`skill-benchmark` can be the primary structural evaluator. Freeze its generator/script and any supplied behavioral results. Treat static or saturated scores as gates rather than proof of behavioral quality.
+
+For behavioral claims, supply locked scenario results or execute paired scenarios against baseline and candidate with the same prompts/files.
+
+## Severity handling
+
+Use `references/severity-lifecycle.md` for canonical severity and tie-breakers. `critical` and `major` findings block final acceptance; `minor` findings are individually evaluated; `needs-verification` is never treated as fixed or safe by absence of proof. Order equally severe findings by stable diagnostic code or canonical subject path when possible.
+
+## Hypothesis discovery contract
+
+Prefer, in order:
+
+1. user-supplied bounded hypothesis;
+2. supplied evidence-backed backlog;
+3. `skill-hypothesis-discovery` when the next candidate is unclear or metrics are saturated;
+4. built-in catalog fallback.
+
+Every tested hypothesis must identify:
+
+- mechanism;
+- evidence signal;
+- bounded file scope;
+- expected effect;
+- validation method;
+- accept/reject threshold;
+- rollback plan;
+- reproducibility control being improved.
+
+Discovery is planning evidence. A discovered hypothesis is not an improvement until it passes the frozen comparison and structural change gate.
 
 ## Structural change gate
 
-Use a structural change gate as an acceptance check separate from the numeric evaluator. The gate may be performed by `skill-change-gate`, a reviewer, or a compatible command. It evaluates whether a candidate patch introduced blocking regressions in skill loading, activation, scope boundaries, local references, safety and authority, validation, packaging, evidence discipline, or output contracts.
+Run a structural gate independently from the numeric evaluator when the policy is `advisory` or `required`. `skill-change-gate` or a compatible command may be used.
 
-Gate policy:
+The gate should inspect regressions in:
 
-- `disabled`: do not run a structural change gate.
-- `advisory`: record the gate result, but do not reject solely on gate warnings or failures; use for manual exploration.
-- `required`: reject candidates when the gate fails, cannot run, or reports blocking regressions; use for automated-loop and self-improvement when a gate command or reviewer is available.
+- activation and scope boundaries;
+- semantic/output contracts;
+- safety/authority;
+- references and progressive loading;
+- validator/test/eval integrity;
+- compatibility/migration behavior;
+- packaging/delivery;
+- evidence discipline and receipts.
 
-A compatible gate command should print JSON with this shape:
+Compatible command output:
 
 ```json
 {
-  "status": "pass",
+  "status": "pass-with-warnings",
   "blocking_regressions": [],
-  "material_concerns": [],
+  "material_concerns": ["new adapter is untested on Windows"],
   "accepted_tradeoffs": [],
-  "notes": []
+  "notes": "core semantics preserved"
 }
 ```
 
-`status` may be `pass`, `pass-with-warnings`, or `fail`. A `fail` status blocks acceptance when policy is `required`. `pass-with-warnings` may be accepted only when warnings are explicitly recorded as non-blocking trade-offs.
+`fail` blocks acceptance when policy is `required`. `pass-with-warnings` may be accepted only when warnings are explicitly recorded as non-blocking.
 
 ## Acceptance rule
 
-Accept only when all configured conditions hold:
+A candidate may be accepted only when all applicable conditions hold:
 
 ```text
-same benchmark hash
-and no blocked paths changed
-and selected hypothesis has evidence-backed mechanism and validation
-and candidate status/gates pass
-and structural change gate passes when required
-and candidate_score >= best_score + min_delta
+same frozen evaluator identity
+and material source snapshots still verify
+and no blocked/protected paths changed
+and required evaluator gates pass
+and no new mandatory gate failure appears
+and target metric meets the predeclared delta when improvement is claimed
+and structural change gate allows acceptance
+and cost/time remains within the declared budget
 ```
 
-for `higher-is-better`, or:
-
-```text
-same benchmark hash
-and no blocked paths changed
-and selected hypothesis has evidence-backed mechanism and validation
-and candidate status/gates pass
-and structural change gate passes when required
-and candidate_score <= best_score - min_delta
-```
-
-for `lower-is-better`. Any evaluator gate failure, missing/invalid hypothesis source, required change-gate failure, evaluator drift, or locked-fixture drift rejects and reverts the candidate even if the number improves.
-
-## Gate flags
-
-- `--enforce-blocker-gates`: default on; reject failed benchmark blocker gates.
-- `--enforce-all-gates`: reject any reported gate failure.
-- `--required-gate <name>`: require a named gate to exist and pass; repeatable.
-- `--require-status-pass`: require evaluator status exactly `pass`.
-- `--enforce-no-new-gate-failures`: default on; reject new gate failures relative to baseline.
-
-Default: blocker gates on; no-new-gate-failures on; all gates optional unless benchmark maturity supports strictness.
+If the primary metric is saturated, replace the metric-improvement clause with an explicit non-saturated auxiliary metric or a clearly scoped hardening objective. Do not claim numeric improvement from wording changes against a ceilinged static score.
 
 ## Freeze policy
 
-Hash evaluator identity and inputs: evaluator mode and acceptance settings; custom eval command for `--evaluator command`; `skill-benchmark` script and optional results file for `--evaluator skill-benchmark`; and every file/directory passed with `--benchmark-lock-path`. Use `--blocked-path` to stop Codex from editing evaluator files or fixtures, even inside the repo or target skill.
+Hash/freeze evaluator identity and inputs:
 
-## Metric sources
+- evaluator mode and acceptance settings;
+- custom evaluator command or benchmark generator;
+- scenarios, expected outputs, grading prompts, thresholds;
+- every `--benchmark-lock-path`;
+- behavioral result files reused by the benchmark.
 
-Use one or more: static skill benchmark, activation suite, output conformance suite, packaging validator, golden examples, safety/negative prompts, human review. Strong autonomous runs should combine static score, fixed activation/output results, packaging validation, and safety/negative gates.
+Use `--blocked-path` to stop the patching agent from editing evaluator/fixture paths even if they are within the normal mutation scope.
+
+If an evaluator must be repaired, invalidate the current comparison, freeze the repaired evaluator separately, and restart the baseline.
+
+## Source integrity policy
+
+When mutable external files or repository content materially determine the hypothesis or acceptance decision, capture their exact bytes before analysis:
+
+```text
+<PYTHON> scripts/evidence_snapshot.py capture ...
+```
+
+For the autonomous runner, use `--source-lock-path` and optional `--source-root`. The runner verifies the manifest before candidate acceptance and again before final reporting.
+
+A failed source verification invalidates the comparison unless the experiment is deliberately re-baselined.
+
+## Saturated metrics
+
+Keep a saturated score as a gate and add a non-saturated auxiliary metric before claiming improvement, such as:
+
+- holdout robustness;
+- ambiguous activation;
+- repair rounds;
+- manual rework;
+- runtime failures;
+- token/context cost;
+- portability capability coverage.
+
+## Diagnostic repair rule
+
+For an objective failure:
+
+`diagnostic -> one causal subject -> smallest supported fix -> same gate -> adjacent gates`
+
+Stop the branch after two consecutive rounds that do not reduce the same objective error set unless new evidence changes the hypothesis.
+
+## Freeze after pass
+
+Once the accepted final candidate passes applicable validation, compute its exact identity and stop editing it. Any later change invalidates the affected evidence and requires revalidation before packaging.
 
 ## Anti-overfitting
 
-Do not delete failing tests, alter expected outputs, edit the evaluator unless the objective is eval design, accept when benchmark hash changed, or report prompt-pass rates without captured outputs. Keep a holdout prompt set for manual review and log rejected hypotheses to prevent repeated failed attempts.
+Do not:
+
+- delete failing tests or difficult scenarios;
+- weaken thresholds or expected outputs;
+- edit evaluator inputs after seeing candidate results;
+- accept when the frozen evaluator hash changed;
+- report prompt/scenario pass rates without captured outputs;
+- optimize a 100/100 static score by adding benchmark-friendly keywords.
+
+Keep holdout scenarios or independent review for claims vulnerable to benchmark overfitting.
+
+## Evidence vocabulary
+
+Use:
+
+- `measured`: executed command/scenario/evaluator evidence;
+- `observed`: direct file/output inspection;
+- `derived`: deterministic calculation from evidence;
+- `supplied`: user-provided evidence not independently executed;
+- `planned`: not executed;
+- `blocked`: could not be obtained.
+
+Do not upgrade structural evidence to behavioral/runtime/perceptual evidence.

@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "skill": "llm-wiki-maintainer",
+  "notes": "Planned lifecycle and regression scenarios. These are not behavioral evidence until executed by a compatible harness against frozen inputs/evaluators.",
+  "scenarios": [
+    {
+      "id": "repro-first-ingest",
+      "category": "core",
+      "prompt": "Ingest raw/a.md into the wiki for the first time.",
+      "expected_structural": ["Compute a content-addressed source_id.", "Capture immutable source bytes or mark snapshot unavailable.", "Emit an ingest receipt and derived mutation receipt.", "Do not alter raw/a.md."],
+      "expected_semantic": ["Read the source and update only durable affected pages with provenance."],
+      "forbidden": ["Treat generated wiki prose as source truth."]
+    },
+    {
+      "id": "repro-same-source-again",
+      "category": "regression",
+      "prompt": "Ingest the exact same raw/a.md again without any other changes.",
+      "expected_structural": ["Reuse the same source_id.", "Classify already-ingested.", "Avoid duplicate source-summary identity and duplicate mutation/log content when no semantic dependency changed."],
+      "expected_semantic": ["Do not invent a new synthesis merely because the operation was repeated."],
+      "forbidden": ["Create a second source page for identical bytes."]
+    },
+    {
+      "id": "repro-same-content-new-filename",
+      "category": "regression",
+      "prompt": "Ingest raw/copy-of-a.md whose bytes are identical to raw/a.md.",
+      "expected_structural": ["Reuse the same source_id.", "Record the new path as an alias.", "Keep a single source snapshot and source-summary identity."],
+      "expected_semantic": ["Do not count filename duplication as independent evidence."],
+      "forbidden": ["Create contradictory duplicate source summaries for the same bytes."]
+    },
+    {
+      "id": "repro-source-modified",
+      "category": "edge",
+      "prompt": "The bytes at an already registered raw path changed outside the wiki workflow. Ingest it now.",
+      "expected_structural": ["Detect path hash drift.", "Preserve the old source_id and snapshot.", "Block automatic reingestion unless external replacement/versioning is explicitly authorized."],
+      "expected_semantic": ["If authorized, treat the new bytes as new evidence and preserve the prior relationship."],
+      "forbidden": ["Silently remap old provenance to the new bytes."]
+    },
+    {
+      "id": "repro-conflicting-sources",
+      "category": "core",
+      "prompt": "Ingest a new source that contradicts an existing source.",
+      "expected_structural": ["Retain both source IDs and provenance paths.", "Represent conflict status explicitly."],
+      "expected_semantic": ["Compare scope, date, version, authority, and applicability before deciding supersession; otherwise keep unresolved conflict."],
+      "forbidden": ["Choose the smoother or newer claim without evidentiary justification."]
+    },
+    {
+      "id": "repro-source-removed",
+      "category": "edge",
+      "prompt": "A previously registered raw source path is now missing.",
+      "expected_structural": ["Report source/path-missing.", "Retain source identity and immutable snapshot when available.", "Do not automatically delete derived pages."],
+      "expected_semantic": ["Flag affected claims for review when source evidence cannot be reopened."],
+      "forbidden": ["Erase provenance history because a path disappeared."]
+    },
+    {
+      "id": "repro-manual-page-edit",
+      "category": "adversarial",
+      "prompt": "A human edited a derived page after it was read but before ingest commit.",
+      "expected_structural": ["Expected-before hash must fail.", "Leave the human-edited page untouched."],
+      "expected_semantic": ["Re-read and reconcile the manual edit before generating a new candidate."],
+      "forbidden": ["Force-overwrite the page with the stale candidate."]
+    },
+    {
+      "id": "repro-orphan-page",
+      "category": "lint",
+      "prompt": "Lint a wiki containing a maintained page with no index/inbound relationship.",
+      "expected_structural": ["Surface an orphan/index coverage finding without deleting the page automatically."],
+      "expected_semantic": ["Decide whether the page is useful, mergeable, or obsolete only from evidence/context."],
+      "forbidden": ["Delete solely because inbound links are absent."]
+    },
+    {
+      "id": "repro-broken-link",
+      "category": "lint",
+      "prompt": "Lint a wiki with a broken internal Markdown or unambiguous wiki link.",
+      "expected_structural": ["Report a stable broken-link diagnostic.", "Repair automatically only when the intended target is unambiguous."],
+      "expected_semantic": [],
+      "forbidden": ["Invent a target when multiple semantic destinations are plausible."]
+    },
+    {
+      "id": "repro-stale-synthesis",
+      "category": "lint",
+      "prompt": "A synthesis has not reviewed a newly linked relevant source.",
+      "expected_structural": ["Flag a semantic/stale-candidate when declared provenance/review sets show the gap."],
+      "expected_semantic": ["Reopen relevant sources and decide whether the synthesis actually changes."],
+      "forbidden": ["Mark the old conclusion false based only on age or sequence."]
+    },
+    {
+      "id": "repro-schema-migration",
+      "category": "migration",
+      "prompt": "Migrate the wiki from its current schema to a new incompatible schema version.",
+      "expected_structural": ["Record old and new schema identities.", "Preserve a last-known-good state.", "Stage schema plus affected pages together.", "Validate before commit and emit mutation/lint receipts."],
+      "expected_semantic": ["Review only fields/pages whose meaning cannot be migrated mechanically."],
+      "forbidden": ["Silently reinterpret existing pages under the new schema."]
+    },
+    {
+      "id": "repro-ingest-interrupted",
+      "category": "failure",
+      "prompt": "A multi-page ingest commit fails after some target files were replaced.",
+      "expected_structural": ["Restore already-touched files from verified backups when possible.", "Preserve recovery evidence and failed candidate state.", "Emit failed mutation receipt."],
+      "expected_semantic": [],
+      "forbidden": ["Leave index/log claiming a mutation that was rolled back."]
+    },
+    {
+      "id": "repro-rerun-after-failure",
+      "category": "failure",
+      "prompt": "Rerun the same ingest after an interrupted transaction was rolled back.",
+      "expected_structural": ["Start from the restored current hashes.", "Reuse stable source/page identities.", "Produce a fresh valid transaction without duplicate derived content."],
+      "expected_semantic": ["Reuse prior semantic decisions only when still supported by the same source bytes/schema."],
+      "forbidden": ["Assume the failed partial commit is current state."]
+    },
+    {
+      "id": "repro-rollback",
+      "category": "recovery",
+      "prompt": "Roll back a completed wiki mutation using its receipt.",
+      "expected_structural": ["Verify current bytes still match the committed after hashes.", "Restore exact before bytes from recovery evidence.", "Emit rollback receipt."],
+      "expected_semantic": [],
+      "forbidden": ["Rollback over later manual/concurrent edits."]
+    },
+    {
+      "id": "repro-convergent-sources",
+      "category": "core",
+      "prompt": "Ingest multiple independent sources that converge on the same claim.",
+      "expected_structural": ["Preserve each unique source ID separately.", "Attach all supporting source IDs to the maintained claim/page."],
+      "expected_semantic": ["Synthesize convergence without falsely claiming the sources are independent when provenance shows otherwise."],
+      "forbidden": ["Collapse distinct sources into one identity merely because their conclusions agree."]
+    },
+    {
+      "id": "repro-contradictory-multiple-sources",
+      "category": "core",
+      "prompt": "Several sources support competing claims about the same topic.",
+      "expected_structural": ["Preserve all source IDs and explicit conflict relationships."],
+      "expected_semantic": ["Represent evidence for each side, scope differences, and unresolved uncertainty; supersede only with supportable precedence."],
+      "forbidden": ["Hide minority evidence or force a single consensus statement."]
+    }
+  ]
+}

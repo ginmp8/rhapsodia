@@ -1,99 +1,111 @@
 ---
 name: skill-consistency-repair
-description: use when asked to audit, validate, diagnose, repair, or package chatgpt or agent skill packages for consistency across skill.md, activation, scope, references, scripts, assets, examples, evals, validators, reports, and packaging. especially use for contradictions, ownership drift, unintegrated resources, stale scaffold, broken local references, weak handoffs, unsupported metrics, or output-contract gaps. do not use for ordinary code review, product planning, target-domain implementation, or generic benchmarking without consistency repair.
+description: use when asked to audit, validate, diagnose, repair, or package agent skill packages for consistency across skill.md, activation, scope, ownership, references, scripts, assets, examples, evals, validators, metadata, reports, and packaging. especially use for contradictions, ownership drift, orphaned or duplicated resources, stale scaffold, broken references, migration leakage, validator drift, weak handoffs, or unsupported evidence claims. do not use for ordinary application code review, product planning, target-domain implementation, or benchmark-only scoring without consistency repair.
 ---
 
 # Skill Consistency Repair
 
 ## Purpose
 
-Audit and repair reusable skill packages so activation, authority, workflow, resources, outputs, validation, and packaging form one consistent contract. Detect contradictions, orphaned resources, ownership drift, stale scaffold, and unsupported capability or metric claims.
+Audit and repair reusable Agent Skills packages so activation, authority, workflow, resources, outputs, validation, recovery, and packaging form one evidence-grounded contract. Optimize for reproducible diagnosis and minimal repairs, not for maximizing a cosmetic score.
 
 ## Scope Boundary
 
-Use only for target skill packages. Inspect or repair:
+Use only for target skill packages. The host-neutral core covers `SKILL.md`, `references/`, `scripts/`, `assets/`, templates, `examples/`, `evals/`, tests/validators, and package metadata. Host-specific files such as `agents/openai.yaml` are optional adapters: preserve them when intentional, but never let them broaden core scope or weaken gates.
 
-- `SKILL.md`: frontmatter, activation, scope, modes, workflow, stop conditions, output contract.
-- `references/`: guidance, rubrics, schemas, loading rules.
-- `scripts/`: cli contracts, validators, reports, packaging helpers.
-- `assets/templates/`: operational output skeletons and usage rules.
-- `examples/`, `evals/`: activation, non-activation, ambiguous, edge, regression, adversarial scenarios.
-- `agents/openai.yaml`: metadata when it conflicts with role.
-- Package hygiene: local references, placeholders, generated files, blocked paths.
-
-Out of scope: target-domain implementation, unrelated repositories, evaluator-fixture or expected-output edits to force passing scores, and measured behavioral claims without executed or supplied evidence.
+Out of scope: target-domain implementation, unrelated repositories, generic benchmark-only work, evaluator/expected-output edits made solely to force a pass, and behavioral claims without executed or supplied evidence.
 
 ## Required Inputs
 
-Resolve or infer before edits:
+Resolve before mutation:
 
-1. `TARGET_SKILL_PATH`: folder or extracted zip with exactly one target skill root.
-2. Mode: `audit-only`, `repair-plan`, `apply-repair`, `validation-only`, or `package`.
-3. Mutation scope: target folder unless narrowed by the user.
-4. Blocked paths: `.git`, secrets, credentials, benchmark fixtures, expected outputs, generated baseline reports/evidence, existing packages, user-declared read-only files.
-5. Evidence policy: target files, user feedback, prior failures, supplied benchmark reports, scenario evidence, optional validator output.
-6. Gates: no broken local references, scaffold markers, ownership contradictions, unintegrated operational resources, validator failures, or package validation failures.
+1. exactly one `TARGET_SKILL_PATH` with a root `SKILL.md`;
+2. primary mode: `audit-only`, `repair-plan`, `apply-repair`, `validation-only`, or `package`;
+3. writable target scope and protected paths;
+4. work/evidence directory outside the target;
+5. available runtime capabilities, including Python 3.10+ when bundled validators are required;
+6. baseline/last-known-good strategy;
+7. evaluator inputs used for acceptance and their freeze status.
 
-For zips, extract to a work directory and identify the single skill root before audit.
+For archives, extract to a work directory and resolve the single skill root first.
 
-## Mode Selection Matrix
+## Mode Router
 
-| Intent | Mode | Output | Mutate? | Closure gate |
-|---|---|---|---|---|
-| Find inconsistencies | `audit-only` | Consistency report | No | `scripts/consistency_audit.py` report |
-| Decide fixes | `repair-plan` | Prioritized plan | No | Fixes map to evidence and validation |
-| Fix package | `apply-repair` | Updated target plus report | Yes | Baseline/final audits compared |
-| Check repaired skill | `validation-only` | Gate summary | No, except report refresh | Audit and validators run |
-| Deliver archive | `package` | Validated `skill.zip` | Yes, only as needed | Folder and archive validations pass |
+| Intent | Mode | Mutation | Closure |
+|---|---|---:|---|
+| Find inconsistencies | `audit-only` | no | versioned consistency report |
+| Decide repairs | `repair-plan` | no | each repair maps to evidence, owner, rollback, and gate |
+| Repair target | `apply-repair` | yes | before/after validation + evaluator integrity + candidate receipt |
+| Check repaired target | `validation-only` | no, except external reports | all declared gates rerun |
+| Deliver archive | `package` | only safe repair/package work | exact frozen candidate packaged atomically |
 
-Use one primary mode. For combined audit, repair, validation, and package requests, run stages in that order and report each gate.
+Use one primary mode. Combined requests run audit -> plan -> repair -> validation -> package without skipping gates.
 
 ## Progressive Loading
 
-Load only branch-relevant files:
+Load only what the active finding needs:
 
-- `references/consistency-taxonomy.md`: finding classes, severity, evidence.
-- `references/repair-workflow.md`: baseline, hypothesis, patch, validation, rollback, packaging.
-- `references/semantic-ownership-review.md`: role boundaries, artifact ownership, handoffs, persona drift.
-- `references/resource-integration.md`: integrated, obsolete, duplicated, missing, asset-only resources.
-- `references/report-contract.md`: durable report and final-response structure.
-- `references/scenario-guidelines.md`: activation, ambiguous, edge, regression, adversarial scenarios.
+- `references/consistency-taxonomy.md`: severity, closed resource statuses, evidence minimums, tie-breakers.
+- `references/resource-integration.md`: consumer/reference tracing and deletion-safety gate.
+- `references/authority-and-conflict-resolution.md`: authority by concern and contradiction resolution.
+- `references/semantic-ownership-review.md`: ownership drift and handoffs.
+- `references/repair-workflow.md`: baseline, evaluator freeze, minimal repair loop, validation, packaging.
+- `references/recovery-and-receipts.md`: rollback, last-known-good, recovery evidence, receipts.
+- `references/report-contract.md`: machine-readable report v2 and evidence labels.
+- `references/scenario-guidelines.md`: activation, regression, adversarial, and evaluator-freeze rules.
 
-Operational resources: `scripts/inventory_skill.py`, `scripts/consistency_audit.py`, `scripts/validate_consistency_report.py`, `scripts/package_target_skill.py`, `scripts/package_skill.py`; templates `assets/templates/consistency-report.md.template`, `assets/templates/repair-plan.md.template`, `assets/templates/patch-decision-record.md.template`, `assets/templates/scenario-suite.json.template`; planned coverage `examples/activation-scenarios.json`. Report scenario metrics only when executed or supplied.
+Operational tools:
+
+- `scripts/inventory_skill.py`: sorted inventory, per-file SHA-256, deterministic fingerprint, reference/consumer graph.
+- `scripts/consistency_audit.py`: provisional classifications plus findings; static evidence only.
+- `scripts/validate_consistency_report.py`: report schema validation.
+- `scripts/freeze_evaluators.py`: evaluator SHA-256 freeze/verify.
+- `scripts/create_consistency_receipt.py`: receipt bound to the exact final candidate and evaluator manifest.
+- `scripts/package_target_skill.py`: validated atomic package delivery with previous valid output preserved as last-known-good.
+- `scripts/package_skill.py`: packaging compatibility wrapper.
+- `tests/test_tools.py`: self-tests for deterministic inventory, deletion safety, report v2 validation, and evaluator freeze integrity.
+
+Operational templates are `assets/templates/consistency-report.md.template`, `assets/templates/repair-plan.md.template`, `assets/templates/patch-decision-record.md.template`, and `assets/templates/scenario-suite.json.template`; copy/fill them only for their declared report/plan/decision/scenario roles.
+
+`evals/activation-scenarios.json` is the authoritative planned evaluator suite. `examples/activation-scenarios.json` is illustrative only. Scenario metrics are planned unless executed evidence is supplied.
 
 ## Workflow
 
-1. Inspect target `SKILL.md`, then inventory `agents/`, `references/`, `scripts/`, `assets/`, `assets/templates/`, `examples/`, `evals/`, validators, and packages.
-2. Baseline with `scripts/inventory_skill.py` and `scripts/consistency_audit.py` before mutation; treat output as structural evidence.
-3. Classify findings as mechanical, semantic, behavioral, resource-integration, validation, or packaging; assign taxonomy severity.
-4. Record each fix hypothesis with inconsistency, evidence, files, effect, risk, rollback, validation, and frozen evaluator inputs.
-5. Repair only allowed target files. Keep `SKILL.md` compact, move branch detail to references, keep templates operational, and integrate useful resources before deletion.
-6. Validate with the same audit, compare baseline/final, run validators or syntax checks, and validate touched scenario files.
-7. Package only after folder validation passes. Exclude caches, generated reports, secrets, credentials, old zips, and blocked paths.
-8. Report measured command output, reviewer judgment, planned scenarios, assumptions, and blockers separately.
+1. **Identity and baseline.** Resolve one target root; canonicalize paths; keep work outputs outside the target; preserve baseline/last-known-good; run inventory/audit/report validation before edits.
+2. **Freeze evaluators.** Freeze the evaluator inputs that will decide acceptance. If evaluator design must change, do that as a separate phase, invalidate the old comparison, refreeze, then restart candidate acceptance.
+3. **Trace ownership and consumers.** For every material resource/finding trace authority plus imports, links, references, consumers, tests, validators, examples, packaging, migration paths, and handoffs.
+4. **Classify.** Use only: `current`, `duplicate`, `obsolete`, `migration-only`, `contradictory`, `orphaned`, `integrable`, `blocked`, `unknown`. Static classification is provisional; semantic judgment follows the evidence rubric.
+5. **Resolve conflicts.** Apply concern-specific authority. Never choose a source merely because it is newer, longer, or named `SKILL.md`. Frozen evaluator expectations cannot be changed during candidate acceptance.
+6. **Repair by diagnosis.** Record one bounded hypothesis; apply the smallest coherent patch directly tied to that diagnosis; rerun the same gate before adjacent gates. Stop a branch after two non-improving objective repair rounds.
+7. **Removal gate.** Never delete a resource because it appears unused. Removal requires full trace evidence, an allowed final status, migrated consumers/compatibility, rollback evidence, and post-removal validation.
+8. **Post-repair validation.** Rerun inventory/audit/report validator, target-owned tests/validators, evaluator integrity, and applicable package validation. Repeated inventory fingerprints must match when no bytes changed.
+9. **Freeze final candidate.** After the last pass, make no further edits. Any change invalidates the affected evidence and requires revalidation.
+10. **Receipt/delivery.** Create the consistency receipt outside the target. Package only the exact frozen candidate; preserve last-known-good/recovery evidence on failure.
 
-## Repair Principles
+## Semantic Judgment Boundary
 
-Prefer corrected ownership and activation boundaries over added prose. Reconcile contradictions; do not hide them by deleting evidence. Integrate useful resources through loading rules, workflow references, script consumers, templates, validators, or examples before deleting. Remove only placeholders, duplicates, obsolete generated reports, misleading examples, caches, or files with no declared workflow use. Align role artifacts with real responsibility, not historical file names. When scores saturate, compare unresolved inconsistency, broken-reference, unintegrated-resource, placeholder, and validator-failure counts.
+Keep model judgment only where semantics require it: ownership, semantic duplication, obsolescence, contradiction meaning, and usefulness/integration. For each such decision, require explicit subjects, direct evidence, authority owner, consumer impact, migration/compatibility impact, confidence, chosen status, and evidence that would change the decision. `unknown` or `blocked` is preferable to invented certainty.
 
 ## Output Contract
 
-Include applicable sections:
+For substantive runs report:
 
-1. Mode and target path.
-2. Baseline evidence: inventory path, audit path, critical findings.
-3. Decision: repair, reject, block, or package.
-4. Changes by `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals`, packaging.
-5. Validation commands with pass/fail/not-run and reasons.
-6. Before/after inconsistency counts when measured.
-7. Protected blocked paths and rollback notes.
-8. Remaining risks, assumptions, unresolved contradictions, next hypothesis.
-9. Package artifact path only when a real validated `skill.zip` exists.
+1. target, mode, capabilities, writable/protected scope;
+2. baseline and last-known-good identity;
+3. evaluator manifest/freeze status;
+4. deterministic inventory identity and trace summary;
+5. resource classification and authority/ownership findings;
+6. accepted/rejected repairs with diagnosis and rollback;
+7. exact validation commands with pass/fail/not-run;
+8. before/after structural evidence without calling it behavioral improvement;
+9. final candidate identity and machine-readable receipt;
+10. package path only when a real validated archive exists;
+11. remaining semantic uncertainty, `unknown`/`blocked` resources, and residual risk.
 
 ## Stop Conditions
 
-Stop and report a blocker when: zero or multiple root `SKILL.md` files make the root unclear; semantic ownership rewrite lacks evidence; requested edits touch blocked paths, fixtures, expected outputs, secrets, credentials, `.git`, or unrelated repos; repair needs target-domain facts absent from target files, user feedback, repository evidence, or supplied sources; the user asks for measured scenario metrics without executed or supplied results; validation fails and the fix is unsafe or out of scope; archive validation fails.
+Stop or return a bounded partial result when target root is ambiguous; baseline/last-known-good cannot be preserved; required authority or consumer evidence is unavailable for a destructive action; a protected evaluator changes after freeze; repair requires changing fixtures/expected outputs merely to pass; source truth is missing; candidate/report identity mismatches; validation cannot pass safely; output aliases target/protected evidence; rollback cannot be trusted; or passing would require weakening a hard gate.
 
 ## Finalization Checklist
 
-Before claiming success, verify: valid minimal frontmatter; aligned activation, scope, modes, workflow, stops, and output contract; every local reference exists; important resources are referenced, script-consumed, template-filled, validator-covered, or asset-only; no non-template placeholder markers remain; touched scripts were syntax-checked or reported untested; touched scenarios separate planned from measured evidence; packaging excludes generated reports, caches, zips, secrets, and blocked paths; final response separates measured evidence, judgment, assumptions, and follow-up.
+Before claiming completion verify: portable frontmatter; aligned activation/scope/modes/stops; no broken local links; all material resources classified with trace evidence; no deletion from absence-of-reference alone; authority conflicts resolved or explicitly blocked; target scripts/tests pass; evaluator manifest verifies; final report validates; independent package validation passes when applicable; receipt matches final candidate bytes; last-known-good/recovery evidence is preserved; and no file changed after the final pass.

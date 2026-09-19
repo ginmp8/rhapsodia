@@ -1,10 +1,12 @@
 # Prompt and Activation Review Report
 
-## Mode Used
+## Target and Mode
 
 - Primary mode: {{mode}}
 - Target surface: {{target_surface}}
-- Review status: {{review_status}}
+- Activation contract: {{activation_contract_version}}
+- Baseline identity: {{baseline_identity_or_na}}
+- Candidate identity: {{candidate_identity_or_na}}
 
 ## Summary Verdict
 
@@ -12,29 +14,9 @@
 
 ## Findings
 
-### Textual Clarity Risk
-
-| id | severity | evidence | issue | proposed change | rationale |
-|---|---|---|---|---|---|
-| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
-
-### Activation Risk
-
-| id | severity | evidence | issue | proposed change | rationale |
-|---|---|---|---|---|---|
-| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
-
-### Ownership Risk
-
-| id | severity | evidence | issue | proposed change | rationale |
-|---|---|---|---|---|---|
-| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
-
-### Output Contract Risk
-
-| id | severity | evidence | issue | proposed change | rationale |
-|---|---|---|---|---|---|
-| {{id}} | {{severity}} | {{evidence}} | {{issue}} | {{proposed_change}} | {{rationale}} |
+| id | defect code | severity | evidence/location | contract clause | issue | proposed change | scenario ids | validation status | claim level |
+|---|---|---|---|---|---|---|---|---|---|
+| {{id}} | {{defect_code}} | {{severity}} | {{evidence}} | {{contract_clause}} | {{issue}} | {{proposed_change}} | {{scenario_ids}} | {{validation_status}} | {{claim_level}} |
 
 ## Recommended Rewrite
 
@@ -42,19 +24,36 @@
 {{rewritten_text}}
 ```
 
-## Activation Scenarios
+## Scenario Evidence
 
-| id | category | prompt | expected behavior | risk covered | evidence status |
+- Suite identity: {{suite_sha256_or_not_frozen}}
+- Evaluator identity: {{evaluator_sha256_or_not_frozen}}
+- Execution kind: {{static_contract_static_adjudication_host_routing_or_runtime}}
+
+| id | group | expected route | observed route | evidence status | result |
 |---|---|---|---|---|---|
-| {{id}} | {{category}} | {{prompt}} | {{expected_behavior}} | {{risk_covered}} | {{planned_supplied_executed_or_blocked}} |
+| {{id}} | {{group}} | {{expected_route}} | {{observed_route_or_not_run}} | {{planned_supplied_executed_or_blocked}} | {{pass_fail_or_not_run}} |
 
-## Validation Status
+## Regressions
 
-- Static review: {{status}}
-- Scenario review: {{status}}
-- Executed validation: {{status}}
-- Handoff required: {{handoff_or_none}}
+{{confirmed_regressions_or_not_measured}}
 
-## Limitations
+## Claims
+
+- Activation precision: {{measured_value_or_not_claimable}}
+- Activation recall: {{measured_value_or_not_claimable}}
+- Behavioral improvement: {{measured_supported_or_not_claimable}}
+- Regression reduction: {{measured_supported_or_not_claimable}}
+
+## Gates
+
+| gate | status | evidence |
+|---|---|---|
+| evaluator unchanged | {{status}} | {{evidence}} |
+| same cases baseline/candidate | {{status}} | {{evidence}} |
+| package/validator checks | {{status}} | {{evidence}} |
+| no blocking scope/evidence regression | {{status}} | {{evidence}} |
+
+## Residual Risks and Limitations
 
 {{limitations}}

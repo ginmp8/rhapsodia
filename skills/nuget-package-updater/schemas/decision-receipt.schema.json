@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nuget-package-updater/decision-receipt.schema.json",
+  "title": "NuGet package decision receipt",
+  "type": "object",
+  "required": ["receiptVersion", "receiptType", "toolContractVersion", "status", "decisionIdentity", "baselineSha256", "targetFramework", "nugetSourceIdentity", "lockPinIdentity", "metadataSnapshotSha256", "writePreview", "packages", "payloadSha256"],
+  "properties": {
+    "receiptVersion": {"const": 1},
+    "receiptType": {"const": "nuget-package-decision"},
+    "toolContractVersion": {"type": "integer", "minimum": 1},
+    "status": {"const": "planned"},
+    "decisionIdentity": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "baselineSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "metadataSnapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "payloadSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "packages": {"type": "array"}
+  }
+}

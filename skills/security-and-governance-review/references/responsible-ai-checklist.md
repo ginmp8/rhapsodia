@@ -52,4 +52,4 @@ Inspect for:
 
 ## Reporting rule
 
-Do not produce a generic responsible-ai checklist as the final answer. Map every responsible-ai finding to a real domain risk, affected user group, evidence, mitigation, and validation probe. If the domain is unknown, report an evidence limitation and ask for domain context only if required to proceed.
+Do not produce a generic responsible-ai checklist as the final answer. Map every responsible-ai finding to a real domain risk, affected user group, evidence, mitigation, and validation probe. If the domain is unknown, use `needs-verification` for the missing domain evidence and request context only when it is essential to proceed.

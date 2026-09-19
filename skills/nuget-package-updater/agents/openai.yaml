@@ -1,6 +1,8 @@
 interface:
   display_name: NuGet Package Updater
   short_description: Safely update Directory.Packages.props NuGet versions.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

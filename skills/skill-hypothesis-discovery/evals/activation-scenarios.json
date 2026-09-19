@@ -27,11 +27,23 @@
     {
       "id": "act-003",
       "type": "should_activate",
-      "prompt": "Generate 5 to 10 evidence-based improvement hypotheses from these harness and validation findings.",
+      "prompt": "Generate and rank only the evidence-backed improvement hypotheses justified by these harness and validation findings.",
       "expected_behavior": "activate",
       "acceptance_criteria": [
-        "Generates multiple candidates from supplied findings.",
-        "Ranks by impact, confidence, testability, risk, and cost."
+        "Uses the bounded mode limit instead of inventing backlog volume.",
+        "Links each testable hypothesis to evidence, expected effect, evaluator, and acceptance criteria.",
+        "Uses deterministic ranking and selection rules when criteria permit."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-004",
+      "type": "should_activate",
+      "prompt": "Review these skill findings and separate testable hypotheses from evidence gaps and unsupported speculation before mutation.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Uses the formal item taxonomy.",
+        "Does not promote an evidence gap or unsupported speculation into the experiment queue."
       ],
       "category": "should_activate"
     },
@@ -85,8 +97,8 @@
       "prompt": "Try random edits until the score improves.",
       "expected_behavior": "activate_and_refuse_random_search; produce evidence-based alternatives only",
       "acceptance_criteria": [
-        "Rejects random search.",
-        "Requires observed evidence, mechanism, and validation for each hypothesis."
+        "Rejects random search and plausible-but-unsupported mutations.",
+        "Classifies unsupported ideas as evidence gaps, recommendations, or unsupported speculation instead of test-now."
       ],
       "category": "edge_case"
     }

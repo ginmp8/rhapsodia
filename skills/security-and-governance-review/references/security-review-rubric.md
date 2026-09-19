@@ -1,68 +1,107 @@
-# Security Review Rubric
+# Security Review Rubric — SGR-2.0
 
-Use this rubric to classify findings consistently.
+`rubric_version: SGR-2.0`
 
-## Evidence class
+Use this versioned rubric for every finding, report, and comparison. Do not silently mix classifications from older reports with SGR-2.0. Legacy labels such as `confirmed risk`, `potential risk`, and `evidence limitation` may be interpreted as historical input, but new output uses the canonical classifications below.
 
-- `confirmed risk`: the target contains a concrete unsafe pattern, exposed sensitive value, dangerous operation, missing control in an active authority path, or scanner-backed issue.
-- `potential risk`: the target contains a suspicious pattern, weak guardrail, incomplete policy, ambiguous permission, risky dependency pattern, or plausible misuse path that needs confirmation.
-- `evidence limitation`: the target lacks enough files, manifests, policy context, runtime configuration, scanner output, or domain detail to confirm or dismiss a risk.
+## Canonical finding classifications
 
-Never upgrade a finding from potential to confirmed solely because a variable name contains `token`, `secret`, `password`, `admin`, or `agent`.
+- `confirmed`: direct evidence establishes the unsafe condition or missing control being claimed. This does **not** by itself prove exploitability, concrete exposure, CVE applicability, or real-world harm unless the evidence establishes that too.
+- `suspicious-pattern`: a concrete pattern warrants review, but authenticity, reachability, exploitability, runtime state, or policy context is incomplete.
+- `governance-risk`: evidence shows an authority, policy, approval, audit, fallback, or human-oversight weakness. This classification is for governance/control risk, not a software vulnerability claim.
+- `needs-verification`: the requested conclusion depends on evidence that is missing, stale, blocked, or not independently verified. Critical missing evidence is fail-closed and must not be converted into a positive assurance claim.
+- `not-applicable`: the criterion is demonstrably outside the target/mode. State the reason; do not use this to hide an uninspected surface.
 
-## Severity
+## Evidence sufficiency
 
-- `critical`: likely credential compromise, arbitrary code execution, destructive command path, unrestricted high-impact tool authority, or unsafe automation that can directly cause severe financial, legal, safety, or data harm.
-- `high`: exploitable secret exposure, unsafe command execution with user input, broad write/delete authority, missing authorization on privileged actions, unreviewed dependency execution hooks, or serious responsible-ai harm without mitigation.
-- `medium`: meaningful weakness that requires additional conditions, such as missing audit logs, weak allowlists, path traversal risk without a proven write primitive, unpinned dependencies in a controlled package, or incomplete human approval.
-- `low`: hygiene issue, weak documentation, missing validation gate, non-sensitive sample issue, or defense-in-depth improvement.
-- `informational`: observation, context, or limitation without an immediate risk claim.
+A finding should map:
+
+`finding -> evidence -> risk -> recommendation -> validation`
+
+Evidence should identify the exact source and identity when possible: file/line, file SHA-256, manifest/lockfile identity, scanner result identity, advisory/source identity, policy version, or user-supplied evidence reference. Sensitive evidence must be masked or represented by a non-reversible description/fingerprint that does not reveal the full secret.
+
+Never promote `suspicious-pattern` or `needs-verification` to `confirmed` based only on variable names, filenames, keywords, severity intuition, or repeated model agreement.
+
+## Stable severity criteria
+
+Severity and confidence are independent. Apply the highest criterion fully supported by the evidence; when two levels fit equally, choose the lower severity unless a concrete impact/authority fact justifies the higher one.
+
+- `critical`: evidence supports a direct path to severe compromise or harm with high-impact authority/blast radius, such as exposed live privileged credentials, arbitrary code execution in a reachable privileged path, destructive unaudited authority over critical resources, or unsafe autonomous action capable of severe financial/legal/safety/data harm.
+- `high`: evidence supports a serious control failure or exploitable condition with substantial impact, but one material precondition or blast-radius constraint separates it from critical.
+- `medium`: meaningful weakness requiring additional conditions, narrower authority, or limited blast radius; includes missing approval/audit controls, traversal/injection primitives not proven reachable, or policy gaps with plausible misuse.
+- `low`: hygiene, defense-in-depth, documentation, sample safety, or validation weakness with limited direct impact.
+- `informational`: source identity, context, not-applicable result, or evidence limitation without a risk claim.
+
+### Severity tie-breakers
+
+Apply in this order:
+
+1. concrete impact demonstrated;
+2. reachable authority/privilege demonstrated;
+3. blast radius demonstrated;
+4. exploitability/misuse path demonstrated;
+5. otherwise select the lower applicable severity and state the missing evidence.
+
+A `needs-verification` item can be high/critical only when the **missing evidence itself** is a high-impact assurance gate (for example, inability to verify authorization for destructive production actions). It must not imply that the underlying vulnerability is confirmed.
 
 ## Confidence
 
-- `high`: exact file evidence, deterministic static scan, manifest evidence, or supplied runtime/security output supports the finding.
-- `medium`: strong pattern evidence exists but exploitability, environment, or policy context is incomplete.
-- `low`: only weak indicators or absent context are available.
+- `high`: exact target evidence, deterministic local scan, signed/scanner output, manifest/lock identity, current authoritative source, or supplied runtime evidence directly supports the claim.
+- `medium`: strong pattern or structural evidence exists, but exploitability, environment, policy, current status, or runtime behavior is incomplete.
+- `low`: weak indicators, inferred context, or indirect evidence only.
 
-## Review gates
+## External vulnerability/CVE claims
 
-A security/governance review should not be marked complete unless:
+Do not claim a CVE is applicable, exploitable, or exposes the target unless evidence includes enough identity to bind the claim to the target, typically:
 
-1. The target scope and mode are stated.
-2. Secrets are masked in outputs.
-3. Confirmed risks are separated from potential risks and limitations.
-4. Every high or critical finding has a containment or validation recommendation.
-5. Dangerous commands are not executed as part of review.
-6. Dependency vulnerability claims are backed by scanner output, manifest evidence plus current source, or user-provided evidence.
-7. Responsible-ai findings tie to the domain and affected users.
-8. Agent governance findings tie to authority, tools, policy, audit, fallback, or handoff evidence.
-9. Limitations are explicit.
+- dependency/package name and resolved version;
+- ecosystem/source identity or lockfile/manifest identity;
+- scanner result or authoritative advisory/current primary source;
+- applicability context when the advisory is conditional.
 
-## Prioritization model
+If current vulnerability evidence is unavailable or cannot be tied to the resolved dependency, use `needs-verification` and record the evidence gap. Never convert stale advisory knowledge into a current confirmed finding.
 
-Prioritize by combined impact, likelihood, authority level, blast radius, evidence strength, and remediation effort:
+## Governance and authority criteria
 
-1. Exposure containment: secrets, credentials, private keys, sensitive logs.
-2. Execution containment: dangerous shell, subprocess, deserialization, archive extraction, path traversal.
-3. Authority containment: tool permissions, allowlists, approval gates, fail-closed policy, audit trail.
-4. Supply-chain containment: install hooks, floating dependencies, untrusted registries, unchecked lockfiles.
-5. Responsible-ai containment: privacy, fairness, accessibility, explainability, opt-out, human override.
-6. Documentation and validation: test gates, report templates, handoff clarity.
+For authority-capable agents/workflows, identify at least:
+
+- action: read | write | execute | delete | send | publish | schedule | deploy | approve | delegate;
+- target/resource scope;
+- authorization source;
+- approval requirement;
+- audit/receipt requirement;
+- failure behavior when authorization is ambiguous;
+- rollback/containment where applicable.
+
+Missing or ambiguous authorization for a high-impact action is fail-closed: do not infer permission from capability.
+
+## Critical review gates
+
+A review is not `complete` unless all applicable gates hold:
+
+1. target/mode and evidence snapshot identity are stated;
+2. protected secret material is never printed in full;
+3. all findings use SGR-2.0 classifications/severity/confidence;
+4. each material finding maps evidence -> risk -> recommendation -> validation;
+5. high/critical findings have containment or validation guidance;
+6. dependency/CVE claims are bound to source/dependency identity and current evidence;
+7. governance findings identify the relevant authority boundary;
+8. threat-model conclusions state assumptions/evidence refs instead of pretending judgment is mechanical;
+9. structural evidence is separated from behavioral/runtime/external-current evidence;
+10. critical evidence gaps force `review_status=blocked-critical-evidence`.
 
 ## Finding format
 
-Use this format for findings:
-
 ```markdown
 ### [finding-id] [short title]
-- **Mode:** secret-handling-review | script-security-review | dependency-risk-review | llm-agent-governance-review | responsible-ai-review | threat-model
-- **Classification:** confirmed risk | potential risk | evidence limitation
+- **Mode:** ...
+- **Classification:** confirmed | suspicious-pattern | governance-risk | needs-verification | not-applicable
 - **Severity:** critical | high | medium | low | informational
 - **Confidence:** high | medium | low
-- **Location:** file path and line, function, section, or unavailable
-- **Evidence:** masked excerpt or precise description
-- **Risk:** impact and abuse path
-- **Recommendation:** safe change or control
-- **Validation gate:** how to verify the fix
-- **Residual risk:** what remains after remediation
+- **Location:** file/line, function, section, source id, or unavailable
+- **Evidence:** masked/minimal description + source identity
+- **Risk:** concrete impact/misuse path, or explicit uncertainty
+- **Recommendation:** minimal auditable control
+- **Validation:** exact gate/probe that would verify remediation or resolve uncertainty
+- **Residual risk:** what remains
 ```

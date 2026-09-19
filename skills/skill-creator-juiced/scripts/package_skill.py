@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from skill_spec import read_text, validate_agent_skill
+from validate_portability import normalize_hosts, validate_portability
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".template"}
 EXCLUDED_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "reports", "benchmark-reports", "test-results", "tmp"}
@@ -152,12 +153,17 @@ def source_tree_sha256(target: Path, files: list[Path]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def validate_folder(target: Path, profile: str) -> dict[str, Any]:
+def validate_folder(target: Path, profile: str, portability_hosts: str | None = None) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     portability = validate_agent_skill(target, profile)
     errors.extend(portability["errors"])
     warnings.extend(portability["warnings"])
+    host_portability = None
+    if portability_hosts:
+        host_portability = validate_portability(target, normalize_hosts(portability_hosts))
+        errors.extend(item["evidence"] for item in host_portability["errors"])
+        warnings.extend(item["evidence"] for item in host_portability["warnings"])
 
     skill_files = [p for p in target.rglob("SKILL.md") if p.is_file() and not skip_reason(p.relative_to(target).as_posix())]
     if skill_files != [target / "SKILL.md"]:
@@ -173,7 +179,7 @@ def validate_folder(target: Path, profile: str) -> dict[str, Any]:
             for no, line in enumerate(read_text(path).splitlines(), 1):
                 if "MARKER_RE" not in line and MARKER_RE.search(line):
                     errors.append(f"residual scaffold marker: {rel}:{no}")
-    return {"status": "pass" if not errors else "fail", "errors": sorted(set(errors)), "warnings": sorted(set(warnings)), "portability": portability}
+    return {"status": "pass" if not errors else "fail", "errors": sorted(set(errors)), "warnings": sorted(set(warnings)), "portability": portability, "host_portability": host_portability}
 
 
 def stage_zip(target: Path, output: Path) -> tuple[Path, dict[str, Any]]:
@@ -345,6 +351,7 @@ def main() -> int:
     parser.add_argument("--output")
     parser.add_argument("--profile", choices=["portable", "openai"], default="portable")
     parser.add_argument("--validate", action="store_true")
+    parser.add_argument("--portability-hosts", help="Optional multi-host matrix required for package acceptance")
     parser.add_argument("--validate-only")
     parser.add_argument("--json-output")
     args = parser.parse_args()
@@ -367,7 +374,7 @@ def main() -> int:
         emit_result(result, None)
         return 1
 
-    folder = validate_folder(target, args.profile) if args.validate else {"status": "not-run", "errors": [], "warnings": []}
+    folder = validate_folder(target, args.profile, args.portability_hosts) if args.validate else {"status": "not-run", "errors": [], "warnings": [], "host_portability": None}
     if folder["status"] == "fail":
         result = {"receipt_version": 2, "mode": "package", "stage": "validation", "profile": args.profile, "status": "fail", "target": str(target), "output": str(output), "folder": folder, "output_preserved": target_exists(output), "receipt_preserved": bool(receipt and target_exists(receipt))}
         emit_result(result, str(receipt) if receipt else None, preserve_existing_on_failure=True)

@@ -1,25 +1,61 @@
 # Evaluation and Gates
 
-Use for measurable target-skill acceptance criteria.
+Use to define baseline/final evidence, frozen evaluators, acceptance, and claims.
 
-## Static Score
+## Evidence layers
 
-Useful 0-100 dimensions: trigger specificity; inputs/assumptions; workflow/modes; output contract; supporting resources; validation/gates; scenario readiness; maintainability; safety/blocked paths/evidence discipline; packaging readiness. Scores guide; required gates override. When static scores saturate, do not treat the score as improvement evidence; add auxiliary harness-quality metrics instead.
+Keep separate:
 
-## Required Gates
+- structural evidence: package shape, references, frontmatter, script syntax, portability/core conformance;
+- behavioral evidence: executed scenarios and evaluator decisions;
+- runtime evidence: actual tool/browser/application behavior;
+- subjective evidence: independent human/model review where quality is inherently judgmental;
+- delivery evidence: frozen target identity, package hash, atomic commit/recovery receipt.
 
-A target is not ready if any required gate fails: exactly one `SKILL.md`; frontmatter `name` and `description`; specific description with negative boundary; clear inputs/outputs; scope boundaries and stops; no unresolved scaffold placeholders; referenced resources and workflow-mentioned `assets/templates/` paths exist; operational assets integrated by workflow/copy/fill/script/validator; intended scripts have commands; validation criteria exist; dynamic facts are not permanent truth; blocked paths and secrets are protected.
+One layer does not prove another.
 
-## Supporting Resources
+## Freeze before comparison
 
-Classify warnings before deleting. An asset is integrated if referenced from `SKILL.md` or loaded references, copied/filled by workflow, rendered/updated/checked by script, or covered by structural/package validation. Delete/migrate only evidence-backed unused scaffolding, duplicates, obsolete/misleading/oversized assets, or explanatory prose better placed in `references/`.
+Before candidate mutation:
 
-## Behavioral Metrics
+1. preserve an immutable target snapshot;
+2. declare scenario corpus/evaluator rules and acceptance thresholds;
+3. protect evaluator fixtures, expected outputs, baseline evidence, scoring rubrics, and thresholds;
+4. record external/VCS source identities when they materially affect results.
 
-Use only for supplied/executed prompts/results. Activation precision = correct activations / actual activations. Activation recall = correct activations / expected activations. Output conformance = conforming outputs / executed prompts. Criteria coverage = satisfied / expected criteria. Robustness = passed / executed edge cases. Rework rate = manually corrected / executed prompts. Harness-quality coverage can be measured without running model prompts when computed from the suite: entry-point coverage, mode-by-risk matrix coverage, output-contract criteria coverage, blocked-path/adversarial coverage, deterministic gate count, and unresolved risk count. If behavior is not measured, label behavioral metrics `not measured` and propose or validate a suite.
+If an evaluator is wrong, invalidate that experiment and restart after fixing/freezing it. Never edit evaluators to make the candidate pass.
 
-## Saturated Metrics and Decisions
+## Required hard gates
 
-If a benchmark is 100/100, keep it as a gate and add a non-saturated auxiliary metric before claiming improvement: scenario conformance, strict checklist coverage, entry-point coverage, package pass/fail plus new gate count, reduced risks, or evidence completeness. Do not claim improvement from an unchanged saturated score.
+For mutation/package claims, require as applicable:
 
-Severity: `blocker`, `major`, `minor`, `informational`. Decisions: `accept`, `accept with risks`, `reject`, `plan only`, `needs context`.
+- unambiguous target identity and writable scope;
+- immutable baseline captured safely;
+- Agent Skills portable core valid for the selected profile;
+- no broken local references/scaffold markers;
+- modified deterministic scripts/tests pass;
+- target-owned mandatory tests/validators pass;
+- protected/evaluator evidence unchanged;
+- no blocking activation, semantic, safety, compatibility, or packaging regression;
+- package/report outputs pass alias/canonical preflight;
+- package receipt corresponds to the final frozen target tree;
+- last-good output/recovery behavior is preserved on failure.
+
+## Saturated metrics
+
+A static score of `100` is a gate, not proof that nothing can improve. Add auxiliary metrics tied to the hypothesis, such as:
+
+- portable-core violations;
+- host-specific dependencies in core semantics;
+- portability/integrity controls present;
+- entry-point/scenario coverage;
+- deterministic gate coverage;
+- baseline/evaluator identity controls;
+- package alias/recovery/receipt behavior;
+- unresolved risks/unknowns.
+
+Never claim behavioral improvement from a new static metric alone.
+
+## Claim rule
+
+Use `measured` only for executed evidence. Use `derived` for inspected structure, `researched` for current sourced facts, `proposed` for planned checks, and `unknown` when evidence is unavailable. Do not convert missing execution capabilities into pass results.

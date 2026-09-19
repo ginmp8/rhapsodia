@@ -1,69 +1,79 @@
-# Test Scenario Methodology
+# Behavioral Scenario Evidence
 
-Use this guide for measurable behavioral benchmarks.
+Use this contract for activation/output metrics.
 
-## Scenario set
+## Recommended suite
 
 Include at least 20 scenarios:
 
-1. `should_activate`: 5 clear activation prompts.
-2. `should_not_activate`: 5 clear non-activation prompts.
-3. `ambiguous`: 5 prompts requiring clarification, safe default, or explicit assumptions.
-4. `edge_case`: 5 prompts with missing files, incomplete inputs, conflicts, large content, invalid paths, or unsupported outputs.
+1. `should_activate`: 5 clear activations.
+2. `should_not_activate`: 5 clear non-activations.
+3. `ambiguous`: 5 prompts requiring clarification/explicit assumptions.
+4. `edge_case`: 5 missing/invalid/conflicting/unsupported cases.
 
-## Manual result table
+## Portable v2 result envelope
 
-| ID | Category | Prompt | Expected activation | Actual activation | Output conforms | Quality score 0-5 | Needs rework | Notes |
-|---|---|---|---|---|---|---:|---|---|
-
-## Optional JSON result schema
-
-Generator-compatible shape:
+Prefer identity-bound evidence:
 
 ```json
-[
-  {
-    "id": "A1",
-    "category": "should_activate",
-    "prompt": "Benchmark the skill at skills/prd-banking-flows",
-    "expected_activation": true,
-    "actual_activation": true,
-    "output_conforms": true,
-    "quality_score": 5,
-    "needs_rework": false,
-    "notes": "Generated the expected report."
-  }
-]
+{
+  "schema_version": 2,
+  "evidence_origin": "executed",
+  "arm_type": "candidate",
+  "target_identity_sha256": "<64 hex>",
+  "evaluator_identity_sha256": "<64 hex>",
+  "scenario_suite_sha256": "<64 hex or suite identity>",
+  "host_profile": "<material host/runtime profile>",
+  "trace_manifest_sha256": "<64 hex when available>",
+  "evaluator_visibility": "hidden",
+  "candidate_saw_evaluator_only_assets": false,
+  "scenarios": [
+    {
+      "id": "A1",
+      "category": "should_activate",
+      "prompt": "Benchmark this skill package.",
+      "expected_activation": true,
+      "actual_activation": true,
+      "output_conforms": true,
+      "quality_score": 5,
+      "needs_rework": false,
+      "notes": "Expected report produced."
+    }
+  ]
+}
 ```
+
+Legacy top-level arrays remain accepted for backwards compatibility, but validation marks them `unpinned`. Do not use unpinned evidence for strict before/after improvement claims.
+
+`arm_type` may be `without-skill`, `baseline`, `candidate`, or `single`. For `without-skill`, omit `target_identity_sha256`. `evaluator_visibility` may be `hidden`, `candidate-visible`, or `not-applicable`. A `hidden` evaluator requires `candidate_saw_evaluator_only_assets=false`; otherwise blind-evaluation claims are invalid. Trace identity is optional because not every host exposes execution traces.
 
 Allowed categories: `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`.
 
-## Deterministic validation
+## Validation
 
-Validate supplied JSON before computing measured metrics:
-
-```bash
-python3 -S scripts/validate_scenario_results.py --results <scenario-results-json> --json-output <validation-output-json>
+```text
+<PYTHON> scripts/validate_scenario_results.py \
+  --results <RESULTS_JSON> \
+  --json-output <VALIDATION_JSON>
 ```
 
-The validator requires an array of stable result objects; allowed category; boolean expected/actual activation; boolean or null conformance/rework; quality score 0-5 when present. If validation fails, do not calculate measured precision, recall, robustness, output conformance, or rework rate from that file.
+Rows require stable `id`, category, prompt, expected/actual activation, output conformance, quality score 0-5 or null, and rework boolean/null.
 
-## Formulas
+## Metrics
 
 - Activation precision = correct actual activations / all actual activations.
 - Activation recall = correct actual activations / all expected activations.
-- Output conformance = conforming outputs / all executed scenarios.
-- Robustness = passed edge cases / all executed edge cases.
-- Rework rate = scenarios needing rework / all executed scenarios.
-- Average quality score = sum of quality scores / scored scenarios.
+- Output conformance = conforming outputs / executed rows with conformance evidence.
+- Robustness = passing edge cases / executed edge cases.
+- Rework rate = rows requiring rework / executed rows.
+- Criteria coverage remains `not measured` unless criteria-level evidence exists.
 
 ## Status labels
 
-- `measured`: executed or supplied evidence exists.
+- `measured`: executed, identity-bound evidence.
+- `supplied`: valid supplied evidence; state whether pinned/unpinned.
 - `planned`: scenario exists but was not executed.
-- `blocked`: missing environment, tool, file, or permission.
-- `not applicable`: scenario does not apply.
+- `blocked`: required capability/evidence unavailable.
+- `not applicable`: metric/scenario does not apply.
 
-## Interpretation
-
-Behaviorally mature target: activation precision >= 90 percent; activation recall >= 85 percent; output conformance >= 90 percent; robustness >= 75 percent; rework rate <= 10 percent. Never report these as measured without execution evidence.
+Never convert planned or malformed evidence into measured metrics.

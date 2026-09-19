@@ -12,6 +12,10 @@ For downstream consumption, label evidence provenance and closure state explicit
 
 Record only inspected, produced, or supplied evidence: files inspected/changed; commands; passed/failed tests; static reasoning; logs/runtime output with secrets redacted; implementation decisions/ADRs; blockers/follow-ups; validation gaps and not-run reasons.
 
+## Traceability
+
+A done task requires a Traceability row whose source resolves to current planning truth: the selected `taskNNN`, a canonical anchor present in the selected task or PRD, or exact current task/objective/acceptance text. Its check column must name the same passed check recorded in the evidence table. Invented labels, generic prose, meta claims, and references to an unexecuted check are invalid. `scripts/validate_execution_state.py` and closure scripts enforce this before controlled records can change.
+
 ## Decisions and ADR Links
 
 For each technical decision or implementation ADR, include title, path, evidence source, validation status, scope guard proving product intent was not rewritten, and handoff target when Mago or nomia must review.
