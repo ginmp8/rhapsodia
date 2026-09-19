@@ -4,7 +4,7 @@ Use these prompts to calibrate activation and output expectations.
 
 ## Secret handling
 
-"Audit this skill package for hardcoded secrets, private keys, connection strings, and sensitive logging. Return confirmed risks separately from potential risks and mask all evidence."
+"Audit this skill package for hardcoded secrets, private keys, connection strings, and sensitive logging. Use SGR-2.0 classifications, never print a complete secret, and map each finding to evidence, risk, recommendation, and validation."
 
 ## Script security
 

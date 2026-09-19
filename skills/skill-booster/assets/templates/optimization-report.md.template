@@ -11,6 +11,14 @@
 - Secondary: {{secondary_objective}}
 - Assumptions: {{assumptions}}
 
+## Source Trust Intake
+- Source class: {{source_class}}
+- External intake receipt: {{external_intake_receipt}}
+- Source/archive SHA-256: {{external_source_sha256}}
+- Target code executed during intake: {{external_target_code_executed}}
+- Blocking findings: {{external_blocking_findings}}
+- Review findings: {{external_review_findings}}
+
 ## Host Compatibility
 - Requested hosts: {{requested_hosts}}
 - Resolved capabilities: {{host_capabilities}}

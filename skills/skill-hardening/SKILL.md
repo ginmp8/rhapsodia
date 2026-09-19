@@ -18,10 +18,12 @@ Resolve or infer before mutation:
 1. `TARGET_SKILL_PATH`: folder, extracted zip, or installed skill with exactly one root `SKILL.md`.
 2. Mode: `audit-only`, `plan-only`, `apply-hardening`, `validation-only`, or `package`.
 3. Scope: target folder only unless the user narrows further.
-4. Blocked: benchmark fixtures, expected outputs, secrets, credentials, `.git`, generated evidence/baseline reports, symlinks that can escape target scope, and user-declared read-only files.
-5. Evidence: target files, user feedback, benchmark reports, failed prompts, prior outputs, domain docs, repository truth, or existing resources.
-6. Research: `auto` only for concrete inspection gaps; constrained runs use supplied or target-local evidence.
-7. Gates: audit score, required commands, package validation, no scaffold markers, all referenced files present, optional benchmark/scenario evidence.
+4. Baseline: immutable copy, clean commit, or equivalent before-state plus deterministic target identity.
+5. Blocked: benchmark fixtures, expected outputs, secrets, credentials, `.git`, generated evidence/baseline reports, frozen evaluators, symlinks that can escape target scope, and user-declared read-only files.
+6. Evidence: target files, user feedback, benchmark reports, failed prompts, prior outputs, domain docs, repository truth, or existing resources.
+7. Reproducibility ceiling: `objective-artifact`, `tool-action`, `research-analytic`, or `constrained-subjective`; do not promise determinism above it.
+8. Research: `auto` only for concrete inspection gaps; constrained runs use supplied or target-local evidence.
+9. Gates: audit score, required commands, evaluator integrity, package validation, no scaffold markers, all referenced files present, optional executed benchmark/scenario evidence.
 
 Default for “harden it”: inspect -> audit -> map -> apply one bounded package-level batch -> validate -> package only when requested or clearly expected.
 
@@ -44,7 +46,9 @@ Use one primary mode. For mixed requests: inspect -> audit -> harden -> validate
 - `references/evaluator-contract.md`: gates, scores, saturated-audit auxiliary metrics, report minimums.
 - `references/evidence-policy.md`: source order, measured-vs-proposed claims, research limits.
 - `references/scenario-suite.md`: activation, non-activation, ambiguous, edge, regression, adversarial scenarios.
+- `references/reproducibility-controls.md`: baseline identity, variability map, frozen evaluator, diagnostic repair, claim layers, and freeze-after-pass.
 - `references/packaging-and-validation.md`: commands, zip creation, package validation, exclusions, delivery evidence.
+- `assets/templates/hardening-contract.json.template`: machine-readable hardening/reproducibility contract; copy and fill before material edits when improvement claims or package delivery matter.
 - `assets/templates/hardening-plan.md.template`: plan skeleton.
 - `assets/templates/hardening-report.md.template`: report skeleton.
 - `assets/templates/reference-file.md.template`: reference skeleton.
@@ -54,38 +58,42 @@ Use one primary mode. For mixed requests: inspect -> audit -> harden -> validate
 - `scripts/inventory_skill.py`: deterministic inventory.
 - `scripts/hardening_audit.py`: maturity scorecard.
 - `scripts/validate_hardened_skill.py`: readiness gates.
+- `scripts/reproducibility_controls.py`: tree identity, contract validation, evaluator freeze, and evaluator verification.
 - `scripts/package_skill.py`: `skill.zip` builder and archive validator.
 
 Keep `SKILL.md` as router/control plane. Move detailed rubrics, schemas, commands, examples, and script contracts to lazy-loaded resources.
 
 ## Workflow
 
-1. **Inspect**: read target `SKILL.md`; run `scripts/inventory_skill.py`; inventory `agents/`, `references/`, `scripts/`, `assets/`, templates, `examples/`, `evals/`, tests, benchmark evidence, validators, packages, generated noise, and unused scaffold.
-2. **Audit**: run `scripts/hardening_audit.py` with markdown/json outputs; treat it as structural evidence. If score is saturated, add a non-saturated signal: scenario quality, unresolved risks, placeholder count, script test pass rate, package gates, or token delta.
-3. **Map**: group changes by `control_plane`, `references`, `scripts`, `templates_assets`, `examples_scenarios`, `validation`, `packaging`. For each change record hypothesis, files, expected effect, validation gate, and accept/reject decision.
-4. **Apply**: edit only allowed target files. Keep `SKILL.md` compact. Use references for branch rules, scripts for deterministic checks, templates for artifact shapes, examples/evals for calibration. Remove only obsolete duplicates, generated noise, caches, old zips, unused scaffold, or files outside workflow.
-5. **Validate**: run `scripts/validate_hardened_skill.py`; re-run `scripts/hardening_audit.py`; run modified scripts once on representative inputs. Fix failed gates within scope or report the blocker. Never claim readiness after failed validation.
-6. **Package**: when requested, run `scripts/package_skill.py` with target, output, and validation. Package only the final skill folder; exclude caches, `.git`, temporary reports, generated evidence, secrets, symlinks, and blocked paths. Validate archive before providing `skill.zip`.
+1. **Inspect and baseline**: read target `SKILL.md`; preserve an immutable before-state; run `scripts/inventory_skill.py`; compute target identity with `scripts/reproducibility_controls.py tree-hash`; inventory `agents/`, `references/`, `scripts/`, `assets/`, templates, `examples/`, `evals/`, tests, benchmark evidence, validators, packages, generated noise, and unused scaffold.
+2. **Audit**: run `scripts/hardening_audit.py` with markdown/json outputs; treat it as structural evidence. If score is saturated, add a non-saturated signal: scenario quality, unresolved risks, residual scaffold-marker count, script test pass rate, package gates, or token delta.
+3. **Contract and freeze**: classify the reproducibility ceiling; map variance across activation, inputs, routing, decisions, generation, validation, repair, and delivery; fill and validate `assets/templates/hardening-contract.json.template`; freeze only the evaluator inputs that will decide acceptance. Keep candidate generators and files that must change outside the frozen set.
+4. **Map**: group changes by `control_plane`, `references`, `scripts`, `templates_assets`, `examples_scenarios`, `validation`, `packaging`. For each change record hypothesis, evidence, files, expected effect, validation gate, and accept/reject decision.
+5. **Apply**: edit only allowed target files. Keep `SKILL.md` compact. Use references for branch rules, scripts for deterministic checks, templates for artifact shapes, examples/evals for calibration. Remove only obsolete duplicates, generated noise, caches, old zips, unused scaffold, or files outside workflow.
+6. **Repair by diagnosis**: run the narrowest failing gate, apply the smallest supported fix, then rerun the same gate. Stop a repair branch after two consecutive non-improving rounds unless new evidence changes the hypothesis. Never weaken a gate or frozen evaluator to obtain a pass.
+7. **Validate and freeze**: verify the evaluator manifest; run `scripts/validate_hardened_skill.py`; re-run `scripts/hardening_audit.py`; run modified scripts once on representative inputs. Compare baseline and candidate using identical cases when claiming behavioral improvement. A passing candidate is frozen; any later edit invalidates affected evidence and requires revalidation.
+8. **Package**: when requested, run `scripts/package_skill.py` with target, output, validation, and JSON receipt. Package only the frozen final skill folder; exclude caches, `.git`, temporary reports, generated evidence, secrets, symlinks, and blocked paths. Validate the archive before atomic replacement and verify that receipt hashes correspond to the delivered candidate and ZIP.
 
 ## Output contract
 
 Final responses include applicable:
 
 1. Mode and target path.
-2. Baseline inventory/audit score when measured.
-3. Initial/final gates, including package gates when requested.
-4. Hardening plan with hypotheses, scenarios, metrics, evaluators, gates.
-5. Changes by `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validation, packaging.
-6. Commands executed with pass/fail outcomes.
-7. Before/after score or gate comparison.
-8. Files changed and blocked paths protected.
-9. Remaining risks, assumptions, follow-up hypotheses.
-10. Package path only when produced and validated.
+2. Baseline and candidate identities, inventory, and audit score when measured.
+3. Reproducibility ceiling, variability controls, and irreducible judgment.
+4. Initial/final gates, frozen-evaluator verification, and package gates when requested.
+5. Hardening plan with hypotheses, scenarios, metrics, evaluators, gates.
+6. Changes by `SKILL.md`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validation, packaging.
+7. Commands executed with pass/fail/not-run outcomes and evidence labels.
+8. Before/after score or gate comparison; never infer behavioral improvement from structural evidence alone.
+9. Files changed and blocked paths protected.
+10. Remaining risks, assumptions, follow-up hypotheses.
+11. Package path, candidate hash, and archive hash only when produced and validated.
 
 ## Stop conditions
 
-Stop before editing when target root is ambiguous; scope requires blocked paths without explicit authorization; needed facts are absent from evidence; requested output would claim unexecuted benchmark/scenario metrics; package cannot be validated after structural change; or the user asks to improve a non-skill repo without a concrete skill target.
+Stop before editing when target root is ambiguous; no immutable baseline can be preserved; scope requires blocked paths without explicit authorization; needed facts are absent from evidence; a required evaluator cannot be frozen or changes during the run; requested output would claim unexecuted benchmark/scenario metrics; package cannot be validated after structural change; passing requires weakening a gate; or the user asks to improve a non-skill repo without a concrete skill target.
 
 ## Finalization checklist
 
-Before claiming hardened status: frontmatter has only lowercase `name` and `description`; scope, modes, workflow, output contract, stop, validation, and packaging rules are present; referenced files exist; support files are referenced, script-consumed, copied/filled, validated, or intentionally asset-only; no scaffold markers remain; added/modified scripts ran once or blockers are stated; template-backed strict structures have validation/writer coverage; measured metrics are never fabricated; folder and archive validation pass before sharing `skill.zip`.
+Before claiming hardened status: frontmatter has only lowercase `name` and `description`; baseline and final identities are recorded; scope, modes, workflow, output contract, stop, validation, and packaging rules are present; referenced files exist; support files are referenced, script-consumed, copied/filled, validated, or intentionally asset-only; frozen evaluators verify unchanged; no scaffold markers remain; added/modified scripts ran once or blockers are stated; template-backed strict structures have validation/writer coverage; structural, behavioral, runtime, and perceptual claims remain separate; measured metrics are never fabricated; no edits occurred after the final pass; folder and archive validation pass and receipt hashes match before sharing `skill.zip`.

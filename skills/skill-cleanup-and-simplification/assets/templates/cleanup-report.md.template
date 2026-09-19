@@ -4,29 +4,32 @@
 
 - Mode: {{mode}}
 - Target: {{target_path}}
-- Date: {{date}}
+- Canonical target: {{canonical_target}}
+- Baseline identity: {{baseline_identity}}
+- Final identity: {{final_identity}}
 
 ## Summary
 
 {{summary}}
 
-## Files changed
+## Applied or attempted changes
 
-| Path | Action | Rationale | Evidence | Rollback |
+| Path | Action result | State | Evidence | Rollback/recovery |
 |---|---|---|---|---|
 {{changed_rows}}
 
-## Files removed
+## Retained, blocked, or unknown
 
-| Path | Classification | Evidence | Risk | Rollback |
-|---|---|---|---|---|
-{{removed_rows}}
-
-## Files retained or blocked
-
-| Path | Classification | Reason | Next action |
+| Path | State | Reason | Next action |
 |---|---|---|---|
 {{retained_rows}}
+
+## Receipts and recovery
+
+- Dry-run receipt: {{dry_run_receipt}}
+- Apply receipt: {{apply_receipt}}
+- Transaction status: {{transaction_status}}
+- Last-known-good: {{last_known_good}}
 
 ## Validation
 

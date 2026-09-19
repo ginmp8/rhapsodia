@@ -8,7 +8,7 @@ import re
 import sys
 from pathlib import Path
 
-from magia_utils import BOARD_ROOT_TEMPLATE, print_errors, read_lines, spec_package_path, spec_package_path_error
+from magia_utils import BOARD_ROOT_TEMPLATE, parse_spec_id, print_errors, read_lines, spec_package_path, spec_package_path_error
 
 LEGACY_TASK_RE = re.compile(r"^###\s+(?P<task_id>task\d{3})(?:\s+-\s*(?P<title>.*))?$")
 STATUS_RE = re.compile(r"^[-*]?\s*(?:Status|status):\s*(?P<status>not[_ ]started|in[_ ]progress|blocked|done|complete|completed|executed)\s*$")
@@ -192,10 +192,16 @@ def write_validation_evidence(path: Path, spec_id: str, records: dict[str, dict[
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Adapt legacy notes.md/validation.md execution content into current MAGIA-owned artifacts.")
-    parser.add_argument("board_root", help=f"Path to the active BOARD_ROOT under {BOARD_ROOT_TEMPLATE}.")
-    parser.add_argument("--spec-id", required=True, help="Selected spec id in the form specNNN.")
+    parser.add_argument("board_root", help=f"Canonical board root under {BOARD_ROOT_TEMPLATE}.")
+    parser.add_argument("--spec-id", required=True, help="Canonical active spec ID in spec-YYYY-MM-DD-feature-key form.")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing current MAGIA-owned artifacts.")
     args = parser.parse_args(argv)
+
+    try:
+        parse_spec_id(args.spec_id)
+    except ValueError as exc:
+        print_errors([str(exc)])
+        return 1
 
     board_root = Path(args.board_root).resolve()
     spec_package = spec_package_path(board_root, args.spec_id)

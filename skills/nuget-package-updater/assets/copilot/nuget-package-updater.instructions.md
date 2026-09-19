@@ -4,48 +4,51 @@ applyTo: "**/{Directory.Packages.props,*.csproj,*.sln}"
 
 # NuGet package update workflow
 
-When asked to update NuGet packages, do not manually choose or edit package versions.
+When asked to update centrally managed NuGet versions, use the repository copy of `tools/nuget-updater/nuget_update.py` as the only version-selection authority. Do not manually choose or edit a version that the script can decide. Do not use MCP package metadata for the decision.
 
-Never use MCP for this package update workflow. The only source of truth for selecting and validating package versions is the repository copy of the skill script, normally:
-
-```bash
-python tools/nuget-updater/nuget_update.py
-```
-
-Use the script first in check mode:
+First run:
 
 ```bash
 python tools/nuget-updater/nuget_update.py check \
   --file Directory.Packages.props \
   --target-framework net10.0 \
-  --report-format markdown \
-  --write-decision-doc
+  --write-decision-doc \
+  --write-evidence \
+  --report-format markdown
 ```
 
-For write operations, use:
+Before writing, review the baseline hash, source identity, lock/pin identity, metadata snapshot, candidate provenance, stable reason codes, write preview, and decision receipt.
+
+For the write, require the prior decision and replay the checked metadata when available:
 
 ```bash
 python tools/nuget-updater/nuget_update.py update \
   --file Directory.Packages.props \
   --target-framework net10.0 \
   --write \
-  --report-format markdown \
-  --report nuget-update-report.md \
-  --write-decision-doc
+  --write-decision-doc \
+  --write-evidence \
+  --expected-decision-receipt docs/pkgs-versions/nuget-decision-receipt-<id>.json \
+  --metadata-snapshot-input docs/pkgs-versions/nuget-metadata-snapshot-<id>.json \
+  --validate-repository \
+  --report-format markdown
 ```
 
 Rules:
 
-- Only use stable NuGet versions.
-- Never use preview, alpha, beta, rc, nightly, dev, or prerelease versions.
-- Validate package metadata through NuGet V3 `RegistrationsBaseUrl`.
-- Cross-check known vulnerabilities through NuGet V3 `VulnerabilityInfo` when the source exposes it.
-- Do not update versions that NuGet metadata reports as deprecated, unlisted, or vulnerable.
-- Do not update packages marked as locked, pinned, ignored, manual, or no-update in `Directory.Packages.props`.
-- Do not bypass `Locked="true"`, `Pin="true"`, `Pinned="true"`, `NoUpdate="true"`, `NuGetUpdaterLocked="true"`, `VersionLocked="true"`, or `UpdatePolicy="locked|pinned|manual|none"`.
-- Do not remove lock comments such as `<!-- nuget-updater: lock -->`.
-- Do not manually edit a version when the script reports an error. Fix the environment, feed, SDK, or policy first.
-- Prefer `Directory.Packages.props` updates over direct `.csproj` package edits.
-- Always create a Markdown decision document under `docs/pkgs-versions/` using `--write-decision-doc`.
-- After updates, run `dotnet restore`, `dotnet build --no-restore`, and the repository test command if available.
-- Include the generated report and decision document path in the final summary.
+- stable versions only by default;
+- never select preview/alpha/beta/rc/dev/nightly versions;
+- validate Registration metadata and VulnerabilityInfo through the script;
+- reject unlisted, deprecated, vulnerable, or untrusted candidates under default policy;
+- preserve configured feed order; first feed wins exact-version ties;
+- respect every lock/pin/manual/no-update marker;
+- do not bypass a lock unless explicitly requested by the user;
+- do not manually select a version after metadata/feed/SDK/restore failure;
+- do not perform unrelated upgrades;
+- treat a changed decision identity as a blocked write;
+- treat changed `Directory.Packages.props` bytes between analysis and write as a blocked write;
+- preserve last-known-good evidence;
+- use atomic script writes, never a direct editor replacement;
+- after write, require repository validation evidence; default `--validate-repository` runs restore/build/test;
+- if validation fails, the script must roll the package file back;
+- summarize receipt paths, hashes, validation status, and rollback state; never claim unexecuted validation passed.

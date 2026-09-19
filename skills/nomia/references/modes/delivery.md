@@ -8,11 +8,23 @@ Use for `delivery-intake`, `delivery-triage`, `delivery-status`, `delivery-repla
 
 Create/refresh template-backed artifacts with local scripts; validate with `scripts/validate_artifact.py` or narrower validators. Do not copy template text manually when a script can write or validate.
 
+## Guided Intake Before Canonical Writes
+
+For an incomplete idea or demand, run `scripts/guide_intake.py <input.yaml-or-json> --as-of <timestamp>`. The result is a non-authoritative triage aid that:
+
+- selects the smallest safe profile and escalates on regulatory, financial, privacy, security, contractual, executive, cross-organization, irreversible, stale, or conflicting evidence triggers;
+- asks blocking questions before optional enrichment;
+- preserves absent owner, date, requester, stakeholder, evidence, and identity facts as unknown;
+- distinguishes supplied facts, opinions, hypotheses, and commitments;
+- states whether repository writing or a Nomia-to-Mago handoff is currently supportable.
+
+Do not copy guidance output into canonical records without source, observation time, authority, freshness, and conflict review. Product discovery may frame the problem, outcome, business process, policy constraints, affected users, success measures, non-goals, and decisions needed. Stop and hand off when the work requires architecture, stack, contracts, technical acceptance criteria, or implementation tasks.
+
 ## delivery-intake / delivery-triage
 
 Purpose: register or triage a demand into governance records.
 
-Inputs: requester, problem/request, source, desired outcome, target date, owner, stakeholders, priority, risk, links when supplied. Unknowns remain explicit.
+Inputs: requester, problem/request, source, desired outcome, target date, owner, stakeholders, business priority, risk, links when supplied. Unknowns remain explicit.
 
 Outputs: `ops.yaml` and, when useful, `status.md` or `stakeholder-brief.md` in the selected spec package. Use `scripts/write_ops_scaffold.py` or `scripts/write_artifact_scaffold.py`; populate supported lists with `scripts/update_template_lists.py`; validate touched artifacts and board paths.
 
@@ -24,7 +36,7 @@ Inputs: current state evidence, notes, risks, blockers, next steps, validation/r
 
 ## delivery-replan
 
-Purpose: record material changes to target date, sprint, scope, owner, commitment, priority, or risk.
+Purpose: record material changes to target date, sprint, scope, owner, commitment, business priority, or risk.
 
 Outputs: append `replanning.md` entry and mirror structured `ops.yaml.replanning` change. Include date, changed fields, from, to, reason, impact, and decision maker when known. Do not use for routine status updates.
 

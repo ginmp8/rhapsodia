@@ -1,167 +1,214 @@
 # Execution Runbook
 
-Use for CLI details, benchmark modes, defaults, self-improvement safeguards, packaging, and rollback beyond `SKILL.md`.
+Use for CLI execution details, autonomous adapters, evidence snapshots, packaging, cancellation, and rollback.
 
 ## Defaults
 
-When details are omitted, continue conservatively:
-- Evaluator: `skill-benchmark` when available; if `100/100`, treat as gate and add non-saturated auxiliary evidence before claiming improvement.
-- Budget: one manual patch or `--max-iterations 3`.
-- Hypothesis source: user-supplied hypothesis/backlog first; `skill-hypothesis-discovery` when no bounded hypothesis exists or metrics are saturated; built-in catalog only as fallback.
-- Minimum delta: `1.0` unless the evaluator has a smaller meaningful unit.
-- Scope: target skill folder only.
-- Blocked: evaluator scripts, expected outputs, scenario fixtures, benchmark reports used as fixtures, lockfiles, `.git`, caches, package artifacts, secrets.
-- Safety: separate working copy and manual review unless the user provides a disposable sandbox or CI runner.
+- Work from a preserved baseline or isolated working copy.
+- Use one bounded manual candidate or max three autonomous iterations unless the user explicitly sets another finite budget.
+- Block evaluator scripts, scenarios, expected outputs, generated evidence, reports used as fixtures, `.git`, caches, package artifacts, credentials, and secrets.
+- Treat saturated scores as gates and add a non-saturated auxiliary metric before claiming improvement.
+- Keep source snapshots and run state outside the target skill package.
+- Freeze the final passing candidate before packaging.
 
+## Runtime capability check
+
+Before mutation, record whether the host provides:
+
+- filesystem read/write;
+- Python 3.10+ or equivalent script execution;
+- command execution;
+- network/research when current external facts are required;
+- independent evaluator/subagent support;
+- artifact delivery/persistence.
+
+Missing capabilities downgrade only the checks that depend on them. Never silently convert `not-run` into `pass`.
 
 ## Skill path resolution
 
-When a user supplies an imprecise target, resolve it before mutation:
-1. If the input ends with `SKILL.md`, use the containing directory after confirming the file exists.
-2. If the input is a directory containing `SKILL.md`, use that directory.
-3. Otherwise, search candidate skill roots by skill name or path substring and continue only after exactly one match is found.
+Resolve exactly one target root whose root contains `SKILL.md`. Do not treat a nested multi-skill repository root as a target skill.
 
-For zero matches, report available candidate roots. For multiple matches, ask for selection rather than guessing. Never mutate a path that does not resolve to exactly one root `SKILL.md`.
+For autonomous runs, the target must live in a Git working tree because rejected candidates are reverted through Git. Manual-patch mode may use an equivalent immutable snapshot instead.
 
+## Material source snapshot
+
+When external inputs affect the patch or decision:
+
+```text
+<PYTHON> scripts/evidence_snapshot.py capture \
+  --root <SOURCE_ROOT> \
+  --path <PATH_1> \
+  --path <PATH_2> \
+  --snapshot-dir <WORK>/source-bytes \
+  --manifest <WORK>/source-manifest.json
+```
+
+Verify before final acceptance:
+
+```text
+<PYTHON> scripts/evidence_snapshot.py verify \
+  --manifest <WORK>/source-manifest.json
+```
+
+The autonomous runner can do this automatically with `--source-root` and repeated `--source-lock-path`.
 
 ## Hypothesis discovery
 
-Use discovery before mutation when no bounded hypothesis is supplied, when a saturated evaluator needs auxiliary directions, or when findings span multiple possible patches. Discovery should generate a backlog, not edit the target.
+If no bounded hypothesis exists, or the current score is saturated/ambiguous, use `skill-hypothesis-discovery` or a compatible supplied backlog before mutation. Do not random-search patches.
 
-Preferred flow:
+A good backlog may conclude `no mutation recommended` or `gather evidence`; respect that result.
+
+## Autonomous runner: Codex adapter
+
+Backward-compatible Codex execution:
 
 ```text
-baseline evidence -> skill-hypothesis-discovery -> backlog/top hypotheses -> skill-improver tests one hypothesis -> skill-change-gate accepts/rejects
+<PYTHON> scripts/skill_improver_loop.py \
+  --target <TARGET> \
+  --evaluator skill-benchmark \
+  --hypothesis-backlog <BACKLOG.json> \
+  --max-iterations 3 \
+  --min-delta 1.0 \
+  --agent-adapter codex \
+  --codex-mode full-auto
 ```
 
-If a machine-readable backlog is available, pass it to the runner:
+`--codex-mode yolo` requires `--sandbox-acknowledged` and must only be used inside an externally hardened disposable environment.
 
-```bash
-python scripts/skill_improver_loop.py \
-  --target /path/to/target-skill \
-  --evaluator skill-benchmark \
-  --hypothesis-backlog /path/to/hypothesis-backlog.json \
+## Autonomous runner: generic command adapter
+
+For another agent CLI, provide an argv template:
+
+```text
+<PYTHON> scripts/skill_improver_loop.py \
+  --target <TARGET> \
+  --evaluator command \
+  --eval-command '<EVALUATOR COMMAND>' \
+  --agent-adapter command \
+  --agent-command-template '<AGENT_CLI> run --cwd {cwd} --target {target} --prompt {prompt}' \
   --max-iterations 3
 ```
 
-Do not treat discovery recommendations as measured improvements. If discovery recommends `gather-evidence` or `no-mutation-recommended`, stop or collect evidence instead of forcing a patch.
+The template is tokenized by `shlex` and executed without a shell. It must contain `{prompt}` and may contain `{cwd}` and `{target}`. If the external CLI cannot safely receive the prompt/path as normal argv, use the host's native action mechanism rather than forcing this adapter.
 
-## Reviewer-severity loop
+## Custom evaluator
 
-When a reviewer, benchmark, agent, or static audit produces issues, triage them before patching:
-- Critical: blocks skill loading, package validation, reference resolution, evaluator execution, or runtime safety. Fix immediately or stop.
-- Major: materially weakens activation, output contract, workflow order, validation, or scope boundaries. Fix before polish.
-- Minor: style, formatting, optional clarity, or subjective suggestions. Evaluate each item for functional value and false-positive risk before editing.
+The command should emit JSON containing at least `score`:
 
-Do not batch unrelated critical, major, and minor changes in one candidate patch. A minor-only remainder may be rejected intentionally when the issue is a false positive, adds complexity, or does not improve activation/output behavior.
+```text
+<PYTHON> scripts/skill_improver_loop.py \
+  --target <TARGET> \
+  --evaluator command \
+  --eval-command '<PYTHON> ../../evals/eval.py --target .' \
+  --benchmark-lock-path ../../evals/eval.py \
+  --required-gate packaging \
+  --max-iterations 3
+```
+
+Prefer `status`, `gates`, and stable diagnostics in evaluator output.
+
+## Structural change gate
+
+For autonomous/self-improvement acceptance, the runner defaults to `required` when `--change-gate-command` is supplied and to `advisory` when no command is available. Explicitly use `required` when an independent gate is available:
+
+```text
+--change-gate-policy required \
+--change-gate-command '<COMMAND THAT EMITS JSON>'
+```
+
+For manual patches, advisory is acceptable when the user did not request fully autonomous acceptance.
 
 ## Graceful cancellation
 
-Long-running loops should expose a stop-file path. The runner checks the file before starting the next candidate and exits cleanly when present. Accepted changes stay in the target folder; rejected candidates remain reverted; in-flight candidate behavior depends on the active executor and should be reviewed before continuing.
+Start with an explicit stop file or accept the default under the state directory:
 
-```bash
-python scripts/skill_improver_loop.py \
-  --target /path/to/target-skill \
-  --evaluator command \
-  --eval-command 'python scripts/static_skill_score.py --target .' \
+```text
+<PYTHON> scripts/skill_improver_loop.py \
+  --target <TARGET> \
+  --evaluator skill-benchmark \
   --max-iterations 3 \
   --stop-file .skill-improver/stop
 ```
 
-Request cancellation from the repository root or pass the same explicit stop-file path:
+Request cancellation:
 
-```bash
-python scripts/cancel_skill_improver.py --stop-file .skill-improver/stop
+```text
+<PYTHON> scripts/cancel_skill_improver.py --stop-file .skill-improver/stop
 ```
 
-Remove the stop file before starting a new loop. Do not report completion solely because cancellation happened; report the last accepted state, skipped iterations, validation status, and remaining risks.
+Inspect canonical status without creating another session store:
 
-## Benchmark modes
-
-- `existing-command`: user supplies deterministic evaluator; require JSON score or score regex; lock inputs.
-- `skill-benchmark`: structural maturity; parse score/verdict/blocker gates; reject blocker failures.
-- `hybrid`: behavior matters; combine static score with locked behavioral result file.
-- `generate-first`: no benchmark; create it, baseline, freeze it, then improve.
-
-## Skill-benchmark run
-
-```bash
-python scripts/skill_improver_loop.py \
-  --target /path/to/target-skill \
-  --evaluator skill-benchmark \
-  --max-iterations 3 \
-  --min-delta 1.0 \
-  --codex-bin codex \
-  --codex-mode full-auto
+```text
+<PYTHON> scripts/skill_improver_status.py --target <TARGET_OR_REPOSITORY>
 ```
 
-Writes reports under `.skill-improver/skill-benchmark-reports/`, freezes inputs, enforces blocker gates, and reverts non-improving candidates.
+The status helper derives evidence from `.skill-improver/runs.jsonl`, the stop file, and the final report.
 
-## Hybrid run
+The runner stops before the next candidate. Accepted changes remain the last-good state; rejected/in-flight candidates are not presented as complete. By default the runner also stops after the first accepted uncommitted candidate, because continuing would blur the clean baseline. Use `--commit-accepted` only in an isolated experiment branch/worktree when multiple accepted iterations are intentionally chained.
 
-```bash
-python scripts/skill_improver_loop.py \
-  --target /path/to/target-skill \
-  --evaluator skill-benchmark \
-  --skill-benchmark-results /path/to/frozen-scenario-results.json \
-  --benchmark-lock-path /path/to/frozen-scenario-results.json \
-  --blocked-path /path/to/evals \
-  --max-iterations 3 \
-  --min-delta 1.0
+## Diagnostic repair
+
+When a candidate fails an objective gate:
+
+1. run the narrowest failing check;
+2. isolate one causal subject;
+3. apply the smallest supported fix;
+4. rerun the same check;
+5. run adjacent checks only after it passes.
+
+Stop after two consecutive non-improving rounds on the same error set unless new evidence appears.
+
+## Final candidate identity
+
+After final validation and before packaging:
+
+```text
+<PYTHON> scripts/evidence_snapshot.py hash-tree \
+  --root <TARGET>
 ```
 
-Use for activation/output behavior; lock scenario results so the agent cannot weaken the benchmark.
+Record `tree_sha256`. Do not edit the candidate after this point without revalidation and a new identity.
 
-## Custom evaluator
+## Package and receipt
 
-```bash
-python scripts/skill_improver_loop.py \
-  --target /path/to/target-skill \
-  --evaluator command \
-  --eval-command 'python /path/to/eval_skill.py --target .' \
-  --benchmark-lock-path /path/to/eval_skill.py \
-  --required-gate packaging \
-  --max-iterations 3 \
-  --min-delta 0.5
+Validate first, then package the frozen candidate:
+
+```text
+<PYTHON> scripts/validate_skill_improver_package.py \
+  --target <TARGET>
+
+<PYTHON> scripts/package_skill.py \
+  --target <TARGET> \
+  --output <OUTPUT_DIR>/skill.zip \
+  --receipt <OUTPUT_DIR>/skill.zip.receipt.json
 ```
 
-Command should print JSON with at least `score`; add `status`, `gates`, `direction`, and `report_path` for stronger decisions.
+The packager:
 
-## Yolo mode
+- canonicalizes destinations before writing;
+- rejects output/receipt aliases with the target or protected paths;
+- runs the validator against a private candidate copy so validator side effects do not mutate the frozen target;
+- stages and CRC-validates the ZIP;
+- computes SHA-256 before commit;
+- preserves/restores last-good outputs on commit failure where possible;
+- writes the optional receipt atomically;
+- verifies the committed package hash.
 
-Only inside an explicitly acknowledged disposable environment:
-
-```bash
-python scripts/skill_improver_loop.py \
-  --target /path/to/target-skill \
-  --evaluator skill-benchmark \
-  --max-iterations 50 \
-  --codex-mode yolo \
-  --sandbox-acknowledged
-```
-
-Never use on a normal workstation or broad filesystem mount.
-
-## Install/package
-
-1. Preserve backup before overwriting an installed skill.
-2. Confirm destination is writable; otherwise produce zip/patch artifact.
-3. Copy only accepted skill folder, excluding evaluator work files, temp reports, caches, secrets, and prior packages.
-4. Re-run validation on installed/packaged contents.
-5. State whether installation is persistent or current-session only.
-6. Include rollback instructions from backup path.
-
-For this package:
-
-```bash
-python scripts/validate_skill_improver_package.py --target /path/to/skill-improver
-python scripts/package_skill.py --target /path/to/skill-improver --output /path/to/skill.zip
-```
+Use repeated `--protected-path` when additional evaluator/source files must never alias the package or receipt destination.
 
 ## Self-improvement safeguards
 
-For `skill-improver` itself: work in a separate copy; record backup/hash; block `evals/`, benchmark reports, expected outputs, and external evaluator scripts unless benchmark design was requested; use one bounded hypothesis per patch; integrate useful resources before deletion; remove templates only after classifying them as placeholders, duplicates, obsolete, or unconsumed; treat static `100/100` as gate only; report bootstrapping, self-reference, and unmeasured behavior.
+When `skill-improver` improves itself:
+
+- use a separate working copy;
+- preserve the installed baseline before edits;
+- freeze `evals/`, the deterministic starter evaluator, and the package validator unless evaluator design is explicitly in scope;
+- use an external structural/reproducibility evaluator for before/after evidence;
+- treat static `100/100` as a gate only;
+- block generated reports and source-snapshot evidence from entering the final package;
+- re-run validation from outside the candidate mutation surface;
+- install/replace only after the candidate is frozen and packaged.
 
 ## Reject/revert when
 
-Benchmark or locked-fixture hash changed; a blocked path changed; files outside scope changed; required gates failed; evaluator output is missing/unparsable/lower confidence; score misses configured delta; safety boundaries weaken; difficult tests are removed; or unmeasured scenario results are claimed.
+Reject or stop when the evaluator hash changes; a protected path changes; source verification fails; files outside scope change; required gates fail; evaluator output is missing/unparsable; the metric misses the threshold; the structural gate blocks; safety/semantic boundaries weaken; difficult tests are removed; the same repair fails twice without improvement; output destinations alias protected inputs; or validation/package delivery fails.

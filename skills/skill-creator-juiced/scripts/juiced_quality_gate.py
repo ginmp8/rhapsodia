@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 
 from skill_spec import read_text, validate_agent_skill
+from validate_portability import normalize_hosts, validate_portability
 
 PLACEHOLDER_PATTERNS = [
     "TO" + "DO",
@@ -33,7 +34,7 @@ def local_markdown_links(target: Path, markdown_file: Path):
         yield markdown_file, ref, (markdown_file.parent / ref).resolve()
 
 
-def run_gate(target: Path, profile: str) -> dict:
+def run_gate(target: Path, profile: str, hosts: str | None = None) -> dict:
     errors: list[str] = []
     warnings: list[str] = []
     inspected: list[str] = []
@@ -49,6 +50,11 @@ def run_gate(target: Path, profile: str) -> dict:
     portability = validate_agent_skill(target, profile)
     errors.extend(portability["errors"])
     warnings.extend(portability["warnings"])
+    host_portability = None
+    if hosts:
+        host_portability = validate_portability(target, normalize_hosts(hosts))
+        errors.extend(item["evidence"] for item in host_portability["errors"])
+        warnings.extend(item["evidence"] for item in host_portability["warnings"])
 
     skill_md = target / "SKILL.md"
     inspected.append(str(skill_md))
@@ -109,6 +115,7 @@ def run_gate(target: Path, profile: str) -> dict:
         "warnings": sorted(set(warnings)),
         "inspected": sorted(set(inspected)),
         "portability": portability,
+        "host_portability": host_portability,
     }
 
 
@@ -116,10 +123,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run structural and portability gates for a skill package.")
     parser.add_argument("target", help="Path to a skill folder")
     parser.add_argument("--profile", choices=["portable", "openai"], default="portable")
+    parser.add_argument("--hosts", help="Optional multi-host matrix: portable-core,openai,codex,claude,copilot,cursor,all")
     parser.add_argument("--json", dest="json_path", help="Optional JSON output path")
     args = parser.parse_args()
 
-    report = run_gate(Path(args.target).resolve(), args.profile)
+    report = run_gate(Path(args.target).resolve(), args.profile, args.hosts)
     if args.json_path:
         out = Path(args.json_path)
         out.parent.mkdir(parents=True, exist_ok=True)

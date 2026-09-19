@@ -1,6 +1,8 @@
 interface:
   display_name: Migration Conflict Analyzer
   short_description: Review EF Core migrations for PR and deployment conflicts.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

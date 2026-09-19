@@ -1,34 +1,19 @@
 # Refactor Examples
 
-## Imperative
+## Safe imperative shortening
 
-Before:
-```md
-You should make sure that you read the target SKILL.md first before doing any other work because it contains the main instructions.
-```
-After:
-```md
-Read target `SKILL.md` first.
-```
+Before: `You should make sure that you read the target SKILL.md first before doing any other work.`
 
-## Merge negatives
+After: `Read target SKILL.md first.`
 
-Before:
-```md
-Do not edit secrets. Do not edit credentials. Do not edit .git. Do not edit benchmark fixtures.
-```
-After:
-```md
-Do not edit secrets, credentials, `.git`, or benchmark fixtures.
-```
+## Merge duplicate negatives
 
-## Keep safety detail
+Before: `Do not edit secrets. Do not edit credentials. Do not edit .git. Do not edit benchmark fixtures.`
 
-Bad:
-```md
-Validate everything. No unsafe stuff. Pack if ok.
-```
-Better:
-```md
-Validate links, protected regions, semantic invariants, touched scripts, and package gates. Do not weaken safety, validation, package, or stop boundaries. Package only after validation passes.
-```
+After: `Do not edit secrets, credentials, .git, or benchmark fixtures.`
+
+## Reject false efficiency
+
+Bad: `Validate everything. No unsafe stuff. Pack if ok.`
+
+Why rejected: it removes specific safety, evidence/citation, validation, and output duties. Fewer tokens do not demonstrate equivalence.

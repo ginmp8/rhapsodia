@@ -17,3 +17,7 @@ Prefer user-declared desired behavior; target repository truth for implementatio
 ## Research Output
 
 Record research questions, sources used, adopted claims, rejected/unused claims, context constraints, and remaining unknowns.
+
+## Portability research
+
+When the user requests cross-host support, verify unstable installation/discovery facts against current primary documentation. Treat the Agent Skills specification as the semantic source of truth and product docs as adapters. Do not copy host-specific discovery paths into the portable core unless the target is intentionally host-specific. Record the verification date/source in durable reports when those facts materially affect delivery.

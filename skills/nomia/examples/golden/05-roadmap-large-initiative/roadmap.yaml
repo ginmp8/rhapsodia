@@ -34,7 +34,8 @@ features:
     confidence: medium
     dependencies: []
     ready_for_spec: true
-    candidate_spec_id: spec022
+    candidate_spec_id: spec-2026-04-20-saved-query-sharing-controls
+    candidate_spec_id_provenance: "user-supplied in input.md"
     scope_summary: Admin-facing saved-query visibility controls.
     mvp_boundary:
       - Saved-query sharing visibility.

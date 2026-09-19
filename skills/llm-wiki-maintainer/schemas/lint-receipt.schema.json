@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:llm-wiki-maintainer:lint-receipt:1",
+  "title": "LLM Wiki lint/validation receipt",
+  "type": "object",
+  "required": ["receipt_version", "stage", "status", "structural_evidence", "semantic_editorial_judgment", "metrics", "limitations"],
+  "properties": {
+    "receipt_version": {"const": 1},
+    "stage": {"const": "lint-validation"},
+    "status": {"enum": ["pass", "warn", "fail"]},
+    "structural_evidence": {"type": "array"},
+    "semantic_editorial_judgment": {"type": "array"},
+    "metrics": {"type": "object"},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

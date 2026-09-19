@@ -2,50 +2,67 @@
 
 ## Objective
 
-
 ## Scope
 
-- Target path:
+- Canonical target path:
 - In scope:
 - Out of scope:
-- Blocked paths:
+- Writable paths:
+- Protected paths:
 
-## Commands
+## Environment/capabilities
 
-| Gate | Command | Source | Required? |
-|---|---|---|---|
-| build |  |  |  |
-| test |  |  |  |
-| lint |  |  |  |
+- Runtime/tool fingerprint:
+- Known blockers:
+
+## Required gates
+
+| Gate | Selected command | Source/rank | Working directory | Required? |
+|---|---|---|---|---|
+| build |  |  |  |  |
+| test |  |  |  |  |
+| lint |  |  |  |  |
+| validator |  |  |  |  |
+| packaging |  |  |  |  |
 
 ## Phase summary
 
-| Phase | Priority | Focus | Files | Gates | Risk |
-|---|---|---|---|---|---|
+| Phase | Priority | Focus | Files | Baseline gate | Rerun gate | Risk |
+|---|---|---|---|---|---|---|
 
-## Phase 1: 
+## Phase 1
 
 ### Goal
 
-### Files to inspect
+### Baseline evidence
 
-### Files to create or modify
+- Exact command:
+- Working directory:
+- State / exit code:
+- Classification/code:
+
+### Files to inspect/change
+
+### Protected evidence check
 
 ### Cases
 
 | Case | Expected behavior | Evidence source |
 |---|---|---|
 
-### Acceptance gates
+### Repair and rerun
 
-- [ ] 
+- Smallest patch hypothesis:
+- Exact same-gate rerun command:
+- Adjacent gates only after rerun pass:
 
-### Risks and rollback
-
+### Stop condition
 
 ## Final validation
 
-- [ ] Build gate:
-- [ ] Test gate:
-- [ ] Lint gate:
-- [ ] Validator/package gate:
+- [ ] Protected paths unchanged or explicitly authorized.
+- [ ] Required gates have receipts.
+- [ ] Exact exit codes recorded.
+- [ ] Read-only validators repeat consistently where required.
+- [ ] Overall state computed by fixed precedence.
+- [ ] Final candidate frozen after last pass.

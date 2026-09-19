@@ -2,10 +2,10 @@
 """
 Hypothesis-driven skill improvement loop.
 
-This runner orchestrates a bounded Codex experiment against a target skill folder:
+This runner orchestrates a bounded agent experiment against a target skill folder:
 1. establish a baseline with a frozen evaluator
 2. load or discover a falsifiable hypothesis when a backlog is supplied
-3. ask Codex to apply a minimal patch
+3. ask the configured agent adapter to apply a minimal patch
 4. re-run the same evaluator
 5. run the structural change gate when configured
 6. keep the patch only if the metric improves, required gates pass, and the change gate allows acceptance
@@ -147,6 +147,64 @@ HYPOTHESES = [
             "Check cancellation between candidate iterations, not by weakening evaluation gates.",
             "Document how accepted, rejected, and in-flight candidates are handled.",
             "Do not delete accepted target changes during cancellation.",
+        ],
+    },
+    {
+        "id": "H053",
+        "name": "Snapshot material source evidence",
+        "goal": "Prevent mutable external evidence from silently redefining a baseline or acceptance decision.",
+        "constraints": [
+            "Capture exact bytes before analysis when external files materially affect the decision.",
+            "Verify source identity again before acceptance.",
+            "Invalidate or explicitly re-baseline when source verification fails.",
+        ],
+    },
+    {
+        "id": "H054",
+        "name": "Add canonical output alias preflight",
+        "goal": "Prevent outputs, receipts, inputs, or protected files from resolving to the same destination.",
+        "constraints": [
+            "Check authored and canonical paths before writes.",
+            "Fail closed on aliases or escaping destinations without altering existing bytes.",
+        ],
+    },
+    {
+        "id": "H055",
+        "name": "Add recovery-aware delivery receipts",
+        "goal": "Preserve last-good artifacts and tie receipts to exact committed bytes.",
+        "constraints": [
+            "Stage, validate, and hash before commit.",
+            "Preserve recovery paths when rollback is incomplete.",
+            "Never emit a success receipt before artifact commit succeeds.",
+        ],
+    },
+    {
+        "id": "H056",
+        "name": "Freeze final candidate after pass",
+        "goal": "Keep final evidence valid by preventing unvalidated edits after the last passing gate.",
+        "constraints": [
+            "Record an exact final candidate identity.",
+            "Require revalidation after any post-pass edit.",
+            "Package only the frozen candidate bytes.",
+        ],
+    },
+    {
+        "id": "H057",
+        "name": "Isolate host adapters from portable core",
+        "goal": "Improve cross-host reliability by making capabilities and portable semantics primary, with vendor CLIs as optional adapters.",
+        "constraints": [
+            "Do not remove intentional host-specific metadata.",
+            "Keep semantic contracts independent of a single agent vendor.",
+            "Prefer standard-library, path-portable scripts and explicit degraded-mode reporting.",
+        ],
+    },
+    {
+        "id": "H058",
+        "name": "Add diagnostic-driven bounded repair",
+        "goal": "Reduce random-search behavior by mapping failures to one causal repair at a time.",
+        "constraints": [
+            "Rerun the same failing gate after the smallest supported fix.",
+            "Stop after two consecutive non-improving rounds on the same objective error set unless new evidence appears.",
         ],
     },
 ]
@@ -787,24 +845,98 @@ def build_codex_prompt(args: argparse.Namespace, target: Path, baseline: EvalRes
     ).strip()
 
 
-def codex_command(args: argparse.Namespace, prompt: str, git_root: Path) -> list[str]:
-    cmd = [args.codex_bin, "exec", "--cd", str(git_root)]
-    if args.codex_model:
-        cmd += ["--model", args.codex_model]
-    if args.codex_mode == "full-auto":
-        cmd.append("--full-auto")
-    elif args.codex_mode == "yolo":
-        if not args.sandbox_acknowledged:
-            raise RuntimeError("--codex-mode yolo requires --sandbox-acknowledged")
-        cmd.append("--dangerously-bypass-approvals-and-sandbox")
-    elif args.codex_mode == "read-only":
-        pass
-    else:
-        raise ValueError(f"invalid codex mode: {args.codex_mode}")
-    if args.codex_json:
-        cmd.append("--json")
-    cmd.append(prompt)
-    return cmd
+def build_agent_command(args: argparse.Namespace, prompt: str, git_root: Path, target: Path) -> list[str]:
+    if args.agent_adapter == "codex":
+        cmd = [args.codex_bin, "exec", "--cd", str(git_root)]
+        if args.codex_model:
+            cmd += ["--model", args.codex_model]
+        if args.codex_mode == "full-auto":
+            cmd.append("--full-auto")
+        elif args.codex_mode == "yolo":
+            if not args.sandbox_acknowledged:
+                raise RuntimeError("--codex-mode yolo requires --sandbox-acknowledged")
+            cmd.append("--dangerously-bypass-approvals-and-sandbox")
+        elif args.codex_mode == "read-only":
+            pass
+        else:
+            raise ValueError(f"invalid codex mode: {args.codex_mode}")
+        if args.codex_json:
+            cmd.append("--json")
+        cmd.append(prompt)
+        return cmd
+
+    if args.agent_adapter == "command":
+        if not args.agent_command_template:
+            raise RuntimeError("--agent-adapter command requires --agent-command-template")
+        tokens = shlex.split(args.agent_command_template)
+        if not tokens:
+            raise RuntimeError("--agent-command-template produced an empty command")
+        replacements = {
+            "{prompt}": prompt,
+            "{cwd}": str(git_root),
+            "{target}": str(target),
+        }
+        rendered: list[str] = []
+        for token in tokens:
+            value = token
+            for placeholder, replacement in replacements.items():
+                value = value.replace(placeholder, replacement)
+            rendered.append(value)
+        if not any("{prompt}" in token for token in tokens):
+            raise RuntimeError("--agent-command-template must include {prompt}")
+        return rendered
+
+    raise ValueError(f"invalid agent adapter: {args.agent_adapter}")
+
+
+def capture_material_sources(args: argparse.Namespace, git_root: Path, state_dir: Path) -> Optional[Path]:
+    if not args.source_lock_path:
+        return None
+    source_root = resolve_under(git_root, args.source_root) if args.source_root else git_root
+    script = SKILL_ROOT / "scripts" / "evidence_snapshot.py"
+    snapshot_dir = state_dir / "source-bytes"
+    manifest = state_dir / "source-manifest.json"
+    cmd = [
+        sys.executable,
+        str(script),
+        "capture",
+        "--root",
+        str(source_root),
+        "--snapshot-dir",
+        str(snapshot_dir),
+        "--manifest",
+        str(manifest),
+    ]
+    for item in args.source_lock_path:
+        cmd += ["--path", str(item)]
+    completed = run(cmd, cwd=git_root, check=False)
+    if completed.returncode != 0:
+        raise RuntimeError(f"source snapshot failed\n{completed.stdout}")
+    return manifest
+
+
+def verify_material_sources(manifest: Optional[Path], git_root: Path) -> None:
+    if manifest is None:
+        return
+    script = SKILL_ROOT / "scripts" / "evidence_snapshot.py"
+    completed = run(
+        [sys.executable, str(script), "verify", "--manifest", str(manifest)],
+        cwd=git_root,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(f"material source verification failed\n{completed.stdout}")
+
+
+def hash_tree_identity(root: Path) -> str:
+    hasher = hashlib.sha256()
+    for file_path in iter_files_for_hash(root):
+        rel = file_path.relative_to(root).as_posix()
+        digest = hashlib.sha256(file_path.read_bytes()).digest()
+        hasher.update(rel.encode("utf-8"))
+        hasher.update(b"\0")
+        hasher.update(digest)
+    return hasher.hexdigest()
 
 
 def append_jsonl(path: Path, obj: dict[str, Any]) -> None:
@@ -833,15 +965,33 @@ def read_stop_reason(stop_file: Path) -> str:
     return reason or "stop file present"
 
 
-def revert_changes(git_root: Path) -> None:
-    run(["git", "reset", "--hard", "HEAD"], cwd=git_root, check=True)
-    run(["git", "clean", "-fd"], cwd=git_root, check=True)
+def git_pathspec(git_root: Path, raw: Path) -> str:
+    resolved = resolve_under(git_root, raw)
+    try:
+        return resolved.relative_to(git_root).as_posix()
+    except ValueError as exc:
+        raise RuntimeError(f"git-scoped mutation path is outside repository: {resolved}") from exc
 
 
-def maybe_commit(args: argparse.Namespace, git_root: Path, hypothesis: dict[str, Any], score: float) -> None:
+def mutation_pathspecs(args: argparse.Namespace, git_root: Path, target: Path) -> list[str]:
+    values = [git_pathspec(git_root, target)]
+    values.extend(git_pathspec(git_root, p) for p in args.extra_allowed_path)
+    return list(dict.fromkeys(values))
+
+
+def revert_changes(args: argparse.Namespace, git_root: Path, target: Path) -> None:
+    pathspecs = mutation_pathspecs(args, git_root, target)
+    # Revert only the declared mutation scope. Never reset/clean the entire repository,
+    # because run state, snapshots, or unrelated untracked files may exist outside it.
+    run(["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", *pathspecs], cwd=git_root, check=True)
+    run(["git", "clean", "-fd", "--", *pathspecs], cwd=git_root, check=True)
+
+
+def maybe_commit(args: argparse.Namespace, git_root: Path, target: Path, hypothesis: dict[str, Any], score: float) -> None:
     if not args.commit_accepted:
         return
-    run(["git", "add", "--", str(args.target)], cwd=git_root, check=True)
+    pathspecs = mutation_pathspecs(args, git_root, target)
+    run(["git", "add", "--", *pathspecs], cwd=git_root, check=True)
     message = f"improve skill via {hypothesis['id']}: {hypothesis['name']} (score {score})"
     run(["git", "commit", "-m", message], cwd=git_root, check=True)
 
@@ -896,7 +1046,9 @@ def write_patch_decision_records(
                 "mode": "automated-loop" if not args.dry_run else "dry-run",
                 "evaluator": args.evaluator,
                 "benchmark_lock": benchmark_lock,
-                "safety_mode": args.codex_mode,
+                "source_manifest": str(getattr(args, "source_manifest", None) or "not configured"),
+                "safety_mode": args.codex_mode if args.agent_adapter == "codex" else "generic-command-adapter",
+                "agent_adapter": args.agent_adapter,
                 "hypothesis_source": getattr(args, "hypothesis_source_label", "built-in-catalog"),
                 "hypothesis_evidence_signal": "see selected hypothesis/backlog evidence in run log",
                 "hypothesis_statement": f"{item.hypothesis_id} - {item.hypothesis_name}",
@@ -917,6 +1069,8 @@ def write_patch_decision_records(
             "change_gate_policy": args.change_gate_policy,
                 "change_gate_status": item.change_gate_status,
                 "change_gate_notes": item.change_gate_notes or "not run",
+                "source_verification": "pass" if getattr(args, "source_manifest", None) else "not-required",
+                "freeze_status": "accepted candidate retained as last-good state" if item.accepted else "rejected candidate reverted",
                 "accepted_or_rejected": "accepted" if item.accepted else "rejected",
                 "decision_reason": item.reason,
                 "rollback_action": "kept patch" if item.accepted else "reverted patch or no mutation retained",
@@ -942,6 +1096,9 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
         f"- `{item.hypothesis_id}` {item.hypothesis_name}: {item.reason}; candidate score: {item.after}"
         for item in rejected
     ]
+    frozen_candidate_identity = hash_tree_identity(args.target)
+    source_manifest = str(getattr(args, "source_manifest", None) or "not configured")
+    source_verification = "pass" if getattr(args, "source_manifest", None) else "not-required"
     rendered = render_template(
         RUN_REPORT_TEMPLATE,
         {
@@ -951,7 +1108,9 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "baseline_harness_score": best.score,
             "baseline_verdict": baseline.data.get("verdict", baseline.status) if isinstance(baseline.data, dict) else baseline.status,
             "baseline_blockers": inline_list([name for name, value in baseline.gates.items() if not gate_passes(value)]),
-            "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`; change gate policy `{args.change_gate_policy}`; stop file `{getattr(args, 'stop_file', 'not configured')}`.",
+            "runtime_context": f"agent_adapter={args.agent_adapter}; python={sys.version.split()[0]}; git_root={git_root}",
+            "source_manifest": source_manifest,
+            "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`; change gate policy `{args.change_gate_policy}`; agent adapter `{args.agent_adapter}`; source manifest `{getattr(args, 'source_manifest', None) or 'not configured'}`; stop file `{getattr(args, 'stop_file', 'not configured')}`.",
             "target_package_summary": f"Target was evaluated from `{args.target}`; report path `{best.report_path or 'not captured'}`.",
             "additional_research_summary": "hypothesis discovery/backlog loaded when configured; otherwise built-in catalog fallback",
             "decision_supported": "accept, reject, revert, package, or continue bounded improvement based on measured gates.",
@@ -976,11 +1135,17 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "packaging_changes": "package step is external to this run report unless invoked separately",
             "commands_executed": f"Evaluator mode `{args.evaluator}`; patch records: {inline_list(patch_records)}",
             "before_after_comparison": f"baseline {baseline.score}; final {best.score}; delta {best.score - baseline.score}",
+            "source_verification": source_verification,
+            "frozen_candidate_identity": frozen_candidate_identity,
+            "evidence_layers": "structural evaluator evidence measured; behavioral/runtime/perceptual evidence only measured when separately executed or supplied",
             "residual_risks": "Behavioral scenario rates are not measured unless captured scenario outputs are supplied; yolo mode remains unsafe outside a disposable sandbox.",
             "package_path": "not packaged by this runner unless a separate package command is executed",
             "package_validator_result": "not run by this report writer",
             "packaged_file_count": "not applicable",
-            "rollback_path": "git reset/clean for rejected patches; accepted patches require VCS or external backup rollback",
+            "package_receipt_identity": "not packaged by this runner; use scripts/package_skill.py --receipt after final validation",
+            "rollback_path": "git reset/clean for rejected in-flight patches; accepted patches remain the last-good state and require VCS or external baseline rollback",
+            "termination_status": getattr(args, "termination_status", "unknown"),
+            "termination_reason": getattr(args, "termination_reason", "not recorded"),
             "measured_evidence": f"baseline score {baseline.score}; final score {best.score}; iterations {len(iterations)}; accepted {len(accepted)}; rejected {len(rejected)}",
             "unmeasured_evidence": "activation/output metrics remain planned unless scenario execution results are supplied.",
         },
@@ -989,7 +1154,7 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run hypothesis-driven skill improvement with Codex.")
+    parser = argparse.ArgumentParser(description="Run hypothesis-driven skill improvement with a pluggable patching agent.")
     parser.add_argument("--target", required=True, type=Path, help="Target skill folder.")
     parser.add_argument("--evaluator", choices=["command", "skill-benchmark"], default="command", help="Metric source. Use skill-benchmark for the bundled benchmark adapter.")
     parser.add_argument("--eval-command", help="Command run inside target folder when --evaluator command is used. Prefer JSON output with score.")
@@ -997,8 +1162,8 @@ def main() -> int:
     parser.add_argument("--skill-benchmark-results", type=Path, help="Optional fixed behavioral results JSON passed to skill-benchmark.")
     parser.add_argument("--skill-benchmark-out", type=Path, help="Output directory for generated skill-benchmark reports.")
     parser.add_argument("--direction", choices=["higher-is-better", "lower-is-better"], default="higher-is-better")
-    parser.add_argument("--min-delta", type=float, default=0.1)
-    parser.add_argument("--max-iterations", type=int, default=10, help="0 means infinite when --infinite is also set.")
+    parser.add_argument("--min-delta", type=float, default=1.0)
+    parser.add_argument("--max-iterations", type=int, default=3, help="0 means infinite when --infinite is also set; default is 3 bounded iterations.")
     parser.add_argument("--infinite", action="store_true", help="Allow an unbounded loop. Requires explicit use.")
     parser.add_argument("--patience", type=int, default=5, help="Stop after this many consecutive rejected hypotheses.")
     parser.add_argument("--sleep-seconds", type=float, default=0.0)
@@ -1007,7 +1172,7 @@ def main() -> int:
     parser.add_argument("--score-regex", help="Regex to extract score when command eval output is not JSON. First group is used.")
     parser.add_argument("--require-status-pass", action="store_true", help="Reject candidate unless evaluator status is exactly pass.")
     parser.add_argument("--required-gate", action="append", default=[], help="Gate name that must be present and pass. Can be repeated.")
-    parser.add_argument("--change-gate-policy", choices=["disabled", "advisory", "required"], default="disabled", help="Structural change gate policy. Use required for autonomous acceptance when --change-gate-command is available.")
+    parser.add_argument("--change-gate-policy", choices=["disabled", "advisory", "required"], default=None, help="Structural change gate policy. Default: required when --change-gate-command is supplied, otherwise advisory.")
     parser.add_argument("--change-gate-command", help="Optional command run from the git root after candidate evaluation. It should print JSON with status pass, pass-with-warnings, or fail.")
     parser.add_argument("--change-gate-timeout", type=int, default=300)
     parser.add_argument("--enforce-all-gates", action="store_true", help="Reject candidate when any reported gate fails.")
@@ -1018,7 +1183,11 @@ def main() -> int:
     parser.add_argument("--freeze-benchmark", action="store_true", default=True, help="Hash evaluator inputs and reject if they change during the run. Enabled by default.")
     parser.add_argument("--no-freeze-benchmark", dest="freeze_benchmark", action="store_false")
     parser.add_argument("--benchmark-lock-path", action="append", type=Path, default=[], help="Additional evaluator fixture path to hash/freeze. Can be repeated.")
-    parser.add_argument("--blocked-path", action="append", type=Path, default=[], help="Path Codex must not modify, even if inside allowed scope. Can be repeated.")
+    parser.add_argument("--blocked-path", action="append", type=Path, default=[], help="Path the patching agent must not modify, even if inside allowed scope. Can be repeated.")
+    parser.add_argument("--source-root", type=Path, help="Root used for material source snapshots. Defaults to the git root.")
+    parser.add_argument("--source-lock-path", action="append", type=Path, default=[], help="Material source path to capture before analysis and verify before acceptance. Can be repeated.")
+    parser.add_argument("--agent-adapter", choices=["codex", "command"], default="codex", help="Patching-agent adapter. 'command' is host-neutral and uses --agent-command-template without a shell.")
+    parser.add_argument("--agent-command-template", help="Generic argv template tokenized with shlex; must contain {prompt}; supports {cwd} and {target}.")
     parser.add_argument("--codex-bin", default="codex")
     parser.add_argument("--codex-model")
     parser.add_argument("--codex-mode", choices=["read-only", "full-auto", "yolo"], default="full-auto")
@@ -1034,6 +1203,12 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="Build prompts and evaluate but do not invoke Codex.")
     args = parser.parse_args()
 
+    # Keep runner defaults aligned with the portable contract: use a required
+    # structural gate when a gate command is available, otherwise record the
+    # missing gate as advisory instead of silently disabling it.
+    if args.change_gate_policy is None:
+        args.change_gate_policy = "required" if args.change_gate_command else "advisory"
+
     target = args.target.resolve()
     if not target.exists():
         raise SystemExit(f"target does not exist: {target}")
@@ -1048,6 +1223,10 @@ def main() -> int:
         raise SystemExit("--codex-mode yolo requires --sandbox-acknowledged")
     if args.change_gate_policy == "required" and not args.change_gate_command:
         raise SystemExit("--change-gate-policy required requires --change-gate-command")
+    if args.agent_adapter == "command" and not args.agent_command_template:
+        raise SystemExit("--agent-adapter command requires --agent-command-template")
+    if args.agent_adapter == "command" and "{prompt}" not in args.agent_command_template:
+        raise SystemExit("--agent-command-template must contain {prompt}")
 
     hypothesis_pool = None
     args.hypothesis_source_label = "built-in-catalog"
@@ -1068,6 +1247,8 @@ def main() -> int:
     args.stop_file = stop_file
     report_path = args.report_path or (state_dir / "improvement-report.md")
     report_path = report_path if report_path.is_absolute() else (git_root / report_path).resolve()
+    source_manifest = capture_material_sources(args, git_root, state_dir)
+    args.source_manifest = source_manifest
 
     baseline = evaluate(args, target, git_root)
     baseline_gate_ok, baseline_gate_reason = result_passes_required_gates(args, baseline, None)
@@ -1080,15 +1261,23 @@ def main() -> int:
     rejected_in_row = 0
     iteration = 0
     results: list[IterationResult] = []
+    termination_status = "completed"
+    termination_reason = "loop completed"
 
     while True:
         if stop_requested(args.stop_file):
-            print(f"[stop] graceful stop requested by {args.stop_file}: {read_stop_reason(args.stop_file)}", flush=True)
+            termination_status = "cancelled"
+            termination_reason = read_stop_reason(args.stop_file)
+            print(f"[stop] graceful stop requested by {args.stop_file}: {termination_reason}", flush=True)
             break
         iteration += 1
         if args.max_iterations and iteration > args.max_iterations:
+            termination_status = "max-iterations-reached"
+            termination_reason = f"configured max iterations reached: {args.max_iterations}"
             break
         if rejected_in_row >= args.patience:
+            termination_status = "patience-reached"
+            termination_reason = f"consecutive rejected hypotheses reached patience: {args.patience}"
             print(f"[stop] patience reached: {args.patience}", flush=True)
             break
 
@@ -1106,14 +1295,15 @@ def main() -> int:
             files = []
             change_gate = ChangeGateResult(status="not-run", notes="dry run")
         else:
-            completed = run(codex_command(args, prompt, git_root), cwd=git_root, timeout=None, check=False)
+            completed = run(build_agent_command(args, prompt, git_root, target), cwd=git_root, timeout=None, check=False)
             if completed.returncode != 0:
-                revert_changes(git_root)
-                raise RuntimeError(f"codex failed with exit code {completed.returncode}\n{completed.stdout}")
+                revert_changes(args, git_root, target)
+                raise RuntimeError(f"patching agent failed with exit code {completed.returncode}\n{completed.stdout}")
             files = changed_files(git_root, [state_dir])
             assert_changed_files_in_scope(files, git_root, target, args.extra_allowed_path)
             assert_no_blocked_paths_changed(files, git_root, args.blocked_path)
             try:
+                verify_material_sources(source_manifest, git_root)
                 after = evaluate(args, target, git_root)
                 if args.freeze_benchmark and after.evaluator_hash != benchmark_hash:
                     accepted = False
@@ -1139,11 +1329,11 @@ def main() -> int:
                 change_gate = ChangeGateResult(status="not-run", notes="candidate evaluation failed before change gate")
 
             if accepted and after is not None:
-                maybe_commit(args, git_root, hypothesis, after.score)
+                maybe_commit(args, git_root, target, hypothesis, after.score)
                 best = after
                 rejected_in_row = 0
             else:
-                revert_changes(git_root)
+                revert_changes(args, git_root, target)
                 rejected_in_row += 1
 
         before_score = best.score if not accepted else baseline.score
@@ -1179,15 +1369,25 @@ def main() -> int:
                 "candidate_gates": None if after is None else after.gates,
                 "change_gate_status": change_gate.status,
                 "change_gate_notes": change_gate.notes,
+                "source_manifest": None if source_manifest is None else str(source_manifest),
+                "source_verification": "pass" if source_manifest is not None else "not-required",
                 "report_path": None if after is None else after.report_path,
             },
         )
         print(f"[decision] accepted={accepted} reason={reason} best={best.score}", flush=True)
+        if accepted and not args.commit_accepted:
+            termination_status = "accepted"
+            termination_reason = "accepted candidate retained as last-good state"
+            print("[stop] accepted candidate retained as last-good state; use --commit-accepted in an isolated working copy to continue with additional accepted iterations", flush=True)
+            break
         if args.sleep_seconds:
             time.sleep(args.sleep_seconds)
 
+    verify_material_sources(source_manifest, git_root)
+    args.termination_status = termination_status
+    args.termination_reason = termination_reason
     write_report(args, git_root, baseline, best, results, report_path)
-    print(json.dumps({"baseline_score": baseline.score, "best_score": best.score, "iterations": len(results), "report_path": str(report_path)}, indent=2))
+    print(json.dumps({"status": termination_status, "reason": termination_reason, "baseline_score": baseline.score, "best_score": best.score, "iterations": len(results), "report_path": str(report_path)}, indent=2))
     return 0
 
 

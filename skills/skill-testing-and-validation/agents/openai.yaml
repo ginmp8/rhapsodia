@@ -1,6 +1,8 @@
 interface:
   display_name: Skill Testing and Validation
   short_description: Plan, run, validate, lint, and minimally fix tests and validators.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

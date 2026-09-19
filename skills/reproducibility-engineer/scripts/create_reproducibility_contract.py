@@ -29,7 +29,7 @@ def main() -> int:
         audit = json.loads(Path(args.audit).read_text(encoding='utf-8'))
 
     contract = {
-        'contract_version': 1,
+        'contract_version': 2,
         'target': {
             'name': fm.get('name', root.name),
             'path': str(root),
@@ -56,6 +56,18 @@ def main() -> int:
             'immutable_pinned_vcs_reads_when_supported': True,
             'reject_source_alias_escape': True,
             'rebaseline_if_source_identity_changes': True
+        },
+        'self_hosting': {
+            'enabled': False,
+            'generation_id': '',
+            'controller_identity': '',
+            'baseline_identity': '',
+            'candidate_identity': '',
+            'max_self_recursion_depth': 1,
+            'controller_read_only': True,
+            'evaluator_outside_candidate_surface': True,
+            'promotion_external_to_candidate': True,
+            'last_known_good_identity': ''
         },
         'delivery': {
             'atomic_when_applicable': True,

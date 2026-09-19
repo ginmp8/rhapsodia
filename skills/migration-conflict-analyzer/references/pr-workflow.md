@@ -1,58 +1,70 @@
 # PR Migration Review Workflow
 
-## Inputs
+## Evidence precedence
 
-Prefer these inputs, in order:
+1. resolved Git base/head/merge-base SHAs;
+2. exact changed migration bytes and SHA-256;
+3. changed ModelSnapshot/Designer identities as supporting evidence;
+4. base migration-history identities read from the resolved base revision;
+5. generated SQL identity when supplied;
+6. provider/DbContext/deployment evidence when supplied.
 
-1. changed migration files from the PR;
-2. changed `ModelSnapshot` and `*.Designer.cs` files as supporting signals;
-3. base-branch migration files for duplicate history comparison;
-4. generated SQL script from the PR branch;
-5. provider, DbContext name, and deployment model.
-
-## Local repository workflow
-
-From the repository root:
+## Local Git workflow
 
 ```bash
-python3 -S scripts/migration_conflict_analyzer.py . --git-base origin/main --format markdown --output migration-conflict-report.md
+python3 -S scripts/migration_conflict_analyzer.py . \
+  --git-base origin/main \
+  --format json \
+  --output migration-conflict-report.json \
+  --receipt migration-conflict-analysis-receipt.json
 ```
 
-The script asks Git for changed files and analyzes changed migration main files, excluding `*.Designer.cs` and `*ModelSnapshot.cs` from operation parsing. It still records snapshot/designer changes as review signals when present in the diff.
+The analyzer records the requested base ref plus resolved base/head/merge-base SHAs. Base-history collision checks are made against migration identities read from the resolved base revision, not inferred from the current working tree.
 
-If Git is unavailable, pass files or folders directly:
+A dirty working tree is recorded. The analyzed working bytes remain bound by file SHA-256; do not describe them as immutable commit bytes unless they match the recorded revision evidence.
 
-```bash
-python3 -S scripts/migration_conflict_analyzer.py path/to/Migrations --format markdown
-```
+## Connector-only PR workflow
 
-## Connector workflow
+When repository execution is unavailable:
 
-When a PR is only available through a connector:
+1. fetch the PR file list/diff;
+2. read every changed main migration file;
+3. read changed ModelSnapshot/Designer files as supporting evidence;
+4. obtain base migration identities when a base-conflict claim is required;
+5. preserve exact diff/file revision identifiers supplied by the connector;
+6. apply `conflict-heuristics.md` manually;
+7. mark deterministic analyzer, Git-object, and package-owned validation as `not-run`.
 
-1. fetch the PR file list or diff;
-2. identify added/modified migration main files;
-3. read each changed migration file;
-4. read changed snapshot/designer files only for divergence signals;
-5. if the analyzer cannot run, apply `references/conflict-heuristics.md` manually and clearly state that deterministic parsing was not executed.
+Do not claim a base collision if base migration history was not inspected.
+
+## Generated SQL
+
+Generated SQL may be supplied with `--generated-sql` to bind its hash to the report. Hashing it is not the same as executing or semantically proving it.
+
+For high-risk changes, separately generate and inspect provider-specific SQL and test both:
+
+- clean database path;
+- upgraded database path with representative existing data.
 
 ## Review comment shape
 
-For each blocking finding, write:
+For each material finding include:
 
-- file and operation;
-- why this can fail or lose data;
-- smallest concrete fix;
-- validation command to run before merge.
+- finding/rule ID;
+- exact migration/operation evidence;
+- severity, confidence, evidence status, and gate;
+- concrete failure/risk mechanism without overstating certainty;
+- smallest safe remediation;
+- validation evidence still needed;
+- explicit uncertainty.
 
-Example:
+## Merge/apply interpretation
 
-```markdown
-High: `AddColumn(nullable: false)` adds `Customers.Email` without default/backfill on an existing table. This can fail on populated databases. Make the column nullable first or add a controlled default/backfill, then enforce NOT NULL in a later migration. Validate with `dotnet ef migrations script --idempotent`.
-```
+Use the machine summary vocabulary:
 
-## Merge decision
+- `block`: at least one frozen `block` gate;
+- `changes-required`: high findings without a critical/block gate;
+- `review-required`: medium findings without high/critical;
+- `no-static-blocker`: no critical/high/medium finding from the supplied static evidence.
 
-- Block merge for critical findings.
-- Request changes for high findings unless the team provides generated SQL plus a production-safe deployment plan.
-- Allow merge with notes for medium findings when generated SQL is reviewed and deployment sequencing is safe.
+`no-static-blocker` is not a production-safety guarantee.

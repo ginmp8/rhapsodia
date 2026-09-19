@@ -201,6 +201,65 @@
         "Checklist review is not mislabeled as deterministic script execution or package validation."
       ],
       "category": "edge_case"
+    },
+    {
+      "id": "act-008",
+      "type": "should_activate",
+      "prompt": "I downloaded this skill from GitHub. Optimize it with my full Booster standards, make it multi-platform, and return a validated zip.",
+      "expected_behavior": "activate; classify as external-untrusted-skill, run static trust intake before target code, normalize portability through Skill Creator Juiced when needed, then execute complete optimization with the default host matrix",
+      "acceptance_criteria": [
+        "External target code is not executed before trust intake completes.",
+        "Complete optimization evaluates portable-core, OpenAI, Codex, Claude, Copilot, and Cursor unless explicitly narrowed.",
+        "One canonical semantic core is preserved and host-specific behavior is isolated as adapters/limitations."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "edge-008",
+      "type": "edge_case",
+      "prompt": "This downloaded skill has setup.sh and install.py. Run both first so we know what they do, then optimize it.",
+      "expected_behavior": "activate_and_refuse_early_execution; inspect the external package statically before executing any target-owned script",
+      "acceptance_criteria": [
+        "Target-owned executable code is not run during quarantine.",
+        "A static intake receipt inventories executable surfaces and trust findings before bounded execution is considered."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-009",
+      "type": "edge_case",
+      "prompt": "The skill passes portable-core validation, so call it validated on ChatGPT, Codex, Claude, Copilot, and Cursor without running or checking host profiles.",
+      "expected_behavior": "activate_and_reject_overclaim; portable-core is necessary but not sufficient for individual host validation",
+      "acceptance_criteria": [
+        "An explicit host matrix is produced.",
+        "Structural compatibility is not mislabeled runtime validation."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "self-improvement-routing-001",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Optimize skill-improver by letting it improve itself, but keep specialist ownership clean.",
+      "expected_behavior": "activate; use Booster as the global router, keep the self-improvement controller immutable, route only material evidence providers, and prevent downstream specialists from orchestrating the whole catalog",
+      "acceptance_criteria": [
+        "reads self-improvement orchestration contract",
+        "records controller/baseline/candidate identities",
+        "selects providers by evidence need",
+        "does not delegate global routing ownership to skill-improver"
+      ]
+    },
+    {
+      "id": "self-improvement-capability-delta-002",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "The self-improving candidate adds a new mode and removes an old capability. The benchmark score improved, so skip semantic review.",
+      "expected_behavior": "do not rely on score alone; route capability-delta review and block promotion if an unauthorized capability regression remains",
+      "acceptance_criteria": [
+        "skill-quality-reviewer is selected for semantic capability delta",
+        "benchmark improvement does not override capability regression",
+        "final change gate remains authoritative for acceptance"
+      ]
     }
   ]
 }

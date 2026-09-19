@@ -4,9 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import sys
+import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -45,6 +48,8 @@ SENSITIVE_NAME_PATTERNS = [
     re.compile(r"private[-_.]?key", re.IGNORECASE),
     re.compile(r"^\.env($|\.)", re.IGNORECASE),
 ]
+ZIP_FORMAT_VERSION = 1
+ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 
 
 def read_text(path: Path) -> str:
@@ -163,6 +168,28 @@ def iter_package_files(target: Path) -> tuple[list[Path], list[dict[str, str]]]:
     return files, excluded
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def tree_sha256(target: Path, files: list[Path]) -> str:
+    digest = hashlib.sha256()
+    for path in files:
+        rel = path.relative_to(target).as_posix()
+        data = path.read_bytes()
+        digest.update(rel.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(str(len(data)).encode("ascii"))
+        digest.update(b"\0")
+        digest.update(hashlib.sha256(data).hexdigest().encode("ascii"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
 def scan_folder_markers(target: Path, files: list[Path]) -> list[dict[str, Any]]:
     hits: list[dict[str, Any]] = []
     for path in files:
@@ -206,22 +233,47 @@ def validate_folder(target: Path) -> list[str]:
     return errors
 
 
-def build_package(target: Path, output: Path) -> dict[str, Any]:
+def build_package(target: Path, output: Path, validate: bool) -> dict[str, Any]:
     files, excluded = iter_package_files(target)
     output.parent.mkdir(parents=True, exist_ok=True)
-    if output.exists():
-        output.unlink()
     root_name = target.name
-    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for file_path in files:
-            rel = file_path.relative_to(target).as_posix()
-            zf.write(file_path, f"{root_name}/{rel}")
-    return {
-        "output": str(output),
-        "file_count": len(files),
-        "excluded": excluded,
-        "size_bytes": output.stat().st_size,
-    }
+    candidate_tree_sha256 = tree_sha256(target, files)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".tmp", dir=output.parent)
+    os.close(fd)
+    temp_path = Path(temp_name)
+    replaced = False
+    try:
+        with zipfile.ZipFile(temp_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+            for file_path in files:
+                rel = file_path.relative_to(target).as_posix()
+                info = zipfile.ZipInfo(f"{root_name}/{rel}", date_time=ZIP_TIMESTAMP)
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.create_system = 3
+                info.external_attr = 0o100644 << 16
+                info.flag_bits |= 0x800
+                zf.writestr(info, file_path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+        pre_replace_validation = validate_archive(temp_path) if validate else {"status": "not_run"}
+        if pre_replace_validation.get("status") not in {"pass", "not_run"}:
+            raise ValueError("temporary archive validation failed: " + "; ".join(pre_replace_validation.get("errors", [])[:5]))
+        package_sha256 = sha256_file(temp_path)
+        size_bytes = temp_path.stat().st_size
+        os.replace(temp_path, output)
+        replaced = True
+        return {
+            "output": str(output),
+            "file_count": len(files),
+            "excluded": excluded,
+            "size_bytes": size_bytes,
+            "candidate_tree_sha256": candidate_tree_sha256,
+            "package_sha256": package_sha256,
+            "zip_format_version": ZIP_FORMAT_VERSION,
+            "zip_timestamp": "1980-01-01T00:00:00",
+            "atomic_replace": True,
+            "pre_replace_validation": pre_replace_validation,
+        }
+    finally:
+        if not replaced and temp_path.exists():
+            temp_path.unlink()
 
 
 def read_archive_text(zf: zipfile.ZipFile, name: str) -> str:
@@ -317,16 +369,41 @@ def main(argv: list[str] | None = None) -> int:
             result = {"mode": "package", "status": "fail", "folder_errors": folder_errors, "target": str(target), "output": str(output)}
             status = "fail"
         else:
-            package_info = build_package(target, output)
-            archive_result = validate_archive(output) if args.validate else {"status": "not_run"}
-            status = "pass" if archive_result.get("status") in {"pass", "not_run"} else "fail"
-            result = {
-                "mode": "package",
-                "status": status,
-                "target": str(target),
-                "package": package_info,
-                "archive": archive_result,
-            }
+            try:
+                package_info = build_package(target, output, args.validate)
+            except (OSError, ValueError, zipfile.BadZipFile) as exc:
+                result = {
+                    "mode": "package",
+                    "status": "fail",
+                    "target": str(target),
+                    "output": str(output),
+                    "errors": [str(exc)],
+                    "atomic_replace": False,
+                }
+                status = "fail"
+                package_info = None
+            if package_info is None:
+                archive_result = {"status": "not_run"}
+            else:
+                archive_result = validate_archive(output) if args.validate else {"status": "not_run"}
+                status = "pass" if archive_result.get("status") in {"pass", "not_run"} else "fail"
+                result = {
+                    "mode": "package",
+                    "status": status,
+                    "target": str(target),
+                    "package": package_info,
+                    "archive": archive_result,
+                    "receipt": {
+                        "schema_version": 1,
+                        "candidate_tree_sha256": package_info["candidate_tree_sha256"],
+                        "package_sha256": package_info["package_sha256"],
+                        "file_count": package_info["file_count"],
+                        "zip_format_version": package_info["zip_format_version"],
+                        "atomic_replace": package_info["atomic_replace"],
+                        "validation_status": archive_result.get("status"),
+                        "output": package_info["output"],
+                    },
+                }
     if args.json_output:
         out = Path(args.json_output)
         out.parent.mkdir(parents=True, exist_ok=True)

@@ -1,117 +1,191 @@
 ---
 name: skill-prompt-and-activation-review
-description: use when asked to review, improve, rewrite, validate, or stress-test prompts, skill frontmatter descriptions, activation rules, boundaries, handoffs, stop conditions, reusable agent instructions, examples, or output contracts. focus on precise activation, clarity, scope control, adversarial resistance, ownership alignment, and auditable outputs. do not use for full skill hardening, benchmarking, consistency repair, broad repository edits, implementation work, or mcp-dependent workflows.
+description: use when asked to review, improve, rewrite, validate statically, or stress-test existing prompt and activation surfaces such as skill frontmatter descriptions, trigger/non-trigger boundaries, handoffs, overlap rules, stop conditions, reusable agent instructions, activation scenarios, or output contracts. focus on precise routing, scope ownership, adversarial resistance, and evidence-aware claims. do not use for generic prompt creation, full benchmarking/harness execution, package-wide hardening or consistency repair, repository implementation, or unrelated writing/code review.
 ---
 
 # Skill Prompt and Activation Review
 
 ## Purpose
 
-Review prompt and activation surfaces for reusable Skills, agents, chat modes, and instruction packages. Optimize for accurate triggering, clear execution, explicit boundaries, robust negative cases, and output contracts that can be audited.
+Review prompt and activation surfaces for reusable Agent Skills, agents, chat modes, and instruction packages. Preserve the linguistic judgment needed for prompt review while making activation/boundary criteria, evidence identity, scenario comparison, and claims reproducible.
 
-This skill is a focused reviewer. It may propose rewrites, scenarios, and verification reports, but it must not perform full benchmark, harness, hardening, consistency repair, or repository implementation work.
+This skill is a focused reviewer. It may propose or apply bounded rewrites inside the target prompt/activation surface and may validate evidence contracts. It does not own full benchmark, harness execution infrastructure, package hardening, consistency repair, repository implementation, or deployment.
 
-## Core Rules
+## Portable Core
 
-- Preserve the original role, intent, and ownership of the target artifact.
-- Prefer precision over length. More text is not automatically an improvement.
-- Keep scope limits visible. Do not remove boundaries merely to make instructions feel smoother.
-- Separate textual clarity risk, activation risk, ownership risk, and output contract risk.
-- Treat examples as calibration data: include activation, non-activation, ambiguous, and edge cases when changing activation descriptions or boundaries.
-- Mark proposed scenarios as planned unless they were actually executed.
-- When the user requests measured quality, repeated execution, scorecards, package-wide hardening, or benchmark evidence, hand off to a benchmark, harness, hardening, consistency repair, or improver workflow instead of pretending to measure.
-- Do not depend on MCP. Use available local files, uploaded content, connected sources, or user-provided text only when the current environment provides them.
-- Do not edit technical artifacts outside the target Skill, agent, prompt, or instruction package unless the user explicitly changes the scope.
+Treat Agent Skills as the semantic core: `SKILL.md` plus relative `references/`, `scripts/`, `evals/`, examples, and assets. Host-specific discovery, invocation syntax, metadata, or tool permissions are optional adapters only.
 
-## Mode Matrix
+`agents/openai.yaml` is an OpenAI adapter when present. Do not require it for semantic correctness, and do not make core routing depend on ChatGPT-, Claude-, Copilot-, Cursor-, or other proprietary invocation mechanisms.
 
-| Mode | Use when the user asks to... | Primary checks | Primary output |
-|---|---|---|---|
-| `activation-description-review` | review frontmatter `description`, agent description, or trigger text | trigger specificity, false positives, false negatives, overlap, required exclusions | findings plus improved description when useful |
-| `instruction-clarity-review` | review `SKILL.md`, agent instructions, or reusable prompt body | imperative clarity, ordering, contradictions, missing inputs, success path | clarity findings and targeted edits |
-| `boundary-review` | evaluate scope, handoffs, non-goals, or stop conditions | overly broad scope, ownership drift, handoff ambiguity, unsafe expansion | boundary findings and corrected boundaries |
-| `adversarial-review` | stress-test prompt/activation behavior | prompt injection bait, ambiguous asks, adjacent-domain traps, escalation prompts | adversarial findings and negative scenarios |
-| `output-contract-review` | review expected output format or report contract | auditability, required sections, evidence rules, contradiction, measurable claims | output contract findings and improved contract |
-| `prompt-rewrite` | rewrite a prompt or activation description | minimality, specificity, preserved intent, reduced ambiguity | rewritten prompt plus rationale |
-| `activation-scenarios` | create or revise behavior examples | activation, non-activation, ambiguous, edge, adversarial coverage | scenario table or json-like list |
-| `verification-report` | produce a formal review report | severity, evidence, proposal, rationale, residual risk | structured report using the review template |
+## Required Contracts
 
-Use one primary mode unless the user explicitly asks for a combined review. In combined reviews, keep findings grouped by risk type.
+Load only what the active branch needs:
+
+- `references/activation-contract.md` — canonical trigger/non-trigger, ambiguity, boundary, overlap, FP/FN, evidence, claim, taxonomy, stop, and portability rules.
+- `references/activation-review-rubric.md` — evidence and severity criteria for activation/boundary/output review.
+- `references/prompt-rewrite-patterns.md` — minimal rewrite rules and evidence requirements.
+- `references/adversarial-scenarios.md` — scenario design and evidence labels.
+- `references/evaluation-protocol.md` — evaluator freeze, baseline/candidate pairing, self-generated candidate provenance, hidden-evaluator visibility, trace provenance, result schema, metrics eligibility, and claim gates.
+- `references/evaluator-visibility.md` — candidate-visible vs evaluator-only boundaries, blind-evaluation leakage rules, and capability-based isolation guidance.
+- `evals/activation-scenarios.json` — canonical host-neutral seed scenarios. Presence is not execution evidence.
+- `assets/templates/review-report.md.template` — formal durable report when useful.
+
+## Modes
+
+| Mode | Use when the user asks to... | Primary output |
+|---|---|---|
+| `activation-description-review` | review frontmatter/trigger text | evidence-backed findings and minimal rewrite |
+| `instruction-clarity-review` | review reusable prompt/agent instructions | clarity findings and bounded edits |
+| `boundary-review` | inspect scope, non-goals, handoffs, overlap, stop rules | ownership/boundary findings |
+| `adversarial-review` | stress prompt/activation rules for bypasses | adversarial findings and scenarios |
+| `output-contract-review` | inspect expected output/evidence wording | output-contract findings and corrected contract |
+| `prompt-rewrite` | rewrite an existing prompt/activation surface | rewritten text plus evidence/rationale |
+| `activation-scenarios` | create/revise activation test cases | versionable scenario records |
+| `verification-report` | produce formal review evidence | report using the template |
+
+Use one primary mode unless the request clearly spans multiple review surfaces. Group findings by defect code rather than blending different risks.
 
 ## Workflow
 
-1. **Identify the target surface.** Determine whether the input is a frontmatter description, agent description, `SKILL.md`, prompt body, boundary section, stop condition, scenario suite, or output contract.
-2. **Select the mode.** Use the mode matrix. If the user gives no mode, infer the smallest mode that satisfies the request.
-3. **Preserve the target contract.** Extract the target role, trigger, non-goals, required inputs, allowed outputs, handoffs, and validation claims before proposing changes.
-4. **Review with the relevant rubric.** Load only the reference needed for the current branch:
-   - Use `references/activation-review-rubric.md` for activation descriptions, boundaries, stop conditions, and output contracts.
-   - Use `references/prompt-rewrite-patterns.md` for prompt rewrites and instruction clarity improvements.
-   - Use `references/adversarial-scenarios.md` for negative, ambiguous, edge, and adversarial scenario generation.
-   - Use `assets/templates/review-report.md.template` when producing a durable review report.
-   - Use `examples/good-and-bad-descriptions.md` and `examples/prompt-review-cases.md` for calibration examples.
-5. **Classify findings.** Group issues by `textual_clarity`, `activation_risk`, `ownership_risk`, and `output_contract_risk`. Assign severity: `blocking`, `high`, `medium`, `low`, or `note`.
-6. **Propose minimal improvements.** Show the smallest rewrite that fixes the issue. Do not add unrelated capabilities or claims.
-7. **Add negative scenarios when boundaries change.** Include at least one non-activation case and one ambiguous case for any changed description or boundary.
-8. **Report validation status.** Distinguish static review, proposed scenarios, supplied evidence, and executed validation. Never claim measured activation precision, recall, or robustness without real scenario execution evidence.
+1. **Resolve target and scope.** Identify the exact prompt/activation surface, allowed mutation scope, and whether the task is static review or evidence-backed comparison.
+2. **Apply the activation contract.** Read `references/activation-contract.md`. Preserve ACT-001/NTR-001/BND-001/ROLE-001 semantics and any stronger target-specific policy.
+3. **Select the smallest mode.** Do not escalate a local rewrite into package-wide review.
+4. **Capture baseline evidence before edits.** Preserve original text/location. For before/after comparisons, record baseline identity and exact scenario/evaluator identity.
+5. **Classify defects with TAX-001.** Distinguish static risks from confirmed executed FP/FN defects. Use the stable severity guidance from the rubric.
+6. **Resolve overlap using OVL-001.** Route by artifact + action + ownership. Split mixed requests when appropriate; do not duplicate authority.
+7. **Propose the smallest supported change.** Every changed activation/frontmatter surface must satisfy EVD-001: original evidence, criterion, defect/risk, minimal change, affected scenarios, and validation state.
+8. **Build scenario coverage when routing/boundaries change.** Include positive (`activation`), negative (`non-activation`), ambiguous, boundary, adversarial, and holdout cases when stronger comparison evidence is intended.
+9. **Freeze before behavioral comparison.** Follow `references/evaluation-protocol.md`. Baseline and candidate must use exactly the same frozen cases and evaluator. For self-generated candidates, also preserve controller/generation provenance and ensure both the authoring controller and evaluated candidate remain blind to evaluator-only holdouts when blind evaluation is claimed. When hidden graders/expected outcomes/holdouts are used, apply `references/evaluator-visibility.md` and keep evaluator-only assets outside candidate-visible inputs. If the evaluator changes or leaks into the candidate run, invalidate and restart the comparison.
+10. **Validate without overclaiming.** Use bundled deterministic scripts for suite/evaluator/evidence integrity. They do not execute model activation. Treat trace identity as optional runtime provenance, not as proof by itself.
+11. **Report claim strength truthfully.** Apply CLM-001. Separate proposed, observed-static, supplied, executed, and derived evidence.
+12. **Stop on integrity/scope blockers.** Apply STOP-001 instead of weakening a boundary or evaluator.
+
+## Deterministic Helpers
+
+Use Python 3.10+ when execution is available. Resolve the Python executable from host capabilities instead of assuming a product-specific command.
+
+Validate a scenario suite:
+
+```text
+<PYTHON> scripts/validate_activation_suite.py evals/activation-scenarios.json --json <OUT>
+```
+
+Freeze evaluator assets before baseline execution:
+
+```text
+<PYTHON> scripts/freeze_activation_evaluator.py freeze \
+  --root . \
+  --path evals/activation-scenarios.json \
+  --path references/activation-contract.md \
+  --path references/activation-review-rubric.md \
+  --path references/evaluation-protocol.md \
+  --out <EVALUATOR_MANIFEST>
+```
+
+Verify they did not change:
+
+```text
+<PYTHON> scripts/freeze_activation_evaluator.py verify \
+  --root . \
+  --manifest <EVALUATOR_MANIFEST> \
+  --json <OUT>
+```
+
+Compare paired evidence only after both arms use the same frozen suite/evaluator:
+
+```text
+<PYTHON> scripts/compare_activation_evidence.py \
+  --suite <FROZEN_SUITE> \
+  --baseline <BASELINE_RESULTS> \
+  --candidate <CANDIDATE_RESULTS> \
+  --json <OUT>
+```
+
+If host-routing execution is unavailable, mark behavioral evidence `blocked` or `not-run`. Do not simulate precision/recall from static review.
 
 ## Review Criteria
 
 Use these criteria across modes:
 
-- **Trigger fit:** a competent model can tell when to invoke the Skill from the description alone.
-- **False-positive resistance:** adjacent but out-of-scope requests are explicitly excluded or handed off.
-- **False-negative resistance:** common valid phrasings, artifacts, and synonyms are covered without becoming too broad.
-- **Role preservation:** the rewrite keeps the original domain, authority, and artifact ownership.
-- **Instruction executability:** the prompt says what to do, in what order, with what inputs, and when to stop.
-- **Conflict control:** no instruction conflicts with another instruction, the frontmatter, examples, stop conditions, or output contract.
-- **Output auditability:** the expected result has sections, evidence expectations, severity/rationale rules, and limitations.
-- **Adversarial resilience:** the target resists requests to ignore scope, merge roles, fabricate validation, or bypass stop conditions.
+- **Trigger fit:** artifact + requested action satisfy ACT-001.
+- **Non-trigger resistance:** adjacent ownership in NTR-001 remains excluded.
+- **Ambiguity control:** AMB-001 cases are clarified or conservatively bounded, not forced into a metric.
+- **Overlap control:** OVL-001 resolves ownership consistently.
+- **Role preservation:** ROLE-001 remains intact.
+- **Boundary integrity:** BND-001 prevents silent mutation expansion.
+- **Evidence integrity:** EVD-001 connects each material change to evidence and scenario coverage. Hidden-evaluator claims also require leakage-free candidate/evaluator visibility separation.
+- **Claim integrity:** CLM-001 prevents unexecuted metrics/improvement claims.
+- **Adversarial resilience:** ADV-001/STOP-001 resist scope/evaluator weakening.
+- **Output auditability:** findings use stable taxonomy, severity, evidence status, and limitations.
 
-## Handoff Rules
+## Evidence and Claims
 
-Hand off rather than continue when the request requires work outside this reviewer’s scope:
+Never treat these as equivalent:
 
-- **Full package consistency repair:** use a consistency repair workflow when contradictions span many package resources, scripts, templates, evals, or packaging rules.
-- **Harness or scenario execution design:** use a harness workflow when the user wants repeatable runners, gates, or evidence capture.
-- **Skill hardening:** use a hardening workflow when the user wants broad maturity improvements across the whole package.
-- **Measured improvement loop:** use an improver workflow when the user wants baseline/final metrics and accepted/rejected hypotheses.
-- **Benchmark or scorecard:** use a benchmark workflow when the deliverable is a maturity score, benchmark report, or measured comparison.
-- **Technical implementation:** use an appropriate code or repository workflow when the change is not limited to prompt, activation, or instruction artifacts.
+- a scenario was authored;
+- a scenario was statically reviewed;
+- a user supplied a result;
+- a scenario was actually executed in a host/harness;
+- a derived metric was computed from valid paired execution evidence.
+
+Do not claim activation precision, activation recall, behavioral improvement, or regression reduction unless the evidence protocol's executed-host-routing gate is satisfied.
+
+When only static evidence exists, use `proposed improvement`, `structurally hardened`, or `observed static improvement` as appropriate.
+
+## Handoffs
+
+Hand off the out-of-scope portion when the request primarily needs:
+
+- generic prompt authoring from scratch;
+- full package benchmark/scorecard;
+- repeated scenario execution or harness infrastructure;
+- package-wide hardening or consistency repair;
+- technical implementation, repository mutation, deployment, or packaging.
+
+Use capability roles rather than depending on specific host invocation names. If no suitable workflow exists, state the unsupported portion instead of expanding this skill's authority.
 
 ## Output Contract
 
-For ordinary reviews, respond with these sections unless the user asks for a narrower output:
+For ordinary reviews, provide:
 
-1. **Mode used**: primary mode and target surface.
-2. **Summary verdict**: pass, needs changes, or blocking.
-3. **Findings**: grouped by textual clarity, activation risk, ownership risk, and output contract risk.
-4. **Recommended rewrite**: only for affected text; preserve unaffected content.
-5. **Activation scenarios**: activation, non-activation, ambiguous, and edge/adversarial cases when relevant.
-6. **Rationale**: why each change reduces ambiguity or risk.
-7. **Validation status**: static review, proposed scenarios, supplied evidence, executed validation, or handoff required.
-8. **Limitations**: missing context, unexecuted scenarios, or external validation needs.
+1. **Mode and target surface**.
+2. **Verdict**: `pass`, `needs-changes`, or `blocking`.
+3. **Findings** using TAX-001 defect codes, stable severity, evidence/location, contract clause, and rationale.
+4. **Recommended rewrite** only for affected text.
+5. **Scenarios** with group, expected route, and evidence status when routing/boundaries are relevant.
+6. **Evidence identities** for baseline/candidate/suite/evaluator when a comparison is attempted, plus controller/generation provenance when the candidate is self-generated.
+7. **Validation status** separated into static, supplied, executed, derived, or blocked.
+8. **Regressions and metrics** only when actually measurable under the evaluation protocol.
+9. **Gates and residual risks**.
 
-For formal reports, use `assets/templates/review-report.md.template`.
+Use `assets/templates/review-report.md.template` for formal reports.
 
 ## Stop Conditions
 
-Stop and report the blocker when:
+Stop the affected branch and report the blocker when:
 
-- The target text is unavailable or cannot be identified.
-- The user asks for measured behavioral metrics without scenario outputs or permission to run a harness.
-- The requested rewrite would change the target’s ownership, remove safety boundaries, or expand scope beyond supplied intent.
-- The requested work requires MCP, unavailable connectors, or technical artifact edits outside the allowed package scope.
-- The target contains contradictory authority rules that cannot be reconciled from supplied evidence.
-- The user asks this skill to replace full benchmark, hardening, consistency repair, or automated improvement work.
+- the target surface or ownership cannot be identified;
+- a requested rewrite would change authority, safety, or mutation scope beyond the supplied intent;
+- the user requests behavioral metrics but no valid same-suite/same-evaluator execution evidence can be obtained;
+- evaluator/scenario evidence changes after baseline freeze;
+- baseline and candidate case identities differ;
+- an out-of-scope implementation/package mutation is required to complete the request;
+- overlapping ownership contracts cannot be resolved from available evidence;
+- passing would require editing expected outcomes, weakening a boundary, fabricating validation, or lowering an evidence gate.
 
 ## Final Checklist
 
 Before finalizing:
 
-- The target role is preserved.
-- The activation surface is specific but not overfit.
-- Boundary, handoff, and stop-condition language is explicit.
-- Findings are separated by risk type.
-- Rewrites are smaller and clearer than the original unless additional specificity is necessary.
-- Negative and ambiguous scenarios are included when activation text or boundaries changed.
-- Validation claims are truthful and do not imply unexecuted measurement.
+- target role and scope are preserved;
+- trigger and non-trigger boundaries are explicit;
+- overlap and ambiguous cases follow the contract;
+- FP/FN labels distinguish risk from executed confirmation;
+- frontmatter/description changes have EVD-001 evidence;
+- scenario suite/evaluator identity is frozen before any behavioral comparison;
+- hidden evaluator/holdout assets are excluded from candidate-visible inputs when blind evaluation is claimed;
+- baseline and candidate use exactly the same cases and materially equivalent host configuration;
+- defect taxonomy and severity are stable;
+- host-specific mechanisms remain adapters, not semantic dependencies;
+- validation claims match evidence actually obtained;
+- no edit occurred after the final validated candidate freeze.

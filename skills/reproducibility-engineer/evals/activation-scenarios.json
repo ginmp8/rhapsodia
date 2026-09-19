@@ -81,6 +81,13 @@
       "kind": "non-activation",
       "prompt": "Review this skill for legacy coupling and documentation issues.",
       "expected_activation": false
+    },
+    {
+      "id": "activate-self-hosting-reproducibility",
+      "kind": "activation",
+      "prompt": "Use Reproducibility Engineer to make this self-improving skill safely improve its own next version without recursive drift.",
+      "expected_activation": true,
+      "expected_behavior": "apply the self-hosting reproducibility profile: immutable controller, isolated candidate, generation identity, recursion limit, external promotion, last-known-good and receipt integrity; do not orchestrate unrelated specialists."
     }
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "run-id",
+  "mode": "adhoc",
+  "profile": "quick",
+  "scope": "bounded scope",
+  "changed_files": [],
+  "validation": [
+    {
+      "command": "command",
+      "status": "pass",
+      "evidence_reference": "path or concise result"
+    }
+  ],
+  "convergence_status": "satisfied",
+  "operational_documents": [],
+  "handoffs": [],
+  "residual_risks": [],
+  "redactions_applied": true
+}

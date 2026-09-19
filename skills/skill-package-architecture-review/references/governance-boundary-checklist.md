@@ -1,64 +1,67 @@
 # Governance Boundary Checklist
 
-Use this reference for `governance-boundary-review` and for package architecture questions involving ownership, authority, handoffs, stop conditions, or overlap with adjacent skills.
+**Contract version:** 2.0.0
 
-## Ownership questions
+Use for `governance-boundary-review` and whenever architecture depends on authority, ownership, or adjacent-skill handoffs.
 
-- Who owns the package behavior: reviewer, implementer, benchmarker, hardener, harness runner, domain expert, or router?
-- Does `SKILL.md` preserve that role across modes?
-- Are any resources written from a different role than the package claims?
-- Are templates and reports aligned with the declared owner?
-- Are examples and evals testing the right skill boundary?
+## Ownership evidence
 
-## Authority questions
+Determine the package role before recommending structure:
 
-- Can the skill edit target files, or only review them?
-- Can it package artifacts, or only recommend package changes?
-- Can it run scripts, or only inspect structure?
-- Can it score behavior, or only identify required evidence?
-- Can it rewrite target-domain rules, or only flag that domain evidence is missing?
+- reviewer;
+- implementer;
+- benchmarker;
+- hardener;
+- harness runner;
+- domain specialist;
+- router.
 
-Authority must be explicit. When authority is absent, default to review-only behavior.
+Check whether modes/resources preserve one coherent role. Deterministic folder-role ownership from the inventory is only a starting taxonomy; do not infer people or teams from names.
+
+## Authority evidence
+
+Record whether the package may:
+
+- read target files;
+- edit target files;
+- execute scripts;
+- package artifacts;
+- run/score scenarios;
+- rewrite domain rules;
+- publish measured claims.
+
+Different authority levels across modes are a separation signal only when they cannot be made explicit and safely governed within one package.
 
 ## Adjacent-skill boundaries
 
-Use architecture review for structural and dependency judgment. Hand off when the user asks for:
+Architecture review owns structural/dependency judgment. Typical next-action handoffs:
 
-- internal contradiction repair or bounded fixes: consistency repair;
-- mature package hardening and package-level improvements: hardening;
-- harness design, scenario gates, and evidence scaffolding: harness;
-- hypothesis-driven before/after optimization: improver;
-- standardized maturity score or comparison: benchmark;
-- repository code implementation or refactoring: code-oriented skills;
-- secret handling audit: secure review.
+- consistency repair: internal contradictions and bounded repairs;
+- hardening: package maturity and reliability upgrades;
+- harness: scenario/evaluator execution and evidence scaffolding;
+- improver: bounded before/after experiments;
+- benchmark: formal comparative scoring;
+- implementation/code skills: repository changes;
+- security review: secrets/authority/security audit.
 
-Do not replace these workflows. Name the handoff, preserve evidence, and avoid doing the adjacent skill's full job unless explicitly requested with the relevant skill active.
+A handoff does not change the primary architecture decision.
 
 ## Handoff contract
 
-A good handoff includes:
+Include:
 
-1. Trigger: why this review is not the owner of the next action.
-2. Evidence: files, findings, and commands already inspected.
-3. Targeted ask: what the next skill should do.
-4. Constraints: blocked paths, no domain rewrite, preserve useful resources, no fabricated metrics.
-5. Acceptance gate: what would prove the next action succeeded.
+1. trigger for handoff;
+2. exact package identity/evidence already inspected;
+3. targeted next action;
+4. constraints/protected paths;
+5. acceptance gate.
 
 ## Stop conditions
 
-Stop before recommending architectural mutation when:
+Stop before architectural mutation advice when:
 
-- evidence does not show low cohesion, ownership conflict, activation ambiguity, maintenance difficulty, or validation burden;
-- the target package has hidden consumers that cannot be inspected;
-- the recommendation would remove security, validation, audit, or governance controls;
-- the package claims measured quality but evidence is missing;
-- the requested change crosses from package architecture into target-domain design.
-
-## Governance risk signs
-
-- Modes use different authority levels without saying so.
-- A review-only skill includes scripts that mutate the target without safeguards.
-- A benchmark-like report claims measured scenario results from planned prompts.
-- Handoff rules are absent where adjacent skills clearly own the next step.
-- Stop conditions are vague and allow domain rewrites by inference.
-- User-facing metadata promises implementation while `SKILL.md` promises review.
+- evidence does not satisfy the rubric's minimum decision criteria;
+- hidden consumers cannot be checked for a destructive change;
+- the change would weaken safety, validation, audit, or governance controls;
+- measured-quality claims lack executed evidence;
+- the requested change crosses into target-domain design without source truth.

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nuget-package-updater/metadata-snapshot.schema.json",
+  "title": "NuGet metadata snapshot",
+  "type": "object",
+  "required": ["schemaVersion", "toolContractVersion", "capturedAt", "sources", "sourceIdentity", "records", "snapshotSha256"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "toolContractVersion": {"type": "integer", "minimum": 1},
+    "capturedAt": {"type": "string"},
+    "replayedFrom": {"type": ["string", "null"]},
+    "sources": {"type": "array", "items": {"type": "string"}},
+    "sourceIdentity": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "offlineVersions": {"type": ["object", "null"]},
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["url", "transport", "capturedAt", "rawSha256", "canonicalSha256", "body"],
+        "properties": {
+          "url": {"type": "string"},
+          "transport": {"enum": ["live", "replay"]},
+          "capturedAt": {"type": "string"},
+          "rawSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "canonicalSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "body": {"type": "string"}
+        }
+      }
+    },
+    "snapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

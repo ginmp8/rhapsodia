@@ -89,3 +89,12 @@ Use `scripts/validate_golden_examples.py --skill-root <skill-root>` as the canon
 - Mago receives roadmap and feature-map handoff evidence only.
 - RFC proposals remain mutable while under review; accepted material decisions are recorded as governance decisions.
 - Execution evidence is consumed as input evidence; nomia does not rewrite it.
+
+
+## 11-governance-adapt-legacy
+
+Demonstrates read-only legacy extraction into a canonical schema-version-2 record using externally supplied identity and unknown technical state.
+
+## 12-canonical-projection-metadata
+
+Demonstrates a human status projection with explicit authority, canonical source, generation timestamp, evidence timestamp, and visible unknowns.

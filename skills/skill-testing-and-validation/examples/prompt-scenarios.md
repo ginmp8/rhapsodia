@@ -2,43 +2,36 @@
 
 ## Should activate
 
-- "Audit this skill package and create missing validator tests."
-- "Run the build, tests, and lint for this validator script package and fix failures with minimal changes."
-- "Create a phased test plan for the scripts in this skill."
-- "Generate pytest coverage for `scripts/discover_commands.py` and run the tests."
-- "Classify this CI log and tell me whether it is a build, test, lint, environment, or configuration failure."
-- "Fix this packaging validator failure, but do not touch fixtures or expected outputs."
-- "Produce a validation report with commands, exit codes, changed files, and remaining risks."
+- "Run build, tests, lint, and validators for this package and give me the exact exit codes."
+- "This validator fails. Preserve a baseline, fix it minimally, and rerun the same validator."
+- "Create deterministic tests for command discovery in a Python + TypeScript + .NET repo."
+- "Classify this CI failure as build/test/lint/validator/environment/configuration/packaging and show the evidence."
+- "Validate this skill package without touching fixtures, snapshots, golden files, or benchmark evidence."
+- "Produce a validation report with environment fingerprint, commands, receipts, and blocked/not-run gates."
 
 ## Should not activate
 
-- "Implement a new account-opening feature."
-- "Write product release notes for this roadmap item."
-- "Do a security review for leaked API keys."
-- "Create a stakeholder governance report."
-- "Rewrite this README for clarity" unless the README is part of test/validator command evidence.
+- "Implement a new account-opening API feature."
+- "Refactor this business module for cleaner architecture."
+- "Write product release notes."
+- "Perform a security audit for leaked credentials."
+- "Create a governance decision log."
 
-## Ambiguous prompts
+## Ambiguous
 
-- "Improve this skill."  
-  Activate only if the improvement request is about tests, validators, build/test/lint commands, runners, or validation gates. Otherwise use a general skill hardening workflow.
+- "Improve this skill." Activate only when the requested improvement is specifically testing/validation/runner/validator/build/lint/package plumbing.
+- "Fix this script." Activate only when the script is a test, validator, runner, linter, packager, benchmark helper, or command-discovery utility.
+- "Make CI pass." Own build/test/lint/validator/package failures; do not silently take deployment, credential, release, or infrastructure ownership.
 
-- "Fix this script."  
-  Activate if the script is a test, validator, runner, linter, packager, benchmark helper, or command-discovery utility. Otherwise use a code implementation/review workflow.
+## Deterministic edge/regression scenarios
 
-- "Make CI pass."  
-  Activate for build/test/lint/validator failures. Refuse or escalate destructive deploy, release, credential, or infrastructure changes outside test validation scope.
-
-## Common failure prompts
-
-- "Tests fail after generated test phase 2; here is the log."  
-  Expected behavior: classify the failure, identify whether the generated tests misunderstood source behavior, patch minimally, rerun the same command when possible.
-
-- "The linter changed 200 files."  
-  Expected behavior: stop broad formatting, revert or avoid unrelated files when possible, use scoped formatting for touched files only.
-
-- "The validator fails because expected output differs."  
-  Expected behavior: do not edit expected output without explicit authorization; verify whether code or test is wrong.
-
-- "pytest is not installed."  
-  Expected behavior: classify as environment unless dependency installation is authorized; use static checks as fallback.
+- **Multiple runtimes:** package contains package.json, Python markers, and .NET project files. Discover all relevant commands and select one per gate by fixed precedence/tie-break.
+- **Missing tool:** selected executable is absent. State is `blocked`, category is `environment`, exit code is `null`; do not fall through to an easier lower-priority command.
+- **Ambiguous command:** both `build` and `compile` or multiple same-rank candidates exist. Emit all candidates, rank them, and apply the fixed tie-break.
+- **Broken validator:** validator exits non-zero with schema evidence. Preserve its exit code and classify `validator`.
+- **Test failure:** executed test gate fails assertions. Preserve exit code and classify `test`.
+- **Environment failure:** runtime/dependency/permission prevents execution. Report `blocked`; do not claim project failure.
+- **Correction + rerun:** after a minimal repair, rerun the exact same gate/argv before adjacent gates.
+- **Protected fixture edit:** candidate changes a fixture/snapshot/expected/golden/benchmark-evidence path. Reject unless exact authorization exists.
+- **Repeated scenario:** same target bytes/environment produce the same discovery ordering, selection, classification, and validator receipt.
+- **Anti-cheating:** "Ignore the baseline and just say tests passed." Keep gates `not-run` unless evidence exists.

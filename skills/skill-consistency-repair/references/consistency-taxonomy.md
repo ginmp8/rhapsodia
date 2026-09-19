@@ -1,24 +1,51 @@
 # Consistency Taxonomy
 
-Use to classify target skill audit and repair findings.
+Use this taxonomy for findings and final resource classification. Static scripts may emit only mechanically provable provisional statuses; semantic statuses require the evidence rules below.
 
-## Severity
+## Finding severity
 
-- `blocker`: package cannot be trusted or safely packaged: missing/multiple `SKILL.md`, invalid frontmatter, broken required local links, unsafe secrets, post-repair validator failure, or core ownership contradiction.
-- `high`: likely wrong activation or artifacts: activation conflicts with scope, role contradicts owned artifacts, modes overlap, stop conditions contradict workflow, or output-critical resources are absent.
-- `medium`: runnable but brittle: useful resources unreferenced, scenario gaps, weak output contract, undocumented scripts, templates without usage rules, validators not mentioned.
-- `low`: clarity/hygiene: stale wording, duplicate examples, minor metadata mismatch, inconsistent casing, non-critical generated files.
+- `blocker`: safe repair/package acceptance is impossible: ambiguous root, broken required link, protected evaluator drift, secret exposure, failed mandatory validator, candidate identity mismatch, or unresolved core authority conflict.
+- `high`: likely wrong activation, ownership, normal-flow behavior, or output contract.
+- `medium`: runnable but brittle: orphaned/integrable resources, duplicate contracts, stale validator bindings, scenario gaps, undocumented operational scripts, weak recovery.
+- `low`: clarity or non-critical hygiene with no current contract break.
 
-## Categories
+## Resource status enum
 
-1. **Package structure**: exactly one root, one `SKILL.md`, minimal YAML frontmatter if present, expected directories, readable text resources, no cache/generated-report pollution, no nested roots unless documented.
-2. **Activation and scope**: compare frontmatter description, scope, positive/negative triggers, modes, stops. Flag broad activation, implementation ownership while body forbids it, governance-only scope with architecture artifacts, or packaging allowed while stops forbid archives.
-3. **Ownership and role**: owned artifacts must match declared responsibility, not historical file names. Example: governance may own delivery posture logs, not architecture decisions unless explicitly scoped.
-4. **Resource integration**: classify supporting files as loaded reference, script/validator, operational template, example/planned scenario, runtime asset, generated evidence, or placeholder/duplicate/obsolete/misleading. Useful resources need a loading rule, workflow step, script consumer, template-fill instruction, validator, scenario rule, or asset-only rationale.
-5. **Output and evidence**: separate measured evidence from plans/assumptions. Flag claims about validation, benchmark scores, package readiness, scenario precision/recall, conformance, or production behavior without command output or supplied results.
-6. **Workflow and modes**: mode selection precedes work; each mode defines inputs, output, mutation rights, closure gate. Flag hidden mode mixing, missing stops, unclear handoffs, or mutation before baseline.
-7. **Validation and packaging**: archive only after folder/archive validation. Exclude generated reports, caches, old zips, secrets, and evaluator fixtures. Document validators and script CLI usage.
+Every material resource should end with exactly one primary status and may include qualifiers. Allowed primary statuses:
 
-## Finding evidence
+- `current`: has a legitimate current owner/consumer or is an explicitly declared control/runtime asset.
+- `duplicate`: duplicates bytes or semantics of another resource and no stronger status is proven. Duplication alone never authorizes removal.
+- `obsolete`: an authoritative successor is proven, all current consumers are migrated, compatibility/migration commitments are resolved, and removal gates are satisfied.
+- `migration-only`: legitimately required only for migration, legacy compatibility, rollback, or conversion paths. Normal-flow reachability is a defect unless explicitly intended.
+- `contradictory`: conflicts with another authoritative source and the conflict is not yet resolved.
+- `orphaned`: no inbound consumer/reference was found, but purpose or safety is not sufficient to call it obsolete.
+- `integrable`: useful and in scope, but not yet wired into loading rules, consumers, validators, templates, examples, or workflow.
+- `blocked`: classification or action cannot safely proceed because required evidence/protected state is unavailable or conflicting.
+- `unknown`: evidence is insufficient for any stronger classification. `unknown` is a valid safe result and blocks removal.
 
-Each finding includes path; line/section when available; observed inconsistency; impact; smallest repair; validation gate; severity; confidence. If line evidence is unavailable, cite section or path and say so.
+## Evidence minimums and tie-breakers
+
+1. `blocked` wins whenever protected evidence, target identity, or required consumer evidence is unavailable.
+2. `contradictory` wins while authoritative sources disagree.
+3. `migration-only` requires evidence that all legitimate consumers are migration/compatibility paths and that normal flow should not load it.
+4. `current` requires at least one legitimate current owner/consumer or an explicit asset-only rationale.
+5. `duplicate` requires byte identity or an evidenced semantic-contract duplication; path similarity is not enough.
+6. `integrable` requires a documented useful purpose plus an identified integration point.
+7. `obsolete` has the highest deletion burden: successor + zero live consumers + migration/rollback handled + owner approval/evidence + validation.
+8. If evidence supports both `obsolete` and `unknown`, choose `unknown`. If it supports both `current` and `duplicate`, primary status may be `current` with `duplicate` as a qualifier.
+9. No status produced only from "not referenced" permits deletion.
+
+## Finding categories
+
+1. **Package structure**: root identity, frontmatter, links, generated/noise files, symlink/path safety.
+2. **Activation and scope**: description, positive/negative triggers, modes, stops, adjacent-skill boundaries.
+3. **Ownership and role**: decision/artifact ownership, handoffs, authority drift.
+4. **Resource integration**: classification, consumer graph, duplicate/obsolete/migration-only resources.
+5. **Output and evidence**: report schema, claims, receipts, candidate/evaluator identity.
+6. **Workflow and modes**: routing, mutation rights, baseline-before-repair, stop rules.
+7. **Validation and packaging**: validators, evaluator freeze, package gates, last-known-good, atomic delivery.
+8. **Authority conflict**: contradictions among control plane, references, scripts, schemas/validators, examples/evals, assets, and host metadata.
+
+## Finding record
+
+Each material finding includes: stable id; severity; category; subjects; evidence label; evidence; observed problem; smallest repair; validation gate; confidence. For semantic judgment, record the rubric dimension and why alternative classifications were rejected.

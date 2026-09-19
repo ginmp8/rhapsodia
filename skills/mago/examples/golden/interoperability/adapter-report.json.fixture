@@ -1,0 +1,18 @@
+{
+  "kind": "mago-sdd-adapter-report",
+  "authoritative": false,
+  "direction": "round-trip",
+  "source": {"format": "mago", "version": "current"},
+  "target": {"format": "openspec", "version": "current-supplied"},
+  "source_spec_id": "spec-2026-04-20-export",
+  "generated_files": ["proposal.md", "design.md", "tasks.md", "spec-delta.md"],
+  "mapped_fields": ["requirements", "technical-design", "tasks", "added-modified-removed"],
+  "omitted_fields": [],
+  "lossy_mappings": [
+    {"source_field": "preserved_behavior", "target_field": "none", "severity": "medium", "reason": "The selected target delta schema has no dedicated preserved-behavior class."}
+  ],
+  "unsupported_target_concepts": [],
+  "source_only_concepts": ["board_identity", "governed_traceability", "magia_reconciliation"],
+  "round_trip": {"status": "lossy_reported", "differences": ["preserved behavior remains only in the Mago delta report"]},
+  "validation": [{"command": "validate target package", "status": "planned"}]
+}

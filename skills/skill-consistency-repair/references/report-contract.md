@@ -1,40 +1,39 @@
 # Report Contract
 
-Use for durable reports and final responses.
+The machine-readable JSON report is authoritative for structural audit output. Markdown is a human-readable rendering of the same evidence.
 
-## Sections
+## Report v2 required fields
 
-1. Target identity and inspected path.
-2. Mode and evidence policy.
-3. Inventory summary.
-4. Decision: pass, repair recommended, blocked, or package-ready.
-5. Findings by severity/category.
-6. Broken local references and missing files.
-7. Resource integration map.
-8. Ownership and scope review.
-9. Validation and packaging gates.
-10. Proposed plan or applied changes.
-11. Measured before/after comparison when available.
-12. Remaining risks and next hypothesis.
+- `report_version: 2`;
+- target path and generation timestamp;
+- `evidence_type`;
+- deterministic `inventory_identity` (SHA-256 fingerprint);
+- inventory summary;
+- authority contract reference;
+- closed resource-classification contract;
+- one resource-classification row per inventoried resource;
+- findings;
+- static score with an explicit non-readiness meaning;
+- readiness field that does not claim publish/package readiness from static audit alone.
+
+Validate with `scripts/validate_consistency_report.py`.
+
+## Resource classification row
+
+Required: path, role, provisional status, confidence, evidence, full trace dimensions, semantic-review flag, and `deletion_allowed=false` for machine classification. Static tooling never grants deletion rights; semantic review must satisfy the deletion gate separately.
 
 ## Finding format
 
-```text
-[id] [severity] [category] title
-Evidence: file path and section or line when available
-Problem: observed inconsistency
-Impact: why it matters
-Repair: smallest safe correction
-Gate: validation that should pass after repair
-Confidence: high | medium | low
-```
+Each finding records: id, severity, category, subjects, evidence, evidence label, problem, smallest repair, gate, confidence.
 
 ## Evidence labels
 
-- `measured`: command output or supplied scenario result inspected.
-- `inspected`: file content read or inventoried.
-- `inferred`: reviewer judgment from inspected evidence.
-- `planned`: scenario, metric, or improvement not executed.
-- `blocked`: evidence unavailable or unsafe to modify.
+- `measured`: command output or supplied executed result;
+- `inspected`: file/package content directly read or inventoried;
+- `inferred`: bounded semantic judgment from inspected evidence;
+- `planned`: scenario or improvement not executed;
+- `blocked`: required evidence unavailable or unsafe to mutate.
 
-Keep labels distinct. Say `scenario coverage planned` unless executed scenario evidence supports a stronger claim.
+## Readiness separation
+
+A clean static report proves only the static audit found no blocker/high inconsistency. It does not prove evaluator integrity, runtime behavior, semantic correctness, package validity, or behavioral improvement. Those require their own gates/receipts.

@@ -4,19 +4,38 @@ Replace every <...> token with repository-truth values.
 Never copy placeholder or example values blindly into generated files.
 -->
 ---
+quality_contract: 2
 spec_id: "<spec_id>"
-order: "<order>"
 feature_key: "<feature_key>"
 title: "<title>"
 type: "<type>"
 classification: "<classification>"
 status: "<status>"
 phase: "<phase>"
-cycle_version: "<cycle_version>"
+cycle_id: "<cycle_id>"
 feature_version: "<feature_version>"
 depends_on_features: []
 depends_on_specs: []
+privacy_contract: 1
 ---
+
+## Privacy and Sharing
+
+- Classification: <public_internal_confidential_or_restricted>
+- Contains Personal Data: <true_or_false>
+- Contains Third-Party Data: <true_or_false>
+- Contains Confidential Data: <true_or_false>
+- Contains Secrets: false
+- Redactions Applied: [<redaction_or_empty>]
+- Redaction Method: <none_mask_pseudonymize_generalize_coarsen_synthesize_aggregate_or_remove>
+- Intended Audience: [<audience>]
+- Allowed Destinations: [<local_internal_approved-vendor_or_public>]
+- Purpose: <artifact_purpose>
+- Retention Days: <approved_non_negative_days>
+- External Share Allowed: <true_or_false>
+- Source Handoff ID: <handoff-id_or_null>
+- Source Reference: <immutable_source_reference>
+- Transformations: [<transformation_or_none>]
 
 # PRD - <title>
 
@@ -34,7 +53,23 @@ depends_on_specs: []
 
 ## Functional Requirements
 
+### REQ-001 - <requirement_title>
+
+- Evidence basis: <repository, intake, contract, incident, or policy evidence>
+- Failure/recovery behavior: <observable failure response and safe retry/recovery path>
+- Verification: AC-001
+- Criticality: <low|medium|high|critical>
+- Criticality basis: <evidence-backed impact and recovery rationale>
+
+WHEN <trigger>, the <system> MUST <observable_response>.
+
 ## Non-Functional Requirements
+
+### NFR-001 - <quality_title>
+
+- Metric: <measurable quality signal>
+- Threshold: <numeric or otherwise objectively testable threshold>
+- Validation: VAL-002
 
 ## Constraints
 
@@ -42,5 +77,17 @@ depends_on_specs: []
 <!-- Keep this section concise and decision-level. Put supporting repository detail, evolving nuance, and working analysis in notes.md. -->
 
 ## Acceptance Criteria
+
+### AC-001 - <acceptance_title>
+
+- Requirements: REQ-001
+- Path: <normal|boundary|error|abuse|recovery|operational>
+
+```gherkin
+Scenario: AC-001 <acceptance_title>
+  Given <evidenced_precondition>
+  When <observable_trigger>
+  Then <observable_outcome>
+```
 
 ## Open Questions

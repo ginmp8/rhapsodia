@@ -1,44 +1,41 @@
 # Token-Efficient Skill Refactor Report
 
-## Mode / Target
+## Run Identity
 - Mode:
 - Target:
+- Baseline identity:
+- Candidate identity:
 - Level:
 
-## Evidence
-- Files:
-- Commands:
-
-## Token Delta
-- Before:
-- After:
-- Delta:
-- Reduction:
+## Token Evidence
+- Method / kind / implementation:
+- Before / after / delta / reduction:
 - Per-file deltas:
 - Per-section deltas:
-- Local regressions:
-- Accepted local trade-offs:
-
-## Changes
-- `SKILL.md`:
-- `references/`:
-- `scripts/`:
-- `assets/templates/`:
-- `examples/`:
-- `evals/`:
-- `agents/`:
+- Local token regressions:
 
 ## Semantic Preservation
-- Preserved:
-- Moved:
-- Changed:
-- Removed redundancy:
-- Risk:
+- Contract identity:
+- Mechanical invariant status:
+- Manual/scenario evidence:
+- Activation/scope/output regressions:
+- Protected surfaces by category:
+- Progressive-loading/local-reference status:
+- Readability review:
 
 ## Validation
-- Protected regions:
-- Links:
-- Scripts:
-- Package:
+- Commands/status:
+- Target-owned tests/validators:
+- Evaluator freeze status:
+- Package validation:
 
-## Rollback / Risks / Next Pass
+## Delivery
+- Frozen candidate SHA-256:
+- Package SHA-256:
+- Receipt:
+- Rollback/last-good evidence:
+
+## Accepted / Rejected Changes
+- Accepted:
+- Rejected:
+- Residual risks / irreducible judgment:

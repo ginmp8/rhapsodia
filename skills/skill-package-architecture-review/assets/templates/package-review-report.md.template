@@ -1,75 +1,57 @@
-# Package Architecture Review: {{target_skill}}
+# Package Architecture Review: {{target_name}}
 
-## 1. Mode and scope
+## Identity
 
-- mode: {{mode}}
-- target: {{target_path}}
-- reviewer role: package architecture review
-- mutation scope: review-only unless explicitly stated
+- schema: `1.0.0`
+- rubric: `2.0.0`
+- target package SHA-256: `{{package_identity_sha256}}`
+- evidence snapshot: `{{evidence_snapshot_identity}}`
+- mode: `{{mode}}`
 
-## 2. Evidence inspected
+## Evidence inspected
 
-| Evidence | Status | Notes |
-|---|---:|---|
-| `SKILL.md` | {{status}} | {{notes}} |
-| `references/` | {{status}} | {{notes}} |
-| `scripts/` | {{status}} | {{notes}} |
-| `assets/` and templates | {{status}} | {{notes}} |
-| `examples/` and `evals/` | {{status}} | {{notes}} |
-| validators or package commands | {{status}} | {{notes}} |
+{{files_commands_reports_and_missing_evidence}}
 
-## 3. Mechanical findings
+## Observations
 
-List structural facts: file tree, local links, missing references, script interfaces, template consumers, package size, generated artifacts, and command output. Do not mix these with judgment.
+Use stable IDs (`obs-001`, ...). Keep facts separate from interpretation.
 
-## 4. Architectural findings
+| ID | Kind | Observation | Evidence |
+|---|---|---|---|
+| {{obs-id}} | mechanical / declared-contract / behavioral / supplied / derived | {{claim}} | {{evidence}} |
 
-### Cohesion and modularization
+## Architectural judgments
 
-{{findings}}
+Use stable IDs (`jud-001`, ...). Every judgment cites observation IDs.
 
-### Progressive loading
+| ID | Judgment | Evidence IDs | Confidence |
+|---|---|---|---|
+| {{jud-id}} | {{claim}} | {{obs-ids}} | low / medium / high |
 
-{{findings}}
+## Decision
 
-### Resource integration
-
-{{findings}}
-
-### Governance boundaries and handoffs
-
-{{findings}}
-
-### Content quality and maintainability
-
-{{findings}}
-
-### Repository/package structure
-
-{{findings}}
-
-## 5. Decision
-
-- recommendation: {{keep_unified | extract_mode | fragment | merge_resource | create_router | handoff | no_change}}
+- choice: `{{keep_unified | split | extract_mode | create_router | merge_resources | no_change}}`
+- evidence IDs: {{evidence_ids}}
+- alternatives considered: {{alternatives}}
+- tie-breaker used: {{tie_breaker}}
 - rationale: {{evidence_based_rationale}}
-- alternatives rejected: {{alternatives}}
 
-## 6. Recommendations
+## Recommendations
 
-| Priority | Recommendation | Evidence | Expected benefit | Risk | Validation gate |
-|---|---|---|---|---|---|
-| p0/p1/p2 | {{action}} | {{evidence}} | {{benefit}} | {{risk}} | {{gate}} |
+| ID | Priority | Recommendation | Evidence IDs | Expected benefit | Risk | Validation gate |
+|---|---|---|---|---|---|---|
+| {{rec-id}} | p0/p1/p2 | {{action}} | {{evidence}} | {{benefit}} | {{risk}} | {{gate}} |
 
-## 7. Measured versus judged claims
+## Measured versus unmeasured
 
-- measured claims: {{commands_or_supplied_evidence}}
-- reviewer judgment: {{judgment}}
-- not measured: {{metrics_or_scenarios_not_run}}
+- commands executed: {{commands}}
+- behavioral scenarios executed: {{true_or_false}}
+- planned/not-run evidence: {{planned}}
 
-## 8. Limitations
+## Residual risks
 
-{{limitations}}
+{{residual_risks}}
 
-## 9. Next steps
+## Next-action handoff
 
-{{next_steps}}
+{{handoff_if_any}}

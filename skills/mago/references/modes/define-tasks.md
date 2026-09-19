@@ -1,4 +1,4 @@
-﻿# Define Tasks Mode
+# Define Tasks Mode
 
 ## Canonical Rules
 
@@ -16,7 +16,7 @@
 
 ## Boundaries
 
-- do not create or alter prd.md, notes.md, validation.md, manifest.yaml, or spec-catalog.yaml
+- do not create or alter prd.md, notes.md, validation.md, manifest.yaml, registry identity, or generated catalog/queue views
 - do not infer execution progress, completion, blockers, rollout state, or execution history
 - do not redefine product scope, rewrite product decisions, or switch into product-only refinement
 - if visible contradictions between tasks.md and adjacent docs cannot be resolved truthfully from tasks.md alone, stop or switch to `define`, `refine`, `define-product`, or `refine-product`

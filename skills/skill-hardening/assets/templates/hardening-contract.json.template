@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "target": {
+    "name": "{{target_skill_name}}",
+    "path": "{{target_skill_path}}",
+    "baseline_tree_sha256": "{{baseline_tree_sha256}}"
+  },
+  "ceiling": "{{objective-artifact|tool-action|research-analytic|constrained-subjective}}",
+  "protected_paths": ["{{path}}"],
+  "variability": [
+    {
+      "id": "V1",
+      "surface": "{{surface}}",
+      "class": "{{mechanical|schema-type|constrained-heuristic|model-judgment|external-nondeterminism}}",
+      "evidence": "{{evidence}}",
+      "control": "{{control}}",
+      "validation": "{{validation}}"
+    }
+  ],
+  "evaluators": [
+    {
+      "id": "E1",
+      "type": "{{validator|scenario|manual-review}}",
+      "metric": "{{metric}}",
+      "command_or_review": "{{command_or_review}}"
+    }
+  ],
+  "hard_gates": ["target-package-valid", "frozen-evaluator-unchanged", "no-blocking-regression"],
+  "acceptance": {
+    "freeze_after_pass": true,
+    "stagnation_limit": 2,
+    "weaken_hard_gates_to_pass": false
+  },
+  "delivery": {
+    "atomic_package_replace": true,
+    "candidate_tree_sha256": true,
+    "archive_sha256": true
+  }
+}

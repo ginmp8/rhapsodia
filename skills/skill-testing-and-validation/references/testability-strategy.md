@@ -1,50 +1,53 @@
 # Testability strategy
 
-Use this reference for `research-testability`, `plan-tests`, `generate-tests`, and `implement-test-phase`.
+Use for `research-testability`, `plan-tests`, `generate-tests`, and `implement-test-phase`.
 
-## Research checklist
+## Research order
 
-Inspect the target in this order:
+1. Package role and requested scope.
+2. Canonical target root and subprojects.
+3. Language/runtime markers.
+4. Existing tests, validators, runners, packagers, evals, and benchmarks.
+5. Command sources and deterministic precedence.
+6. Environment/tool availability and version identity.
+7. Side effects, network/time/randomness, credentials, generated outputs, and mutable fixtures.
+8. Coverage gaps and known failure evidence.
 
-1. **Package role**: skill package, script bundle, CLI tool, validator, runner, benchmark helper, library, or application fragment.
-2. **Language markers**: package.json, pyproject.toml, pytest.ini, *.sln, *.csproj, go.mod, Cargo.toml, pom.xml, build.gradle, Makefile, deno.json.
-3. **Existing tests and validators**: tests/, test/, spec/, __tests__/, `evals/`, `validators/`, `benchmarks/`, `scripts/validate*`, `scripts/*test*`.
-4. **Command sources**: README, Makefile, package scripts, CI workflows, pyproject tool sections, comments in validators, task files.
-5. **Testability risks**: side effects, filesystem writes, network calls, nondeterminism, time dependence, environment variables, credentials, generated outputs, language/runtime mismatch.
-6. **Coverage gaps**: important files without direct tests, validators without negative cases, scripts without argument error tests, packagers without exclusion tests, linter/build commands not exercised.
+Run `scripts/discover_commands.py` when executable command discovery matters. Record all candidates and the selected candidate rather than only a prose recommendation.
 
-## Priority model
+## Priority
 
-Rank work by risk and leverage:
+- **P0**: command discovery/runner correctness, validators, packagers, protected evidence, baseline/rerun integrity.
+- **P1**: parsing/classification logic, schema validation, negative cases, receipt generation.
+- **P2**: regression/edge cases and CLI error behavior.
+- **P3**: broad low-risk coverage expansion.
 
-- **P0**: packaging, validators, build/test/lint runners, command discovery, failure-prone scripts, safety-critical exclusions.
-- **P1**: core parsing/classification logic, test-generation helpers, schema validators, report generators.
-- **P2**: edge-case expansions, regression tests for known failures, usability tests for CLI errors.
-- **P3**: broad coverage expansion with low defect risk.
+## Phase contract
 
-## Phase design
+Each implementation phase must state:
 
-A good phase is independently valuable and verifiable. Keep phases small enough that a failed build or test can be attributed to a limited patch.
+- objective and bounded file set;
+- protected paths;
+- baseline command/evidence;
+- exact required gate(s);
+- selected command and working directory;
+- expected failure/success states;
+- rollback/stop condition.
 
-Recommended phase shape:
+After mutation, rerun the exact failed gate before adjacent gates.
 
-- objective;
-- files to inspect;
-- files to create or modify;
-- scenarios and expected assertions;
-- build/test/lint gates;
-- risks and rollback notes.
+## Test generation
 
-## Test/case generation rules
+- Match existing framework/style when it is clearly established.
+- Prefer deterministic unit tests for pure parsing/classification.
+- Use temporary directories for filesystem behavior.
+- Do not write real fixtures, snapshots, golden files, expected outputs, or benchmark evidence.
+- Include happy, empty, malformed, boundary, failure, and repeated-run cases where relevant.
+- Validator tests must include rejected inputs and must not weaken the validator.
+- Runner tests must verify exact exit-code preservation and `pass|fail|blocked|not-run` states.
+- Command-discovery tests must include multi-runtime and ambiguity/tie-break cases.
+- Repair tests should prove the same gate/command is rerun after a correction.
 
-- Match existing framework, naming, fixtures, assertion style, and directory conventions.
-- Prefer deterministic unit tests for pure parsing/validation code.
-- Use temporary directories for filesystem behavior; do not write into real fixtures or benchmark evidence.
-- Cover happy path, empty input, malformed input, boundary conditions, and representative error paths.
-- For scripts, include CLI argument validation and non-zero exit behavior where practical.
-- For validators, include both accepted and rejected cases. Do not weaken the validator or expected output to make tests pass.
-- For skill packages, validate frontmatter, referenced local files, absence of placeholders, scenario schemas, executable script syntax, and package exclusions.
+## Evidence rule
 
-## Generated tests versus implemented tests
-
-When asked to generate tests without applying them, return proposed file paths and test content or case tables. When asked to implement, write files only inside allowed scope and run gates afterward.
+Generated-but-unexecuted tests are `planned`, not passing evidence. An implemented phase is not complete until applicable target-owned build/test/lint/validator gates have executable evidence or are explicitly `blocked`/`not-run`.

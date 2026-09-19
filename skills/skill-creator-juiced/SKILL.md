@@ -9,7 +9,7 @@ description: Create, redesign, substantially upgrade, validate, and package port
 
 Create high-quality reusable skills as operational packages, not generic instruction dumps. Keep the semantic core portable across Agent Skills-compatible hosts, reduce avoidable model freedom with objective mechanisms, preserve model judgment where it is useful, and validate before delivery.
 
-This skill owns net-new skill creation, major redesigns, portability normalization, specialist orchestration, acceptance gates, and final package delivery. It does not replace the specialists it routes to.
+This skill owns net-new skill creation, major redesigns, portability normalization, specialist orchestration, acceptance gates, and final package delivery. `PORTABILITY_OWNER = skill-creator-juiced`: do not create a parallel portability specialist unless this responsibility is deliberately extracted in a future architecture change. It does not replace the specialists it routes to.
 
 ## Scope
 
@@ -25,7 +25,7 @@ Resolve or infer before writing files:
 2. activation, non-activation, ambiguous, and edge prompts when available;
 3. expected inputs, outputs, language, format, citations, and evidence rules;
 4. required capabilities such as filesystem read/write, command execution, network access, connectors, subagents, or artifact delivery;
-5. target hosts when portability matters;
+5. target hosts when portability matters; portability/redesign defaults to `portable-core,openai,codex,claude,copilot,cursor` unless the user explicitly narrows support;
 6. blocked paths, fixtures, expected outputs, secrets, evaluator evidence, and packaging expectations.
 
 Default to the open Agent Skills format as the canonical core. Detect capabilities instead of assuming product-specific tool names. Mutate only the target skill folder. Keep `.git`, secrets, credentials, fixtures, expected outputs, frozen evaluator evidence, generated baseline evidence, old archives, and unrelated files protected.
@@ -37,7 +37,7 @@ Default to the open Agent Skills format as the canonical core. Detect capabiliti
 | `create` | net-new skill from examples or workflow | complete skill package |
 | `redesign` | existing skill needs architecture or portability change | bounded redesign and updated package |
 | `quality-upgrade` | hardening, reproducibility, benchmark, validation, cleanup, or token-efficiency work | validated candidate plus specialist ledger |
-| `portability` | host-neutralization or multi-host compatibility is the main goal | portable core plus optional adapters |
+| `portability` | host-neutralization or multi-host compatibility is the main goal, including Booster handoff for host-coupled external skills | portable core plus optional adapters and explicit compatibility matrix |
 | `package` | final archive requested | validated `skill.zip` |
 | `explain-or-route` | the request is not actually skill work | concise handoff |
 
@@ -63,6 +63,7 @@ Read [references/host-portability.md](references/host-portability.md) whenever t
 Portable defaults:
 
 - use the Agent Skills `SKILL.md` contract as source of truth;
+- when portability is the objective, target `portable-core,openai,codex,claude,copilot,cursor` by default and record an explicit result for each profile;
 - use relative package paths;
 - keep scripts self-contained or document dependencies explicitly;
 - describe required capabilities, not product-specific tool names, unless the skill intentionally targets one host;
@@ -85,7 +86,7 @@ Load only what the active branch needs:
 - `evals/activation-scenarios.json` for the frozen baseline activation suite when present.
 - `evals/portability-scenarios.json` for planned cross-host and reproducibility-routing coverage.
 - `examples/creation-scenarios.md` for compact calibration examples.
-- `scripts/validate_portability.py` for portable/static validation.
+- `scripts/validate_portability.py` for portable/static validation across `portable-core`, OpenAI, Codex, Claude, GitHub Copilot, and Cursor.
 - `scripts/juiced_quality_gate.py` for structural package quality validation.
 - `scripts/package_skill.py` for atomic validated packaging and package receipt generation.
 - `assets/templates/skill-delivery-report.md.template` when a durable report is useful.
@@ -96,13 +97,13 @@ Follow [references/creation-workflow.md](references/creation-workflow.md):
 
 1. Infer lifecycle state, harvest established context, and establish target identity, scope, protected evidence, host/runtime capabilities, and the appropriate baseline.
 2. Decide cohesion: unified skill, modes, router, or split.
-3. Design the portable package core and optional host adapters.
+3. Design the portable package core and optional host adapters. When portability is the objective, preserve one semantic core, classify each host-specific feature as optional adapter/optimization, required capability, or blocker, and produce a compatibility matrix for `portable-core,openai,codex,claude,copilot,cursor` unless explicitly narrowed.
 4. Draft or update the smallest coherent set of files, define the evaluation contract, and apply the proportional reproducibility-by-design pass from [references/reproducibility-by-design.md](references/reproducibility-by-design.md).
 5. Run the reproducibility decision gate from [references/reproducibility-routing.md](references/reproducibility-routing.md) only after local design controls are understood; invoke the specialist when material gaps remain or deeper reproducibility work is explicitly required.
 6. Run only the specialist passes that own material risks.
 7. Evaluate against the correct baseline when possible; inspect failures for generalizable causes, use held-out scenarios for final claims, and reject eval-specific fixes.
 8. Repair by diagnosis: rerun the narrowest failing gate after each fix; stop random search after two non-improving rounds.
-9. Validate portability, package structure, scripts, references, and target-owned tests.
+9. Validate portability, package structure, scripts, references, and target-owned tests. Portability/redesign must run the requested host matrix; a structural pass is not runtime proof.
 10. Apply change acceptance for existing-skill updates.
 11. Freeze the passing candidate, package atomically, and report evidence by layer.
 
@@ -139,9 +140,9 @@ Before delivery, apply [references/quality-gates.md](references/quality-gates.md
 When command execution is available:
 
 ```text
-<PYTHON> scripts/validate_portability.py <target-skill-folder> --profile portable
-<PYTHON> scripts/juiced_quality_gate.py <target-skill-folder> --profile portable
-<PYTHON> scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --profile portable --validate --json-output <output-dir>/package-receipt.json
+<PYTHON> scripts/validate_portability.py <target-skill-folder> --hosts portable-core,openai,codex,claude,copilot,cursor
+<PYTHON> scripts/juiced_quality_gate.py <target-skill-folder> --profile portable --hosts portable-core,openai,codex,claude,copilot,cursor
+<PYTHON> scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --profile portable --validate --portability-hosts portable-core,openai,codex,claude,copilot,cursor --json-output <output-dir>/package-receipt.json
 ```
 
 Resolve `<PYTHON>` to an available Python 3 interpreter; do not assume the executable name.
@@ -162,7 +163,7 @@ A pass in one layer does not imply another.
 For substantive creation or update work, report:
 
 1. target skill and mode;
-2. architecture decision and portability profile;
+2. architecture decision, portability profile, requested host set, and compatibility matrix;
 3. changed files and purpose;
 4. specialists invoked, checklist-applied, skipped, unavailable, or not-applicable with reasons;
 5. reproducibility-by-design classification/controls and the `reproducibility-engineer` routing decision when applicable;

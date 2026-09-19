@@ -1,24 +1,74 @@
 {
-  "target": "<skill-name-or-path>",
+  "schema_version": "2.0",
+  "target": {
+    "name": "<skill-name>",
+    "identity": "unverified:replace-with-target-identity"
+  },
   "mode": "backlog-discovery",
-  "evidence_status": "mixed",
+  "evidence_status": "observed",
   "recommendation": "test-hypotheses",
-  "hypotheses": [
+  "evidence_snapshot": {
+    "snapshot_id": "sha256:108e434abdfb0849798ded71f31e3acf75707b68c64a11c679751612c773224f",
+    "sources": [
+      {
+        "id": "E001",
+        "status": "observed",
+        "identity": "unverified:replace-with-real-source-identity",
+        "summary": "Replace with the concrete evidence signal that justifies this hypothesis."
+      }
+    ]
+  },
+  "metrics": [
+    {
+      "id": "M001",
+      "role": "auxiliary",
+      "status": "active",
+      "name": "Replace with an active non-saturated metric"
+    }
+  ],
+  "items": [
     {
       "id": "H001",
-      "title": "<short title>",
-      "statement": "If we change or check X, Y should improve because Z.",
-      "target_area": "activation",
-      "evidence": "<observed signal or missing evidence>",
-      "expected_effect": "<expected measurable or gate-level effect>",
-      "validation_method": "<command, evaluator, scenario, or gate>",
+      "kind": "testable-hypothesis",
+      "title": "Replace with short bounded title",
+      "statement": "If we make the bounded change, the named observable should improve because the evidenced mechanism is causal.",
+      "target_area": "validation",
+      "subject_key": "bounded-subject",
+      "mechanism_key": "bounded-mechanism",
+      "effect_key": "bounded-effect",
+      "dedupe_key": "validation:bounded-subject:bounded-mechanism:bounded-effect",
+      "evidence_refs": [
+        "E001"
+      ],
+      "mechanism": "Describe the evidenced mechanism connecting the proposed change to the expected effect.",
+      "expected_effect": {
+        "observable": "Describe the concrete measurable or inspectable effect.",
+        "direction": "reduce",
+        "metric_ids": [
+          "M001"
+        ]
+      },
+      "evaluator": {
+        "id": "EV001",
+        "status": "available",
+        "method": "Replace with the independent evaluator or gate."
+      },
+      "acceptance_criteria": [
+        "State a predeclared pass/fail criterion for this experiment."
+      ],
       "impact": 4,
       "confidence": 3,
       "testability": 4,
       "risk": 2,
       "cost": 2,
-      "recommendation": "test-now"
+      "gate_effect": "non-blocking",
+      "recommendation": "test-now",
+      "conflicts_with": [],
+      "depends_on": []
     }
   ],
-  "selected_for_testing": ["H001"]
+  "selected_for_testing": [
+    "H001"
+  ],
+  "next_hypothesis_id": "H001"
 }

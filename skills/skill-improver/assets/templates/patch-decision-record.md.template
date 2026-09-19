@@ -6,7 +6,9 @@
 - Mode: {{mode}}
 - Evaluator: {{evaluator}}
 - Benchmark lock or hash: {{benchmark_lock}}
+- Material source manifest: {{source_manifest}}
 - Safety mode: {{safety_mode}}
+- Agent adapter: {{agent_adapter}}
 
 ## Hypothesis
 
@@ -32,6 +34,12 @@
 - Policy: {{change_gate_policy}}
 - Status: {{change_gate_status}}
 - Notes: {{change_gate_notes}}
+
+## Integrity and repair
+
+- Source verification: {{source_verification}}
+- Repair rule: diagnostic -> smallest causal fix -> same gate; stop after two non-improving rounds
+- Freeze status: {{freeze_status}}
 
 ## Decision
 

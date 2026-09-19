@@ -2,50 +2,38 @@
 
 Use this checklist for `llm-agent-governance-review`.
 
-## Authority boundaries
+## Authority-boundary matrix
 
-Inspect whether the agent or skill states:
+For every meaningful capability, record the boundary explicitly:
 
-- What it may read, write, execute, delete, send, schedule, or publish.
-- Which actions require explicit user authorization.
-- Which paths and resources are blocked.
-- Whether it can use network, terminal, email, calendar, repository, browser, or connector tools.
-- Whether it can call other agents, delegate work, or hand off decisions.
+| Action | Resource scope | Authorization source | Approval | Audit/receipt | Failure behavior | Rollback/containment |
+|---|---|---|---|---|---|---|
+| read/write/execute/delete/send/publish/schedule/deploy/approve/delegate | exact target | user/policy/config/system | none/explicit/human | required/not applicable | fail closed/fail open | concrete control |
+
+Capability is not authorization. When authorization or target identity is ambiguous for a high-impact action, fail closed and classify the gap `governance-risk` or `needs-verification` based on the evidence available.
+
+## Inspect
+
+- What the agent may read, write, execute, delete, send, schedule, publish, deploy, approve, or delegate.
+- Which actions require explicit user/human authorization.
+- Which paths/resources are blocked or read-only.
+- Network, terminal, email, calendar, repository, browser, connector, and subagent authority.
+- Cross-agent trust boundaries and whether delegated authority can exceed the caller's authority.
 
 ## Policy enforcement
 
-Look for:
+Look for explicit allowlists/denylists, scoped mutation, human approval for high-impact actions, rate/budget limits, retries/timeouts, fail-closed policy, rollback/containment, and separation of governance logic from business logic.
 
-- Explicit allowlists for tools, paths, commands, domains, and mutation scopes.
-- Deny rules for secrets, credentials, `.git`, expected outputs, generated evidence, fixtures, and destructive commands.
-- Fail-closed behavior on ambiguous permissions, uncertain target identity, or missing policy context.
-- Human-in-the-loop approval for high-impact operations.
-- Rate limits, budget limits, retries, timeouts, and rollback rules.
-- Separation of governance logic from business logic.
+Do not infer a policy from tool availability, UI capability, or a broad system role. Missing policy evidence stays `needs-verification`.
 
 ## Audit and observability
 
-Look for:
+Look for append-only or tamper-evident records of tool calls, approvals, denied actions, handoffs, policy decisions, and remediation actions. Evidence should distinguish command/tool output, reviewer judgment, assumptions, and planned scenarios.
 
-- Append-only audit trail guidance for tool calls, policy decisions, denied actions, approvals, handoffs, and remediation actions.
-- Evidence records that distinguish command output, reviewer judgment, assumptions, and planned scenarios.
-- Report sections for validation commands, blocked paths, residual risks, and limitations.
+## LLM-specific controls
 
-## LLM security
-
-Look for:
-
-- Prompt injection handling when untrusted content is summarized, transformed, or used as instructions.
-- Data exfiltration controls for secrets and sensitive internal content.
-- Context boundary rules that separate user content, system/developer instructions, target files, and tool outputs.
-- Output filtering or redaction for sensitive data.
-- Stop conditions for malicious, destructive, or authority-escalating requests.
+Inspect prompt-injection boundaries, data exfiltration controls, context provenance, secret redaction, untrusted-content handling, stop conditions, and escalation for authority-escalating requests.
 
 ## Handoff and fallback
 
-Look for:
-
-- Clear owner for unresolved risks.
-- When to escalate to human review, security, legal, compliance, or product owner.
-- What to do when scanner evidence, manifests, policy, or current vulnerability data is unavailable.
-- No silent success when evidence is missing.
+Record the owner of unresolved risk, escalation path, what happens when scanner/manifests/policy/current vulnerability evidence is unavailable, and whether the workflow avoids silent success. Critical missing authorization evidence must block positive assurance.

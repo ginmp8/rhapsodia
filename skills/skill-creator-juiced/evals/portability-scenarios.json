@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "evidence_status": "planned-not-executed",
   "scenarios": [
     {
@@ -125,6 +125,28 @@
         "treat related artifact and receipt as one logical transaction",
         "preserve last-known-good outputs on failure",
         "preserve and report recovery evidence when rollback is incomplete"
+      ]
+    },
+    {
+      "id": "portable-five-host-families-with-codex-explicit",
+      "class": "core",
+      "prompt": "Normalize this downloaded skill to our standard and make it multi-platform by default.",
+      "expect": [
+        "use one portable Agent Skills semantic core",
+        "evaluate portable-core, OpenAI, Codex, Claude, GitHub Copilot, and Cursor",
+        "isolate host adapters instead of cloning the skill",
+        "separate structural compatibility from runtime validation"
+      ]
+    },
+    {
+      "id": "booster-portability-owner-handoff",
+      "class": "routing",
+      "prompt": "Skill Booster found ChatGPT-only tool names and /mnt/data assumptions in a third-party skill. Fix portability.",
+      "expect": [
+        "skill-creator-juiced owns portability redesign",
+        "remove host-private dependencies from semantic core without deleting legitimate behavior",
+        "preserve host-only features as optional adapters or explicit capability limitations",
+        "return the normalized candidate to Booster for downstream gates"
       ]
     }
   ]

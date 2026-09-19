@@ -1,46 +1,75 @@
 # Validation and Reporting
 
-## Metrics
+## Token metrics
 
-Report available: `estimated_tokens_before`, `estimated_tokens_after`, `token_delta`, `reduction_pct`, `per_file_token_deltas`, `per_section_token_deltas`, `local_token_regressions`, `files_changed`, `compression_level`, `semantic_risk`, `protected_region_status`, `traceability_term_status`, `local_links_status`, `script_validation_status`, `package_validation_status`. Counts are estimates unless a tokenizer is declared.
+Always report the tokenization identity before counts. Required fields: `method`, `kind`, comparison `scope`, implementation/version when available, before count, after count, delta, reduction percentage, per-file deltas, and local section regressions. Use the same method for both arms.
 
-## Gates
+`estimator-v1` is deterministic but approximate for model billing/context. `tiktoken:<encoding>` is exact only for that encoding and must not silently fall back.
 
-Fail when activation loses triggers/exclusions; stop/safety/validation/package/output rules weaken; evidence/citation/reference/source/path/line duties are removed, collapsed, or unverified; links break; protected regions change without explanation; touched scripts or packaging fail; equivalence is unexplained; or changed prose grows without semantic-gain trade-off.
+Machine-readable diagnostics must distinguish token reduction from preservation failures and identify the failing subject/category rather than returning a generic pass/fail.
 
-Traceability gate: if before text contains `citation`, `reference`, `source`, `path`, `line`, or `evidence/citation`, final text must retain an equivalent verifiable-reference duty or mark the change intentional and authorized.
+## Preservation gates
 
-## Skill Root Convention
+Fail when any applicable condition holds:
 
-Use `<skill-root>` for the root folder of this skill package. In this repository that is usually `skills/skill-token-efficient`; when installed under GitHub/Copilot conventions it may be `.github/skills/skill-token-efficient`; when extracted from a package it may be `skill-token-efficient`.
+- activation, scope, safety, validation, compatibility, output, stop, or evidence/citation duties weaken;
+- a required protected literal is missing without authorized equivalence;
+- a mechanical invariant fails;
+- a `manual`/`scenario` invariant lacks the evidence needed for the claim being made;
+- a baseline-reachable instruction reference becomes unreachable or a local reference breaks;
+- progressive loading is replaced by orphaned or always-loaded branch detail;
+- token reduction is the only positive evidence;
+- touched scripts/tests/package validation fail;
+- the final candidate differs from the frozen identity or receipt.
 
 ## Commands
 
 Baseline:
 
-```bash
-python -S <skill-root>/scripts/refactor_audit.py --target <target> --output <report-dir>/baseline.json --markdown <report-dir>/baseline.md
+```text
+<PYTHON> -S <skill-root>/scripts/refactor_audit.py --target <BASELINE> --tokenizer estimator-v1 --token-scope instructions --output <REPORT_DIR>/baseline.json
 ```
 
-Final:
+Contract:
 
-```bash
-python -S <skill-root>/scripts/refactor_audit.py --target <target> --output <report-dir>/final.json --markdown <report-dir>/final.md
+```text
+<PYTHON> -S <skill-root>/scripts/validate_refactor_contract.py <CONTRACT>
+```
+
+Scenario coverage:
+
+```text
+<PYTHON> -S <skill-root>/scripts/validate_eval_suite.py <skill-root>/evals/activation-scenarios.json
 ```
 
 Compare:
 
-```bash
-python -S <skill-root>/scripts/refactor_audit.py --before <baseline-target> --after <final-target> --output <report-dir>/comparison.json --markdown <report-dir>/comparison.md
+```text
+<PYTHON> -S <skill-root>/scripts/refactor_audit.py --before <BASELINE> --after <CANDIDATE> --contract <CONTRACT> --tokenizer estimator-v1 --token-scope instructions --output <REPORT_DIR>/comparison.json --markdown <REPORT_DIR>/comparison.md --fail-on-preservation-loss
 ```
 
 Syntax/package:
 
-```bash
-python -S -m py_compile scripts/refactor_audit.py scripts/package_skill.py
-python -S scripts/package_skill.py --target <target> --output <artifact-dir>/skill.zip --validate
+```text
+<PYTHON> -S -m py_compile <skill-root>/scripts/*.py
+<PYTHON> -S <skill-root>/scripts/package_skill.py --target <CANDIDATE> --output <ARTIFACT_DIR>/skill.zip --receipt <ARTIFACT_DIR>/skill.receipt.json --validate
 ```
 
-## Report Shape
+## Report contract
 
-Mode/target; evidence and citations/references used; baseline/final tokens/reduction; per-file and per-section deltas; local regressions and accepted trade-offs; changes by file; invariants preserved/moved/changed; protected-region comparison; traceability-term comparison; commands/outcomes; failed gates; rollback; residual risks; next pass.
+Keep token efficiency and semantic preservation separate:
+
+- mode, target, baseline/candidate identities;
+- tokenizer identity and count kind;
+- total/file/section token deltas;
+- semantic-invariant results by category and verification type;
+- protected-surface results by category;
+- activation/scope/output regression evidence and whether it was executed or only planned;
+- deterministic local-reference/progressive-loading status;
+- changed files/sections and accepted trade-offs;
+- exact commands/status;
+- manual/scenario evidence still required;
+- rollback/last-good path;
+- final frozen identity;
+- package and receipt hashes/paths only after validation;
+- residual risks/irreducible judgment.

@@ -11,6 +11,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from nomia_utils import SPEC_ID_RE, atomic_write_text
+
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover
@@ -18,7 +20,6 @@ except Exception:  # pragma: no cover
 
 
 FEATURE_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-SPEC_ID_RE = re.compile(r"^spec\d{3}$")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:[-_./:][a-z0-9]+)*$")
 TEMPLATE_TOKEN_RE = re.compile(r"<[^>\n]+>")
 
@@ -96,11 +97,11 @@ RULES: dict[str, dict[str, ListRule]] = {
         "items": ListRule(
             "items",
             "mapping",
-            required=("spec_id", "feature_key", "title", "owner", "state", "target_date", "priority", "urgency", "impact", "risk", "confidence", "candidate_impacted_repos", "source"),
+            required=("spec_id", "feature_key", "title", "owner", "state", "target_date", "business_priority", "urgency", "impact", "risk", "confidence", "candidate_impacted_repos", "source"),
             optional=(),
             enum_fields={
                 "state": VALID_STATE,
-                "priority": VALID_PRIORITY,
+                "business_priority": VALID_PRIORITY,
                 "urgency": VALID_URGENCY,
                 "impact": VALID_IMPACT,
                 "risk": VALID_RISK,
@@ -228,11 +229,11 @@ def load_artifact(path: Path) -> dict[str, Any]:
 
 def write_artifact(path: Path, data: dict[str, Any]) -> None:
     if path.suffix.lower() == ".json":
-        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        atomic_write_text(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
         return
     if yaml is None:
         fail("PyYAML is required for YAML artifacts.")
-    path.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=False), encoding="utf-8")
+    atomic_write_text(path, yaml.safe_dump(data, sort_keys=False, allow_unicode=False))
 
 
 def get_parent(data: dict[str, Any], dotted_path: str) -> tuple[dict[str, Any], str]:

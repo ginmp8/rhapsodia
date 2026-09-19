@@ -2,6 +2,8 @@ interface:
   display_name: Skill Harness
   short_description: Design and run evidence-based harnesses for improving target
     skills.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

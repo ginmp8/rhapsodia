@@ -1,14 +1,25 @@
-[
-  {
-    "id": "A001",
-    "category": "should_activate",
-    "prompt": "benchmark the target skill package and produce the canonical report",
-    "expected_activation": true,
-    "expected_behavior": "activate skill-benchmark, inspect the target package, generate or draft a benchmark report, and validate the report structure",
-    "actual_activation": null,
-    "output_conforms": null,
-    "quality_score": null,
-    "needs_rework": null,
-    "notes": "planned result record; populate actual fields only after execution"
-  }
-]
+{
+  "schema_version": 2,
+  "evidence_origin": "executed",
+  "arm_type": "candidate",
+  "target_identity_sha256": "<64-hex-target-tree-hash>",
+  "evaluator_identity_sha256": "<64-hex-evaluator-hash>",
+  "scenario_suite_sha256": "<64-hex-suite-hash>",
+  "host_profile": "<material-host-runtime-profile>",
+  "trace_manifest_sha256": null,
+  "evaluator_visibility": "hidden",
+  "candidate_saw_evaluator_only_assets": false,
+  "scenarios": [
+    {
+      "id": "A001",
+      "category": "should_activate",
+      "prompt": "benchmark the target skill package and produce the canonical report",
+      "expected_activation": true,
+      "actual_activation": null,
+      "output_conforms": null,
+      "quality_score": null,
+      "needs_rework": null,
+      "notes": "populate actual fields only after execution"
+    }
+  ]
+}

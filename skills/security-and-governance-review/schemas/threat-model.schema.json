@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:security-and-governance-review:threat-model:1",
+  "title": "Lightweight evidence-linked threat model",
+  "type": "object",
+  "required": ["threat_model_version", "assets", "trust_boundaries", "actors", "abuse_cases", "controls", "residual_risks", "validation_probes", "assumptions", "evidence_refs"],
+  "properties": {
+    "threat_model_version": {"const": "threat-model-1"},
+    "assets": {"type": "array"},
+    "trust_boundaries": {"type": "array"},
+    "actors": {"type": "array"},
+    "abuse_cases": {"type": "array"},
+    "controls": {"type": "array"},
+    "residual_risks": {"type": "array"},
+    "validation_probes": {"type": "array"},
+    "assumptions": {"type": "array"},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}}
+  }
+}

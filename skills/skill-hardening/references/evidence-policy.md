@@ -22,6 +22,17 @@ A result is measured only if executed in this run or supplied as execution evide
 
 Never claim scenario precision/recall/robustness/pass rate from a planned suite; package readiness before folder/archive validators pass; script correctness before a representative run or syntax check; benchmark improvement when baseline is saturated unless an auxiliary metric improved.
 
+## Claim layers and labels
+
+Keep four evidence layers separate:
+
+- structural evidence: package shape, references, schemas, hashes, and static gates;
+- behavioral evidence: executed scenarios and evaluator decisions;
+- runtime evidence: actual application, browser, tool, or integration behavior;
+- perceptual evidence: independent human or image-capable review.
+
+Label material claims as `measured`, `observed`, `derived`, `supplied`, `planned`, or `blocked`. Do not upgrade a weaker label because the result is plausible. A static maturity score is structural evidence, not proof of behavioral improvement.
+
 ## Evidence record
 
-For applied hardening or package delivery, report baseline inventory/audit, hardening map with hypotheses/gates, changed files, commands with pass/fail outcomes, final validator/package results, residual risks, and unmeasured behavior.
+For applied hardening or package delivery, report immutable baseline identity, candidate identity, evaluator identity/verification, baseline inventory/audit, hardening map with hypotheses/gates, changed files, commands with pass/fail/not-run outcomes, final validator/package results, residual risks, and unmeasured behavior.

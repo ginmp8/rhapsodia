@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "run_id": "<stable-run-id>",
+  "arm": "candidate",
+  "evidence_status": "executed",
+  "target_identity_sha256": "<64-hex-or-null-for-without-skill>",
+  "evaluator_identity_sha256": "<64-hex>",
+  "scenario_suite_sha256": "<64-hex>",
+  "host_profile": "<capability/profile identity>",
+  "isolation_level": "workspace",
+  "self_hosting": {
+    "generation_id": "<stable-generation-id>",
+    "controller_identity_sha256": "<64-hex>",
+    "baseline_identity_sha256": "<64-hex>",
+    "candidate_identity_sha256": "<64-hex>",
+    "controller_candidate_separated": true,
+    "controller_read_only": true
+  },
+  "candidate_visible_manifest_sha256": "<64-hex>",
+  "evaluator_only_manifest_sha256": "<64-hex-or-null>",
+  "trace": {
+    "status": "available",
+    "reference": "<runner-specific reference>",
+    "sha256": "<64-hex-or-null>"
+  },
+  "leakage_check": {
+    "status": "pass",
+    "candidate_saw_evaluator_only_assets": false,
+    "notes": ""
+  },
+  "scenarios": []
+}

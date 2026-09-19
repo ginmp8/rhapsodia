@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {"id":"latest-stable","group":"core","expected":{"reasonCode":"safe-compatible-update-or-safe-update-selected","observable":"highest policy-allowed stable version is selected"}},
+    {"id":"prerelease-available","group":"regression","expected":{"observable":"prerelease is never selected by default"}},
+    {"id":"vulnerable-latest","group":"regression","expected":{"reasonCode":"candidate-vulnerable","observable":"unsafe latest is rejected and a lower safe candidate may be selected"}},
+    {"id":"deprecated-latest","group":"regression","expected":{"reasonCode":"candidate-deprecated","observable":"deprecated candidate is rejected"}},
+    {"id":"unlisted-version","group":"regression","expected":{"reasonCode":"candidate-unlisted","observable":"unlisted candidate is rejected"}},
+    {"id":"package-pinned","group":"core","expected":{"reasonCode":"package-locked","observable":"Pin intent prevents mutation"}},
+    {"id":"package-locked","group":"core","expected":{"reasonCode":"package-locked","observable":"Locked intent prevents mutation"}},
+    {"id":"framework-incompatibility","group":"edge","expected":{"reasonCode":"no-compatible-candidate","observable":"incompatible candidate is not forced"}},
+    {"id":"multiple-feeds","group":"edge","expected":{"observable":"configured feed order is identity-bearing and first feed wins exact-version ties"}},
+    {"id":"metadata-unavailable","group":"edge","expected":{"reasonCode":"metadata-unavailable","observable":"decision fails closed rather than guessing"}},
+    {"id":"metadata-changed-between-check-write","group":"adversarial","expected":{"observable":"expected decision receipt mismatch blocks write unless exact snapshot replay reproduces the decision"}},
+    {"id":"restore-failure","group":"edge","expected":{"reasonCode":"no-compatible-candidate","observable":"restore failure is captured with stable kind and output hash"}},
+    {"id":"write-interrupted","group":"adversarial","expected":{"observable":"original props remains intact and LKG evidence survives"}},
+    {"id":"rerun-no-changes","group":"regression","expected":{"observable":"second update performs no mutation and preserves bytes"}}
+  ]
+}

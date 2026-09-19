@@ -45,6 +45,7 @@ Read target `SKILL.md` first. Then load only the references needed for the activ
 - [`references/validator-patterns.md`](references/validator-patterns.md): validator design by output/workflow class and receipt contract.
 - [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md): exact input snapshots, immutable source provenance, output alias safety, recovery-aware commits, and durable receipts.
 - [`references/scenario-design.md`](references/scenario-design.md): activation, boundary, edge, regression, adversarial, and holdout scenarios.
+- [`references/self-hosting-reproducibility.md`](references/self-hosting-reproducibility.md): controller/baseline/candidate generation controls for skills that modify themselves, including recursion, promotion, and last-known-good invariants.
 - [`references/report-contract.md`](references/report-contract.md): final evidence/report structure.
 - [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned self-coverage for this meta-skill; never treat it as executed evidence until a harness runs it.
 - [`assets/templates/reproducibility-report.md.template`](assets/templates/reproducibility-report.md.template): copy/fill only when a durable report artifact is useful.
@@ -71,7 +72,7 @@ Full `apply`, `validation-only`, and `package` evidence requires a writable file
 ### 1. Establish target identity and baseline
 
 1. Resolve exactly one target skill root containing `SKILL.md`.
-2. Record target path, current version/identity when present, requested behavior, host/runtime profile, detected capabilities, writable scope, blocked paths, and package expectation.
+2. Record target path, current version/identity when present, requested behavior, host/runtime profile, detected capabilities, writable scope, blocked paths, and package expectation. If the target will modify itself, also load `references/self-hosting-reproducibility.md` and freeze controller/generation/last-known-good identity before candidate mutation.
 3. Preserve an immutable baseline before edits: copy, clean VCS commit, or equivalent snapshot.
 4. If external files or repository evidence materially determine the transformation or acceptance decision, capture the exact source bytes before analysis and use that snapshot as evidence. Prefer immutable VCS object reads for pinned revisions; do not let working-tree edits or replacement refs silently redefine a pinned source. Read `references/integrity-and-recovery.md` when this applies.
 5. Run target-owned validators/tests/package checks first when available. Record exact commands and exit status.
@@ -100,6 +101,8 @@ State the ceiling explicitly. Do not promise byte-level determinism for stochast
 Map every material source of variance across:
 
 `activation -> input normalization -> mode/router -> reference loading -> decisions -> generation -> validation -> repair -> delivery -> packaging`
+
+For self-hosted workflows, extend the map with `controller freeze -> candidate isolation -> evaluator visibility -> generation identity -> promotion -> rollback/last-known-good`.
 
 For each source classify it as:
 
@@ -266,7 +269,8 @@ Follow `references/report-contract.md`. Every substantive run must report:
 - accepted and rejected transformations;
 - behavioral comparison when measured;
 - final gates and residual risks;
-- package path only when the archive exists and validation passed.
+- package path only when the archive exists and validation passed;
+- for self-hosted transformations, controller/baseline/candidate/generation identities, recursion limit, external-promotion status, last-known-good status, and bootstrap-conformance result when checked.
 
 ## Stop conditions
 

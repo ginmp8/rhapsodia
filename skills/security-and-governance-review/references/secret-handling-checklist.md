@@ -2,52 +2,39 @@
 
 Use this checklist for `secret-handling-review`.
 
+## Absolute output rule
+
+**Never print, quote, log, copy, hash-as-display, or otherwise reproduce a complete secret value in review output.** This applies even when the user supplied the value or the target file is local. Use `[masked secret]` or `[masked private key block]`. Do not preserve prefix/suffix fragments as a default redaction strategy.
+
+The bundled scanner uses deterministic content omission/fingerprints so repeated runs do not expose additional fragments.
+
 ## Inspect
 
 - Hardcoded passwords, api keys, bearer tokens, oauth client secrets, webhook secrets, signing keys, private keys, certificates, cookies, session ids, and database connection strings.
 - Secrets split across literals in the same file.
-- Base64 or encoded credentials used as credential storage.
+- Base64/encoded credentials used as credential storage.
 - `.env`, `.npmrc`, `.pypirc`, cloud credential files, service-account json, kubeconfig, ssh keys, and local config examples.
 - Secrets in tests, fixtures, examples, markdown docs, screenshots, generated reports, expected outputs, package templates, and validator outputs.
-- Sensitive logging of authorization headers, cookies, jwt values, session ids, tokens, full connection strings, request bodies, or exception objects carrying secrets.
+- Sensitive logging of authorization headers, cookies, jwt/session/token values, full connection strings, request bodies, or exception objects carrying secrets.
 - Default credentials, fallback secrets, `changeme` defaults, and bootstrap tokens.
 
-## Classify safely
+## Protect source material
 
-Treat as confirmed risk:
+- Credentials, `.env`, and private-key files are protected-unread by default for snapshotting; do not ingest their contents merely to create a receipt.
+- Fixtures and expected outputs are protected from mutation; identity may be hash-only when necessary.
+- Never modify or delete protected files during a review.
+- If inspection of a protected source is essential, require explicit authorization and still apply the absolute output rule.
 
-- Provider-shaped tokens or private key blocks.
-- Connection strings with embedded passwords or access keys.
-- Concrete credential values assigned to credential-like names.
-- Logging that prints sensitive fields from real runtime data.
+## Classification
 
-Treat as potential risk:
+Use `confirmed` only when evidence establishes the unsafe condition actually claimed, for example a known-live credential exposed in a public artifact with authoritative confirmation. Pattern matching alone is `suspicious-pattern`.
 
-- Placeholder samples that normalize unsafe practice.
-- Credential-like variables with non-placeholder values that cannot be validated.
-- Redaction functions without tests.
-- Documentation that encourages copying secrets into files.
+Use `needs-verification` when a credential-shaped value cannot be safely/authentically verified. Placeholders such as `example-token` or `your_api_key_here` are not confirmed leaks; they may be low-severity sample-hygiene findings if they normalize unsafe practice.
 
-Treat as evidence limitation:
+## Remediation
 
-- Config values sourced externally but no deployment policy is available.
-- Secret scanners are unavailable for a repository-scale claim.
-- The review lacks history, logs, or environment configuration.
-
-## Masking rules
-
-- Never output the full value.
-- For short values, use `[masked secret]`.
-- For longer values, use at most the first 3 and last 3 visible characters, for example `abc...xyz`.
-- For private keys, output only `[masked private key block]`.
-- Do not include raw screenshots or copied blocks containing secrets.
-
-## Remediation guidance
-
-- Rotate or revoke exposed real credentials.
-- Remove secrets from code, docs, examples, templates, reports, expected outputs, and logs.
-- Move runtime secrets to workload identity or a managed secret store when possible; otherwise inject via deployment-time environment variables.
+- If a real credential is confirmed exposed: revoke/rotate, remove from artifacts/logs, and assess blast radius/scopes.
+- Move runtime secrets to workload identity or a managed secret store when possible; otherwise inject through a controlled deployment-time secret mechanism.
 - Keep `.env.example` free of real values.
-- Add automated secret scanning and redaction tests.
-- Redact logs at field boundaries and avoid logging full request/response payloads for sensitive operations.
-- Audit blast radius, scopes, and downstream systems after exposure.
+- Add automated secret scanning/redaction tests using fake credentials.
+- Redact logs at field boundaries; avoid logging full sensitive request/response payloads.

@@ -1,18 +1,39 @@
-schema_version: 1
-spec_id: null
+schema_version: 2
+spec_id: spec-2026-04-20-generic-intake-01
+spec_id_provenance: fixture://identity/01
+privacy:
+  classification: internal
+  contains_personal_data: false
+  contains_third_party_data: false
+  contains_confidential_data: false
+  contains_secrets: false
+  redactions_applied: []
+  redaction_method: none
+  intended_audience:
+  - governance-operator
+  allowed_destinations:
+  - local
+  purpose: governance-record
+  retention_days: 0
+  external_share_allowed: false
+  source_handoff_id: null
+  source_reference: template://ops.yaml
+  transformations:
+  - synthetic-template
 request:
   title: CSV export should preserve filtered dashboard table columns
   requester: customer-success
   requested_date: 2026-04-20
   source: github_issue
-  context: Customer reports exports include hidden columns after dashboard filters are applied.
+  context: Customer reports exports include hidden columns after dashboard filters
+    are applied.
 ownership:
   owner: null
   backup_owner: null
   stakeholders: []
   decision_maker: null
   watchers:
-    - customer-success
+  - customer-success
 planning:
   sprint: null
   bucket: retention
@@ -20,7 +41,7 @@ planning:
   commitment: unknown
   milestone: null
   rollout_target: null
-priority:
+business_priority:
   level: unknown
   urgency: high
   impact: medium
@@ -32,7 +53,8 @@ status:
   summary: Intake captured from GitHub issue; triage is still needed.
   updated_at: 2026-04-20
   confidence: low
-  evidence_summary: GitHub issue only. Mago spec and Magia execution evidence are not recorded.
+  evidence_summary: GitHub issue only. Mago spec and Magia execution evidence are
+    not recorded.
   manual:
     summary: Renewal impact reported by Customer Success.
     updated_at: 2026-04-20
@@ -41,20 +63,98 @@ status:
     summary: No execution progress inferred.
     updated_at: null
     evidence: []
+governance:
+  profile: standard
+  lifecycle: intake
+  status: intake
+technical_state:
+  planning:
+    state: unknown
+    source: null
+    observed_at: null
+  execution:
+    state: unknown
+    source: null
+    observed_at: null
+  validation:
+    state: unknown
+    source: null
+    observed_at: null
+release:
+  state: unknown
+  released_at: null
+  evidence: []
+dependencies: []
+decision:
+  state: unknown
+  current: null
+  evidence: []
+handoffs:
+  mago:
+    state: unknown
+    source: null
+    observed_at: null
+  magia:
+    state: unknown
+    source: null
+    observed_at: null
+provenance:
+  updated_at: '2026-07-23T00:00:00+00:00'
+  facts:
+    legacy_source: fixture://legacy/01
+    legacy_schema_version: 1
+    legacy_spec_id: null
+    canonical_spec_id: spec-2026-04-20-generic-intake-01
+    canonical_spec_id_provenance: fixture://identity/01
+  changes:
+  - field: schema_version
+    from: 1
+    to: 2
+    actor: governance-adapt
+    changed_at: '2026-07-23T00:00:00+00:00'
+    source: fixture://legacy/01
+    rationale: canonicalize governance facts without carrying legacy identity or technical
+      authority
+    affected_commitments: []
+  - field: spec_id
+    from: null
+    to: spec-2026-04-20-generic-intake-01
+    actor: governance-adapt
+    changed_at: '2026-07-23T00:00:00+00:00'
+    source: fixture://identity/01
+    rationale: use externally supplied current identity; legacy identity remains evidence
+      only
+    affected_commitments: []
+timestamps:
+  intake_at: null
+  state_entered_at: null
+  blocked_since: null
+  decision_requested_at: null
+  decision_at: null
+  planning_started_at: null
+  planning_ready_at: null
+  execution_started_at: null
+  execution_completed_at: null
+  validation_observed_at: null
+  released_at: null
+  closed_at: null
+  stakeholder_requested_at: null
+  stakeholder_responded_at: null
 blockers: []
 risks:
-  - id: risk-001
-    summary: Renewal impact is reported but not yet sized.
-    severity: medium
-    owner: customer-success
+- id: risk-001
+  summary: Renewal impact is reported but not yet sized.
+  severity: medium
+  owner: customer-success
+risk_history: []
 replanning: []
 tags:
-  - export
-  - retention
+- export
+- retention
 repos:
   candidate_impacted: []
 links:
   mago: []
   magia: []
   external:
-    - https://github.com/example/redash/issues/4821
+  - https://example.com/issues/4821

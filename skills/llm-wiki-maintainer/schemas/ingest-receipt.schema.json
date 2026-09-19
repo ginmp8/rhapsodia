@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:llm-wiki-maintainer:ingest-receipt:1",
+  "title": "LLM Wiki ingest receipt",
+  "type": "object",
+  "required": ["receipt_version", "stage", "status", "operation_id", "classification", "schema_version", "source_path", "source_id", "sha256", "size"],
+  "properties": {
+    "receipt_version": {"const": 1},
+    "stage": {"const": "ingest"},
+    "status": {"enum": ["pass", "blocked", "failed"]},
+    "operation_id": {"type": "string"},
+    "classification": {"type": "string"},
+    "schema_version": {"type": "string"},
+    "source_path": {"type": "string"},
+    "source_id": {"pattern": "^sha256:[0-9a-f]{64}$"},
+    "sha256": {"pattern": "^[0-9a-f]{64}$"},
+    "size": {"type": "integer", "minimum": 0}
+  },
+  "additionalProperties": true
+}

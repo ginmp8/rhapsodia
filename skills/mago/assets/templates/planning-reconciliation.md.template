@@ -1,0 +1,32 @@
+<!-- Read-only, non-authoritative comparison of Mago intent and supplied Magia evidence. -->
+---
+kind: mago-planning-reconciliation
+authoritative: false
+spec_id: "<spec_id>"
+plan_version: "<feature_version>"
+magia_evidence_refs: []
+---
+
+# Planning Reconciliation - <title>
+
+## Implemented as Planned
+
+## Implementation Deviation
+
+## Unmet Acceptance Criteria
+
+## Obsolete Planned Task
+
+## Newly Discovered Work
+
+## Required Planning Revision
+
+## No-Change Convergence
+
+## Evidence Status and Provenance
+
+## Handoffs
+
+- Mago planning revision: <required|not_required>
+- Magia implementation follow-up: <required|not_required>
+- Nomia governance/status follow-up: <required|not_required>

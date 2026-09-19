@@ -2,6 +2,8 @@ interface:
   display_name: Skill Cleanup and Simplification
   short_description: Safe cleanup, simplification, duplicate consolidation, and technical-debt
     planning for skill packages.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

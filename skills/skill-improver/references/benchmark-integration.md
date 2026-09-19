@@ -23,7 +23,7 @@ Never accept subjectively without an evaluator. A benchmark may be created first
 Run:
 
 ```bash
-python scripts/skill_improver_loop.py \
+<PYTHON> scripts/skill_improver_loop.py \
   --target /path/to/target-skill \
   --evaluator skill-benchmark \
   --max-iterations 10 \
@@ -35,7 +35,7 @@ python scripts/skill_improver_loop.py \
 Activation quality or generated-output quality matters; static score is saturated; or benchmark-friendly wording could game the result.
 
 ```bash
-python scripts/skill_improver_loop.py \
+<PYTHON> scripts/skill_improver_loop.py \
   --target /path/to/target-skill \
   --evaluator skill-benchmark \
   --skill-benchmark-results /path/to/frozen-scenario-results.json \
@@ -70,3 +70,8 @@ For `--evaluator skill-benchmark`: freeze benchmark inputs; enforce blocker gate
 ## Benchmark-design phase
 
 If no benchmark exists: run `skill-benchmark` once; create at least 20 planned/measured scenarios across activate, do-not-activate, ambiguous, and edge cases; convert measured outputs to locked scenario-results JSON; lock results/config; record baseline; then start a new improvement run. Do not add tests inside the same candidate acceptance loop.
+
+
+## Reproducibility overlay
+
+When benchmark score is already saturated, keep it as a gate and choose a non-saturated auxiliary metric before mutation. Freeze evaluator inputs and material source evidence separately: `--benchmark-lock-path` protects evaluator identity; `--source-lock-path` captures external evidence whose bytes affect the decision. A score gain is not accepted when source verification or the structural change gate fails.

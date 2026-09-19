@@ -3,44 +3,71 @@
 ## Mode and target
 
 - Mode:
-- Target path:
+- Canonical target path:
 - Scope:
-- Blocked paths protected:
+- Writable paths:
+- Protected paths:
+- Baseline identity:
+
+## Environment fingerprint
+
+- Platform:
+- Python/runtime:
+- Relevant tools/versions:
+- Capability blockers:
+
+## Command selection
+
+| Gate | Selected command | Source/rank | Working directory | Required? |
+|---|---|---|---|---|
 
 ## Baseline before changes
 
-| Command/static check | Status | Evidence |
-|---|---|---|
+| Gate | State | Classification/code | Exit code | Receipt/evidence |
+|---|---|---|---:|---|
 
 ## Changes made
 
-| File | Change | Rationale |
+| File | Change | Diagnostic/rationale |
 |---|---|---|
 
-## Command evidence
+## Protected evidence check
 
-| Gate | Command | Working directory | Exit code | Status | Output summary |
+- Status:
+- Receipt/evidence:
+
+## Same-gate rerun evidence
+
+| Gate | Exact command | Working directory | Exit code | State | Receipt/evidence |
 |---|---|---|---:|---|---|
 
-## Failure classification
+## Adjacent/final gates
 
-| Failure | Category | Root-cause hypothesis | Resolution |
+| Gate | Command | Exit code | State | Classification | Evidence type | Receipt |
+|---|---|---:|---|---|---|---|
+
+## Overall conclusion
+
+- Overall state (`pass|fail|blocked|not-run`):
+- Fixed-rule basis:
+
+## Not-run or blocked
+
+| Gate | State | Reason | Required capability/input |
 |---|---|---|---|
 
-## Final gates
+## Evidence labels
 
-| Gate | Status | Evidence |
-|---|---|---|
-
-## Not run or blocked
-
-| Gate | Reason | Next step |
-|---|---|---|
+- Executed:
+- Supplied:
+- Static:
+- Planned:
 
 ## Residual risks
 
 - 
 
-## Next recommended action
+## Freeze
 
-- 
+- Candidate frozen after final pass:
+- Post-pass edits requiring revalidation:

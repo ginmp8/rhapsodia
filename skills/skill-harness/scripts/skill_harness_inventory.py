@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventory a ChatGPT or Agent skill package for skill-harness runs."""
+"""Inventory a Agent Skills-compatible skill package for skill-harness runs."""
 import argparse
 import json
 import re
@@ -143,7 +143,7 @@ def inventory(target):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Inventory a ChatGPT or Agent skill package.")
+    parser = argparse.ArgumentParser(description="Inventory a Agent Skills-compatible skill package.")
     parser.add_argument("--target", required=True, help="Path to target skill folder")
     parser.add_argument("--output", help="Path to write JSON inventory")
     args = parser.parse_args()

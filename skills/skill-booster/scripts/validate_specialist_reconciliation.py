@@ -16,6 +16,7 @@ DEFAULT_REQUIRED_SPECIALISTS = [
     "skill-hypothesis-discovery",
     "skill-improver",
     "skill-change-gate",
+    "skill-quality-reviewer",
     "skill-package-architecture-review",
     "context-architect",
     "skill-prompt-and-activation-review",

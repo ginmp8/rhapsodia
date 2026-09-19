@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate structural readiness of a ChatGPT or Agent skill package."""
+"""Validate structural readiness of a Agent Skills-compatible skill package."""
 import argparse
 import importlib.util
 import json
@@ -9,6 +9,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 INVENTORY_PATH = SCRIPT_DIR / "skill_harness_inventory.py"
+PORTABILITY_PATH = SCRIPT_DIR / "skill_harness_portability.py"
 sys.dont_write_bytecode = True
 ALLOWED_SCENARIO_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
 REQUIRED_SCENARIO_FIELDS = {"id", "type", "prompt", "expected_behavior", "acceptance_criteria"}
@@ -24,6 +25,13 @@ UNRESOLVED_MARKERS = (
 
 def load_inventory_module():
     spec = importlib.util.spec_from_file_location("skill_harness_inventory", INVENTORY_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_portability_module():
+    spec = importlib.util.spec_from_file_location("skill_harness_portability", PORTABILITY_PATH)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -93,8 +101,11 @@ def validate_scenarios(target):
 def validate_scripts(target):
     gates = []
     scripts = sorted((target / "scripts").glob("*.py")) if (target / "scripts").exists() else []
+    tests = sorted((target / "tests").glob("*.py")) if (target / "tests").exists() else []
+    python_files = scripts + tests
     add_gate(gates, "python_scripts_present", bool(scripts), "major", f"count={len(scripts)}")
-    for script in scripts:
+    add_gate(gates, "python_self_tests_present", bool(tests), "major", f"count={len(tests)}")
+    for script in python_files:
         rel = script.relative_to(target).as_posix()
         try:
             compile(read_text(script), str(script), "exec")
@@ -163,7 +174,7 @@ def validate_template_assets(target):
     return gates
 
 
-def validate_package(target):
+def validate_package(target, profile="portable"):
     target = Path(target).resolve()
     inv_mod = load_inventory_module()
     inv = inv_mod.inventory(target)
@@ -176,6 +187,12 @@ def validate_package(target):
     add_gate(gates, "frontmatter_description_specific", len(description) >= 120 and any(term in description.lower() for term in ["use when", "when asked", "supports"]), "major", detail=f"length={len(description)}")
     add_gate(gates, "frontmatter_negative_boundary", any(term in description.lower() for term in ["do not use", "unless", "not use"]), "major", detail="negative trigger language present")
     add_gate(gates, "no_missing_references", not inv.get("missing_references"), detail=f"missing={inv.get('missing_references', [])}")
+    portability = load_portability_module().validate(target, profile)
+    for item in portability.get("checks", []):
+        severity = item.get("severity", "major")
+        if severity == "info":
+            continue
+        add_gate(gates, f"portability:{item.get('code')}", item.get("passed"), severity, item.get("detail", ""))
     gates.extend(validate_text_placeholders(inv))
     gates.extend(validate_template_assets(target))
     scenario_gates, scenario_details = validate_scenarios(target)
@@ -190,6 +207,8 @@ def validate_package(target):
         "verdict": verdict,
         "gates": gates,
         "scenario_details": scenario_details,
+        "portability": portability,
+        "profile": profile,
         "inventory_summary": {
             "file_count": inv.get("file_count"),
             "skill_md_count": inv.get("skill_md_count"),
@@ -200,11 +219,12 @@ def validate_package(target):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate a ChatGPT or Agent skill package.")
+    parser = argparse.ArgumentParser(description="Validate an Agent Skills-compatible package and optional host profile.")
     parser.add_argument("--target", required=True, help="Path to target skill folder")
     parser.add_argument("--output", help="Path to write JSON validation report")
+    parser.add_argument("--profile", choices=("portable", "openai", "claude", "copilot", "cursor"), default="portable")
     args = parser.parse_args()
-    report = validate_package(args.target)
+    report = validate_package(args.target, profile=args.profile)
     payload = json.dumps(report, indent=2, sort_keys=True)
     if args.output:
         out = Path(args.output)

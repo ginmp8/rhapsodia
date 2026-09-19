@@ -9,6 +9,16 @@ Use when designing validation for a hardening run or a dedicated evaluator for a
 3. Resource integration: each useful resource is referenced, lazy-loaded, executable, copied, filled, script-consumed, or validated.
 4. Behavioral evidence: activation, negative, ambiguous, edge prompts, expected outputs, measured results.
 
+Structural evidence, behavioral evidence, runtime evidence, and perceptual evidence are separate claim layers. A pass in one layer does not imply a pass in another.
+
+## Evaluator independence and freeze
+
+Before candidate mutation, freeze the prompts, fixtures, expected outputs, grader rules, thresholds, and independent validators that will decide acceptance. Record their SHA-256 identities. Keep candidate generators and files intentionally changed by the plan outside the frozen set.
+
+Baseline and candidate must use the same evaluator version and identical scenarios. If a frozen evaluator is defective, invalidate the comparison, repair and refreeze it separately, then restart. Never change a fixture, threshold, or grader after seeing candidate results and continue the same experiment.
+
+Include holdout cases when a strong behavioral-improvement claim matters. An unexecuted suite remains planned evidence.
+
 ## Required fail gates
 
 Fail when any applies:
@@ -22,6 +32,8 @@ Fail when any applies:
 - operational template removed or migrated only because no script consumes it, without classification evidence;
 - scripts added by the run were not run or explicitly reported untested;
 - benchmark fixtures changed during improvement;
+- frozen evaluator identity changed during the experiment;
+- baseline and candidate used different cases, thresholds, or evaluator versions for an improvement claim;
 - packaging fails.
 
 ## Score bands
@@ -38,7 +50,7 @@ If a benchmark is already `100/100`, keep it as a gate and add a non-saturated a
 
 ## Report minimums
 
-Include target path/name, inventory, gate status, score by layer, resource map, top risks, prioritized improvements, commands, and measured-versus-proposed evidence.
+Include target path/name, baseline and candidate identities, evaluator manifest/verification, inventory, gate status, score by layer, resource map, top risks, prioritized improvements, commands, and evidence labels (`measured`, `observed`, `derived`, `supplied`, `planned`, `blocked`).
 
 ## Package-delivery auxiliary gates
 

@@ -6,30 +6,31 @@ Every complete Skill Booster run must execute, apply by checklist, or classify e
 
 | # | Pass | Purpose | Minimum evidence/checklist |
 |---:|---|---|---|
-| 1 | `skill-creator-juiced` | design governance and escalation | decide optimization vs redesign/router/split; preserve purpose; require package gates; no fabricated readiness |
+| 1 | `skill-creator-juiced` | design governance, portability ownership, and escalation | decide optimization vs redesign/router/split; preserve purpose; when host coupling exists own `portability` normalization into one portable core plus optional adapters; require package gates; no fabricated readiness |
 | 2 | `skill-benchmark` | initial maturity score/report | structural vs behavioral evidence separated; no precision/recall without results; saturated score gets auxiliary metric |
 | 3 | `skill-harness` | repeatable scenarios and gates | activation, non-activation, ambiguous, edge, regression, output-contract coverage; run `scripts/run_activation_harness.py` for schema/coverage when compatible; freeze suite; planned vs executed marked |
 | 4 | reproducibility decision + optional `reproducibility-engineer` | identify controllable variance before backlog selection | evaluate `references/reproducibility-routing.md`; validate decision JSON; if applicable and available invoke `reproducibility-engineer` in `audit-only` by default or `apply` only for an explicit/bounded reproducibility transformation; otherwise record `not-applicable`, `blocked`, or `unavailable` with evidence |
 | 5 | `skill-hypothesis-discovery` | evidence-based improvement backlog | derive 5-10 candidate hypotheses from benchmark, harness, reproducibility audit when applicable, architecture, validation, security, consistency, and token evidence; dedupe; rank; recommend top 1-3 for current cycle; mark no-mutation when warranted |
 | 6 | `skill-improver` | objective, freeze, bounded experiments, decisions | use selected hypothesis or supplied backlog; baseline before mutation; one bounded hypothesis per patch; accept/reject with gates; proposals marked untested; do not re-own a batch explicitly delegated to reproducibility-engineer apply mode |
 | 7 | `skill-change-gate` | candidate acceptance gate | classify candidate regressions as blocking, material, trade-off, or follow-up; reject or repair before accept when blocking regressions exist |
-| 8 | `skill-package-architecture-review` | package structure decision | unified/modes/router/split/stop decision; `SKILL.md` control plane; resources have declared use |
-| 9 | `context-architect` | cross-file impact map | affected files, imports/consumers, ripple effects, safe sequence, unrelated paths avoided |
-| 10 | `skill-prompt-and-activation-review` | activation and boundaries | specific frontmatter, visible non-triggers, ambiguous rules, auditable output, stop conditions |
-| 11 | `prompt-architect` | complex prompts/instructions | preserve intent; state success criteria; remove vague wording; examples only when calibrating |
-| 12 | `skill-consistency-repair` | contradictions and integration gaps | compare `SKILL.md`, refs, scripts, templates, evals; links resolve; unsupported claims removed/marked |
-| 13 | `documentation-quality` | references, examples, templates, script docs | docs have clear purpose, verified commands/artifacts, minimal duplication, source-backed claims |
-| 14 | `karpathy-guidelines` | scripts and technical artifacts | scripts do one thing; explicit CLI; useful errors; no overbuilt framework; smoke/syntax check modified code |
-| 15 | `security-and-governance-review` | secrets, unsafe commands, authority | no secrets/logging leaks; scoped writes; safe archive handling; tool authority and residual risks recorded |
-| 16 | `skill-testing-and-validation` | validators, lint, smoke, package checks | structure validation, requested-host portability validation when applicable, activation-harness check when compatible, reproducibility-decision validator, link checks, modified scripts run/syntax-check, package validation recorded |
-| 17 | `skill-cleanup-and-simplification` | hygiene and simplification | classify before deletion; remove only caches, old zips, generated noise, duplicates, scaffold; validate after cleanup |
-| 18 | `skill-token-efficient` | main compression after stability | preserve triggers, exclusions, routing, safety, validation, output, stop; reduce conservatively; revalidate immediately |
-| 19 | `skill-testing-and-validation` | post-compression validation | rerun affected validators, activation-harness check when compatible, reproducibility routing contract, and package checks; reject compression that weakens contract or fails gates |
-| 20 | `skill-hardening` | final readiness and package maturity | inventory passes; support files integrated; no generated noise; validators/package checks pass; scope exact |
-| 21 | final `skill-change-gate` | final acceptance gate | rerun or apply gate checklist after hardening/compression; no blocking regression may remain before final acceptance |
-| 22 | final `skill-benchmark` | final score and delta | compare against baseline; measured vs judged evidence separated; residual risks and next hypothesis listed |
-| 23 | final `skill-improver` closure | final decisions | accept/reject hypotheses; record files; gates; rollback; package only when validated |
-| 24 | final `skill-token-efficient` closure | no avoidable waste after closure | prefer audit/validate mode; if mutating, rerun affected validation/package checks; preserve activation, safety, validation, output, stop, routing, reproducibility, and evidence duties |
+| 8 | `skill-quality-reviewer` | semantic capability-delta review | when baseline/candidate capabilities materially change or self-improvement is in scope, classify `added`, `preserved`, `regressed`, `removed-authorized`, `removed-breaking`, `redundant`, or `unproven`; do not treat static presence as behavioral improvement |
+| 9 | `skill-package-architecture-review` | package structure decision | unified/modes/router/split/stop decision; `SKILL.md` control plane; resources have declared use |
+| 10 | `context-architect` | cross-file impact map | affected files, imports/consumers, ripple effects, safe sequence, unrelated paths avoided |
+| 11 | `skill-prompt-and-activation-review` | activation and boundaries | specific frontmatter, visible non-triggers, ambiguous rules, auditable output, stop conditions |
+| 12 | `prompt-architect` | complex prompts/instructions | preserve intent; state success criteria; remove vague wording; examples only when calibrating |
+| 13 | `skill-consistency-repair` | contradictions and integration gaps | compare `SKILL.md`, refs, scripts, templates, evals; links resolve; unsupported claims removed/marked |
+| 14 | `documentation-quality` | references, examples, templates, script docs | docs have clear purpose, verified commands/artifacts, minimal duplication, source-backed claims |
+| 15 | `karpathy-guidelines` | scripts and technical artifacts | scripts do one thing; explicit CLI; useful errors; no overbuilt framework; smoke/syntax check modified code |
+| 16 | `security-and-governance-review` | secrets, unsafe commands, authority | no secrets/logging leaks; scoped writes; safe archive handling; tool authority and residual risks recorded |
+| 17 | `skill-testing-and-validation` | validators, lint, smoke, package checks | structure validation, requested-host portability validation when applicable, activation-harness check when compatible, reproducibility-decision validator, link checks, modified scripts run/syntax-check, package validation recorded |
+| 18 | `skill-cleanup-and-simplification` | hygiene and simplification | classify before deletion; remove only caches, old zips, generated noise, duplicates, scaffold; validate after cleanup |
+| 19 | `skill-token-efficient` | main compression after stability | preserve triggers, exclusions, routing, safety, validation, output, stop; reduce conservatively; revalidate immediately |
+| 20 | `skill-testing-and-validation` | post-compression validation | rerun affected validators, activation-harness check when compatible, reproducibility routing contract, and package checks; reject compression that weakens contract or fails gates |
+| 21 | `skill-hardening` | final readiness and package maturity | inventory passes; support files integrated; no generated noise; validators/package checks pass; scope exact |
+| 22 | final `skill-change-gate` | final acceptance gate | rerun or apply gate checklist after hardening/compression; no blocking regression may remain before final acceptance |
+| 23 | final `skill-benchmark` | final score and delta | compare against baseline; measured vs judged evidence separated; residual risks and next hypothesis listed |
+| 24 | final `skill-improver` closure | final decisions | accept/reject hypotheses; record files; gates; rollback; package only when validated |
+| 25 | final `skill-token-efficient` closure | no avoidable waste after closure | prefer audit/validate mode; if mutating, rerun affected validation/package checks; preserve activation, safety, validation, output, stop, routing, reproducibility, and evidence duties |
 
 ## Reproducibility pass rules
 

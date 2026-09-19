@@ -1,46 +1,69 @@
-# Example Migration Review Cases
+# Migration Conflict Analyzer Examples
 
-## Duplicate column across PR migrations
+These examples show the distinction between observed evidence and bounded interpretation. Rule IDs and severities come from `references/heuristic-set.json`.
 
-Input signal:
+## Duplicate AddColumn
 
-- `20260401090000_AddCustomerEmail.cs`: `AddColumn("Email", table: "Customers")`
-- `20260401103000_AddEmailToCustomer.cs`: `AddColumn("Email", table: "Customers")`
+Two changed migrations both add `Customers.Email`.
 
-Expected finding: critical duplicate column creation.
+Expected primary finding:
 
-## Safe disjoint column additions with runtime warning
+- rule: `duplicate.add-column`;
+- severity: critical;
+- evidence status: derived;
+- gate: block;
+- rationale: duplicate structured creation is directly derived from the changed operations.
 
-Input signal:
+## Standalone DropColumn
 
-- migration A adds `Customers.Email`;
-- migration B adds `Customers.Phone`;
-- application applies migrations during startup.
+A migration drops `Customers.LegacyCode`.
 
-Expected finding: no deterministic schema conflict, but medium runtime deployment hazard if multiple instances apply migrations concurrently or app starts using columns before migration completes.
+Expected primary finding:
 
-## Unsafe rename
+- rule: `destructive.drop-column`;
+- severity: high;
+- evidence status: observed;
+- uncertainty: data presence and consumer dependency are unknown.
 
-Input signal:
+Do not rewrite this as "data loss will occur" without data/consumer evidence.
 
-- migration drops `Customers.Name` and adds `Customers.FullName`.
+## Drop/Add possible rename
 
-Expected finding: high data-loss risk; recommend `RenameColumn` or explicit backfill.
+One migration drops `Customers.Name` and adds `Customers.FullName`.
 
-## Not-null column on existing table
+Expected findings include destructive review plus `rename.drop-add`. The rename interpretation is inferred/medium-confidence because replacement can be intentional.
 
-Input signal:
+## Conflicting indexes
 
-- `AddColumn(nullable: false)` without `defaultValue`, `defaultValueSql`, or computed column;
-- table is not created in the same PR.
+Two migrations create indexes over the same table/column set but disagree on uniqueness or identity.
 
-Expected finding: high risk for populated database.
+Expected primary finding: `conflict.index-definition` high. Multiple same-column indexes can be intentional, so the report requests reconciliation rather than asserting invalid SQL.
 
-## Raw SQL backfill dependency
+## Conflicting FKs
 
-Input signal:
+Two migrations map `Orders.OwnerId` to different principal tables.
 
-- raw SQL updates `Customers.Email`;
-- another migration adds `Customers.Email`.
+Expected primary finding: `conflict.foreign-key-definition` high with explicit business-intent uncertainty.
 
-Expected finding: medium or high ordering risk depending on operation order and same migration grouping.
+## Raw SQL increment
+
+`UPDATE Counters SET Value = Value + 1` inside `migrationBuilder.Sql(...)`.
+
+Expected findings include:
+
+- `raw-sql.opaque-mutation`;
+- `raw-sql.non-idempotent-data`.
+
+The second rule detects a narrow rerun-sensitive pattern. Provider behavior and surrounding guards still require exact SQL execution evidence.
+
+## Runtime startup migration
+
+Runtime code contains `Database.MigrateAsync()` and deployment evidence explicitly says multiple application instances can start.
+
+Expected primary finding: `runtime.concurrent-startup-migrate` high. Report a concurrency hazard, not a guaranteed failure.
+
+## Harmless static case
+
+A single migration adds one nullable column to an existing table, with no other evidence.
+
+Expected: no critical/high/medium finding from the frozen static heuristic set. This means `no-static-blocker`, not "production safe".

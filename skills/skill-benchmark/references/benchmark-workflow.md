@@ -1,71 +1,114 @@
-# Benchmark Workflow Reference
+# Benchmark Workflow
 
-Use for command execution, evidence handling, path choices, comparison, and final responses.
+Use for filesystem execution, evidence identity, comparison, paths, and finalization.
 
-## Command sequence
+## Capability preflight
 
-For a filesystem target:
+Resolve before commands:
 
-1. Inspect the tree and read target `SKILL.md`.
-2. Generate static report:
+- readable target;
+- writable work/output directory outside target;
+- `<PYTHON>` = available Python 3.10+ launcher/execution method;
+- requested host profiles;
+- optional independent behavioral execution capability.
 
-   ```bash
-   node scripts/generate_benchmark_report.js --target <target-skill-folder> --out <benchmark-output-root>
-   ```
+If Python cannot run, manual/static inspection may continue, but script gates are `not-run` and no package/report-validation pass may be claimed.
 
-3. If scenario results JSON exists, validate before metrics:
+## Filesystem benchmark sequence
 
-   ```bash
-   python3 -S scripts/validate_scenario_results.py --results <scenario-results-json>
-   ```
+1. Read target `SKILL.md`; confirm one root skill.
+2. Capture exact source bytes:
 
-4. Generate with validated results:
+```text
+<PYTHON> scripts/snapshot_target.py capture \
+  --target <TARGET> \
+  --snapshot-dir <WORK>/target-snapshot \
+  --out <WORK>/target-manifest.json
+```
 
-   ```bash
-   node scripts/generate_benchmark_report.js --target <target-skill-folder> --out <benchmark-output-root> --results <scenario-results-json>
-   ```
+3. Freeze evaluator identity:
 
-5. Validate report:
+```text
+<PYTHON> scripts/benchmark_identity.py --json <WORK>/evaluator-manifest.json
+```
 
-   ```bash
-   python3 -S scripts/validate_benchmark_report.py --report <generated-report-file>
-   ```
+4. When multi-host support is requested/claimed:
 
-6. Read the report and add qualitative findings only where evidence supports them.
+```text
+<PYTHON> scripts/validate_portability.py \
+  --target <WORK>/target-snapshot \
+  --hosts portable-core,openai,claude,copilot,cursor \
+  --json <WORK>/portability.json
+```
 
-Use absolute script paths when outside the skill folder. Use `--out` so evidence stays away from protected target packages.
+5. If scenario results exist, validate them first:
 
-## Path ownership
+```text
+<PYTHON> scripts/validate_scenario_results.py \
+  --results <RESULTS_JSON> \
+  --json-output <WORK>/scenario-validation.json
+```
 
-- Generated reports belong in the caller repo or explicit output dir, not inside the benchmarked skill by default.
-- Do not write into target fixtures, expected outputs, secrets, credentials, or user-declared read-only paths.
-- The canonical report path string is an output location, not a bundled file required by this skill.
-- If files cannot be written, return report content and intended path.
+6. Generate the report from the frozen snapshot:
+
+```text
+<PYTHON> scripts/generate_benchmark_report.py \
+  --target <WORK>/target-snapshot \
+  --source-manifest <WORK>/target-manifest.json \
+  --out <OUTPUT_ROOT> \
+  --hosts <HOSTS> \
+  [--results <RESULTS_JSON>]
+```
+
+7. Validate the generated report:
+
+```text
+<PYTHON> scripts/validate_benchmark_report.py \
+  --report <REPORT_MD> \
+  --json-output <WORK>/report-validation.json
+```
+
+8. Before final comparison/readiness claims, verify source identity:
+
+```text
+<PYTHON> scripts/snapshot_target.py verify \
+  --manifest <WORK>/target-manifest.json \
+  --json <WORK>/target-verification.json
+```
+
+Read `integrity-and-recovery.md` for failure/recovery semantics.
+
+## Legacy Node helper
+
+`scripts/generate_benchmark_report.js` is retained only for backwards compatibility. It is not part of the portable core execution path and must not be required for multi-platform readiness.
 
 ## Evidence hierarchy
 
-1. Current target files and command output.
-2. User-supplied scenario results, prior reports, review notes, issue links.
-3. Target-local references, examples, validators, templates, scripts.
-4. Qualitative judgment, labeled as judgment.
+1. Frozen target bytes and command output.
+2. Identity-bound supplied/executed scenario evidence.
+3. User-supplied prior reports/review notes/issues, clearly labeled.
+4. Target-local references/examples/validators.
+5. Qualitative judgment, explicitly labeled.
 
-## Static vs behavioral evidence
-
-- Static evidence supports structure, frontmatter quality, output contract, resource integration, and validation coverage.
-- Static evidence does not prove activation precision, recall, robustness, output conformance, or rework rate.
-- Behavioral evidence is measured only from executed prompts or user-supplied execution results.
-- Planned suites are useful but not measured evidence.
-
-Resource integration must classify role, not count files. `references/` carry guidance, schemas, rubrics, or policy; `assets/templates/` carry reusable skeletons. A useful integrated template is not a duplicate of a reference. If deleting a useful resource improves a static score, treat that as evaluator weakness or missing integration evidence.
-
-## Required report checks
-
-A complete report must include all `references/report-template.md` sections; target name, inspected source, score, verdict, and gate status; automated findings separated from qualitative findings; concrete scenario prompts across required categories; metrics marked not measured without execution evidence; validated scenario JSON before measured metrics; risks and prioritized improvements; no unresolved scaffold markers, fake examples, or fabricated metrics.
+Never cite uninspected files or treat planned evals as executed evidence.
 
 ## Comparison rules
 
-Keep versions separate: identify target and baseline sources; state files/reports for each; compute deltas only from comparable measures; do not merge results unless the same frozen suite was executed.
+For baseline vs candidate:
+
+- freeze each target separately;
+- use the same evaluator identity;
+- use the same scenario suite identity;
+- compare only like-for-like dimensions/metrics;
+- if evaluator/scenario identity differs, mark delta `not comparable`;
+- source changes after snapshot invalidate live-source claims unless deliberately re-baselined.
+
+## Output ownership
+
+Generated reports/receipts belong outside the target package. Never write into target fixtures, expected outputs, secrets, credentials, evaluator files, or benchmark baselines.
+
+The report generator and package builder preflight canonical paths and preserve last-known-good outputs on failed commits. Do not bypass those checks with manual overwrites.
 
 ## Final response
 
-Include target/source path, report path or content, score/verdict, failed gates, residual risks, commands run, and whether behavioral metrics were measured, supplied, or planned only.
+Include target/source identity, evaluator identity, report path/content, score/verdict, failed/review gates, behavioral evidence status, requested-host portability status, commands run, validation result, and residual risks.

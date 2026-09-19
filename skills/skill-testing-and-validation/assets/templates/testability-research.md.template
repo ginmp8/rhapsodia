@@ -1,54 +1,62 @@
 # Testability Research
 
-## Target
+## Target and scope
 
-- Path:
+- Canonical target path:
 - Requested scope:
 - Writable paths:
-- Blocked paths:
+- Protected paths:
+- Mode:
+
+## Capability and environment fingerprint
+
+- Filesystem read/write:
+- Command execution:
+- Python/runtime availability:
+- Relevant tool versions/paths:
+- Blocked capabilities:
 
 ## Project overview
 
 - Package role:
-- Languages/runtime:
+- Languages/runtimes:
 - Frameworks/tools:
-- Existing test framework:
+- Existing test/validator framework:
 
-## Command candidates
+## Command discovery
 
-| Type | Command | Source | Confidence | Notes |
-|---|---|---|---|---|
-| build |  |  |  |  |
-| test |  |  |  |  |
-| lint |  |  |  |  |
+| Gate | Selected command | Rank/source | Working directory | Runtime available | Required? |
+|---|---|---|---|---|---|
+| build |  |  |  |  |  |
+| test |  |  |  |  |  |
+| lint |  |  |  |  |  |
+| validator |  |  |  |  |  |
+| packaging |  |  |  |  |  |
+
+### Alternate candidates / ambiguities
+
+| Gate | Candidate | Rank/source | Tie-break result |
+|---|---|---|---|
 
 ## Existing tests and validators
 
-| Path | Purpose | Patterns observed |
-|---|---|---|
-
-## Files or behaviors to test
-
-### High priority
-
-| Path | Reason | Testability | Risks |
+| Path | Purpose | Read/write behavior | Risks |
 |---|---|---|---|
 
-### Medium priority
+## Testability risks
 
-| Path | Reason | Testability | Risks |
+- Nondeterminism:
+- External services/network:
+- Credentials/configuration:
+- Protected fixtures/evidence:
+- Generated outputs:
+
+## Coverage gaps and priorities
+
+| Priority | Path/behavior | Gap | Proposed evidence |
 |---|---|---|---|
-
-### Low priority or skip
-
-| Path | Reason |
-|---|---|
-
-## Gaps and recommendations
-
-- 
 
 ## Baseline evidence
 
-| Command | Status | Evidence |
-|---|---|---|
+| Gate | Command/static evidence | State | Exit code | Classification | Receipt/evidence |
+|---|---|---|---:|---|---|

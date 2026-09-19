@@ -7,107 +7,217 @@ description: 'use when asked to audit a skill package, agent package, validator,
 
 ## Purpose
 
-Review reusable skill packages, agents, scripts, validators, templates, and nearby technical helper projects for security, supply-chain, governance, llm/agent authority, responsible-ai, and compliance risks. Treat the review as evidence-based assurance work, not as general hardening or style cleanup.
+Review reusable skill packages, agents, scripts, validators, templates, and nearby technical helper projects for security, supply-chain, governance, llm/agent authority, responsible-ai, and compliance risks. This is evidence-based assurance work, not general hardening or style cleanup.
+
+Default to **read-only** review. Mutation requires explicit user authorization and must not change protected evidence merely to make a finding disappear.
+
+## Reproducibility contract
+
+This is a `research-analytic` skill. Reproducibility means equivalent inputs/evidence should produce materially comparable classifications, severity reasoning, evidence mappings, gates, and report structure. It does **not** require byte-identical threat-model prose or eliminate analyst judgment.
+
+Use:
+
+- rubric `SGR-2.0` from `references/security-review-rubric.md`;
+- deterministic local helpers for static triage, evidence identity, redaction, and report validation;
+- explicit source/evidence identity;
+- frozen scenario/evaluator inputs when comparing versions;
+- separate structural, behavioral, runtime, and external-current evidence.
+
+Do not convert threat modeling, responsible-ai analysis, or governance judgment into mechanical scoring merely to increase determinism.
 
 ## Scope boundary
 
-Use this skill only for security and governance review. It may inspect `SKILL.md`, `agents/`, `references/`, `scripts/`, `assets/templates/`, dependency manifests, validators, packaging scripts, examples, and small auxiliary project files.
+Use this skill only for security/governance review. It may inspect `SKILL.md`, agents, references, scripts, templates, dependency manifests/lockfiles, validators, packaging scripts, examples, small auxiliary project files, and policy evidence relevant to the review.
 
-Do not use this skill to replace broad skill hardening, ordinary code review, vulnerability exploitation, dependency installation, destructive command execution, or risky remediation. If a finding needs code changes, first produce a remediation plan with validation gates; apply changes only when the user explicitly asks for implementation.
+Do not use it to replace broad skill hardening, ordinary code review, vulnerability exploitation, dependency installation, destructive execution, or risky remediation. If code changes are needed, first produce a remediation plan with validation gates; implement only when explicitly authorized.
 
 ## Required inputs
 
 Resolve or conservatively infer:
 
-1. `TARGET_PATH`: skill folder, extracted package, repository subfolder, uploaded files, pasted code, or named installed skill.
-2. Review mode: one of the modes below, or `security-report` when unspecified.
-3. Evidence policy: target files, user-supplied context, local static scan output, package manifests, and approved primary sources if current facts are required.
-4. Allowed actions: read-only by default. No dependency downloads, no package installs, no network calls, no destructive shell commands, and no mutation unless separately authorized.
-5. Blocked paths: `.git`, credentials, local env files, private keys, real secrets, fixtures containing expected secret values, expected outputs, generated evidence, old zips, and user-declared read-only paths.
-6. Output expectation: inline findings, filled report template, threat model, or remediation plan.
+1. `TARGET_PATH`: exact skill/project/files/snippets being reviewed.
+2. Review mode: one mode below, or `security-report` when unspecified.
+3. Evidence policy: target files, user context, local read-only scan output, manifests/lockfiles, runtime evidence supplied by the user, and approved current primary/scanner sources when freshness matters.
+4. Allowed actions: read-only by default; no installs, dependency hooks, destructive commands, network mutation, or target mutation unless separately authorized.
+5. Protected paths/evidence: `.git`, credentials, `.env`, private keys, real secrets, fixtures/golden inputs, expected outputs, frozen evaluator evidence, generated baseline evidence, and user-declared protected paths.
+6. Output expectation: inline findings, Markdown report, machine-readable JSON report, threat model, or remediation plan.
+
+If target identity is ambiguous and a concrete finding depends on it, do not guess.
 
 ## Modes
 
-- `secret-handling-review`: inspect hardcoded secrets, tokens, credentials, connection strings, private keys, `.env` leakage, and sensitive logging. Never print the full secret value.
-- `script-security-review`: inspect Python, JavaScript, TypeScript, shell, PowerShell, packaging, archive, and validator scripts for unsafe subprocess, shell injection, path traversal, symlink handling, archive extraction, untrusted deserialization, broad deletes, and unsafe file writes.
-- `dependency-risk-review`: inspect manifests and lockfiles for supply-chain signals, unpinned or floating versions, direct install-from-url patterns, lifecycle scripts, unknown registries, license/compliance flags, and missing vulnerability evidence. Do not claim a CVE without a source or scanner result.
-- `llm-agent-governance-review`: inspect agent authority boundaries, tools, permissions, policy enforcement, audit trails, rate limits, handoffs, stop conditions, human approval, fail-closed behavior, and cross-agent trust boundaries.
-- `responsible-ai-review`: inspect domain-specific risks around bias, fairness, accessibility, privacy, explainability, consent, automation impact, human override, and exclusion. Avoid generic checklist-only comments.
-- `threat-model`: create a lightweight threat model with assets, trust boundaries, actors, abuse cases, controls, residual risks, and validation probes.
-- `remediation-plan`: prioritize fixes with severity, evidence, scope, risk, owner assumption, validation gate, rollback, and safe implementation order.
-- `security-report`: produce the complete structured report using `assets/templates/security-report.md.template`.
+- `secret-handling-review`: hardcoded secrets, tokens, credentials, connection strings, private keys, `.env` leakage, and sensitive logging. Never emit a complete secret value.
+- `script-security-review`: unsafe subprocess/shell use, injection, traversal, symlinks, archive extraction, deserialization, broad deletes, and unsafe writes.
+- `dependency-risk-review`: manifests/lockfiles, floating versions, install-from-url, lifecycle hooks, registries, licenses/policy, and current vulnerability evidence. Never claim a CVE/applicability without evidence bound to dependency/source identity.
+- `llm-agent-governance-review`: authority boundaries, permissions, approval, policy enforcement, audit, rate/budget limits, handoffs, fail-closed behavior, and cross-agent trust.
+- `responsible-ai-review`: contextual risks around privacy, fairness, accessibility, explainability, consent, automation impact, human override, and exclusion.
+- `threat-model`: evidence-linked assets, trust boundaries, actors, abuse cases, controls, assumptions, residual risks, and validation probes using `schemas/threat-model.schema.json` as the machine-readable shape.
+- `remediation-plan`: prioritized fixes with evidence, risk, owner assumption, safe order, validation gate, and rollback/containment.
+- `security-report`: complete report using the Markdown template and, when machine-readable output is useful/requested, `schemas/security-review-report.schema.json`.
 
-## Resource loading
+## Progressive resource loading
 
-Load only what the selected mode needs:
+Load only what the active mode needs:
 
-- `references/security-review-rubric.md` for severity, evidence classes, confidence, gates, and report judgment.
-- `references/secret-handling-checklist.md` for secret detection, masking, logging, rotation, and false-positive rules.
-- `references/script-security-checklist.md` for scripts, file handling, subprocess, archive extraction, path traversal, and packaging safety.
-- `references/agent-governance-checklist.md` for authority boundaries, tool permissions, policy controls, audit trails, handoffs, fallback, and stop conditions.
-- `references/responsible-ai-checklist.md` for contextual responsible-ai review, fairness, accessibility, privacy, explainability, and escalation.
-- `assets/templates/security-report.md.template` when the user asks for a durable report or mode `security-report`.
-- `examples/security-review-prompts.md` for concrete activation, non-activation, and mode-selection prompt examples.
-- `scripts/security_static_review.py` when files are available and a safe, local, read-only static scan will improve coverage.
+- `references/security-review-rubric.md`: SGR-2.0 classifications, stable severity criteria, confidence, tie-breakers, and critical gates.
+- `references/evidence-and-source-integrity.md`: deterministic source/evidence snapshot, protected evidence, dependency/source identity, and evidence-layer separation.
+- `references/secret-handling-checklist.md`: secret detection, absolute no-full-secret rule, protected secret sources, and safe remediation.
+- `references/script-security-checklist.md`: scripts, subprocess, file handling, traversal, archives, deserialization, and packaging.
+- `references/agent-governance-checklist.md`: authority matrix, approvals, audit, fail-closed rules, handoffs, and trust boundaries.
+- `references/responsible-ai-checklist.md`: contextual responsible-ai review.
+- `assets/templates/security-report.md.template`: durable Markdown report.
+- `schemas/security-review-report.schema.json`: machine-readable report contract.
+- `schemas/threat-model.schema.json`: threat-model contract.
+- `evals/activation-scenarios.json`: frozen/planned regression scenarios; scenario files are not behavioral evidence until executed.
+- `scripts/security_static_review.py`: deterministic read-only static triage.
+- `scripts/evidence_snapshot.py`: deterministic evidence/source identity receipt.
+- `scripts/validate_security_report.py`: standard-library machine-readable report gate.
 
 ## Review workflow
 
-1. **Identify the target and mode.** Read the target `SKILL.md` first when present, then inventory relevant files. If the mode is not specified, run `security-report` with all applicable subreviews.
-2. **Protect sensitive material.** Do not open or print full secret values unnecessarily. Mask secrets in notes and outputs. Do not inspect `.git` history unless the user explicitly asks and the environment supports safe redaction.
-3. **Run optional static scan.** When a filesystem target exists, run:
+### 1. Resolve target, mode, authority, and protected scope
 
-   ```bash
-   python scripts/security_static_review.py --target <TARGET_PATH> --format markdown --output <REPORT_PATH>
-   ```
+Read target `SKILL.md` first when present, then inventory relevant files. Record what may be read and what is protected from mutation or content exposure. Do not follow symlinks into blocked/out-of-scope paths.
 
-   Treat script output as triage evidence. Manually review likely false positives before finalizing.
-4. **Perform human security review.** Apply the relevant checklist files. Select the highest-risk categories first based on target context: secrets, scripts, dependencies, agent authority, responsible ai, then compliance.
-5. **Classify evidence.** Label each issue as `confirmed risk`, `potential risk`, or `evidence limitation`. Do not invent vulnerabilities from naming alone.
-6. **Assign severity and confidence.** Use the rubric. Severity reflects impact and exploitability; confidence reflects evidence strength.
-7. **Recommend safely.** Prefer minimal, auditable controls: least privilege, explicit allowlists, fail-closed policy, managed secret stores, no sensitive logging, safe archive extraction, pinned dependencies, human approval for high-impact actions, and append-only audit trails.
-8. **Validate.** State commands executed, scripts checked, files inspected, and gates that passed or failed. If no dynamic validation was performed, say so.
-9. **Finalize.** Produce the requested output. For `security-report`, use the template structure and include findings, evidence, recommendations, validation, limitations, and residual risk.
+### 2. Snapshot evidence identity before analysis
 
-## Evidence and reporting rules
+When a filesystem target exists and the runtime permits it, create a receipt before substantive conclusions:
 
-- Never expose secrets. Mask values as `prefix...suffix` or `[masked secret]`.
-- Quote only the minimum necessary evidence and never quote full credentials, private keys, tokens, cookies, session ids, or connection strings.
-- Distinguish `confirmed risk`, `potential risk`, and `evidence limitation` in every finding.
-- Use `critical`, `high`, `medium`, `low`, or `informational` severity. Use `high`, `medium`, or `low` confidence.
-- Do not claim dependency vulnerability, license violation, or compliance failure without manifest evidence, scanner output, authoritative source, or user-provided policy.
-- Do not mark placeholders such as `example-token`, `your_api_key_here`, or `changeme` as confirmed leaks; classify them as sample-hygiene risks only if they encourage unsafe practice.
-- Do not recommend removing existing security controls. Improve or tighten them.
-- Prefer fail-closed behavior for ambiguous tool authorization and high-impact agent actions.
-- For responsible-ai review, map risks to the actual product domain, users, decisions, and harms.
+```text
+<PYTHON> scripts/evidence_snapshot.py --target <TARGET_PATH> --output <WORK>/evidence-receipt.json
+```
+
+Use relative paths and hashes for safe files. Credentials/`.env`/private-key sources should be `protected-unread`; fixtures/expected outputs should be protected from mutation and may be `protected-hash-only`. A hash proves identity, not safety.
+
+If material source identity cannot be established, say so. For high-impact conclusions that depend on missing evidence, fail closed.
+
+### 3. Run deterministic static triage when useful
+
+```text
+<PYTHON> scripts/security_static_review.py --target <TARGET_PATH> --format json --output <WORK>/static-triage.json
+```
+
+Treat results as triage evidence only. The scanner uses stable ordering/ids and deterministic redaction. Pattern matches do not prove exploitability, a live credential, a CVE, or concrete exposure.
+
+### 4. Perform mode-specific review
+
+Apply the relevant checklists. For agent/governance work, build an authority matrix for meaningful read/write/execute/delete/send/publish/schedule/deploy/approve/delegate actions. Capability never implies authorization.
+
+For threat modeling, use the schema as structure while preserving evidence-based analyst judgment. State assumptions and evidence refs; do not generate arbitrary scores.
+
+### 5. Classify with SGR-2.0
+
+Every material finding uses exactly one classification:
+
+- `confirmed`
+- `suspicious-pattern`
+- `governance-risk`
+- `needs-verification`
+- `not-applicable`
+
+Then assign severity/confidence using the versioned rubric and tie-breakers. Do not upgrade based on naming, intuition, or model consensus.
+
+### 6. Enforce evidence mapping
+
+Every material finding must map:
+
+`finding -> evidence -> risk -> recommendation -> validation`
+
+Evidence should include source identity when available. For secrets, report only masked/omitted evidence. For current dependency/CVE claims, bind the claim to resolved dependency identity plus scanner/authoritative source identity; otherwise use `needs-verification`.
+
+### 7. Fail closed on critical evidence gaps
+
+Do not silently produce a positive assurance conclusion when critical evidence is missing. Examples:
+
+- high-impact agent mutation authority exists but authorization policy cannot be verified;
+- user asks whether a dependency is affected by a current CVE but resolved version/current advisory evidence is unavailable;
+- target integrity changed after the evidence snapshot;
+- a secret-like value appears but authenticity/exposure cannot be safely established.
+
+For machine-readable reports, non-empty `critical_evidence_gaps` requires `review_status=blocked-critical-evidence`.
+
+### 8. Validate output
+
+For JSON reports:
+
+```text
+<PYTHON> scripts/validate_security_report.py <REPORT.json>
+```
+
+The validator checks report/rubric versions, classifications, severities, evidence mapping, evidence layers, fail-closed status, duplicate finding ids, and recognized unredacted secret-like values.
+
+State commands executed and exact pass/fail/not-run status. If dynamic/runtime checks were not run, do not imply they passed.
+
+### 9. Finalize without post-pass mutation
+
+Once the final evidence/report gates pass, treat that result as frozen. Any later edit that affects findings, evidence, redaction, classification, or validation requires rerunning the affected gates.
+
+## Absolute secret rule
+
+Never print a complete credential, token, private key, cookie, session id, password, connection-string password, or equivalent secret. This is absolute for this skill's outputs and helper scripts.
+
+Use `[masked secret]`, `[masked private key block]`, or an evidence fingerprint that omits content. Do not use prefix/suffix fragments as the default redaction mechanism.
+
+## Claims and evidence limits
+
+- Do not allege a vulnerability, CVE applicability, concrete exposure, license violation, or compliance failure without appropriate evidence.
+- `confirmed` confirms only the scope of the precise claim supported by evidence; do not inflate it into exploitability or impact not demonstrated.
+- Use `needs-verification` when evidence is absent/stale/unbound to exact source identity.
+- Do not call a static score, checklist, unexecuted scenario file, or model-only review behavioral validation.
+- Current vulnerability/license/policy facts may require current primary/scanner evidence; if unavailable, report the limitation rather than guessing.
+
+## Machine-readable report contract
+
+A JSON report should contain at least:
+
+- `report_version: security-review-report-1`
+- `rubric_version: SGR-2.0`
+- target name/identity and mode
+- `review_status: complete | partial | blocked-critical-evidence`
+- evidence snapshot/tree identity
+- `critical_evidence_gaps`
+- findings with classification/severity/confidence/location/evidence/risk/recommendation/validation/residual risk
+- optional threat model conforming to `schemas/threat-model.schema.json`
+- commands and outcomes
+- evidence layers: `structural`, `behavioral`, `runtime`, `external_current`
+- limitations
 
 ## Output contract
 
-A complete response should include:
+A complete review should include:
 
-1. Mode and target.
-2. Files or snippets inspected.
-3. Executive security posture.
-4. Findings ordered by severity, each with: id, mode, classification, severity, confidence, location, masked evidence, risk, recommendation, validation gate, and residual risk.
-5. Threat model when requested or useful.
-6. Dependency and supply-chain observations when manifests exist.
-7. Governance and responsible-ai observations when agents or ai behavior are present.
-8. Remediation plan with priority order and safe validation.
-9. Commands executed and pass/fail/not-run status.
-10. Limitations and evidence gaps.
+1. Mode, target, rubric/report version, and evidence identity.
+2. Files/sources inspected plus protected/uninspected surfaces.
+3. Executive posture stated without unsupported assurance.
+4. Findings ordered by stable severity criteria, each with the full evidence mapping.
+5. Threat model when requested/useful, with assumptions and evidence refs.
+6. Dependency/supply-chain observations with dependency/source identity where applicable.
+7. Governance/responsible-ai observations tied to actual authority/domain evidence.
+8. Remediation plan with safe validation and rollback/containment where relevant.
+9. Commands/gates with pass/fail/not-run.
+10. Structural evidence separated from behavioral/runtime/external-current evidence.
+11. Limitations, critical evidence gaps, and residual risk.
 
 ## Stop conditions
 
-Stop before mutation or risky analysis when:
+Stop before risky analysis or mutation when:
 
-- the requested action would expose or print full secrets;
-- the user asks to execute destructive commands, untrusted scripts, malware, exploit code, or package install hooks without an explicit safe sandbox and clear authorization;
-- the target has no inspectable files and the user requests concrete findings;
-- the review requires current vulnerability or license data and browsing or scanner evidence is unavailable;
-- the requested remediation would change `.git`, credentials, fixtures, expected outputs, or unrelated project files;
-- evidence is insufficient to support a confirmed vulnerability claim.
+- output would require exposing a full secret;
+- the user asks to execute destructive/untrusted code, malware, exploit code, or install hooks without a safe authorized sandbox;
+- concrete findings are requested but no inspectable target exists;
+- a current CVE/license/compliance conclusion requires evidence that is unavailable;
+- remediation would mutate `.git`, credentials, `.env`, private keys, fixtures, expected outputs, frozen evaluators, generated baseline evidence, or unrelated project files;
+- target/source identity changed after snapshot and trustworthy re-baselining cannot be done;
+- the only way to reach a positive conclusion is to weaken evidence, redaction, or fail-closed gates.
+
+## Host portability
+
+Keep the semantic core host-independent and portable across compatible hosts. Use Agent Skills-compatible Markdown/references/scripts and Python standard-library helpers. Do not require ChatGPT-, Claude-, Copilot-, Cursor-, or other host-specific invocation semantics for correctness. Treat `agents/openai.yaml` as an optional adapter, not a core dependency.
+
+If local command execution or Python 3.10+ is unavailable, continue with the safe read-only subset, mark script gates `not-run`, and do not claim those mechanical validations passed.
 
 ## Relationship to neighboring skills
 
-- Use broad hardening skills for package maturity, activation, scenario coverage, template integration, consistency, and packaging hygiene.
-- Use secure-code-review for focused secret and credential handling in ordinary code artifacts.
-- Use this skill when the review spans security plus governance of skills, agents, scripts, validators, authority boundaries, llm safety, responsible ai, and compliance evidence.
+- Use broad hardening/reproducibility skills for package maturity, activation, regression infrastructure, and packaging beyond this security/governance scope.
+- Use secure-code-review for focused secret/credential handling in ordinary application code.
+- Use this skill when security review spans skills/agents/scripts/dependencies together with authority, governance, responsible-ai, compliance evidence, or threat modeling.

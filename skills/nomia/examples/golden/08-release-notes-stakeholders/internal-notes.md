@@ -1,5 +1,14 @@
 # Internal Notes
 
+## Privacy Handling
+
+- Classification: internal
+- Audience Roles: product-role, support-role
+- Contains Personal Data: false
+- Retention Policy: policy://internal-notes/90-days
+- Redactions Applied: none
+- External Share Allowed: false
+
 ## Summary
 
 Release notes are scoped to beta saved-query sharing controls.

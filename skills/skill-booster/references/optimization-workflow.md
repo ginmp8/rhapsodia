@@ -4,21 +4,29 @@ Use this ordered workflow for every target skill. If a stop condition applies, r
 
 ## Phase 0: Intake
 
-Capture target path/zip, mode, final artifact, writable scope, blocked paths, known failures, evaluator, language/output conventions, requested hosts, and user-declared read-only files. Resolve host capabilities from `references/host-compatibility.md` instead of assuming a vendor runtime. For `full optimization`, use `apply-optimization`, then validation and package when gates pass.
+Capture target path/zip, source class, mode, final artifact, writable scope, blocked paths, known failures, evaluator, language/output conventions, requested hosts, and user-declared read-only files. Downloaded/uploaded third-party packages start as `external-untrusted-skill`; apply `references/external-skill-intake.md` before executing target-owned code. Resolve host capabilities from `references/host-compatibility.md` instead of assuming a vendor runtime. For `full optimization`, use `apply-optimization`, require `portable-core`, default the host matrix to `portable-core,openai,codex,claude,copilot,cursor`, then validate and package when gates pass.
 
 ## Phase 1: Preflight and inventory
 
-Run:
+For `external-untrusted-skill`, first run the Booster-owned static intake without executing target code:
+
+```text
+<PYTHON> scripts/inspect_external_skill.py --target <TARGET_OR_ARCHIVE> --json <WORK>/external-intake.json
+```
+
+Resolve blocking findings before continuing. Then run:
 
 ```text
 <PYTHON> scripts/validate_skill_booster.py --target <TARGET_SKILL_PATH>
 ```
 
-When portability is requested or will be claimed:
+Always run portable-core validation for mutating optimization. For complete optimization use:
 
 ```text
-<PYTHON> scripts/validate_portability.py --target <TARGET_SKILL_PATH> --hosts <HOSTS>
+<PYTHON> scripts/validate_portability.py --target <TARGET_SKILL_PATH> --hosts portable-core,openai,codex,claude,copilot,cursor
 ```
+
+If the user deliberately narrows support, substitute that explicit host set but do not call the result fully multi-platform.
 
 Inventory `SKILL.md`, optional host adapters such as `agents/`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, reports, generated files, and packages. Host adapters may enhance one platform but cannot be required by the portable core. Record risks and unavailable resources.
 

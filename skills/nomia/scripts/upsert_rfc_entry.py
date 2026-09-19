@@ -9,6 +9,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+from nomia_utils import atomic_write_text
+
 
 PROPOSAL_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 VALID_STATUSES = {"draft", "in_review", "accepted", "rejected", "deferred", "superseded"}
@@ -42,7 +44,7 @@ def ensure_scaffold(path: Path) -> None:
     if path.exists():
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("# RFC Proposals\n\n## Entries\n\nNo RFC proposals recorded.\n", encoding="utf-8")
+    atomic_write_text(path, "# RFC Proposals\n\n## Entries\n\nNo RFC proposals recorded.\n")
 
 
 def validate_due_date(value: str) -> None:
@@ -116,14 +118,14 @@ def upsert_entry(path: Path, proposal_id: str, entry: str) -> None:
 
     if target_start is None:
         rendered = text.rstrip() + "\n\n" + entry
-        path.write_text(rendered, encoding="utf-8")
+        atomic_write_text(path, rendered)
         return
 
     following = [index for index in entry_starts if index > target_start]
     target_end = following[0] if following else len(lines)
     replacement = entry.rstrip().splitlines()
     rendered_lines = lines[:target_start] + replacement + lines[target_end:]
-    path.write_text("\n".join(rendered_lines).rstrip() + "\n", encoding="utf-8")
+    atomic_write_text(path, "\n".join(rendered_lines).rstrip() + "\n")
 
 
 def main(argv: list[str]) -> int:

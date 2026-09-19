@@ -4,9 +4,11 @@
 
 - Target path: {{target_path}}
 - Baseline static score: {{baseline_static_score}}
-- Baseline harness audit score: {{baseline_harness_score}}
+- Final/best harness score: {{baseline_harness_score}}
 - Baseline verdict: {{baseline_verdict}}
 - Baseline blockers: {{baseline_blockers}}
+- Agent/runtime context: {{runtime_context}}
+- Material source manifest: {{source_manifest}}
 
 ## 2. Research and context summary
 
@@ -75,18 +77,28 @@
 
 {{before_after_comparison}}
 
-## 10. Residual risks
+## 10. Final freeze and evidence integrity
+
+- Source verification: {{source_verification}}
+- Frozen candidate identity: {{frozen_candidate_identity}}
+- Evidence layers: {{evidence_layers}}
+
+## 11. Termination and residual risks
+
+- Termination status: {{termination_status}}
+- Termination reason: {{termination_reason}}
 
 {{residual_risks}}
 
-## 11. Final package
+## 12. Final package
 
 - Package path: {{package_path}}
 - Package validator result: {{package_validator_result}}
 - Packaged file count: {{packaged_file_count}}
-- Rollback path: {{rollback_path}}
+- Package/receipt identity: {{package_receipt_identity}}
+- Rollback/recovery path: {{rollback_path}}
 
-## 12. Evidence boundary
+## 13. Evidence boundary
 
 - Measured evidence: {{measured_evidence}}
 - Proposed or unmeasured evidence: {{unmeasured_evidence}}

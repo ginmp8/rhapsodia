@@ -2,6 +2,8 @@ interface:
   display_name: Skill Prompt and Activation Review
   short_description: Review Skill prompts, activation descriptions, boundaries, scenarios,
     and output contracts.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

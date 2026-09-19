@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "measurement_kind": "deterministic_executable_evidence",
+  "scenarios": [
+    {
+      "id": "quick-profile-positive",
+      "area": "requirements-design-validation",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_package_validation.PackageValidationTests.test_valid_quick_package_accepts_explicit_non_applicable_phases"],
+      "expected_exit": 0
+    },
+    {
+      "id": "standard-profile-positive",
+      "area": "requirements-design-validation",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_package_validation.PackageValidationTests.test_valid_standard_package"],
+      "expected_exit": 0
+    },
+    {
+      "id": "governed-artifact-decisions-negative",
+      "area": "requirements-design-validation",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_package_validation.PackageValidationTests.test_governed_requires_complete_artifact_decisions"],
+      "expected_exit": 0
+    },
+    {
+      "id": "governed-quality-v2",
+      "area": "requirements-design-validation",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_plan_quality_v2"],
+      "expected_exit": 0
+    },
+    {
+      "id": "clarification-handoff-v2",
+      "area": "requirements-design-validation",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_clarification_readiness_v2"],
+      "expected_exit": 0
+    },
+    {
+      "id": "concurrent-identity-and-registry",
+      "area": "execution-resume",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_concurrency_model"],
+      "expected_exit": 0
+    },
+    {
+      "id": "mutation-recovery",
+      "area": "execution-resume",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_mutation_transaction"],
+      "expected_exit": 0
+    },
+    {
+      "id": "planning-execution-boundary",
+      "area": "product-ecosystem",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_contract_preservation.ContractPreservationTests.test_planning_execution_handoff_contract"],
+      "expected_exit": 0
+    },
+    {
+      "id": "generated-view-determinism",
+      "area": "product-ecosystem",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_contract_preservation.ContractPreservationTests.test_generated_view_contract"],
+      "expected_exit": 0
+    },
+    {
+      "id": "security-governed-v2",
+      "area": "security-risk",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_security_risk_v2"],
+      "expected_exit": 0
+    },
+    {
+      "id": "interoperability-round-trips",
+      "area": "interoperability",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_sdd_adapter_roundtrip", "tests.test_kiro_adapter_v2"],
+      "expected_exit": 0
+    },
+    {
+      "id": "release-and-dependency-contracts",
+      "area": "product-ecosystem",
+      "command": ["{python}", "-B", "-m", "unittest", "tests.test_release_metadata", "tests.test_runtime_dependencies_v2"],
+      "expected_exit": 0
+    }
+  ]
+}
