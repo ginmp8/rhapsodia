@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/secure-code-review/scan-result.schema.json",
+  "title": "Secure Code Review scan result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "target", "summary", "scan_stats", "skipped", "findings"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "status": {"enum": ["complete", "partial"]},
+    "target": {"type": "string", "minLength": 1},
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["critical", "high", "medium", "low"],
+      "properties": {
+        "critical": {"type": "integer", "minimum": 0},
+        "high": {"type": "integer", "minimum": 0},
+        "medium": {"type": "integer", "minimum": 0},
+        "low": {"type": "integer", "minimum": 0}
+      }
+    },
+    "scan_stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["files_considered", "files_scanned", "files_skipped", "findings"],
+      "properties": {
+        "files_considered": {"type": "integer", "minimum": 0},
+        "files_scanned": {"type": "integer", "minimum": 0},
+        "files_skipped": {"type": "integer", "minimum": 0},
+        "findings": {"type": "integer", "minimum": 0}
+      }
+    },
+    "skipped": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "reason"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "reason": {"enum": ["symlink", "unsupported-type", "too-large", "read-error"]}
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "line", "severity", "confidence", "rule", "evidence"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^scr-[0-9a-f]{16}$"},
+          "path": {"type": "string", "minLength": 1},
+          "line": {"type": "integer", "minimum": 1},
+          "severity": {"enum": ["critical", "high", "medium", "low"]},
+          "confidence": {"enum": ["confirmed", "likely", "possible"]},
+          "rule": {"type": "string", "minLength": 1},
+          "evidence": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

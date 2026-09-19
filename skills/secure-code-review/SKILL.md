@@ -1,123 +1,181 @@
 ---
 name: secure-code-review
-description: review code, configuration, infrastructure-as-code, ci/cd definitions, and technical examples for hardcoded secrets, unsafe credential handling, sensitive logging, and insecure secret usage. use when chatgpt needs to inspect pasted code, uploaded files, repositories, pull requests, scripts, yaml, json, env examples, docker files, or deployment manifests for tokens, api keys, passwords, connection strings, private keys, or weak secret-management practices.
+description: review code, configuration, infrastructure-as-code, ci/cd, logs, examples, and technical documentation specifically for hardcoded secrets, credential exposure, sensitive logging, unsafe secret loading, and remediation. use for focused secret/credential review of pasted code, files, repositories, yaml, json, env examples, docker files, or deployment manifests. do not use as the primary reviewer for unrelated application-security flaws.
 ---
 
 # Secure Code Review
 
-## Overview
+## Purpose
 
-Review technical artifacts for secret exposure and insecure credential-handling patterns. Identify concrete findings, explain the risk, and recommend safer replacements such as environment variables, managed secret stores, workload identity, or short-lived credentials.
+Review code, configuration, infrastructure-as-code, CI/CD, examples, logs, and technical documentation for **secret exposure and insecure credential handling**. Produce evidence-linked findings without copying usable credentials into the review itself.
 
-## Core Review Flow
+This is a focused security skill. It is not the primary reviewer for injection, authorization logic, dependency vulnerabilities, cryptography design, threat modeling, or broad application-security posture unless those issues directly concern secrets or credentials.
 
-1. Classify the input.
-   - Treat source code, configuration, IaC, CI/CD files, shell scripts, examples, and documentation as in scope.
-   - Treat values as sensitive when they can grant access, decrypt data, or reveal internal topology.
+## Activation boundaries
 
-2. Look for the highest-risk issues first.
-   - Hardcoded passwords, tokens, API keys, client secrets, private keys, certificates, and connection strings.
-   - Secrets embedded in examples, tests, fixtures, Dockerfiles, compose files, Terraform, Kubernetes manifests, GitHub Actions, and application settings.
-   - Logging or printing of credentials, authorization headers, cookies, JWTs, session IDs, or full connection strings.
-   - “Temporary” fallback secrets, default credentials, and secrets stored in comments.
+Use this skill when the request is mainly about one or more of:
 
-3. Distinguish suspicious strings from true findings.
-   - Do not label placeholders such as `your_api_key_here`, `example-password`, `changeme`, or obvious fake values as confirmed leaks.
-   - Mark uncertain cases as `needs verification` when the pattern is suspicious but the value may be synthetic.
-   - Treat private-key blocks, real provider token formats, and live-looking connection strings as strong evidence.
+- hardcoded passwords, tokens, API keys, client secrets, signing keys, private keys, certificates with private material, or credential-bearing connection strings;
+- secrets in source, configuration, IaC, CI/CD, tests, examples, screenshots, logs, or documentation;
+- unsafe credential loading, fallback secrets, long-lived static credentials, or secret redaction;
+- repository or file-tree scanning for likely secret exposure;
+- remediation after a secret appears to have been exposed.
 
-4. Recommend remediation with a direct replacement path.
-   - Move runtime secrets to environment variables only as a minimum baseline.
-   - Prefer a managed secret store when the deployment platform supports one.
-   - Prefer identity-based access over long-lived static credentials when available.
-   - Recommend rotation and revocation for any exposed real secret.
-   - Recommend log redaction, masking, and least-privilege scoping when the issue involves output or observability.
+Do not use it as the primary skill for:
 
-5. Produce a structured review.
-   - Summarize the security posture in 1-2 sentences.
-   - List findings ordered by severity.
-   - For each finding, include: severity, location, evidence, why it matters, and the safest practical fix.
-   - End with a concise remediation checklist.
+- a general secure-code review whose main risks are unrelated to credentials;
+- vulnerability research or exploit development;
+- validating whether a credential is live by attempting authentication;
+- generic code quality or architecture review with no secret-handling question.
 
-## Review Rules
+If the request spans broad security/governance plus credentials, keep this skill responsible only for the credential/secret portion or route to the broader security skill.
 
-### Treat these as findings
+## Modes and routing
 
-- Secrets hardcoded directly in code or config.
-- Secrets concatenated from multiple literals in the same file.
-- Base64-encoded secrets when their purpose is still credential storage rather than harmless transport.
-- Full database URIs that include usernames or passwords.
-- Private keys or PEM blocks committed anywhere in the artifact.
-- Authorization headers, bearer tokens, cookies, or session values shown in logs, tests, screenshots, or examples.
-- Secrets stored in comments, TODOs, sample payloads, or documentation.
+Choose one route before reviewing:
 
-### Treat these as weaker signals unless corroborated
+1. **Direct review** — pasted snippets, screenshots, or a small number of files. Review manually against the policy and output contract.
+2. **Filesystem review** — a readable file or directory is available. Run the bundled scanner first, validate its JSON result, then perform semantic review of the scanner findings and relevant surrounding code.
+3. **Mixed review** — both pasted context and a filesystem target exist. Scan the target and review the supplied context separately; merge findings by stable issue identity without duplicating the same exposure.
 
-- Variable names like `token`, `secret`, `password`, or `key` without a real value.
-- Placeholder strings or obvious documentation examples.
-- Random-looking strings without context.
-- Hashes or IDs that are non-secret identifiers.
+Do not invent repository coverage. If a requested file, history, log, branch, or external system is unavailable, say that surface was not inspected.
 
-### Escalate severity when any of the following apply
+## Evidence and safety contract
 
-- The value looks valid for a known provider format.
-- The secret is in a public-facing artifact, client-side bundle, mobile app, or frontend code.
-- The secret appears in version-controlled history, CI logs, or shared screenshots.
-- The credential has broad scope, admin access, production access, or long-lived expiry.
+Before reporting a finding:
 
-## Remediation Priorities
+- distinguish a real or likely credential from synthetic examples, public identifiers, hashes, and random-looking non-secret IDs;
+- do not echo a full suspected credential in the answer, scanner evidence, logs, receipts, or examples;
+- use the minimum redacted fragment needed to locate the issue;
+- preserve file/line provenance when available;
+- separate **severity** from **confidence**;
+- do not attempt to authenticate with a discovered credential as part of this skill.
 
-### Preferred replacement order
+A scanner match is supporting evidence, not proof that a credential is live. A manual finding still requires concrete source evidence.
 
-1. Replace hardcoded credentials with workload identity, instance roles, or federated identity.
-2. Otherwise, load secrets from a managed secret store.
-3. Otherwise, inject them via deployment-time environment variables.
-4. Avoid local `.env` files in committed repositories except as untracked developer-only scaffolding, and keep `.env.example` free of real values.
+## Severity and confidence
 
-### Always recommend after exposure
+Use the versioned rules in [`references/security-policy.md`](references/security-policy.md).
 
-- Rotate or revoke the exposed credential.
-- Remove the secret from active code paths.
-- Check logs, build systems, and documentation for the same value.
-- Audit blast radius and permissions.
-- Add or improve automated secret scanning.
+Severity is one of:
 
-## Output Format
+`critical | high | medium | low`
 
-Use this structure unless the user asks for a different format:
+Confidence is one of:
 
-### Security summary
-One short paragraph.
+`confirmed | likely | possible`
 
-### Findings
-For each finding, use:
-- **Severity:** critical | high | medium | low | needs verification
-- **Location:** file and line, or snippet section when exact lines are unavailable
-- **Issue:** what was found
-- **Evidence:** brief quoted fragment or precise description
-- **Risk:** why it matters
-- **Fix:** the safest practical replacement
+`possible` replaces the old practice of using "needs verification" as if it were a severity. If authenticity is uncertain, keep the potential impact severity and lower confidence instead.
 
-### Remediation checklist
-- immediate containment
-- code/config cleanup
-- rotation or revocation
-- preventive guardrails
+Order findings by:
 
-## Using the bundled scanner
+`severity desc -> path -> line -> rule -> finding id`
 
-Use `scripts/scan_secrets.py` when files are available in the working directory and a deterministic scan will improve coverage. The scanner is especially useful for repositories, config trees, infrastructure folders, and mixed-language codebases.
+Do not raise severity only because a string looks random. Exposure surface, privilege, environment, credential type, and evidence determine severity.
 
-Example:
+## Review workflow
+
+### 1. Establish scope and coverage
+
+Record what was actually inspected: pasted content, exact files/directories, repository surface, logs, history, or screenshots. Note inaccessible or intentionally skipped surfaces.
+
+### 2. Run deterministic scanning when files are available
 
 ```bash
-python scripts/scan_secrets.py /path/to/project
-python scripts/scan_secrets.py /path/to/file --format json
+python3 scripts/scan_secrets.py /path/to/target --format json --output /tmp/secure-code-review-scan.json
+python3 scripts/validate_scan_result.py /tmp/secure-code-review-scan.json
 ```
 
-Use the script results as supporting evidence, not as the sole judgment. Manually review likely false positives before presenting a final conclusion.
+The scanner:
 
-## References
+- traverses files canonically;
+- does not follow symbolic-link files;
+- emits relative paths and stable finding IDs;
+- redacts matched credential material;
+- reports skipped files and scan counts;
+- does not claim that zero matches means zero secrets outside scanned coverage.
 
-- Use `references/security-policy.md` for the review standard and severity model.
-- Use `references/remediation-playbook.md` for concrete replacement and cleanup guidance.
+Read [`references/scanner-contract.md`](references/scanner-contract.md) before interpreting partial coverage or scanner diagnostics.
+
+### 3. Review semantic context
+
+For each candidate:
+
+- determine whether the value is synthetic, public, redacted, encrypted, credential-bearing, or likely usable;
+- inspect how the value is loaded, transmitted, logged, persisted, and scoped;
+- look for related copies in nearby config, tests, CI/CD, examples, and logging code when those surfaces are available;
+- distinguish storage risk from exposure risk and post-exposure response.
+
+Do not promote a scanner heuristic directly into a confirmed finding without reviewing context.
+
+### 4. Deduplicate
+
+Merge detections that describe the same source location and secret-handling defect. Prefer the more specific rule over a generic entropy/assignment rule. Keep separate findings when remediation, exposure surface, or credential identity materially differs.
+
+### 5. Recommend the safest practical remediation
+
+Use [`references/remediation-playbook.md`](references/remediation-playbook.md). Preferred order:
+
+1. workload, instance, or federated identity;
+2. managed secret store;
+3. deployment-time secret injection;
+4. developer-local untracked configuration only when the stronger options do not fit the environment.
+
+For likely exposed credentials, include rotation or revocation, reuse search, least-privilege review, and preventive scanning where applicable.
+
+### 6. Validate claims
+
+If the scanner reports skipped files, unreadable files, size limits, or unsupported surfaces, phrase the conclusion as coverage-bounded. Do not write "no secrets" unless the requested surface was completely inspected and the evidence supports that statement.
+
+## Output contract v2
+
+Use this structure unless the user requests another format.
+
+### Security summary
+
+One short paragraph stating the inspected scope, highest material risk, and any important coverage limitation.
+
+### Findings
+
+For each finding:
+
+- **ID:** stable identifier when available
+- **Severity:** critical | high | medium | low
+- **Confidence:** confirmed | likely | possible
+- **Location:** file and line, or precise section when lines are unavailable
+- **Rule:** stable category such as `hardcoded_credential`, `credential_in_log`, `private_key_material`, or scanner rule ID
+- **Issue:** what is wrong
+- **Evidence:** redacted, minimum necessary evidence
+- **Risk:** concrete consequence if the credential is usable or the practice persists
+- **Fix:** safest practical replacement
+- **Post-exposure:** rotate/revoke and scope-audit actions when exposure is likely
+
+### Coverage
+
+State scanned/inspected surfaces and any skipped or unavailable surfaces. Omit this section only when the scope is trivially complete from the user-provided snippet.
+
+### Remediation checklist
+
+Order by containment first, then code/config cleanup, rotation/revocation, least privilege, and prevention.
+
+## Stop conditions
+
+Stop or return a bounded partial review when:
+
+- the requested artifact is unavailable or unreadable;
+- following a symlink would leave the requested scan root;
+- a binary/unsupported format is material but cannot be inspected safely;
+- a file is skipped by the scanner size or type policy and manual inspection is not feasible;
+- determining whether a credential is live would require attempting authentication;
+- a conclusion would require repository history, CI logs, or external systems that were not provided or accessible.
+
+Report the missing evidence instead of inferring a clean result.
+
+## Progressive references
+
+- [`references/security-policy.md`](references/security-policy.md): severity, confidence, evidence, tie-breakers, and finding taxonomy.
+- [`references/remediation-playbook.md`](references/remediation-playbook.md): containment and replacement guidance.
+- [`references/scanner-contract.md`](references/scanner-contract.md): deterministic scanner behavior and coverage semantics.
+- [`schemas/scan-result.schema.json`](schemas/scan-result.schema.json): machine-readable scanner output contract.
+- [`references/source-basis.md`](references/source-basis.md): external standards and primary-source basis used to ground the policy.
+- [`evals/review-scenarios.json`](evals/review-scenarios.json): planned activation/boundary/regression cases; these are scenario definitions, not executed behavioral evidence.

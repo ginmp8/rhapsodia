@@ -83,3 +83,16 @@ Use these checklists for frontend architecture, PR, security, UX, runtime valida
 - [ ] `API_GUIDE.md` explains contracts, mappers, and error handling.
 - [ ] `SECURITY_FRONTEND.md` blocks common leak paths.
 - [ ] Docs avoid stale framework tutorials and focus on project decisions.
+
+## Reproducibility and context-efficiency checklist
+
+- [ ] One primary mode owns the response contract.
+- [ ] Inspected files and material uninspected dependencies are distinguishable.
+- [ ] Repository scope expanded only for a concrete dependency, contract, security, config, or failing-validation trigger.
+- [ ] Findings use stable severity/category/location/evidence/impact/fix/validation semantics.
+- [ ] Duplicate symptoms with one root cause are consolidated.
+- [ ] Measured, observed, supplied, inferred, assumed, planned, and blocked evidence are not conflated.
+- [ ] Static checks are not presented as runtime/browser proof.
+- [ ] Runtime evidence is not presented as subjective UX/visual approval.
+- [ ] Repair work targets the diagnosed cause before adjacent cleanup.
+- [ ] A final material edit after validation triggers the affected validation again.

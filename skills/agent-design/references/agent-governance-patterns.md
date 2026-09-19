@@ -1,118 +1,93 @@
 # Agent Governance Patterns
 
-Use these patterns to review or design agent safety, auditability, escalation, and controlled execution. Apply them even when the target runtime does not expose dedicated governance tools.
+Use these patterns for authority, auditability, escalation, controlled execution, and failure handling. Apply them even when the runtime has no dedicated governance feature.
 
 ## Governance Principles
 
-1. Least authority: give the agent only the tools and decision rights required by its mission.
-2. Fail closed for high-impact ambiguity: pause or escalate when intent, scope, permissions, or evidence is unclear.
-3. Separate policy from execution: governance agents review and recommend; execution agents apply bounded changes only when authorized.
-4. Preserve auditability: require visible summaries of decisions, evidence, commands, changed files, and handoffs.
-5. Keep controls explicit: boundaries, stop conditions, and escalation rules must live in the prompt or agent spec, not in unstated assumptions.
-6. Avoid tool hallucination: describe required capabilities without assuming MCP, repository, terminal, browser, or external services exist.
+1. **Least authority**: grant only the decisions and capabilities required by the mission.
+2. **Fail closed for high-impact ambiguity**: unresolved intent, ownership, permission, or evidence blocks high-impact execution.
+3. **Separate review from execution**: a reviewer does not gain mutation authority because it found a defect.
+4. **Make termination observable**: stateful work needs completed, blocked/escalated, and failure outcomes.
+5. **Preserve auditability**: decisions, evidence, actions, validation, and handoffs remain inspectable.
+6. **Minimize handoff data**: transfer only context required by the recipient.
+7. **Do not assume tools**: declare semantic capabilities and host adapters separately.
 
 ## Authority Boundary Pattern
 
-Define each agent's authority with this structure:
+Define:
 
-- May decide: decisions within role scope.
-- May recommend: decisions requiring human or downstream approval.
-- May execute: allowed concrete actions, paths, commands, or tool categories.
-- Must not execute: forbidden actions and protected resources.
-- Must escalate: triggers requiring user, owner, reviewer, or governance approval.
+- may decide;
+- may recommend;
+- may execute;
+- must not execute;
+- must escalate.
 
-High-impact actions require explicit human confirmation unless the user's environment already provides an approved controlled-execution contract.
+For write, terminal, deployment, destructive, financial, security-policy, identity/access, credential, or production-impacting actions, missing authority is a blocker rather than implicit permission.
 
-High-impact actions include production changes, deployments, destructive file operations, security policy mutation, credential handling, financial decisions, identity/access changes, irreversible data changes, broad repository rewrites, and cross-system automation.
+## High-Impact Actions
+
+Examples include production changes, deployments, destructive file/data operations, security policy mutation, credential handling, financial actions, identity/access changes, broad repository rewrites, irreversible migrations, and cross-system automation.
+
+A high-impact action requires an explicit approved authority contract. If the surrounding environment already supplies a controlled-execution authorization, record that dependency rather than inventing a second approval mechanism.
 
 ## Stop Conditions
 
-Every agent needs stop conditions. Include the conditions that match the role:
+Include the conditions relevant to the role:
 
-- scope is ambiguous or conflicts with prior instructions;
-- required input, ownership, permission, or repository context is missing;
-- requested action exceeds the tool contract or authority boundary;
-- evidence is insufficient for an approval, rejection, migration, or execution decision;
-- validation fails and no bounded fix exists;
-- operation would touch secrets, credentials, production data, protected branches, generated evidence, or blocked paths;
-- handoff target is unavailable or would receive incomplete context;
-- user asks the agent to bypass controls, hide evidence, or operate unaudited.
+- scope conflicts with the mission or prior authority;
+- required input, owner, permission, or context is missing;
+- requested action exceeds the tool contract;
+- evidence is insufficient for an approval/rejection/migration/execution decision;
+- validation fails and no bounded repair is authorized;
+- operation would touch protected resources outside the declared scope;
+- a handoff target is unavailable or would receive incomplete/unsafe context;
+- the same state/handoff repeats without new evidence;
+- a finite iteration/repair budget is exhausted;
+- the user asks for hidden, unaudited, policy-bypassing, or uncontrolled behavior.
 
 ## Audit Trail Pattern
 
-For review, governance, and execution agents, require an audit summary containing:
+For review, governance, routing, or execution work, record as applicable:
 
-1. request summary;
+1. request and owned outcome;
 2. scope and assumptions;
-3. inspected sources or context used;
-4. decisions made and reasons;
-5. tools or commands used, if any;
-6. changed files or proposed changes, if any;
-7. validation results;
-8. unresolved risks;
-9. handoff recipient and payload.
+3. evidence/context inspected;
+4. decisions and criteria;
+5. tools/actions/commands used;
+6. changed or proposed artifacts;
+7. validation results and evidence labels;
+8. unresolved risks/blockers;
+9. handoff target and `handoff/v1` payload;
+10. final state: completed, blocked, escalated, or rollback-required.
 
-If the runtime cannot persist audit logs, the agent should still emit the audit summary in the conversation or final artifact.
-
-## Governance Review Checklist
-
-Use this checklist for `agent-governance-review`:
-
-- Mission and trigger are specific.
-- Tool contract follows least authority.
-- Write, terminal, web, deployment, or external-system tools are justified.
-- Authority boundary names allowed, forbidden, and escalation actions.
-- Stop conditions are concrete and high-impact actions are gated.
-- Handoffs preserve context but avoid unnecessary sensitive data.
-- Audit expectations are visible and realistic for the runtime.
-- Validation plan includes misuse, ambiguity, and failure cases.
-- Agent does not promise unavailable tools or background execution.
-- Router agents do not embed or duplicate specialist prompts.
+If durable logs are unavailable, emit the audit summary in the final artifact or conversation.
 
 ## Controlled Execution Pattern
 
-Use this only when the agent is allowed to change files, run commands, or perform multi-step execution.
+Use only when mutation/execution is part of the explicit role.
 
 Required controls:
 
-- Scope: allowed files, directories, repositories, or systems.
-- Blocked paths: secrets, credentials, generated evidence, `.git`, protected config, production assets, and user-declared read-only files.
-- Preconditions: inputs, approvals, clean working state, or selected issue/spec.
-- Execution plan: short sequence before mutation.
-- Validation: commands or checks that must pass.
-- Rollback: how to revert or report partial work.
-- Final report: changed files, commands, results, risks.
+- allowed scope and blocked/protected paths;
+- preconditions and authorization state;
+- bounded execution plan;
+- idempotency/retry expectations when repeated actions are possible;
+- validation checks;
+- failure behavior;
+- rollback or compensation strategy when meaningful;
+- final state and audit receipt.
 
-## Governance Agent Output Shape
+Do not treat "best effort" as a rollback strategy for destructive or irreversible actions.
 
-```markdown
-# Agent Governance Review
+## Governance Review Checklist
 
-## Verdict
-approve | approve with changes | reject | blocked
-
-## Critical Findings
-- [severity] finding, evidence, impact, fix
-
-## Authority Boundary
-- may decide:
-- may recommend:
-- may execute:
-- must not execute:
-- must escalate:
-
-## Tool Contract Assessment
-...
-
-## Stop Conditions
-...
-
-## Auditability
-...
-
-## Required Fixes
-...
-
-## Validation Plan
-...
-```
+- Mission and owned output are specific.
+- Critical gates from `agent-design-rubric/v2` were assessed.
+- Tool contract follows least authority.
+- Authority names allowed, forbidden, and escalation actions.
+- Stateful/routing workflows have explicit termination and cycle rules.
+- Handoffs are compact and avoid unnecessary sensitive data.
+- Evidence labels distinguish observed/measured from inferred/planned.
+- Validation covers misuse, ambiguity, failure, and adversarial cases.
+- The design does not promise unavailable tools or background execution.
+- Review/router agents do not silently acquire specialist execution authority.

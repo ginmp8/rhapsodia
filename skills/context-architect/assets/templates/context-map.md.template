@@ -1,32 +1,50 @@
 ## Context Map for: {{TASK}}
 
+### Evidence identity
+- Contract: context-map/2.0
+- Repository: {{REPOSITORY}}
+- Revision/worktree: {{REVISION}}
+- Evidence freshness: {{FRESHNESS}}
+
 ### Scope classification
 - Change type: {{CHANGE_TYPE}}
+- Evidence tier: {{EVIDENCE_TIER}}
 - Scope confidence: {{CONFIDENCE}} - {{CONFIDENCE_REASON}}
 - Repository evidence inspected: {{EVIDENCE}}
 
-### Primary files
-| File | Why it is primary | Expected change |
-|---|---|---|
-| {{PRIMARY_FILE}} | {{WHY_PRIMARY}} | {{EXPECTED_CHANGE}} |
+### Primary files / owners
+| File | Evidence | Why primary | Expected action |
+|---|---|---|---|
+| {{PRIMARY_FILE}} | {{PRIMARY_EVIDENCE_LABEL}} | {{WHY_PRIMARY}} | {{EXPECTED_CHANGE}} |
 
 ### Secondary files and dependencies
-| File | Relationship | Action |
-|---|---|---|
-| {{SECONDARY_FILE}} | {{RELATIONSHIP}} | {{ACTION}} |
+| File | Relation | Evidence | Action |
+|---|---|---|---|
+| {{SECONDARY_FILE}} | {{RELATIONSHIP}} | {{SECONDARY_EVIDENCE_LABEL}} | {{ACTION}} |
 
 ### Test coverage and validation
-| Test or command | Purpose | Confidence |
-|---|---|---|
-| {{COMMAND_OR_TEST}} | {{PURPOSE}} | {{TEST_CONFIDENCE}} |
+| Test or command | Evidence | Purpose | Confidence |
+|---|---|---|---|
+| {{COMMAND_OR_TEST}} | {{VALIDATION_EVIDENCE_LABEL}} | {{PURPOSE}} | {{TEST_CONFIDENCE}} |
 
 ### Patterns to follow
 - {{PATTERN_REFERENCE}}
 
+### Conflicts / unresolved consumers
+- {{CONFLICT_OR_UNRESOLVED}}
+
 ### Ripple effects and risks
-| Risk | Evidence | Mitigation |
-|---|---|---|
-| {{RISK}} | {{RISK_EVIDENCE}} | {{MITIGATION}} |
+| Severity | Risk | Evidence | Mitigation |
+|---|---|---|---|
+| {{RISK_SEVERITY}} | {{RISK}} | {{RISK_EVIDENCE}} | {{MITIGATION}} |
+
+### Coverage and closure
+- Closure: {{CLOSURE}}
+- Owners/definitions: {{OWNER_COVERAGE}}
+- Direct consumers: {{CONSUMER_COVERAGE}}
+- Runtime/config: {{RUNTIME_COVERAGE}}
+- Tests/validation: {{VALIDATION_COVERAGE}}
+- External/dynamic consumers: {{EXTERNAL_COVERAGE}}
 
 ### Suggested sequence
 1. {{STEP_1}}

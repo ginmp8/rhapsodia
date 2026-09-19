@@ -1,0 +1,62 @@
+{
+  "receipt_version": 1,
+  "target": {
+    "kind": "pull-request",
+    "identity": "repo@example/pr/42",
+    "revision": "0123456789abcdef",
+    "environment": null
+  },
+  "mode": "pr-risk-review",
+  "scope": {
+    "reviewed": [
+      "src/Auth/AccountService.py"
+    ],
+    "assumptions": [],
+    "uninspected": [
+      "deployment manifests"
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "BSH-001",
+      "category": "authorization",
+      "subject": "src/Auth/AccountService.py:update_account",
+      "severity": "BLOCKER",
+      "confidence": "confirmed",
+      "evidence_status": "observed",
+      "evidence": [
+        {
+          "status": "observed",
+          "subject": "src/Auth/AccountService.py:update_account",
+          "detail": "The changed path updates the requested account after authentication without an ownership check.",
+          "sensitive": false,
+          "redacted": false
+        }
+      ],
+      "problem": "Authentication is treated as sufficient authorization for an arbitrary account id.",
+      "impact": "An authenticated actor can modify another tenant's account if the id is known.",
+      "severity_rationale": "The changed state-changing path breaks tenant/resource isolation.",
+      "smallest_fix": "Authorize the account resource against the authenticated tenant at the state-changing service boundary.",
+      "validation": "Add a cross-tenant negative integration test and verify the update is denied.",
+      "blocks_merge": true,
+      "expected_treatment": "Fix in this PR",
+      "fingerprint": "missing account ownership authorization | update_account | cross-tenant modification",
+      "trigger_or_condition": "A state-changing request supplies a resource identifier that reaches the affected operation."
+    }
+  ],
+  "validation_gaps": [],
+  "validation": [
+    {
+      "name": "cross-tenant integration test",
+      "status": "planned",
+      "evidence": "Recommended but not executed in this review."
+    }
+  ],
+  "coverage": {
+    "status": "partial",
+    "notes": [
+      "Deployment manifests were not supplied."
+    ]
+  },
+  "verdict": "CHANGES_REQUESTED"
+}

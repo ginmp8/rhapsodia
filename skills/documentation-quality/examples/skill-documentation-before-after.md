@@ -6,11 +6,11 @@ Use these examples to calibrate concise, evidence-grounded documentation improve
 
 ### Before
 
-```markdown
+````markdown
 # Validator
 
 Run the validator to check everything. See the script here. It will validate the skill and create a complete report.
-```
+````
 
 ### Problems
 
@@ -21,7 +21,7 @@ Run the validator to check everything. See the script here. It will validate the
 
 ### After
 
-```markdown
+````markdown
 # Package validator
 
 Use this reference when documenting the package validation step.
@@ -37,7 +37,7 @@ python target-package/scripts/package_skill.py path/to/skill-folder
 ## What it checks
 
 The package validator checks skill structure and creates `skill.zip` when validation passes. If the script is absent or the interface differs, report that as a documentation gap instead of describing unverified behavior.
-```
+````
 
 ### Why this is better
 
@@ -50,11 +50,11 @@ The package validator checks skill structure and creates `skill.zip` when valida
 
 ### Before
 
-```markdown
+````markdown
 # My Skill
 
 This skill helps with docs. It can review, fix, validate, harden, benchmark, and package any skill. Use the examples folder for more info. Click here for details.
-```
+````
 
 ### Problems
 
@@ -65,7 +65,7 @@ This skill helps with docs. It can review, fix, validate, harden, benchmark, and
 
 ### After
 
-```markdown
+````markdown
 # My Skill
 
 This skill reviews and improves human-oriented documentation in a Skill package.
@@ -85,7 +85,7 @@ Use a dedicated hardening or benchmark workflow for activation ownership, packag
 ## Examples
 
 See `examples/skill-documentation-before-after.md` when you need rewrite patterns for concise Skill documentation.
-```
+````
 
 ### Why this is better
 
@@ -98,23 +98,23 @@ See `examples/skill-documentation-before-after.md` when you need rewrite pattern
 
 ### Before
 
-```markdown
+````markdown
 ## Setup
 
 #### Running
 
 For instructions, click here. See this and this for examples.
-```
+````
 
 ### After
 
-```markdown
+````markdown
 ## Setup
 
 ### Run the documentation review
 
 Read `references/documentation-quality-rubric.md` before evaluating technical accuracy. Use `examples/skill-documentation-before-after.md` when the requested output needs before/after examples.
-```
+````
 
 ### Why this is better
 

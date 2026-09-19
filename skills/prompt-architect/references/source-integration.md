@@ -1,57 +1,72 @@
 # Source Integration
 
-Use this reference when a prompt must be created or improved from documentation, URLs, repositories, code files, standards, product docs, or multiple source artifacts.
+Use when a prompt is derived from external documentation, files, repositories, standards, examples, or multiple sources.
 
-## Source Hierarchy
+## Source authority
 
-Prefer sources in this order unless the user states otherwise:
+Default precedence:
 
-1. user-provided constraints and examples;
-2. official documentation and maintained repositories;
-3. repository-local README, contributing guides, tests, and examples;
-4. internal docs or project conventions available through connected sources;
-5. reputable secondary sources;
-6. inferred best practices.
+1. current user requirements for the prompt-design task;
+2. binding safety/legal/compliance constraints;
+3. authoritative specification or official documentation for the target system/version;
+4. repository-local contracts, tests, schemas, and maintained examples;
+5. project/internal documentation supplied by the user;
+6. reputable secondary sources;
+7. community guidance;
+8. inferred best practice.
 
-When sources conflict, prefer the most authoritative, current, and task-specific source. State unresolved conflicts when the final prompt depends on them.
+Authority and recency are separate. A newer community post does not automatically override an older binding specification.
 
-## Extraction Checklist
+## Source identity and provenance
 
-Extract only information that changes prompt execution:
+For each material source, record enough identity to distinguish what was actually used:
 
-- required inputs and outputs;
-- build, deploy, test, or operational commands;
-- domain definitions and naming conventions;
-- constraints, edge cases, and prohibited actions;
+- title/path/URL;
+- version, revision, branch/commit, or date when known;
+- relevant section/range;
+- whether content was directly inspected or only summarized by another source;
+- requirements extracted from it.
+
+When a repository/file revision materially controls acceptance, capture a **source snapshot** or exact source bytes when feasible and prefer a pinned VCS revision over a moving branch or live page. If the source changes mid-review, either continue using the captured version or intentionally re-baseline; do not mix versions silently.
+
+## Extraction
+
+Extract only facts that change prompt execution:
+
+- required inputs/outputs;
+- schemas/protocols;
+- commands/tool capabilities;
+- domain definitions;
 - version-specific behavior;
-- examples and anti-examples;
-- source-specific success criteria;
-- required citations or traceability.
+- constraints and prohibited actions;
+- failure modes;
+- examples that clarify semantics;
+- success criteria;
+- citation/traceability requirements.
 
-Avoid copying source material wholesale. Convert it into concise, actionable prompt instructions.
+Convert them into concise prompt requirements rather than copying large passages.
 
-## Research Integration Pattern
+## Conflict representation
 
-When sources are used, include a concise source note unless the user asks for prompt-only output:
+Classify source conflicts as:
 
-- sources inspected;
-- key requirements extracted;
-- conflicts resolved;
-- assumptions made;
-- source gaps that affect confidence.
+- `resolved-by-authority`;
+- `resolved-by-version`;
+- `scoped-exception`;
+- `unresolved`.
 
-In the final prompt, include source rules only when future executions need them. Do not include one-time research notes inside a reusable prompt unless they will help the model perform future tasks.
+For unresolved material conflicts, expose the alternatives and request authority instead of blending them.
 
-## Repository and Codebase Prompts
+## Repository/codebase prompts
 
-For prompts based on a codebase:
+Inspect contracts before style:
 
-- inspect README, package files, project configuration, tests, and representative implementation files;
-- infer conventions from repeated patterns, not isolated examples;
-- distinguish required rules from observed preferences;
-- avoid hardcoding paths that are likely to change unless the prompt is repository-specific;
-- add tool-use instructions only for tools that the executing agent actually has.
+`README/docs -> manifests/config -> schemas/interfaces -> tests -> representative implementation -> examples`
 
-## Citation and Evidence
+Use repeated implementation patterns as evidence only when no stronger contract exists. Do not generalize from one isolated file.
 
-When the user asks for citations or the prompt will be used in a research-heavy workflow, instruct the target model to cite sources close to the claims they support. Require explicit uncertainty when sources are unavailable or insufficient.
+## Evidence and citations in generated prompts
+
+Add citation/source rules only when future executions need them. Do not embed one-time research notes into a reusable prompt unless they are operationally necessary.
+
+If future execution requires sources that may be unavailable, define a fallback: state uncertainty, stop, or return missing-evidence status. Never instruct the executor to fabricate citations or source-backed claims.

@@ -19,7 +19,7 @@ Good reference files usually contain:
 
 Use this shape when creating a new reference file:
 
-```markdown
+````markdown
 # Clear reference title
 
 Short purpose statement naming when to load this file.
@@ -39,7 +39,7 @@ Compact examples that reflect real target behavior.
 ## Validation or stop conditions
 
 How to verify the output and when to report a gap.
-```
+````
 
 ## README or guide pattern
 
@@ -61,7 +61,7 @@ Keep the quick start shorter than the reference sections. Move long details into
 
 Use this shape when documenting scripts or validators:
 
-```markdown
+````markdown
 ## `path/to/script`
 
 Purpose: what it does and when to run it.
@@ -84,7 +84,7 @@ Outputs:
 Limitations:
 - cases not checked;
 - manual review still required.
-```
+````
 
 Only use a command example after verifying the script exists and the interface is inspectable. Otherwise, document the gap.
 

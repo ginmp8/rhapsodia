@@ -1,19 +1,23 @@
 # Dependency Tracing Guide
 
-Use this file when searching a repository to build or verify a context map.
+Use this file to build or verify a context map. Search in a stable order so repeated runs do not jump directly to whichever file appears first.
 
-## General search sequence
+## Canonical search sequence
 
-1. Search exact symbols and file names.
-2. Search callers and usages.
-3. Search registrations and configuration.
-4. Search tests and fixtures.
-5. Search similar implementations.
-6. Search docs, migration notes, generated code instructions, and CI commands.
+1. Exact task anchors: supplied path, symbol, endpoint, command, config key, error text, schema/table/topic name.
+2. Owning definition: type/function/module, contract, schema, migration, generator source, configuration owner.
+3. Direct consumers: calls, imports/exports, implementations, subclasses, handlers, serializers, query projections.
+4. Runtime wiring: dependency injection, routers, schedulers, workers, event subscriptions, feature flags, package/build registration.
+5. Tests and fixtures: unit, integration, contract, migration, snapshot/golden, smoke, e2e.
+6. Boundary consumers: public APIs, generated clients, database views, queues/topics, cross-service contracts, CLI/UI surfaces.
+7. Analogous patterns: nearest implementation with the same responsibility.
+8. Operational/deployment evidence: CI, containers, infra, docs, rollback/backfill, metrics/alerts when risk requires it.
+
+Use exact-symbol matches before broad domain terms. When equally relevant results remain, prefer the current module/bounded context, then normalized path order.
 
 ## Useful local commands
 
-Prefer repository-native tools when available. If shell access exists, use combinations like:
+Prefer repository-native indexes/tools when available. Shell examples:
 
 ```bash
 rg "SymbolName|config_key|endpoint|error message" .
@@ -23,37 +27,42 @@ git grep "SymbolName"
 git ls-files | rg "name|domain|feature"
 ```
 
+Do not treat an empty static search as proof that no consumer exists.
+
 ## Trace dimensions
 
-- **Imports/exports**: modules that import the changed file, barrel exports, public API surfaces.
-- **Type references**: interfaces, base classes, generics, DTOs, schemas, validators, serialization contracts.
-- **Runtime wiring**: dependency injection, routers, handlers, consumers, background jobs, schedulers, feature flags.
-- **Data boundaries**: migrations, ORM mappings, query projections, indexes, seed data, generated clients.
-- **Operational hooks**: metrics, logs, traces, alerts, dashboards, retries, idempotency, locks, rate limits.
-- **Tests**: unit, integration, contract, snapshot, fixture, golden file, migration, smoke, and e2e tests.
+- **Definitions/ownership**: source declaration, package/module, build target, CODEOWNERS when present, schema/generator owner.
+- **Imports/exports**: modules that import the changed file, barrel exports, public surfaces.
+- **Type/contract references**: interfaces, base classes, generics, DTOs, schemas, validators, serialization contracts.
+- **Runtime wiring**: DI, routers, handlers, consumers, background jobs, schedulers, feature flags, reflection/convention registration.
+- **Data boundaries**: migrations, ORM mappings, queries, projections, indexes, seed data, views, backfills, generated clients.
+- **Operational hooks**: metrics, logs, traces, alerts, dashboards, retries, idempotency, locks, ordering, rate limits.
+- **Tests**: unit, integration, contract, snapshot/golden, fixture, migration, smoke, e2e.
+- **Dynamic/external references**: config strings, route names, topic names, SQL object names, plugin discovery, external clients/repositories.
 
 ## Ecosystem hints
 
 ### .NET / C#
 
-Search for interfaces, handlers, DI registrations, options classes, hosted services, EF mappings, migrations, MediatR handlers, validators, and test fixtures. Watch for extension methods and source generators.
+Search interfaces, handlers, DI registrations, extension methods, options classes, hosted services, EF mappings/migrations, MediatR handlers, validators, serializers, source generators, solution/project references, and test fixtures.
 
 ### Python
 
-Search imports, FastAPI routers, Pydantic models, dependency providers, Alembic migrations, pytest fixtures, background jobs, and CLI entrypoints.
+Search imports, FastAPI/Django/Flask routing, Pydantic models, dependency providers, Alembic migrations, pytest fixtures, entry points/plugins, background jobs, and CLI entrypoints.
 
 ### TypeScript / JavaScript
 
-Search exports, route handlers, React component usages, type declarations, generated clients, package scripts, test files, and bundler config.
+Search exports, route handlers, React/component usages, type declarations, generated clients, package scripts, build aliases, test files, bundler/server config, and convention-based routing.
 
 ### SQL and data pipelines
 
-Search migrations, model definitions, materialized views, scheduled jobs, downstream dashboards, consumers, and backfill scripts. Identify rollback and compatibility constraints.
+Search migrations, model definitions, views/materialized views, scheduled jobs, downstream transformations/dashboards, consumers, and backfill scripts. Identify rollback and compatibility constraints.
 
 ## Evidence notation
 
-When reporting evidence, prefer:
+Prefer:
 
-- `path:line` when line numbers are available.
-- `command -> result summary` when using shell commands.
-- `search term -> relevant paths` when line numbers are unavailable.
+- `path:line` for directly inspected evidence;
+- `command -> result summary` for measured tool output;
+- `search term -> relevant paths` when exact lines are unavailable;
+- `inferred: ...` when a dependency relation is reasoned rather than directly observed.

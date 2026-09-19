@@ -1,89 +1,163 @@
 # Prompt Architecture Workflow
 
-Use this reference for creation and improvement work when the prompt needs more than a small wording change.
+Use this reference for `create` and `improve` work that needs more than a narrow wording edit.
 
-## 1. Intent Frame
+## 1. Build the requirement ledger
 
-Capture these facts before drafting:
+Capture each material requirement as one row:
 
-- task: what the model must do;
-- actor: who the model is acting as, if any;
-- audience: who will consume the output;
-- inputs: files, text, URLs, repositories, data, forms, messages, or examples;
-- constraints: style, policy, tools, latency, format, length, citations, language, and exclusions;
-- success criteria: what a correct answer must satisfy;
-- failure cases: what the prompt must avoid.
+| Field | Meaning |
+|---|---|
+| `id` | stable identifier |
+| `requirement` | concise semantic rule |
+| `authority` | `explicit`, `source-required`, `inferred`, or `optional` |
+| `protected` | whether the candidate may change/remove it |
+| `source` | user, file, URL, repo path, prior prompt section, or assumption |
+| `status` | `preserve`, `clarify`, `change`, `remove`, `blocked` |
+| `reason` | evidence for any non-preserve status |
 
-Proceed with explicit assumptions when a gap is low-risk. Ask only when the missing fact changes the prompt materially.
+Never downgrade an `explicit` or `source-required` protected requirement merely for brevity or style.
 
-## 2. Prompt Audit Pattern
+## 2. Resolve conflicts deterministically
 
-For an existing prompt, inspect in this order:
+Use this precedence unless higher-priority platform/safety rules override it:
 
-1. Objective clarity: is the first instruction concrete and actionable?
-2. Role fit: does the role improve execution, or is it decorative?
-3. Context completeness: are facts, definitions, and constraints available before they are needed?
-4. Tool rules: are tool triggers and prohibitions explicit?
-5. Workflow order: does analysis happen before conclusions and final answers?
-6. Output contract: is the final format precise enough to test?
-7. Examples: are examples representative, consistent, and placed after the rules they illustrate?
-8. Conflict scan: do any MUST, NEVER, default, and exception rules contradict each other?
-9. Safety and privacy: does the prompt avoid secrets, hidden reasoning disclosure, unsafe actions, and unverifiable claims?
-10. Validation readiness: can a tester decide pass or fail from the written criteria?
+1. explicit user prohibition/requirement for the current task;
+2. legally/safety/compliance-required behavior;
+3. explicit source contract or downstream compatibility requirement;
+4. explicit behavior in the original prompt;
+5. repeated source/project convention;
+6. inferred intent;
+7. stylistic preference.
 
-## 3. Creation Pattern
+If two requirements at the same authority level conflict and no local exception resolves them, mark `blocked` and ask for authority rather than silently choosing.
 
-Create prompts with this default structure. Remove sections that do not add execution value.
+Specific exceptions beat general rules only when both share the same authority and the exception is clearly scoped.
 
-1. One-line task instruction.
-2. Context and role, if helpful.
-3. Inputs and assumptions.
-4. Workflow or decision tree.
-5. Tool and source rules.
-6. Constraints and prohibited behaviors.
-7. Output format.
-8. Examples.
-9. Notes, edge cases, and stop conditions.
+## 3. Audit in execution order
 
-Prefer a clear first line over a title. The first line should tell the model exactly what to do.
+Inspect:
 
-## 4. Improvement Pattern
+1. task/objective;
+2. intended executor and audience;
+3. inputs/context;
+4. authority and conflicts;
+5. tools and source access;
+6. workflow/decision order;
+7. output contract;
+8. examples;
+9. safety/privacy;
+10. success criteria and validation readiness.
 
-When rewriting an existing prompt:
+Classify each finding as:
 
-- preserve original intent, domain vocabulary, constants, examples, and required constraints;
-- preserve structure when it is already usable, especially for long or highly governed prompts;
-- replace vague directions with testable actions;
-- move conclusions, classifications, or recommendations after analysis steps;
-- convert implicit expectations into explicit output-format rules;
-- remove duplication and conflicting instructions;
-- add examples only for unstable or high-variance outputs;
-- document any intentional behavior change.
+- `observation` — directly visible;
+- `inference` — plausible but not explicit;
+- `recommendation` — proposed design choice;
+- `blocking-conflict` — cannot be safely resolved without authority.
 
-## 5. Minimal vs Structural Rewrite
+## 4. Choose rewrite scope
 
-Use a minimal rewrite when:
+### Minimal rewrite
 
-- the prompt has a clear structure;
-- the user's requested change is narrow;
-- only wording, output format, or one rule is defective.
+Use when the existing prompt has a sound structure and the defect is narrow. Prefer changing the smallest semantic surface.
 
-Use a structural rewrite when:
+### Structural rewrite
 
-- the prompt mixes role, task, examples, and output rules in a confusing order;
-- the output format cannot be tested;
-- requirements conflict;
-- examples contradict the instructions;
-- the prompt asks for conclusions before evidence or reasoning.
+Use only when one or more are true:
 
-## 6. Prompt Tester Loop
+- execution order is materially confusing;
+- constraints are scattered or contradictory;
+- output contract cannot be tested;
+- examples materially conflict with rules;
+- tool/source behavior is unsafe or ambiguous;
+- multiple defects share the same structural cause.
 
-After drafting, test with one or more realistic scenarios:
+Preserve externally referenced headings, variables, schemas, examples, and section names unless changing them is part of the explicit task.
 
-1. State the scenario and inputs.
-2. Execute the draft literally as a model would.
-3. Identify ambiguity, missing context, conflicts, and output-format drift.
-4. Revise the prompt only where a defect is linked to a concrete failure.
-5. Repeat up to three cycles when material defects remain.
+## 5. Canonical prompt architecture
 
-A validation cycle is successful when no critical ambiguity remains, the output format is enforceable, and the tester can identify a clear path to completion.
+Use this order when relevant:
+
+1. one-line task instruction;
+2. context/role;
+3. inputs and assumptions;
+4. workflow/decision tree;
+5. tool and source rules;
+6. constraints/prohibitions;
+7. output contract;
+8. examples;
+9. edge cases/stop conditions.
+
+This is a default, not a mandatory template. Omit empty sections. Do not restructure a governed prompt just to match this order if the current structure is already clear and compatible.
+
+## 6. Control degrees of freedom
+
+Use the lowest reliable control:
+
+- exact syntax/schema -> explicit format or validator;
+- repeated defaults -> canonical default;
+- tie -> ordered tie-breaker;
+- subjective trade-off -> rubric + evidence;
+- uncertain fact -> assumption or source requirement;
+- unsafe ambiguity -> stop condition.
+
+Do not use examples as the only mechanism for critical behavior. State the rule first; examples illustrate it.
+
+## 7. Tool/source rules
+
+For each tool or source capability that matters, define:
+
+- trigger;
+- allowed inputs;
+- prohibited use;
+- fallback when unavailable;
+- evidence/citation expectations;
+- stop condition when absence would make the result unreliable.
+
+Never name a tool the target executor does not actually have unless the prompt explicitly describes an adapter or hypothetical interface.
+
+## 8. Output contract
+
+A strong output contract specifies only what downstream correctness needs:
+
+- structure/order;
+- required/optional fields;
+- allowed syntax;
+- length or granularity constraints when material;
+- citation/evidence placement;
+- whether code fences are allowed;
+- empty/unknown/error representation;
+- ordering/tie rules where consumers depend on them.
+
+Avoid ceremonial formatting that adds tokens without reducing ambiguity.
+
+## 9. Examples
+
+Add examples when they stabilize behavior that prose alone leaves ambiguous.
+
+Rules:
+
+- examples follow rules, not replace them;
+- use placeholders for user-specific/secrets;
+- keep examples internally consistent with constraints;
+- preserve user-marked immutable examples exactly;
+- include an anti-example only when it clarifies a common failure mode.
+
+## 10. Candidate change ledger
+
+For `improve`, record material changes as:
+
+`requirement id -> baseline behavior -> candidate behavior -> reason -> validation scenario`
+
+A wording-only edit with no behavioral effect need not be listed.
+
+## 11. Validation and repair
+
+Freeze evaluation criteria before candidate mutation when improvement claims matter.
+
+For each failure:
+
+`scenario -> criterion -> evidence -> causal defect -> smallest repair -> same-scenario rerun`
+
+After the same material defect set fails to improve twice, stop that repair branch and report it. Maximum default cycles: three.

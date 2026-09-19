@@ -1,0 +1,79 @@
+{
+  "contract_version": "1.0",
+  "skill": "thinking-token-efficient",
+  "required_invariants": [
+    {
+      "id": "quality-first",
+      "severity": "hard",
+      "files": ["SKILL.md"],
+      "match_any": ["quality first"]
+    },
+    {
+      "id": "cot-boundary",
+      "severity": "hard",
+      "files": ["SKILL.md"],
+      "match_any": ["do not reveal hidden chain of thought"]
+    },
+    {
+      "id": "traceability",
+      "severity": "hard",
+      "files": ["SKILL.md"],
+      "match_any": ["evidence/citation/source/path/line"]
+    },
+    {
+      "id": "validation-honesty",
+      "severity": "hard",
+      "files": ["SKILL.md"],
+      "match_any": ["executed and not-executed validation"]
+    },
+    {
+      "id": "compression-ladder",
+      "severity": "hard",
+      "files": ["SKILL.md"],
+      "match_any": ["compression ladder"]
+    },
+    {
+      "id": "hidden-token-claim-boundary",
+      "severity": "hard",
+      "files": ["SKILL.md", "references/measurement-and-preservation.md"],
+      "match_any": ["host telemetry"]
+    },
+    {
+      "id": "planned-evals-not-measured",
+      "severity": "hard",
+      "files": ["SKILL.md", "evals/activation-scenarios.json"],
+      "match_any": ["planned"]
+    }
+  ],
+  "protected_literal_categories": [
+    "urls",
+    "paths",
+    "commands",
+    "env_vars",
+    "schemas",
+    "flags",
+    "proper_nouns",
+    "versions",
+    "numbers",
+    "safety_rules",
+    "validation_rules",
+    "evidence_rules"
+  ],
+  "protected_core_files": [
+    "SKILL.md",
+    "references/compression-protocol.md",
+    "references/semantic-safety.md",
+    "references/technical-discipline.md",
+    "references/validation-gates.md"
+  ],
+  "progressive_loading": {
+    "entrypoint": "SKILL.md",
+    "max_reference_depth": 1,
+    "supporting_content_on_demand": true
+  },
+  "claim_rules": {
+    "static_footprint_does_not_prove_hidden_reasoning_savings": true,
+    "behavioral_equivalence_requires_executed_scenarios": true,
+    "same_tokenization_method_required_for_before_after": true
+  }
+}

@@ -11,10 +11,10 @@ Assume .NET 10 as the baseline. Do not optimize for older versions unless reques
 <Nullable>enable</Nullable>
 <ImplicitUsings>enable</ImplicitUsings>
 <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-<LangVersion>latest</LangVersion>
+<LangVersion>14.0</LangVersion>
 ```
 
-Use central package management with `Directory.Packages.props` for repository consistency.
+Use central package management with `Directory.Packages.props` for repository consistency. When repository reproducibility matters, pin the .NET SDK with `global.json` instead of relying on whichever SDK happens to be installed.
 
 ## Feature adoption rule
 

@@ -1,0 +1,15 @@
+{
+  "manifest_version": 1,
+  "files": [
+    {
+      "path": "evals/acceptance-contract.json",
+      "sha256": "4c5343f740119ce625cda4e757451ad15ba72311739a1c98bebb3d67166bb39f",
+      "size": 1499
+    },
+    {
+      "path": "evals/scenarios.json",
+      "sha256": "58d6032e5b0413a0436ec7e007879e71b0530bf562a83f89a78381a1e4b6dbb0",
+      "size": 1954
+    }
+  ]
+}

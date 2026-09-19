@@ -1,32 +1,35 @@
-[Concise instruction describing the task. This should be the first line and should not be a heading.]
+[Concise imperative task instruction. Do not use a decorative role sentence when it adds no execution value.]
 
-[Context, role, and assumptions needed for consistent execution.]
+[Context and assumptions required for consistent execution. Omit if unnecessary.]
 
-# Steps
+# Inputs
+
+- [Required input and availability rule.]
+
+# Workflow
 
 1. [First required action.]
 2. [Second required action.]
-3. [Continue only as needed.]
+3. [Decision/tie-breaker only when needed.]
+
+# Tools and Sources
+
+- [Trigger, allowed use, fallback, and evidence/citation rule. Omit if irrelevant.]
 
 # Constraints
 
 - [Required behavior.]
 - [Prohibited behavior.]
-- [Tool or source rule, if applicable.]
+- [Protected semantic rule.]
 
-# Output Format
+# Output Contract
 
-[Describe the exact output structure, length, syntax, citation rules, and whether code fences are allowed.]
+[Exact structure/syntax/order/error behavior needed by the consumer.]
 
 # Examples
 
-## Example 1
+[Add only when they reduce ambiguity.]
 
-Input: [representative input]
+# Stop Conditions
 
-Output: [representative output]
-
-# Notes
-
-- [Edge case or priority rule.]
-- [Stop condition or uncertainty rule.]
+- [Condition where guessing would change correctness or safety.]

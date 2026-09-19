@@ -1,0 +1,20 @@
+{
+  "scenario_version": 1,
+  "scenarios": [
+    {"id":"new-spec","group":"core","observable":"catalog identity is created before spec files; next spec_id and append order follow deterministic rules"},
+    {"id":"refine-no-material-change","group":"regression","observable":"no semantic diff produces no_change and no rewritten bytes"},
+    {"id":"refine-repeat","group":"regression","observable":"second identical refine is idempotent"},
+    {"id":"decompose-repeat","group":"regression","observable":"stable task ids remain stable and repeated decomposition adds no duplicate tasks"},
+    {"id":"normalize-legacy","group":"core","observable":"legacy names map to canonical outputs without deleting source or unknown files"},
+    {"id":"conflicting-ids","group":"edge","observable":"duplicate spec_id blocks"},
+    {"id":"inconsistent-manifest","group":"edge","observable":"manifest/catalog identity mismatch blocks"},
+    {"id":"tasks-out-of-order","group":"edge","observable":"dependency-invalid task ordering is diagnosed deterministically"},
+    {"id":"dependency-cycle","group":"edge","observable":"spec dependency cycle blocks"},
+    {"id":"protected-file","group":"adversarial","observable":"write to protected path blocks before mutation"},
+    {"id":"partial-write-failure","group":"regression","observable":"last-good bytes are restored and recovery evidence is retained on rollback failure"},
+    {"id":"rerun-after-success","group":"regression","observable":"same operation returns no_change without rewriting"},
+    {"id":"rerun-after-failure","group":"regression","observable":"retry begins from verified restored state or explicit recovery state"},
+    {"id":"output-aliases-input","group":"adversarial","observable":"resolved source/target/receipt alias blocks before mutation"},
+    {"id":"duplicate-canonical-identity","group":"edge","observable":"same feature_key plus feature_version cannot be owned by two specs in one cycle"}
+  ]
+}

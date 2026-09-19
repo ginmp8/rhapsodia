@@ -4,6 +4,8 @@ interface:
     and production engineering guidance.
   icon: code
   color: '#512BD4'
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   products:
   - chatgpt

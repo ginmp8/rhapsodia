@@ -1,47 +1,108 @@
 # Validation Scenarios
 
-Use this reference when testing prompt behavior or building a scenario suite.
+Use for prompt testing, baseline-vs-candidate comparison, and regression coverage.
 
-## Scenario Types
+## Evidence layers
 
-Create a balanced set when validation matters:
+Keep these distinct:
 
-- activation scenario: normal request the prompt should handle;
-- edge scenario: unusual but supported input;
-- ambiguity scenario: missing information that should trigger assumptions or a question;
-- conflict scenario: competing requirements that must be prioritized;
-- negative scenario: request outside scope that should be refused or redirected;
-- regression scenario: behavior the old prompt handled well and the new prompt must preserve.
+- `static`: prompt/source inspection or manual literal walkthrough;
+- `behavioral`: actual execution by a compatible model/agent with recorded output;
+- `runtime`: actual external tools/connectors/filesystems/browser behavior;
+- `supplied`: evidence provided by the user or another system but not independently executed here.
 
-## Scenario Record
+A static walkthrough cannot prove behavioral or runtime success.
 
-Each scenario should include:
+## Freeze rule
 
-- id;
-- type;
-- user input;
-- required behavior;
+When claiming an improvement over an existing prompt, freeze before candidate mutation:
+
+- scenario prompts/inputs;
+- required behaviors;
+- hard gates;
 - expected output traits;
-- failure signals;
-- priority.
+- forbidden behaviors;
+- grader/rubric version;
+- thresholds/acceptance rule.
 
-## Prompt Tester Procedure
+If these change after candidate results are seen, invalidate the comparison or start a new experiment.
 
-For each scenario:
+## Scenario groups
 
-1. Read the draft prompt literally.
-2. Identify the first action the model would take.
-3. Check whether required inputs are available.
-4. Produce or outline the expected output shape.
-5. Mark defects: ambiguity, conflict, missing context, wrong tool trigger, output drift, unsafe behavior, over-broad scope, or untestable criterion.
-6. Decide pass, pass with reservations, fail, or blocked.
+Use the smallest relevant set:
 
-## Defect Severity
+- `activation`: request the prompt should own;
+- `non-activation`: adjacent request it should not own;
+- `core`: representative happy path;
+- `boundary`: supported edge of scope;
+- `ambiguous`: missing information requiring a bounded assumption or question;
+- `conflict`: competing requirements/authority;
+- `regression`: behavior known to matter from the baseline or a past defect;
+- `adversarial`: exposes unsafe shortcuts, prompt injection, fixture editing, or dishonest claims;
+- `runtime`: depends on actual tools/environment;
+- `holdout`: frozen outside the authoring surface and not consulted during candidate design.
 
-- critical: causes unsafe behavior, wrong task execution, impossible output, or contradiction.
-- major: likely causes inconsistent output or repeated clarification.
-- minor: wording, ordering, or style issue that does not block completion.
+Bundled visible scenarios are not true holdouts by themselves.
 
-## Iteration Rule
+## Scenario record
 
-Revise the prompt only for defects linked to a scenario failure. Do not expand scope merely because the tester imagined a possible future use case.
+Recommended machine-readable fields:
+
+```json
+{
+  "id": "conflict-json-001",
+  "group": "conflict",
+  "priority": "high",
+  "input": "...",
+  "expected": {
+    "activation": "yes",
+    "hard_gates": ["identify-conflict"],
+    "observables": ["does not preserve contradictory rules"],
+    "forbidden": ["claims measured validation without execution"]
+  }
+}
+```
+
+Validate reusable suites with `scripts/validate_scenario_suite.py`.
+
+## Defect taxonomy
+
+Use stable classes:
+
+- `ACTIVATION_FALSE_POSITIVE`;
+- `ACTIVATION_FALSE_NEGATIVE`;
+- `SCOPE_DRIFT`;
+- `MISSING_INPUT_RULE`;
+- `AUTHORITY_CONFLICT`;
+- `TOOL_RULE_ERROR`;
+- `SOURCE_RULE_ERROR`;
+- `OUTPUT_CONTRACT_DRIFT`;
+- `EXAMPLE_CONTRADICTION`;
+- `SAFETY_PRIVACY_DEFECT`;
+- `UNTESTABLE_CRITERION`;
+- `UNSUPPORTED_CLAIM`;
+- `RUNTIME_DEPENDENCY_BLOCKED`.
+
+Severity: `critical`, `major`, `moderate`, `minor`.
+
+## Acceptance
+
+For each scenario record:
+
+- pass/fail/blocked;
+- evidence layer;
+- defect codes;
+- relevant output excerpt or observable evidence;
+- evaluator/rubric identity.
+
+One failure can prove a regression. One success does not prove reliability for stochastic executors.
+
+For strong behavioral improvement claims, repeat paired runs when practical and record ties rather than forcing a winner.
+
+## Repair loop
+
+Use:
+
+`scenario -> failed criterion -> causal prompt defect -> smallest repair -> same scenario -> adjacent regressions`
+
+Do not modify the frozen evaluator to obtain a pass. Stop after two non-improving repair rounds on the same material defect set, with a default maximum of three cycles.

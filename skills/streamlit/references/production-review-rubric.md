@@ -2,6 +2,8 @@
 
 Use this rubric to evaluate Streamlit apps before sharing them with a wider audience. It is intentionally practical: score only what can be inspected from code, configuration, command output, screenshots, logs, tests, or user-provided evidence. Do not claim production readiness when startup, secrets, critical user flows, or deployment assumptions were not checked.
 
+Label material evidence using `measured`, `observed`, `supplied`, `derived`, `inferred`, `planned`, or `blocked` from `reproducible-workflow.md`. A score must not imply that an unexecuted check passed.
+
 ## Scoring model
 
 Score each dimension from 0 to 5.
@@ -101,7 +103,7 @@ When producing a review, include these sections and do not leave any section emp
 
 1. `Verdict`: one of `approve`, `approve with reservations`, or `reject`, followed by the reason.
 2. `Scope reviewed`: concrete files, pages, commands, screenshots, or logs inspected.
-3. `Top findings`: severity, evidence, impact, and smallest safe fix.
+3. `Top findings`: severity, evidence label, evidence, impact, and smallest safe fix.
 4. `Scorecard`: every dimension scored or marked `not inspected` with a reason.
 5. `Required fixes before release`: release blockers only, or `None found from inspected evidence`.
 6. `Suggested improvements`: non-blocking improvements, or `None identified from inspected evidence`.

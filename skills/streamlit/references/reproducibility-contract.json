@@ -1,0 +1,46 @@
+{
+  "contract_version": 1,
+  "primary_modes": [
+    "build",
+    "debug",
+    "review",
+    "test",
+    "deploy",
+    "optimize",
+    "migrate",
+    "reference"
+  ],
+  "evidence_labels": [
+    "measured",
+    "observed",
+    "supplied",
+    "derived",
+    "inferred",
+    "planned",
+    "blocked"
+  ],
+  "hard_gates": [
+    "preserve-security-controls",
+    "preserve-evaluator-unless-proven-wrong",
+    "no-unexecuted-pass-claim",
+    "version-evidence-for-version-sensitive-guidance",
+    "no-unsafe-rerun-side-effects"
+  ],
+  "repair": {
+    "stagnation_limit": 2,
+    "one_causal_change_per_round_when_objective_gate_fails": true
+  },
+  "comparison": {
+    "same_validation_method_before_after": true,
+    "freeze_evaluator_before_candidate_change": true,
+    "performance_claim_requires_comparable_measurement": true
+  },
+  "delivery": {
+    "freeze_after_pass": true,
+    "canonical_output_alias_preflight": true,
+    "atomic_delivery_when_packaging": true,
+    "durable_receipt": true,
+    "package_hash_algorithm": "sha256",
+    "preserve_last_good_on_commit_failure": true
+  }
+}

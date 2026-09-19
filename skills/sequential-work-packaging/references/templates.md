@@ -93,6 +93,7 @@ depends_on_specs: []
 
 ```md
 - [ ] Task 1: <short title>
+  - Task ID: task001
   - Objective: ...
   - Affected boundary: ...
   - Task type: ...
@@ -161,3 +162,26 @@ Use this at the end of each spec package review:
 - dependencies are modeled at the correct level
 - ids, casing, status, phase, and versions follow the convention
 ```
+
+
+## 9. Hash-guarded operation plan
+
+Use this shape when committing generated candidate files with `scripts/apply_transaction.py`:
+
+```json
+{
+  "plan_version": 1,
+  "mode": "refine",
+  "cycle_root": "/absolute/path/to/01.00.00",
+  "writes": [
+    {
+      "path": "specs/spec001/tasks.md",
+      "source": "/staging/spec001/tasks.md",
+      "expected_before_sha256": "<64-hex-sha256>"
+    }
+  ],
+  "post_validate": {"mode": "refine", "spec_id": "spec001"}
+}
+```
+
+For a new file, use `"expected_before_sha256": "ABSENT"`. Never omit this precondition.

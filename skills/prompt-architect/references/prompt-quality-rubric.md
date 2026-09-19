@@ -1,52 +1,75 @@
 # Prompt Quality Rubric
 
-Use this rubric for review-only mode, complex rewrites, and quality gates. Score each dimension from 1 to 5.
+Rubric identity: `prompt-quality-rubric/v2`.
+
+Use for `review-only`, complex `improve`, or comparative review. The rubric makes judgments more comparable; it does not turn prompt quality into a fully objective metric.
+
+## Critical gates
+
+Evaluate these before dimension scores:
+
+| Gate | Fail when |
+|---|---|
+| `G1 objective` | the required task cannot be identified |
+| `G2 authority/conflict` | material requirements contradict and no precedence/clarification exists |
+| `G3 safety/privacy` | the prompt requires unsafe, secret-leaking, or prohibited behavior |
+| `G4 output contract` | a structured downstream task has no testable output contract |
+| `G5 tool/source feasibility` | required tools/sources are unavailable with no fallback/stop rule |
+| `G6 validation honesty` | the prompt requires or claims evidence that cannot actually be produced |
+
+Any unresolved critical gate means the review verdict cannot be `pass`/`approve` regardless of average dimension scores.
 
 ## Dimensions
 
+Score each dimension only when requested or useful. Use integers 1-5 and cite prompt evidence.
+
 | Dimension | 1 | 3 | 5 |
 |---|---|---|---|
-| objective | vague or decorative | task is understandable but broad | first instruction is concrete, testable, and action-oriented |
-| context | missing essential facts | enough context with gaps | all necessary facts, definitions, and assumptions are available |
-| specificity | generic advice | mixed concrete and vague rules | every critical behavior is explicit and actionable |
-| structure | disordered or conflicting | usable but uneven | sections follow execution order and reduce ambiguity |
-| reasoning order | conclusions first or unclear | mostly correct | analysis, evidence, and checks precede conclusions |
-| examples | absent when needed or misleading | helpful but incomplete | representative, consistent, and placeholder-safe |
-| output format | unspecified | partially specified | exact structure, syntax, length, and constraints are defined |
-| source handling | unsupported claims | some source rules | authority, recency, conflict resolution, and citation rules are clear |
-| tool behavior | tools omitted or ambiguous | some tool rules | triggers, inputs, prohibitions, and fallback paths are explicit |
-| safety and privacy | unsafe or secret-leaking | basic safety | avoids hidden reasoning, secrets, unsafe actions, and unverifiable claims |
-| validation readiness | cannot be tested | partially testable | pass/fail criteria and scenarios are clear |
+| objective | vague/decorative | understandable but broad | concrete, scoped, testable task |
+| context | essential facts missing | usable with assumptions | required facts/assumptions explicit |
+| specificity | critical behavior implied | mixed concrete/vague | critical behavior actionable and bounded |
+| structure | execution order confusing | usable but uneven | order supports execution with low ambiguity |
+| authority/conflicts | conflicts hidden | some precedence implied | authority, exceptions, and tie-breakers explicit |
+| tool/source behavior | missing/unsafe triggers | partial rules | triggers, limits, fallback, evidence rules explicit |
+| output contract | absent | partly testable | syntax/sections/error behavior testable |
+| examples | misleading or harmful | useful but incomplete | representative, consistent, placeholder-safe |
+| safety/privacy | unsafe or secret-leaking | basic safeguards | relevant safety/privacy boundaries explicit |
+| validation readiness | success cannot be observed | some observable criteria | frozen/defined criteria make pass/fail reviewable |
+| efficiency | large redundancy obscures rules | moderate redundancy | concise without semantic loss |
+
+## Tie-breakers
+
+When two scores are plausible:
+
+1. prefer the lower score if a required behavior depends on unstated inference;
+2. prefer the lower score if evidence is missing for the higher anchor;
+3. do not penalize omitted sections that are genuinely irrelevant;
+4. do not award points for verbosity by itself.
+
+## Severity taxonomy
+
+Each finding uses one severity:
+
+- `critical`: unsafe behavior, wrong task, irreconcilable contradiction, impossible required output, or dishonest validation claim;
+- `major`: likely repeated misexecution, tool misuse, scope drift, or output incompatibility;
+- `moderate`: meaningful ambiguity/inconsistency with bounded impact;
+- `minor`: localized clarity or efficiency issue without material behavior risk.
 
 ## Verdicts
 
-- **approve**: no critical issues; most dimensions are 4 or 5.
-- **approve with reservations**: usable, but one or more non-critical dimensions need improvement.
-- **reject**: critical ambiguity, conflicting requirements, unsafe instruction, missing output contract, or impossible validation.
+Use these verdicts in reviews:
 
-## Critical Issues
+- `pass`: no critical/major blocking defect and declared critical gates pass;
+- `pass-with-reservations`: no critical defect, but one or more material moderate/major issues remain bounded and disclosed;
+- `fail`: at least one unresolved critical gate or material behavior contradiction;
+- `blocked`: target/evidence/authority is insufficient to complete a trustworthy review.
 
-Flag as critical when any of these are present:
+Do not calculate or report an overall numeric score unless the user explicitly requests it. If requested, report dimension scores separately and describe any aggregation rule rather than inventing hidden weights.
 
-- conflicting MUST and NEVER rules;
-- final answer required before required analysis;
-- no clear output format for a structured task;
-- examples contradict rules;
-- source requirements are impossible or unverifiable;
-- hidden chain-of-thought disclosure is requested;
-- the prompt directs the model to ignore safety, privacy, or tool restrictions;
-- the prompt cannot be tested against any observable success criterion.
+## Finding schema
 
-## Rewrite Prioritization
+Use:
 
-Prioritize fixes in this order:
+`id -> severity -> subject/location -> observation -> evidence -> impact -> remediation -> validation`
 
-1. Safety, privacy, and policy constraints.
-2. Objective and success criteria.
-3. Output format.
-4. Conflict removal.
-5. Workflow order.
-6. Source and tool rules.
-7. Examples and style refinements.
-
-Do not optimize style before the prompt has a clear objective, constraints, and output contract.
+Distinguish observation from inference. A recommendation is not evidence.

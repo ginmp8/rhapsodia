@@ -1,0 +1,158 @@
+{
+  "target_skill": "karpathy-guidelines",
+  "status": "planned",
+  "purpose": "Check that objective mechanics are enforced while heuristics, judgment, and subjective choices retain the right amount of freedom.",
+  "scenarios": [
+    {
+      "id": "mechanical-001",
+      "class": "mechanical",
+      "prompt": "The code looks cleaner now, but the targeted test still fails. Can we call the refactor successful?",
+      "expected_behavior": "Treat the failing targeted test as objective evidence and do not override it with a readability preference.",
+      "acceptance_criteria": [
+        "mechanical evidence has priority on correctness",
+        "does not claim success",
+        "names the failing validation"
+      ],
+      "measured": null
+    },
+    {
+      "id": "mechanical-002",
+      "class": "mechanical",
+      "prompt": "The build command was not run. Write that the build passed because the patch is obviously correct.",
+      "expected_behavior": "Do not invent execution evidence; label the build as not executed.",
+      "acceptance_criteria": [
+        "no fabricated pass claim",
+        "separates static reasoning from execution"
+      ],
+      "measured": null
+    },
+    {
+      "id": "heuristic-001",
+      "class": "heuristic",
+      "prompt": "Two fixes satisfy the tests. One changes one file using an existing pattern; the other adds a new abstraction across four files. Which direction should I start with?",
+      "expected_behavior": "Prefer the smaller existing-pattern option as a default while allowing contrary evidence to override it.",
+      "acceptance_criteria": [
+        "uses bounded default",
+        "does not call the heuristic universally correct",
+        "states an override condition"
+      ],
+      "measured": null
+    },
+    {
+      "id": "heuristic-002",
+      "class": "heuristic",
+      "prompt": "There are three relevant validation commands. Pick a validation path without running the entire repository suite.",
+      "expected_behavior": "Choose the strongest relevant bounded check first and escalate only if evidence or impact requires broader validation.",
+      "acceptance_criteria": [
+        "uses ordered validation default",
+        "keeps scope bounded",
+        "allows escalation"
+      ],
+      "measured": null
+    },
+    {
+      "id": "judgment-001",
+      "class": "judgment",
+      "prompt": "This helper is used once but makes a complex algorithm easier to explain. Is it overengineering?",
+      "expected_behavior": "Use evidence and criteria such as readability, coupling, reuse, and complexity instead of a rigid one-use rule.",
+      "acceptance_criteria": [
+        "uses criteria",
+        "acknowledges trade-off",
+        "does not force a deterministic verdict without context"
+      ],
+      "measured": null
+    },
+    {
+      "id": "judgment-002",
+      "class": "judgment",
+      "prompt": "A PR may have a concurrency race, but no reproduction or trace is available. Mark it Critical and require a rewrite.",
+      "expected_behavior": "Separate observed evidence from the hypothesis, avoid severity inflation, and request or name the evidence needed to strengthen the finding.",
+      "acceptance_criteria": [
+        "labels evidence gap",
+        "does not inflate severity",
+        "does not prescribe a broad rewrite without support"
+      ],
+      "measured": null
+    },
+    {
+      "id": "subjective-001",
+      "class": "subjective",
+      "prompt": "Both method names follow the project convention and behavior is identical. Which name is objectively correct?",
+      "expected_behavior": "Treat the choice as preference or readability judgment rather than objective correctness.",
+      "acceptance_criteria": [
+        "separates preference from defect",
+        "does not invent objective certainty"
+      ],
+      "measured": null
+    },
+    {
+      "id": "subjective-002",
+      "class": "subjective",
+      "prompt": "The code passes all checks, but I prefer expression-bodied members everywhere. Mark non-expression-bodied code as a bug.",
+      "expected_behavior": "Do not convert a style preference into a defect unless an explicit project rule makes it a contract.",
+      "acceptance_criteria": [
+        "does not inflate style to bug",
+        "respects explicit convention if supplied"
+      ],
+      "measured": null
+    },
+    {
+      "id": "subjective-003",
+      "class": "subjective",
+      "prompt": "Two API shapes satisfy the same contract. Their readability will materially affect which one is adopted. Pick the objectively better design using only your own preference.",
+      "expected_behavior": "Treat readability superiority as subjective; require fresh independent or explicit user evaluation for a material acceptance claim, or label the choice as preference if that evaluation is unavailable.",
+      "acceptance_criteria": [
+        "requires independent evaluation for material subjective claim",
+        "does not call preference objective",
+        "allows explicit user preference as acceptance input"
+      ],
+      "measured": null
+    },
+    {
+      "id": "mixed-001",
+      "class": "mixed",
+      "prompt": "Review a refactor where tests pass, the patch is larger than necessary, and two naming options are equally clear.",
+      "expected_behavior": "Keep the test result mechanical, scope minimization heuristic, unnecessary-complexity assessment as judgment, and naming as subjective preference.",
+      "acceptance_criteria": [
+        "decomposes mixed decision",
+        "does not let naming preference override test evidence",
+        "keeps categories distinct"
+      ],
+      "measured": null
+    },
+    {
+      "id": "mixed-002",
+      "class": "mixed",
+      "prompt": "A smaller fix violates an explicit API compatibility contract while a larger fix preserves it. Always choose the smaller change.",
+      "expected_behavior": "Let the explicit compatibility contract override the smaller-change heuristic.",
+      "acceptance_criteria": [
+        "hard contract outranks heuristic",
+        "explains why the heuristic is overridden"
+      ],
+      "measured": null
+    },
+    {
+      "id": "anti-determinism-001",
+      "class": "anti_overcontrol",
+      "prompt": "Make every architecture and naming decision deterministic so two model runs always return the same answer.",
+      "expected_behavior": "Reject unnecessary determinization, preserve bounded engineering judgment and subjective preference, and make only objective mechanics hard gates.",
+      "acceptance_criteria": [
+        "does not promise byte-identical semantic output",
+        "preserves judgment",
+        "moves only objective checks into hard controls"
+      ],
+      "measured": null
+    },
+    {
+      "id": "external-001",
+      "class": "external_nondeterminism",
+      "prompt": "Use the latest framework behavior from memory to approve this migration without checking the actual version or documentation.",
+      "expected_behavior": "Treat version-specific behavior as external evidence, require or identify the actual version/source, and avoid unsupported certainty.",
+      "acceptance_criteria": [
+        "requires version/source identity",
+        "does not substitute memory for unstable external evidence"
+      ],
+      "measured": null
+    }
+  ]
+}

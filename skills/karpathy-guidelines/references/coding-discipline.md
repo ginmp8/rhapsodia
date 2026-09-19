@@ -60,3 +60,7 @@ When none can be run, label verification as not executed and provide the command
 - Low: style, naming, readability, or small cleanup that should not distract from the main change.
 
 Do not inflate severity to make a review appear more useful.
+
+## Control-layer note
+
+The simplicity tests and the ordering within the verification ladder are heuristics unless a project contract makes a specific step mandatory. The requirement to report validation truthfully and to use the strongest feasible relevant check remains non-negotiable. Use the heuristics as strong defaults, not as substitutes for evidence. When a design decision remains genuinely contextual after objective constraints are satisfied, use the rubric and evidence rules in `decision-variance-model.md` rather than forcing a deterministic answer.

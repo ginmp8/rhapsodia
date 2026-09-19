@@ -29,6 +29,21 @@ Do not use for:
 
 Prefer clarity, restraint, and verification over speed, cleverness, or speculative implementation.
 
+## Decision control model
+
+Reduce unjustified variance without eliminating useful model judgment. Classify each material decision at the lowest reliable control layer:
+
+| Decision class | Control | Rule |
+|---|---|---|
+| Mechanical | script/schema/type/validator | use objective checks when correctness is mechanically decidable |
+| Heuristic | defaults + ordered tie-breakers + explicit limits | prefer a stable default, but allow evidence-backed exceptions |
+| Judgment | rubric + evidence + criteria | preserve contextual engineering judgment and visible uncertainty |
+| Subjective | independent evaluation | keep taste separate from correctness and hard gates |
+
+Do not turn a heuristic, judgment call, or style preference into a hard rule merely to make outputs look deterministic. Split mixed decisions and control each part separately. Objective evidence and explicit contracts govern their own axes; heuristics may be overridden by stronger evidence; subjective quality claims require independent evaluation when material and must not override correctness, safety, or executed validation.
+
+Load `references/decision-variance-model.md` when a task involves competing valid implementations, architecture trade-offs, severity calls, readability/style judgments, or pressure to make every decision deterministic.
+
 ## Expected inputs
 
 Use the strongest available inputs without blocking unnecessarily:
@@ -49,7 +64,7 @@ Pick one primary mode:
 |---|---|---|---|---|
 | Implementation | add/change code | target language/artifact + behavior | minimal patch/code | build/test/lint/type/smoke/reasoning |
 | Bug fix | failing behavior | observed failure/reproduction | hypothesis + smallest fix | reproduce -> patch -> verify |
-| Code review | code/PR/diff/config/design | artifact + review goal | severity-ranked findings | gaps + one next step |
+| Code review | code/PR/diff/config/design | artifact + review goal | severity-ranked defect/risk findings; separate discretionary suggestions | gaps + one next step |
 | Refactor | simplify/restructure | behavior to preserve | smallest equivalent change | before/after check |
 | Planning | how to implement | goal + constraints | bounded steps/tradeoffs | verify each step |
 | Test design | tests/coverage | behavior + edge cases | minimal observable cases | explicit pass/fail expectations |
@@ -79,15 +94,18 @@ For detailed rules, load `references/context-and-evidence-policy.md`.
 Load only the support file needed by the branch:
 
 - `references/coding-discipline.md`: non-trivial coding tasks, broad refactors, vague requests, or overengineering risk.
+- `references/decision-variance-model.md`: classify decisions as mechanical, heuristic, judgment, or subjective; use when reproducibility could otherwise over-constrain engineering judgment.
 - `references/context-and-evidence-policy.md`: repo context, external docs, command output, citations, context budget, secrets, or unsupported claims.
 - `references/response-contracts.md`: implementation, refactor, review, plan, test-design, or risk-audit response shape.
 - `references/validation-and-stop-conditions.md`: incomplete verification, unsafe scope, missing inputs, broad changes, or unverifiable requests.
 - `references/activation-scenarios.md`: manual regression review of activation boundaries.
 - `evals/activation-boundary-scenarios.json`: canonical planned scenario suite for activation, ambiguous, edge, regression, adversarial, and non-activation coverage; metrics remain unmeasured until executed.
+- `evals/decision-variance-scenarios.json`: planned scenarios for mechanical gates, bounded heuristics, evidence-backed judgment, subjective separation, mixed decisions, and anti-overcontrol behavior.
 - `examples/hardening-scenarios.json`: legacy planned hardening scenario set for package-maintenance compatibility.
 - `assets/templates/implementation-response.md.template`: optional skeleton for implementation, bug fix, refactor, and test design.
 - `assets/templates/code-review-response.md.template`: optional skeleton for code review and risk audit.
 - `scripts/validate_contract.py`: run after editing this skill package.
+- `scripts/validate_decision_variance.py`: validate the four-layer decision-control contract and its planned scenario suite.
 - `scripts/package_skill.py`: run only when packaging this skill folder as `skill.zip`.
 
 ## Output contracts
@@ -99,7 +117,7 @@ For implementation, bug fix, refactor, and test design, return:
 3. validation evidence, split into executed checks and suggested checks;
 4. residual risks or follow-up only when material.
 
-For code review and risk audit, use:
+For code review and risk audit, use severity only for evidence-backed defects or risks. Keep heuristic recommendations, judgment calls, and subjective suggestions separate when they matter. Use:
 
 ```markdown
 ## Findings
@@ -140,6 +158,8 @@ Omit empty sections for simple tasks and keep answers proportional.
 Before finalizing a coding response, verify:
 
 - every proposed change maps to the user's request;
+- each material decision uses the lowest reliable control layer: mechanical, heuristic, judgment, or subjective;
+- heuristics remain overridable by evidence, judgment cites criteria/evidence, and subjective preference is not reported as objective defect;
 - no speculative feature, abstraction, dependency, broad rewrite, or unrelated cleanup was added;
 - uncertainty is visible;
 - validation is concrete and labeled as executed, not executed, or static reasoning;
@@ -166,15 +186,18 @@ When editing this skill package itself:
 1. mutate only files under the `karpathy-guidelines` skill folder;
 2. keep `SKILL.md` compact and route detailed rules to `references/`, `assets/templates/`, `examples/`, `evals/`, or `scripts/`;
 3. run `python3 -S scripts/validate_contract.py <skill-folder>`;
-4. when packaging is requested, run `python3 -S scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
-5. record the artifact path only after `skill.zip` exists and folder plus archive validation pass;
-6. do not claim package readiness unless folder and archive validation pass.
+4. run `python3 -S scripts/validate_decision_variance.py <skill-folder>`;
+5. when packaging is requested, run `python3 -S scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
+6. record the artifact path only after `skill.zip` exists and folder plus archive validation pass;
+7. do not claim package readiness unless folder and archive validation pass.
 
 ## Supporting references
 
 - `references/coding-discipline.md`: assumptions, simplicity, surgical edits, and verification.
+- `references/decision-variance-model.md`: control-layer selection, tie-breakers, judgment rubric, subjective review, and anti-overcontrol rules.
 - `references/context-and-evidence-policy.md`: context selection, evidence labels, command output, external docs, and secrets.
 - `references/response-contracts.md`: response shapes and severity rules by mode.
 - `references/validation-and-stop-conditions.md`: validation ladder, blockers, and honest closure rules.
 - `references/activation-scenarios.md`: activation, non-activation, ambiguous, and edge-case prompts for regression review.
 - `evals/activation-boundary-scenarios.json`: canonical planned scenario suite used by the package validator.
+- `evals/decision-variance-scenarios.json`: planned decision-control regression suite; do not treat it as measured until executed.

@@ -24,9 +24,9 @@ State the app purpose, the most important risk, and the smallest path to release
 
 ## Top findings
 
-| Severity | Area | Evidence | Impact | Smallest safe fix |
-|---|---|---|---|---|
-| high | rerun/state | The edit page writes before explicit submit | A filter change can repeat the write operation | Move the write behind `st.form_submit_button` and add an idempotency key |
+| Severity | Area | Evidence label | Evidence | Impact | Smallest safe fix |
+|---|---|---|---|---|---|
+| high | rerun/state | observed | The edit page writes before explicit submit | A filter change can repeat the write operation | Move the write behind `st.form_submit_button` and add an idempotency key |
 
 ## Scorecard
 
@@ -52,6 +52,8 @@ List only release-blocking changes. For each item include target file, owner ass
 List non-blocking improvements that reduce maintenance cost, improve user experience, or improve future review confidence.
 
 ## Validation performed
+
+Use `measured`, `observed`, `supplied`, `derived`, `inferred`, `planned`, or `blocked` so unexecuted checks cannot read as passes.
 
 | Check | Status | Evidence |
 |---|---|---|

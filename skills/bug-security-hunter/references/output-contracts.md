@@ -13,7 +13,7 @@ Use this compact contract when the user asks for a short review, quick check, fi
 - Verdict: ✅ `APPROVED` | 🟡 `APPROVED_WITH_COMMENTS` | 🔴 `CHANGES_REQUESTED` | 🟣 `NEEDS_MORE_CONTEXT`
 
 ## Top findings
-1. **🔴 `BLOCKER`/🟠 `MAJOR`/🟡 `MINOR`/🔵 `NIT`/🟣 `QUESTION` - Issue:** evidence -> impact -> smallest fix -> validation.
+1. **BSH-001 - 🔴 `BLOCKER`/🟠 `MAJOR`/🟡 `MINOR`/🔵 `NIT`/🟣 `QUESTION` - Issue:** evidence status + confidence -> evidence -> impact -> smallest fix -> validation.
 
 ## Gaps
 - ...
@@ -38,7 +38,9 @@ Use the emoji and label together in every finding and suggested PR comment:
 - 🔵 `NIT`: small readability, style, naming, formatting, or consistency issue only.
 - 🟣 `QUESTION`: approval-relevant missing context or suspicious but unconfirmed signal.
 
-Security confidence values: `Confirmed`, `Likely`, `Needs verification`, `Not applicable`.
+Confidence values: `confirmed`, `likely`, `needs-verification`, `not-applicable`.
+
+Evidence status values: `measured`, `observed`, `supplied`, `inferred`, `planned`, `blocked`, `out-of-scope`. Static source inspection is `observed`, not `measured`.
 
 Expected treatment values: `Fix in this PR`, `Already fixed by the author in this PR`, `Accepted by the team without change`, `Future issue opened for follow-up`, `Not applicable`.
 
@@ -83,20 +85,28 @@ State whether the inspected change shows exposed secrets or credentials, sensiti
 
 ## Findings
 
-### 1. 🔴 `BLOCKER` - Objective title
+### BSH-001 - 🔴 `BLOCKER` - Objective title
 
-**File/line:** `path/to/file.ext:Lx-Ly`
+**File/line or subject:** `path/to/file.ext:Lx-Ly`
 
-**Security confidence:** Confirmed/Likely/Needs verification/Not applicable
+**Evidence status:** measured/observed/supplied/inferred/planned/blocked/out-of-scope
+
+**Confidence:** confirmed/likely/needs-verification/not-applicable
 
 **Evidence:**
 Describe the observed code/config/diff/log behavior. Do not copy full secrets or sensitive values; use masked evidence such as `Bearer sk_***`, `Password=***`, or `-----BEGIN PRIVATE KEY-----`.
+
+**Trigger/condition:**
+State the condition under which the defect or abuse path becomes relevant.
 
 **Problem:**
 Explain the incorrect, fragile, unsafe, or risky behavior.
 
 **Impact:**
 Explain the concrete functional, technical, operational, data, contract, or security impact.
+
+**Severity rationale:**
+State the hard floor or risk reasoning used; if a material confirmation point is missing, use `QUESTION` or a validation gap instead of inflating severity.
 
 **Suggestion:**
 State the smallest sufficient fix or mitigation.
@@ -121,7 +131,7 @@ Briefly explain why the item must be resolved now, may be deferred, or was accep
 ---
 
 ## Test and validation gaps
-List missing or unevidenced unit, integration, contract, authorization, invalid-input, regression, migration, performance, secret scanning, dependency scanning, SAST, or sensitive-log validations.
+List missing or unevidenced unit, integration, contract, authorization, invalid-input, regression, migration, performance, secret scanning, dependency scanning, SAST, or sensitive-log validations. Mark each as `planned`, `blocked`, `out-of-scope`, or `needs-verification`.
 
 ## Questions for the author
 List only questions that can change the approval decision.
@@ -139,6 +149,13 @@ If there are security findings, organize remediation under immediate response, c
 
 ## Positive signals
 List good decisions found in the PR, if any.
+
+## Coverage and reproducibility
+- Target identity/revision recorded when available
+- Findings deduplicated by root-cause fingerprint
+- Findings sorted canonically before assigning IDs
+- Measured vs observed vs supplied vs planned evidence kept distinct
+- Uninspected/blocked evidence explicit
 
 ## Final checklist
 - [ ] Scope understood
@@ -250,10 +267,14 @@ Never use ✅ `APPROVED` when there is a 🔴 `BLOCKER`, probable or confirmed r
 ...
 ```
 
+## Machine-readable receipt
+
+For durable audits, automation, or comparison, mirror the review into `schemas/review-receipt.schema.json` and validate with `scripts/validate_review_receipt.py`. Do not claim the receipt proves the correctness of the judgment; it proves contract consistency and evidence bookkeeping.
+
 ## Finding line format
 
 Use this compact form for short answers:
 
 ```markdown
-- **🔴 `BLOCKER`/🟠 `MAJOR`/🟡 `MINOR`/🔵 `NIT`/🟣 `QUESTION` - Issue:** evidence -> impact -> smallest fix -> validation.
+- **BSH-001 - 🔴 `BLOCKER`/🟠 `MAJOR`/🟡 `MINOR`/🔵 `NIT`/🟣 `QUESTION` - Issue:** evidence status + confidence -> evidence -> impact -> smallest fix -> validation.
 ```

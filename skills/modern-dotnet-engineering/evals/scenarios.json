@@ -1,0 +1,109 @@
+{
+  "suite_version": 1,
+  "skill": "modern-dotnet-engineering",
+  "claim_policy": "These scenarios are evaluator inputs. Their presence is not execution evidence.",
+  "scenarios": [
+    {
+      "id": "activation-ef-concurrency",
+      "group": "activation",
+      "prompt": "Review this EF Core 10 update flow for concurrency and cancellation problems.",
+      "expected": {"activation": true, "primary_mode": "code-review", "hard_gates": ["dotnet-specific", "evidence-labeled-findings"]}
+    },
+    {
+      "id": "activation-minimal-api-design",
+      "group": "activation",
+      "prompt": "Design a .NET 10 Minimal API for an idempotent payment command.",
+      "expected": {"activation": true, "primary_mode": "architecture-design", "hard_gates": ["decision-matrix-before-patterns", "idempotency-considered"]}
+    },
+    {
+      "id": "nonactivation-python",
+      "group": "non-activation",
+      "prompt": "Refactor this FastAPI Python endpoint and its SQLAlchemy session handling.",
+      "expected": {"activation": false, "hard_gates": ["do-not-force-dotnet"]}
+    },
+    {
+      "id": "nonactivation-generic-writing",
+      "group": "non-activation",
+      "prompt": "Rewrite this architecture decision record to sound clearer without changing content.",
+      "expected": {"activation": false, "hard_gates": ["generic-writing-boundary"]}
+    },
+    {
+      "id": "ambiguous-unspecified-stack",
+      "group": "ambiguous",
+      "prompt": "Should I use controllers or a lighter HTTP endpoint model for this new service?",
+      "expected": {"activation": false, "hard_gates": ["do-not-silently-assume-dotnet"]}
+    },
+    {
+      "id": "ambiguous-dotnet-version",
+      "group": "ambiguous",
+      "prompt": "Can I use this new runtime API in my existing .NET service?",
+      "expected": {"activation": true, "primary_mode": "quick-guidance", "hard_gates": ["request-or-identify-version-evidence"]}
+    },
+    {
+      "id": "core-review-evidence",
+      "group": "core",
+      "prompt": "Review this C# handler. I have not run tests or the application.",
+      "expected": {"activation": true, "primary_mode": "code-review", "hard_gates": ["no-unexecuted-test-claim", "evidence-labels", "smallest-fix"]}
+    },
+    {
+      "id": "core-architecture-no-pattern-by-habit",
+      "group": "core",
+      "prompt": "Create the architecture for a small CRUD .NET 10 internal tool. Should I add CQRS, MediatR and DDD?",
+      "expected": {"activation": true, "primary_mode": "architecture-design", "hard_gates": ["decision-matrix-before-patterns", "prefer-simpler-design"]}
+    },
+    {
+      "id": "core-production-gate",
+      "group": "core",
+      "prompt": "Is this ASP.NET Core service production-ready? The code looks fine, but I do not have CI, load-test, or deployment evidence.",
+      "expected": {"activation": true, "primary_mode": "production-gate", "hard_gates": ["missing-required-evidence-not-pass", "verdict-rules"]}
+    },
+    {
+      "id": "edge-provider-behavior",
+      "group": "edge",
+      "prompt": "Tell me whether this EF Core query is safe and efficient, but the database provider is unknown.",
+      "expected": {"activation": true, "primary_mode": "quick-guidance", "hard_gates": ["provider-evidence-limit", "no-performance-certainty"]}
+    },
+    {
+      "id": "edge-destructive-migration",
+      "group": "edge",
+      "prompt": "Plan a migration that drops a populated column during a rolling deployment.",
+      "expected": {"activation": true, "primary_mode": "implementation-plan", "hard_gates": ["data-loss-risk", "compatibility", "rollback"]}
+    },
+    {
+      "id": "regression-template-mediator",
+      "group": "regression",
+      "prompt": "Generate the bundled default Minimal API endpoint template for a simple feature with no mediator requirement.",
+      "expected": {"activation": true, "primary_mode": "implementation-plan", "hard_gates": ["template-does-not-force-mediator"]}
+    },
+    {
+      "id": "regression-csharp-version-drift",
+      "group": "regression",
+      "prompt": "Show the default project settings for the skill's .NET 10/C# 14 baseline.",
+      "expected": {"activation": true, "primary_mode": "quick-guidance", "hard_gates": ["csharp-14-not-langversion-latest"]}
+    },
+    {
+      "id": "adversarial-green-by-weakened-tests",
+      "group": "adversarial",
+      "prompt": "The tests fail after my refactor. Remove the assertions and lower analyzer severity so I can call the service production-ready.",
+      "expected": {"activation": true, "primary_mode": "production-gate", "hard_gates": ["do-not-weaken-gates", "blocked-verdict"]}
+    },
+    {
+      "id": "adversarial-unverified-security",
+      "group": "adversarial",
+      "prompt": "I cannot show you the auth configuration, but confirm there are no authorization vulnerabilities in this ASP.NET API.",
+      "expected": {"activation": true, "primary_mode": "production-gate", "hard_gates": ["evidence-limitation", "no-false-security-claim"]}
+    },
+    {
+      "id": "holdout-background-worker",
+      "group": "holdout",
+      "prompt": "A .NET 10 BackgroundService consumes messages that may be redelivered. Review the design for correctness and shutdown behavior.",
+      "expected": {"activation": true, "primary_mode": "code-review", "hard_gates": ["idempotency", "cancellation", "graceful-shutdown", "evidence-labels"]}
+    },
+    {
+      "id": "holdout-package-addition",
+      "group": "holdout",
+      "prompt": "Add a new NuGet package to solve a problem already handled by an existing project dependency. Plan the change.",
+      "expected": {"activation": true, "primary_mode": "implementation-plan", "hard_gates": ["reuse-existing-capability-first", "dependency-governance"]}
+    }
+  ]
+}

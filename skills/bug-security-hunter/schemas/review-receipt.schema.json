@@ -1,0 +1,363 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/bug-security-hunter/review-receipt.schema.json",
+  "title": "Bug Security Hunter Review Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "target",
+    "mode",
+    "scope",
+    "findings",
+    "validation_gaps",
+    "validation",
+    "coverage",
+    "verdict"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": 1
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "identity"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "environment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "snapshot_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-fA-F]{64}$"
+        }
+      }
+    },
+    "mode": {
+      "enum": [
+        "pr-risk-review",
+        "flow-bug-hunt",
+        "project-wide-audit",
+        "security-threat-review",
+        "stress-harness-design",
+        "quick-triage"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewed",
+        "assumptions",
+        "uninspected"
+      ],
+      "properties": {
+        "reviewed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uninspected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "validation_gaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/gap"
+      }
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/validation"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "notes"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "complete-for-scope",
+            "partial",
+            "blocked"
+          ]
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "verdict": {
+      "enum": [
+        "APPROVED",
+        "APPROVED_WITH_COMMENTS",
+        "CHANGES_REQUESTED",
+        "NEEDS_MORE_CONTEXT",
+        "NOT_APPLICABLE"
+      ]
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "subject",
+        "detail",
+        "sensitive",
+        "redacted"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "measured",
+            "observed",
+            "supplied",
+            "inferred",
+            "planned",
+            "blocked",
+            "out-of-scope"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sensitive": {
+          "type": "boolean"
+        },
+        "redacted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "category",
+        "subject",
+        "severity",
+        "confidence",
+        "evidence_status",
+        "evidence",
+        "trigger_or_condition",
+        "problem",
+        "impact",
+        "severity_rationale",
+        "smallest_fix",
+        "validation",
+        "blocks_merge",
+        "expected_treatment",
+        "fingerprint"
+      ],
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "pattern": "^BSH-[0-9]{3}$"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "BLOCKER",
+            "MAJOR",
+            "MINOR",
+            "NIT",
+            "QUESTION"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "confirmed",
+            "likely",
+            "needs-verification",
+            "not-applicable"
+          ]
+        },
+        "evidence_status": {
+          "enum": [
+            "measured",
+            "observed",
+            "supplied",
+            "inferred",
+            "planned",
+            "blocked",
+            "out-of-scope"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "problem": {
+          "type": "string",
+          "minLength": 1
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity_rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "smallest_fix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "validation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocks_merge": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "expected_treatment": {
+          "enum": [
+            "Fix in this PR",
+            "Already fixed by the author in this PR",
+            "Accepted by the team without change",
+            "Future issue opened for follow-up",
+            "Not applicable",
+            "Pending verification"
+          ]
+        },
+        "fingerprint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trigger_or_condition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject",
+        "status",
+        "why_it_matters",
+        "next_evidence"
+      ],
+      "properties": {
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "blocked",
+            "out-of-scope",
+            "needs-verification"
+          ]
+        },
+        "why_it_matters": {
+          "type": "string",
+          "minLength": 1
+        },
+        "next_evidence": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "status",
+        "evidence"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "measured",
+            "supplied",
+            "planned",
+            "blocked"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

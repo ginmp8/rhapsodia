@@ -1,0 +1,50 @@
+{
+  "receipt_version": 1,
+  "target": {
+    "kind": "pull-request",
+    "identity": "repo@example/pr/43"
+  },
+  "mode": "pr-risk-review",
+  "scope": {
+    "reviewed": [
+      "config.env"
+    ],
+    "assumptions": [],
+    "uninspected": []
+  },
+  "findings": [
+    {
+      "finding_id": "BSH-001",
+      "category": "security",
+      "subject": "config.env",
+      "severity": "NIT",
+      "confidence": "confirmed",
+      "evidence_status": "observed",
+      "evidence": [
+        {
+          "status": "observed",
+          "subject": "config.env",
+          "detail": "API_TOKEN=verylongunmaskedsecret123456",
+          "sensitive": true,
+          "redacted": false
+        }
+      ],
+      "problem": "A credential-like value is present in source.",
+      "impact": "The credential may be exposed.",
+      "severity_rationale": "Credential exposure.",
+      "smallest_fix": "Remove and rotate the credential.",
+      "validation": "Run secret scanning and rotation verification.",
+      "blocks_merge": true,
+      "expected_treatment": "Fix in this PR",
+      "fingerprint": "credential exposure | config.env | secret leak",
+      "trigger_or_condition": "A credential-like value is committed in the reviewed configuration."
+    }
+  ],
+  "validation_gaps": [],
+  "validation": [],
+  "coverage": {
+    "status": "complete-for-scope",
+    "notes": []
+  },
+  "verdict": "APPROVED"
+}

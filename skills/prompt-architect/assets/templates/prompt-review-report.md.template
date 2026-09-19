@@ -1,33 +1,50 @@
 # Prompt Review Report
 
+Rubric: `prompt-quality-rubric/v2`
+
+## Target
+
+- Identity: [name/version/hash]
+- Mode: review-only
+- Evidence: [observed | measured | supplied | blocked]
+
+## Critical Gates
+
+| Gate | Status | Evidence |
+|---|---|---|
+| G1 objective | [pass/fail/blocked] | [evidence] |
+| G2 authority/conflict | [pass/fail/blocked] | [evidence] |
+| G3 safety/privacy | [pass/fail/blocked] | [evidence] |
+| G4 output contract | [pass/fail/blocked] | [evidence] |
+| G5 tool/source feasibility | [pass/fail/blocked] | [evidence] |
+| G6 validation honesty | [pass/fail/blocked] | [evidence] |
+
+## Findings
+
+| ID | Severity | Subject | Observation/Evidence | Impact | Remediation | Validation |
+|---|---|---|---|---|---|---|
+| F-001 | [severity] | [subject] | [evidence] | [impact] | [fix] | [check] |
+
+## Rubric
+
+| Dimension | Score 1-5 | Evidence |
+|---|---:|---|
+| objective | [score] | [evidence] |
+| context | [score] | [evidence] |
+| specificity | [score] | [evidence] |
+| structure | [score] | [evidence] |
+| authority/conflicts | [score] | [evidence] |
+| tool/source behavior | [score] | [evidence] |
+| output contract | [score] | [evidence] |
+| examples | [score] | [evidence] |
+| safety/privacy | [score] | [evidence] |
+| validation readiness | [score] | [evidence] |
+| efficiency | [score] | [evidence] |
+
 ## Verdict
 
-[approve | approve with reservations | reject]
+[pass | pass-with-reservations | fail | blocked]
 
-## Scorecard
+## Bounded Rewrite Strategy
 
-| Dimension | Score | Evidence | Fix |
-|---|---:|---|---|
-| objective | [1-5] | [evidence] | [fix] |
-| context | [1-5] | [evidence] | [fix] |
-| specificity | [1-5] | [evidence] | [fix] |
-| structure | [1-5] | [evidence] | [fix] |
-| reasoning order | [1-5] | [evidence] | [fix] |
-| examples | [1-5] | [evidence] | [fix] |
-| output format | [1-5] | [evidence] | [fix] |
-| source handling | [1-5] | [evidence] | [fix] |
-| tool behavior | [1-5] | [evidence] | [fix] |
-| safety and privacy | [1-5] | [evidence] | [fix] |
-| validation readiness | [1-5] | [evidence] | [fix] |
-
-## Critical Issues
-
-- [issue]
-
-## Recommended Rewrite Strategy
-
-[short strategy]
-
-## Validation Notes
-
-[scenario, result, defects, and residual risks]
+[prioritized fixes; no rewrite unless requested]

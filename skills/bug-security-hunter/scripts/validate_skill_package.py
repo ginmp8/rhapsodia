@@ -141,7 +141,6 @@ def main() -> int:
         if required_type not in types:
             fail(f"scenario type missing: {required_type}")
 
-
     behavioral = json.loads((root / "evals/behavioral-scenarios.json").read_text(encoding="utf-8"))
     if behavioral.get("schema") != "bug-security-hunter-behavioral-v1":
         fail("behavioral scenarios schema is invalid")
