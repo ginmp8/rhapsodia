@@ -1,46 +1,42 @@
 # Recombination Contract
 
-Recombine semantic transformations, not arbitrary diffs.
+Recombine semantic transformations, not raw diffs.
 
 ## Operators
 
-### transformation-merge
+- `transformation-merge`: combine complementary survivor transformations.
+- `backcross`: apply useful donor transformations on the canonical base to recover canonical characteristics.
+- `repair-crossover`: add a registry transformation explicitly mapped to a recorded non-blocking deficit.
+- `bounded-mutation`: add/remove/replace one evidence-backed transformation or bounded strategy parameter.
 
-Use when two survivors contain compatible transformations affecting different capabilities or complementary failure modes. The child request names one base parent, one or more donors, and the exact transformation ids to retain/apply.
+## Mandatory preflight
 
-### backcross
+Before emitting any candidate request:
 
-Use when a novel candidate adds useful behavior but regresses toward a weaker canonical property. Use the canonical candidate as base or donor, retaining only the proven novel transformation(s) that justify the child.
+1. resolve every transformation id against the frozen registry;
+2. compute dependency closure and require all dependencies;
+3. reject declared conflicts;
+4. reject transformations declaring violation of frozen capability invariants;
+5. reject rejected/deprecated transformations;
+6. derive expected capability effects from registry entries;
+7. reject duplicate `(base_parent, transformation-set)` strategies;
+8. enforce candidate budget;
+9. preserve holdout blindness and never use hidden evaluator details as mutation input.
 
-### repair-crossover
+Run `scripts/validate_candidate_request.py` on model-authored requests. `scripts/plan_recombination.py` applies the same controls for deterministic merge/backcross planning.
 
-Use when a strong candidate has one evidenced deficit and another candidate/registry entry contains a transformation specifically addressing that deficit. Do not import unrelated donor changes.
-
-### bounded-mutation
-
-Add, remove, replace, or parameterize one evidence-backed transformation or strategy choice. This is not random prompt rewriting.
-
-## Compatibility
-
-Before emitting a child request:
-
-1. reject transformation conflicts declared in the registry;
-2. include required dependencies;
-3. check affected capability invariants;
-4. keep one causal question per child when practical;
-5. prefer already accepted/validated transformations over speculative ones unless novelty is the explicit purpose;
-6. never use evaluator feedback that violates holdout blindness.
-
-## Candidate request
+## Candidate request v2
 
 ```json
 {
-  "candidate_id": "C07",
+  "request_version": 2,
+  "candidate_id": "C007",
   "operator": "transformation-merge",
-  "base_parent_id": "C03",
-  "donor_parent_ids": ["C05"],
-  "transformation_ids": ["T002", "T008"],
-  "expected_capability_effects": ["activation", "validation"],
-  "reason": "complementary non-conflicting transformations"
+  "base_parent_id": "C003",
+  "donor_parent_ids": ["C005"],
+  "transformation_ids": ["T002", "T003"],
+  "expected_capability_effects": ["activation", "lineage-integrity"],
+  "reason": "combine complementary validated transformations",
+  "request_signature": "sha256-of-base-plus-transformation-set"
 }
 ```

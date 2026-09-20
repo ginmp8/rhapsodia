@@ -1,35 +1,44 @@
 # Candidate and Lineage Contract
 
-Each candidate record must include:
+## Candidate record
 
-- `candidate_id`;
-- `role`: `canonical|evidence-driven|focused|novel-bounded|merge|backcross|repair|mutation|other`;
-- `status`: `planned|generated|evaluating|active|rejected|finalist|terminal`;
-- `candidate_identity` when generated;
-- `parent_ids`;
-- `base_parent_id` when generation needs one physical base;
-- `donor_parent_ids` when applicable;
-- `operator`;
-- `transformation_ids`;
-- `generation_receipt_ref`;
-- `evaluation_ref`/level;
-- hard-gate outcomes;
-- metric values;
-- novelty score/evidence when used;
-- rejection/selection rationale.
+Use search-state v2. Each generated candidate records:
+
+- unique `candidate_id`, role, lifecycle status, and immutable `candidate_identity`;
+- `parent_ids`, one physical `base_parent_id`, and optional donor parents;
+- operator and transformation ids;
+- derived/declared expected capability effects;
+- an identity-bound `generation_receipt` summary;
+- an `evaluation` record with frozen evaluator identity, level, evidence type, gates, metrics, uncertainty, deficits, and holdout status.
+
+`planned` candidates may omit generated-byte evidence. `generated` and later states require candidate identity and generation receipt. `active`/`finalist` candidates require a complete comparable evaluation.
 
 ## Parent semantics
 
-`baseline` is the stable regression reference. A `parent` is a direct ancestor used for local attribution. They may be the same identity but must not be silently conflated.
+The baseline is the immutable cumulative regression reference. A parent is a direct ancestor. For multi-parent children, exactly one `base_parent_id` identifies the bytes mutated; donors contribute semantic transformations only.
 
-For a multi-parent child, designate one `base_parent_id` whose bytes were mutated and list the others as donors. This makes the generation operation reproducible and keeps file ancestry distinct from semantic donor ancestry.
+Parents must already exist earlier in append-only state or be the baseline pseudo-node. Donors must be parents and cannot equal the base parent.
 
-## Lineage invariants
+## Receipt invariants
 
-- parent ids must already exist or refer to the immutable baseline pseudo-node;
-- no candidate may parent itself;
-- lineage must be acyclic;
-- candidate ids are never reused;
-- changing a candidate's bytes requires a new candidate identity/id;
-- rejected candidates are retained in history;
-- a final candidate's claimed transformations must match its generation receipt.
+The generation receipt summary must match the candidate on:
+
+- candidate identity;
+- base parent;
+- donor set;
+- operator;
+- transformation set.
+
+This validates internal provenance consistency. It does not independently prove an external mutation service told the truth; callers should bind `receipt_identity` to their actual mutation receipt.
+
+## Lineage and strategy invariants
+
+- no self-parenting or cycles;
+- no candidate-id reuse;
+- new bytes require a new candidate id/identity;
+- transformation ids must exist in the frozen registry;
+- all dependencies must be present;
+- declared conflicts cannot coexist;
+- transformations that violate frozen capability invariants cannot enter a valid candidate;
+- the same physical base plus the same transformation set cannot be generated twice as separate search strategies;
+- rejected candidates remain in history.

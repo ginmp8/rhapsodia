@@ -1,3 +1,12 @@
 interface:
-  display_name: "Skill Evolution"
-  short_description: "Evidence-guided multi-candidate search for existing skills"
+  display_name: Skill Evolution
+  short_description: Evidence-guided multi-candidate search for existing skills
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

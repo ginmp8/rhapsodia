@@ -1,233 +1,244 @@
 ---
 name: skill-evolution
-description: "use when explicitly invoked as the multi-candidate search controller, or when an optimization orchestrator hands off a prepared evolutionary-search contract for an existing Agent Skills-compatible skill; controls champion-challenger search, transformation recombination, backcross, Pareto selection, novelty preservation, lineage, stagnation, and finalist selection. Do not auto-own generic optimize/evolve-this-skill requests, ordinary single-candidate optimization, net-new skill creation, direct target mutation, benchmark ownership, or final promotion/package decisions."
+description: "use when explicitly invoked as the multi-candidate search controller, or when an optimization orchestrator hands off a frozen evolutionary-search contract for an existing Agent Skills-compatible skill; controls reproducible champion-challenger search, identity-bound lineage, validated transformation recombination/backcross, noise-aware Pareto selection, derived novelty/diversity, deterministic stagnation/checkpoints, and finalist selection. Do not auto-own ordinary single-candidate optimization, net-new skill creation, target mutation, benchmark semantics, acceptance gates, or final promotion/package decisions."
 ---
 
 # Skill Evolution
 
 ## Mission
 
-Control evidence-guided multi-candidate search over an existing skill without becoming a second optimizer, benchmark, harness, or acceptance gate. Treat the caller's frozen baseline, capabilities, transformations, evaluator identities, and hard gates as immutable search inputs. Search over candidate strategies and semantic transformations, preserve lineage, keep useful diversity, and return finalists plus complete evidence for an external promotion decision.
+Control evidence-guided multi-candidate search without becoming a second optimizer, benchmark, harness, or promotion gate. Treat baseline, capability/hypothesis/transformation identities, evaluator identities, gates, objectives, interfaces, and budgets as frozen search inputs. Request candidate generation from the caller, compare only identity-compatible evidence, preserve lineage and negative evidence, and return finalists for an external promotion decision.
 
 ## Authority boundary
 
-This skill owns:
+Own only:
 
-- candidate population/search state;
-- lineage and parent relationships;
-- candidate roles and search-step identities;
-- transformation recombination plans;
-- backcross and repair-crossover plans;
-- Pareto/non-dominance selection;
-- novelty/diversity preservation;
-- champion-challenger bookkeeping;
-- search budget, stagnation, and termination;
-- finalist selection.
+- population/search state and candidate lifecycle;
+- parent/donor lineage and generation-receipt consistency;
+- recombination/backcross/repair-crossover planning;
+- hard-gate-first Pareto/non-dominance selection;
+- derived novelty/diversity preservation;
+- search budget, deterministic stagnation, checkpoint chain, and termination;
+- finalist selection and promotion recommendation.
 
-This skill does **not** own:
+Do not own:
 
-- discovery of the whole specialist catalog;
-- editing target skill bytes directly;
-- executing a mutation implementation;
-- benchmark scoring semantics;
-- scenario/harness execution;
+- broad specialist discovery/orchestration;
+- direct target-byte mutation;
+- mutation implementation;
+- evaluator/benchmark/scenario semantics;
+- evaluator/threshold edits;
 - candidate acceptance gates;
-- changing frozen evaluators or thresholds;
-- promoting a candidate to target baseline;
-- promoting a search strategy into another skill's canonical workflow;
-- final packaging or installation.
+- target or workflow-policy promotion;
+- final package/install delivery.
 
-The caller provides mutation and evaluation capabilities. This skill emits requests and selection decisions over their returned evidence.
+The caller supplies mutation/evaluation interfaces and remains final promotion owner.
 
 ## Required inputs
 
-Resolve before starting search:
+Before search, resolve a **v2 search contract** containing:
 
-1. `TARGET_IDENTITY`: exact baseline skill identity/hash or immutable snapshot reference.
-2. `TARGET_CLASS`: caller-supplied target class when available.
-3. `CAPABILITY_MAP`: semantic capabilities/invariants that candidates must preserve when material.
-4. `HYPOTHESIS_POOL`: evidence-backed hypotheses or transformation candidates. Empty is allowed only for a canonical/control-only dry run.
-5. `TRANSFORMATION_REGISTRY`: stable transformation ids with dependencies/conflicts where available.
-6. `EVALUATION_POLICY`: objective metrics with direction, hard gates, evaluator/scenario identities, and ladder levels available.
-7. `MUTATION_INTERFACE`: caller contract capable of creating an isolated candidate from one base parent plus zero or more donor/transformation instructions.
-8. `EVALUATION_INTERFACE`: caller contract capable of returning identity-bound gates/metrics for a candidate under frozen evidence.
-9. `SEARCH_BUDGET`: default values below unless explicitly overridden.
+1. immutable target/baseline identity and target class;
+2. stable ids for capability map, hypothesis pool, and transformation registry;
+3. frozen mutation/evaluation interface ids;
+4. bounded budget;
+5. hard gates;
+6. objective directions and predeclared `min_delta` values;
+7. frozen evaluator/scenario/evaluation-policy identity;
+8. allowed evaluation levels/operators;
+9. canonical/preserved roles;
+10. derived selection/novelty policy;
+11. capability invariants;
+12. transformation registry with status, dependencies, conflicts, capability effects, invariant violations, and optional deficit addresses.
 
-Default budget:
-
-```yaml
-initial_variants: 4
-max_active_candidates: 4
-max_total_candidates: 20
-expected_total_candidates: 8-12
-finalists: 2
-stagnant_rounds: 3
-max_recombination_proposals_per_round: 3
-```
-
-Twenty candidates is a ceiling, not a target.
-
-## Search modes
-
-- `plan-only`: validate inputs and emit the initial candidate/recombination plan without creating or evaluating candidates.
-- `search`: run the full caller-mediated search until termination or finalists are selected.
-- `resume`: continue from a validated search state.
-- `selection-only`: rank/select from already evaluated candidates without requesting mutation.
-- `validation-only`: validate search contract/state/lineage and report defects without changing search state.
-
-Default to `search` only when mutation/evaluation interfaces are actually available. Otherwise use `plan-only` or `selection-only` and state the limitation.
-
-## Progressive loading
-
-Load only what the active stage needs:
-
-- [references/search-model.md](references/search-model.md): search lifecycle, initial variants, budget, and stop conditions.
-- [references/candidate-and-lineage-contract.md](references/candidate-and-lineage-contract.md): candidate ids, parentage, roles, identities, and lineage invariants.
-- [references/recombination-contract.md](references/recombination-contract.md): transformation merge, backcross, repair crossover, compatibility rules, and candidate requests.
-- [references/selection-and-pareto.md](references/selection-and-pareto.md): hard-gate filtering, non-dominance, novelty, diversity, and deterministic tie-breaks.
-- [references/evaluation-and-promotion.md](references/evaluation-and-promotion.md): evaluation ladder use, parent/baseline comparison, holdout discipline, and promotion boundary.
-- [references/host-portability.md](references/host-portability.md): portable-core requirements and runtime capability handling.
-- [assets/templates/search-contract.json.template](assets/templates/search-contract.json.template): portable search contract.
-- [assets/templates/search-state.json.template](assets/templates/search-state.json.template): portable lineage/population state.
-- [assets/templates/search-report.md.template](assets/templates/search-report.md.template): durable report skeleton.
-- [scripts/validate_search_contract.py](scripts/validate_search_contract.py): deterministic contract validation.
-- [scripts/validate_search_state.py](scripts/validate_search_state.py): deterministic state/lineage validation including cycle and budget checks.
-- [scripts/select_survivors.py](scripts/select_survivors.py): hard-gate-first Pareto/novelty selection from supplied evaluation evidence.
-- [scripts/plan_recombination.py](scripts/plan_recombination.py): deterministic candidate-request planning from surviving candidates and transformation sets.
-- [evals/activation-scenarios.json](evals/activation-scenarios.json): planned activation/boundary coverage; not behavioral proof until executed.
-
-## Workflow
-
-### 1. Freeze and validate search inputs
-
-Record baseline, capability/evaluator identities, transformation/hypothesis inputs, objective directions, hard gates, budget, and caller interfaces. Run:
+Use [assets/templates/search-contract.json.template](assets/templates/search-contract.json.template). Validate before any mutation request:
 
 ```text
 <PYTHON> scripts/validate_search_contract.py <SEARCH_CONTRACT.json>
 ```
 
-Do not start multi-candidate search when baseline/evaluator identity is mutable or hard-gate semantics are missing.
+Do not silently continue a v1 search as v2. Read [references/search-model.md](references/search-model.md) for re-baseline rules.
 
-### 2. Seed a deliberately small initial population
+## Search modes
 
-Default to four roles when evidence supports them:
+- `plan-only`: validate inputs and emit bounded candidate/recombination requests; no mutation/evaluation claims.
+- `search`: caller-mediated multi-candidate search with validated requests/evidence.
+- `resume`: continue only after latest state checkpoint verifies.
+- `selection-only`: select from already evaluated identity-compatible candidates.
+- `validation-only`: validate contract/state/request/checkpoint integrity without changing search state.
 
-1. `canonical`: candidate produced by the caller's normal canonical optimization strategy;
-2. `evidence-driven`: alternate evidence-backed hypothesis selection;
-3. `focused`: strategy centered on the most material diagnosed weakness;
-4. `novel-bounded`: materially different but still evidence-backed and contract-safe strategy.
+Default to `search` only when caller mutation/evaluation interfaces are actually available. Otherwise use the narrow safe mode and state the limitation.
 
-Do not invent transformations merely to fill four slots. Fewer seeds are valid when the evidence only supports fewer distinct strategies. Preserve the original baseline as immutable reference even when it is not an active candidate.
+## Progressive loading
 
-### 3. Request candidate generation, never edit directly
+Load only what the active stage needs:
 
-Emit a `candidate_request` containing candidate id, operator, base parent, donor parents if any, transformation ids, capabilities expected to change, and causal intent. The mutation owner returns candidate identity plus transformation receipt. Reject mismatched or untraceable receipts.
+- [references/search-model.md](references/search-model.md): lifecycle, v2 freeze, population, deterministic stagnation, and cost control.
+- [references/candidate-and-lineage-contract.md](references/candidate-and-lineage-contract.md): candidate identity, parent/donor semantics, receipt and lineage invariants.
+- [references/recombination-contract.md](references/recombination-contract.md): transformation compatibility and candidate-request v2.
+- [references/selection-and-pareto.md](references/selection-and-pareto.md): evaluator compatibility, uncertainty/min-delta dominance, canonical preservation, derived novelty.
+- [references/evaluation-and-promotion.md](references/evaluation-and-promotion.md): evidence identity, ladder, holdout, and external promotion boundary.
+- [references/state-integrity-and-resume.md](references/state-integrity-and-resume.md): checkpoint hashes, receipt chain, resume, and stagnation validation.
+- [references/host-portability.md](references/host-portability.md): portable-core runtime handling.
+- [assets/templates/search-state.json.template](assets/templates/search-state.json.template): v2 state shape.
+- [assets/templates/search-report.md.template](assets/templates/search-report.md.template): durable report skeleton.
+- [scripts/validate_search_state.py](scripts/validate_search_state.py): lineage, receipts, transformation sets, evaluation identity, budget, and finalist validation.
+- [scripts/validate_candidate_request.py](scripts/validate_candidate_request.py): deterministic pre-mutation request gate.
+- [scripts/select_survivors.py](scripts/select_survivors.py): hard-gate-first, min-delta/uncertainty-aware Pareto selection and derived diversity.
+- [scripts/plan_recombination.py](scripts/plan_recombination.py): dependency/conflict/invariant-aware deterministic planning.
+- [scripts/checkpoint_search_state.py](scripts/checkpoint_search_state.py): state hash-chain receipt and deterministic stagnation/resume checks.
+- [evals/activation-scenarios.json](evals/activation-scenarios.json): planned activation/boundary scenarios; never behavioral proof until executed.
 
-### 4. Evaluate cheaply first
+## Workflow
 
-Use the caller's staged evaluation ladder. Require lower hard gates before escalation. Typical progression:
+### 1. Freeze and validate search inputs
+
+Freeze every required identity before candidate mutation. Validate the v2 contract. If evaluator identity, capability/hypothesis/transformation identity, interface identity, hard gates, or objective policy can drift mid-search, stop and re-baseline rather than pretending results are comparable.
+
+### 2. Seed a deliberately small population
+
+When evidence supports them, use up to four roles:
+
+1. `canonical` — caller's normal canonical optimization result;
+2. `evidence-driven` — alternate evidence-backed hypothesis selection;
+3. `focused` — most material diagnosed weakness;
+4. `novel-bounded` — materially different but contract-safe strategy.
+
+Do not invent transformations to fill slots. Preserve the immutable baseline separately from active candidates.
+
+### 3. Validate every generation request before mutation
+
+A candidate request identifies one physical base, optional donors, exact transformation ids, expected capability effects, causal reason, and deterministic request signature.
+
+For model-authored requests run:
+
+```text
+<PYTHON> scripts/validate_candidate_request.py \
+  --contract <SEARCH_CONTRACT.json> \
+  --state <SEARCH_STATE.json> \
+  --request <CANDIDATE_REQUEST.json>
+```
+
+Reject unknown/rejected transformations, dependency gaps, conflicts, capability-invariant violations, duplicate base+transformation strategies, parent errors, effect mismatches, or budget overflow before calling the mutation owner.
+
+### 4. Bind generated candidates to receipts
+
+The mutation owner returns immutable candidate identity plus a generation receipt. Record the receipt summary in state and require it to match candidate identity, base, donors, operator, and transformation set. A changed candidate byte identity creates a new candidate; never rewrite history.
+
+### 5. Evaluate cheaply and comparably
+
+Use the caller's ladder:
 
 `L0 structural -> L1 deterministic -> L2 focused -> optional L3 harness -> optional L4 benchmark -> promotion-only L5 holdout`
 
-Do not send obviously invalid candidates to expensive evaluation.
+Record evaluator/scenario/policy identity on every evaluation. Do not compare peers whose deciding evidence identity differs. Keep evidence labels truthful; search cannot upgrade `supplied` evidence to `measured`.
 
-### 5. Select survivors without collapsing all trade-offs into one score
+### 6. Select survivors without fake precision
 
-Apply hard gates first. Then use objective directions to calculate non-dominance. Preserve useful diversity when the Pareto set exceeds active capacity. Never compensate a failed safety/semantic/activation/validation gate with token, cost, or quality gains.
-
-If no frozen scalar weighting policy exists, do not invent an overall numeric winner among non-dominated candidates.
-
-### 6. Recombine only justified complementary evidence
-
-Supported operators:
-
-- `transformation-merge`: combine compatible accepted transformations from different parents;
-- `backcross`: retain a novel/high-value transformation while restoring canonical/baseline characteristics through a canonical parent;
-- `repair-crossover`: combine a strong candidate with a donor transformation specifically addressing its evidenced deficit;
-- `bounded-mutation`: add/remove/replace one evidence-backed transformation or strategy parameter.
-
-Never merge raw file diffs blindly. Resolve transformation dependencies/conflicts before requesting a child. Prefer one causal question per child.
-
-### 7. Preserve lineage and rejected evidence
-
-Every candidate must record parent ids, operator, transformations, evaluation identities, gate outcomes, metric values, novelty evidence, and terminal status. Rejected candidates remain in history; do not rewrite them out of the experiment record.
-
-Validate state after each round:
+Run:
 
 ```text
-<PYTHON> scripts/validate_search_state.py --contract <SEARCH_CONTRACT.json> --state <SEARCH_STATE.json>
+<PYTHON> scripts/select_survivors.py \
+  --contract <SEARCH_CONTRACT.json> \
+  --state <SEARCH_STATE.json>
 ```
 
-### 8. Stop when additional search is no longer justified
+The selector:
+
+1. rejects incompatible evaluation identity/evidence;
+2. applies hard gates;
+3. computes dominance using predeclared `min_delta + uncertainty(A) + uncertainty(B)`;
+4. keeps non-dominated alternatives;
+5. preserves configured comparator roles when eligible;
+6. derives novelty from transformation-set Jaccard distance rather than accepting a model-authored novelty score;
+7. uses lower uncertainty then stable candidate id as deterministic tie-breaks.
+
+Never invent a weighted global winner after observing candidate results.
+
+### 7. Recombine only validated semantic transformations
+
+Use `scripts/plan_recombination.py` for deterministic merge/backcross/repair proposals. Recombination must resolve dependency closure and reject conflicts/invariant violations before producing requests. Never merge raw file diffs.
+
+Model judgment may decide **which causal experiment is worth trying**; mechanics decide whether the request is structurally admissible.
+
+### 8. Validate state and checkpoint each completed round
+
+After integrating generation/evaluation results, run:
+
+```text
+<PYTHON> scripts/validate_search_state.py \
+  --contract <SEARCH_CONTRACT.json> \
+  --state <SEARCH_STATE.json>
+```
+
+Then create the round checkpoint described in [references/state-integrity-and-resume.md](references/state-integrity-and-resume.md). The receipt hashes exact contract/state content, chains to the previous receipt, and mechanically verifies the stagnation counter.
+
+### 9. Stop when further search is unjustified
 
 Stop on the first applicable condition:
 
-- requested finalists are selected and promotion-level evidence is sufficient;
-- `max_total_candidates` is reached;
-- configured consecutive stagnant rounds produce no materially new non-dominated candidate;
-- no new evidence-backed mutation/recombination is available;
-- all remaining candidates violate hard gates or duplicate existing strategies;
-- evaluator sensitivity is insufficient to distinguish candidates reliably;
-- further search would require changing frozen evaluators/thresholds.
+- sufficient finalists have promotion-level evidence;
+- total candidate budget is exhausted;
+- checkpoint-derived stagnation reaches the configured threshold;
+- no new evidence-backed compatible request remains;
+- all remaining strategies fail hard gates or duplicate existing strategies;
+- evaluator sensitivity cannot distinguish candidates reliably;
+- continuation would require evaluator/threshold drift or holdout leakage.
 
-Do not consume the remaining budget simply because it exists.
+Budget is a ceiling, not a target.
 
-### 9. Use holdout only for finalists when needed
+### 10. Use holdout only for finalists when required
 
-When overfitting risk is material, request L5 holdout only for finalists. If holdout details are exposed and used to repair a candidate, that holdout is no longer unseen; require a fresh holdout for a later blind promotion claim.
+If holdout feedback is revealed for repair, mark it `revealed-development`; it is no longer blind evidence. Require a fresh unseen holdout for a later blind promotion claim.
 
-### 10. Return finalists; never self-promote
+### 11. Return finalists; never self-promote
 
-Return:
+Return search identity, frozen inputs, complete lineage/receipts, evaluation compatibility, gate eliminations, Pareto archive, derived diversity decisions, recombination decisions, checkpoint chain, termination reason, finalists, unresolved trade-offs, evidence level/holdout status, and one caller-facing recommendation:
 
-- complete search identity and termination reason;
-- baseline/canonical reference identities;
-- candidate lineage and transformation history;
-- hard-gate eliminations;
-- Pareto archive/non-dominated candidates;
-- finalists and why they survived;
-- unresolved trade-offs;
-- evidence level reached per finalist;
-- holdout status;
-- recommendation to caller: `promote-candidate`, `keep-baseline`, `gather-evidence`, or `no-single-winner`.
+- `promote-candidate`;
+- `keep-baseline`;
+- `gather-evidence`;
+- `no-single-winner`.
 
-The caller owns final acceptance, candidate freeze, package, and target/workflow promotion.
+The caller independently reruns final gates and owns freeze/package/promotion.
 
-## Selection invariants
+## Selection and integrity invariants
 
-- Baseline/evaluator identities never change mid-search without explicit restart/re-baseline.
-- Hard-gate failure eliminates a candidate from normal survival.
-- Original/canonical references remain available for comparison and backcross even if not active survivors.
-- Parent and stable baseline are distinct semantic roles.
-- Search state is append-only for historical candidate records except for lifecycle/status fields.
-- No candidate may parent itself or create a lineage cycle.
-- Candidate ids and transformation ids are unique within their registries.
-- A child cannot claim a transformation absent from its generation receipt.
-- Non-dominated alternatives may coexist; a single global winner is not mandatory.
-- Search strategy success on one target does not automatically become canonical policy for another target/class.
+- frozen search/evaluator identities never drift mid-search;
+- hard-gate failure cannot be compensated by another metric;
+- baseline and direct parent remain distinct roles;
+- canonical comparator remains available when configured and eligible;
+- state/history is append-only except lifecycle/status fields;
+- candidate ids are never reused and lineage is acyclic;
+- generation receipt matches candidate provenance claims;
+- transformation dependencies/conflicts/invariants are mechanically enforced;
+- no arbitrary novelty score controls survival;
+- request/state checkpoint hashes are deterministic over canonical JSON;
+- holdout exposure changes its evidence status;
+- target-level search success never auto-promotes a global workflow policy.
 
 ## Output contract
 
 Every substantive run reports:
 
-1. target/baseline identity and target class;
-2. mode, search id, budget, capabilities, and runtime limits;
-3. frozen evaluator/scenario/hard-gate identities;
-4. initial candidate strategy plan;
-5. all candidate requests and returned identities;
-6. lineage graph/table and transformation provenance;
-7. evaluation level reached by each candidate;
-8. hard-gate eliminations and reasons;
-9. Pareto/non-dominated archive and diversity decisions;
-10. recombination/backcross/mutation decisions with evidence;
-11. stagnation/budget counters and termination reason;
-12. finalists, unresolved trade-offs, and holdout status;
-13. explicit statement that final promotion/package is caller-owned;
-14. commands actually executed and their outcomes;
-15. residual uncertainty and unsupported claims avoided.
+1. target/baseline/canonical identities and target class;
+2. mode, search id, contract/state version, budget, and runtime limits;
+3. capability/hypothesis/transformation and mutation/evaluation interface identities;
+4. frozen evaluator/scenario/policy/hard-gate identities;
+5. initial strategies and all validated/rejected candidate requests;
+6. candidate identities, generation receipts, lineage, and transformations;
+7. evaluation level/evidence identity per candidate;
+8. hard-gate eliminations and incompatible evidence;
+9. Pareto archive, min-delta/uncertainty treatment, and derived novelty decisions;
+10. recombination/backcross/repair decisions and deterministic skips;
+11. checkpoint/state hashes, receipt chain, stagnation counter, and termination reason;
+12. finalists, unresolved trade-offs, holdout status, and caller recommendation;
+13. commands actually executed and outcomes;
+14. residual uncertainty and unsupported claims avoided;
+15. explicit statement that final acceptance/freeze/package remains caller-owned.
 
-Use `measured` only for executed validators/evaluators supplied to the search. Use `derived` for deterministic calculations over measured/supplied evidence, `planned` for requests not yet executed, and `unknown` when evidence is unavailable.
+Use `measured` only for executed evaluator/tool evidence. Use `derived` for deterministic calculations over supplied/measured inputs, `supplied` for caller results not rerun here, `planned` for unexecuted work, and `unknown` when unresolved.
 
 ## Stop conditions
 
-Stop or return a bounded result when baseline/evaluator identities are unavailable or drifted; hard-gate semantics are absent; candidate generation/evaluation is required but no caller interface exists; protected/evaluator-only assets would be exposed improperly; candidate lineage is cyclic or identity-inconsistent; the only way to continue is to weaken a gate or mutate evaluator evidence; the search budget is exceeded; or final promotion would require authority this skill does not own.
+Stop or return a bounded result when frozen identities are absent/drifted; hard-gate/objective semantics are missing; mutation/evaluation interfaces are unavailable for `search`; v1 state is presented as a v2 resume without explicit re-baseline; a candidate receipt/evaluator identity/lineage is inconsistent; a request requires dependency/conflict/invariant violations; checkpoint verification fails; search budget/stagnation is exhausted; holdout blindness would be violated; the only continuation path weakens a gate; or final promotion would require authority this skill does not own.
