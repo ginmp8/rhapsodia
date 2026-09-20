@@ -11,7 +11,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from _common import dump_json
 
-SUPPORTED_VERSION = 2
+SUPPORTED_VERSION = 3
 ALLOWED_DIRECTIONS = {"maximize", "minimize"}
 ALLOWED_OPERATORS = {"transformation-merge", "backcross", "repair-crossover", "bounded-mutation"}
 ALLOWED_TRANSFORMATION_STATUS = {"proposed", "accepted", "validated", "rejected", "deprecated"}
@@ -46,8 +46,8 @@ def validate(data: dict) -> list[str]:
         return sorted(set(errors))
 
     if data["contract_version"] != SUPPORTED_VERSION:
-        if data["contract_version"] == 1:
-            errors.append("contract_version:upgrade_required_v2")
+        if data["contract_version"] in {1, 2}:
+            errors.append("contract_version:upgrade_required_v3")
         else:
             errors.append("contract_version:unsupported")
 
@@ -62,7 +62,7 @@ def validate(data: dict) -> list[str]:
     if not isinstance(input_identities, dict):
         errors.append("input_identities:invalid")
     else:
-        for key in ("capability_map_id", "hypothesis_pool_id", "transformation_registry_id"):
+        for key in ("capability_map_id", "hypothesis_pool_id", "transformation_registry_id", "evaluation_plan_id"):
             if not isinstance(input_identities.get(key), str) or not input_identities[key].strip():
                 errors.append(f"input_identities.{key}:invalid")
 
@@ -150,8 +150,14 @@ def validate(data: dict) -> list[str]:
     if not isinstance(policy, dict):
         errors.append("selection_policy:invalid")
     else:
-        if policy.get("id") != "pareto-then-novelty-v2":
+        if policy.get("id") != "pareto-then-novelty-v3":
             errors.append("selection_policy.id:unsupported")
+        if policy.get("eligible_evidence_types") != ["measured", "supplied"]:
+            errors.append("selection_policy.eligible_evidence_types:invalid")
+        if policy.get("comparison_level_policy") != "same-level":
+            errors.append("selection_policy.comparison_level_policy:invalid")
+        if policy.get("holdout_failure_policy") != "eliminate-blind-fail":
+            errors.append("selection_policy.holdout_failure_policy:invalid")
         novelty = policy.get("novelty_policy")
         if not isinstance(novelty, dict) or novelty.get("id") != "transformation-jaccard-v1" or novelty.get("source") != "derived":
             errors.append("selection_policy.novelty_policy:invalid")

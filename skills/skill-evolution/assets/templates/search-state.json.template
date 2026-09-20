@@ -1,5 +1,5 @@
 {
-  "state_version": 2,
+  "state_version": 3,
   "search_id": "search-001",
   "round": 0,
   "stagnant_rounds": 0,
@@ -10,19 +10,27 @@
       "role": "canonical",
       "status": "active",
       "candidate_identity": "candidate-sha256-or-immutable-ref",
-      "parent_ids": ["BASELINE"],
+      "parent_ids": [
+        "BASELINE"
+      ],
       "base_parent_id": "BASELINE",
       "donor_parent_ids": [],
       "operator": "bounded-mutation",
-      "transformation_ids": ["T001"],
-      "expected_capability_effects": ["canonical-baseline"],
+      "transformation_ids": [
+        "T001"
+      ],
+      "expected_capability_effects": [
+        "canonical-baseline"
+      ],
       "generation_receipt": {
         "receipt_identity": "generation-receipt-sha256-or-ref",
         "candidate_identity": "candidate-sha256-or-immutable-ref",
         "base_parent_id": "BASELINE",
         "donor_parent_ids": [],
         "operator": "bounded-mutation",
-        "transformation_ids": ["T001"]
+        "transformation_ids": [
+          "T001"
+        ]
       },
       "evaluation": {
         "evaluation_ref": "evaluation-result-sha256-or-ref",
@@ -41,15 +49,23 @@
           "validation": "pass"
         },
         "metrics": {
-          "quality": {"value": 0.92, "uncertainty": 0.01},
-          "token_cost": {"value": 1000, "uncertainty": 0}
+          "quality": {
+            "value": 0.92,
+            "uncertainty": 0.01
+          },
+          "token_cost": {
+            "value": 1000,
+            "uncertainty": 0
+          }
         },
         "deficits": [],
         "holdout_status": "not-used"
       }
     }
   ],
-  "pareto_archive": ["C_CANONICAL"],
+  "pareto_archive": [
+    "C_CANONICAL"
+  ],
   "finalists": [],
   "termination_reason": null
 }

@@ -1,6 +1,6 @@
 {
-  "handoff_version": 2,
-  "contract_version": 2,
+  "handoff_version": 3,
+  "contract_version": 3,
   "mode": "evolutionary-optimization",
   "search_id": "search-001",
   "target_identity": "sha256-or-immutable-ref",
@@ -18,10 +18,24 @@
     "scenario_set_id": "frozen-scenario-id",
     "policy_id": "frozen-evaluation-policy-id"
   },
-  "hard_gates": ["activation", "semantics", "safety", "evaluator_integrity", "validation"],
+  "hard_gates": [
+    "activation",
+    "semantics",
+    "safety",
+    "evaluator_integrity",
+    "validation"
+  ],
   "objectives": [
-    {"name": "quality", "direction": "maximize", "min_delta": 0.02},
-    {"name": "token_cost", "direction": "minimize", "min_delta": 25}
+    {
+      "name": "quality",
+      "direction": "maximize",
+      "min_delta": 0.02
+    },
+    {
+      "name": "token_cost",
+      "direction": "minimize",
+      "min_delta": 25
+    }
   ],
   "budget": {
     "initial_variants": 4,
@@ -43,12 +57,35 @@
     "version": 2,
     "interface_id": "candidate-evaluation-v2"
   },
-  "allowed_evaluation_levels": ["L0-structural", "L1-deterministic", "L2-focused", "L3-harness", "L4-benchmark", "L5-holdout"],
-  "allowed_operators": ["transformation-merge", "backcross", "repair-crossover", "bounded-mutation"],
-  "preserve_roles": ["canonical"],
+  "allowed_evaluation_levels": [
+    "L0-structural",
+    "L1-deterministic",
+    "L2-focused",
+    "L3-harness",
+    "L4-benchmark",
+    "L5-holdout"
+  ],
+  "allowed_operators": [
+    "transformation-merge",
+    "backcross",
+    "repair-crossover",
+    "bounded-mutation"
+  ],
+  "preserve_roles": [
+    "canonical"
+  ],
   "selection_policy": {
-    "id": "pareto-then-novelty-v2",
-    "novelty_policy": {"id": "transformation-jaccard-v1", "source": "derived"},
+    "id": "pareto-then-novelty-v3",
+    "eligible_evidence_types": [
+      "measured",
+      "supplied"
+    ],
+    "comparison_level_policy": "same-level",
+    "holdout_failure_policy": "eliminate-blind-fail",
+    "novelty_policy": {
+      "id": "transformation-jaccard-v1",
+      "source": "derived"
+    },
     "uncertainty_policy": "margin-plus-min-delta-v1"
   }
 }

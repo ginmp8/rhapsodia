@@ -39,9 +39,9 @@ def build(handoff:dict,base:Path)->dict:
    'addresses':sorted(set(item.get('addresses',[]))),
   })
  return {
-  'contract_version':2,'search_id':handoff['search_id'],'target_identity':target,'target_class':handoff['target_class'],
+  'contract_version':3,'search_id':handoff['search_id'],'target_identity':target,'target_class':handoff['target_class'],
   'baseline_candidate_id':handoff['baseline_candidate_id'],'canonical_candidate_id':handoff['canonical_candidate_id'],
-  'input_identities':{'capability_map_id':stable_id(cap_p),'hypothesis_pool_id':stable_id(hyp_p),'transformation_registry_id':stable_id(tr_p)},
+  'input_identities':{'capability_map_id':stable_id(cap_p),'hypothesis_pool_id':stable_id(hyp_p),'transformation_registry_id':stable_id(tr_p),'evaluation_plan_id':stable_id(ev_p)},
   'interfaces':{'mutation_interface_id':handoff['mutation_interface']['interface_id'],'evaluation_interface_id':handoff['evaluation_interface']['interface_id']},
   'budget':handoff['budget'],'hard_gates':handoff['hard_gates'],'objectives':handoff['objectives'],'evaluation_identity':handoff['evaluation_identity'],
   'allowed_evaluation_levels':handoff['allowed_evaluation_levels'],'allowed_operators':handoff['allowed_operators'],'preserve_roles':handoff['preserve_roles'],

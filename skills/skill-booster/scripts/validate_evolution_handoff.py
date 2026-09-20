@@ -12,8 +12,8 @@ def validate(d):
  for k in required:
   if k not in d:e.append(f'missing:{k}')
  if e:return sorted(set(e))
- if d['handoff_version']!=2:e.append('handoff_version:unsupported')
- if d['contract_version']!=2:e.append('contract_version:unsupported')
+ if d['handoff_version']!=3:e.append('handoff_version:unsupported')
+ if d['contract_version']!=3:e.append('contract_version:unsupported')
  if d['mode']!='evolutionary-optimization':e.append('mode:invalid')
  for k in ('search_id','target_identity','target_class','baseline_candidate_id','canonical_candidate_id'):
   if not _nonempty(d.get(k)):e.append(f'{k}:invalid')
@@ -61,8 +61,11 @@ def validate(d):
  preserve=d.get('preserve_roles')
  if not isinstance(preserve,list) or any(not _nonempty(x) for x in preserve) or len(preserve)!=len(set(preserve)):e.append('preserve_roles:invalid')
  p=d.get('selection_policy',{})
- if not isinstance(p,dict) or p.get('id')!='pareto-then-novelty-v2':e.append('selection_policy.id:unsupported')
+ if not isinstance(p,dict) or p.get('id')!='pareto-then-novelty-v3':e.append('selection_policy.id:unsupported')
  else:
+  if p.get('eligible_evidence_types')!=['measured','supplied']:e.append('selection_policy.eligible_evidence_types:invalid')
+  if p.get('comparison_level_policy')!='same-level':e.append('selection_policy.comparison_level_policy:invalid')
+  if p.get('holdout_failure_policy')!='eliminate-blind-fail':e.append('selection_policy.holdout_failure_policy:invalid')
   n=p.get('novelty_policy',{})
   if not isinstance(n,dict) or n.get('id')!='transformation-jaccard-v1' or n.get('source')!='derived':e.append('selection_policy.novelty_policy:invalid')
   if p.get('uncertainty_policy')!='margin-plus-min-delta-v1':e.append('selection_policy.uncertainty_policy:invalid')
@@ -72,7 +75,7 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('handoff');p.add_argument('--json-output');a=p.parse_args()
  try:d=json.loads(Path(a.handoff).read_text(encoding='utf-8'));e=validate(d)
  except Exception as exc:d={};e=[f'handoff:unreadable:{exc.__class__.__name__}']
- r={'status':'pass' if not e else 'fail','handoff_version':2,'errors':e};s=json.dumps(r,indent=2,sort_keys=True)+"\n"
+ r={'status':'pass' if not e else 'fail','handoff_version':3,'errors':e};s=json.dumps(r,indent=2,sort_keys=True)+"\n"
  if a.json_output:Path(a.json_output).write_text(s,encoding='utf-8')
  print(s,end='');return 0 if not e else 2
 if __name__=='__main__':sys.exit(main())

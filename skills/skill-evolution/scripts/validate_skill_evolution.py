@@ -56,9 +56,9 @@ def _validate_integration_manifest(root: Path, manifest: dict) -> list[str]:
     if not isinstance(exports, list):
         return errors + ["integration-manifest:exports"]
     expected_exports = {
-        "skill-opt.evolution-search-contract": 2,
+        "skill-opt.evolution-search-contract": 3,
         "skill-opt.candidate-request": 2,
-        "skill-opt.search-state": 2,
+        "skill-opt.search-state": 3,
         "skill-opt.candidate-evaluation": 2,
     }
     seen_exports: dict[str, int] = {}
@@ -88,8 +88,8 @@ def _validate_integration_manifest(root: Path, manifest: dict) -> list[str]:
         errors.append("integration-manifest:imports")
     else:
         generation = [i for i in imports if isinstance(i, dict) and i.get("contract_id") == "skill-opt.candidate-generation-receipt"]
-        if len(generation) != 1 or 2 not in generation[0].get("accepted_versions", []):
-            errors.append("integration-manifest:import:skill-opt.candidate-generation-receipt:v2")
+        if len(generation) != 1 or 3 not in generation[0].get("accepted_versions", []):
+            errors.append("integration-manifest:import:skill-opt.candidate-generation-receipt:v3")
     return errors
 
 
@@ -109,8 +109,8 @@ def main() -> int:
         text = skill.read_text(encoding="utf-8")
         if not re.search(r"(?m)^name:\s*skill-evolution\s*$", text):
             errors.append("frontmatter:name")
-        if "contract v2" not in text.lower() and "v2 search contract" not in text.lower():
-            errors.append("skill:missing_v2_contract_guidance")
+        if "contract v3" not in text.lower() and "v3 search contract" not in text.lower():
+            errors.append("skill:missing_v3_contract_guidance")
         for path in re.findall(r"\]\(([^)]+)\)", text):
             if "://" not in path and not path.startswith("#") and not (root / path).exists():
                 errors.append(f"broken-link:{path}")

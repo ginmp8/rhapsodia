@@ -14,7 +14,7 @@
     },
     {
       "contract_id": "skill-opt.search-candidate-context",
-      "version": 2,
+      "version": 3,
       "role": "owner",
       "surface_paths": [
         "assets/templates/search-candidate-context.json.template",

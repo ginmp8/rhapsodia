@@ -8,7 +8,7 @@
       "prompt": "Run an evolutionary champion-challenger search over this existing skill with a frozen evaluator and maximum of 12 candidates.",
       "expected_behavior": "activate",
       "acceptance_criteria": [
-        "Requires frozen v2 search inputs.",
+        "Requires frozen v3 search inputs.",
         "Controls search state without taking direct mutation or promotion ownership."
       ],
       "category": "should_activate"
@@ -82,7 +82,7 @@
       "id": "amb-002",
       "type": "ambiguous",
       "prompt": "Try three variants of this optimization.",
-      "expected_behavior": "plan_or_gather_evidence unless the caller provides the frozen v2 search inputs required for search",
+      "expected_behavior": "plan_or_gather_evidence unless the caller provides the frozen v3 search inputs required for search",
       "acceptance_criteria": [
         "Does not fabricate evaluator, budget, lineage, or candidate-generation interfaces.",
         "May plan candidate requests, but enters search only when required frozen inputs validate."

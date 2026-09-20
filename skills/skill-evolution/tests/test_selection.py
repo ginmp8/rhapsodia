@@ -41,6 +41,14 @@ def candidate(base, cid, role, transforms, effects, quality, token_cost, uncerta
     return c
 
 
+
+
+def state_with(candidates):
+    state = template("search-state.json.template")
+    state["candidates"] = candidates
+    state["pareto_archive"] = []
+    state["finalists"] = []
+    return state
 def test_failed_gate_eliminated_and_tradeoffs_survive():
     contract = template("search-contract.json.template")
     base = template("search-state.json.template")["candidates"][0]
@@ -48,7 +56,7 @@ def test_failed_gate_eliminated_and_tradeoffs_survive():
     b = candidate(base, "C002", "focused", ["T002"], ["activation"], 0.95, 1200)
     c = candidate(base, "C003", "novel-bounded", ["T003"], ["lineage-integrity"], 1.0, 800)
     c["evaluation"]["hard_gates"]["safety"] = "fail"
-    result = mod.select(contract, {"candidates": [a, b, c]})
+    result = mod.select(contract, state_with([a, b, c]))
     assert result["eliminated_hard_gate"] == ["C003"]
     assert set(result["pareto_frontier"]) == {"C002", "C_CANONICAL"}
 
@@ -58,7 +66,7 @@ def test_min_delta_prevents_noise_from_becoming_dominance():
     base = template("search-state.json.template")["candidates"][0]
     a = candidate(base, "C_CANONICAL", "canonical", ["T001"], ["canonical-baseline"], 0.90, 1000)
     b = candidate(base, "C002", "focused", ["T002"], ["activation"], 0.91, 1000)
-    result = mod.select(contract, {"candidates": [a, b]})
+    result = mod.select(contract, state_with([a, b]))
     assert set(result["pareto_frontier"]) == {"C002", "C_CANONICAL"}
 
 
@@ -67,7 +75,7 @@ def test_uncertainty_expands_material_improvement_margin():
     base = template("search-state.json.template")["candidates"][0]
     a = candidate(base, "C_CANONICAL", "canonical", ["T001"], ["canonical-baseline"], 0.90, 1000)
     b = candidate(base, "C002", "focused", ["T002"], ["activation"], 0.94, 1000, uncertainty=0.03)
-    result = mod.select(contract, {"candidates": [a, b]})
+    result = mod.select(contract, state_with([a, b]))
     assert set(result["pareto_frontier"]) == {"C002", "C_CANONICAL"}
 
 
@@ -76,7 +84,7 @@ def test_preserved_canonical_remains_selected_even_when_dominated():
     base = template("search-state.json.template")["candidates"][0]
     a = candidate(base, "C_CANONICAL", "canonical", ["T001"], ["canonical-baseline"], 0.90, 1000)
     b = candidate(base, "C002", "focused", ["T002"], ["activation"], 0.95, 900)
-    result = mod.select(contract, {"candidates": [a, b]})
+    result = mod.select(contract, state_with([a, b]))
     assert result["pareto_frontier"] == ["C002"]
     assert "C_CANONICAL" in result["selected_survivors"]
     assert "C002" in result["selected_survivors"]
@@ -88,6 +96,6 @@ def test_mismatched_evaluator_is_not_compared():
     a = candidate(base, "C_CANONICAL", "canonical", ["T001"], ["canonical-baseline"], 0.90, 1000)
     b = candidate(base, "C002", "focused", ["T002"], ["activation"], 1.0, 500)
     b["evaluation"]["identity"]["policy_id"] = "different-policy"
-    result = mod.select(contract, {"candidates": [a, b]})
+    result = mod.select(contract, state_with([a, b]))
     assert result["incompatible_evidence"] == ["C002"]
     assert result["pareto_frontier"] == ["C_CANONICAL"]

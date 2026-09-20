@@ -10,7 +10,7 @@ Validate with `scripts/validate_candidate_request.py`. Resolve transformation de
 
 ## Execution
 
-Materialize a fresh isolated candidate from the base parent. Apply only the requested compatible transformations and required dependencies. Never import donor diffs wholesale. Preserve evaluator/protected evidence. Emit generation-receipt v2 containing candidate id/identity, the exact request signature, base/donor ids, operator, applied transformation ids, changed files, validation status, and causal limitations. Validate it with `scripts/validate_generation_receipt.py` before returning it to the caller.
+Materialize a fresh isolated candidate from the base parent. Apply only the requested compatible transformations and required dependencies. Never import donor diffs wholesale. Preserve evaluator/protected evidence. Emit generation-receipt v3 containing candidate id/identity, the exact request signature, base/donor ids, operator, applied transformation ids, changed files, validation status, and causal limitations. Validate it with `scripts/validate_generation_receipt.py` before returning it to the caller.
 
 ## Boundary
 

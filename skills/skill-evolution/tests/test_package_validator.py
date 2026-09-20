@@ -79,7 +79,7 @@ def test_package_validator_rejects_missing_declared_surface(tmp_path):
     assert any('missing_surface:missing/public-surface.json' in error for error in report['errors'])
 
 
-def test_package_validator_requires_generation_receipt_v2_import(tmp_path):
+def test_package_validator_requires_generation_receipt_v3_import_when_missing(tmp_path):
     target = copy_skill(tmp_path)
     manifest = target / 'contracts' / 'integration-manifest.json'
     payload = json.loads(manifest.read_text(encoding='utf-8'))
@@ -87,4 +87,15 @@ def test_package_validator_requires_generation_receipt_v2_import(tmp_path):
     manifest.write_text(json.dumps(payload), encoding='utf-8')
     code, report = run_validator(target)
     assert code == 2
-    assert 'integration-manifest:import:skill-opt.candidate-generation-receipt:v2' in report['errors']
+    assert 'integration-manifest:import:skill-opt.candidate-generation-receipt:v3' in report['errors']
+
+def test_package_validator_requires_generation_receipt_v3_import(tmp_path):
+    root = copy_skill(tmp_path)
+    path = root / 'contracts/integration-manifest.json'
+    manifest = json.loads(path.read_text())
+    imp = next(x for x in manifest['imports'] if x.get('contract_id') == 'skill-opt.candidate-generation-receipt')
+    imp['accepted_versions'] = [2]
+    path.write_text(json.dumps(manifest, indent=2) + '\n')
+    code, report = run_validator(root)
+    assert code != 0
+    assert 'integration-manifest:import:skill-opt.candidate-generation-receipt:v3' in report['errors']

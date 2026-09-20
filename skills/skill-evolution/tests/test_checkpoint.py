@@ -57,7 +57,12 @@ def test_new_transformation_signature_resets_stagnation():
     state1["stagnant_rounds"] = 0
     extra = copy.deepcopy(state1["candidates"][0])
     extra["candidate_id"] = "C002"
+    extra["candidate_identity"] = "candidate-C002-bytes"
     extra["transformation_ids"] = ["T002"]
+    extra["expected_capability_effects"] = ["activation"]
+    extra["generation_receipt"]["receipt_identity"] = "receipt-C002"
+    extra["generation_receipt"]["candidate_identity"] = "candidate-C002-bytes"
+    extra["generation_receipt"]["transformation_ids"] = ["T002"]
     state1["candidates"].append(extra)
     receipt1, errors = mod.build_receipt(contract, state1, receipt0)
     assert errors == []

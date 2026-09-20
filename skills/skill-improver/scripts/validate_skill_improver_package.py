@@ -29,6 +29,11 @@ REQUIRED_FILES = [
     'evals/skill-improver-scenarios.json',
     'assets/templates/improvement-run-report.md.template',
     'assets/templates/patch-decision-record.md.template',
+    'references/evolution-candidate-execution.md',
+    'assets/templates/generation-receipt.json.template',
+    'scripts/validate_candidate_request.py',
+    'scripts/validate_generation_receipt.py',
+    'contracts/integration-manifest.json',
 ]
 
 REQUIRED_CATEGORIES = {
@@ -274,6 +279,44 @@ def validate_template_consumption(root: Path) -> list[str]:
     return errors
 
 
+
+def validate_integration_manifest(root: Path) -> list[str]:
+    path = root / 'contracts' / 'integration-manifest.json'
+    if not path.is_file():
+        return ['missing integration manifest: contracts/integration-manifest.json']
+    try:
+        manifest = json.loads(read_text(path))
+    except Exception as exc:
+        return [f'integration manifest invalid JSON: {exc}']
+    errors: list[str] = []
+    if manifest.get('manifest_version') != 1:
+        errors.append('integration-manifest:manifest_version')
+    if manifest.get('skill') != 'skill-improver':
+        errors.append('integration-manifest:skill')
+    exports = manifest.get('exports')
+    if not isinstance(exports, list):
+        errors.append('integration-manifest:exports')
+        exports = []
+    receipt = [x for x in exports if isinstance(x, dict) and x.get('contract_id') == 'skill-opt.candidate-generation-receipt']
+    if len(receipt) != 1 or receipt[0].get('version') != 3:
+        errors.append('integration-manifest:export:skill-opt.candidate-generation-receipt:v3')
+    else:
+        paths = receipt[0].get('surface_paths')
+        if not isinstance(paths, list) or not paths:
+            errors.append('integration-manifest:skill-opt.candidate-generation-receipt:surface_paths')
+        else:
+            for rel in paths:
+                if not isinstance(rel, str) or not (root / rel).is_file():
+                    errors.append(f'integration-manifest:skill-opt.candidate-generation-receipt:missing_surface:{rel}')
+    imports = manifest.get('imports')
+    if not isinstance(imports, list):
+        errors.append('integration-manifest:imports')
+        imports = []
+    request = [x for x in imports if isinstance(x, dict) and x.get('contract_id') == 'skill-opt.candidate-request']
+    if len(request) != 1 or 2 not in request[0].get('accepted_versions', []):
+        errors.append('integration-manifest:import:skill-opt.candidate-request:v2')
+    return errors
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description='Validate skill-improver package readiness.'
@@ -338,6 +381,10 @@ def main() -> int:
     evaluator_example_errors = validate_command_evaluator_examples(root)
     gates['command_evaluator_examples'] = 'pass' if not evaluator_example_errors else 'fail'
     errors.extend(evaluator_example_errors)
+
+    integration_errors = validate_integration_manifest(root)
+    gates['integration_manifest'] = 'pass' if not integration_errors else 'fail'
+    errors.extend(integration_errors)
 
     disallowed_names = {'.DS_Store', 'test-results.json', 'skill-benchmark.md'}
     disallowed_suffixes = {'.pyc', '.pyo', '.zip'}

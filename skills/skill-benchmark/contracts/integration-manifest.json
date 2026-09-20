@@ -4,7 +4,7 @@
   "exports": [
     {
       "contract_id": "skill-opt.benchmark-candidate-evidence",
-      "version": 3,
+      "version": 4,
       "role": "owner-producer",
       "surface_paths": [
         "references/multi-candidate-evaluation.md",
