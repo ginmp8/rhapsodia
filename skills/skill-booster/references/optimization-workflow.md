@@ -1,106 +1,113 @@
 # Optimization Workflow
 
-Use this ordered workflow for every target skill. If a stop condition applies, report the blocker instead of mutating.
+Use this workflow for every target skill. It is organized into six canonical phases. The specialist passbook is a ledger within these phases, not a second architecture. If a stop condition applies, report the blocker instead of mutating.
 
-## Phase 0: Intake
+## Phase 1: Establish
 
-Capture target path/zip, source class, mode, final artifact, writable scope, blocked paths, known failures, evaluator, language/output conventions, requested hosts, and user-declared read-only files. Downloaded/uploaded third-party packages start as `external-untrusted-skill`; apply `references/external-skill-intake.md` before executing target-owned code. Resolve host capabilities from `references/host-compatibility.md` instead of assuming a vendor runtime. For `full optimization`, use `apply-optimization`, require `portable-core`, default the host matrix to `portable-core,openai,codex,claude,copilot,cursor`, then validate and package when gates pass.
+Capture target path/archive, source class, target class, mode, objective, final artifact, writable/protected scope, evaluator, requested hosts, runtime capabilities, and user-declared read-only files.
 
-## Phase 1: Preflight and inventory
-
-For `external-untrusted-skill`, first run the Booster-owned static intake without executing target code:
+For `external-untrusted-skill`, run the Booster-owned static intake before executing target code:
 
 ```text
 <PYTHON> scripts/inspect_external_skill.py --target <TARGET_OR_ARCHIVE> --json <WORK>/external-intake.json
 ```
 
-Resolve blocking findings before continuing. Then run:
+Then run structural/portability preflight as applicable:
 
 ```text
 <PYTHON> scripts/validate_skill_booster.py --target <TARGET_SKILL_PATH>
+<PYTHON> scripts/validate_portability.py --target <TARGET_SKILL_PATH> --hosts <HOSTS>
 ```
 
-Always run portable-core validation for mutating optimization. For complete optimization use:
+Preserve an immutable baseline and freeze evaluator/scenario/expected-output/metric inputs before candidate mutation. Snapshot material external source bytes when they affect the decision. Build or consume a capability map when the target is complex, baseline/candidate capability preservation is material, or a change may remove/transfer behavior. Keep the map in the work/evidence area, not inside the target unless the target owns such a contract.
+
+## Phase 2: Diagnose
+
+Run evidence providers against the frozen baseline. Providers are read-only/audit/checklist by default in this phase.
+
+Required early evidence normally includes initial `skill-benchmark`, `skill-harness`, and the reproducibility-routing decision. Then select the additional providers material to the target class and surfaces: capability/quality review, package architecture, context impact, activation/prompt, consistency, documentation, code, security, testing, cleanup, and token/context analysis.
+
+The purpose is to collect evidence before hypothesis selection. Do not run `skill-hypothesis-discovery` before material diagnostic providers whose findings are expected to influence the backlog.
+
+A provider may identify a required repair, but that does not grant mutation authority. Record findings with stable evidence ids and affected capability ids when known.
+
+## Phase 3: Select
+
+Reconcile evidence by criterion owner. Classify each proposed change as exactly one of:
+
+- `repair` - demonstrated defect/contract break;
+- `optimization` - predeclared measurable improvement on an active metric;
+- `experiment` - bounded unproven hypothesis.
+
+Run `skill-hypothesis-discovery` after diagnostic evidence is available. Select one bounded hypothesis or one explicitly inseparable batch. Before mutation record:
+
+- hypothesis id;
+- transformation id;
+- change intent;
+- parent/baseline identity;
+- affected capabilities/files;
+- expected effect;
+- frozen evaluator/acceptance rule;
+- rollback;
+- declared mutation owner.
+
+Required repairs may proceed even when the correct claim is "repair completed" rather than "measured improvement".
+
+## Phase 4: Mutate
+
+Use an isolated candidate. Exactly one owner mutates each transformation batch.
+
+Default owner is `skill-improver`. `reproducibility-engineer` owns an `invoke-apply` reproducibility batch only for that selected bounded transformation. Another specialist may own a batch only when the caller explicitly delegates it and the specialist contract allows mutation.
+
+Evidence providers must not silently apply unrelated fixes after selection. New findings discovered during mutation become new evidence/hypotheses unless they are necessary to make the selected batch valid.
+
+## Phase 5: Evaluate
+
+Evaluate the candidate against the same frozen evidence using the staged ladder:
+
+1. `L0-structural` - identity, package shape, references, protected paths, schemas/syntax.
+2. `L1-deterministic` - target validators/tests/static contracts.
+3. `L2-focused` - selected-hypothesis scenarios/metrics and touched-capability checks.
+4. `L3-harness` - broader regression/adversarial execution when warranted.
+5. `L4-benchmark` - full comparable baseline/parent/candidate benchmark when an improvement claim warrants it.
+6. `L5-holdout` - independent/evaluator-only holdout for promotion claims exposed to overfitting risk.
+
+A required lower-level failure blocks escalation. `skill-change-gate` is required for material candidate acceptance. Record the experiment even when rejected/reverted/inconclusive. Use ablation only for a real attribution question; do not explode the search space by default.
+
+Validate pre-evolution artifacts when present:
 
 ```text
-<PYTHON> scripts/validate_portability.py --target <TARGET_SKILL_PATH> --hosts portable-core,openai,codex,claude,copilot,cursor
+<PYTHON> scripts/validate_pre_evolution_state.py \
+  --capability-map <WORK>/capability-map.json \
+  --transformation-registry <WORK>/transformation-registry.json \
+  --experiment-registry <WORK>/experiment-registry.json \
+  --evaluation-plan <WORK>/evaluation-plan.json
 ```
 
-If the user deliberately narrows support, substitute that explicit host set but do not call the result fully multi-platform.
+## Phase 6: Prove
 
-Inventory `SKILL.md`, optional host adapters such as `agents/`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, reports, generated files, and packages. Host adapters may enhance one platform but cannot be required by the portable core. Record risks and unavailable resources.
+After candidate acceptance, run affected hardening/validation, final `skill-change-gate`, final benchmark and holdout only at the evidence level required by the claim, token/readiness closure, source/evaluator identity verification, and portability closure.
 
-## Phase 2: Baseline and freeze
-
-Use the strongest available evaluator: target validator/CI, `skill-benchmark`, harness, static validator, then planned evaluator. Freeze scenarios, expected outputs, benchmark inputs, scoring config, validator scripts, fixtures, generated baseline reports, and blocked paths. When external files or repository evidence materially determine hypotheses or acceptance, capture exact source bytes before analysis with `scripts/snapshot_sources.py`; prefer immutable revision/object reads for pinned VCS evidence. When activation scenarios are present and compatible, run `scripts/run_activation_harness.py` as deterministic schema/coverage evidence, not as live activation precision. Record score, gates, warnings, command, timestamp, source identity, and hashes when practical.
-
-## Phase 3: Specialist passes and reproducibility routing
-
-Run or account for the passbook sequence using the host-native dispatch mechanism. Specialist names are logical capabilities; do not embed or assume a vendor-private skill API. Key order constraints:
-
-1. `skill-creator-juiced` and architecture-governance decisions precede broad rewrites.
-2. Run initial `skill-benchmark` and `skill-harness` before the reproducibility gate whenever possible.
-3. Evaluate `references/reproducibility-routing.md` and write one routing decision before hypothesis discovery. Validate it:
+Freeze the exact final candidate:
 
 ```text
-<PYTHON> scripts/validate_reproducibility_decision.py <DECISION_JSON>
+<PYTHON> scripts/freeze_candidate.py freeze --target <TARGET_SKILL_PATH> --out <WORK>/candidate-manifest.json
+<PYTHON> scripts/freeze_candidate.py verify --target <TARGET_SKILL_PATH> --manifest <WORK>/candidate-manifest.json
 ```
 
-4. If the state is `invoke-audit`, invoke `reproducibility-engineer` in `audit-only`; its ceiling/variability/control findings feed `skill-hypothesis-discovery`. If the state is `invoke-apply`, invoke it in `apply` only for the explicit bounded reproducibility batch, then run `skill-change-gate` before acceptance. `not-applicable`, `blocked`, and `unavailable` require evidence and do not count as invocation.
-5. `skill-hypothesis-discovery` produces a deduplicated ranked backlog from benchmark, harness, reproducibility findings when applicable, and the remaining specialist evidence; it does not mutate target files.
-6. `skill-improver` tests selected bounded hypotheses not already owned by an `invoke-apply` reproducibility batch; `skill-change-gate` reviews candidate acceptance before broader conclusions are accepted.
-7. Run prompt/activation, consistency, docs, code/security/testing, cleanup, and token passes in passbook order. Revalidate after compression, then harden, run final `skill-change-gate`, benchmark, improver closure, and final token-efficiency closure.
+Any later target edit invalidates affected evidence and requires revalidation/re-freeze.
 
-If the user supplies an explicit required specialist sequence, actual invocation is mandatory for every available listed specialist; checklist-only is allowed only when unavailable, blocked, unsafe, or not-applicable. Reconcile before completion/package claims.
+Package only the frozen candidate with recovery-aware atomic delivery. Preserve last-known-good package/receipt on failure. Keep target promotion separate from workflow-policy promotion: results from this target may become advisory history for later optimization, but they must not silently rewrite the Booster's canonical policy.
 
-## Phase 4: Patch discipline
+## Historical evidence rule
 
-Apply one bounded hypothesis per patch batch. Keep `SKILL.md` compact; move branch details to references; use scripts only for deterministic validation/packaging; keep templates/assets only when operational or intentionally retained. Do not alter frozen evaluator inputs, fixtures, expected outputs, generated evidence, secrets, old zips, or unrelated files.
+Persist current-run experiment and transformation history. Cross-run history may inform hypothesis priority only when provenance is retained. Scope its relevance by target class, capability surface, evaluator contract, and environment. A prior win/loss is evidence, not a universal rule.
 
-For reproducibility-owned work:
+## Future evolutionary mode boundary
 
-- `audit-only` does not mutate; route findings into the normal backlog.
-- `apply` owns only the selected reproducibility transformation batch.
-- Do not duplicate the same patch under both `reproducibility-engineer` and `skill-improver`.
-- After a reproducibility `apply` batch, run the same target validators and candidate `skill-change-gate` used for other material patches.
+This workflow deliberately stops before population search. A future evolutionary mode may reuse the same capability map, transformation/experiment registries, evaluation ladder, parent identities, and promotion rules. Until such a mode exists and is validated, canonical optimization remains one selected candidate/batch at a time.
 
-## Phase 5: Validate, freeze, package, and close
 
-After each material change, rerun the frozen evaluator, affected validators, and `skill-change-gate` or local checklist. Before final report or packaging, validate any explicit specialist reconciliation ledger and reverify any material source snapshot. If the live source changed, evaluate only the captured snapshot or explicitly invalidate/re-baseline the experiment. If discovery finds no viable mutation, report no-mutation unless required repairs exist. After cleanup/compression, rerun validators, script syntax/smoke checks, link/package checks, final `skill-change-gate`, final benchmark, and token audit with local-regression review.
+## Evolutionary optimization branch
 
-After the last passing final gate, freeze the candidate outside the target folder:
-
-```text
-<PYTHON> scripts/freeze_candidate.py freeze \
-  --target <TARGET_SKILL_PATH> \
-  --out <WORK_DIR>/candidate-manifest.json
-```
-
-Any later target edit invalidates the freeze. Immediately before packaging:
-
-```text
-<PYTHON> scripts/freeze_candidate.py verify \
-  --target <TARGET_SKILL_PATH> \
-  --manifest <WORK_DIR>/candidate-manifest.json
-```
-
-Package only when verification passes. `scripts/package_skill.py` validates/canonicalizes archive and receipt destinations before writing, rejects aliases, validates the target, excludes generated evidence/reports/caches/old zips/control artifacts, writes and verifies deterministic staged outputs, computes candidate/archive hashes, then commits `skill.zip` plus the success receipt as one recovery-aware transaction. A failed attempt must leave the previous archive and previous successful receipt untouched; incomplete rollback must preserve explicit recovery paths.
-
-```text
-<PYTHON> scripts/package_skill.py \
-  --target <TARGET_SKILL_PATH> \
-  --output <OUTPUT_DIR>/skill.zip \
-  --report <REPORT_DIR>/package-validation.json
-```
-
-When an explicit required sequence was supplied:
-
-```text
-<PYTHON> scripts/package_skill.py \
-  --target <TARGET_SKILL_PATH> \
-  --output <OUTPUT_DIR>/skill.zip \
-  --report <REPORT_DIR>/package-validation.json \
-  --reconciliation-ledger <LEDGER_JSON>
-```
-
-For a portability objective, add `--portability-hosts <HOSTS>` to packaging so the delivered candidate is rechecked before replacement. Final closure reports baseline vs final, source-snapshot/provenance verification when material, host capability/portability evidence, reproducibility decision/evidence, backlog summary, deltas, accepted/rejected hypotheses, commands, pass ledger, reconciliation counts/finalization decision, candidate/final `skill-change-gate`, candidate manifest hash, package hash, receipt version/stage, last-known-good/recovery status, risks, next hypothesis, and token closure. If any post-freeze target mutation occurs, invalidate closure evidence and rerun affected gates before packaging.
+After Establish/Diagnose/Select, an explicit `evolutionary-optimization` request branches to `references/evolutionary-search-routing.md`. Keep the canonical strategy/result as comparator, validate the handoff, and let Skill Evolution own only search-state decisions. Candidate byte mutation, evaluation, change gates, final freeze, target promotion, and packaging remain owned by the existing Booster workflow. After finalists return, rejoin Phase 5/Prove and run independent final gates.

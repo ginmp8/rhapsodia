@@ -1,0 +1,3 @@
+interface:
+  display_name: "Skill Evolution"
+  short_description: "Evidence-guided multi-candidate search for existing skills"

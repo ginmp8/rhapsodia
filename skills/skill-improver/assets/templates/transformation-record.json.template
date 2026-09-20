@@ -1,0 +1,17 @@
+{
+  "transformation_id": "T001",
+  "hypothesis_id": "H001",
+  "parent_identity": "sha256:baseline",
+  "change_intent": "experiment",
+  "operation_summary": "Apply one bounded semantic change.",
+  "expected_effect": "Improve the declared active metric without regression.",
+  "evaluator_identity": "sha256:evaluator",
+  "status": "planned",
+  "capability_refs": [],
+  "files": [
+    "SKILL.md"
+  ],
+  "evidence_refs": [
+    "EV-001"
+  ]
+}

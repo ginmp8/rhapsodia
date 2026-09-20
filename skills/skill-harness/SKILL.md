@@ -51,6 +51,8 @@ Always read target `SKILL.md` first. Load only needed branches:
 - [`references/mode-research-policy.md`](references/mode-research-policy.md): source policy and conflicts.
 - [`references/skill-improvement-playbook.md`](references/skill-improvement-playbook.md): bounded changes and common fixes.
 - [`references/evaluation-and-gates.md`](references/evaluation-and-gates.md): scores, required gates, saturated metrics, decisions.
+- [`references/evaluation-tiers-and-holdout.md`](references/evaluation-tiers-and-holdout.md): focused/harness/holdout scenario tiers, candidate-visible vs evaluator-only partitions, and holdout reuse rules.
+- [`references/multi-candidate-execution.md`](references/multi-candidate-execution.md): isolation/comparability rules for executing the same frozen scenario partition across several search candidates.
 - [`references/scenario-suite-guidelines.md`](references/scenario-suite-guidelines.md): activation, non-activation, ambiguous, edge, regression, adversarial scenario schema.
 - [`references/harness-quality-patterns.md`](references/harness-quality-patterns.md): entry-point coverage, determinism, isolation, observability, anti-patterns.
 - [`references/isolated-execution-contract.md`](references/isolated-execution-contract.md): candidate/evaluator visibility separation, isolated-run contract, trace evidence, leakage gates, control-arm rules, and optional self-hosted generation provenance.
@@ -68,6 +70,8 @@ Templates are operational when copied, filled, rendered, validated, or declared 
 ## Harness Map
 
 Define before editing: decision; object under test; portable core vs host adapters; runtime capabilities; writable/read-only/protected scope; dependencies; target entry points; scenario groups; input corpus/model; candidate-visible inputs; evaluator-only assets; source identities; optional self-hosting generation/controller/baseline/candidate identities; evidence sources; runner commands/adapters; execution isolation level; trace manifest; evaluators; optional control arm; metrics; hard gates; recovery policy; and evidence record for baseline, plan, changes, command outputs, final comparison, package path, hashes, risks, and rollback.
+
+- `scripts/validate_multi_candidate_manifest.py`: validates candidate/run/workdir uniqueness, frozen comparability identities, and holdout leakage claims for multi-candidate runs.
 
 ## Workflow
 
@@ -87,9 +91,9 @@ Define before editing: decision; object under test; portable core vs host adapte
    <PYTHON> <skill-root>/scripts/skill_harness_portability.py --target <TARGET_SKILL_PATH> --profile <PROFILE> --output <report-dir>/portability.json
    ```
 
-3. **Plan** evidence policy, hypotheses, portable-core/adapter changes, target entry points, input corpus/model, scenarios, metrics, evaluators, hard gates, validation, packaging, recovery, and risk. Prefer `assets/templates/harness-plan.md.template` for durable plans. For high-risk or saturated-score targets, add auxiliary coverage/integrity metrics before claiming improvement.
+3. **Plan** evidence policy, hypotheses, portable-core/adapter changes, target entry points, input corpus/model, scenarios, metrics, evaluators, hard gates, validation, packaging, recovery, and risk. When staged evaluation is requested, partition scenarios into `L2-focused`, `L3-harness`, and optional `L5-holdout` using `references/evaluation-tiers-and-holdout.md`. Prefer `assets/templates/harness-plan.md.template` for durable plans. For high-risk or saturated-score targets, add auxiliary coverage/integrity metrics before claiming improvement.
 
-4. **Establish execution visibility when behavioral evidence is requested.** Separate candidate-visible inputs from evaluator-only rubrics, expected outcomes, hidden graders, and holdouts. For self-hosted runs, also bind execution to `generation_id`, immutable controller identity, baseline identity, and candidate identity; Harness verifies isolation/provenance but does not own promotion or specialist routing. Use capability-based isolation: a dedicated work directory is the minimum; process/container isolation is stronger when the host supports it. Do not require Docker as portable core semantics. Capture a run/trace manifest and validate it before treating outcomes as measured. Read `references/isolated-execution-contract.md`.
+4. **Establish execution visibility when behavioral evidence is requested.** Separate candidate-visible inputs from evaluator-only rubrics, expected outcomes, hidden graders, and holdouts. For multi-candidate/search runs, follow `references/multi-candidate-execution.md`: give each candidate an isolated work area, identical frozen scenario/evaluator identities, and a distinct trace identity; do not reuse mutable state between candidates. For self-hosted runs, also bind execution to `generation_id`, immutable controller identity, baseline identity, and candidate identity; Harness verifies isolation/provenance but does not own promotion or specialist routing. Use capability-based isolation: a dedicated work directory is the minimum; process/container isolation is stronger when the host supports it. Do not require Docker as portable core semantics. Capture a run/trace manifest and validate it before treating outcomes as measured. Read `references/isolated-execution-contract.md`.
 
 5. **Freeze evidence and apply** bounded edits only inside allowed scope. Protect baseline snapshots, evaluator fixtures, expected outputs, scoring thresholds, and source identities. If an evaluator must change, invalidate that comparison and restart from a new frozen baseline. Preserve target behavior; isolate host extensions; move long branches to references; add scripts only for deterministic work; never invent benchmark, validation, install, or package evidence.
 

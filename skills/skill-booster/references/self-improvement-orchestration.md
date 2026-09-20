@@ -38,6 +38,12 @@ Use only the providers whose evidence is material to the candidate. Complete opt
 6. **Final acceptance remains independent.** Improvement score or specialist approval never overrides a blocking change-gate result.
 7. **Promote only exact frozen bytes.** Package/install receipts must match the candidate identity accepted by the final gates.
 
+## Pre-evolution state ownership
+
+For self-improvement, keep capability, transformation, experiment, and evaluation-plan artifacts outside the candidate mutation surface. The Booster owns aggregation/orchestration of these records. Providers may emit compatible records for their own outputs, but they must not rewrite global history or promote workflow policy.
+
+A self-generated target win can support target promotion after frozen gates pass. It is not sufficient on its own to change the Booster's canonical workflow; workflow-policy promotion is a separate cross-target decision.
+
 ## Ordering for a self-improvement generation
 
 A proportional default is:
@@ -93,3 +99,8 @@ When two providers disagree outside their ownership, do not invent a tie-breaker
 - Do not create peer-to-peer orchestration loops.
 - Direct pairwise integration is allowed only where one skill's stable output is a natural input to the other and no global routing decision is involved.
 - The Booster may know the full catalog because orchestration is its responsibility.
+
+
+### Evolutionary self-improvement
+
+When the self-improving target uses evolutionary mode, keep three identities separate and immutable during a generation: active Booster/controller, Skill Evolution/search controller, and frozen evaluator set. Candidate Booster variants live outside both controllers. Skill Evolution may select/search among candidate Booster variants but cannot promote or replace the active Booster; an external/unchanged Booster proof path must verify the selected candidate before promotion.

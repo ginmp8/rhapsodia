@@ -14,7 +14,7 @@ from _common import dump_json
 ALLOWED_CATEGORIES = {'should_activate', 'should_not_activate', 'ambiguous', 'edge_case'}
 REQUIRED_FIELDS = {'id', 'category', 'prompt', 'expected_activation', 'actual_activation', 'output_conforms', 'quality_score', 'needs_rework'}
 SHA_RE = re.compile(r'^[0-9a-f]{64}$')
-ALLOWED_ARMS = {'without-skill', 'baseline', 'candidate', 'single'}
+ALLOWED_ARMS = {'without-skill', 'baseline', 'parent', 'candidate', 'single'}
 ALLOWED_EVALUATOR_VISIBILITY = {'hidden', 'candidate-visible', 'not-applicable'}
 
 
@@ -109,7 +109,7 @@ def validate_payload(data: Any) -> dict[str, Any]:
             errors.append(f'arm_type must be one of {sorted(ALLOWED_ARMS)} when present')
         if arm == 'without-skill' and meta.get('target_identity_sha256'):
             errors.append('without-skill arm must omit target_identity_sha256')
-        if arm in {'baseline', 'candidate', 'single'} and meta.get('target_identity_sha256') is None:
+        if arm in {'baseline', 'parent', 'candidate', 'single'} and meta.get('target_identity_sha256') is None:
             warnings.append(f'{arm} arm should include target_identity_sha256 for strict comparison claims')
         host_profile = meta.get('host_profile')
         if host_profile is not None and (not isinstance(host_profile, str) or not host_profile.strip()):

@@ -7,6 +7,8 @@ Use when a benchmark compares versions or asks whether a skill adds value beyond
 - `without-skill`: the same task/scenarios run without the target skill. Use to estimate incremental skill value.
 - `baseline`: the immutable prior skill version. This is the primary regression baseline for existing-skill updates.
 - `candidate`: the proposed skill version.
+- `parent`: optional direct ancestor of a candidate in an iterative experiment. Use for local transformation attribution; it does not replace the stable regression `baseline`.
+  Parent scenario evidence uses `arm_type: parent`; strict comparison still requires the same evaluator/scenario/runtime identities.
 - `single`: a standalone run not intended for a strict delta.
 
 For a net-new skill, `without-skill` may be the only meaningful baseline. For an existing-skill update, do not replace the prior-version `baseline` with `without-skill`; they answer different questions.

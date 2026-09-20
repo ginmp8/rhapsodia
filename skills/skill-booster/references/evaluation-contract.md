@@ -65,6 +65,21 @@ Rules:
 
 Do not invoke merely because the target has scripts, evals, validators, or a complex workflow. The specialist must remove an observed source of variance or add useful evidence.
 
+## Pre-evolution state contract
+
+For complete optimization, keep an external work-state record that can later support multi-candidate comparison without changing the target package. Use the templates from `assets/templates/` and validate them with `scripts/validate_pre_evolution_state.py`.
+
+Required semantics when the artifact is material:
+
+- capability map: semantic capabilities, owners, consumers, validators, invariants;
+- transformation registry: bounded changes classified as `repair`, `optimization`, or `experiment` and tied to capability/evidence ids;
+- experiment registry: parent/candidate/transformation/evaluator identities plus outcome, including rejected/inconclusive candidates;
+- evaluation plan: staged `L0` through `L5` ladder and promotion evidence requirement.
+
+These are experiment-state artifacts, not benchmark fixtures. Keep them outside the candidate mutation surface so a candidate cannot rewrite its own history or acceptance evidence.
+
+Cross-run experiment history may influence discovery only as provenance-bound evidence. Do not convert a previous target's result into a universal policy without comparable target class, capability surface, evaluator contract, and environment.
+
 ## Metrics
 
 Prefer multiple signals: structure validity, requested-host portability, host capability resolution, reproducibility decision/result, `skill-hypothesis-discovery` backlog quality, `skill-change-gate` status, activation coverage, output-contract adherence, local-link integrity, script smoke status, security findings, contradiction count, package status, final candidate hash, archive hash, total/local token deltas, and benchmark score. Treat saturated scores as gates; add auxiliary metrics such as unresolved risks, local token regressions, scenario coverage, unreferenced resources, or package gates.

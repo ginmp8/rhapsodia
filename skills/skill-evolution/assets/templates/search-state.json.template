@@ -1,0 +1,26 @@
+{
+  "state_version": 1,
+  "search_id": "search-001",
+  "round": 0,
+  "stagnant_rounds": 0,
+  "status": "active",
+  "candidates": [
+    {
+      "candidate_id": "C_CANONICAL",
+      "role": "canonical",
+      "status": "active",
+      "candidate_identity": "sha256",
+      "parent_ids": ["BASELINE"],
+      "base_parent_id": "BASELINE",
+      "donor_parent_ids": [],
+      "operator": "bounded-mutation",
+      "transformation_ids": ["T001"],
+      "hard_gates": {"activation": "pass", "semantics": "pass", "safety": "pass", "evaluator_integrity": "pass", "validation": "pass"},
+      "metrics": {"quality": 0.92, "token_cost": 1000},
+      "novelty": 0.2
+    }
+  ],
+  "pareto_archive": [],
+  "finalists": [],
+  "termination_reason": null
+}

@@ -68,6 +68,8 @@ Load only branch-relevant resources:
 - [`references/host-portability.md`](references/host-portability.md): portable core, host profiles, capability rules.
 - [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md): source snapshots, evaluator identity, alias safety, recovery, receipts.
 - [`references/control-and-capability-delta.md`](references/control-and-capability-delta.md): no-skill control-arm rules, hidden-evaluator visibility, trace provenance, and deterministic capability-delta interpretation.
+- [`references/evaluation-ladder-and-parent-comparison.md`](references/evaluation-ladder-and-parent-comparison.md): L0-L5 staged evaluation, direct-parent attribution, hard-gate-first comparison, and non-dominated multi-metric reporting.
+- [`references/multi-candidate-evaluation.md`](references/multi-candidate-evaluation.md): identity/comparability contract for evaluating several search candidates without taking ownership of survivor selection.
 - [`assets/templates/benchmark-report.md.template`](assets/templates/benchmark-report.md.template): manual report skeleton.
 - [`assets/templates/scenario-results.json.template`](assets/templates/scenario-results.json.template): identity-bound behavioral results skeleton.
 - [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation/non-activation/ambiguous/edge/regression/adversarial coverage.
@@ -81,6 +83,8 @@ Load only branch-relevant resources:
 - [`scripts/validate_portability.py`](scripts/validate_portability.py): structural portability validator.
 - [`scripts/package_skill.py`](scripts/package_skill.py): deterministic portable package builder with atomic receipt.
 
+
+- `scripts/validate_candidate_set.py`: validates same-baseline/evaluator/scenario identity across a supplied candidate evaluation set.
 
 ## Workflow
 
@@ -128,6 +132,8 @@ Never invent activation precision/recall, robustness, output conformance, criter
 
 ### 5. Compare versions only when comparable
 
+When iterative optimization supplies a direct parent, preserve both roles: compare candidate vs parent for local transformation attribution and candidate vs stable baseline for cumulative regression. When a caller supplies multiple search candidates, follow `references/multi-candidate-evaluation.md`: evaluate each against the same frozen identities and emit comparable per-candidate evidence, but leave survivor/Pareto selection to the caller/search controller. Use `references/evaluation-ladder-and-parent-comparison.md`; do not replace the baseline with the parent silently.
+
 For self-improvement, treat controller identity as generation provenance rather than a benchmark arm. Baseline/candidate strict deltas require the same generation/controller provenance in addition to the same evaluator, suite, and materially relevant host configuration.
 
 For `comparison-benchmark`:
@@ -144,7 +150,7 @@ For `comparison-benchmark`:
 When arm files are available, run:
 
 ```text
-<PYTHON> scripts/compare_benchmark_arms.py --candidate <CANDIDATE_RESULTS> [--baseline <BASELINE_RESULTS>] [--without-skill <CONTROL_RESULTS>] --json-output <WORK>/arm-comparison.json
+<PYTHON> scripts/compare_benchmark_arms.py --candidate <CANDIDATE_RESULTS> [--baseline <BASELINE_RESULTS>] [--parent <PARENT_RESULTS>] [--without-skill <CONTROL_RESULTS>] --json-output <WORK>/arm-comparison.json
 ```
 
 A higher score from a changed rubric is not evidence that the skill improved. A no-skill control is not a substitute for the prior-version baseline when regression claims are being made.
@@ -174,6 +180,9 @@ After report validation and source/evaluator verification pass, apply the **free
 Generated report+receipt and package+receipt delivery must be atomic when filesystem writes are available: stage all outputs, validate them, commit together, preserve the last-known-good outputs on failure, and retain explicit recovery evidence if rollback is incomplete. Read [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md).
 
 ## Output contract
+
+When staged evaluation metadata is supplied, report the highest evaluation level actually supported by evidence and do not imply higher levels ran. When a direct parent is supplied, report parent identity and candidate-vs-parent delta separately from candidate-vs-baseline. Apply hard gates before any score-based comparison; if multiple candidates are non-dominated and no frozen weighting policy exists, report that rather than manufacturing an overall winner.
+
 
 A substantive benchmark must include:
 

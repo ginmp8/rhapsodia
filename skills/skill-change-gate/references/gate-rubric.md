@@ -30,6 +30,21 @@ Material examples:
 - support directories included without clear consumers;
 - optional host metadata is present but stale or unvalidated for that host.
 
+### 1A. Capability preservation and parent drift
+
+Blocking examples:
+
+- a required baseline capability is `regressed` or `removed-breaking` without explicit authorization;
+- the candidate is evaluated against a different direct parent/baseline identity than the transformation record claims under strict policy;
+- a required affected capability is `unproven` and acceptance depends on it.
+
+Material examples:
+
+- capability ownership moved but consumer/validator evidence is incomplete;
+- candidate adds a capability with no independent validation yet.
+
+Do not infer capability loss from file deletion alone; trace semantic ownership/consumers/validators when a capability map is supplied.
+
 ### 2. Activation and routing
 
 Blocking examples:

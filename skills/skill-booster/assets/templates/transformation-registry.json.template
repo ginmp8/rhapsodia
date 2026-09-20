@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "target_identity": "sha256:replace-with-real-identity",
+  "transformations": [
+    {
+      "id": "T001",
+      "change_intent": "repair",
+      "hypothesis_id": "H001",
+      "parent_candidate_ids": [
+        "baseline"
+      ],
+      "capability_refs": [
+        "cap.activation.route"
+      ],
+      "files": [
+        "SKILL.md"
+      ],
+      "operation_summary": "Restore an evidenced activation boundary without changing unrelated behavior.",
+      "expected_effect": "Activation contract matches the frozen baseline requirement.",
+      "evaluator_refs": [
+        "activation-suite-v1"
+      ],
+      "depends_on": [],
+      "conflicts_with": [],
+      "status": "planned",
+      "evidence_refs": [
+        "EV-001"
+      ]
+    }
+  ]
+}
