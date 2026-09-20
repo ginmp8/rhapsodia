@@ -66,6 +66,28 @@
         "Does not treat sub-minimum/noisy deltas as material superiority."
       ],
       "category": "edge_case"
+    },
+    {
+      "id": "amb-001",
+      "type": "ambiguous",
+      "prompt": "Improve this skill and try a few approaches.",
+      "expected_behavior": "do_not_auto_activate; ordinary optimization remains with the optimization orchestrator unless a frozen evolutionary-search contract or explicit evolutionary invocation is present",
+      "acceptance_criteria": [
+        "Does not infer population-search authority from vague multi-approach language.",
+        "Routes to ordinary optimization or asks the caller for a valid evolutionary handoff when search is actually intended."
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "id": "amb-002",
+      "type": "ambiguous",
+      "prompt": "Try three variants of this optimization.",
+      "expected_behavior": "plan_or_gather_evidence unless the caller provides the frozen v2 search inputs required for search",
+      "acceptance_criteria": [
+        "Does not fabricate evaluator, budget, lineage, or candidate-generation interfaces.",
+        "May plan candidate requests, but enters search only when required frozen inputs validate."
+      ],
+      "category": "ambiguous"
     }
   ]
 }

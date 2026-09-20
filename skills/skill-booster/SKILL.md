@@ -89,6 +89,8 @@ Use `references/optimization-workflow.md` as the detailed contract. The canonica
 5. **Evaluate / Search branch**: in canonical mode, use the staged ladder from `references/pre-evolution-foundation.md`: `L0-structural` -> `L1-deterministic` -> `L2-focused` -> optional `L3-harness` -> optional `L4-benchmark` -> optional `L5-holdout`. In `evolutionary-optimization`, validate the v2 handoff, compile canonical pre-evolution artifacts with `scripts/build_evolution_contract.py`, validate the resulting Skill Evolution v2 search contract with the search controller, keep the canonical result/reference in every comparison, service candidate-generation/evaluation requests through the existing owners, and receive finalists without delegating final promotion authority. Fail required lower levels before spending on higher ones. Run `skill-change-gate` independently per material candidate and retain accepted, rejected, reverted, and inconclusive experiment records.
 6. **Prove**: perform hardening and affected revalidation, final `skill-change-gate`, final benchmark/holdout when the claim requires them, final token/readiness closure, source/evaluator verification, candidate freeze, portability closure, and atomic packaging. Before an ecosystem-safe/package claim, run the integration-impact gate for any declared or discovered cross-skill contract surface. A known incompatible consumer/provider is blocking; missing peer evidence means integration compatibility is `not-proven`, not `pass`. Separate target-candidate promotion from any future Booster workflow-policy promotion; a single target win never changes canonical policy.
 
+For `complete` / `full` optimization, every material actionable finding from Diagnose or final closure must end as `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`. Do not report complete optimization while a material finding remains only follow-up/planned/deferred. A material token-efficiency finding therefore opens another bounded transformation batch and affected revalidation rather than being silently deferred.
+
 For complete/full optimization, validate the pre-evolution artifacts when produced:
 
 ```text
@@ -120,27 +122,28 @@ Final reports must include:
 5. reproducibility decision state, material signals, selected mode, specialist invocation status, downstream owner, and decision-validator result;
 6. hypothesis-discovery status, candidate backlog count, selected hypotheses, and deferred hypotheses;
 7. accepted/rejected hypotheses with files, expected effect, validation, change-gate decision, and evidence;
-8. required repairs kept without measured improvement;
-9. files changed by phase;
-10. protected paths respected statement;
-11. validation commands and pass/fail/not-run outcomes;
-12. before/after benchmark or static score when measured;
-13. skill-change-gate and final skill-change-gate status;
-14. final benchmark result;
-15. portability matrix for `portable-core`, OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, and Cursor (or the explicitly narrowed target set), including evidence level, optional adapter status, degradation, and blocked/unavailable capabilities;
-16. total/local token deltas, local trade-offs, and final token-efficiency closure;
-17. final candidate manifest identity and freeze verification;
-18. source snapshot/provenance identity and final source verification when material external evidence was used;
-19. package path, candidate hash, archive hash, receipt version/stage, atomic-delivery status, last-known-good preservation, and recovery paths only when `skill.zip` exists and package validation passed;
-20. remaining risks, assumptions, rollback notes, and next hypothesis or no-mutation recommendation;
-21. for self-improvement, controller/baseline/candidate identities, selected evidence providers with ownership/status, promotion receipt status, and confirmation that no downstream specialist re-owned global orchestration;
-22. target class and capability-map status when material;
-23. repair/optimization/experiment classification for accepted candidate work;
-24. transformation registry and experiment registry identities/counts for work performed;
-25. highest evaluation-ladder level reached for the accepted candidate and why higher levels were or were not required;
-26. target-promotion status kept separate from any workflow-policy recommendation;
-27. integration-impact status, peer catalog coverage, changed exported contract surfaces, incompatible/unresolved consumers, and whether ecosystem compatibility is proven;
-28. for evolutionary mode: validated search handoff identity, search id/budget, candidate count, canonical comparator identity, search termination reason, Pareto/finalist ids, highest evidence level per finalist, and the Booster-owned final promotion decision.
+8. material finding closure ledger with terminal disposition (`fixed`, `rejected`, `accepted-trade-off`, `blocked`, `not-applicable`) and evidence;
+9. required repairs kept without measured improvement;
+10. files changed by phase;
+11. protected paths respected statement;
+12. validation commands and pass/fail/not-run outcomes;
+13. before/after benchmark or static score when measured;
+14. skill-change-gate and final skill-change-gate status;
+15. final benchmark result;
+16. portability matrix for `portable-core`, OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, and Cursor (or the explicitly narrowed target set), including evidence level, optional adapter status, degradation, and blocked/unavailable capabilities;
+17. total/local token deltas, local trade-offs, and final token-efficiency closure;
+18. final candidate manifest identity and freeze verification;
+19. source snapshot/provenance identity and final source verification when material external evidence was used;
+20. package path, candidate hash, archive hash, receipt version/stage, atomic-delivery status, last-known-good preservation, and recovery paths only when `skill.zip` exists and package validation passed;
+21. remaining risks, assumptions, rollback notes, and next hypothesis or no-mutation recommendation;
+22. for self-improvement, controller/baseline/candidate identities, selected evidence providers with ownership/status, promotion receipt status, and confirmation that no downstream specialist re-owned global orchestration;
+23. target class and capability-map status when material;
+24. repair/optimization/experiment classification for accepted candidate work;
+25. transformation registry and experiment registry identities/counts for work performed;
+26. highest evaluation-ladder level reached for the accepted candidate and why higher levels were or were not required;
+27. target-promotion status kept separate from any workflow-policy recommendation;
+28. integration-impact status, peer catalog coverage, changed exported contract surfaces, incompatible/unresolved consumers, and whether ecosystem compatibility is proven;
+29. for evolutionary mode: validated search handoff identity, search id/budget, candidate count, canonical comparator identity, search termination reason, Pareto/finalist ids, highest evidence level per finalist, and the Booster-owned final promotion decision.
 
 Use `measured` only for executed commands, validators, scenario results, package checks, or supplied data.
 

@@ -6,7 +6,7 @@ Use before editing a target skill.
 
 ```yaml
 target: <path>
-mode: <audit-only|plan-only|apply-optimization|validation-only|package>
+mode: <audit-only|plan-only|apply-optimization|evolutionary-optimization|validation-only|package>
 evaluator: <command or specialist report>
 evaluator_status: <executed|planned|blocked>
 score: <number|null>
@@ -79,6 +79,18 @@ Required semantics when the artifact is material:
 These are experiment-state artifacts, not benchmark fixtures. Keep them outside the candidate mutation surface so a candidate cannot rewrite its own history or acceptance evidence.
 
 Cross-run experiment history may influence discovery only as provenance-bound evidence. Do not convert a previous target's result into a universal policy without comparable target class, capability surface, evaluator contract, and environment.
+
+## Material finding closure contract
+
+For `complete` / `full` optimization, every material actionable finding produced by Diagnose or final token/readiness closure must reach exactly one terminal disposition before completion:
+
+- `fixed` — addressed by an accepted validated transformation;
+- `rejected` — evidence shows the proposed change should not be applied;
+- `accepted-trade-off` — intentionally retained with explicit rationale and impact;
+- `blocked` — cannot be resolved in the permitted environment/scope and is reported as a readiness limitation;
+- `not-applicable` — evidence shows the finding does not apply to this target.
+
+`follow-up`, `planned`, `deferred`, or an unclassified backlog item is not a terminal disposition for a material actionable finding. A complete/full optimization claim is therefore invalid while such a finding remains open. Non-material opportunities may remain as future hypotheses.
 
 ## Metrics
 

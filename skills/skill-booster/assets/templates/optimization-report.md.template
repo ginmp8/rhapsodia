@@ -97,6 +97,16 @@
 ## Changes Applied
 {{changes_applied}}
 
+## Material Finding Closure
+Allowed terminal dispositions for material actionable findings: `fixed`, `rejected`, `accepted-trade-off`, `blocked`, `not-applicable`.
+
+| Finding | Material/actionable | Terminal disposition | Evidence / rationale |
+|---|---:|---|---|
+{{material_finding_closure_rows}}
+
+- Open material actionable findings: {{open_material_findings}}
+- Complete/full optimization closure gate: {{material_finding_closure_gate}}
+
 ## Portability Evidence
 | Host/profile | Status | Adapter | Evidence/limitations |
 |---|---|---|---|

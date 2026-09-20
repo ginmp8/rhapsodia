@@ -6,16 +6,13 @@ Response shape:
 
 1. Resolve requested hosts/capabilities/Python launcher, preflight target root, and run portability validation when claimed.
 2. Freeze evaluator/scenarios/fixtures before mutation; when external evidence matters, snapshot/pin the exact source bytes before analysis.
-3. Collect benchmark and harness evidence.
-4. Evaluate the reproducibility decision gate and validate its JSON record. Invoke `reproducibility-engineer` only when material signals justify it.
-5. Run `skill-hypothesis-discovery` with reproducibility findings when applicable and rank 5-10 hypotheses.
-6. Apply selected bounded hypotheses; avoid duplicate ownership when a reproducibility `apply` batch is delegated.
-7. Run candidate `skill-change-gate` before accepting material changes.
-8. Validate after material changes.
-9. Run `skill-token-efficient` only after behavior, validation, and gates are stable.
-10. Revalidate after compression.
-11. Harden, run final gate/benchmark/improver/token closure, reverify material source snapshots, then freeze the exact final candidate.
-12. Verify the freeze and requested-host portability, preflight package/report aliases, and commit package+success receipt transactionally; return them only when validation, hashes, and last-known-good/recovery guarantees pass.
+3. Collect benchmark/harness evidence, classify reproducibility, then run the remaining diagnostic providers in passbook order: quality, package architecture, context, prompt/activation, prompt architecture, consistency, documentation, code, security, testing, cleanup, and token/context analysis.
+4. Reconcile all diagnostic evidence, then run `skill-hypothesis-discovery` and rank 5-10 bounded hypotheses.
+5. Apply one selected bounded transformation with one declared mutation owner; avoid duplicate ownership when a reproducibility `apply` batch is delegated.
+6. Run candidate `skill-change-gate`, then `skill-testing-and-validation`, before accepting material changes.
+7. Harden, run final change gate, final benchmark, final improver lifecycle closure, and final token-efficiency closure.
+8. For complete/full optimization, resolve every material actionable finding to `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`; if final token closure finds material avoidable waste, open another bounded batch and rerun affected gates instead of deferring it.
+9. Reverify material source snapshots, freeze the exact final candidate, verify requested-host portability, preflight package/report aliases, and commit package+success receipt transactionally; return them only when validation, hashes, and last-known-good/recovery guarantees pass.
 
 ## Ledger excerpt
 
@@ -27,27 +24,27 @@ Use one row per required pass. For explicit required sequences, available specia
 | 2 | skill-benchmark | pass | invoked-skill | static report; behavioral metrics planned |
 | 3 | skill-harness | pass | invoked-skill | scenario schema/coverage valid |
 | 4 | reproducibility decision + optional reproducibility-engineer | pass | invoked-skill | invoke-audit; variability findings recorded |
-| 5 | skill-hypothesis-discovery | pass | invoked-skill | 7 candidates; H1-H3 selected |
-| 6 | skill-improver | pass | invoked-skill | bounded patch decision record |
-| 7 | skill-change-gate | pass | invoked-skill | no blocking candidate regression |
-| 8 | skill-quality-reviewer | pass | invoked-skill | capability delta preserved; no breaking removal |
-| 9 | skill-package-architecture-review | pass | invoked-skill | unified package retained |
-| 10 | context-architect | pass | invoked-skill | affected files and sequence mapped |
-| 11 | skill-prompt-and-activation-review | pass | invoked-skill | activation and boundary review |
-| 12 | prompt-architect | pass | invoked-skill | instruction clarity review |
-| 13 | skill-consistency-repair | pass | invoked-skill | refs/scripts/templates aligned |
-| 14 | documentation-quality | pass | invoked-skill | docs verified against files |
-| 15 | karpathy-guidelines | pass | invoked-skill | scripts kept small and checked |
-| 16 | security-and-governance-review | pass | invoked-skill | no blocking security finding |
-| 17 | skill-testing-and-validation | pass | invoked-skill | validators pass |
-| 18 | skill-cleanup-and-simplification | pass | invoked-skill | generated noise absent |
-| 19 | skill-token-efficient | pass | invoked-skill | total/file/section token audit |
-| 20 | post-compression skill-testing-and-validation | pass | invoked-skill | validators rerun |
+| 5 | skill-quality-reviewer | pass | invoked-skill | capability delta preserved; no breaking removal |
+| 6 | skill-package-architecture-review | pass | invoked-skill | unified package retained |
+| 7 | context-architect | pass | invoked-skill | affected files and sequence mapped |
+| 8 | skill-prompt-and-activation-review | pass | invoked-skill | activation and boundary review |
+| 9 | prompt-architect | pass | invoked-skill | instruction clarity review |
+| 10 | skill-consistency-repair | pass | invoked-skill | refs/scripts/templates aligned |
+| 11 | documentation-quality | pass | invoked-skill | docs verified against files |
+| 12 | karpathy-guidelines | pass | invoked-skill | scripts kept small and checked |
+| 13 | security-and-governance-review | pass | invoked-skill | no blocking security finding |
+| 14 | skill-testing-and-validation | pass | invoked-skill | baseline validators/tests classified |
+| 15 | skill-cleanup-and-simplification | pass | invoked-skill | generated noise absent |
+| 16 | skill-token-efficient | pass | invoked-skill | diagnostic token/context findings recorded |
+| 17 | skill-hypothesis-discovery | pass | invoked-skill | 7 candidates; H1-H3 selected |
+| 18 | skill-improver | pass | invoked-skill | one selected bounded transformation applied |
+| 19 | skill-change-gate | pass | invoked-skill | no blocking candidate regression |
+| 20 | skill-testing-and-validation | pass | invoked-skill | affected validators/tests rerun |
 | 21 | skill-hardening | pass | invoked-skill | readiness gates pass |
 | 22 | final skill-change-gate | pass | invoked-skill | no blocking final regression |
 | 23 | final skill-benchmark | pass | invoked-skill | final score/delta recorded |
-| 24 | final skill-improver | pass | invoked-skill | accept/reject ledger closed |
-| 25 | final skill-token-efficient | pass | invoked-skill | no unjustified local token growth |
+| 24 | final skill-improver | pass | invoked-skill | accept/reject/revert ledger closed |
+| 25 | final skill-token-efficient | pass | invoked-skill | no unresolved material avoidable context waste |
 
 ## Discovery backlog excerpt
 

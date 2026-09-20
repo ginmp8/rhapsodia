@@ -69,6 +69,16 @@ Do not silently continue a v1 search as v2. Read [references/search-model.md](re
 
 Default to `search` only when caller mutation/evaluation interfaces are actually available. Otherwise use the narrow safe mode and state the limitation.
 
+### Package self-validation
+
+Run the package validator during preflight when package integrity is material, for every `validation-only` request, and again after any edit to this skill before claiming it is ready for integration:
+
+```text
+<PYTHON> scripts/validate_skill_evolution.py --target <SKILL_EVOLUTION_ROOT>
+```
+
+This gate validates the declared integration manifest and all v2 public surfaces, including candidate-evaluation. A missing or invalid declared surface blocks readiness; do not substitute generic package validation for this skill-specific gate.
+
 ## Progressive loading
 
 Load only what the active stage needs:

@@ -62,7 +62,7 @@
     {
       "contract_id": "skill-opt.benchmark-candidate-evidence",
       "accepted_versions": [
-        2
+        3
       ],
       "required_for": [
         "evolutionary-optimization:L4"
@@ -71,7 +71,7 @@
     {
       "contract_id": "skill-opt.harness-multi-candidate-evidence",
       "accepted_versions": [
-        2
+        3
       ],
       "required_for": [
         "evolutionary-optimization:L3"
