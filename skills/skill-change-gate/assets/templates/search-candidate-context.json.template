@@ -1,0 +1,17 @@
+{
+  "context_version": 2,
+  "search_id": "search-001",
+  "candidate_id": "C007",
+  "candidate_identity": "sha256-or-immutable-ref",
+  "base_parent_id": "C003",
+  "donor_parent_ids": ["C005"],
+  "operator": "transformation-merge",
+  "transformation_ids": ["T002", "T008"],
+  "request_signature": "request-signature-sha256",
+  "generation_receipt_identity": "generation-receipt-sha256-or-ref",
+  "evaluation_identity": {
+    "evaluator_id": "frozen-evaluator-id",
+    "scenario_set_id": "frozen-scenario-id",
+    "policy_id": "frozen-evaluation-policy-id"
+  }
+}

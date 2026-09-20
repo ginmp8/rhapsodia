@@ -15,7 +15,7 @@ Require all of: explicit evolutionary intent; immutable baseline identity; valid
 
 ## Handoff
 
-Create `evolution-handoff.json` from `assets/templates/evolution-handoff.json.template` and validate with `scripts/validate_evolution_handoff.py`. The handoff is capability-based: it describes mutation/evaluation interfaces without requiring vendor-private tool names.
+Create a v2 `evolution-handoff.json` from `assets/templates/evolution-handoff.json.template` and validate it with `scripts/validate_evolution_handoff.py`. Then compile the caller-owned capability map, validated hypothesis pool, transformation registry, and evaluation plan into the Skill Evolution v2 search contract with `scripts/build_evolution_contract.py`. Validate that compiled contract with the Skill Evolution contract validator before search. This adapter keeps Booster-owned schemas out of the search controller while preserving exact artifact identities.
 
 The canonical strategy/result remains a protected comparator and may be used for backcross. The immutable original baseline remains the cumulative regression reference.
 
@@ -23,9 +23,9 @@ The canonical strategy/result remains a protected comparator and may be used for
 
 1. invoke Skill Evolution with the validated handoff;
 2. receive candidate requests;
-3. dispatch each request to exactly one mutation owner;
+3. validate each `candidate-request-v2`, then dispatch it to exactly one mutation owner that declares compatibility with `skill-opt.candidate-request` v2;
 4. run required change-gate/evaluation levels;
-5. return identity-bound candidate evidence to Skill Evolution;
+5. normalize identity-bound evaluator evidence to candidate-evaluation v2 (use `scripts/build_candidate_evaluation.py` when filesystem execution is available), validate it against the frozen search contract, and return it to Skill Evolution;
 6. repeat until Skill Evolution returns finalists/termination;
 7. Booster independently reruns the final required proof gates;
 8. Booster alone freezes/promotes/packages the accepted target candidate.
@@ -39,3 +39,8 @@ When Booster itself is the target, freeze the active Booster controller outside 
 ## Workflow-policy learning
 
 A target-level search win is evidence for that target, not automatic policy. Cross-target search history may be retained as advisory evidence. Promoting a search strategy into Booster canonical policy requires a separate governed comparison across relevant target classes.
+
+
+## Contract evolution
+
+The v2 handoff/search contract is a public integration surface. Its version and the candidate-request/evaluation interfaces are declared in `contracts/integration-manifest.json`. Before changing any of those surfaces, use `references/integration-impact-contract.md` and gate all known peer consumers. Do not silently upgrade one side of the handoff.

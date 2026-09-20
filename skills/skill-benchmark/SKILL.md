@@ -84,7 +84,8 @@ Load only branch-relevant resources:
 - [`scripts/package_skill.py`](scripts/package_skill.py): deterministic portable package builder with atomic receipt.
 
 
-- `scripts/validate_candidate_set.py`: validates same-baseline/evaluator/scenario identity across a supplied candidate evaluation set.
+- `scripts/validate_candidate_set.py`: validates multi-candidate evidence; evolutionary-search contract v2 additionally freezes scoring-policy identity, candidate/parent identities, evaluation level, and metric uncertainty.
+- `contracts/integration-manifest.json`: declares the benchmark multi-candidate evidence contract for cross-skill impact analysis.
 
 ## Workflow
 

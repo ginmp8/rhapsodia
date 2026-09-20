@@ -80,6 +80,9 @@ Load only what the active stage needs:
 - [references/evaluation-and-promotion.md](references/evaluation-and-promotion.md): evidence identity, ladder, holdout, and external promotion boundary.
 - [references/state-integrity-and-resume.md](references/state-integrity-and-resume.md): checkpoint hashes, receipt chain, resume, and stagnation validation.
 - [references/host-portability.md](references/host-portability.md): portable-core runtime handling.
+- `contracts/integration-manifest.json`: declares the versioned contracts this controller owns plus the external generation-receipt contract it accepts, enabling orchestrator impact analysis without duplicating peer schemas.
+- [assets/templates/candidate-evaluation.json.template](assets/templates/candidate-evaluation.json.template): owner schema example for normalized candidate-evaluation v2 envelopes.
+- [scripts/validate_candidate_evaluation.py](scripts/validate_candidate_evaluation.py): validates normalized evaluator identity, hard gates, metrics, uncertainty, level, and holdout status against the frozen search contract.
 - [assets/templates/search-state.json.template](assets/templates/search-state.json.template): v2 state shape.
 - [assets/templates/search-report.md.template](assets/templates/search-report.md.template): durable report skeleton.
 - [scripts/validate_search_state.py](scripts/validate_search_state.py): lineage, receipts, transformation sets, evaluation identity, budget, and finalist validation.
@@ -242,3 +245,8 @@ Use `measured` only for executed evaluator/tool evidence. Use `derived` for dete
 ## Stop conditions
 
 Stop or return a bounded result when frozen identities are absent/drifted; hard-gate/objective semantics are missing; mutation/evaluation interfaces are unavailable for `search`; v1 state is presented as a v2 resume without explicit re-baseline; a candidate receipt/evaluator identity/lineage is inconsistent; a request requires dependency/conflict/invariant violations; checkpoint verification fails; search budget/stagnation is exhausted; holdout blindness would be violated; the only continuation path weakens a gate; or final promotion would require authority this skill does not own.
+
+
+## Integration contract changes
+
+Treat every declared export/import version as public integration surface. A schema, required-input, request, receipt, or state change that affects a declared surface requires an explicit version decision and caller-side impact gate. Do not rely on internal tests alone to claim ecosystem compatibility.

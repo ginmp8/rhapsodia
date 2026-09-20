@@ -204,6 +204,10 @@ For skill packaging, use [`scripts/package_skill.py`](scripts/package_skill.py) 
 - [`examples/prompt-scenarios.md`](examples/prompt-scenarios.md): activation and boundary examples.
 - [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned prompt coverage only; never report it as executed behavioral evidence unless a harness actually runs it.
 
+## Integration surface
+
+`contracts/integration-manifest.json` declares `skill-opt.validation-gate-receipt` v1. `scripts/run_gate.py` receipts are therefore a public machine-readable surface when consumed by an orchestrator. Any incompatible receipt change requires a version bump and integration impact analysis; local validator success alone is insufficient for an ecosystem-safe claim.
+
 ## Output contract
 
 Every validation response/report must identify, when applicable:

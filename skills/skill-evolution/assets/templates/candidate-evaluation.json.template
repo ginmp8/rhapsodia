@@ -1,0 +1,34 @@
+{
+  "contract_version": 2,
+  "candidate_id": "C001",
+  "candidate_identity": "sha256-or-immutable-ref",
+  "evaluation": {
+    "evaluation_ref": "sha256-or-immutable-ref",
+    "identity": {
+      "evaluator_id": "frozen-evaluator-id",
+      "scenario_set_id": "frozen-scenario-id",
+      "policy_id": "frozen-evaluation-policy-id"
+    },
+    "level": "L4-benchmark",
+    "evidence_type": "supplied",
+    "hard_gates": {
+      "activation": "pass",
+      "semantics": "pass",
+      "safety": "pass",
+      "evaluator_integrity": "pass",
+      "validation": "pass"
+    },
+    "metrics": {
+      "quality": {
+        "value": 0.91,
+        "uncertainty": 0.02
+      },
+      "token_cost": {
+        "value": 1000,
+        "uncertainty": 0
+      }
+    },
+    "deficits": [],
+    "holdout_status": "not-used"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-improver",
+  "exports": [
+    {
+      "contract_id": "skill-opt.candidate-generation-receipt",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/evolution-candidate-execution.md",
+        "assets/templates/generation-receipt.json.template",
+        "scripts/validate_generation_receipt.py"
+      ]
+    }
+  ],
+  "imports": [
+    {
+      "contract_id": "skill-opt.candidate-request",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "search/evolution candidate execution"
+      ]
+    }
+  ]
+}

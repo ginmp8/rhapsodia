@@ -1,0 +1,58 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-evolution",
+  "exports": [
+    {
+      "contract_id": "skill-opt.evolution-search-contract",
+      "version": 2,
+      "role": "owner",
+      "surface_paths": [
+        "assets/templates/search-contract.json.template",
+        "scripts/validate_search_contract.py",
+        "references/search-model.md"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.candidate-request",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/recombination-contract.md",
+        "scripts/validate_candidate_request.py",
+        "scripts/plan_recombination.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.search-state",
+      "version": 2,
+      "role": "owner",
+      "surface_paths": [
+        "assets/templates/search-state.json.template",
+        "scripts/validate_search_state.py",
+        "scripts/checkpoint_search_state.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.candidate-evaluation",
+      "version": 2,
+      "role": "owner",
+      "surface_paths": [
+        "assets/templates/candidate-evaluation.json.template",
+        "scripts/validate_candidate_evaluation.py",
+        "references/evaluation-and-promotion.md"
+      ]
+    }
+  ],
+  "imports": [
+    {
+      "contract_id": "skill-opt.candidate-generation-receipt",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "search",
+        "resume"
+      ]
+    }
+  ]
+}

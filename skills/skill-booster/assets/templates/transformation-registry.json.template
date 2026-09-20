@@ -25,7 +25,12 @@
       "status": "planned",
       "evidence_refs": [
         "EV-001"
-      ]
+      ],
+      "capability_effects": [
+        "cap.activation.route"
+      ],
+      "violates_invariants": [],
+      "addresses": []
     }
   ]
 }

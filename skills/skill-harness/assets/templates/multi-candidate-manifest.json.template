@@ -1,0 +1,17 @@
+{
+  "contract_version": 2,
+  "runs": [
+    {
+      "candidate_id": "C001",
+      "candidate_identity": "sha256-or-immutable-ref",
+      "run_id": "run-C001-001",
+      "trace_id": "trace-C001-001",
+      "work_dir": "/isolated/work/C001",
+      "evaluator_id": "frozen-evaluator-id",
+      "scenario_set_id": "frozen-scenario-partition-id",
+      "evaluation_policy_id": "frozen-evaluation-policy-id",
+      "holdout_blind": true,
+      "candidate_saw_evaluator_only_assets": false
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-benchmark",
+  "exports": [
+    {
+      "contract_id": "skill-opt.benchmark-candidate-evidence",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/multi-candidate-evaluation.md",
+        "assets/templates/multi-candidate-evidence.json.template",
+        "scripts/validate_candidate_set.py"
+      ]
+    }
+  ],
+  "imports": []
+}

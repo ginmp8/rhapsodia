@@ -10,6 +10,13 @@ Every comparable candidate carries the same frozen:
 
 An identity mismatch makes peer dominance/Pareto claims invalid. Do not merge results across changed evaluators by convenience; restart/re-baseline when the deciding evidence contract changes.
 
+
+## Candidate-evaluation v2 envelope
+
+The versioned integration envelope is owned by this skill and validated with `scripts/validate_candidate_evaluation.py`. It carries `candidate_id`, `candidate_identity`, and one `evaluation` object containing the frozen identity tuple, ladder level, evidence type, complete hard-gate map, complete objective metrics with optional uncertainty, deficits, holdout status, and an immutable evaluation reference.
+
+Evaluation providers such as harnesses or benchmarks keep their own local evidence formats. The caller/orchestrator normalizes those results into this envelope before the controller compares candidates. Do not make providers depend on Pareto or population semantics.
+
 ## Evaluation ladder
 
 Use caller-provided evidence through:

@@ -1,0 +1,19 @@
+{
+  "contract_version": 2,
+  "candidates": [
+    {
+      "candidate_id": "C001",
+      "candidate_identity": "sha256-or-immutable-ref",
+      "parent_id": "BASELINE",
+      "baseline_id": "baseline-sha256-or-ref",
+      "evaluator_id": "frozen-evaluator-id",
+      "scenario_set_id": "frozen-scenario-id",
+      "policy_id": "frozen-scoring-policy-id",
+      "evaluation_level": "L4-benchmark",
+      "metrics": {
+        "quality": {"value": 0.91, "uncertainty": 0.02},
+        "token_cost": {"value": 1000, "uncertainty": 0}
+      }
+    }
+  ]
+}

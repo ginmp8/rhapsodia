@@ -77,7 +77,9 @@ Load only what the active branch needs:
 - `scripts/static_skill_score.py`: deterministic starter evaluator; saturated scores are gates only.
 - `scripts/validate_self_improvement_receipt.py`: deterministic gate for controller/candidate separation and promotion-receipt integrity in self-improvement mode.
 - `scripts/validate_transformation_record.py`: validates the portable parent/transformation/change-intent record before a mutating experiment uses it as provenance.
-- `scripts/validate_candidate_request.py`: validates an optional multi-candidate/search request before mutation.
+- `scripts/validate_candidate_request.py`: validates the current candidate-request v2 envelope before mutation.
+- `scripts/validate_generation_receipt.py`: validates generation-receipt v2 before returning a materialized search candidate.
+- `contracts/integration-manifest.json`: declares the v2 request/receipt integration surfaces for orchestrator impact analysis.
 - `skill-change-gate` or compatible command: independent structural regression gate.
 - `scripts/validate_skill_improver_package.py` and `scripts/package_skill.py`: package validation and recovery-aware packaging.
 - `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template`: templates consumed by the runner.
@@ -109,7 +111,7 @@ Stop, revert, or return a bounded partial result when: target identity is ambigu
 
 ## Output contract
 
-For any mutating experiment, include parent candidate identity, transformation id(s), change intent, affected capability refs when supplied, candidate identity, evaluator/scenario identity, acceptance decision, and causal limitations. For a search/evolution request also include request id, base parent id, donor parent ids, operator, and a receipt that the materialized candidate corresponds to the requested transformation set. If ablation was run, list each ablation candidate as a separate experiment result.
+For any mutating experiment, include parent candidate identity, transformation id(s), change intent, affected capability refs when supplied, candidate identity, evaluator/scenario identity, acceptance decision, and causal limitations. For a search/evolution request also include candidate-request v2 identity (`request_signature`), base parent id, donor parent ids, operator, expected capability effects, and a validated generation-receipt v2 proving that the materialized candidate corresponds to the requested transformation set. If ablation was run, list each ablation candidate as a separate experiment result.
 
 
 For substantive improvement/hardening runs include:

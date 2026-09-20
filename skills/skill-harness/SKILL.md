@@ -71,7 +71,8 @@ Templates are operational when copied, filled, rendered, validated, or declared 
 
 Define before editing: decision; object under test; portable core vs host adapters; runtime capabilities; writable/read-only/protected scope; dependencies; target entry points; scenario groups; input corpus/model; candidate-visible inputs; evaluator-only assets; source identities; optional self-hosting generation/controller/baseline/candidate identities; evidence sources; runner commands/adapters; execution isolation level; trace manifest; evaluators; optional control arm; metrics; hard gates; recovery policy; and evidence record for baseline, plan, changes, command outputs, final comparison, package path, hashes, risks, and rollback.
 
-- `scripts/validate_multi_candidate_manifest.py`: validates candidate/run/workdir uniqueness, frozen comparability identities, and holdout leakage claims for multi-candidate runs.
+- `scripts/validate_multi_candidate_manifest.py`: validates multi-candidate isolation; contract v2 additionally freezes evaluation-policy identity and unique trace ids for evolutionary-search comparability.
+- `contracts/integration-manifest.json`: declares the harness multi-candidate evidence surface for cross-skill impact analysis.
 
 ## Workflow
 

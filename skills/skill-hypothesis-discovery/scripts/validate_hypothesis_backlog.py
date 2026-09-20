@@ -84,6 +84,11 @@ def score(item: dict[str, Any]) -> int:
     )
 
 
+
+def canonical_hypothesis_pool_id(data: dict[str, Any]) -> str:
+    payload = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
 def canonical_snapshot_id(sources: list[dict[str, Any]]) -> str:
     ordered = sorted(sources, key=lambda item: str(item.get("id", "")))
     payload = json.dumps(ordered, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -549,6 +554,7 @@ def validate(data: Any) -> dict[str, Any]:
         "warnings": warnings,
         "diagnostics": diagnostics,
         "snapshot_id": evidence_snapshot.get("snapshot_id") if isinstance(evidence_snapshot, dict) else None,
+        "hypothesis_pool_id": canonical_hypothesis_pool_id(data),
         "ranked_ids": ranked_ids,
         "eligible_ids": ranked_ids,
         "scores": {iid: item_scores[iid] for iid in sorted(item_scores)},

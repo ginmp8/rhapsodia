@@ -82,7 +82,8 @@ Load only what the active branch needs:
 - `references/discovery-method.md` — deterministic discovery pipeline, minimum evidence, dedupe/conflicts, saturation, and stop rules.
 - `references/hypothesis-schema.md` — v2 taxonomy, JSON contract, ranking, tie-breakers, and experiment limits.
 - `references/integration-workflows.md` — handoffs to optimizer/harness/benchmark/change-gate workflows.
-- `scripts/validate_hypothesis_backlog.py` — validate and deterministically rank JSON backlogs.
+- `scripts/validate_hypothesis_backlog.py` — validate and deterministically rank JSON backlogs. The v2 result also emits a canonical `hypothesis_pool_id` for downstream evolutionary contracts.
+- `contracts/integration-manifest.json` — declares the hypothesis-pool v2 surface for cross-skill impact analysis.
 - `assets/templates/hypothesis-backlog.json.template` — canonical v2 machine-readable example.
 - `assets/templates/hypothesis-report.md.template` — durable markdown report template.
 - `examples/hypothesis-discovery-examples.md` — calibrated examples.
