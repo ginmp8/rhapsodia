@@ -3,20 +3,36 @@
 ## Search identity
 - target:
 - baseline:
+- canonical comparator:
 - search id:
+- contract version:
 - mode:
 - budget:
-- evaluator/scenario identities:
+- capability/hypothesis/transformation identities:
+- evaluator/scenario/policy identities:
+- mutation/evaluation interface identities:
 
 ## Initial strategies
 
-## Candidate lineage
+## Candidate lineage and generation receipts
 
-## Eliminations
+## Evaluation compatibility
 
-## Pareto archive
+## Hard-gate eliminations
+
+## Pareto archive and uncertainty treatment
+
+## Derived novelty and diversity decisions
 
 ## Recombination decisions
+- accepted requests:
+- rejected/skipped requests and deterministic reason:
+
+## Checkpoint chain
+- latest state hash:
+- latest receipt hash:
+- previous receipt hash:
+- stagnation counter:
 
 ## Finalists
 

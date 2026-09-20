@@ -1,10 +1,19 @@
 {
-  "contract_version": 1,
+  "contract_version": 2,
   "search_id": "search-001",
   "target_identity": "sha256-or-immutable-ref",
   "target_class": "orchestration-meta",
   "baseline_candidate_id": "BASELINE",
   "canonical_candidate_id": "C_CANONICAL",
+  "input_identities": {
+    "capability_map_id": "capability-map-sha256-or-ref",
+    "hypothesis_pool_id": "hypothesis-pool-sha256-or-ref",
+    "transformation_registry_id": "transformation-registry-sha256-or-ref"
+  },
+  "interfaces": {
+    "mutation_interface_id": "caller-mutation-interface-v1",
+    "evaluation_interface_id": "caller-evaluation-interface-v1"
+  },
   "budget": {
     "initial_variants": 4,
     "max_active_candidates": 4,
@@ -15,14 +24,50 @@
   },
   "hard_gates": ["activation", "semantics", "safety", "evaluator_integrity", "validation"],
   "objectives": [
-    {"name": "quality", "direction": "maximize"},
-    {"name": "token_cost", "direction": "minimize"}
+    {"name": "quality", "direction": "maximize", "min_delta": 0.02},
+    {"name": "token_cost", "direction": "minimize", "min_delta": 25}
   ],
   "evaluation_identity": {
     "evaluator_id": "frozen-evaluator-id",
-    "scenario_set_id": "frozen-scenario-id"
+    "scenario_set_id": "frozen-scenario-id",
+    "policy_id": "frozen-evaluation-policy-id"
   },
+  "allowed_evaluation_levels": ["L0-structural", "L1-deterministic", "L2-focused", "L3-harness", "L4-benchmark", "L5-holdout"],
   "allowed_operators": ["transformation-merge", "backcross", "repair-crossover", "bounded-mutation"],
   "preserve_roles": ["canonical"],
-  "selection_policy": "pareto-then-novelty"
+  "selection_policy": {
+    "id": "pareto-then-novelty-v2",
+    "novelty_policy": {"id": "transformation-jaccard-v1", "source": "derived"},
+    "uncertainty_policy": "margin-plus-min-delta-v1"
+  },
+  "capability_invariants": ["activation-contract", "authority-boundary", "evaluator-integrity"],
+  "transformation_registry": [
+    {
+      "id": "T001",
+      "status": "validated",
+      "depends_on": [],
+      "conflicts_with": [],
+      "capability_effects": ["canonical-baseline"],
+      "violates_invariants": [],
+      "addresses": []
+    },
+    {
+      "id": "T002",
+      "status": "accepted",
+      "depends_on": [],
+      "conflicts_with": [],
+      "capability_effects": ["activation"],
+      "violates_invariants": [],
+      "addresses": ["activation-ambiguity"]
+    },
+    {
+      "id": "T003",
+      "status": "accepted",
+      "depends_on": [],
+      "conflicts_with": [],
+      "capability_effects": ["lineage-integrity"],
+      "violates_invariants": [],
+      "addresses": ["lineage-gap"]
+    }
+  ]
 }

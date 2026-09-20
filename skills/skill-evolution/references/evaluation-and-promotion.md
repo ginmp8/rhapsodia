@@ -1,6 +1,16 @@
 # Evaluation and Promotion
 
-## Ladder
+## Evaluation identity
+
+Every comparable candidate carries the same frozen:
+
+- evaluator id;
+- scenario-set id;
+- evaluation-policy id.
+
+An identity mismatch makes peer dominance/Pareto claims invalid. Do not merge results across changed evaluators by convenience; restart/re-baseline when the deciding evidence contract changes.
+
+## Evaluation ladder
 
 Use caller-provided evidence through:
 
@@ -11,27 +21,22 @@ Use caller-provided evidence through:
 - L4 benchmark;
 - L5 holdout.
 
-A search controller may request evaluation levels; it does not own evaluator semantics.
+The controller requests levels but never owns evaluator semantics. Record evidence type truthfully (`measured`, `supplied`, `derived`, `planned`, or `unknown`).
 
 ## Comparisons
 
-Preserve:
+Preserve three distinct comparisons:
 
-- candidate vs parent for local transformation attribution;
-- candidate vs stable baseline for cumulative regression;
-- candidate vs peer candidates for non-dominance only when evaluator identities are comparable.
+- candidate vs direct parent for local attribution;
+- candidate vs immutable baseline for cumulative regression;
+- candidate vs peer only under comparable frozen evidence.
+
+Use each objective's predeclared `min_delta` plus recorded uncertainty before declaring material superiority.
 
 ## Holdout
 
-Use holdout only when the promotion claim justifies it. If holdout feedback is revealed for repair, mark it development evidence and require a fresh holdout before any later blind claim.
+Use L5 only when the promotion claim requires it. If holdout feedback is exposed for repair, record `revealed-development`; it is no longer blind evidence. A later blind promotion claim needs fresh holdout evidence.
 
 ## Promotion boundary
 
-Search output may recommend:
-
-- `promote-candidate`;
-- `keep-baseline`;
-- `gather-evidence`;
-- `no-single-winner`.
-
-The caller owns final change gate, freeze, package, install, and any canonical workflow-policy update.
+Search output may recommend `promote-candidate`, `keep-baseline`, `gather-evidence`, or `no-single-winner`. The caller owns final change gate, final re-evaluation, freeze, packaging, installation, and canonical workflow-policy updates.

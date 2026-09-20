@@ -2,33 +2,51 @@
 
 ## Lifecycle
 
-Use an evidence-guided champion-challenger search rather than an unconstrained genetic algorithm:
+Use evidence-guided champion-challenger search:
 
-`freeze -> seed -> generate -> cheap-evaluate -> select -> recombine -> evaluate -> stop -> finalists`
+`freeze -> validate -> seed -> generate -> cheap-evaluate -> select -> recombine -> checkpoint -> stop -> finalists`
 
-The search works on semantic candidate plans and transformation ids. It never mutates raw files itself.
+Search semantic transformations and candidate strategies; never mutate target files directly.
 
-## Default population shape
+## Contract generation
 
-Start with up to four deliberately different seeds:
+New searches use search-contract **v2** and search-state **v2**. Do not silently reinterpret v1 artifacts. For an old run, either finish it with the old controller or explicitly re-baseline into v2 with new frozen identities. A re-baseline is a new search identity, not a continuation.
 
-- canonical;
-- evidence-driven alternate;
-- focused weakness strategy;
-- novel-bounded strategy.
+Freeze these before candidate mutation:
 
-Keep at most four active candidates. Normally expect 8-12 total candidates across the run. Allow up to 20 only as a hard ceiling.
+- target/baseline identity;
+- capability-map, hypothesis-pool, and transformation-registry identities;
+- evaluator, scenario-set, and evaluation-policy identities;
+- hard gates and objective directions/minimum deltas;
+- mutation/evaluation interface identities;
+- budget and selection policy.
+
+## Default population
+
+Seed up to four evidence-supported roles:
+
+- `canonical`;
+- `evidence-driven`;
+- `focused`;
+- `novel-bounded`.
+
+Do not invent transformations to fill the population. Keep at most four active candidates, normally evaluate 8-12 total, and treat 20 as a hard ceiling.
 
 ## Search rounds
 
-A round may create 1-3 children. Prefer targeted recombination over all-pairs crossover. Search history is append-only. A rejected child still contributes negative evidence.
+A round may request 1-3 children. Validate every request before mutation. Reject duplicates, dependency gaps, declared conflicts, capability-invariant violations, unknown transformations, or budget overflow before spending mutation/evaluation cost.
 
-## Stagnation
+History is append-only. Rejected candidates and skipped requests remain negative evidence.
 
-A round is stagnant when it creates no new non-dominated candidate and no materially novel valid strategy. Default stop after three consecutive stagnant rounds.
+## Deterministic stagnation
 
-Reset stagnation only when a candidate materially changes the Pareto archive or introduces a validated novel strategy likely to support a later useful recombination.
+Treat a completed round as stagnant only when both are true relative to the previous checkpoint:
+
+1. the Pareto archive is unchanged; and
+2. the round introduces no new transformation-set signature.
+
+Use `scripts/checkpoint_search_state.py`; do not increment/reset stagnation by prose judgment. Stop when the configured consecutive-stagnation threshold is reached.
 
 ## Cost control
 
-Escalate evaluation only when lower levels pass. Do not run L4/L5 on every candidate. L5 is promotion-oriented, not a development loop.
+Escalate evaluation only after lower required levels pass. L4/L5 are not default development loops. L5 remains promotion-oriented and holdout blindness must be preserved.

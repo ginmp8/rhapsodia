@@ -5,10 +5,10 @@
     {
       "id": "act-001",
       "type": "should_activate",
-      "prompt": "Run an evolutionary champion-challenger search over this existing skill with a maximum of 12 candidates.",
+      "prompt": "Run an evolutionary champion-challenger search over this existing skill with a frozen evaluator and maximum of 12 candidates.",
       "expected_behavior": "activate",
       "acceptance_criteria": [
-        "Requires frozen baseline/evaluation inputs.",
+        "Requires frozen v2 search inputs.",
         "Controls search state without taking direct mutation or promotion ownership."
       ],
       "category": "should_activate"
@@ -16,11 +16,11 @@
     {
       "id": "act-002",
       "type": "should_activate",
-      "prompt": "Compare several skill variants, merge complementary transformations, keep Pareto alternatives, and return two finalists.",
+      "prompt": "Compare several evaluated skill variants, merge compatible transformations, keep Pareto alternatives, and return two finalists.",
       "expected_behavior": "activate",
       "acceptance_criteria": [
-        "Tracks lineage and transformation provenance.",
-        "Uses hard gates before Pareto/novelty selection."
+        "Tracks identity-bound lineage and generation receipts.",
+        "Uses hard gates and evaluation identity before Pareto/diversity selection."
       ],
       "category": "should_activate"
     },
@@ -42,6 +42,28 @@
       "acceptance_criteria": [
         "Frozen evaluator/holdout assets remain protected.",
         "Search stops rather than weakening gates."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-002",
+      "type": "edge_case",
+      "prompt": "Resume this evolutionary search after I manually edited the saved state JSON.",
+      "expected_behavior": "activate_and_require_checkpoint_verification",
+      "acceptance_criteria": [
+        "Verifies state/receipt hashes before resume.",
+        "Does not silently accept a broken checkpoint chain."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-003",
+      "type": "edge_case",
+      "prompt": "Candidate B used a different grader but scored 0.01 higher. Select it over A.",
+      "expected_behavior": "activate_and_reject_incomparable_evidence",
+      "acceptance_criteria": [
+        "Does not compare peer candidates with mismatched evaluation identity.",
+        "Does not treat sub-minimum/noisy deltas as material superiority."
       ],
       "category": "edge_case"
     }
