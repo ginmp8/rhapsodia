@@ -90,7 +90,7 @@ The package is original RhapsodIA work, conceptually related to `skills/skill-cr
 
 Status: covered by PR #8.
 
-The package is original RhapsodIA work inspired by public software-engineering guidance commonly associated with Andrej Karpathy-style coding discipline. PR #8 added `skills/karpathy-guidelines/references/source-and-license.md` and a root README entry.
+The package is original RhapsodIA work inspired by public software-engineering guidance commonly associated with Andrej Karpathy-style coding discipline: small changes, explicit assumptions, verification, and resistance to unnecessary abstraction. It does not copy upstream text verbatim. Future edits that copy or closely adapt public posts, talks, repositories, or documentation must record the source, license, and affected files in `README.md` and this audit.
 
 ## Public similarity observations that do not require new attribution
 

@@ -62,7 +62,7 @@ Known third-party or adapted content:
 - `skills/streamlit/` is an original RhapsodIA skill built from and cross-referencing the official Streamlit documentation and Streamlit project sources. The official upstream repositories `streamlit/docs` and `streamlit/streamlit` are licensed under Apache License 2.0; see `skills/streamlit/references/source-and-license.md` for source and attribution notes.
 - `skills/context-architect/` is inspired by GitHub's `awesome-copilot` Context Architect agent. The upstream source is licensed under the MIT License, Copyright GitHub, Inc.; see `skills/context-architect/references/upstream-source.md` for source and adaptation notes.
 - `skills/skill-creator-juiced/` is an original RhapsodIA orchestration skill conceptually related to `skills/skill-creator/`; see `skills/skill-creator-juiced/references/source-and-license.md` for attribution and update rules.
-- `skills/karpathy-guidelines/` is an original RhapsodIA skill inspired by public software-engineering guidance; see `skills/karpathy-guidelines/references/source-and-license.md` for source and update rules.
+- `skills/karpathy-guidelines/` is an original RhapsodIA skill inspired by public software-engineering guidance commonly associated with Andrej Karpathy; see `docs/public-source-attribution-audit.md` for provenance and update rules.
 - `skills/llm-wiki-maintainer/` is an original RhapsodIA skill that operationalizes and paraphrases the public [`llm-wiki.md`](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern by Andrej Karpathy.
 - Some skills may include upstream or adaptation notes in their own `references/` files.
 
