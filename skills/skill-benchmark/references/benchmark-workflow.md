@@ -37,7 +37,7 @@ If Python cannot run, manual/static inspection may continue, but script gates ar
 ```text
 <PYTHON> scripts/validate_portability.py \
   --target <WORK>/target-snapshot \
-  --hosts portable-core,openai,claude,copilot,cursor \
+  --hosts portable-core,openai,codex,claude,copilot,cursor \
   --json <WORK>/portability.json
 ```
 

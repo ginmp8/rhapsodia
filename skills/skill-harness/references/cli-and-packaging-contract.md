@@ -62,6 +62,27 @@ The main score is structural and can saturate. Use auxiliary portability/integri
 
 Validates the open Agent Skills core, relative/resource safety, name/directory identity, optional compatibility metadata, and host-adapter isolation. Host-specific discovery notes are informational adapters, not portable semantics.
 
+### `scripts/skill_harness_host_matrix.py`
+
+```text
+<PYTHON> <skill-root>/scripts/skill_harness_host_matrix.py \
+  --target <TARGET_SKILL_PATH> \
+  --profiles all \
+  --strict \
+  --output <report-dir>/host-matrix.json
+```
+
+Runs the existing portability validator for `portable`, `openai`, `claude`, `copilot`, and `cursor` without changing those profile semantics. `--profiles` may also be a comma-separated subset. Exit non-zero when any selected profile fails; with `--strict`, warnings also fail the matrix.
+
+### `scripts/run_self_tests.py`
+
+```text
+<PYTHON> <skill-root>/scripts/run_self_tests.py \
+  --output <report-dir>/self-tests.json
+```
+
+Runs bundled zero-argument functions whose names start with `test_` using only the Python standard library. It fails closed when the tests directory is missing, no matching test modules exist, no test functions are discovered, a module import fails, or any test fails. Use `--tests-dir <path>` only for explicit alternate test fixtures. This is the portable self-test command; pytest remains optional developer tooling rather than a runtime requirement.
+
 ### `scripts/skill_harness_validate.py`
 
 ```text

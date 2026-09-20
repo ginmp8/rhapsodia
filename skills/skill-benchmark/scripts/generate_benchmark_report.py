@@ -482,7 +482,7 @@ def main() -> int:
     parser.add_argument('--out', help='Output directory or explicit .md report path. Defaults outside the target.')
     parser.add_argument('--results', help='Optional validated scenario results JSON.')
     parser.add_argument('--source-manifest', help='Optional snapshot manifest from snapshot_target.py.')
-    parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,claude,copilot,cursor,all')
+    parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,codex,claude,copilot,cursor,all')
     parser.add_argument('--json-output', help='Optional success receipt JSON path; defaults beside report.')
     args = parser.parse_args()
 

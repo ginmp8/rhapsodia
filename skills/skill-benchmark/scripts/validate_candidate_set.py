@@ -2,13 +2,14 @@ from __future__ import annotations
 import argparse,json,sys
 from pathlib import Path
 LEVELS={'L0-structural','L1-deterministic','L2-focused','L3-harness','L4-benchmark','L5-holdout'}
+METRIC_LEVELS={'L2-focused','L3-harness','L4-benchmark','L5-holdout'}
 
 def _nonempty(v):return isinstance(v,str) and bool(v.strip())
 def validate(d):
  e=[];version=d.get('contract_version',1);rows=d.get('candidates')
  if version not in {1,2}:e.append('contract_version:unsupported')
  if not isinstance(rows,list) or not rows:return sorted(set(e+['candidates:invalid']))
- ids=[];refs={};keys=('baseline_id','evaluator_id','scenario_set_id')+ (('policy_id',) if version==2 else tuple())
+ ids=[];refs={};metric_ids=None;keys=('baseline_id','evaluator_id','scenario_set_id')+ (('policy_id',) if version==2 else tuple())
  for i,r in enumerate(rows):
   if not isinstance(r,dict):e.append(f'candidate[{i}]:invalid');continue
   cid=r.get('candidate_id');ids.append(cid)
@@ -24,6 +25,10 @@ def validate(d):
   metrics=r.get('metrics',{})
   if not isinstance(metrics,dict):e.append(f'candidate[{i}].metrics:invalid');continue
   if version==2:
+   if r.get('evaluation_level') in METRIC_LEVELS and not metrics:e.append(f'candidate[{i}].metrics:empty')
+   current_metric_ids=frozenset(metrics)
+   if metric_ids is None:metric_ids=current_metric_ids
+   elif metric_ids!=current_metric_ids:e.append('comparability:metrics:set_mismatch')
    for name,val in metrics.items():
     if isinstance(val,bool):e.append(f'candidate[{i}].metrics.{name}:invalid')
     elif isinstance(val,(int,float)):pass

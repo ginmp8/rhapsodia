@@ -1,6 +1,6 @@
 ---
 name: skill-benchmark
-description: use when asked to benchmark, audit, score, validate, compare, or measure maturity of reusable agent skills-compatible packages for chatgpt/openai, claude, github copilot/codex, cursor, or other compatible hosts. produces evidence-based reports with scorecard, gates, source/evaluator identities, scenario status, risks, improvements, portability findings, and verdict. use for report validation, version comparison, publish readiness, or metrics from validated scenario evidence. do not use for generic code review, skill mutation, prompt advice, or hardening unless the requested deliverable is a reusable skill benchmark.
+description: use when asked to benchmark, audit, score, validate, compare, or measure maturity of reusable agent skills-compatible packages for chatgpt/openai, codex, claude, github copilot, cursor, or other compatible hosts. produces evidence-based reports with scorecard, gates, source/evaluator identities, scenario status, risks, improvements, portability findings, and verdict. use for report validation, version comparison, publish readiness, or metrics from validated scenario evidence. do not use for generic code review, skill mutation, prompt advice, or hardening unless the requested deliverable is a reusable skill benchmark.
 ---
 
 # Skill Benchmark
@@ -37,7 +37,7 @@ For filesystem benchmarks, prefer an immutable target snapshot and frozen evalua
 
 ## Host portability
 
-Use the open Agent Skills package as the semantic core. Do not make benchmark behavior depend on ChatGPT-, Claude-, Copilot-, Cursor-, or vendor-private tool names. `agents/openai.yaml` is an optional OpenAI adapter and must not add score merely by existing.
+Use the open Agent Skills package as the semantic core. Do not make benchmark behavior depend on ChatGPT-, Codex-, Claude-, Copilot-, Cursor-, or vendor-private tool names. `agents/openai.yaml` is an optional OpenAI adapter and must not add score merely by existing.
 
 When portability matters, read [`references/host-portability.md`](references/host-portability.md). Resolve capabilities before execution rather than branching only on product name:
 

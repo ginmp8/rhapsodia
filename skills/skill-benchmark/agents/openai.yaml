@@ -1,12 +1,7 @@
 interface:
   display_name: Skill Benchmark
   short_description: Benchmark reusable agent skills with reproducible evidence.
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   allow_implicit_invocation: true
-  products:
-  - chatgpt
-  - codex
-  - api
-  - atlas

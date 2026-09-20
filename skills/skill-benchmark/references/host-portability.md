@@ -19,7 +19,8 @@ The benchmark's deterministic path uses Python 3.10+ standard library only. Reso
 
 | Profile | Discovery/distribution | Adapter policy |
 |---|---|---|
-| `openai` | ChatGPT can use packaged/custom skills; Codex supports filesystem skills including `.agents/skills`. | `agents/openai.yaml` is optional OpenAI metadata. Never award score merely because it exists. |
+| `openai` | ChatGPT/OpenAI skill surfaces consume the portable Agent Skills package. | `agents/openai.yaml` is optional OpenAI metadata. Never award score merely because it exists. |
+| `codex` | Codex discovers Agent Skills-compatible packages, including repository skills under `.agents/skills`. | The same optional `agents/openai.yaml` may provide OpenAI/Codex metadata, but the portable core must work without it. |
 | `claude` | Claude Code discovers `.claude/skills/<name>/`; claude.ai supports uploaded custom skill ZIPs. | No OpenAI adapter required. Keep bundled helpers self-contained because hosted execution may restrict package installation/network. |
 | `copilot` | Project skills may live in `.github/skills`, `.claude/skills`, or `.agents/skills`; personal skills may live in `~/.copilot/skills` or `~/.agents/skills`. | No extra adapter required. Do not require host-specific tool-permission frontmatter for correctness. |
 | `cursor` | Cursor discovers `.agents/skills`, `.cursor/skills`, user equivalents, and compatible Claude/Codex locations. | Cursor-specific frontmatter is optional. Cloud agents may require project/synced skills rather than unsynced local skills. |
@@ -67,7 +68,7 @@ A multi-platform claim requires:
 5. deterministic helpers have declared runtimes and no undeclared package dependency;
 6. runtime/behavioral support is reported separately from structural portability.
 
-## Current source pointers verified 2026-09-18
+## Current source pointers verified 2026-09-20
 
 - Agent Skills specification: `https://agentskills.io/specification`
 - OpenAI skill authoring: `https://developers.openai.com/docs/build-skills`
