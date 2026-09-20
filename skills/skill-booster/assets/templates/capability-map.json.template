@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "target": {
+    "name": "target-skill",
+    "identity": "sha256:replace-with-real-identity",
+    "class": "orchestration-meta"
+  },
+  "capabilities": [
+    {
+      "id": "cap.activation.route",
+      "name": "Route intended optimization requests",
+      "kind": "activation",
+      "owner": "SKILL.md frontmatter/control plane",
+      "status": "current",
+      "resources": [
+        "SKILL.md"
+      ],
+      "consumers": [
+        "host skill router"
+      ],
+      "validators": [
+        "activation scenario suite"
+      ],
+      "evidence_refs": [
+        "EV-001"
+      ],
+      "invariants": [
+        "does not broaden into net-new skill creation"
+      ]
+    }
+  ]
+}

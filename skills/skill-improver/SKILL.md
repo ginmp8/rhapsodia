@@ -36,7 +36,7 @@ Resolve before mutation:
 2. Mode: `benchmark-only`, `manual-patch`, `automated-loop`, `package-install`, or `self-improvement`.
 3. Runtime capability profile: filesystem read/write, Python 3.10+, command execution, network/research when freshness matters, independent evaluator/subagent support, artifact delivery.
 4. Evaluator contract: command or benchmark, score direction, minimum delta, required gates, locks, blocked paths, auxiliary metric when the primary metric is saturated.
-5. Hypothesis source: user-supplied hypothesis, supplied backlog, `skill-hypothesis-discovery`, or built-in catalog fallback.
+5. Hypothesis source: user-supplied hypothesis, supplied backlog, `skill-hypothesis-discovery`, or built-in catalog fallback. When supplied, also resolve `change_intent`, transformation id, affected capability ids, parent candidate identity, and prior experiment evidence.
 6. Material source evidence: external files/repository content whose exact bytes affect the hypothesis or acceptance decision.
 7. Budget and safety posture: iteration/time budget, sandbox/manual-review posture, allowed mutation scope.
 8. Structural change-gate policy: `disabled`, `advisory`, or `required`.
@@ -56,6 +56,8 @@ Defaults: preserve a baseline before mutation; one bounded manual patch or max t
 
 Load only what the active branch needs:
 - `references/evaluation-contract.md`: evaluator schema, freeze rules, acceptance, metric gates, hypothesis policy, structural change-gate policy.
+- `references/transformation-records-and-ablation.md`: portable transformation records, one-causal-batch discipline, parent-child provenance, and bounded ablation rules.
+- `references/evolution-candidate-execution.md`: local contract for materializing a caller/search-controller candidate request without taking ownership of population selection or promotion.
 - `references/severity-lifecycle.md`: stable severity taxonomy, deterministic triage, iteration state, completion/cancellation semantics, and max-iteration rules.
 - `references/legacy-migration.md`: migration map from the deprecated `skill-improvement` workflow and compatibility commitments.
 - `references/reproducibility-controls.md`: source snapshots, repair rules, freeze-after-pass, canonical path preflight, recovery-aware delivery, durable receipts, evidence layers.
@@ -74,9 +76,12 @@ Load only what the active branch needs:
 - `scripts/skill_improver_loop.py`: optional autonomous runner; its Codex adapter is not the portable semantic core.
 - `scripts/static_skill_score.py`: deterministic starter evaluator; saturated scores are gates only.
 - `scripts/validate_self_improvement_receipt.py`: deterministic gate for controller/candidate separation and promotion-receipt integrity in self-improvement mode.
+- `scripts/validate_transformation_record.py`: validates the portable parent/transformation/change-intent record before a mutating experiment uses it as provenance.
+- `scripts/validate_candidate_request.py`: validates an optional multi-candidate/search request before mutation.
 - `skill-change-gate` or compatible command: independent structural regression gate.
 - `scripts/validate_skill_improver_package.py` and `scripts/package_skill.py`: package validation and recovery-aware packaging.
 - `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template`: templates consumed by the runner.
+- `assets/templates/transformation-record.json.template`: portable example for parent/capability/transformation provenance; validate with `scripts/validate_transformation_record.py`.
 
 ## Workflow
 
@@ -85,8 +90,8 @@ Load only what the active branch needs:
 3. **Snapshot material sources**: when external files or repository evidence affect the patch or acceptance decision, capture their exact bytes before analysis and verify them again before final acceptance. If they changed, explicitly re-baseline or invalidate the comparison.
 4. **Measure baseline**: record score, status, gates, evaluator hash, source snapshot identity, command, report path, and unresolved risks. If the primary metric is saturated, keep it as a gate and define a non-saturated auxiliary metric before claiming improvement.
 5. **Diagnose and triage**: use `references/severity-lifecycle.md` to classify findings as `critical`, `major`, `minor`, or `needs-verification`, apply its tie-breakers, and process blocking severity first. Prefer observable failure signals over taste; never auto-fix an unverified suspicion.
-6. **Discover/select one hypothesis**: state mechanism, evidence signal, files, expected effect, validation method, accept/reject rule, rollback plan, and expected reproducibility control. Use evidence-backed discovery before built-in fallback when the next candidate is unclear.
-7. **Apply the smallest coherent candidate**: mutate only allowed paths. Move mechanical/repetitive rules into scripts/schemas/validators when that reduces variance; keep model judgment only where it is genuinely needed. Never weaken evaluator, safety, activation, output, compatibility, or package gates.
+6. **Discover/select one hypothesis**: state change intent (`repair`, `optimization`, or `experiment`), mechanism, evidence signal, affected capability ids/files, transformation id, parent identity, expected effect, validation method, accept/reject rule, rollback plan, and expected reproducibility control. Use evidence-backed discovery before built-in fallback when the next candidate is unclear.
+7. **Apply the smallest coherent candidate**: when a caller supplies a search/evolution candidate request, validate and follow `references/evolution-candidate-execution.md`; otherwise follow `references/transformation-records-and-ablation.md`. Prefer one causal transformation per candidate and preserve parent/transformation provenance. Mutate only allowed paths. Move mechanical/repetitive rules into scripts/schemas/validators when that reduces variance; keep model judgment only where it is genuinely needed. Never weaken evaluator, safety, activation, output, compatibility, or package gates.
 8. **Repair by diagnosis**: run the narrowest failing validator, identify one causal subject, apply the smallest supported fix, rerun the same gate, then adjacent gates. Stop a branch after two consecutive non-improving rounds on the same objective error set unless new evidence appears.
 9. **Evaluate and change-gate**: re-run the same frozen evaluator and verify protected/source identities. Reject if hashes changed, blocked paths changed, evaluator gates fail, the metric misses the threshold, or the structural gate finds a blocking regression.
 10. **Accept, rollback, or stop**: keep accepted changes only. Revert rejected candidates while preserving the last accepted state and rejection evidence. In `self-improvement`, the candidate cannot authorize its own promotion; require the frozen external/change-gate surface, emit and validate the self-improvement receipt, and promote only the exact frozen candidate. Use the canonical termination states in `references/severity-lifecycle.md`; honor explicit stop files between iterations; cancellation must not fabricate completion.
@@ -103,6 +108,9 @@ Treat `skill-improvement` as a deprecated compatibility surface, not a second im
 Stop, revert, or return a bounded partial result when: target identity is ambiguous; no safe baseline can be preserved; required source truth is unavailable; a required evaluator cannot be frozen; evaluator/protected inputs change during a candidate; mutation requires blocked fixtures, expected outputs, secrets, or unrelated paths; a required capability is unavailable for a hard gate; a required change gate fails or cannot run; the same objective repair fails to improve after two rounds; output/receipt paths alias inputs/protected paths/sibling outputs; validation/package checks fail; source snapshots no longer match and cannot be re-baselined; or the only route to green weakens a hard gate.
 
 ## Output contract
+
+For any mutating experiment, include parent candidate identity, transformation id(s), change intent, affected capability refs when supplied, candidate identity, evaluator/scenario identity, acceptance decision, and causal limitations. For a search/evolution request also include request id, base parent id, donor parent ids, operator, and a receipt that the materialized candidate corresponds to the requested transformation set. If ablation was run, list each ablation candidate as a separate experiment result.
+
 
 For substantive improvement/hardening runs include:
 1. target, mode, objective, baseline identity, runtime capability profile, and final artifact;

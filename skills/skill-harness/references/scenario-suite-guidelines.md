@@ -28,7 +28,7 @@ Suites live under `evals/`:
 }
 ```
 
-Required per scenario: stable unique `id`, supported `type`, `prompt`, `expected_behavior`, non-empty `acceptance_criteria`. Optional: `mode`, `mutation_mode`, `risk`, `notes`, `entry_point`, `input_shape`, `expected_artifacts`, `isolation_needs`.
+Required per scenario: stable unique `id`, supported `type`, `prompt`, `expected_behavior`, non-empty `acceptance_criteria`. Optional: `mode`, `mutation_mode`, `risk`, `notes`, `entry_point`, `input_shape`, `expected_artifacts`, `isolation_needs`, `evaluation_tier` (`L2-focused|L3-harness|L5-holdout`), and `visibility` (`candidate-visible|evaluator-only`). Read `references/evaluation-tiers-and-holdout.md` before claiming a hidden/holdout result.
 
 Use `status: planned` for expectation-only suites. Use `status: measured` only when every scenario has executed result, model output, evaluator decision, and timestamp/run ID. Planned suites can report only coverage and schema validity, not precision, recall, or pass rate.
 

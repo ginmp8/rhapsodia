@@ -48,7 +48,7 @@ Proceed with explicit assumptions when evidence is partial, but use `insufficien
 3. Caller context: manual patch, experiment candidate, hardening pass, cleanup pass, token-efficiency pass, or package update.
 4. Acceptance policy: `strict`, `normal`, or `advisory`; default to `normal`, use `strict` for automated/self-improvement loops.
 5. Supporting evidence: validator output, benchmark report, scenario results, command logs, reviewer notes, package receipt, or stated missing evidence.
-6. Frozen identities when available: before tree, candidate tree, evaluator/scenario inputs, delivered artifact. For self-improvement, also accept generation/controller/last-known-good identity and promotion-receipt correspondence from the caller.
+6. Frozen identities when available: stable baseline tree, optional direct parent tree, candidate tree, evaluator/scenario inputs, delivered artifact. For self-improvement, also accept generation/controller/last-known-good identity and promotion-receipt correspondence from the caller.
 7. Protected paths or blocked artifacts when known.
 8. Portability profile: default `portable`; use `openai` only when OpenAI adapter metadata is explicitly part of delivery acceptance.
 
@@ -71,6 +71,8 @@ Load only what the active gate needs:
 - [`references/evidence-integrity.md`](references/evidence-integrity.md) when before/candidate identities, frozen evaluators, package receipts, output aliases, recovery, or durable receipts matter.
 - [`references/host-portability.md`](references/host-portability.md) when cross-host compatibility or host-specific extensions matter.
 - [`references/integration-with-skill-improver.md`](references/integration-with-skill-improver.md) for experiment/self-improvement loops.
+- [`references/capability-preservation-and-parent-provenance.md`](references/capability-preservation-and-parent-provenance.md) when capability maps, transformation ids/change intent, or direct-parent attribution are supplied.
+- [`references/search-candidate-gate.md`](references/search-candidate-gate.md) when the candidate belongs to a multi-candidate/evolution search and lineage/search provenance is supplied.
 - `scripts/static_change_gate.py` when a compatible Python runtime and filesystem access are available.
 - [`examples/usage-examples.md`](examples/usage-examples.md) for compact outcome examples.
 - [`evals/activation-scenarios.json`](evals/activation-scenarios.json) for planned activation/non-activation coverage; never call it executed evidence until actually run.
@@ -80,7 +82,7 @@ Load only what the active gate needs:
 1. **Resolve target and runtime.** Identify one target skill, candidate evidence, caller context, policy, portability profile, available capabilities, and whether evidence is before/after, diff-only, or post-validation.
 2. **Establish evidence identity.** Record supplied baseline/candidate/evaluator identities before interpretation. In self-improvement, also record generation/controller provenance and verify that the gate runs outside the candidate mutation surface when that evidence is supplied. If acceptance depends on frozen evidence but identity cannot be established, use `insufficient-evidence`. Read `references/evidence-integrity.md` for strict experiments or delivery gates.
 3. **Check evidence sufficiency.** If no target content or candidate evidence exists, stop with `insufficient-evidence`. Partial evidence may support bounded findings, not unsupported acceptance.
-4. **Inventory touched surfaces.** Map changes to activation, `SKILL.md`, references, scripts, assets/templates, examples, evals/tests, validators, packaging, protected paths, host adapters, output contract, and delivery/recovery behavior.
+4. **Inventory touched surfaces.** Map changes to activation, `SKILL.md`, references, scripts, assets/templates, examples, evals/tests, validators, packaging, protected paths, host adapters, output contract, and delivery/recovery behavior. When a capability map is supplied, map each touched surface to affected capability ids and classify preservation/regression using `references/capability-preservation-and-parent-provenance.md`.
 5. **Run the static helper when available.** Resolve `<PYTHON>` from the host instead of assuming an executable name. Keep the JSON report outside both candidate and baseline roots.
 
 ```text
@@ -105,7 +107,7 @@ For frozen experiments, add applicable evidence controls:
 Treat helper output as mechanical evidence, not the full decision.
 6. **Review semantically.** Use the rubric to inspect activation intent, authority, safety, evidence discipline, validation truthfulness, output semantics, compatibility, and whether removed/changed resources still have valid owners/consumers.
 7. **Review portability.** Under `portable`, fail or warn when core semantics depend on one host's private runtime. Optional host adapters are acceptable when ignoring them leaves the core workflow intact.
-8. **Classify findings.** Mark each as blocking regression, material concern, non-blocking trade-off, false positive, or follow-up hypothesis. State whether it is candidate-introduced, pre-existing, or unknown when material.
+8. **Classify findings.** Mark each as blocking regression, material concern, non-blocking trade-off, false positive, or follow-up hypothesis. For search candidates, gate each candidate independently using `references/search-candidate-gate.md`; do not choose survivors, rank peers, or waive a regression because another candidate is worse. State whether it is candidate-introduced, pre-existing, or unknown when material.
 9. **Decide.** Blocking regressions fail. Under `strict`, unresolved material concerns also fail unless explicitly waived. `pass` requires sufficient applicable evidence, not merely a clean static report.
 10. **Report for the caller.** State accept, reject, repair-before-accept, gather-evidence, or advisory-only. Keep measured improvement separate from quality acceptance.
 
@@ -137,8 +139,11 @@ Return this structure for every substantive gate:
 - decision for caller: accept | reject | repair-before-accept | gather-evidence | advisory-only
 
 ### Evidence identities
-- before tree:
+- stable baseline tree:
+- direct parent tree: `<same-as-baseline | identity | not-supplied>`
 - candidate tree:
+- transformation ids / change intent: `<not-supplied | values>`
+- search id / candidate id / lineage ref: `<not-applicable | supplied values>`
 - evaluator/protected evidence:
 - artifact/receipt correspondence:
 - self-improvement generation/controller/promotion receipt: `<not-applicable | supplied evidence>`
@@ -149,6 +154,10 @@ Return this structure for every substantive gate:
 - commands/results:
 - runtime capabilities:
 - missing evidence:
+
+### Capability preservation
+| capability | classification | evidence | decision impact |
+|---|---|---|---|
 
 ### Findings
 | severity | area | origin | finding | decision impact |

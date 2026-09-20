@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "target_identity": "sha256:replace-with-real-identity",
+  "levels": [
+    {
+      "id": "L0-structural",
+      "required": true,
+      "status": "planned",
+      "checks": [
+        "package structure",
+        "references",
+        "protected paths"
+      ]
+    },
+    {
+      "id": "L1-deterministic",
+      "required": true,
+      "status": "planned",
+      "checks": [
+        "target validators",
+        "tests",
+        "deterministic contracts"
+      ]
+    },
+    {
+      "id": "L2-focused",
+      "required": true,
+      "status": "planned",
+      "checks": [
+        "hypothesis-specific scenarios and metrics"
+      ]
+    },
+    {
+      "id": "L3-harness",
+      "required": false,
+      "status": "planned",
+      "checks": [
+        "broad regression/adversarial harness"
+      ]
+    },
+    {
+      "id": "L4-benchmark",
+      "required": false,
+      "status": "planned",
+      "checks": [
+        "paired baseline/candidate benchmark"
+      ]
+    },
+    {
+      "id": "L5-holdout",
+      "required": false,
+      "status": "planned",
+      "checks": [
+        "independent evaluator-only holdout"
+      ]
+    }
+  ],
+  "promotion": {
+    "target_promotion_requires": [
+      "all required levels pass",
+      "final change gate pass"
+    ],
+    "workflow_policy_promotion": "separate cross-target decision"
+  }
+}

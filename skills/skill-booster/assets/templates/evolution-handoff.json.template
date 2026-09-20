@@ -1,0 +1,61 @@
+{
+  "handoff_version": 1,
+  "mode": "evolutionary-optimization",
+  "target_identity": "sha256-or-immutable-ref",
+  "target_class": "orchestration-meta",
+  "baseline_candidate_id": "BASELINE",
+  "canonical_candidate_id": "C_CANONICAL",
+  "capability_map_ref": "capability-map.json",
+  "transformation_registry_ref": "transformation-registry.json",
+  "experiment_registry_ref": "experiment-registry.json",
+  "evaluation_plan_ref": "evaluation-plan.json",
+  "evaluation_identity": {
+    "evaluator_id": "frozen-evaluator-id",
+    "scenario_set_id": "frozen-scenario-id"
+  },
+  "hard_gates": [
+    "activation",
+    "semantics",
+    "safety",
+    "evaluator_integrity",
+    "validation"
+  ],
+  "objectives": [
+    {
+      "name": "quality",
+      "direction": "maximize"
+    },
+    {
+      "name": "token_cost",
+      "direction": "minimize"
+    }
+  ],
+  "budget": {
+    "initial_variants": 4,
+    "max_active_candidates": 4,
+    "max_total_candidates": 20,
+    "finalists": 2,
+    "stagnant_rounds": 3,
+    "max_recombination_proposals_per_round": 3
+  },
+  "mutation_interface": {
+    "owner": "caller-routed",
+    "contract": "candidate-request-v1"
+  },
+  "evaluation_interface": {
+    "owner": "caller-routed",
+    "contract": "candidate-evaluation-v1"
+  },
+  "contract_version": 1,
+  "search_id": "search-001",
+  "allowed_operators": [
+    "transformation-merge",
+    "backcross",
+    "repair-crossover",
+    "bounded-mutation"
+  ],
+  "preserve_roles": [
+    "canonical"
+  ],
+  "selection_policy": "pareto-then-novelty"
+}

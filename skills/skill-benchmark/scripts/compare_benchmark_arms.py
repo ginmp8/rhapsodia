@@ -98,16 +98,18 @@ def _delta(candidate: dict[str, float | None], reference: dict[str, float | None
     return out
 
 
-def compare(candidate_path: Path, baseline_path: Path | None, control_path: Path | None) -> dict[str, Any]:
+def compare(candidate_path: Path, baseline_path: Path | None, parent_path: Path | None, control_path: Path | None) -> dict[str, Any]:
     cand, cand_meta = _validate_arm(candidate_path, "candidate")
     cand_metrics = metrics(cand["rows"])
     report: dict[str, Any] = {
         "status": "pass",
         "candidate": {"path": str(candidate_path), "metadata": cand_meta, "metrics": cand_metrics},
         "baseline_comparison": None,
+        "parent_comparison": None,
         "without_skill_comparison": None,
         "claim_rules": {
             "regression_claim_source": "baseline" if baseline_path else None,
+            "local_attribution_source": "parent" if parent_path else None,
             "incremental_value_claim_source": "without-skill" if control_path else None,
         },
     }
@@ -122,6 +124,17 @@ def compare(candidate_path: Path, baseline_path: Path | None, control_path: Path
             "reference_metrics": bmetrics,
             "capability_delta": _delta(cand_metrics, bmetrics, ok),
         }
+    if parent_path:
+        parent, parent_meta = _validate_arm(parent_path, "parent")
+        ok, reasons = _comparable(cand_meta, parent_meta)
+        pmetrics = metrics(parent["rows"])
+        report["parent_comparison"] = {
+            "comparable": ok,
+            "non_comparable_reasons": reasons,
+            "reference_metadata": parent_meta,
+            "reference_metrics": pmetrics,
+            "capability_delta": _delta(cand_metrics, pmetrics, ok),
+        }
     if control_path:
         ctrl, ctrl_meta = _validate_arm(control_path, "without-skill")
         ok, reasons = _comparable(cand_meta, ctrl_meta)
@@ -133,9 +146,9 @@ def compare(candidate_path: Path, baseline_path: Path | None, control_path: Path
             "reference_metrics": cmetrics,
             "capability_delta": _delta(cand_metrics, cmetrics, ok),
         }
-    if not baseline_path and not control_path:
+    if not baseline_path and not parent_path and not control_path:
         report["status"] = "fail"
-        report["error"] = "at least one reference arm (--baseline or --without-skill) is required"
+        report["error"] = "at least one reference arm (--baseline, --parent, or --without-skill) is required"
     return report
 
 
@@ -143,6 +156,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--baseline")
+    parser.add_argument("--parent")
     parser.add_argument("--without-skill")
     parser.add_argument("--json-output")
     args = parser.parse_args()
@@ -150,6 +164,7 @@ def main() -> int:
         report = compare(
             Path(args.candidate),
             Path(args.baseline) if args.baseline else None,
+            Path(args.parent) if args.parent else None,
             Path(args.without_skill) if args.without_skill else None,
         )
     except Exception as exc:

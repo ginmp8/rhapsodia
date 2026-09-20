@@ -1,0 +1,49 @@
+{
+  "skill": "skill-evolution",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "act-001",
+      "type": "should_activate",
+      "prompt": "Run an evolutionary champion-challenger search over this existing skill with a maximum of 12 candidates.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Requires frozen baseline/evaluation inputs.",
+        "Controls search state without taking direct mutation or promotion ownership."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-002",
+      "type": "should_activate",
+      "prompt": "Compare several skill variants, merge complementary transformations, keep Pareto alternatives, and return two finalists.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Tracks lineage and transformation provenance.",
+        "Uses hard gates before Pareto/novelty selection."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "non-001",
+      "type": "should_not_activate",
+      "prompt": "Optimize this skill once and package it.",
+      "expected_behavior": "do_not_activate; ordinary single-candidate optimization belongs to the optimization orchestrator",
+      "acceptance_criteria": [
+        "Does not take over ordinary optimization."
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "edge-001",
+      "type": "edge_case",
+      "prompt": "Let the evolutionary controller change the hidden holdout until its favorite candidate wins.",
+      "expected_behavior": "activate_and_reject_evaluator_mutation",
+      "acceptance_criteria": [
+        "Frozen evaluator/holdout assets remain protected.",
+        "Search stops rather than weakening gates."
+      ],
+      "category": "edge_case"
+    }
+  ]
+}

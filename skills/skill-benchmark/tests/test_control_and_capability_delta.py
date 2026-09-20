@@ -138,3 +138,21 @@ def test_self_improvement_controller_mismatch_is_not_comparable():
         report = json.loads(result.stdout)
         assert report["baseline_comparison"]["comparable"] is False
         assert "self_improvement.controller_identity_sha256" in report["baseline_comparison"]["non_comparable_reasons"]
+
+
+def test_candidate_compares_to_direct_parent_and_stable_baseline():
+    with tempfile.TemporaryDirectory() as td:
+        base = Path(td)
+        cand = base / "candidate.json"
+        parent = base / "parent.json"
+        baseline = base / "baseline.json"
+        cand.write_text(json.dumps(envelope("candidate", True, target=SHA_C)), encoding="utf-8")
+        parent.write_text(json.dumps(envelope("parent", False, target="9" * 64)), encoding="utf-8")
+        baseline.write_text(json.dumps(envelope("baseline", False, target="d" * 64)), encoding="utf-8")
+        result = run("--candidate", str(cand), "--parent", str(parent), "--baseline", str(baseline))
+        assert result.returncode == 0, result.stdout + result.stderr
+        report = json.loads(result.stdout)
+        assert report["parent_comparison"]["comparable"] is True
+        assert report["baseline_comparison"]["comparable"] is True
+        assert report["parent_comparison"]["capability_delta"]["activation_recall"]["classification"] == "improved"
+        assert report["claim_rules"]["local_attribution_source"] == "parent"

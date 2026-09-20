@@ -1,60 +1,72 @@
 # Specialist Passbook
 
-Every complete Skill Booster run must execute, apply by checklist, or classify each pass below. Invoke specialists through the active host's native mechanism; the names below identify capabilities, not a specific API or tool syntax. Status values: `pass`, `fail`, `blocked`, `not-run`, `not-applicable`, `applied-by-checklist`, `planned`. Also record `execution_type`: `invoked-skill`, `deterministic-script`, `checklist-only`, `blocked`, `unavailable`, `not-applicable`, or `not-run`.
+Every complete Skill Booster run must execute, apply by checklist, or classify each pass below. The ordered ledger is grouped by the six canonical phases. Specialist names identify capabilities, not a vendor-private invocation API.
+
+Status values: `pass`, `fail`, `blocked`, `not-run`, `not-applicable`, `applied-by-checklist`, `planned`.
+Execution types: `invoked-skill`, `deterministic-script`, `checklist-only`, `blocked`, `unavailable`, `not-applicable`, `not-run`.
+
+## Mutation ownership invariant
+
+During `diagnose`, specialists are evidence providers by default. They may inspect and recommend but must not silently mutate the candidate. Each selected transformation batch has exactly one declared mutation owner. Default owner is `skill-improver`; `reproducibility-engineer` may own a bounded `invoke-apply` batch; another specialist may own a batch only when explicitly delegated and its own contract permits mutation.
 
 ## Ordered pass ledger
 
-| # | Pass | Purpose | Minimum evidence/checklist |
-|---:|---|---|---|
-| 1 | `skill-creator-juiced` | design governance, portability ownership, and escalation | decide optimization vs redesign/router/split; preserve purpose; when host coupling exists own `portability` normalization into one portable core plus optional adapters; require package gates; no fabricated readiness |
-| 2 | `skill-benchmark` | initial maturity score/report | structural vs behavioral evidence separated; no precision/recall without results; saturated score gets auxiliary metric |
-| 3 | `skill-harness` | repeatable scenarios and gates | activation, non-activation, ambiguous, edge, regression, output-contract coverage; run `scripts/run_activation_harness.py` for schema/coverage when compatible; freeze suite; planned vs executed marked |
-| 4 | reproducibility decision + optional `reproducibility-engineer` | identify controllable variance before backlog selection | evaluate `references/reproducibility-routing.md`; validate decision JSON; if applicable and available invoke `reproducibility-engineer` in `audit-only` by default or `apply` only for an explicit/bounded reproducibility transformation; otherwise record `not-applicable`, `blocked`, or `unavailable` with evidence |
-| 5 | `skill-hypothesis-discovery` | evidence-based improvement backlog | derive 5-10 candidate hypotheses from benchmark, harness, reproducibility audit when applicable, architecture, validation, security, consistency, and token evidence; dedupe; rank; recommend top 1-3 for current cycle; mark no-mutation when warranted |
-| 6 | `skill-improver` | objective, freeze, bounded experiments, decisions | use selected hypothesis or supplied backlog; baseline before mutation; one bounded hypothesis per patch; accept/reject with gates; proposals marked untested; do not re-own a batch explicitly delegated to reproducibility-engineer apply mode |
-| 7 | `skill-change-gate` | candidate acceptance gate | classify candidate regressions as blocking, material, trade-off, or follow-up; reject or repair before accept when blocking regressions exist |
-| 8 | `skill-quality-reviewer` | semantic capability-delta review | when baseline/candidate capabilities materially change or self-improvement is in scope, classify `added`, `preserved`, `regressed`, `removed-authorized`, `removed-breaking`, `redundant`, or `unproven`; do not treat static presence as behavioral improvement |
-| 9 | `skill-package-architecture-review` | package structure decision | unified/modes/router/split/stop decision; `SKILL.md` control plane; resources have declared use |
-| 10 | `context-architect` | cross-file impact map | affected files, imports/consumers, ripple effects, safe sequence, unrelated paths avoided |
-| 11 | `skill-prompt-and-activation-review` | activation and boundaries | specific frontmatter, visible non-triggers, ambiguous rules, auditable output, stop conditions |
-| 12 | `prompt-architect` | complex prompts/instructions | preserve intent; state success criteria; remove vague wording; examples only when calibrating |
-| 13 | `skill-consistency-repair` | contradictions and integration gaps | compare `SKILL.md`, refs, scripts, templates, evals; links resolve; unsupported claims removed/marked |
-| 14 | `documentation-quality` | references, examples, templates, script docs | docs have clear purpose, verified commands/artifacts, minimal duplication, source-backed claims |
-| 15 | `karpathy-guidelines` | scripts and technical artifacts | scripts do one thing; explicit CLI; useful errors; no overbuilt framework; smoke/syntax check modified code |
-| 16 | `security-and-governance-review` | secrets, unsafe commands, authority | no secrets/logging leaks; scoped writes; safe archive handling; tool authority and residual risks recorded |
-| 17 | `skill-testing-and-validation` | validators, lint, smoke, package checks | structure validation, requested-host portability validation when applicable, activation-harness check when compatible, reproducibility-decision validator, link checks, modified scripts run/syntax-check, package validation recorded |
-| 18 | `skill-cleanup-and-simplification` | hygiene and simplification | classify before deletion; remove only caches, old zips, generated noise, duplicates, scaffold; validate after cleanup |
-| 19 | `skill-token-efficient` | main compression after stability | preserve triggers, exclusions, routing, safety, validation, output, stop; reduce conservatively; revalidate immediately |
-| 20 | `skill-testing-and-validation` | post-compression validation | rerun affected validators, activation-harness check when compatible, reproducibility routing contract, and package checks; reject compression that weakens contract or fails gates |
-| 21 | `skill-hardening` | final readiness and package maturity | inventory passes; support files integrated; no generated noise; validators/package checks pass; scope exact |
-| 22 | final `skill-change-gate` | final acceptance gate | rerun or apply gate checklist after hardening/compression; no blocking regression may remain before final acceptance |
-| 23 | final `skill-benchmark` | final score and delta | compare against baseline; measured vs judged evidence separated; residual risks and next hypothesis listed |
-| 24 | final `skill-improver` closure | final decisions | accept/reject hypotheses; record files; gates; rollback; package only when validated |
-| 25 | final `skill-token-efficient` closure | no avoidable waste after closure | prefer audit/validate mode; if mutating, rerun affected validation/package checks; preserve activation, safety, validation, output, stop, routing, reproducibility, and evidence duties |
+| # | Phase | Pass | Default role | Purpose / minimum evidence |
+|---:|---|---|---|---|
+| 1 | establish | `skill-creator-juiced` | provider | design governance, portability ownership, redesign/router/split escalation; preserve portable core |
+| 2 | establish/diagnose | `skill-benchmark` | provider | baseline maturity/evidence; separate static from behavioral evidence |
+| 3 | establish/diagnose | `skill-harness` | provider | freeze repeatable scenarios/evaluator visibility; activation/non-activation/ambiguous/edge/regression coverage |
+| 4 | diagnose | reproducibility decision + optional `reproducibility-engineer` | provider or bounded mutator | classify controllable variance; `invoke-audit` feeds diagnosis, `invoke-apply` owns only the selected reproducibility batch |
+| 5 | diagnose | `skill-quality-reviewer` | provider | reconstruct capabilities/canonical contract; capability delta/legacy/semantic defects |
+| 6 | diagnose | `skill-package-architecture-review` | provider | package structure, loading, ownership, integration, keep/split/router evidence |
+| 7 | diagnose | `context-architect` | provider | affected files/consumers/dependencies/ripple and safe sequence |
+| 8 | diagnose | `skill-prompt-and-activation-review` | provider | activation, non-activation, ambiguity, overlap, boundary evidence |
+| 9 | diagnose | `prompt-architect` | provider | instruction/prompt contract clarity where complex prompting is material |
+| 10 | diagnose | `skill-consistency-repair` | provider by default | contradictions, integration gaps, ownership drift; emit repair evidence unless explicitly delegated to mutate |
+| 11 | diagnose | `documentation-quality` | provider | docs/reference/example/template quality and verified commands |
+| 12 | diagnose | `karpathy-guidelines` | provider | script/technical-artifact quality, CLI/error behavior, unnecessary complexity |
+| 13 | diagnose | `security-and-governance-review` | provider | secrets, authority, unsafe commands/files, governance and residual risk |
+| 14 | diagnose | `skill-testing-and-validation` | provider | existing validators/tests/links/package gates and missing validation surfaces |
+| 15 | diagnose | `skill-cleanup-and-simplification` | provider by default | classify duplication/scaffold/generated noise before any deletion; emit cleanup hypotheses |
+| 16 | diagnose | `skill-token-efficient` | provider by default | identify context/token waste without weakening activation/safety/evidence semantics |
+| 17 | select | `skill-hypothesis-discovery` | planner | dedupe evidence into 5-10 bounded candidates, classify repair/optimization/experiment, select top 1-3/current next |
+| 18 | mutate | `skill-improver` | default mutator | apply one selected bounded transformation, preserve baseline/evaluator, record transformation/experiment identity |
+| 19 | evaluate | `skill-change-gate` | independent gate | candidate regression/acceptance decision; blocking regressions reject or require repair |
+| 20 | evaluate | `skill-testing-and-validation` | validator | rerun affected deterministic gates and candidate validation after mutation |
+| 21 | prove | `skill-hardening` | closure provider/mutator only if explicitly delegated | final package maturity, integration, validation, scope exactness; any mutation reopens affected gates |
+| 22 | prove | final `skill-change-gate` | independent gate | final no-blocking-regression acceptance after hardening/closure |
+| 23 | prove | final `skill-benchmark` | provider | baseline/candidate delta at the evidence level required by the claim; include parent/control when relevant |
+| 24 | prove | final `skill-improver` closure | lifecycle owner | close accept/reject/revert state, rollback evidence, candidate identity, promotion receipt readiness |
+| 25 | prove | final `skill-token-efficient` closure | provider by default | audit final avoidable context waste; if it mutates, rerun affected validation and final gate before freeze |
 
 ## Reproducibility pass rules
 
-- Always classify pass 4 before `skill-hypothesis-discovery`; never leave it implicit.
-- `invoke-audit` requires actual `reproducibility-engineer` invocation in `audit-only`; its variability map becomes evidence for pass 5.
-- `invoke-apply` requires actual invocation in `apply`; that specialist owns only the bounded reproducibility batch, followed by pass 7 before acceptance.
-- `not-applicable` requires an evidence-based rationale showing no material controllable variance; scripts/evals alone do not make the specialist applicable.
-- `blocked` and `unavailable` must preserve the material-signal evidence and must not be reported as specialist execution.
+- Always classify pass 4 before `skill-hypothesis-discovery`.
+- `invoke-audit` is diagnostic evidence and does not mutate.
+- `invoke-apply` is allowed only for an explicit reproducibility objective or selected bounded reproducibility transformation; run pass 19 before accepting that batch.
+- `not-applicable`, `blocked`, and `unavailable` require evidence and do not count as specialist invocation.
 - Validate the routing record with `<PYTHON> scripts/validate_reproducibility_decision.py <DECISION_JSON>`.
+
+## Provider rules
+
+- A provider may return findings, capability refs, evidence gaps, candidate hypotheses, and validation requirements.
+- A provider does not gain mutation authority merely because it found a defect.
+- Findings produced after pass 17 that are outside the selected transformation become follow-up hypotheses unless required for candidate validity/safety.
+- When a provider is explicitly delegated as mutation owner, record that delegation in the transformation registry and rerun affected gates afterward.
 
 ## Pass rules
 
 - Never skip passes silently; classify each one.
-- For an explicit required sequence, invoke every available specialist. Checklist-only is allowed only when unavailable, blocked, unsafe, or not-applicable; it does not satisfy invocation.
-- `pass` requires actual specialist invocation or equivalent deterministic script/gate. Manual review is `applied-by-checklist` with `execution_type: checklist-only`.
-- Mark a pass `not-applicable` only with artifact evidence.
-- `skill-hypothesis-discovery` is not a mutator. If it recommends no mutation, record the rationale and skip measured-improvement patches unless the user supplies a concrete hypothesis.
-- A failed nonblocking specialist can still be reported, but readiness claims require explicit gate rationale. A `skill-change-gate` failure with blocking regression prevents acceptance until repaired, reverted, or explicitly narrowed out of scope with user approval.
+- For an explicit required sequence, invoke every available specialist. Checklist-only is allowed only when unavailable, blocked, unsafe, or not-applicable and does not satisfy invocation.
+- `pass` requires actual invocation or equivalent deterministic script/gate. Manual review is `applied-by-checklist`.
+- `skill-hypothesis-discovery` is not a mutator.
+- A failed nonblocking provider can still be reported, but readiness claims require explicit gate rationale.
 - Never alter fixtures, expected outputs, frozen benchmark baselines, secrets, generated evidence, old zips, or unrelated files to make a pass look successful.
-- After the final passing gate, freeze the exact candidate. Any target edit invalidates the freeze and requires affected validation plus a new manifest.
+- After the final passing gate, freeze the exact candidate. Any target edit invalidates affected evidence.
 
 ## Required sequence reconciliation gate
 
-Before final readiness, completion, or package claims, reconcile the user-required sequence against actual execution evidence.
+Before final readiness, completion, or package claims, reconcile any user-required sequence against actual execution evidence with `scripts/validate_specialist_reconciliation.py`.
 
 Required JSON ledger fields:
 
@@ -72,10 +84,9 @@ Required JSON ledger fields:
 }
 ```
 
-Run:
-
-```text
-<PYTHON> scripts/validate_specialist_reconciliation.py --ledger <LEDGER_JSON>
-```
-
 Finalization is blocked when a required specialist is unclassified, `not-run`, checklist-only under an explicit sequence, or available but not invoked/blocked/not-applicable. A report may say `full optimization completed` only when this gate passes or no explicit specialist sequence was supplied.
+
+
+## Evolutionary mode branch
+
+`skill-evolution` is **not pass 26** and is not part of the canonical 25-pass ledger. It is a mode-specific search controller inserted after the Select phase when `evolutionary-optimization` is explicit. Booster services its candidate requests through the existing mutation/evaluation owners, then resumes the normal Prove phase for the finalist(s). Canonical mode must remain fully functional when Skill Evolution is unavailable.

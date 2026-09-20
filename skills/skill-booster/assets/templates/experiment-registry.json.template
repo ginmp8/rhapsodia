@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "target": {
+    "identity": "sha256:replace-with-real-identity",
+    "class": "orchestration-meta"
+  },
+  "experiments": [
+    {
+      "id": "E001",
+      "parent_candidate_ids": [
+        "baseline"
+      ],
+      "candidate_id": "C001",
+      "candidate_identity": "sha256:replace-with-frozen-candidate-identity",
+      "transformation_ids": [
+        "T001"
+      ],
+      "evaluator_identity": "sha256:replace-with-evaluator-identity",
+      "scenario_identity": "sha256:replace-with-scenario-identity",
+      "evaluation_level": "L2-focused",
+      "metrics": [],
+      "gate_status": "planned",
+      "result": "planned",
+      "decision": "pending",
+      "evidence_refs": [],
+      "notes": ""
+    }
+  ]
+}
