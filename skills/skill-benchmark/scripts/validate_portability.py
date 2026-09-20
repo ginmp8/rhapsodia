@@ -10,7 +10,7 @@ from pathlib import Path
 
 from _common import dump_json, extract_local_refs, parse_frontmatter
 
-KNOWN_HOSTS = {'portable-core', 'openai', 'claude', 'copilot', 'cursor'}
+KNOWN_HOSTS = {'portable-core', 'openai', 'codex', 'claude', 'copilot', 'cursor'}
 PRIVATE_TOKENS = {
     'skills__read': 'OpenAI/ChatGPT private skill tool name',
     'tools.skills__': 'OpenAI/ChatGPT private skill namespace',
@@ -29,7 +29,7 @@ def normalize_hosts(raw: str) -> list[str]:
     if not hosts:
         hosts = ['portable-core']
     if 'all' in hosts:
-        hosts = ['portable-core', 'openai', 'claude', 'copilot', 'cursor']
+        hosts = ['portable-core', 'openai', 'codex', 'claude', 'copilot', 'cursor']
     if 'portable-core' not in hosts:
         hosts.insert(0, 'portable-core')
     unknown = sorted(set(hosts) - KNOWN_HOSTS)
@@ -176,11 +176,15 @@ def validate(root: Path, hosts: list[str]) -> dict:
             findings.append(finding)
             errors.append(finding)
         host_results['claude'] = {'status': 'fail' if core_errors or errors else 'pass', 'adapter': 'none-required'}
-    if 'openai' in hosts:
+    if 'openai' in hosts or 'codex' in hosts:
         adapter, adapter_findings = validate_openai_adapter(root)
         findings.extend(adapter_findings)
         host_errors = [item for item in adapter_findings if item['severity'] == 'error']
-        host_results['openai'] = {'status': 'fail' if core_errors or host_errors else 'pass', 'adapter': adapter}
+        host_status = 'fail' if core_errors or host_errors else 'pass'
+        if 'openai' in hosts:
+            host_results['openai'] = {'status': host_status, 'adapter': adapter}
+        if 'codex' in hosts:
+            host_results['codex'] = {'status': host_status, 'adapter': adapter}
     if 'copilot' in hosts:
         host_results['copilot'] = {'status': 'fail' if core_errors else 'pass', 'adapter': 'none-required'}
     if 'cursor' in hosts:
@@ -205,7 +209,7 @@ def validate(root: Path, hosts: list[str]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description='Validate skill-benchmark portability across Agent Skills-compatible hosts.')
     parser.add_argument('--target', required=True)
-    parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,claude,copilot,cursor,all')
+    parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,codex,claude,copilot,cursor,all')
     parser.add_argument('--json', dest='json_output')
     args = parser.parse_args()
     try:

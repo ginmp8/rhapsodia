@@ -4,7 +4,7 @@ Use when a caller is comparing several skill candidates from the same search. Be
 
 ## Comparability
 
-For strict peer comparison require the same: baseline identity, evaluator identity/version, scenario set/partition, **evaluation/scoring policy identity**, runtime/model settings when material, and metric definitions. Preserve each candidate's direct parent separately.
+For strict peer comparison require the same: baseline identity, evaluator identity/version, scenario set/partition, **evaluation/scoring policy identity**, runtime/model settings when material, and metric definitions. Contract v2 enforces identical metric IDs across candidates; `policy_id` is the frozen identity for the scoring policy/metric definitions. Metric-bearing levels (`L2`-`L5`) require at least one metric. Preserve each candidate's direct parent separately.
 
 ## Output envelope
 

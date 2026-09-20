@@ -8,3 +8,24 @@ def test_evaluator_mismatch():
 def test_policy_mismatch():
  d={'contract_version':2,'candidates':[row('C1'),row('C2')]};d['candidates'][1]['policy_id']='P2';assert 'comparability:policy_id:mismatch' in m.validate(d)
 def test_legacy_v1_still_valid():assert m.validate({'candidates':[{'candidate_id':'C1','baseline_id':'B','evaluator_id':'E','scenario_set_id':'S','metrics':{'q':1}}]})==[]
+
+def test_v2_l4_rejects_empty_metrics():
+ d={'contract_version':2,'candidates':[row('C1'),row('C2')]}
+ for candidate in d['candidates']:
+  candidate['metrics']={}
+ errors=m.validate(d)
+ assert 'candidate[0].metrics:empty' in errors
+ assert 'candidate[1].metrics:empty' in errors
+
+def test_v2_rejects_metric_set_mismatch():
+ d={'contract_version':2,'candidates':[row('C1'),row('C2')]}
+ d['candidates'][0]['metrics']={'quality':{'value':1,'uncertainty':0.1}}
+ d['candidates'][1]['metrics']={'token_cost':{'value':100,'uncertainty':0}}
+ assert 'comparability:metrics:set_mismatch' in m.validate(d)
+
+def test_v2_l1_allows_empty_metrics_when_all_candidates_match():
+ d={'contract_version':2,'candidates':[row('C1'),row('C2')]}
+ for candidate in d['candidates']:
+  candidate['evaluation_level']='L1-deterministic'
+  candidate['metrics']={}
+ assert m.validate(d)==[]

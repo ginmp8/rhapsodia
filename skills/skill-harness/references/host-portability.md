@@ -71,14 +71,20 @@ Bundled harness scripts should:
 
 `openai`, `claude`, `copilot`, and `cursor` run the same portable core and may add profile-specific adapter checks. A host profile must never weaken the portable core merely to pass.
 
-Use:
+Use the single-profile commands when one delivery target is in scope:
 
 ```text
 <PYTHON> scripts/skill_harness_portability.py --target <TARGET_SKILL_PATH> --profile portable --output <report-dir>/portability.json
 <PYTHON> scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --profile portable --output <report-dir>/validation.json
 ```
 
-Run additional host profiles when the delivery requirement explicitly names those hosts.
+For a multi-platform claim, validate the supported matrix in one dependency-free gate:
+
+```text
+<PYTHON> scripts/skill_harness_host_matrix.py --target <TARGET_SKILL_PATH> --profiles all --strict --output <report-dir>/host-matrix.json
+```
+
+The matrix delegates each profile to `scripts/skill_harness_portability.py`; it does not fork host semantics or create a second portability rubric. A comma-separated profile subset is allowed when the requested host matrix is narrower and explicitly recorded.
 
 ## Packaging rule
 

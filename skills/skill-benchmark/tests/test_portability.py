@@ -22,10 +22,27 @@ def test_all_structural_host_profiles_pass() -> None:
     report = module.validate(ROOT, module.normalize_hosts('all'))
     assert report['status'] == 'pass', report
     assert report['portable_core'] is True
-    for host in ('openai', 'claude', 'copilot', 'cursor'):
+    for host in ('openai', 'codex', 'claude', 'copilot', 'cursor'):
         assert report['host_results'][host]['status'] == 'pass', report['host_results'][host]
+
+
+def test_codex_is_an_explicit_supported_profile() -> None:
+    import sys
+    sys.path.insert(0, str(ROOT / 'scripts'))
+    module = load_module()
+    hosts = module.normalize_hosts('codex')
+    assert hosts == ['portable-core', 'codex']
+    report = module.validate(ROOT, hosts)
+    assert report['host_results']['codex']['status'] == 'pass', report
+
+
+def test_current_openai_adapter_has_no_legacy_products_field() -> None:
+    text = (ROOT / 'agents' / 'openai.yaml').read_text(encoding='utf-8')
+    assert 'products:' not in text
 
 
 if __name__ == '__main__':
     test_all_structural_host_profiles_pass()
+    test_codex_is_an_explicit_supported_profile()
+    test_current_openai_adapter_has_no_legacy_products_field()
     print('ok')

@@ -1,0 +1,19 @@
+{
+  "contract_version": 1,
+  "runs": [
+    {
+      "candidate_id": "C001",
+      "candidate_identity": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "run_id": "run-C001-001",
+      "trace_id": "trace-C001-001",
+      "trace_manifest_id": "trace-manifest-C001-001",
+      "trace_manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "work_dir": "isolated/work/C001/run-001",
+      "evaluator_id": "frozen-evaluator-id",
+      "scenario_set_id": "frozen-scenario-partition-id",
+      "evaluation_policy_id": "frozen-evaluation-policy-id",
+      "holdout_blind": true,
+      "candidate_saw_evaluator_only_assets": false
+    }
+  ]
+}

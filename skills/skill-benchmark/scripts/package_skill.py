@@ -216,7 +216,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--output')
     parser.add_argument('--validate-only', help='Validate an existing package zip without creating a new one.')
     parser.add_argument('--json-output', help='Optional success receipt path. Existing last-good receipts are preserved on failure.')
-    parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,claude,copilot,cursor,all')
+    parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,codex,claude,copilot,cursor,all')
     args = parser.parse_args(argv)
 
     if args.validate_only:
