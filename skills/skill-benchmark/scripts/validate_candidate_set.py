@@ -5,8 +5,8 @@ LEVELS={'L0-structural','L1-deterministic','L2-focused','L3-harness','L4-benchma
 
 def _nonempty(v):return isinstance(v,str) and bool(v.strip())
 def validate(d):
- e=[];version=d.get('contract_version',1);rows=d.get('candidates')
- if version not in {1,2,3}:e.append('contract_version:unsupported')
+ e=[];version=d.get('contract_version',1);rows=d.get('candidates');candidate_identities=set()
+ if version not in {1,2,3,4}:e.append('contract_version:unsupported')
  if not isinstance(rows,list) or not rows:return sorted(set(e+['candidates:invalid']))
  ids=[];refs={};metric_ids=None;keys=('baseline_id','evaluator_id','scenario_set_id')+ (('policy_id',) if version>=2 else tuple())
  for i,r in enumerate(rows):
@@ -15,6 +15,9 @@ def validate(d):
   if not _nonempty(cid):e.append(f'candidate[{i}].candidate_id:missing')
   if version>=2:
    if not _nonempty(r.get('candidate_identity')):e.append(f'candidate[{i}].candidate_identity:missing')
+   elif version>=4:
+    if r.get('candidate_identity') in candidate_identities:e.append('candidate_identity:duplicate')
+    candidate_identities.add(r.get('candidate_identity'))
    if not _nonempty(r.get('parent_id')):e.append(f'candidate[{i}].parent_id:missing')
    if r.get('evaluation_level') not in LEVELS:e.append(f'candidate[{i}].evaluation_level:invalid')
   for k in keys:
@@ -23,7 +26,7 @@ def validate(d):
    elif refs[k]!=r[k]:e.append(f'comparability:{k}:mismatch')
   metrics=r.get('metrics',{})
   if not isinstance(metrics,dict):e.append(f'candidate[{i}].metrics:invalid');continue
-  if version==3:
+  if version>=3:
    if not metrics:e.append(f'candidate[{i}].metrics:empty')
    current_metric_ids=frozenset(metrics)
    if metric_ids is None:metric_ids=current_metric_ids

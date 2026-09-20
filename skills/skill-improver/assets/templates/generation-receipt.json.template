@@ -1,13 +1,20 @@
 {
-  "receipt_version": 2,
+  "receipt_version": 3,
   "candidate_id": "C007",
   "candidate_identity": "sha256-or-immutable-ref",
-  "request_signature": "request-signature-sha256",
+  "request_signature": "952110c13857a4af7353968f359d8dd7badacc7355d1dc1468f12533bf3b5911",
   "base_parent_id": "C003",
-  "donor_parent_ids": ["C005"],
+  "donor_parent_ids": [
+    "C005"
+  ],
   "operator": "transformation-merge",
-  "transformation_ids": ["T002", "T008"],
-  "changed_files": ["SKILL.md"],
+  "transformation_ids": [
+    "T002",
+    "T008"
+  ],
+  "changed_files": [
+    "SKILL.md"
+  ],
   "validation_status": "pass",
   "causal_limitations": []
 }

@@ -4,7 +4,7 @@
   "exports": [
     {
       "contract_id": "skill-opt.harness-multi-candidate-evidence",
-      "version": 3,
+      "version": 4,
       "role": "owner-producer",
       "surface_paths": [
         "references/multi-candidate-execution.md",
@@ -14,7 +14,7 @@
     },
     {
       "contract_id": "skill-opt.harness-multi-candidate-evidence-strict",
-      "version": 1,
+      "version": 2,
       "role": "owner-producer",
       "surface_paths": [
         "references/multi-candidate-execution-strict.md",

@@ -27,8 +27,11 @@ VALID_HOLDOUT_STATUS = {"not-used", "blind-pass", "blind-fail", "revealed-develo
 
 def validate(contract: dict, state: dict) -> list[str]:
     errors: list[str] = []
-    if state.get("state_version") != 2:
-        errors.append("state_version:unsupported")
+    if state.get("state_version") != 3:
+        if state.get("state_version") == 2:
+            errors.append("state_version:upgrade_required_v3")
+        else:
+            errors.append("state_version:unsupported")
     if state.get("search_id") != contract.get("search_id"):
         errors.append("search_id:mismatch")
     if state.get("status") not in VALID_SEARCH_STATUS:
@@ -67,6 +70,7 @@ def validate(contract: dict, state: dict) -> list[str]:
     allowed_levels = set(contract.get("allowed_evaluation_levels", []))
     baseline_id = contract.get("baseline_candidate_id")
     seen_ids: set[str] = set()
+    materialized_identities: set[str] = set()
     seen_request_signatures: dict[str, str] = {}
 
     for c in candidates:
@@ -131,6 +135,11 @@ def validate(contract: dict, state: dict) -> list[str]:
         identity = c.get("candidate_identity")
         if generated_or_later and (not isinstance(identity, str) or not identity.strip()):
             errors.append(f"candidate:{cid}:candidate_identity_required")
+        elif generated_or_later:
+            if identity in materialized_identities:
+                errors.append("candidate_identity:duplicate")
+            else:
+                materialized_identities.add(identity)
 
         receipt = c.get("generation_receipt")
         if generated_or_later:
@@ -156,6 +165,8 @@ def validate(contract: dict, state: dict) -> list[str]:
         if needs_complete_evaluation and not has_evaluation:
             errors.append(f"candidate:{cid}:evaluation_required")
         if has_evaluation:
+            if not isinstance(evaluation.get("evaluation_ref"), str) or not evaluation["evaluation_ref"].strip():
+                errors.append(f"candidate:{cid}:evaluation_ref_required")
             if not evaluation_identity_matches(c, contract):
                 errors.append(f"candidate:{cid}:evaluation_identity_mismatch")
             if evaluation.get("level") not in allowed_levels:

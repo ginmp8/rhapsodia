@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 _SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+_SHA256_REF_RE = re.compile(r"^sha256:[0-9a-fA-F]{64}$")
 _REQUIRED_RUN_FIELDS = (
     "candidate_id",
     "candidate_identity",
@@ -28,7 +29,8 @@ def _nonempty(value):
 
 def validate(data):
     errors = []
-    if data.get("contract_version") != 1:
+    version = data.get("contract_version")
+    if version not in {1, 2}:
         errors.append("contract_version:unsupported")
 
     runs = data.get("runs")
@@ -95,7 +97,8 @@ def validate(data):
         trace_manifest_sha256 = run.get("trace_manifest_sha256")
         if _nonempty(trace_manifest_sha256):
             normalized_hash = trace_manifest_sha256.lower()
-            if not _SHA256_RE.fullmatch(trace_manifest_sha256):
+            valid_hash = _SHA256_RE.fullmatch(trace_manifest_sha256) if version == 1 else _SHA256_REF_RE.fullmatch(trace_manifest_sha256)
+            if not valid_hash:
                 errors.append(f"run[{index}].trace_manifest_sha256:invalid")
             elif normalized_hash in trace_manifest_hashes:
                 errors.append("trace_manifest_sha256:duplicate")

@@ -15,7 +15,7 @@ Require all of: explicit evolutionary intent; immutable baseline identity; valid
 
 ## Handoff
 
-Create a v2 `evolution-handoff.json` from `assets/templates/evolution-handoff.json.template` and validate it with `scripts/validate_evolution_handoff.py`. Then compile the caller-owned capability map, validated hypothesis pool, transformation registry, and evaluation plan into the Skill Evolution v2 search contract with `scripts/build_evolution_contract.py`. Validate that compiled contract with the Skill Evolution contract validator before search. This adapter keeps Booster-owned schemas out of the search controller while preserving exact artifact identities.
+Create a v3 `evolution-handoff.json` from `assets/templates/evolution-handoff.json.template` and validate it with `scripts/validate_evolution_handoff.py`. Then compile the caller-owned capability map, validated hypothesis pool, transformation registry, and evaluation plan into the Skill Evolution v3 search contract with `scripts/build_evolution_contract.py`. Validate that compiled contract with the Skill Evolution contract validator before search. This adapter keeps Booster-owned schemas out of the search controller while preserving exact artifact identities, including the evaluation-plan identity.
 
 The canonical strategy/result remains a protected comparator and may be used for backcross. The immutable original baseline remains the cumulative regression reference.
 
@@ -43,4 +43,4 @@ A target-level search win is evidence for that target, not automatic policy. Cro
 
 ## Contract evolution
 
-The v2 handoff/search contract is a public integration surface. Its version and the candidate-request/evaluation interfaces are declared in `contracts/integration-manifest.json`. Before changing any of those surfaces, use `references/integration-impact-contract.md` and gate all known peer consumers. Do not silently upgrade one side of the handoff.
+The v3 handoff/search contract is a public integration surface. Its version and the candidate-request/evaluation interfaces are declared in `contracts/integration-manifest.json`. Before changing any of those surfaces, use `references/integration-impact-contract.md` and gate all known peer consumers. Do not silently upgrade one side of the handoff.

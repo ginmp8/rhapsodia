@@ -1,6 +1,6 @@
 # State Integrity and Resume
 
-Use an external checkpoint receipt for every completed search round. The state file remains ordinary JSON; the receipt binds the exact canonical JSON bytes by SHA-256 without creating a self-referential hash field.
+Validate search-state v3 before survivor selection and again before every checkpoint. Use an external checkpoint receipt for every completed search round. The state file remains ordinary JSON; the receipt binds the exact canonical JSON bytes by SHA-256 without creating a self-referential hash field.
 
 ## Create checkpoint
 

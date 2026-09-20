@@ -10,6 +10,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from _common import dump_json, evaluation_identity_matches, metric_value
+from validate_search_state import validate as validate_state
 
 
 def _evaluation(c: dict) -> dict:
@@ -32,11 +33,30 @@ def _comparable(c: dict, contract: dict) -> bool:
     return all(metric_value(metrics.get(o["name"])) is not None for o in contract.get("objectives", []))
 
 
+def _evidence_eligible(c: dict, contract: dict) -> bool:
+    allowed = set(contract.get("selection_policy", {}).get("eligible_evidence_types", []))
+    return _evaluation(c).get("evidence_type") in allowed
+
+
+def _holdout_failed(c: dict, contract: dict) -> bool:
+    policy = contract.get("selection_policy", {}).get("holdout_failure_policy")
+    return policy == "eliminate-blind-fail" and _evaluation(c).get("holdout_status") == "blind-fail"
+
+
+def _same_comparison_level(a: dict, b: dict, contract: dict) -> bool:
+    policy = contract.get("selection_policy", {}).get("comparison_level_policy")
+    if policy == "same-level":
+        return _evaluation(a).get("level") == _evaluation(b).get("level")
+    return True
+
+
 def _margin(obj: dict, a_uncertainty: float, b_uncertainty: float) -> float:
     return float(obj.get("min_delta", 0.0)) + a_uncertainty + b_uncertainty
 
 
-def _dominates(a: dict, b: dict, objectives: list[dict]) -> bool:
+def _dominates(a: dict, b: dict, objectives: list[dict], contract: dict) -> bool:
+    if not _same_comparison_level(a, b, contract):
+        return False
     am = _evaluation(a).get("metrics", {})
     bm = _evaluation(b).get("metrics", {})
     strictly_better = False
@@ -92,6 +112,29 @@ def _novelty_against_selected(candidate: dict, selected: list[dict]) -> float:
 
 
 def select(contract: dict, state: dict) -> dict:
+    state_errors = validate_state(contract, state)
+    # Evaluation-identity drift is a selection incompatibility, not a structural
+    # state corruption: keep it visible in incompatible_evidence rather than
+    # comparing it or hiding it behind a generic state failure.
+    fatal_state_errors = [
+        error for error in state_errors
+        if not error.endswith(":evaluation_identity_mismatch")
+    ]
+    if fatal_state_errors:
+        return {
+            "status": "fail",
+            "errors": fatal_state_errors,
+            "eligible": [],
+            "incompatible_evidence": [],
+            "ineligible_evidence": [],
+            "eliminated_holdout": [],
+            "eliminated_hard_gate": [],
+            "pareto_frontier": [],
+            "selected_survivors": [],
+            "derived_novelty": {},
+            "selection_policy": contract.get("selection_policy", {}),
+        }
+
     gates = contract["hard_gates"]
     objectives = contract["objectives"]
     candidates = [
@@ -101,12 +144,16 @@ def select(contract: dict, state: dict) -> dict:
 
     incompatible = sorted(c["candidate_id"] for c in candidates if not _comparable(c, contract))
     comparable = [c for c in candidates if c["candidate_id"] not in set(incompatible)]
-    eliminated = sorted(c["candidate_id"] for c in comparable if not _gate_pass(c, gates))
-    eligible = [c for c in comparable if _gate_pass(c, gates)]
+    ineligible_evidence = sorted(c["candidate_id"] for c in comparable if not _evidence_eligible(c, contract))
+    evidence_eligible = [c for c in comparable if c["candidate_id"] not in set(ineligible_evidence)]
+    eliminated_holdout = sorted(c["candidate_id"] for c in evidence_eligible if _holdout_failed(c, contract))
+    holdout_eligible = [c for c in evidence_eligible if c["candidate_id"] not in set(eliminated_holdout)]
+    eliminated = sorted(c["candidate_id"] for c in holdout_eligible if not _gate_pass(c, gates))
+    eligible = [c for c in holdout_eligible if _gate_pass(c, gates)]
 
     frontier: list[dict] = []
     for c in eligible:
-        if not any(_dominates(other, c, objectives) for other in eligible if other is not c):
+        if not any(_dominates(other, c, objectives, contract) for other in eligible if other is not c):
             frontier.append(c)
     frontier.sort(key=lambda c: c["candidate_id"])
 
@@ -135,7 +182,7 @@ def select(contract: dict, state: dict) -> dict:
         remaining = [c for c in eligible if c not in selected]
         remaining.sort(
             key=lambda c: (
-                sum(1 for other in eligible if other is not c and _dominates(other, c, objectives)),
+                sum(1 for other in eligible if other is not c and _dominates(other, c, objectives, contract)),
                 -_novelty_against_selected(c, selected),
                 _uncertainty(c, objectives),
                 c["candidate_id"],
@@ -153,8 +200,11 @@ def select(contract: dict, state: dict) -> dict:
 
     return {
         "status": "pass",
+        "errors": [],
         "eligible": sorted(c["candidate_id"] for c in eligible),
         "incompatible_evidence": incompatible,
+        "ineligible_evidence": ineligible_evidence,
+        "eliminated_holdout": eliminated_holdout,
         "eliminated_hard_gate": eliminated,
         "pareto_frontier": sorted(c["candidate_id"] for c in frontier),
         "selected_survivors": [c["candidate_id"] for c in selected],
@@ -176,7 +226,7 @@ def main() -> int:
     if args.json_output:
         Path(args.json_output).write_text(rendered, encoding="utf-8")
     print(rendered, end="")
-    return 0
+    return 0 if result.get("status") == "pass" else 2
 
 
 if __name__ == "__main__":

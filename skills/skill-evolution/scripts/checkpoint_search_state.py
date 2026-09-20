@@ -10,6 +10,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from _common import dump_json, sha256_data, transformation_signature
+from validate_search_state import validate as validate_state
 
 RECEIPT_VERSION = 1
 
@@ -23,7 +24,7 @@ def _strategy_signatures(state: dict) -> list[str]:
 
 
 def build_receipt(contract: dict, state: dict, previous_receipt: dict | None = None) -> tuple[dict, list[str]]:
-    errors: list[str] = []
+    errors: list[str] = list(validate_state(contract, state))
     if contract.get("search_id") != state.get("search_id"):
         errors.append("search_id:mismatch")
     previous_hash = sha256_data(previous_receipt) if previous_receipt is not None else None

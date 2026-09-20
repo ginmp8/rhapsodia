@@ -4,18 +4,18 @@
 
 Use evidence-guided champion-challenger search:
 
-`freeze -> validate -> seed -> generate -> cheap-evaluate -> select -> recombine -> checkpoint -> stop -> finalists`
+`freeze -> validate -> seed -> generate -> cheap-evaluate -> validate-state -> select -> recombine -> validate-state -> checkpoint -> stop -> finalists`
 
 Search semantic transformations and candidate strategies; never mutate target files directly.
 
 ## Contract generation
 
-New searches use search-contract **v2** and search-state **v2**. Do not silently reinterpret v1 artifacts. For an old run, either finish it with the old controller or explicitly re-baseline into v2 with new frozen identities. A re-baseline is a new search identity, not a continuation.
+New searches use search-contract **v3** and search-state **v3**. Do not silently reinterpret v1/v2 artifacts. For an old run, either finish it with the old controller or explicitly re-baseline into v3 with new frozen identities. A re-baseline is a new search identity, not a continuation.
 
 Freeze these before candidate mutation:
 
 - target/baseline identity;
-- capability-map, hypothesis-pool, and transformation-registry identities;
+- capability-map, hypothesis-pool, transformation-registry, and evaluation-plan identities;
 - evaluator, scenario-set, and evaluation-policy identities;
 - hard gates and objective directions/minimum deltas;
 - mutation/evaluation interface identities;

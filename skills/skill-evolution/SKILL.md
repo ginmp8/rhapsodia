@@ -36,11 +36,11 @@ The caller supplies mutation/evaluation interfaces and remains final promotion o
 
 ## Required inputs
 
-Before search, resolve a **v2 search contract** containing:
+Before search, resolve a **v3 search contract** containing:
 
 1. immutable target/baseline identity and target class;
 2. stable ids for capability map, hypothesis pool, and transformation registry;
-3. frozen mutation/evaluation interface ids;
+3. stable ids for the evaluation plan plus frozen mutation/evaluation interface ids;
 4. bounded budget;
 5. hard gates;
 6. objective directions and predeclared `min_delta` values;
@@ -57,7 +57,7 @@ Use [assets/templates/search-contract.json.template](assets/templates/search-con
 <PYTHON> scripts/validate_search_contract.py <SEARCH_CONTRACT.json>
 ```
 
-Do not silently continue a v1 search as v2. Read [references/search-model.md](references/search-model.md) for re-baseline rules.
+Do not silently continue a v1/v2 search as v3. Read [references/search-model.md](references/search-model.md) for re-baseline rules.
 
 ## Search modes
 
@@ -77,13 +77,13 @@ Run the package validator during preflight when package integrity is material, f
 <PYTHON> scripts/validate_skill_evolution.py --target <SKILL_EVOLUTION_ROOT>
 ```
 
-This gate validates the declared integration manifest and all v2 public surfaces, including candidate-evaluation. A missing or invalid declared surface blocks readiness; do not substitute generic package validation for this skill-specific gate.
+This gate validates the declared integration manifest and all declared public surfaces, including v3 search/state and v2 candidate-request/evaluation. A missing or invalid declared surface blocks readiness; do not substitute generic package validation for this skill-specific gate.
 
 ## Progressive loading
 
 Load only what the active stage needs:
 
-- [references/search-model.md](references/search-model.md): lifecycle, v2 freeze, population, deterministic stagnation, and cost control.
+- [references/search-model.md](references/search-model.md): lifecycle, v3 freeze, population, deterministic stagnation, and cost control.
 - [references/candidate-and-lineage-contract.md](references/candidate-and-lineage-contract.md): candidate identity, parent/donor semantics, receipt and lineage invariants.
 - [references/recombination-contract.md](references/recombination-contract.md): transformation compatibility and candidate-request v2.
 - [references/selection-and-pareto.md](references/selection-and-pareto.md): evaluator compatibility, uncertainty/min-delta dominance, canonical preservation, derived novelty.
@@ -93,7 +93,7 @@ Load only what the active stage needs:
 - `contracts/integration-manifest.json`: declares the versioned contracts this controller owns plus the external generation-receipt contract it accepts, enabling orchestrator impact analysis without duplicating peer schemas.
 - [assets/templates/candidate-evaluation.json.template](assets/templates/candidate-evaluation.json.template): owner schema example for normalized candidate-evaluation v2 envelopes.
 - [scripts/validate_candidate_evaluation.py](scripts/validate_candidate_evaluation.py): validates normalized evaluator identity, hard gates, metrics, uncertainty, level, and holdout status against the frozen search contract.
-- [assets/templates/search-state.json.template](assets/templates/search-state.json.template): v2 state shape.
+- [assets/templates/search-state.json.template](assets/templates/search-state.json.template): v3 state shape.
 - [assets/templates/search-report.md.template](assets/templates/search-report.md.template): durable report skeleton.
 - [scripts/validate_search_state.py](scripts/validate_search_state.py): lineage, receipts, transformation sets, evaluation identity, budget, and finalist validation.
 - [scripts/validate_candidate_request.py](scripts/validate_candidate_request.py): deterministic pre-mutation request gate.
@@ -106,7 +106,7 @@ Load only what the active stage needs:
 
 ### 1. Freeze and validate search inputs
 
-Freeze every required identity before candidate mutation. Validate the v2 contract. If evaluator identity, capability/hypothesis/transformation identity, interface identity, hard gates, or objective policy can drift mid-search, stop and re-baseline rather than pretending results are comparable.
+Freeze every required identity before candidate mutation. Validate the v3 contract. If evaluator identity, capability/hypothesis/transformation identity, interface identity, hard gates, or objective policy can drift mid-search, stop and re-baseline rather than pretending results are comparable.
 
 ### 2. Seed a deliberately small population
 
@@ -146,9 +146,17 @@ Use the caller's ladder:
 
 Record evaluator/scenario/policy identity on every evaluation. Do not compare peers whose deciding evidence identity differs. Keep evidence labels truthful; search cannot upgrade `supplied` evidence to `measured`.
 
-### 6. Select survivors without fake precision
+### 6. Validate state, then select survivors without fake precision
 
-Run:
+Before selection, validate the integrated generation/evaluation state:
+
+```text
+<PYTHON> scripts/validate_search_state.py \
+  --contract <SEARCH_CONTRACT.json> \
+  --state <SEARCH_STATE.json>
+```
+
+Only then run:
 
 ```text
 <PYTHON> scripts/select_survivors.py \
@@ -156,15 +164,16 @@ Run:
   --state <SEARCH_STATE.json>
 ```
 
-The selector:
+The selector also validates state defensively, then:
 
 1. rejects incompatible evaluation identity/evidence;
-2. applies hard gates;
-3. computes dominance using predeclared `min_delta + uncertainty(A) + uncertainty(B)`;
-4. keeps non-dominated alternatives;
-5. preserves configured comparator roles when eligible;
-6. derives novelty from transformation-set Jaccard distance rather than accepting a model-authored novelty score;
-7. uses lower uncertainty then stable candidate id as deterministic tie-breaks.
+2. excludes unexecuted `planned`/`unknown` evidence from selection;
+3. eliminates `blind-fail` holdout results;
+4. applies hard gates;
+5. compares Pareto dominance only within the same frozen evaluation level;
+6. computes dominance using predeclared `min_delta + uncertainty(A) + uncertainty(B)`;
+7. keeps non-dominated alternatives and configured comparator roles when eligible;
+8. derives novelty from transformation-set Jaccard distance rather than accepting a model-authored novelty score.
 
 Never invent a weighted global winner after observing candidate results.
 
@@ -254,7 +263,7 @@ Use `measured` only for executed evaluator/tool evidence. Use `derived` for dete
 
 ## Stop conditions
 
-Stop or return a bounded result when frozen identities are absent/drifted; hard-gate/objective semantics are missing; mutation/evaluation interfaces are unavailable for `search`; v1 state is presented as a v2 resume without explicit re-baseline; a candidate receipt/evaluator identity/lineage is inconsistent; a request requires dependency/conflict/invariant violations; checkpoint verification fails; search budget/stagnation is exhausted; holdout blindness would be violated; the only continuation path weakens a gate; or final promotion would require authority this skill does not own.
+Stop or return a bounded result when frozen identities are absent/drifted; hard-gate/objective semantics are missing; mutation/evaluation interfaces are unavailable for `search`; v1/v2 state is presented as a v3 resume without explicit re-baseline; a candidate receipt/evaluator identity/lineage is inconsistent; a request requires dependency/conflict/invariant violations; checkpoint verification fails; search budget/stagnation is exhausted; holdout blindness would be violated; the only continuation path weakens a gate; or final promotion would require authority this skill does not own.
 
 
 ## Integration contract changes

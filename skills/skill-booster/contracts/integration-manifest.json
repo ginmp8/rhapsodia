@@ -4,7 +4,7 @@
   "exports": [
     {
       "contract_id": "skill-opt.evolution-handoff",
-      "version": 2,
+      "version": 3,
       "role": "owner-producer",
       "surface_paths": [
         "assets/templates/evolution-handoff.json.template",
@@ -17,7 +17,7 @@
     {
       "contract_id": "skill-opt.evolution-search-contract",
       "accepted_versions": [
-        2
+        3
       ],
       "required_for": [
         "evolutionary-optimization"
@@ -44,7 +44,7 @@
     {
       "contract_id": "skill-opt.search-candidate-context",
       "accepted_versions": [
-        2
+        3
       ],
       "required_for": [
         "evolutionary-optimization:change-gate"
@@ -62,7 +62,7 @@
     {
       "contract_id": "skill-opt.benchmark-candidate-evidence",
       "accepted_versions": [
-        3
+        4
       ],
       "required_for": [
         "evolutionary-optimization:L4"
@@ -71,7 +71,7 @@
     {
       "contract_id": "skill-opt.harness-multi-candidate-evidence",
       "accepted_versions": [
-        3
+        4
       ],
       "required_for": [
         "evolutionary-optimization:L3"
@@ -99,7 +99,7 @@
     {
       "contract_id": "skill-opt.candidate-generation-receipt",
       "accepted_versions": [
-        2
+        3
       ],
       "required_for": [
         "evolutionary-optimization"

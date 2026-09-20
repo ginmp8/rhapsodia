@@ -1,15 +1,15 @@
 # Strict Multi-Candidate Execution Evidence
 
-Use this contract when a caller needs evolution/search evidence with identity-bound repeated runs and trace-manifest provenance. It is additive to the existing `skill-opt.harness-multi-candidate-evidence` v2 contract; it does not replace or reinterpret v2.
+Use this contract when a caller needs evolution/search evidence with identity-bound repeated runs and trace-manifest provenance. It is additive to the current `skill-opt.harness-multi-candidate-evidence` v4 contract; it does not replace or reinterpret the base contract.
 
 ## Contract identity
 
 - contract id: `skill-opt.harness-multi-candidate-evidence-strict`
-- version: `1`
+- version: `2`
 - template: `assets/templates/multi-candidate-manifest-strict.json.template`
 - validator: `scripts/validate_multi_candidate_manifest_strict.py`
 
-The legacy v2 surface remains unchanged for existing consumers. Use this strict contract only when the caller explicitly accepts it or when a coordinated ecosystem change set migrates consumers.
+Base v1/v2/v3 and strict v1 remain legacy-readable for their original consumers. Use strict v2 when repeated executions of one candidate are required under the current canonical trace-hash representation.
 
 ## Required invariants
 
@@ -20,7 +20,7 @@ For every run:
 - the same `candidate_id` may appear in multiple runs only when `candidate_identity` is identical;
 - different `candidate_id` values must not share one `candidate_identity`;
 - `run_id`, `work_dir`, `trace_id`, `trace_manifest_id`, and `trace_manifest_sha256` are unique per run;
-- `trace_manifest_sha256` is a 64-character SHA-256 hex digest;
+- strict v2 represents `trace_manifest_sha256` canonically as `sha256:<64hex>`;
 - comparable runs use the same `evaluator_id`, `scenario_set_id`, and `evaluation_policy_id`;
 - holdout/blind claims fail when evaluator-only assets were candidate-visible.
 
@@ -38,4 +38,4 @@ Do not embed secrets or evaluator-only payloads in this envelope. Use identifier
 <PYTHON> <skill-root>/scripts/validate_multi_candidate_manifest_strict.py <manifest.json>
 ```
 
-A failing validator blocks use of the envelope as strict multi-candidate evidence. The existing v2 validator remains the compatibility path for existing consumers and must not be silently upgraded to strict semantics without a versioned, coordinated consumer migration.
+A failing validator blocks use of the envelope as strict multi-candidate evidence. Strict v1 remains legacy-readable with its original unprefixed 64-hex representation; do not silently reinterpret it as v2.

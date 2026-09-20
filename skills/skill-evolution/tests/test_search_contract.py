@@ -17,8 +17,8 @@ def load(name, path):
     return mod
 
 
-contract_mod = load("contract_v2", SCRIPTS / "validate_search_contract.py")
-state_mod = load("state_v2", SCRIPTS / "validate_search_state.py")
+contract_mod = load("contract_v3", SCRIPTS / "validate_search_contract.py")
+state_mod = load("state_v3", SCRIPTS / "validate_search_state.py")
 
 
 def template(name):
@@ -29,10 +29,10 @@ def test_contract_template_valid():
     assert contract_mod.validate(template("search-contract.json.template")) == []
 
 
-def test_contract_rejects_v1_instead_of_silently_reinterpreting():
+def test_contract_rejects_v2_instead_of_silently_reinterpreting():
     c = template("search-contract.json.template")
-    c["contract_version"] = 1
-    assert "contract_version:upgrade_required_v2" in contract_mod.validate(c)
+    c["contract_version"] = 2
+    assert "contract_version:upgrade_required_v3" in contract_mod.validate(c)
 
 
 def test_contract_rejects_budget_above_20():

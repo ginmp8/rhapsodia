@@ -1,5 +1,5 @@
 {
-  "contract_version": 3,
+  "contract_version": 4,
   "runs": [
     {
       "candidate_id": "C001",
