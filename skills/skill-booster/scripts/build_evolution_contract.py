@@ -22,6 +22,10 @@ def build(handoff:dict,base:Path)->dict:
  identities.extend([tr.get('target_identity'),ev.get('target_identity')])
  bad=[x for x in identities if x and x!=target]
  if bad:raise ValueError('artifact target identity mismatch')
+ if ev.get('schema_version')!=2:raise ValueError('evaluation plan schema_version must be 2')
+ finalist_policy=ev.get('finalist_policy')
+ if not isinstance(finalist_policy,dict):raise ValueError('evaluation plan finalist policy missing')
+ if handoff.get('finalist_policy')!=finalist_policy:raise ValueError('finalist policy mismatch between handoff and evaluation plan')
  invariants=[]
  for c in cap.get('capabilities',[]):
   if isinstance(c,dict):invariants.extend(x for x in c.get('invariants',[]) if isinstance(x,str) and x)
@@ -39,13 +43,13 @@ def build(handoff:dict,base:Path)->dict:
    'addresses':sorted(set(item.get('addresses',[]))),
   })
  return {
-  'contract_version':3,'search_id':handoff['search_id'],'target_identity':target,'target_class':handoff['target_class'],
+  'contract_version':4,'search_id':handoff['search_id'],'target_identity':target,'target_class':handoff['target_class'],
   'baseline_candidate_id':handoff['baseline_candidate_id'],'canonical_candidate_id':handoff['canonical_candidate_id'],
   'input_identities':{'capability_map_id':stable_id(cap_p),'hypothesis_pool_id':stable_id(hyp_p),'transformation_registry_id':stable_id(tr_p),'evaluation_plan_id':stable_id(ev_p)},
   'interfaces':{'mutation_interface_id':handoff['mutation_interface']['interface_id'],'evaluation_interface_id':handoff['evaluation_interface']['interface_id']},
   'budget':handoff['budget'],'hard_gates':handoff['hard_gates'],'objectives':handoff['objectives'],'evaluation_identity':handoff['evaluation_identity'],
   'allowed_evaluation_levels':handoff['allowed_evaluation_levels'],'allowed_operators':handoff['allowed_operators'],'preserve_roles':handoff['preserve_roles'],
-  'selection_policy':handoff['selection_policy'],'capability_invariants':invariants,'transformation_registry':transformed,
+  'selection_policy':handoff['selection_policy'],'finalist_policy':finalist_policy,'capability_invariants':invariants,'transformation_registry':transformed,
  }
 def main()->int:
  ap=argparse.ArgumentParser();ap.add_argument('--handoff',required=True);ap.add_argument('--out',required=True);ap.add_argument('--json-output');a=ap.parse_args()

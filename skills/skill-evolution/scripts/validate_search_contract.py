@@ -11,11 +11,12 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from _common import dump_json
 
-SUPPORTED_VERSION = 3
+SUPPORTED_VERSION = 4
 ALLOWED_DIRECTIONS = {"maximize", "minimize"}
 ALLOWED_OPERATORS = {"transformation-merge", "backcross", "repair-crossover", "bounded-mutation"}
 ALLOWED_TRANSFORMATION_STATUS = {"proposed", "accepted", "validated", "rejected", "deprecated"}
 ALLOWED_LEVELS = {"L0-structural", "L1-deterministic", "L2-focused", "L3-harness", "L4-benchmark", "L5-holdout"}
+ALLOWED_HOLDOUT_POLICIES = {"not-required", "blind-pass-required"}
 
 
 def validate(data: dict) -> list[str]:
@@ -36,6 +37,7 @@ def validate(data: dict) -> list[str]:
         "allowed_evaluation_levels",
         "allowed_operators",
         "selection_policy",
+        "finalist_policy",
         "capability_invariants",
         "transformation_registry",
     )
@@ -46,8 +48,8 @@ def validate(data: dict) -> list[str]:
         return sorted(set(errors))
 
     if data["contract_version"] != SUPPORTED_VERSION:
-        if data["contract_version"] in {1, 2}:
-            errors.append("contract_version:upgrade_required_v3")
+        if data["contract_version"] in {1, 2, 3}:
+            errors.append("contract_version:upgrade_required_v4")
         else:
             errors.append("contract_version:unsupported")
 
@@ -163,6 +165,21 @@ def validate(data: dict) -> list[str]:
             errors.append("selection_policy.novelty_policy:invalid")
         if policy.get("uncertainty_policy") != "margin-plus-min-delta-v1":
             errors.append("selection_policy.uncertainty_policy:invalid")
+
+    finalist_policy = data.get("finalist_policy")
+    if not isinstance(finalist_policy, dict):
+        errors.append("finalist_policy:invalid")
+    else:
+        minimum_level = finalist_policy.get("minimum_evaluation_level")
+        holdout_policy = finalist_policy.get("holdout_policy")
+        if minimum_level not in ALLOWED_LEVELS:
+            errors.append("finalist_policy.minimum_evaluation_level:invalid")
+        elif isinstance(levels, list) and minimum_level not in levels:
+            errors.append("finalist_policy.minimum_evaluation_level:not_allowed")
+        if holdout_policy not in ALLOWED_HOLDOUT_POLICIES:
+            errors.append("finalist_policy.holdout_policy:invalid")
+        if holdout_policy == "blind-pass-required" and minimum_level != "L5-holdout":
+            errors.append("finalist_policy:blind_holdout_requires_l5")
 
     invariants = data.get("capability_invariants")
     if not isinstance(invariants, list) or any(not isinstance(x, str) or not x for x in invariants) or len(invariants) != len(set(invariants)):

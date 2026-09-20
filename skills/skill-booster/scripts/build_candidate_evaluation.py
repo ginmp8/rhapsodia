@@ -12,12 +12,12 @@ def _stable_ref(payload):
  b=json.dumps(payload,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode('utf-8')
  return 'sha256:'+hashlib.sha256(b).hexdigest()
 def build(contract,cid,candidate_identity,benchmark=None,harness=None,hard_gates=None,metrics=None,level=None,evidence_type='supplied',deficits=None,holdout_status='not-used'):
- if contract.get('contract_version')!=2:raise ValueError('search_contract:unsupported')
+ if contract.get('contract_version')!=4:raise ValueError('search_contract:unsupported')
  identity=dict(contract['evaluation_identity'])
  resolved_metrics=metrics
  resolved_level=level
  if benchmark is not None:
-  if benchmark.get('contract_version')!=3:raise ValueError('benchmark:unsupported_contract')
+  if benchmark.get('contract_version')!=4:raise ValueError('benchmark:unsupported_contract')
   row=_find(benchmark.get('candidates',[]),cid,'benchmark')
   if row.get('candidate_identity')!=candidate_identity:raise ValueError('benchmark:candidate_identity_mismatch')
   bident={'evaluator_id':row.get('evaluator_id'),'scenario_set_id':row.get('scenario_set_id'),'policy_id':row.get('policy_id')}
@@ -25,7 +25,7 @@ def build(contract,cid,candidate_identity,benchmark=None,harness=None,hard_gates
   resolved_metrics=row.get('metrics')
   resolved_level=row.get('evaluation_level')
  if harness is not None:
-  if harness.get('contract_version')!=3:raise ValueError('harness:unsupported_contract')
+  if harness.get('contract_version')!=4:raise ValueError('harness:unsupported_contract')
   row=_find(harness.get('runs',[]),cid,'harness')
   if row.get('candidate_identity')!=candidate_identity:raise ValueError('harness:candidate_identity_mismatch')
   hident={'evaluator_id':row.get('evaluator_id'),'scenario_set_id':row.get('scenario_set_id'),'policy_id':row.get('evaluation_policy_id')}

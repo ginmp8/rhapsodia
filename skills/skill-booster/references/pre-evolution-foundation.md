@@ -109,6 +109,10 @@ Use staged evaluation to avoid spending expensive evidence on candidates that al
 
 Failing a required lower level blocks escalation. A candidate may stop early when the requested claim does not require higher levels. Use `assets/templates/evaluation-plan.json.template`.
 
+### Finalist policy
+
+Evaluation-plan schema v2 freezes the evidence threshold for evolutionary finalists separately from final target promotion. Set `finalist_policy.minimum_evaluation_level` to the least evidence level a candidate must reach before the search controller may label it a finalist. Use `holdout_policy: blind-pass-required` only when finalist selection itself requires fresh blind L5 evidence; otherwise use `not-required`. The Booster compiles this policy into the v4 handoff/search contract and still reruns final promotion gates independently after search.
+
 ## 8. Evidence-provider and mutation-owner separation
 
 Default evidence providers to read-only or checklist/audit modes during `diagnose`. Examples include benchmark, harness, quality review, architecture/context review, activation/prompt review, consistency, documentation, security, testing analysis, cleanup analysis, and token analysis.

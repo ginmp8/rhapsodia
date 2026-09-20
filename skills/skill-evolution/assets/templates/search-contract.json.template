@@ -1,5 +1,5 @@
 {
-  "contract_version": 3,
+  "contract_version": 4,
   "search_id": "search-001",
   "target_identity": "sha256-or-immutable-ref",
   "target_class": "orchestration-meta",
@@ -121,5 +121,9 @@
         "lineage-gap"
       ]
     }
-  ]
+  ],
+  "finalist_policy": {
+    "minimum_evaluation_level": "L4-benchmark",
+    "holdout_policy": "not-required"
+  }
 }

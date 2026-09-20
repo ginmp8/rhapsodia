@@ -2,7 +2,7 @@
 
 ## Candidate record
 
-Use search-state v3. Each generated candidate records:
+Use search-state v4. Each generated candidate records:
 
 - unique `candidate_id`, role, lifecycle status, and immutable `candidate_identity`;
 - `parent_ids`, one physical `base_parent_id`, and optional donor parents;

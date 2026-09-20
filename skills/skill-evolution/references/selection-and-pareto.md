@@ -2,13 +2,13 @@
 
 ## Validate state before selection
 
-Survivor selection operates only on a search-state v3 document that passes `scripts/validate_search_state.py`. The selector validates the state defensively as well; invalid lineage, receipts, candidate identity, evaluation references, or state version return `status=fail` and no survivors.
+Survivor selection operates only on a search-state v4 document that passes `scripts/validate_search_state.py`. The selector validates the state defensively as well; invalid lineage, receipts, candidate identity, evaluation references, or state version return `status=fail` and no survivors.
 
 ## Eligibility first
 
 Compare only candidates whose evaluation identity exactly matches the frozen evaluator/scenario/policy identity and whose required objective metrics are present. Report incompatible evidence separately; do not force a comparison.
 
-Selection eligibility is frozen by search-contract v3:
+Selection eligibility is frozen by search-contract v4:
 
 - `measured` and `supplied` evidence may be selected;
 - `planned`, `unknown`, and unproven `derived` evidence remain recordable but are not survivor-selection evidence;

@@ -1,6 +1,6 @@
 {
-  "handoff_version": 3,
-  "contract_version": 3,
+  "handoff_version": 4,
+  "contract_version": 4,
   "mode": "evolutionary-optimization",
   "search_id": "search-001",
   "target_identity": "sha256-or-immutable-ref",
@@ -87,5 +87,9 @@
       "source": "derived"
     },
     "uncertainty_policy": "margin-plus-min-delta-v1"
+  },
+  "finalist_policy": {
+    "minimum_evaluation_level": "L4-benchmark",
+    "holdout_policy": "not-required"
   }
 }

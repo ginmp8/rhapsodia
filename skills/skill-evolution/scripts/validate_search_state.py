@@ -23,13 +23,24 @@ VALID_ROLES = {"canonical", "evidence-driven", "focused", "novel-bounded", "merg
 VALID_GATE_VALUES = {"pass", "fail", "not-run", "blocked"}
 VALID_EVIDENCE_TYPES = {"measured", "supplied", "derived", "planned", "unknown"}
 VALID_HOLDOUT_STATUS = {"not-used", "blind-pass", "blind-fail", "revealed-development"}
+LEVEL_ORDER = ["L0-structural", "L1-deterministic", "L2-focused", "L3-harness", "L4-benchmark", "L5-holdout"]
+LEVEL_RANK = {level: index for index, level in enumerate(LEVEL_ORDER)}
+VALID_TERMINATION_REASONS = {
+    "sufficient-finalists",
+    "candidate-budget-exhausted",
+    "stagnation-threshold-reached",
+    "no-compatible-requests",
+    "all-strategies-eliminated",
+    "evaluator-insufficient-discrimination",
+    "continuation-invalidates-evidence",
+}
 
 
 def validate(contract: dict, state: dict) -> list[str]:
     errors: list[str] = []
-    if state.get("state_version") != 3:
-        if state.get("state_version") == 2:
-            errors.append("state_version:upgrade_required_v3")
+    if state.get("state_version") != 4:
+        if state.get("state_version") in {1, 2, 3}:
+            errors.append("state_version:upgrade_required_v4")
         else:
             errors.append("state_version:unsupported")
     if state.get("search_id") != contract.get("search_id"):
@@ -45,8 +56,11 @@ def validate(contract: dict, state: dict) -> list[str]:
     if state.get("status") == "active" and isinstance(state.get("stagnant_rounds"), int) and state["stagnant_rounds"] >= budget.get("stagnant_rounds", 10**9):
         errors.append("termination:stagnation_threshold_reached")
     termination_reason = state.get("termination_reason")
-    if state.get("status") == "terminated" and (not isinstance(termination_reason, str) or not termination_reason.strip()):
-        errors.append("termination_reason:required")
+    if state.get("status") == "terminated":
+        if not isinstance(termination_reason, str) or not termination_reason.strip():
+            errors.append("termination_reason:required")
+        elif termination_reason not in VALID_TERMINATION_REASONS:
+            errors.append("termination_reason:invalid")
     if state.get("status") == "active" and termination_reason not in (None, ""):
         errors.append("termination_reason:must_be_empty_while_active")
 
@@ -68,6 +82,10 @@ def validate(contract: dict, state: dict) -> list[str]:
     hard_gate_names = list(contract.get("hard_gates", []))
     objective_names = [o.get("name") for o in contract.get("objectives", []) if isinstance(o, dict)]
     allowed_levels = set(contract.get("allowed_evaluation_levels", []))
+    finalist_policy = contract.get("finalist_policy", {})
+    finalist_minimum_level = finalist_policy.get("minimum_evaluation_level")
+    finalist_holdout_policy = finalist_policy.get("holdout_policy")
+    finalist_evidence_types = set(contract.get("selection_policy", {}).get("eligible_evidence_types", []))
     baseline_id = contract.get("baseline_candidate_id")
     seen_ids: set[str] = set()
     materialized_identities: set[str] = set()
@@ -208,6 +226,22 @@ def validate(contract: dict, state: dict) -> list[str]:
                 if missing_metrics:
                     errors.append(f"candidate:{cid}:missing_metrics:{','.join(sorted(missing_metrics))}")
 
+            if status == "finalist":
+                level = evaluation.get("level")
+                if level in LEVEL_RANK and finalist_minimum_level in LEVEL_RANK:
+                    if LEVEL_RANK[level] < LEVEL_RANK[finalist_minimum_level]:
+                        errors.append(f"candidate:{cid}:finalist_evaluation_level_below_minimum")
+                if evaluation.get("evidence_type") not in finalist_evidence_types:
+                    errors.append(f"candidate:{cid}:finalist_evidence_type_ineligible")
+                if not isinstance(gates, dict) or any(gates.get(gate) != "pass" for gate in hard_gate_names):
+                    errors.append(f"candidate:{cid}:finalist_hard_gates_not_pass")
+                holdout_status = evaluation.get("holdout_status", "not-used")
+                if holdout_status == "blind-fail":
+                    errors.append(f"candidate:{cid}:finalist_holdout_failed")
+                if finalist_holdout_policy == "blind-pass-required":
+                    if level != "L5-holdout" or holdout_status != "blind-pass":
+                        errors.append(f"candidate:{cid}:finalist_blind_holdout_required")
+
         seen_ids.add(cid)
 
     visiting: set[str] = set()
@@ -248,6 +282,16 @@ def validate(contract: dict, state: dict) -> list[str]:
                 errors.append(f"finalists:unknown:{cid}")
             elif by_id[cid].get("status") != "finalist":
                 errors.append(f"finalists:status_mismatch:{cid}")
+        declared_finalists = {
+            cid for cid, candidate in by_id.items()
+            if candidate.get("status") == "finalist"
+        }
+        for cid in sorted(declared_finalists - set(finalists)):
+            errors.append(f"finalists:missing:{cid}")
+        if state.get("status") == "terminated" and termination_reason == "sufficient-finalists":
+            required_finalists = budget.get("finalists", 0)
+            if len(finalists) < required_finalists:
+                errors.append("termination:sufficient_finalists_not_reached")
 
     return sorted(set(errors))
 

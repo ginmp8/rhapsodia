@@ -8,6 +8,7 @@
 - contract version:
 - mode:
 - budget:
+- finalist policy:
 - capability/hypothesis/transformation identities:
 - evaluator/scenario/policy identities:
 - mutation/evaluation interface identities:

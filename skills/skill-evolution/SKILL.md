@@ -36,7 +36,7 @@ The caller supplies mutation/evaluation interfaces and remains final promotion o
 
 ## Required inputs
 
-Before search, resolve a **v3 search contract** containing:
+Before search, resolve a **v4 search contract** containing:
 
 1. immutable target/baseline identity and target class;
 2. stable ids for capability map, hypothesis pool, and transformation registry;
@@ -48,8 +48,9 @@ Before search, resolve a **v3 search contract** containing:
 8. allowed evaluation levels/operators;
 9. canonical/preserved roles;
 10. derived selection/novelty policy;
-11. capability invariants;
-12. transformation registry with status, dependencies, conflicts, capability effects, invariant violations, and optional deficit addresses.
+11. frozen finalist policy with the minimum evaluation level and holdout requirement;
+12. capability invariants;
+13. transformation registry with status, dependencies, conflicts, capability effects, invariant violations, and optional deficit addresses.
 
 Use [assets/templates/search-contract.json.template](assets/templates/search-contract.json.template). Validate before any mutation request:
 
@@ -57,7 +58,7 @@ Use [assets/templates/search-contract.json.template](assets/templates/search-con
 <PYTHON> scripts/validate_search_contract.py <SEARCH_CONTRACT.json>
 ```
 
-Do not silently continue a v1/v2 search as v3. Read [references/search-model.md](references/search-model.md) for re-baseline rules.
+Do not silently continue a v1/v2/v3 search as v4. Read [references/search-model.md](references/search-model.md) for re-baseline rules.
 
 ## Search modes
 
@@ -77,13 +78,13 @@ Run the package validator during preflight when package integrity is material, f
 <PYTHON> scripts/validate_skill_evolution.py --target <SKILL_EVOLUTION_ROOT>
 ```
 
-This gate validates the declared integration manifest and all declared public surfaces, including v3 search/state and v2 candidate-request/evaluation. A missing or invalid declared surface blocks readiness; do not substitute generic package validation for this skill-specific gate.
+This gate validates the declared integration manifest and all declared public surfaces, including v4 search/state and v2 candidate-request/evaluation. A missing or invalid declared surface blocks readiness; do not substitute generic package validation for this skill-specific gate.
 
 ## Progressive loading
 
 Load only what the active stage needs:
 
-- [references/search-model.md](references/search-model.md): lifecycle, v3 freeze, population, deterministic stagnation, and cost control.
+- [references/search-model.md](references/search-model.md): lifecycle, v4 freeze, population, deterministic stagnation, and cost control.
 - [references/candidate-and-lineage-contract.md](references/candidate-and-lineage-contract.md): candidate identity, parent/donor semantics, receipt and lineage invariants.
 - [references/recombination-contract.md](references/recombination-contract.md): transformation compatibility and candidate-request v2.
 - [references/selection-and-pareto.md](references/selection-and-pareto.md): evaluator compatibility, uncertainty/min-delta dominance, canonical preservation, derived novelty.
@@ -93,7 +94,7 @@ Load only what the active stage needs:
 - `contracts/integration-manifest.json`: declares the versioned contracts this controller owns plus the external generation-receipt contract it accepts, enabling orchestrator impact analysis without duplicating peer schemas.
 - [assets/templates/candidate-evaluation.json.template](assets/templates/candidate-evaluation.json.template): owner schema example for normalized candidate-evaluation v2 envelopes.
 - [scripts/validate_candidate_evaluation.py](scripts/validate_candidate_evaluation.py): validates normalized evaluator identity, hard gates, metrics, uncertainty, level, and holdout status against the frozen search contract.
-- [assets/templates/search-state.json.template](assets/templates/search-state.json.template): v3 state shape.
+- [assets/templates/search-state.json.template](assets/templates/search-state.json.template): v4 state shape.
 - [assets/templates/search-report.md.template](assets/templates/search-report.md.template): durable report skeleton.
 - [scripts/validate_search_state.py](scripts/validate_search_state.py): lineage, receipts, transformation sets, evaluation identity, budget, and finalist validation.
 - [scripts/validate_candidate_request.py](scripts/validate_candidate_request.py): deterministic pre-mutation request gate.
@@ -106,7 +107,7 @@ Load only what the active stage needs:
 
 ### 1. Freeze and validate search inputs
 
-Freeze every required identity before candidate mutation. Validate the v3 contract. If evaluator identity, capability/hypothesis/transformation identity, interface identity, hard gates, or objective policy can drift mid-search, stop and re-baseline rather than pretending results are comparable.
+Freeze every required identity before candidate mutation. Validate the v4 contract. If evaluator identity, capability/hypothesis/transformation identity, interface identity, hard gates, or objective policy can drift mid-search, stop and re-baseline rather than pretending results are comparable.
 
 ### 2. Seed a deliberately small population
 
@@ -199,7 +200,7 @@ Then create the round checkpoint described in [references/state-integrity-and-re
 
 Stop on the first applicable condition:
 
-- sufficient finalists have promotion-level evidence;
+- sufficient finalists satisfy the frozen finalist policy and have promotion-level evidence;
 - total candidate budget is exhausted;
 - checkpoint-derived stagnation reaches the configured threshold;
 - no new evidence-backed compatible request remains;
@@ -209,9 +210,9 @@ Stop on the first applicable condition:
 
 Budget is a ceiling, not a target.
 
-### 10. Use holdout only for finalists when required
+### 10. Enforce the frozen finalist policy
 
-If holdout feedback is revealed for repair, mark it `revealed-development`; it is no longer blind evidence. Require a fresh unseen holdout for a later blind promotion claim.
+A candidate may enter `finalists` only when its evaluation level meets or exceeds `finalist_policy.minimum_evaluation_level`, its evidence type is selection-eligible, every hard gate passes, and any configured blind-holdout requirement is satisfied. If holdout feedback is revealed for repair, mark it `revealed-development`; it is no longer blind evidence and cannot satisfy `blind-pass-required`. Require a fresh unseen holdout for a later blind promotion claim.
 
 ### 11. Return finalists; never self-promote
 
@@ -228,6 +229,7 @@ The caller independently reruns final gates and owns freeze/package/promotion.
 
 - frozen search/evaluator identities never drift mid-search;
 - hard-gate failure cannot be compensated by another metric;
+- finalist status/list membership and sufficient-finalist termination are valid only when the frozen finalist policy is satisfied;
 - baseline and direct parent remain distinct roles;
 - canonical comparator remains available when configured and eligible;
 - state/history is append-only except lifecycle/status fields;
@@ -263,7 +265,7 @@ Use `measured` only for executed evaluator/tool evidence. Use `derived` for dete
 
 ## Stop conditions
 
-Stop or return a bounded result when frozen identities are absent/drifted; hard-gate/objective semantics are missing; mutation/evaluation interfaces are unavailable for `search`; v1/v2 state is presented as a v3 resume without explicit re-baseline; a candidate receipt/evaluator identity/lineage is inconsistent; a request requires dependency/conflict/invariant violations; checkpoint verification fails; search budget/stagnation is exhausted; holdout blindness would be violated; the only continuation path weakens a gate; or final promotion would require authority this skill does not own.
+Stop or return a bounded result when frozen identities are absent/drifted; hard-gate/objective semantics are missing; mutation/evaluation interfaces are unavailable for `search`; v1/v2/v3 state is presented as a v4 resume without explicit re-baseline; a candidate receipt/evaluator identity/lineage is inconsistent; a request requires dependency/conflict/invariant violations; checkpoint verification fails; search budget/stagnation is exhausted; holdout blindness would be violated; the only continuation path weakens a gate; or final promotion would require authority this skill does not own.
 
 
 ## Integration contract changes
