@@ -1,6 +1,6 @@
 ---
 name: skill-quality-reviewer
-description: review, audit, score, compare, or validate chatgpt and compatible agent skill packages, folders, zips, skill.md files, references, scripts, evals, and prior review reports. use when the user wants evidence-based findings about activation, ownership, architecture, workflow correctness, legacy coupling, obsolete compatibility, migration residue, duplicated contracts, runtime peer coupling, structural noise, resource integration, contradictions, validation gaps, package hygiene, token efficiency, or prompt-ready remediation instructions. produce severity-ranked findings, an evidence-based scorecard, legacy and ownership matrices when applicable, a readiness verdict, and a self-contained correction input. do not use to implement fixes, create new skills, review ordinary application code, or perform security audits.
+description: review, audit, score, compare, or validate Agent Skills-compatible packages across ChatGPT/OpenAI, Codex, Claude, GitHub Copilot, Cursor, and other compatible hosts, including folders, zips, skill.md files, references, scripts, evals, and prior review reports. use when the user wants evidence-based findings about activation, ownership, architecture, workflow correctness, legacy coupling, obsolete compatibility, migration residue, duplicated contracts, runtime peer coupling, structural noise, resource integration, contradictions, validation gaps, package hygiene, portability, token efficiency, or prompt-ready remediation instructions. produce severity-ranked findings, an evidence-based scorecard, legacy and ownership matrices when applicable, a readiness verdict, and a self-contained correction input. do not use to implement fixes, create new skills, review ordinary application code, or perform security audits.
 ---
 
 # Skill Quality Reviewer
@@ -22,7 +22,7 @@ Review a skill package as an operational system, not as isolated prose. Find rea
 - Require explicit isolation for `migration-only` behavior. Normal activation and execution must not silently fall back to old schemas, aliases, paths, states, or versions.
 - Recommend the smallest sufficient correction. Do not turn a local defect into a broad redesign unless the evidence shows an architectural cause.
 - Do not penalize an unconventional design merely because it differs from a preferred template. Penalize only behavior, maintainability, evidence, or package-integrity consequences.
-- Do not treat optional folders as mandatory unless the target platform, target skill, or declared contract requires them.
+- Do not treat optional folders or host adapters as mandatory unless the target platform, target skill, or declared contract requires them. Review the portable core first and host adapters separately.
 - Keep checklist scoring separate from executed validation. Never describe a static score as a measured behavioral benchmark.
 - Produce a self-contained correction input that does not depend on this conversation, hidden reasoning, or unstated context.
 
@@ -49,7 +49,7 @@ Use the strongest available target:
 - skill folder, extracted ZIP, ZIP archive, repository path, or supplied files;
 - intended purpose, owner role, and expected activation surface when available;
 - current contract sources, supported versions, migration commitments, and ownership map when legacy decisions depend on them;
-- requested mode, output language, strictness, and scoring expectations;
+- requested mode, output language, strictness, scoring expectations, and target host/profile when host-specific metadata or portability matters;
 - known failures, previous reports, validation commands, protected files, or peer packages when supplied.
 
 Defaults:
@@ -59,6 +59,8 @@ Defaults:
 - review all inspectable files under the selected skill root;
 - treat missing compatibility or consumer evidence as `blocked` instead of preserving or removing by assumption;
 - keep generated reports outside the target package;
+- treat the open Agent Skills package as the portable semantic core; `agents/openai.yaml` is an optional OpenAI adapter and its absence is not a defect unless OpenAI metadata is explicitly required;
+- resolve an available Python 3 launcher as `<PYTHON>` (`python`, `python3`, `py -3`, absolute interpreter path, or host execution equivalent) instead of assuming one executable name;
 - do not require a correction implementation to complete the review.
 
 Stop and request the correct target only when zero or multiple candidate root `SKILL.md` files make the review subject ambiguous. If a partial target is intentional, proceed and state the limitation. For multi-skill ecosystem review, keep a separate package map and score per skill before evaluating shared contracts.
@@ -68,6 +70,7 @@ Stop and request the correct target only when zero or multiple candidate root `S
 Load only what the active mode needs:
 
 - [`references/review-workflow.md`](references/review-workflow.md): ordered investigation and closure workflow.
+- [`references/host-portability.md`](references/host-portability.md): portable-core rules, host adapters, capability detection, launcher policy, and portability evidence boundaries.
 - [`references/review-rubric.md`](references/review-rubric.md): dimensions, defect taxonomy, scorecard, and readiness gates.
 - [`references/legacy-and-compatibility-audit.md`](references/legacy-and-compatibility-audit.md): legacy classifications, migration gates, audit surfaces, technical searches, ownership calibration, and closure criteria.
 - [`references/finding-model.md`](references/finding-model.md): severity, evidence labels, finding quality bar, legacy classification, and confidence rules.
@@ -83,8 +86,8 @@ Load only what the active mode needs:
 ## Workflow
 
 1. **Classify the target and mode.** Identify the skill root, requested depth, intended output, and whether the task is review-only, legacy audit, comparison, or report validation.
-2. **Run deterministic preflight when possible.** Execute `python scripts/inspect_skill_package.py <target> --json-out <report.json>`. Treat structural findings as evidence and `legacy_signal_summary` entries as discovery candidates, not semantic verdicts.
-3. **Inventory the package.** Record `SKILL.md`, `agents/`, references, scripts, assets, examples, evals, validators, package builders, changelogs, generated files, peer dependencies, and uninspected surfaces.
+2. **Run deterministic preflight when possible.** Resolve `<PYTHON>` from available host capabilities, then execute `<PYTHON> scripts/inspect_skill_package.py <target> --host-profile <auto|portable|openai|codex|claude|copilot|cursor> --json-out <report.json>`. Default to `auto`; use an explicit profile only when the requested host matters. Treat structural findings as evidence and `legacy_signal_summary` entries as discovery candidates, not semantic verdicts.
+3. **Inventory the package.** Record `SKILL.md`, optional host adapters such as `agents/openai.yaml`, references, scripts, assets, examples, evals, validators, package builders, changelogs, generated files, peer dependencies, and uninspected surfaces. Separate portable-core requirements from host-specific metadata.
 4. **Reconstruct intended current behavior.** State the skill's owner role, target artifacts, activation prompts, non-activation boundaries, modes, inputs, outputs, tools, handoffs, stop conditions, current identifiers, schemas, states, and supported versions.
 5. **Identify canonical sources.** Map each important concept to its current machine-readable schema, validator, `SKILL.md` rule, canonical reference, validated fixture, owner, and consumer. Treat disagreements as candidates rather than resolving them silently.
 6. **Define invariants.** Identify what must remain true for correct activation, routing, execution, authority, evidence, output, validation, migration isolation, compatibility, and packaging.
@@ -101,7 +104,7 @@ Load only what the active mode needs:
 17. **Apply gates and decide the provisional verdict.** Resolve score/verdict contradictions, decision-critical `blocked` items, unresolved common-path majors, and unsupported behavioral claims before drafting remediation.
 18. **Write findings and matrices.** Order findings by severity. Each material finding must satisfy `references/finding-model.md`. Include legacy classification, ownership, compatibility, and runtime-coupling matrices when applicable; include them unconditionally in `legacy-audit` mode.
 19. **Build the correction input.** Convert accepted findings into ordered, bounded remediation instructions using `references/correction-input-contract.md`. Preserve current behavior, remove obsolete compatibility, isolate valid migrations, replace acceptance tests with rejection tests where support ended, and prohibit scope drift.
-20. **Validate the report when possible.** Execute `python scripts/validate_review_report.py <report.md>`. Repair report-shape failures without weakening findings.
+20. **Validate the report when possible.** Execute `<PYTHON> scripts/validate_review_report.py <report.md>`. Repair report-shape failures without weakening findings.
 21. **Close honestly.** State verdict, score type, inspected coverage, executed commands, classification counts, unresolved questions, and whether the correction input is ready to use.
 
 ## Review Priorities

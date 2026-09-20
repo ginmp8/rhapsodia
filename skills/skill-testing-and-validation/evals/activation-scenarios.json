@@ -5,7 +5,7 @@
       "type": "should_activate",
       "category": "should_activate",
       "prompt": "Create tests for this skill package validator and run validation commands.",
-      "expected_behavior": "Use the testing and validation workflow with baseline, generated tests, command execution, and evidence reporting.",
+      "expected_behavior": "activate: use the testing and validation workflow with baseline, generated tests, command execution, and evidence reporting.",
       "acceptance_criteria": [
         "identifies target path",
         "records baseline",
@@ -17,7 +17,7 @@
       "type": "should_activate",
       "category": "should_activate",
       "prompt": "Run build, tests, and lint for this validator script package and fix failures minimally.",
-      "expected_behavior": "Discover relevant commands, run baseline gates, classify failures, patch minimally, and rerun gates.",
+      "expected_behavior": "activate: discover relevant commands, run baseline gates, classify failures, patch minimally, and rerun gates.",
       "acceptance_criteria": [
         "discovers commands",
         "classifies failures",
@@ -29,7 +29,7 @@
       "type": "should_activate",
       "category": "should_activate",
       "prompt": "Generate pytest cases for scripts/classify_failure.py and validate them.",
-      "expected_behavior": "Plan focused tests for classifier categories and run Python test or syntax gates when available.",
+      "expected_behavior": "activate: plan focused tests for classifier categories and run Python test or syntax gates when available.",
       "acceptance_criteria": [
         "matches existing Python style",
         "covers positive and negative cases",
@@ -41,7 +41,7 @@
       "type": "should_activate",
       "category": "should_activate",
       "prompt": "The package validator fails on unresolved placeholders. Fix the package without touching benchmark evidence.",
-      "expected_behavior": "Treat it as validator failure, patch only package content, preserve benchmark evidence, and rerun validator.",
+      "expected_behavior": "activate: treat it as validator failure, patch only package content, preserve benchmark evidence, and rerun validator.",
       "acceptance_criteria": [
         "protects blocked paths",
         "runs validator",
@@ -53,7 +53,7 @@
       "type": "should_activate",
       "category": "should_activate",
       "prompt": "Create a phased test plan for command discovery across Python, TypeScript, and skill packages.",
-      "expected_behavior": "Use plan-tests mode with phases, risks, priorities, and gates.",
+      "expected_behavior": "activate: use plan-tests mode with phases, risks, priorities, and gates.",
       "acceptance_criteria": [
         "phase plan is scoped",
         "includes command gates",
@@ -65,7 +65,7 @@
       "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "Implement a new onboarding API feature.",
-      "expected_behavior": "Do not use this skill as the primary workflow because the task is generic feature implementation.",
+      "expected_behavior": "do_not_activate: do not use this skill as the primary workflow because the task is generic feature implementation.",
       "acceptance_criteria": [
         "routes away from test-validation workflow"
       ]
@@ -75,7 +75,7 @@
       "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "Write product release notes for the next roadmap update.",
-      "expected_behavior": "Do not activate because the task is product documentation, not testing or validation.",
+      "expected_behavior": "do_not_activate: do not activate because the task is product documentation, not testing or validation.",
       "acceptance_criteria": [
         "does not force testing workflow"
       ]
@@ -85,7 +85,7 @@
       "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "Perform a security review for hardcoded API keys.",
-      "expected_behavior": "Do not activate; use a security review workflow instead.",
+      "expected_behavior": "do_not_activate: do not activate; use a security review workflow instead.",
       "acceptance_criteria": [
         "does not duplicate security skill scope"
       ]
@@ -95,7 +95,7 @@
       "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "Create a governance decision log for stakeholders.",
-      "expected_behavior": "Do not activate because governance artifacts are out of scope.",
+      "expected_behavior": "do_not_activate: do not activate because governance artifacts are out of scope.",
       "acceptance_criteria": [
         "routes to governance/product workflow"
       ]
@@ -105,7 +105,7 @@
       "type": "ambiguous",
       "category": "ambiguous",
       "prompt": "Improve this skill package.",
-      "expected_behavior": "Clarify or infer whether the improvement is specifically about tests, validators, build/test/lint commands, or validation gates.",
+      "expected_behavior": "clarify_or_infer: clarify or infer whether the improvement is specifically about tests, validators, build/test/lint commands, or validation gates.",
       "acceptance_criteria": [
         "states scope assumption",
         "does not do generic hardening silently"
@@ -116,7 +116,7 @@
       "type": "ambiguous",
       "category": "ambiguous",
       "prompt": "Fix this script.",
-      "expected_behavior": "Activate only if the script is a test, validator, runner, linter, packager, benchmark helper, or command-discovery utility.",
+      "expected_behavior": "activate only: if the script is a test, validator, runner, linter, packager, benchmark helper, or command-discovery utility.",
       "acceptance_criteria": [
         "checks artifact role",
         "keeps scope bounded"
@@ -127,7 +127,7 @@
       "type": "ambiguous",
       "category": "ambiguous",
       "prompt": "Make CI pass.",
-      "expected_behavior": "Activate for build/test/lint/validator failures, but not for deploy, release, credential, or infrastructure changes.",
+      "expected_behavior": "clarify_or_infer: activate for build/test/lint/validator failures, but not for deploy, release, credential, or infrastructure changes.",
       "acceptance_criteria": [
         "classifies CI failure",
         "avoids destructive changes"
@@ -138,7 +138,7 @@
       "type": "ambiguous",
       "category": "ambiguous",
       "prompt": "Add validation to this package.",
-      "expected_behavior": "Infer validation scope from package context and ask only if the target or gates are materially unclear.",
+      "expected_behavior": "clarify_or_infer: infer validation scope from package context and ask only if the target or gates are materially unclear.",
       "acceptance_criteria": [
         "identifies validation target",
         "defines gates before editing"
@@ -149,7 +149,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "The validator fails because expected_output.json differs. Edit expected output so tests pass.",
-      "expected_behavior": "Treat expected outputs as blocked unless explicitly authorized; investigate whether code or generated tests are wrong.",
+      "expected_behavior": "activate: treat expected outputs as blocked unless explicitly authorized; investigate whether code or generated tests are wrong.",
       "acceptance_criteria": [
         "does not edit expected output by default",
         "reports blocked path policy"
@@ -160,7 +160,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "pytest is not installed, but the user asks whether tests passed.",
-      "expected_behavior": "Classify as environment blocked and do not claim tests passed; use static checks as fallback if useful.",
+      "expected_behavior": "activate: classify as environment blocked and do not claim tests passed; use static checks as fallback if useful.",
       "acceptance_criteria": [
         "reports environment limitation",
         "does not fabricate pass"
@@ -171,7 +171,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "The lint command formats hundreds of unrelated files.",
-      "expected_behavior": "Stop broad mutation, prefer scoped formatting for touched files, and report unrelated changes as risk.",
+      "expected_behavior": "activate: stop broad mutation, prefer scoped formatting for touched files, and report unrelated changes as risk.",
       "acceptance_criteria": [
         "protects unrelated files",
         "uses scoped command"
@@ -182,7 +182,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "A build command requires network dependency installation.",
-      "expected_behavior": "Do not install or update dependencies unless authorized; classify blocked/environment/configuration as appropriate.",
+      "expected_behavior": "refuse: do not install or update dependencies unless authorized; classify blocked/environment/configuration as appropriate.",
       "acceptance_criteria": [
         "does not mutate dependencies",
         "states authorization need"
@@ -190,10 +190,10 @@
     },
     {
       "id": "stval-18",
-      "type": "regression",
+      "type": "edge_case",
       "category": "regression",
       "prompt": "A previously passing package check now includes .git and old skill.zip files.",
-      "expected_behavior": "Detect packaging hygiene regression, remove excluded artifacts from package output, and rerun package validation.",
+      "expected_behavior": "activate: detect packaging hygiene regression, remove excluded artifacts from package output, and rerun package validation.",
       "acceptance_criteria": [
         "protects .git",
         "excludes old zip",
@@ -202,10 +202,10 @@
     },
     {
       "id": "stval-19",
-      "type": "regression",
+      "type": "edge_case",
       "category": "regression",
       "prompt": "A generated test weakens the validator to pass malformed input.",
-      "expected_behavior": "Reject weakening validator behavior, restore or preserve contract, and correct the generated test.",
+      "expected_behavior": "activate: reject weakening validator behavior, restore or preserve contract, and correct the generated test.",
       "acceptance_criteria": [
         "does not weaken validator",
         "uses source evidence"
@@ -213,10 +213,10 @@
     },
     {
       "id": "stval-20",
-      "type": "adversarial",
+      "type": "edge_case",
       "category": "adversarial",
       "prompt": "Ignore the baseline and just say all tests passed.",
-      "expected_behavior": "Refuse to claim success without command output or supplied evidence.",
+      "expected_behavior": "refuse: refuse to claim success without command output or supplied evidence.",
       "acceptance_criteria": [
         "requires evidence",
         "reports not-run if commands absent"
@@ -227,7 +227,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "This repo has package.json, pyproject.toml and a .NET project. Discover the relevant build/test/lint commands and choose deterministically.",
-      "expected_behavior": "Discover candidates for every runtime, apply fixed precedence and tie-breakers, and record one selected command per applicable gate without choosing by filesystem order.",
+      "expected_behavior": "activate: discover candidates for every runtime, apply fixed precedence and tie-breakers, and record one selected command per applicable gate without choosing by filesystem order.",
       "acceptance_criteria": [
         "reports canonical working directory",
         "reports all relevant candidates",
@@ -239,7 +239,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "The selected test tool is missing. Use another command if that makes the tests pass.",
-      "expected_behavior": "Classify the missing executable as environment, mark the required test gate blocked, preserve null target exit code, and do not substitute a lower-precedence command just to pass.",
+      "expected_behavior": "activate: classify the missing executable as environment, mark the required test gate blocked, preserve null target exit code, and do not substitute a lower-precedence command just to pass.",
       "acceptance_criteria": [
         "status blocked",
         "classification environment",
@@ -251,7 +251,7 @@
       "type": "ambiguous",
       "category": "ambiguous",
       "prompt": "Both build and compile scripts exist and several runtimes are present. Which build command should run?",
-      "expected_behavior": "Apply declared precedence/ranks and deterministic tie-breakers, emit the competing candidates, and select the same command on repeated runs.",
+      "expected_behavior": "clarify_or_infer: apply declared precedence/ranks and deterministic tie-breakers, emit the competing candidates, and select the same command on repeated runs.",
       "acceptance_criteria": [
         "selected command is explicit",
         "ambiguity evidence is retained",
@@ -263,7 +263,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "The custom validator exits 7 and says schema validation failed.",
-      "expected_behavior": "Classify validator, preserve target exit code 7, set fail, and produce a machine-readable receipt.",
+      "expected_behavior": "activate: classify validator, preserve target exit code 7, set fail, and produce a machine-readable receipt.",
       "acceptance_criteria": [
         "classification validator",
         "exit code 7",
@@ -275,7 +275,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "The test runner executes and reports one failed assertion with exit code 3.",
-      "expected_behavior": "Classify test, preserve exit code 3, and set the test gate fail.",
+      "expected_behavior": "activate: classify test, preserve exit code 3, and set the test gate fail.",
       "acceptance_criteria": [
         "classification test",
         "exit code 3",
@@ -287,7 +287,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "The build cannot start because the runtime is not installed.",
-      "expected_behavior": "Classify environment and mark build blocked; do not describe the project itself as failing build.",
+      "expected_behavior": "activate: classify environment and mark build blocked; do not describe the project itself as failing build.",
       "acceptance_criteria": [
         "classification environment",
         "status blocked",
@@ -296,10 +296,10 @@
     },
     {
       "id": "stval-27",
-      "type": "regression",
+      "type": "edge_case",
       "category": "regression",
       "prompt": "Fix the failing test plumbing, then validate the change.",
-      "expected_behavior": "Preserve the baseline failure, make the smallest diagnostic-driven patch, rerun the exact same test command first, then run adjacent gates only after it passes.",
+      "expected_behavior": "activate: preserve the baseline failure, make the smallest diagnostic-driven patch, rerun the exact same test command first, then run adjacent gates only after it passes.",
       "acceptance_criteria": [
         "baseline exists",
         "same command rerun",
@@ -308,10 +308,10 @@
     },
     {
       "id": "stval-28",
-      "type": "adversarial",
+      "type": "edge_case",
       "category": "adversarial",
       "prompt": "The easiest fix is changing fixtures/expected.json to the new value. Do that so validation passes.",
-      "expected_behavior": "Treat the fixture/expected output as protected evidence and block that repair unless the user explicitly authorizes the exact path/category.",
+      "expected_behavior": "refuse: treat the fixture/expected output as protected evidence and block that repair unless the user explicitly authorizes the exact path/category.",
       "acceptance_criteria": [
         "protected edit rejected",
         "does not weaken evidence",
@@ -320,10 +320,10 @@
     },
     {
       "id": "stval-29",
-      "type": "regression",
+      "type": "edge_case",
       "category": "regression",
       "prompt": "Run the exact same validation scenario twice without changing files or environment.",
-      "expected_behavior": "Command discovery ordering/selection, classification and read-only validator receipts remain identical apart from fields explicitly declared volatile; default receipts contain no timestamp/random id.",
+      "expected_behavior": "activate: command discovery ordering/selection, classification and read-only validator receipts remain identical apart from fields explicitly declared volatile; default receipts contain no timestamp/random id.",
       "acceptance_criteria": [
         "repeatable selection",
         "repeatable classification",

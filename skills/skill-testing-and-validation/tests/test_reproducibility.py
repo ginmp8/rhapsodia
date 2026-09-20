@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -12,6 +13,7 @@ sys.path.insert(0, str(SCRIPTS))
 from classify_failure import classify  # noqa: E402
 from discover_commands import discover  # noqa: E402
 from environment_fingerprint import fingerprint  # noqa: E402
+from package_skill import package as package_skill  # noqa: E402
 from run_gate import make_receipt  # noqa: E402
 from validate_protected_paths import validate as validate_protected  # noqa: E402
 
@@ -96,6 +98,38 @@ class ReproducibilityTests(unittest.TestCase):
             result = validate_protected(baseline, candidate, set())
             self.assertEqual("fail", result["status"])
             self.assertEqual("protected/modified", result["diagnostics"][0]["code"])
+
+    def test_packaging_is_stable_across_source_mtime_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "demo-skill"
+            root.mkdir()
+            (root / "SKILL.md").write_text("---\nname: demo-skill\ndescription: deterministic package test\n---\n", encoding="utf-8")
+            (root / "note.txt").write_text("same bytes\n", encoding="utf-8")
+            first_zip = Path(td) / "first.zip"
+            second_zip = Path(td) / "second.zip"
+            first = package_skill(root, first_zip)
+            os.utime(root / "note.txt", (1_700_000_000, 1_700_000_000))
+            second = package_skill(root, second_zip)
+            self.assertTrue(first["passed"])
+            self.assertTrue(second["passed"])
+            self.assertEqual(first["sha256"], second["sha256"])
+            self.assertEqual(first_zip.read_bytes(), second_zip.read_bytes())
+
+    def test_packaging_rejects_symlink_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "demo-skill"
+            root.mkdir()
+            (root / "SKILL.md").write_text("---\nname: demo-skill\ndescription: symlink package test\n---\n", encoding="utf-8")
+            target = Path(td) / "outside.txt"
+            target.write_text("secret\n", encoding="utf-8")
+            link = root / "linked.txt"
+            try:
+                link.symlink_to(target)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlink creation is unavailable on this platform")
+            result = package_skill(root, Path(td) / "skill.zip")
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("symlink inputs are not package-safe" in item for item in result["errors"]))
 
 
 if __name__ == "__main__":

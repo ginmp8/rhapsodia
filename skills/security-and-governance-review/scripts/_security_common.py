@@ -21,7 +21,7 @@ SEVERITIES = {"critical", "high", "medium", "low", "informational"}
 CONFIDENCES = {"high", "medium", "low"}
 
 SECRET_PATTERNS = [
-    ("private-key-block", re.compile(r"-----BEGIN (?:RSA |DSA |EC |OPENSSH |PGP )?PRIVATE KEY-----")),
+    ("private-key-block", re.compile(r"-----BEGIN (?:RSA |DSA |EC |OPENSSH |PGP |ENCRYPTED )?PRIVATE KEY-----")),
     ("github-token", re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b")),
     ("github-fine-grained-token", re.compile(r"\bgithub_pat_[A-Za-z0-9_]{20,}\b")),
     ("slack-token", re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{20,}\b")),
@@ -35,7 +35,12 @@ SECRET_PATTERNS = [
 ]
 
 UNREAD_NAME_RE = re.compile(
-    r"(^|/)(?:\.env(?:\..*)?|id_(?:rsa|dsa|ecdsa|ed25519)|credentials?(?:\..*)?|.*private[_-]?key.*|.*\.pem|.*\.p12|.*\.pfx)$",
+    r"(^|/)(?:"
+    r"\.env(?:\..*)?|\.npmrc|\.pypirc|\.netrc|\.git-credentials|kubeconfig|"
+    r"credentials?(?:\..*)?|application_default_credentials\.json|"
+    r"service[-_]?account[^/]*\.json|\.docker/config\.json|"
+    r"id_(?:rsa|dsa|ecdsa|ed25519)|.*private[_-]?key.*|.*\.pem|.*\.p12|.*\.pfx"
+    r")$",
     re.IGNORECASE,
 )
 HASH_ONLY_RE = re.compile(
@@ -88,3 +93,23 @@ def protected_status(relative_path: str) -> str | None:
     if HASH_ONLY_RE.search(normalized):
         return "protected-hash-only"
     return None
+
+
+def output_aliases_target(target: Path, output: Path) -> bool:
+    """Return True when writing output would mutate the reviewed target itself."""
+    target_resolved = target.resolve(strict=False)
+    output_resolved = output.resolve(strict=False)
+    if target.is_dir():
+        try:
+            output_resolved.relative_to(target_resolved)
+        except ValueError:
+            return False
+        return True
+    return output_resolved == target_resolved
+
+
+def require_external_output(target: Path, output: Path) -> None:
+    """Reject output aliases so read-only review helpers cannot modify their target."""
+    if output_aliases_target(target, output):
+        scope = "target directory" if target.is_dir() else "target file"
+        raise ValueError(f"output path must not alias or be inside the {scope}: {output}")

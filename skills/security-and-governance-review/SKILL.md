@@ -72,6 +72,8 @@ Load only what the active mode needs:
 - `scripts/security_static_review.py`: deterministic read-only static triage.
 - `scripts/evidence_snapshot.py`: deterministic evidence/source identity receipt.
 - `scripts/validate_security_report.py`: standard-library machine-readable report gate.
+- `tests/test_security_tools.py`: deterministic regression tests for protected-source handling, read-only output boundaries, redaction, and validator CLI behavior.
+- `examples/security-review-prompts.md`: compact calibration prompts for supported review modes and boundaries.
 
 ## Review workflow
 
@@ -87,7 +89,7 @@ When a filesystem target exists and the runtime permits it, create a receipt bef
 <PYTHON> scripts/evidence_snapshot.py --target <TARGET_PATH> --output <WORK>/evidence-receipt.json
 ```
 
-Use relative paths and hashes for safe files. Credentials/`.env`/private-key sources should be `protected-unread`; fixtures/expected outputs should be protected from mutation and may be `protected-hash-only`. A hash proves identity, not safety.
+`<WORK>` must resolve outside the reviewed target. Reject output aliases and paths inside the target so evidence collection remains read-only and cannot contaminate target identity. Use relative paths and hashes for safe files. Credentials/`.env`/private-key sources should be `protected-unread`; fixtures/expected outputs should be protected from mutation and may be `protected-hash-only`. A hash proves identity, not safety.
 
 If material source identity cannot be established, say so. For high-impact conclusions that depend on missing evidence, fail closed.
 
@@ -97,7 +99,7 @@ If material source identity cannot be established, say so. For high-impact concl
 <PYTHON> scripts/security_static_review.py --target <TARGET_PATH> --format json --output <WORK>/static-triage.json
 ```
 
-Treat results as triage evidence only. The scanner uses stable ordering/ids and deterministic redaction. Pattern matches do not prove exploitability, a live credential, a CVE, or concrete exposure.
+Keep `<WORK>` outside the reviewed target. Treat results as triage evidence only. The scanner uses stable ordering/ids and deterministic redaction. Pattern matches do not prove exploitability, a live credential, a CVE, or concrete exposure.
 
 ### 4. Perform mode-specific review
 
@@ -212,7 +214,7 @@ Stop before risky analysis or mutation when:
 
 ## Host portability
 
-Keep the semantic core host-independent and portable across compatible hosts. Use Agent Skills-compatible Markdown/references/scripts and Python standard-library helpers. Do not require ChatGPT-, Claude-, Copilot-, Cursor-, or other host-specific invocation semantics for correctness. Treat `agents/openai.yaml` as an optional adapter, not a core dependency.
+Keep the semantic core host-independent and portable across compatible hosts. Use Agent Skills-compatible Markdown/references/scripts and Python standard-library helpers. Do not require ChatGPT-, Claude-, Copilot-, Cursor-, or other host-specific invocation semantics for correctness. Treat `agents/openai.yaml` and other host-specific adapters as optional adapters, never core dependencies.
 
 If local command execution or Python 3.10+ is unavailable, continue with the safe read-only subset, mark script gates `not-run`, and do not claim those mechanical validations passed.
 

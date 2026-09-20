@@ -10,13 +10,13 @@ Before substantive analysis of a filesystem target, prefer a deterministic recei
 <PYTHON> scripts/evidence_snapshot.py --target <TARGET_PATH> --output <WORK>/evidence-receipt.json
 ```
 
-The receipt records relative paths, hashes for safe sources, dependency-source roles, protected states, and a stable tree identity. It intentionally omits timestamps so equivalent source bytes produce equivalent receipts.
+The receipt records relative paths, hashes for safe sources, dependency-source roles, protected states, and a stable tree identity. It intentionally omits timestamps so equivalent source bytes produce equivalent receipts. Write receipts outside the reviewed target; output inside the target would violate the read-only boundary and contaminate target identity.
 
 ## Protected evidence
 
 Treat these as protected from mutation by default:
 
-- credentials and secret stores;
+- credentials and secret stores, including `.npmrc`, `.pypirc`, `.netrc`, `.git-credentials`, Docker credential config, kubeconfig, cloud/application-default credentials, and service-account JSON;
 - `.env` files;
 - private keys/certificates carrying private material;
 - fixtures/golden inputs;

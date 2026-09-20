@@ -15,7 +15,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable, Optional
 
-from _security_common import RUBRIC_VERSION, SECRET_PATTERNS, protected_status, redact_text, sha256_bytes, stable_id
+from _security_common import RUBRIC_VERSION, SECRET_PATTERNS, protected_status, redact_text, require_external_output, sha256_bytes, stable_id
 
 BLOCKED_DIR_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".tox", ".venv", "venv", "node_modules", "dist", "build"}
 TEXT_EXTENSIONS = {".md", ".txt", ".py", ".js", ".ts", ".tsx", ".jsx", ".sh", ".bash", ".zsh", ".ps1", ".yaml", ".yml", ".json", ".toml", ".ini", ".cfg", ".dockerfile", ".lock", ".cs", ".java", ".go", ".rs", ".rb"}
@@ -178,6 +178,11 @@ def main() -> int:
     target = Path(args.target).resolve()
     if not target.exists():
         raise SystemExit(f"target not found: {target}")
+    if args.output:
+        try:
+            require_external_output(target, Path(args.output))
+        except ValueError as exc:
+            raise SystemExit(str(exc)) from exc
     root = target if target.is_dir() else target.parent
     findings: list[Finding] = []
     for path in iter_files(target, args.max_bytes):

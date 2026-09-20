@@ -78,6 +78,7 @@ Do not award or deduct points solely because the candidate has more/fewer files,
 - a validator enforces an outdated schema;
 - a resource is renamed or moved without updating references;
 - metadata advertises a broader or narrower capability than the package;
+- an optional host adapter is incorrectly treated as a portable-core requirement, or host-specific metadata changes the semantic contract;
 - current and old contracts are both described as authoritative;
 - changelog text supplies the only copy of a current rule.
 
@@ -139,7 +140,8 @@ Do not award or deduct points solely because the candidate has more/fewer files,
 - placeholders remain in operational files;
 - caches, generated reports, old archives, backups, or scaffold files are packaged;
 - package instructions cannot produce the declared archive shape;
-- generated files contain local machine paths or stale evidence.
+- generated files contain local machine paths or stale evidence;
+- core instructions require a vendor-specific absolute path, private host tool, or one fixed Python launcher when an equivalent portable mechanism exists.
 
 ### Documentation and context-efficiency defects
 
@@ -183,6 +185,6 @@ Apply after scoring:
 - Do not deduct the full weight for one local issue.
 - Do not duplicate one root defect across every dimension; identify the root cause and record secondary effects.
 - Do not award full points solely because a section heading exists.
-- Do not require scripts, assets, examples, or evals when they add no operational value; assess whether the absence weakens the declared capability.
+- Do not require scripts, assets, examples, evals, or vendor adapters when they add no operational value; assess whether the absence weakens the declared capability or an explicitly requested host profile.
 - Treat deterministic preflight output and legacy-signal searches as evidence leads, not automatic scores.
 - Do not reward deletion, lower token count, or fewer files unless current behavior, authority, and validation are preserved.

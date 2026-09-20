@@ -183,7 +183,7 @@
 
 **Observed package**
 
-- One skill imports a validator from a sibling skill directory using an absolute `/home/oai/skills/...` path.
+- One skill imports a validator from a sibling skill directory using an absolute `<SKILL_CATALOG_ROOT>/<peer-skill>/...` path.
 - Local execution fails when the sibling is not installed.
 - The shared contract has no package-independent canonical representation.
 

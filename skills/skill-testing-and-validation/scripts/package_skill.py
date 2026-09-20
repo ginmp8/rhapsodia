@@ -15,6 +15,8 @@ from typing import Any
 EXCLUDE_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules", "dist", "build"}
 EXCLUDE_SUFFIXES = {".pyc", ".pyo", ".log", ".tmp", ".zip"}
 MAX_BYTES = 25 * 1024 * 1024
+ZIP_EPOCH = (1980, 1, 1, 0, 0, 0)
+ZIP_FILE_MODE = 0o100644 << 16
 NAME_RE = re.compile(r"^name:\s*([a-z0-9-]+)\s*$", re.MULTILINE)
 
 
@@ -50,6 +52,9 @@ def validate_root(root: Path) -> list[str]:
         errors.append("expected exactly one root SKILL.md")
     if not skill_name(root):
         errors.append("portable lowercase skill name missing from SKILL.md frontmatter")
+    for path in sorted(root.rglob("*")):
+        if path.is_symlink():
+            errors.append(f"symlink inputs are not package-safe: {path.relative_to(root).as_posix()}")
     return errors
 
 
@@ -96,10 +101,14 @@ def package(root: Path, output: Path) -> dict[str, Any]:
     temp = Path(temp_name)
     try:
         archive_root = skill_name(root) or root.name
-        with zipfile.ZipFile(temp, "w", zipfile.ZIP_DEFLATED) as archive:
+        with zipfile.ZipFile(temp, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
             for file_path in files:
-                arcname = Path(archive_root) / file_path.relative_to(root)
-                archive.write(file_path, arcname.as_posix())
+                arcname = (Path(archive_root) / file_path.relative_to(root)).as_posix()
+                info = zipfile.ZipInfo(arcname, date_time=ZIP_EPOCH)
+                info.create_system = 3
+                info.external_attr = ZIP_FILE_MODE
+                info.compress_type = zipfile.ZIP_DEFLATED
+                archive.writestr(info, file_path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
         size = temp.stat().st_size
         if size > MAX_BYTES:
             result["errors"] = ["archive exceeds 25 MiB upload limit"]

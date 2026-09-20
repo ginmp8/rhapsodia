@@ -7,7 +7,7 @@ import json
 import os
 from pathlib import Path
 
-from _security_common import EVIDENCE_RECEIPT_VERSION, protected_status, sha256_bytes, sha256_file
+from _security_common import EVIDENCE_RECEIPT_VERSION, protected_status, require_external_output, sha256_bytes, sha256_file
 
 BLOCKED_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".tox", ".venv", "venv", "node_modules"}
 DEPENDENCY_NAMES = {"requirements.txt", "pyproject.toml", "poetry.lock", "package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "composer.json", "gemfile", "gemfile.lock", "go.mod", "go.sum", "cargo.toml", "cargo.lock", "packages.lock.json", "directory.packages.props"}
@@ -52,6 +52,11 @@ def main() -> int:
     target = Path(args.target).resolve()
     if not target.exists():
         raise SystemExit(f"target not found: {target}")
+    out = Path(args.output)
+    try:
+        require_external_output(target, out)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
     files = records(target)
     canonical = json.dumps(files, sort_keys=True, separators=(",", ":")).encode("utf-8")
     payload = {
@@ -65,7 +70,6 @@ def main() -> int:
             "symlink-blocked": "link target is not traversed",
         },
     }
-    out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return 0
