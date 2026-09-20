@@ -1,11 +1,13 @@
 {
-  "contract_version": 2,
+  "contract_version": 3,
   "runs": [
     {
       "candidate_id": "C001",
       "candidate_identity": "sha256-or-immutable-ref",
       "run_id": "run-C001-001",
       "trace_id": "trace-C001-001",
+      "trace_manifest_id": "trace-manifest-C001-001",
+      "trace_manifest_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "work_dir": "/isolated/work/C001",
       "evaluator_id": "frozen-evaluator-id",
       "scenario_set_id": "frozen-scenario-partition-id",
