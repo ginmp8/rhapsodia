@@ -188,7 +188,7 @@ Investigate:
 - runtime imports from another skill package;
 - reading another package's `SKILL.md` or internal references during normal execution;
 - executing another skill's scripts by path;
-- absolute paths such as `/home/oai/skills/...`;
+- vendor- or machine-specific absolute paths to peer skill installations, such as `<SKILL_CATALOG_ROOT>/<peer-skill>/...`;
 - dependence on joint installation for local core functions;
 - shared mutable files;
 - a contract whose only canonical copy lives inside one peer skill;
@@ -307,20 +307,13 @@ Expected contract: retain the smallest canonical content that preserves activati
 
 ## 6. Technical discovery searches
 
-Use equivalent searches when filesystem access exists. Adapt names and formats to the target domain.
+Use equivalent searches when filesystem access exists. Prefer the host's native file/search capability or the bundled deterministic inspector. If an external search CLI is available, adapt syntax and path separators to the host instead of requiring Bash, `rg`, `find`, POSIX paths, or a fixed skill-catalog location.
 
-```bash
-rg -n -i \
-  'legacy|deprecated|obsolete|old format|previously|formerly|historical|pre-normalization|normalized history|compatibility.?mode|allow_legacy|fallback|handoff-v1|schema.?version.?1|order_hint|priority|done|complete|cancelled|canceled|ulid|uuid|docs/current|backup|copy|v1' \
-  <TARGETS>
+Useful discovery patterns include:
 
-rg -n \
-  '/home/oai/skills|read_text.*SKILL.md|subprocess.*skills|import .*<PEER_SKILL>' \
-  <TARGETS>
-
-find <TARGETS> -type f \( -name '*.zip' -o -name '*.pyc' -o -name '*.bak' -o -name '*.tmp' -o -name '*.log' \)
-find <TARGETS> -type d \( -name '__pycache__' -o -name '.pytest_cache' -o -name '.mypy_cache' -o -name '.ruff_cache' \)
-```
+- historical/compatibility terms: `legacy`, `deprecated`, `obsolete`, `old format`, `compatibility mode`, `allow_legacy`, version-1 identifiers, old aliases, and fallback controls;
+- runtime coupling: reads of peer `SKILL.md`, execution/import of peer scripts, or absolute paths into `<SKILL_CATALOG_ROOT>`;
+- residue: archives, `.pyc`, backup/temp/log files, and cache directories.
 
 Text search is discovery only. For each match, inspect surrounding rules, consumers, tests, and current canonical sources before classifying it.
 

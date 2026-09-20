@@ -107,7 +107,7 @@ Resolve the evidence-backed defects from the review while preserving the skill's
 5. migration isolation, failure atomicity, and loss-reporting tests when a migration remains;
 6. producer/consumer and ownership checks for shared contracts;
 7. activation/non-activation/ambiguous/edge scenarios;
-8. package-hygiene and reproducible-archive checks;
+8. package-hygiene, portable-core/host-adapter checks when relevant, and reproducible-archive checks;
 9. report or package validation required by the target.
 
 ## Completion Report

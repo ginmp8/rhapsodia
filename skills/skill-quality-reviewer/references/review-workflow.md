@@ -10,14 +10,14 @@ Record:
 - files supplied, omitted, and protected;
 - known failures, prior reviews, expected behavior, supported versions, and migration commitments.
 
-Do not begin semantic scoring until the root is unambiguous. For ecosystem review, map each skill root separately before evaluating shared contracts.
+Do not begin semantic scoring until the root is unambiguous. For ecosystem review, map each skill root separately before evaluating shared contracts. Resolve the target host profile only when host-specific metadata or portability is part of the request; otherwise review the portable core first.
 
 ## 2. Build the package map
 
 | Surface | Questions |
 |---|---|
 | `SKILL.md` | Can the skill activate, route, execute, stop, and produce its declared current output? |
-| `agents/openai.yaml` | Does user-facing metadata match the actual capability? |
+| `agents/openai.yaml` | Optional OpenAI adapter: when present or explicitly required, does user-facing metadata match the actual capability without redefining portable-core semantics? |
 | `references/` | Are rules reachable, current, non-contradictory, and branch-loaded only when needed? |
 | `scripts/` | Are deterministic helpers integrated, runnable, current, and runtime-independent from peer skills? |
 | `assets/` | Are assets used in outputs rather than hidden reasoning or historical residue? |
@@ -56,9 +56,10 @@ At minimum, evaluate:
 7. Planned scenarios are not reported as executed results.
 8. Packaging excludes generated or obsolete operational residue.
 9. The output contract can be satisfied from required inputs.
-10. The correction input is self-contained.
-11. Normal execution accepts only current contracts and identifiers.
-12. Historical adaptation occurs only in an explicit, isolated migration mode.
+10. Portable-core correctness does not depend on an optional vendor adapter or absolute host installation path.
+11. The correction input is self-contained.
+12. Normal execution accepts only current contracts and identifiers.
+13. Historical adaptation occurs only in an explicit, isolated migration mode.
 13. Unknown or malformed current input does not silently fall back to legacy behavior.
 14. Current and historical rules do not compete as sources of truth.
 15. Peer skills exchange versioned contracts rather than importing or reading each other's internals at runtime.

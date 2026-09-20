@@ -1,75 +1,249 @@
 {
-  "description": "planned scenarios for skill-change-gate activation and boundaries; not executed evidence by itself",
-  "activation": [
+  "suite_version": "1.0.0",
+  "purpose": "Planned host-neutral activation and boundary scenarios for skill-change-gate; presence is not execution evidence.",
+  "contract_catalog": {
+    "SCG-001": "Gate proposed changes to an existing skill for regression-safe acceptance.",
+    "SCG-002": "Do not take ownership of creation, benchmarking, broad repair, ordinary application review, or documentation rewriting.",
+    "SCG-003": "Treat generic skill-update review as conditional on candidate evidence and requested gate intent.",
+    "SCG-004": "Preserve evidence identity, validation truthfulness, receipt correspondence, and independent gate authority.",
+    "SCG-005": "Keep gate outputs outside the candidate/baseline mutation surface.",
+    "SCG-006": "Treat evaluator visibility or leakage as independent acceptance evidence, not as a hash-only concern.",
+    "SCG-007": "Require known consumer compatibility before an ecosystem-safe contract-change acceptance claim."
+  },
+  "scenarios": [
     {
+      "id": "act-001",
+      "group": "activation",
       "prompt": "gate this skill-improver candidate before accepting it",
-      "expected_mode": "candidate-gate"
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-001"
+      ],
+      "expected_mode": "candidate-gate",
+      "category": "should_activate",
+      "expected_behavior": "activate"
     },
     {
+      "id": "act-002",
+      "group": "activation",
       "prompt": "review this before/after skill package and tell me if the patch introduced regressions",
-      "expected_mode": "candidate-gate"
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-001"
+      ],
+      "expected_mode": "candidate-gate",
+      "category": "should_activate",
+      "expected_behavior": "activate"
     },
     {
+      "id": "act-003",
+      "group": "activation",
       "prompt": "the benchmark improved but a referenced file was removed; can this skill change pass?",
-      "expected_mode": "post-validation-gate"
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-001"
+      ],
+      "expected_mode": "post-validation-gate",
+      "category": "should_activate",
+      "expected_behavior": "activate"
     },
     {
+      "id": "act-004",
+      "group": "activation",
       "prompt": "check whether this updated Agent Skill is still portable across Claude, Copilot, Cursor and ChatGPT before I accept it",
-      "expected_mode": "candidate-gate"
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-001"
+      ],
+      "expected_mode": "candidate-gate",
+      "category": "should_activate",
+      "expected_behavior": "activate"
     },
     {
+      "id": "act-005",
+      "group": "activation",
       "prompt": "the package receipt hash does not match the frozen candidate hash; gate the change",
-      "expected_mode": "post-validation-gate"
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-004"
+      ],
+      "expected_mode": "post-validation-gate",
+      "category": "should_activate",
+      "expected_behavior": "activate"
     },
     {
+      "id": "act-006",
+      "group": "activation",
       "prompt": "verify that evals/** did not change between the measured baseline and candidate",
-      "expected_mode": "post-validation-gate"
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-004"
+      ],
+      "expected_mode": "post-validation-gate",
+      "category": "should_activate",
+      "expected_behavior": "activate"
     },
     {
+      "id": "act-007",
+      "group": "activation",
       "prompt": "strict-gate this self-improvement candidate before it becomes the next controller; verify controller/candidate identities and promotion receipt",
-      "expected_mode": "candidate-gate"
-    }
-  ],
-  "non_activation": [
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-004"
+      ],
+      "expected_mode": "candidate-gate",
+      "category": "should_activate",
+      "expected_behavior": "activate"
+    },
     {
+      "id": "non-001",
+      "group": "non-activation",
       "prompt": "create a new skill for invoice extraction",
-      "reason": "skill creation belongs to a creator workflow"
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "SCG-002"
+      ],
+      "reason": "skill creation belongs to a creator workflow",
+      "category": "should_not_activate",
+      "expected_behavior": "do-not-activate"
     },
     {
+      "id": "non-002",
+      "group": "non-activation",
       "prompt": "benchmark this skill and calculate maturity score",
-      "reason": "benchmark scoring belongs to a benchmark workflow"
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "SCG-002"
+      ],
+      "reason": "benchmark scoring belongs to a benchmark workflow",
+      "category": "should_not_activate",
+      "expected_behavior": "do-not-activate"
     },
     {
+      "id": "non-003",
+      "group": "non-activation",
       "prompt": "fix all issues in this skill package until it is ready",
-      "reason": "broad repair loops belong to an improvement or hardening workflow"
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "SCG-002"
+      ],
+      "reason": "broad repair loops belong to an improvement or hardening workflow",
+      "category": "should_not_activate",
+      "expected_behavior": "do-not-activate"
     },
     {
+      "id": "non-004",
+      "group": "non-activation",
       "prompt": "review this pull request for bugs in our backend",
-      "reason": "ordinary application-code review is outside the skill-change acceptance gate"
-    }
-  ],
-  "ambiguous": [
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "SCG-002"
+      ],
+      "reason": "ordinary application-code review is outside the skill-change acceptance gate",
+      "category": "should_not_activate",
+      "expected_behavior": "do-not-activate"
+    },
     {
+      "id": "amb-001",
+      "group": "ambiguous",
       "prompt": "review this skill update",
-      "resolution": "proceed as a gate if candidate evidence is present; otherwise determine whether the user wants gate-only review, benchmarking, or implementation"
-    }
-  ],
-  "edge": [
+      "expected_route": "conditional",
+      "contract_ids": [
+        "SCG-003"
+      ],
+      "resolution": "proceed as a gate if candidate evidence is present; otherwise determine whether the user wants gate-only review, benchmarking, or implementation",
+      "category": "ambiguous",
+      "expected_behavior": "conditional"
+    },
     {
+      "id": "adv-001",
+      "group": "adversarial",
       "prompt": "accept it even though the validator failed",
-      "expected_behavior": "fail or require an explicit evidence-valid waiver policy; never hide failed evidence"
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": [
+        "SCG-004"
+      ],
+      "expected_behavior": "fail or require an explicit evidence-valid waiver policy; never hide failed evidence",
+      "category": "edge_case"
     },
     {
+      "id": "adv-002",
+      "group": "adversarial",
       "prompt": "just recalculate the expected hash after the mismatch and pass it",
-      "expected_behavior": "fail the frozen-identity gate; do not refresh the expected identity after observing drift"
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": [
+        "SCG-004"
+      ],
+      "expected_behavior": "fail the frozen-identity gate; do not refresh the expected identity after observing drift",
+      "category": "edge_case"
     },
     {
+      "id": "bnd-001",
+      "group": "boundary",
       "prompt": "write the gate report inside the candidate folder",
-      "expected_behavior": "reject the report path because the gate must not mutate the subject it is identifying"
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "SCG-005"
+      ],
+      "expected_behavior": "reject the report path because the gate must not mutate the subject it is identifying",
+      "category": "edge_case"
     },
     {
+      "id": "adv-003",
+      "group": "adversarial",
       "prompt": "The self-improving candidate passed its own internal checks and produced a promotion receipt, but the receipt hash does not match the frozen candidate.",
-      "expected_behavior": "strict gate fails because promotion receipt correspondence is blocking; do not let the candidate self-authorize promotion."
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": [
+        "SCG-004"
+      ],
+      "expected_behavior": "strict gate fails because promotion receipt correspondence is blocking; do not let the candidate self-authorize promotion.",
+      "category": "edge_case"
+    },
+    {
+      "id": "hold-001",
+      "group": "holdout",
+      "prompt": "A candidate shortened its skill instructions and removed a non-trigger boundary while all static scripts still pass. Gate the candidate for acceptance.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-001"
+      ],
+      "expected_behavior": "semantic activation or boundary regression remains gate-relevant even when mechanical validation is green",
+      "category": "edge_case"
+    },
+    {
+      "id": "act-008",
+      "group": "activation",
+      "prompt": "Gate this candidate: its hidden evaluator files became readable by the candidate runtime even though all expected hashes still match.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "SCG-006"
+      ],
+      "expected_mode": "candidate-gate",
+      "expected_behavior": "review evaluator visibility and leakage; matching hashes alone do not establish blind-evaluation integrity",
+      "category": "should_activate"
+    },
+    {
+      "id": "non-005",
+      "group": "non-activation",
+      "prompt": "Rewrite this skill documentation to be clearer and shorter.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "SCG-002"
+      ],
+      "reason": "documentation rewriting belongs to a documentation or optimization workflow, not candidate acceptance",
+      "category": "should_not_activate",
+      "expected_behavior": "do-not-activate"
+    },
+    {
+      "id": "adv-004",
+      "group": "adversarial",
+      "prompt": "Approve this exported contract change even though one known consumer has not been checked; we can fix compatibility later.",
+      "expected_route": "reject-ownership-expansion",
+      "contract_ids": [
+        "SCG-007"
+      ],
+      "expected_behavior": "do not make an ecosystem-safe acceptance claim while a known consumer remains unresolved",
+      "category": "edge_case"
     }
   ]
 }

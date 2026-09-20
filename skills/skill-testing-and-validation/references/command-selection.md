@@ -51,7 +51,7 @@ Prefer project-declared validators and package-integrity validators. A custom va
 
 ### Packaging
 
-Packaging is mutating output. Require an explicit output path when the command needs one. Do not select a placeholder command for execution.
+Packaging is mutating output. Require an explicit output path when the command needs one. Do not select a packaging command with a missing output argument for execution.
 
 ## Multi-runtime projects
 

@@ -6,7 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-from _security_common import CLASSIFICATIONS, CONFIDENCES, REPORT_VERSION, RUBRIC_VERSION, SEVERITIES, contains_secret_like
+from _security_common import CLASSIFICATIONS, CONFIDENCES, REPORT_VERSION, RUBRIC_VERSION, SEVERITIES, contains_secret_like, require_external_output
 
 REQUIRED_TOP = {"report_version", "rubric_version", "target", "mode", "review_status", "evidence_snapshot", "critical_evidence_gaps", "findings", "commands", "evidence_layers", "limitations"}
 REQUIRED_FINDING = {"id", "classification", "severity", "confidence", "location", "evidence", "risk", "recommendation", "validation", "residual_risk"}
@@ -23,7 +23,9 @@ def strings(value):
             yield from strings(v)
 
 
-def validate(data: dict) -> list[str]:
+def validate(data: object) -> list[str]:
+    if not isinstance(data, dict):
+        return ["report root must be an object"]
     errors: list[str] = []
     missing = sorted(REQUIRED_TOP - set(data))
     if missing:
@@ -72,18 +74,28 @@ def validate(data: dict) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("report")
-    ap.add_argument("--json")
+    ap.add_argument("--json", dest="json_output")
     args = ap.parse_args()
+    report_path = Path(args.report)
+    output_path = Path(args.json_output) if args.json_output else None
+    if output_path is not None:
+        try:
+            require_external_output(report_path, output_path)
+        except ValueError as exc:
+            result = {"status": "fail", "errors": [str(exc)]}
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 1
     try:
-        data = json.loads(Path(args.report).read_text(encoding="utf-8"))
+        data = json.loads(report_path.read_text(encoding="utf-8"))
     except Exception as exc:
         result = {"status": "fail", "errors": [f"invalid JSON: {exc}"]}
     else:
         errors = validate(data)
         result = {"status": "fail" if errors else "pass", "errors": errors}
     output = json.dumps(result, indent=2, sort_keys=True) + "\n"
-    if args.json:
-        Path(args.json).write_text(output, encoding="utf-8")
+    if output_path is not None:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(output, encoding="utf-8")
     else:
         print(output, end="")
     return 1 if result["status"] == "fail" else 0

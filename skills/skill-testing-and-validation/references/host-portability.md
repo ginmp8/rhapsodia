@@ -20,6 +20,10 @@ Branch on capability, not product name. ChatGPT/Codex, Claude, GitHub Copilot, C
 
 Resolve a usable Python 3.10+ execution method. The CLI spelling may be `python3`, `python`, `py -3`, or a host code-execution facility. Once running, bundled scripts use `sys.executable` for child Python commands and `pathlib` for paths.
 
+## Portable packaging
+
+The bundled packager rejects symlink inputs and normalizes ZIP timestamps and permission metadata before hashing the archive. This avoids Unix/Windows metadata drift while preserving source file bytes. Package outputs remain artifacts outside the skill root.
+
 ## Degraded mode
 
 If execution is unavailable, static research/planning may continue, but executable gates are `not-run` or `blocked`. If filesystem write is unavailable, do not claim a repair was applied. If runtime/tool discovery is incomplete, do not silently substitute another command merely to obtain a pass.

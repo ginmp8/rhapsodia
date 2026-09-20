@@ -74,6 +74,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("target", help="Skill folder, SKILL.md path, or ZIP archive")
     parser.add_argument("--json-out", help="Write the complete report to this JSON file")
     parser.add_argument("--strict", action="store_true", help="Return non-zero when MAJOR or BLOCKER findings exist")
+    parser.add_argument(
+        "--host-profile",
+        choices=("auto", "portable", "openai", "codex", "claude", "copilot", "cursor"),
+        default="auto",
+        help="Host profile for optional adapter checks; default auto validates adapters only when present",
+    )
     return parser.parse_args()
 
 
@@ -265,7 +271,7 @@ def collect_legacy_question_leads(root: Path, files: list[Path]) -> list[Finding
                 ))
     return leads
 
-def inspect(root: Path, source_kind: str) -> dict[str, object]:
+def inspect(root: Path, source_kind: str, host_profile: str = "auto") -> dict[str, object]:
     findings: list[Finding] = []
     files = list(iter_files(root))
     relative_files = [path.relative_to(root).as_posix() for path in files]
@@ -311,9 +317,11 @@ def inspect(root: Path, source_kind: str) -> dict[str, object]:
                 "Retain only name and description unless the active platform contract requires more.")
 
     metadata_path = root / "agents" / "openai.yaml"
+    openai_required = host_profile == "openai"
     if not metadata_path.exists():
-        add(findings, "META001", "MINOR", "agents/openai.yaml", "ChatGPT UI metadata file is absent.",
-            "Add agents/openai.yaml when the package targets ChatGPT.", "likely")
+        if openai_required:
+            add(findings, "META001", "MINOR", "agents/openai.yaml", "OpenAI adapter metadata is absent for the explicit openai profile.",
+                "Add agents/openai.yaml when OpenAI-specific metadata is part of the declared target profile.", "likely")
     else:
         metadata = read_text(metadata_path)
         if "display_name:" not in metadata:
@@ -486,6 +494,7 @@ def inspect(root: Path, source_kind: str) -> dict[str, object]:
         "schema_version": "1.1",
         "target_root": str(root),
         "source_kind": source_kind,
+        "host_profile": host_profile,
         "inventory": {
             "file_count": len(relative_files),
             "files": relative_files,
@@ -522,7 +531,7 @@ def main() -> int:
     try:
         with tempfile.TemporaryDirectory(prefix="skill-review-") as temporary:
             root, source_kind = resolve_root(target, Path(temporary))
-            report = inspect(root, source_kind)
+            report = inspect(root, source_kind, args.host_profile)
     except (InspectionError, zipfile.BadZipFile, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
