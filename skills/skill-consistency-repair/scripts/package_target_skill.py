@@ -6,19 +6,35 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import secrets
 import shutil
 import tempfile
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 from consistency_audit import audit
 from inventory_skill import scan_target
 
-EXCLUDED_DIRS = {'.git', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache', 'reports', 'benchmark-reports', 'test-results'}
-EXCLUDED_SUFFIXES = {'.pyc', '.pyo'}
-SECRET_WORDS = {'secret', 'credential', 'private_key', 'id_rsa', '.env'}
+EXCLUDED_DIRS = {
+    '.git', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache',
+    'tmp', '.tmp', 'reports', 'benchmark-reports', 'test-results',
+}
+EXCLUDED_NAMES = {'.ds_store', 'test-results.json', 'hardening-audit.json'}
+EXCLUDED_SUFFIXES = {'.pyc', '.pyo', '.swp', '.swo'}
+SENSITIVE_NAME_PATTERNS = (
+    re.compile(r'(^|[-_.])secret(s)?($|[-_.])', re.IGNORECASE),
+    re.compile(r'(^|[-_.])credential(s)?($|[-_.])', re.IGNORECASE),
+    re.compile(r'(^|[-_.])token(s)?($|[-_.])', re.IGNORECASE),
+    re.compile(r'private[-_.]?key', re.IGNORECASE),
+    re.compile(r'^id_rsa($|\.)', re.IGNORECASE),
+    re.compile(r'^\.env($|\.)', re.IGNORECASE),
+)
+ZIP_FORMAT_VERSION = 1
+ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+ZIP_REGULAR_MODE = 0o100644
+ZIP_EXECUTABLE_MODE = 0o100755
 
 
 def sha256_file(path: Path) -> str:
@@ -41,28 +57,53 @@ def paths_alias(a: Path, b: Path) -> bool:
     return a.resolve() == b.resolve()
 
 
+def is_sensitive_name(name: str) -> bool:
+    return any(pattern.search(name) for pattern in SENSITIVE_NAME_PATTERNS)
+
+
 def should_exclude(path: Path, root: Path) -> bool:
     rel_parts = path.relative_to(root).parts
     if any(part in EXCLUDED_DIRS for part in rel_parts):
         return True
     name = path.name.lower()
-    if path.suffix.lower() in EXCLUDED_SUFFIXES or name.endswith('.zip'):
+    if name in EXCLUDED_NAMES:
         return True
-    if any(word in name for word in SECRET_WORDS):
+    if path.suffix.lower() in EXCLUDED_SUFFIXES or name.endswith(('.zip', '~')):
+        return True
+    if is_sensitive_name(name):
         return True
     return False
 
 
 def files_to_zip(root: Path) -> Iterable[Path]:
+    files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = sorted(d for d in dirnames if d not in EXCLUDED_DIRS)
-        for filename in sorted(filenames):
+        for filename in filenames:
             path = Path(dirpath) / filename
             if not path.is_symlink() and not should_exclude(path, root):
-                yield path
+                files.append(path)
+    yield from sorted(files, key=lambda path: path.relative_to(root).as_posix())
 
 
-def validate_archive(zip_path: Path, skill_name: str | None = None) -> list[str]:
+def write_normalized_archive(zip_path: Path, target: Path, skill_name: str, files: Iterable[Path]) -> list[str]:
+    """Write deterministic ZIP entries independent of source mtime and permissions."""
+    names: list[str] = []
+    with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+        for path in files:
+            arcname = f'{skill_name}/{path.relative_to(target).as_posix()}'
+            info = zipfile.ZipInfo(arcname, date_time=ZIP_TIMESTAMP)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            mode = ZIP_EXECUTABLE_MODE if path.suffix.lower() in {'.py', '.sh'} else ZIP_REGULAR_MODE
+            info.external_attr = mode << 16
+            info.flag_bits |= 0x800
+            zf.writestr(info, path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+            names.append(arcname)
+    return names
+
+
+def validate_archive(zip_path: Path, skill_name: str | None = None, *, require_normalized: bool = False) -> list[str]:
     errors: list[str] = []
     if not zip_path.exists():
         return ['archive was not created']
@@ -71,7 +112,8 @@ def validate_archive(zip_path: Path, skill_name: str | None = None) -> list[str]
             bad = zf.testzip()
             if bad:
                 errors.append(f'archive CRC failure: {bad}')
-            names = zf.namelist()
+            infos = zf.infolist()
+            names = [info.filename for info in infos]
             tops = {name.split('/', 1)[0] for name in names if name and '/' in name}
             if len(tops) != 1:
                 errors.append(f'archive must contain exactly one top-level skill directory, found {sorted(tops)}')
@@ -79,12 +121,28 @@ def validate_archive(zip_path: Path, skill_name: str | None = None) -> list[str]
                 errors.append(f'archive root must be {skill_name!r}, found {sorted(tops)}')
             if not any(name.endswith('/SKILL.md') for name in names):
                 errors.append('archive is missing SKILL.md')
-            blocked = [name for name in names if any(part in EXCLUDED_DIRS for part in Path(name).parts)]
+            unsafe = [
+                name for name in names
+                if name.startswith('/') or '..' in PurePosixPath(name).parts
+            ]
+            if unsafe:
+                errors.append(f'archive includes unsafe paths: {unsafe[:10]}')
+            blocked = [name for name in names if any(part in EXCLUDED_DIRS for part in PurePosixPath(name).parts)]
             if blocked:
                 errors.append(f'archive includes excluded paths: {blocked[:10]}')
-            secretish = [name for name in names if any(word in Path(name).name.lower() for word in SECRET_WORDS)]
+            secretish = [name for name in names if is_sensitive_name(PurePosixPath(name).name.lower())]
             if secretish:
                 errors.append(f'archive includes secret-like paths: {secretish[:10]}')
+            if require_normalized:
+                non_normalized: list[str] = []
+                for info in infos:
+                    suffix = PurePosixPath(info.filename).suffix.lower()
+                    expected_mode = ZIP_EXECUTABLE_MODE if suffix in {'.py', '.sh'} else ZIP_REGULAR_MODE
+                    actual_mode = (info.external_attr >> 16) & 0o177777
+                    if info.date_time != ZIP_TIMESTAMP or info.create_system != 3 or actual_mode != expected_mode:
+                        non_normalized.append(info.filename)
+                if non_normalized:
+                    errors.append(f'archive includes non-normalized ZIP metadata: {non_normalized[:10]}')
     except zipfile.BadZipFile as exc:
         errors.append(f'invalid zip: {exc}')
     return errors
@@ -150,7 +208,10 @@ def main() -> int:
     parser.add_argument('--validate', action='store_true')
     parser.add_argument('--allow-findings', action='store_true', help='Package even if static audit has high/blocker findings.')
     parser.add_argument('--last-good', help='Path for preserving the previous validated package. Defaults beside output.')
-    parser.add_argument('--receipt', help='Optional JSON package receipt path; must be outside target.')
+    parser.add_argument(
+        '--json-output', '--receipt', dest='receipt',
+        help='Optional JSON package receipt path.',
+    )
     args = parser.parse_args()
 
     target = Path(args.target).resolve()
@@ -180,19 +241,15 @@ def main() -> int:
         os.close(fd)
         staged_package = Path(temp_name)
         included: list[str] = []
-        with zipfile.ZipFile(staged_package, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
-            for path in files_to_zip(target):
-                arcname = f'{skill_name}/{path.relative_to(target).as_posix()}'
-                zf.write(path, arcname)
-                included.append(arcname)
-        errors = validate_archive(staged_package, skill_name)
+        included = write_normalized_archive(staged_package, target, skill_name, files_to_zip(target))
+        errors = validate_archive(staged_package, skill_name, require_normalized=True)
         if errors:
             staged_package.unlink(missing_ok=True)
             print(json.dumps({'status': 'fail', 'stage': 'archive-validation', 'errors': errors}, indent=2))
             return 1
 
         staged_targets: list[tuple[Path, Path]] = []
-        previous_valid = output.exists() and not validate_archive(output, skill_name)
+        previous_valid = output.exists() and not validate_archive(output, skill_name, require_normalized=False)
         if previous_valid:
             last_good.parent.mkdir(parents=True, exist_ok=True)
             fd, lkg_name = tempfile.mkstemp(prefix=f'.{last_good.name}.', suffix='.tmp', dir=last_good.parent)
@@ -203,16 +260,26 @@ def main() -> int:
 
         package_sha = sha256_file(staged_package)
         receipt = {
-            'receipt_version': 1,
+            'receipt_version': 2,
             'status': 'pass',
+            'stage': 'committed',
             'candidate_identity': inventory.get('inventory_fingerprint'),
+            'candidate_sha256': inventory.get('inventory_fingerprint'),
             'package_sha256': package_sha,
+            'archive_sha256': package_sha,
             'package_bytes': staged_package.stat().st_size,
             'file_count': len(included),
             'skill_name': skill_name,
+            'zip_format_version': ZIP_FORMAT_VERSION,
+            'zip_timestamp': '1980-01-01T00:00:00',
+            'validation_status': 'pass',
+            'final_path': output.as_posix(),
+            'atomic_replace': True,
             'previous_valid_package_preserved': bool(previous_valid),
             'last_known_good': last_good.as_posix() if previous_valid else None,
             'output_preserved_on_precommit_failure': True,
+            'last_good_preserved_on_failure': True,
+            'recovery': [],
         }
         staged_targets.append((staged_package, output))
         if receipt_path:

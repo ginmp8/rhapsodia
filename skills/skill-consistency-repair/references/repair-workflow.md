@@ -19,7 +19,9 @@ Before any repair:
 <PYTHON> scripts/validate_consistency_report.py <WORK>/audit-before.json
 ```
 
-Preserve a full baseline copy, clean VCS revision, or equivalent last-known-good outside the mutation scope. The baseline inventory fingerprint and file hashes are the identity proof. Never overwrite baseline evidence during the run.
+Preserve a full baseline copy, clean immutable VCS revision, or equivalent last-known-good outside the mutation scope. The baseline inventory fingerprint and file hashes are the identity proof. Never overwrite baseline evidence during the run.
+
+When a repair decision depends materially on peer skills, repository files, prior reports, or other mutable external sources, preserve an immutable source snapshot (exact bytes) or pinned immutable revision in the work directory before analysis. Record its identity and verify it again before final acceptance. If the live source changes, keep evaluating the frozen snapshot or explicitly invalidate and re-baseline; never mix evidence from different source versions.
 
 ## 3. Freeze evaluators before candidate acceptance
 
@@ -78,7 +80,9 @@ Create a receipt outside the target:
 For packaging:
 
 ```text
-<PYTHON> scripts/package_target_skill.py --target <TARGET> --output <OUTPUT>/skill.zip --validate --receipt <OUTPUT>/package-receipt.json
+<PYTHON> scripts/package_skill.py --target <TARGET> --output <OUTPUT>/skill.zip --validate --json-output <OUTPUT>/package-receipt.json
 ```
 
-Packaging stages and validates the new archive before commit, preserves the previous validated output as last-known-good when present, and reports recovery evidence if commit/rollback fails.
+Packaging writes deterministic entry order plus normalized ZIP timestamps/permissions, stages and validates the archive before commit, preserves the previous validated output as last-known-good when present, and reports recovery evidence if commit/rollback fails.
+
+When packaging code changes, build twice from byte-identical target trees whose file mtimes or source permissions differ and require identical archive SHA-256 values before accepting the change.

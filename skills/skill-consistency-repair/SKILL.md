@@ -22,8 +22,8 @@ Resolve before mutation:
 1. exactly one `TARGET_SKILL_PATH` with a root `SKILL.md`;
 2. primary mode: `audit-only`, `repair-plan`, `apply-repair`, `validation-only`, or `package`;
 3. writable target scope and protected paths;
-4. work/evidence directory outside the target;
-5. available runtime capabilities, including Python 3.10+ when bundled validators are required;
+4. work/evidence directory outside the target, plus immutable snapshots/pins for material external evidence used to decide ownership, compatibility, or removal;
+5. available runtime capabilities, including an available Python 3.10+ launcher when bundled validators are required; record the exact launcher instead of assuming `python` or `python3`;
 6. baseline/last-known-good strategy;
 7. evaluator inputs used for acceptance and their freeze status.
 
@@ -61,8 +61,8 @@ Operational tools:
 - `scripts/validate_consistency_report.py`: report schema validation.
 - `scripts/freeze_evaluators.py`: evaluator SHA-256 freeze/verify.
 - `scripts/create_consistency_receipt.py`: receipt bound to the exact final candidate and evaluator manifest.
-- `scripts/package_target_skill.py`: validated atomic package delivery with previous valid output preserved as last-known-good.
-- `scripts/package_skill.py`: packaging compatibility wrapper.
+- `scripts/package_skill.py`: canonical portable package entrypoint; emits deterministic ZIP bytes, validates before commit, preserves last-known-good output, and writes a versioned JSON receipt.
+- `scripts/package_target_skill.py`: package implementation used by the canonical entrypoint.
 - `tests/test_tools.py`: self-tests for deterministic inventory, deletion safety, report v2 validation, and evaluator freeze integrity.
 
 Operational templates are `assets/templates/consistency-report.md.template`, `assets/templates/repair-plan.md.template`, `assets/templates/patch-decision-record.md.template`, and `assets/templates/scenario-suite.json.template`; copy/fill them only for their declared report/plan/decision/scenario roles.
@@ -71,16 +71,22 @@ Operational templates are `assets/templates/consistency-report.md.template`, `as
 
 ## Workflow
 
-1. **Identity and baseline.** Resolve one target root; canonicalize paths; keep work outputs outside the target; preserve baseline/last-known-good; run inventory/audit/report validation before edits.
+1. **Identity and baseline.** Resolve one target root; canonicalize paths; keep work outputs outside the target; preserve baseline/last-known-good; snapshot or pin exact material external source evidence before it influences a decision; run inventory/audit/report validation before edits.
 2. **Freeze evaluators.** Freeze the evaluator inputs that will decide acceptance. If evaluator design must change, do that as a separate phase, invalidate the old comparison, refreeze, then restart candidate acceptance.
 3. **Trace ownership and consumers.** For every material resource/finding trace authority plus imports, links, references, consumers, tests, validators, examples, packaging, migration paths, and handoffs.
 4. **Classify.** Use only: `current`, `duplicate`, `obsolete`, `migration-only`, `contradictory`, `orphaned`, `integrable`, `blocked`, `unknown`. Static classification is provisional; semantic judgment follows the evidence rubric.
 5. **Resolve conflicts.** Apply concern-specific authority. Never choose a source merely because it is newer, longer, or named `SKILL.md`. Frozen evaluator expectations cannot be changed during candidate acceptance.
 6. **Repair by diagnosis.** Record one bounded hypothesis; apply the smallest coherent patch directly tied to that diagnosis; rerun the same gate before adjacent gates. Stop a branch after two non-improving objective repair rounds.
 7. **Removal gate.** Never delete a resource because it appears unused. Removal requires full trace evidence, an allowed final status, migrated consumers/compatibility, rollback evidence, and post-removal validation.
-8. **Post-repair validation.** Rerun inventory/audit/report validator, target-owned tests/validators, evaluator integrity, and applicable package validation. Repeated inventory fingerprints must match when no bytes changed.
+8. **Post-repair validation.** Rerun inventory/audit/report validator, target-owned tests/validators, evaluator integrity, applicable package validation, and material external-source identity verification. Repeated inventory fingerprints must match when no bytes changed.
 9. **Freeze final candidate.** After the last pass, make no further edits. Any change invalidates the affected evidence and requires revalidation.
 10. **Receipt/delivery.** Create the consistency receipt outside the target. Package only the exact frozen candidate; preserve last-known-good/recovery evidence on failure.
+
+## Portability Contract
+
+The portable core is host-neutral. `agents/openai.yaml` is an optional adapter, not a runtime dependency. Use package-local relative paths, `pathlib`/standard-library filesystem APIs, and the host's available Python 3 launcher. Do not require vendor-private tool names, installation paths, Unix-only commands, or host-specific discovery locations for correctness.
+
+Package delivery must normalize ZIP entry ordering, timestamps, permission metadata, and POSIX archive paths so filesystem metadata differences do not change the archive identity for the same candidate bytes. Package outputs and receipts stay outside the frozen target.
 
 ## Semantic Judgment Boundary
 
