@@ -31,4 +31,6 @@ A durable consistency receipt should contain:
 - last-known-good identity/path when available;
 - explicit claim boundary.
 
+A package-delivery receipt additionally records `receipt_version`, committed `stage`, candidate/tree identity, archive SHA-256, normalized ZIP format version, validation status, final archive path, atomic-replace state, last-known-good preservation state, and recovery paths. Package receipt outputs stay outside the frozen target.
+
 Receipt outputs must live outside the frozen target package. `scripts/create_consistency_receipt.py` rejects candidate/report identity drift.

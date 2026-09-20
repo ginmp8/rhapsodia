@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package this skill folder or another target skill folder as skill.zip after consistency validation."""
+"""Portable packaging entrypoint for consistency-repair skill delivery."""
 from __future__ import annotations
 
 import argparse

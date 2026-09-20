@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,6 +16,7 @@ sys.path.insert(0, str(SCRIPTS))
 from consistency_audit import audit  # noqa: E402
 from freeze_evaluators import freeze, verify  # noqa: E402
 from inventory_skill import scan_target  # noqa: E402
+from package_target_skill import ZIP_TIMESTAMP, files_to_zip, sha256_file, validate_archive, write_normalized_archive  # noqa: E402
 from validate_consistency_report import validate  # noqa: E402
 
 
@@ -51,6 +55,33 @@ class ConsistencyToolTests(unittest.TestCase):
             result = verify(root, manifest)
             self.assertEqual('fail', result['status'])
             self.assertEqual(['evals/cases.json'], result['changed'])
+
+    def test_package_bytes_ignore_source_mtime_and_permissions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            first = root / 'first' / 'sample-skill'
+            second = root / 'second' / 'sample-skill'
+            first.mkdir(parents=True)
+            (first / 'scripts').mkdir()
+            (first / 'SKILL.md').write_text('---\nname: sample-skill\ndescription: package determinism fixture\n---\n', encoding='utf-8')
+            (first / 'scripts' / 'tool.py').write_text('print("ok")\n', encoding='utf-8')
+            shutil.copytree(first, second)
+
+            os.utime(first / 'SKILL.md', (946684800, 946684800))
+            os.utime(second / 'SKILL.md', (1789948800, 1789948800))
+            (first / 'scripts' / 'tool.py').chmod(0o600)
+            (second / 'scripts' / 'tool.py').chmod(0o755)
+
+            first_zip = root / 'first.zip'
+            second_zip = root / 'second.zip'
+            write_normalized_archive(first_zip, first, 'sample-skill', files_to_zip(first))
+            write_normalized_archive(second_zip, second, 'sample-skill', files_to_zip(second))
+
+            self.assertEqual(sha256_file(first_zip), sha256_file(second_zip))
+            self.assertEqual([], validate_archive(first_zip, 'sample-skill', require_normalized=True))
+            self.assertEqual([], validate_archive(second_zip, 'sample-skill', require_normalized=True))
+            with zipfile.ZipFile(first_zip) as zf:
+                self.assertTrue(all(info.date_time == ZIP_TIMESTAMP for info in zf.infolist()))
 
 
 if __name__ == '__main__':
