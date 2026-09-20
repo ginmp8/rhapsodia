@@ -24,6 +24,12 @@ Own repository context mapping for code changes, refactors, feature implementati
 
 Do not own product governance, generic single-snippet explanation, skill-package hardening, or implementation that bypasses repository evidence.
 
+## Host portability gate
+
+Keep the core portable across compatible Agent Skills hosts. `agents/openai.yaml` and other host-specific adapters are optional and cannot own semantic rules. Before mapping, detect the runtime capabilities needed by the selected mode: filesystem/repository read, search/reference lookup, command execution, write access, Python helper availability, and network access when external freshness is required. Missing capability lowers the evidence level or makes the affected branch `blocked`; it never authorizes invented evidence.
+
+For reusable maps, freeze evidence identities before implementation and revalidate them on reuse. Load `references/host-portability.md` for detailed degradation rules and launcher guidance.
+
 ## Modes
 
 | User intent | Mode | Primary output | Edit allowed |
@@ -44,6 +50,7 @@ Resolve or conservatively infer these before finalizing a map:
 5. Safety constraints: blocked/read-only paths, generated files, migrations, secrets, production data, access-control surfaces.
 6. Validation expectation: tests, build, lint, type check, reproduction command, runtime check, or reason validation is unavailable.
 7. Evidence tier: `focused`, `standard`, or `extended`.
+8. Final artifact expectation when material: chat map/plan only, repository edits, or a durable context-map artifact.
 
 ### Evidence tier selection
 
@@ -67,6 +74,10 @@ Use these labels when materially useful:
 - `blocked`: evidence could not be obtained.
 
 When evidence conflicts, apply the precedence rules in the reference and report unresolved conflicts instead of silently picking the convenient source.
+
+## Progressive loading
+
+Use `SKILL.md` as the control plane. Load a supporting reference only when its branch is active: evidence/scope, dependency tracing, map rendering, implementation sequencing, risk/validation, or host portability. This keeps context bounded without changing the output contract.
 
 ## Context mapping workflow
 
@@ -139,12 +150,13 @@ If repository access is incomplete, mark the map `provisional` and state exactly
 - `references/change-sequencing.md`: safe ordering, PR splitting, map drift, and validation strategy.
 - `references/risk-and-validation-checklist.md`: risk checklist and validation evidence levels.
 - `references/upstream-source.md`: attribution and adaptation notes.
+- `references/host-portability.md`: capability-first multi-platform behavior and adapter boundaries.
 - `assets/templates/context-map.md.template`: reusable v2 context-map template.
 - `scripts/generate_context_map_skeleton.py`: generate a v2 context-map skeleton.
 - `scripts/context_evidence_snapshot.py`: capture/verify selected repository evidence hashes with machine-readable diagnostics.
 - `scripts/validate_context_architect_skill.py`: validate package structure, references, scripts, and scenario schemas.
-- `scripts/package_skill.py`: build a deterministic `skill.zip` with path preflight and optional receipt.
-- `evals/activation-scenarios.json`: frozen legacy/planned activation and boundary scenarios; not measured unless executed externally.
+- `scripts/package_skill.py`: build a deterministic `skill.zip` with canonical output-path preflight, staged verification, last-known-good restoration, atomic replacement, and optional receipt.
+- `evals/activation-scenarios.json`: frozen planned activation and boundary scenarios; not measured unless executed externally.
 - `evals/reproducibility-scenarios.json`: planned provenance, stale-map, conflict, and closure scenarios; not measured unless executed externally.
 - `examples/example-context-map.md`: calibrated example.
 

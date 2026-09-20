@@ -209,8 +209,8 @@ def verify(args: argparse.Namespace) -> int:
         "manifest": str(manifest_path),
         "diagnostics": diagnostics,
     }
-    if args.json:
-        atomic_json_write(Path(args.json), report)
+    if args.json_output:
+        atomic_json_write(Path(args.json_output), report)
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if not diagnostics else 1
 
@@ -228,7 +228,7 @@ def build_parser() -> argparse.ArgumentParser:
     verify_parser = sub.add_parser("verify", help="Verify repository evidence against a prior manifest.")
     verify_parser.add_argument("--root", required=True, help="Repository root to verify.")
     verify_parser.add_argument("--manifest", required=True, help="Previously captured manifest.")
-    verify_parser.add_argument("--json", help="Optional machine-readable verification report path.")
+    verify_parser.add_argument("--json", dest="json_output", help="Optional machine-readable verification report path.")
     verify_parser.set_defaults(func=verify)
     return parser
 
