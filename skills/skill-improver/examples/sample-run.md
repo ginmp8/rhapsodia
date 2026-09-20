@@ -23,8 +23,8 @@ The backlog should come from `skill-hypothesis-discovery` or an equivalent evide
 <PYTHON> scripts/skill_improver_loop.py \
   --target <TARGET_SKILL_ROOT> \
   --evaluator command \
-  --eval-command '<PYTHON> ../../evals/eval_skill.py --target .' \
-  --benchmark-lock-path ../../evals/eval_skill.py \
+  --eval-command '<PYTHON> <SKILL_IMPROVER_ROOT>/examples/eval_skill.py --target .' \
+  --benchmark-lock-path <SKILL_IMPROVER_ROOT>/examples/eval_skill.py \
   --agent-adapter command \
   --agent-command-template '<AGENT_CLI> run --cwd {cwd} --prompt {prompt}' \
   --max-iterations 3 \
@@ -32,6 +32,8 @@ The backlog should come from `skill-hypothesis-discovery` or an equivalent evide
 ```
 
 The generic template is executed as argv without a shell. It must contain `{prompt}` and may contain `{cwd}` and `{target}`.
+
+`<SKILL_IMPROVER_ROOT>` must be replaced with the absolute canonical path of this `skill-improver` package. The same evaluator path is used for execution and `--benchmark-lock-path` so the executed evaluator and frozen evaluator identity cannot diverge because of different relative-path bases.
 
 ## Lock material source evidence
 

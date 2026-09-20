@@ -48,7 +48,7 @@ Prefer the versioned scenario envelope documented in `test-scenarios.md`. It bin
 - evidence origin;
 - scenario rows.
 
-Legacy arrays remain accepted for compatibility but are `unpinned` and cannot support strict before/after improvement claims.
+Reject top-level arrays and unversioned scenario-result shapes. Only the versioned v2 envelope may enter benchmark evidence validation.
 
 ## Output alias preflight
 

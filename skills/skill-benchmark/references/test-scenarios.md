@@ -11,9 +11,9 @@ Include at least 20 scenarios:
 3. `ambiguous`: 5 prompts requiring clarification/explicit assumptions.
 4. `edge_case`: 5 missing/invalid/conflicting/unsupported cases.
 
-## Portable v2 result envelope
+## Scenario result envelope
 
-Prefer identity-bound evidence:
+Require the versioned identity-bound v2 envelope:
 
 ```json
 {
@@ -43,7 +43,7 @@ Prefer identity-bound evidence:
 }
 ```
 
-Legacy top-level arrays remain accepted for backwards compatibility, but validation marks them `unpinned`. Do not use unpinned evidence for strict before/after improvement claims.
+Top-level arrays and unversioned result shapes are invalid. Scenario evidence must use `schema_version: 2` with a `scenarios` array.
 
 `arm_type` may be `without-skill`, `baseline`, `candidate`, or `single`. For `without-skill`, omit `target_identity_sha256`. `evaluator_visibility` may be `hidden`, `candidate-visible`, or `not-applicable`. A `hidden` evaluator requires `candidate_saw_evaluator_only_assets=false`; otherwise blind-evaluation claims are invalid. Trace identity is optional because not every host exposes execution traces.
 

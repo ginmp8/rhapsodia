@@ -214,7 +214,6 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description='Build and validate a portable Agent Skills package zip.')
     parser.add_argument('--target')
     parser.add_argument('--output')
-    parser.add_argument('--validate', action='store_true', help='Compatibility flag; validation is always performed.')
     parser.add_argument('--validate-only', help='Validate an existing package zip without creating a new one.')
     parser.add_argument('--json-output', help='Optional success receipt path. Existing last-good receipts are preserved on failure.')
     parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,claude,copilot,cursor,all')
