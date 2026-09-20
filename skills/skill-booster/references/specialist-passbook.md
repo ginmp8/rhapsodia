@@ -51,7 +51,7 @@ During `diagnose`, specialists are evidence providers by default. They may inspe
 
 - A provider may return findings, capability refs, evidence gaps, candidate hypotheses, and validation requirements.
 - A provider does not gain mutation authority merely because it found a defect.
-- Findings produced after pass 17 that are outside the selected transformation become follow-up hypotheses unless required for candidate validity/safety.
+- Findings produced after pass 17 that are outside the selected transformation become follow-up hypotheses unless required for candidate validity/safety. For `complete`/`full` optimization, any such finding that is material and actionable must later receive a terminal disposition (`fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`) before completion; a mere follow-up entry is not closure.
 - When a provider is explicitly delegated as mutation owner, record that delegation in the transformation registry and rerun affected gates afterward.
 
 ## Pass rules

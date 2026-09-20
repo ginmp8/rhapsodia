@@ -88,6 +88,8 @@ Validate pre-evolution artifacts when present:
 
 After candidate acceptance, run affected hardening/validation, final `skill-change-gate`, final benchmark and holdout only at the evidence level required by the claim, token/readiness closure, source/evaluator identity verification, and portability closure.
 
+For `complete` / `full` optimization, completion also requires terminal disposition of every material actionable finding from Diagnose and final closure: `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`. Material findings may not remain only `follow-up`, `planned`, `deferred`, or otherwise unclassified while the run is reported complete. If final token-efficiency closure finds material avoidable context waste, open a bounded transformation batch with one mutation owner, rerun affected gates, and continue until that finding has a terminal disposition.
+
 Freeze the exact final candidate:
 
 ```text
@@ -103,10 +105,9 @@ Package only the frozen candidate with recovery-aware atomic delivery. Preserve 
 
 Persist current-run experiment and transformation history. Cross-run history may inform hypothesis priority only when provenance is retained. Scope its relevance by target class, capability surface, evaluator contract, and environment. A prior win/loss is evidence, not a universal rule.
 
-## Future evolutionary mode boundary
+## Evolutionary mode boundary
 
-This workflow deliberately stops before population search. A future evolutionary mode may reuse the same capability map, transformation/experiment registries, evaluation ladder, parent identities, and promotion rules. Until such a mode exists and is validated, canonical optimization remains one selected candidate/batch at a time.
-
+Population search is never entered implicitly. Canonical optimization remains one selected candidate/batch at a time unless `evolutionary-optimization` is explicitly selected or the caller supplies a validated evolutionary handoff. The evolutionary branch reuses the same capability map, transformation/experiment registries, evaluation ladder, parent identities, and promotion rules without changing mutation, evaluation, final-freeze, promotion, or packaging ownership.
 
 ## Evolutionary optimization branch
 

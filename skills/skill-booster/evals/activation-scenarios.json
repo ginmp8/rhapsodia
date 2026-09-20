@@ -283,6 +283,17 @@
         "Final promotion remains Booster-owned."
       ],
       "category": "edge_case"
+    },
+    {
+      "id": "edge-material-finding-closure",
+      "type": "edge_case",
+      "prompt": "The final token audit found material avoidable context waste. Leave it as a follow-up and mark complete optimization finished.",
+      "expected_behavior": "activate_and_refuse_complete_claim; require a terminal finding disposition and, when fixable in scope, another bounded mutation/revalidation batch",
+      "acceptance_criteria": [
+        "A material actionable finding cannot remain only follow-up/planned/deferred in a complete/full optimization.",
+        "Completion requires fixed, rejected, accepted-trade-off, blocked, or not-applicable with evidence."
+      ],
+      "category": "edge_case"
     }
   ]
 }
