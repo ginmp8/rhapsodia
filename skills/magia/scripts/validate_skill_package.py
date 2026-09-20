@@ -20,6 +20,7 @@ from validate_shared_contract_provenance import validate as validate_shared_prov
 from validate_ecosystem_release_metadata import validate as validate_release_metadata
 from validate_resource_integration import validate as validate_resource_integration
 from validate_runtime_dependencies import validate as validate_runtime_dependencies
+from validate_booster_activation_scenarios import validate as validate_booster_activation_scenarios
 
 from validate_boundary import collect_errors as collect_boundary_errors
 from validate_instruction_contract import collect_errors as collect_instruction_contract_errors
@@ -276,6 +277,9 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/board-contract.md",
         "references/common-execution.md",
         "references/resource-map.md",
+        "references/execution-profiles.md",
+        "references/failure-recovery-taxonomy.md",
+        "references/run-state-and-recovery.md",
         "references/convergence-and-validation.md",
         "references/public-artifact-adapters.md",
         "references/package-delivery.md",
@@ -298,10 +302,12 @@ def validate_target(target: Path) -> dict[str, Any]:
         "references/artifacts/execution-evidence.md",
         "references/validation-and-closure.md",
         "assets/templates/implementation-notes.md.template",
+        "assets/templates/run-state.json.template",
         "assets/templates/validation-evidence.md.template",
         "assets/templates/technical-gap-note.md.template",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "evals/booster-activation-scenarios.json",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/planning_traceability.py",
@@ -328,6 +334,8 @@ def validate_target(target: Path) -> dict[str, Any]:
         "scripts/select_validation.py",
         "scripts/select_validation_checks.py",
         "scripts/validate_convergence.py",
+        "scripts/run_state.py",
+        "scripts/validate_booster_activation_scenarios.py",
         "scripts/adapt_public_artifacts.py",
         "scripts/validate_resource_integration.py",
         "scripts/validate_runtime_dependencies.py",
@@ -397,6 +405,12 @@ def validate_target(target: Path) -> dict[str, Any]:
 
     errors.extend(validate_eval_scenarios(target / "evals" / "activation-scenarios.json"))
     checks.append("eval scenarios")
+
+    booster_result = validate_booster_activation_scenarios(target / "evals" / "booster-activation-scenarios.json")
+    errors.extend(booster_result.get("errors", []))
+    checks.append(
+        f"booster activation structural scenarios ({booster_result.get('scenario_count', 0)} scenarios; live behavior not measured)"
+    )
 
     errors.extend(validate_shared_artifact_boundaries(target))
     checks.append("shared artifact boundaries")
@@ -471,6 +485,9 @@ def zip_required_resources() -> list[str]:
         "requirements-dev.txt",
         "CHANGELOG.md",
         "references/resource-map.md",
+        "references/execution-profiles.md",
+        "references/failure-recovery-taxonomy.md",
+        "references/run-state-and-recovery.md",
         "references/convergence-and-validation.md",
         "references/public-artifact-adapters.md",
         "references/package-delivery.md",
@@ -487,6 +504,10 @@ def zip_required_resources() -> list[str]:
         "references/priority-contract.md",
         "examples/activation-scenarios.json",
         "evals/activation-scenarios.json",
+        "evals/booster-activation-scenarios.json",
+        "assets/templates/run-state.json.template",
+        "scripts/run_state.py",
+        "scripts/validate_booster_activation_scenarios.py",
         "scripts/board_contract.py",
         "scripts/validate_board_contract.py",
         "scripts/planning_traceability.py",

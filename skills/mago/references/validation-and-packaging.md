@@ -54,10 +54,11 @@ The command stops on the first failed gate and preserves an atomic JSON checkpoi
 Individual validators remain available for diagnosis and sharding:
 
 1. Run `scripts/validate_activation_scenarios.py` for the frozen static routing oracle.
-2. Run `scripts/run_test_suite.py` and merge complete shards with `scripts/merge_test_reports.py`.
-3. Run `scripts/run_sdd_evidence_harness.py` for `evidence/sdd-evidence-scenarios.json` and `evidence/lifecycle-contract-scenarios.json`; merge shards with `scripts/merge_evidence_reports.py`.
-4. Pass the current merged test report to `scripts/validate_skill_package.py --test-report <report>`.
-5. Build and validate `skill.zip` only after those gates pass.
+2. Run `scripts/validate_artifact_matrix.py references/artifact-decision-matrix.md` and `scripts/validate_planning_experience.py .`; `scripts/validate_skill_package.py` invokes both again as mandatory package gates.
+3. Run `scripts/run_test_suite.py` and merge complete shards with `scripts/merge_test_reports.py`.
+4. Run `scripts/run_sdd_evidence_harness.py` for `evidence/sdd-evidence-scenarios.json` and `evidence/lifecycle-contract-scenarios.json`; merge shards with `scripts/merge_evidence_reports.py`.
+5. Pass the current merged test report to `scripts/validate_skill_package.py --test-report <report>`.
+6. Build and validate `skill.zip` only after those gates pass.
 
 ## Packaging Exclusions
 

@@ -2,6 +2,8 @@
 
 Use this reference when showing current execution state, resuming interrupted work, or diagnosing a lock or journal. The view is a **non-authoritative read-only projection**; `tasks.md`, `manifest.yaml`, registry state, MAGIA execution notes, validation evidence, command output, and the transaction journal retain their existing authority.
 
+For resumable execution state, checkpoints, fingerprints, cancellation, retry, rollback, and handoff use `references/run-state-and-recovery.md`. When a failed/blocked step must be classified before choosing repair, retry, rollback, stop, or handoff, use `references/failure-recovery-taxonomy.md`. This file remains the read-only visibility/recovery-decision entrypoint rather than duplicating those contracts.
+
 ## Safe inspection
 
 Run:

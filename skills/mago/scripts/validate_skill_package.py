@@ -35,6 +35,7 @@ REQUIRED_FILES = (
     "references/evidence-contract.md",
     "references/operating-rules.md",
     "references/validation-and-packaging.md",
+    "references/artifact-decision-matrix.md",
     "references/activation-routing.md",
     "references/mutation-transaction-and-resume.md",
     "references/security-risk-contract.md",
@@ -65,6 +66,8 @@ REQUIRED_FILES = (
     "scripts/validate_triggered_artifact.py",
     "scripts/validate_security_risk.py",
     "scripts/validate_plan_quality.py",
+    "scripts/validate_artifact_matrix.py",
+    "scripts/validate_planning_experience.py",
     "scripts/validate_clarification_readiness.py",
     "scripts/mutation_transaction.py",
     "scripts/sdd_adapter.py",
@@ -542,6 +545,24 @@ def validate_planning_template_boundaries(root: Path, result: ValidationResult) 
             result.fail(f"notes.md.template must remain planning-only and must not contain `{term}`")
 
 
+def validate_reproducibility_controls(root: Path, result: ValidationResult) -> None:
+    """Run package-local deterministic gates added by the reproducibility hardening pass."""
+    run_python_gate(
+        root,
+        root / "scripts" / "validate_artifact_matrix.py",
+        [str(root / "references" / "artifact-decision-matrix.md")],
+        "artifact decision matrix",
+        result,
+    )
+    run_python_gate(
+        root,
+        root / "scripts" / "validate_planning_experience.py",
+        [str(root)],
+        "planning experience",
+        result,
+    )
+
+
 def validate_semantic_contracts(root: Path, result: ValidationResult) -> None:
     run_python_gate(
         root, root / "scripts" / "validate_priority_contract.py", ["--target", str(root)],
@@ -631,6 +652,7 @@ def run(root: Path, test_report: Path | None = None) -> ValidationResult:
     validate_evidence_controls(root, result)
     validate_release_controls(root, result)
     validate_planning_template_boundaries(root, result)
+    validate_reproducibility_controls(root, result)
     validate_semantic_contracts(root, result)
     # Tests execute last because their nested process probes can contaminate later
     # subprocess orchestration on some runtimes even after all test cases pass.

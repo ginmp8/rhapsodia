@@ -2,6 +2,7 @@
 
 ## [1.10.0] - 2026-09-19
 
+- Integrate artifact-decision-matrix and planning-experience validators into the canonical package/distribution gate with regression coverage for negative failures.
 - Add a frozen, package-local cross-skill reproducibility contract/suite covering routing, handoffs, ownership, priority, privacy, freshness, replay, closure, and safe reruns.
 - Move routing intent/edge definitions into the byte-equivalent local routing contract and add deterministic route identity/phase projection without peer runtime reads.
 - Add explicit ownership contract, coordinated migration path, package receipts, and handoff-ledger last-known-good recovery/receipts.

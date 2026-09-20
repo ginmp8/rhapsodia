@@ -44,7 +44,7 @@ Implementation decisions require inspected evidence, necessity, product-intent f
 
 1. Classify execution, blocker, documentation, or handoff.
 2. Load [canonical paths](references/canonical-paths.md), [common execution](references/common-execution.md), and [execution entry](references/execution-entry.md).
-3. When needed load [repository orientation](references/repository-orientation.md), [senior discipline](references/senior-engineering-discipline.md), and triggered [risk escalation](references/risk-and-change-escalation.md), [complexity reduction](references/complexity-reduction-execution.md), or [multi-repository execution](references/multi-repository-execution.md).
+3. When needed load [repository orientation](references/repository-orientation.md), [senior discipline](references/senior-engineering-discipline.md), and triggered [risk escalation](references/risk-and-change-escalation.md), [execution profiles](references/execution-profiles.md), [complexity reduction](references/complexity-reduction-execution.md), or [multi-repository execution](references/multi-repository-execution.md). Load [run state/recovery](references/run-state-and-recovery.md) only for resumable, stateful, interrupted, or governed execution, and [failure/recovery taxonomy](references/failure-recovery-taxonomy.md) only after a failed or blocked step requires a repair/retry/rollback/stop/handoff decision.
 4. For RALPH load [board contract](references/board-contract.md), [planning handoff](references/planning-handoff.md), and optional [safe parallelism](references/safe-parallelism.md).
 5. Load exactly one mode: [ADHOC](references/modes/adhoc.md), [RALPH](references/modes/ralph.md), or [ADAPT](references/modes/adapt.md).
 6. Load [execution records](references/artifacts/execution-records.md), [evidence](references/artifacts/execution-evidence.md), [developer standards](references/developer-artifact-standards.md), and [technical documentation](references/technical-documentation.md) only when writing.
@@ -59,7 +59,7 @@ Implementation decisions require inspected evidence, necessity, product-intent f
 | RALPH | selected task or dependency-safe batch from a Mago contract | readiness, checks, traceability, state, and board gates pass |
 | ADAPT | legacy execution records into current Magia evidence | current state validates or gaps stay explicit |
 
-Risk profile is independent of mode.
+Risk profile is independent of mode; [execution profiles](references/execution-profiles.md) are the canonical control-depth contract.
 
 ## Required Inputs Before Mutation
 

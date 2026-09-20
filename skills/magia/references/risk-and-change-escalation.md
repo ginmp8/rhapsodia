@@ -2,6 +2,8 @@
 
 Load before mutation when work can affect contracts, data, security, compliance, availability, financial outcomes, or more than one repository/service. Use the smallest rigor that safely fits the change.
 
+This reference owns risk signals and escalation triggers. `references/execution-profiles.md` owns the full `quick`/`standard`/`governed` control-depth, evidence, rollback, and output contract; when both are loaded, profile semantics come from that execution-profile contract.
+
 ## Risk Profile
 
 | Profile | Use when | Minimum evidence |

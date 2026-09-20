@@ -15,6 +15,13 @@ RESOURCE_ROUTES = {
     "scripts/validate_convergence.py": ("references/resource-map.md", "references/convergence-and-validation.md"),
     "scripts/adapt_public_artifacts.py": ("references/resource-map.md", "references/public-artifact-adapters.md"),
     "scripts/validate_resource_integration.py": ("references/resource-map.md", "scripts/validate_skill_package.py"),
+    "references/execution-profiles.md": ("SKILL.md", "references/resource-map.md", "references/risk-and-change-escalation.md"),
+    "references/failure-recovery-taxonomy.md": ("SKILL.md", "references/resource-map.md", "references/execution-visibility-and-recovery.md"),
+    "references/run-state-and-recovery.md": ("SKILL.md", "references/resource-map.md", "references/execution-visibility-and-recovery.md"),
+    "scripts/run_state.py": ("references/resource-map.md", "references/run-state-and-recovery.md"),
+    "assets/templates/run-state.json.template": ("references/resource-map.md", "references/run-state-and-recovery.md"),
+    "evals/booster-activation-scenarios.json": ("references/resource-map.md", "scripts/validate_booster_activation_scenarios.py"),
+    "scripts/validate_booster_activation_scenarios.py": ("references/resource-map.md", "references/package-delivery.md", "scripts/validate_skill_package.py"),
 }
 
 

@@ -11,6 +11,9 @@ Use to locate MAGIA resources without loading every file.
 - `references/repository-orientation.md`: read-only brownfield orientation, repository signals, and orientation-to-execution gates.
 - `references/senior-engineering-discipline.md`: small, explicit, verifiable engineering behavior.
 - `references/risk-and-change-escalation.md`: standard/governed risk profiles, evidence precedence, contract-change controls, and closure gates.
+- `references/execution-profiles.md`: canonical quick/standard/governed control-depth contract, evidence breadth, rollback, run-record, lifecycle, and output depth.
+- `references/failure-recovery-taxonomy.md`: primary failure classification and bounded repair/retry/rollback/stop/handoff rules.
+- `references/run-state-and-recovery.md`: resumable machine-readable run state, fingerprints, checkpoints, cancellation, retry, rollback, handoff, and closure.
 - `references/safe-parallelism.md`: explicit execution-wave prerequisites, conflict rules, sequential fallback, and reconciliation gates.
 - `references/complexity-reduction-execution.md`: behavior-preserving simplification, de-abstraction, refactor execution.
 - `references/planning-handoff.md`: consume Mago/nomia artifacts, including execution-handoff-plan.md, as execution inputs.
@@ -46,12 +49,15 @@ Use to locate MAGIA resources without loading every file.
 
 - `examples/activation-scenarios.json`: human-readable calibration cases.
 - `evals/activation-scenarios.json`: canonical planned activation, non-activation, ambiguous, edge, regression, and adversarial coverage. Metrics remain unmeasured until prompt outputs and evaluator decisions are captured.
+- `evals/booster-activation-scenarios.json`: frozen booster activation corpus; `scripts/validate_booster_activation_scenarios.py` enforces structural/category/authority/evidence invariants. This is structural evidence only; live activation precision/recall remains unmeasured.
 
 ## Templates
 
 MAGIA-owned execution evidence templates: `assets/templates/implementation-notes.md.template`, `assets/templates/validation-evidence.md.template`, and `assets/templates/technical-gap-note.md.template`. MAGIA intentionally does not bundle templates for MAGO-owned planning artifacts (`registry/<spec_id>.yaml`, `manifest.yaml`, `tasks.md`, `notes.md`, or `validation.md`). Use MAGO to create or normalize those files, then use MAGIA execution-state scripts only to update existing records from truthful execution evidence.
 
 Developer docs: `assets/templates/implementation-notes.md.template`, `assets/templates/complexity-reduction-evidence.md.template`, `assets/templates/implementation-adr.md.template`, `assets/templates/validation-evidence.md.template`, `assets/templates/runbook.md.template`, `assets/templates/migration-execution-note.md.template`, `assets/templates/contract-change-note.md.template`, `assets/templates/observability-note.md.template`, `assets/templates/troubleshooting.md.template`, `assets/templates/security-risk-note.md.template`, `assets/templates/technical-gap-note.md.template`.
+
+Resumable execution: `assets/templates/run-state.json.template` is the field template owned by `references/run-state-and-recovery.md` and operated by `scripts/run_state.py`.
 
 ## Scripts
 
@@ -62,6 +68,8 @@ Developer docs: `assets/templates/implementation-notes.md.template`, `assets/tem
 - Selector precedence: this script is canonical once explicit change surfaces and available checks are known; output kind is `magia-validation-selection`.
 - `scripts/validate_convergence.py`: validate requirement-to-execution-evidence convergence reports.
 - `scripts/adapt_public_artifacts.py`: produce a read-only normalized execution view from supported public SDD artifacts.
+- `scripts/run_state.py`: create and transition resumable execution state under the `references/run-state-and-recovery.md` contract.
+- `scripts/validate_booster_activation_scenarios.py`: produce a machine-readable structural receipt for the frozen booster activation corpus; it never claims live-model behavior.
 - `scripts/validate_resource_integration.py`: fail package validation when these operational resources are no longer reachable from the control plane and resource map.
 - `scripts/summarize_execution_state.py`: produce a read-only execution and recovery projection without mutating state or running recovery.
 - `scripts/write_artifact_scaffold.py`: copy a matching MAGIA-owned template only inside a validated `--board-root` or explicit ADHOC `--allowed-root`; it must not scaffold or update MAGO-owned planning files.
