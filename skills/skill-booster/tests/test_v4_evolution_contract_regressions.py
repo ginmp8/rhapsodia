@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("build_v3_reg", ROOT / "scripts" / "build_evolution_contract.py")
+spec = importlib.util.spec_from_file_location("build_v4_reg", ROOT / "scripts" / "build_evolution_contract.py")
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 
@@ -22,10 +22,10 @@ def write_inputs(tmp_path, evaluation_plan):
     return handoff
 
 
-def test_handoff_template_is_v3_and_freezes_selection_eligibility():
+def test_handoff_template_is_v4_and_freezes_selection_eligibility():
     handoff = json.loads((ROOT / "assets" / "templates" / "evolution-handoff.json.template").read_text())
-    assert handoff["handoff_version"] == 3
-    assert handoff["contract_version"] == 3
+    assert handoff["handoff_version"] == 4
+    assert handoff["contract_version"] == 4
     assert handoff["selection_policy"]["eligible_evidence_types"] == ["measured", "supplied"]
     assert handoff["selection_policy"]["comparison_level_policy"] == "same-level"
     assert handoff["selection_policy"]["holdout_failure_policy"] == "eliminate-blind-fail"
@@ -33,10 +33,10 @@ def test_handoff_template_is_v3_and_freezes_selection_eligibility():
 
 def test_evaluation_plan_identity_changes_compiled_contract(tmp_path):
     target = "sha256:test"
-    ev_a = {"schema_version": 1, "target_identity": target, "levels": [], "promotion": {}, "checks": ["a"]}
+    ev_a = {"schema_version": 2, "target_identity": target, "levels": [], "promotion": {}, "finalist_policy": {"minimum_evaluation_level": "L4-benchmark", "holdout_policy": "not-required"}, "checks": ["a"]}
     handoff = write_inputs(tmp_path, ev_a)
     first = mod.build(handoff, tmp_path)
-    assert first["contract_version"] == 3
+    assert first["contract_version"] == 4
     assert "evaluation_plan_id" in first["input_identities"]
     ev_b = copy.deepcopy(ev_a)
     ev_b["checks"] = ["different"]

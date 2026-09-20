@@ -31,6 +31,7 @@ EVAL_STATUS = {"planned", "pass", "fail", "blocked", "not-run", "not-applicable"
 EXPERIMENT_RESULTS = {"planned", "pass", "fail", "inconclusive", "rejected", "accepted"}
 EXPERIMENT_DECISIONS = {"pending", "accept", "reject", "repair", "gather-evidence", "stop"}
 GATE_STATUS = {"planned", "pass", "pass-with-warnings", "fail", "blocked", "insufficient-evidence", "not-run"}
+FINALIST_HOLDOUT_POLICIES = {"not-required", "blind-pass-required"}
 
 
 def load(path: Path) -> Any:
@@ -172,7 +173,7 @@ def validate_evaluation_plan(data: Any) -> tuple[list[str], dict[str, Any]]:
     require(isinstance(data, dict), errors, "ROOT", "evaluation plan must be an object")
     if not isinstance(data, dict):
         return errors, {}
-    require(data.get("schema_version") == 1, errors, "SCHEMA", "evaluation plan schema_version must be 1")
+    require(data.get("schema_version") == 2, errors, "SCHEMA", "evaluation plan schema_version must be 2")
     target_identity = data.get("target_identity")
     require(nonempty_str(target_identity), errors, "TARGET_ID", "evaluation target_identity is required")
     levels = data.get("levels")
@@ -197,7 +198,18 @@ def validate_evaluation_plan(data: Any) -> tuple[list[str], dict[str, Any]]:
         indices = [canonical.index(x) for x in seen if x in canonical]
         require(indices == sorted(indices), errors, "LEVEL_ORDER", "evaluation levels must follow L0 through L5 order")
     require(isinstance(data.get("promotion"), dict), errors, "PROMOTION", "promotion must be an object")
-    return errors, {"target_identity": target_identity, "levels": seen}
+    finalist_policy = data.get("finalist_policy")
+    require(isinstance(finalist_policy, dict), errors, "FINALIST_POLICY", "finalist_policy must be an object")
+    if isinstance(finalist_policy, dict):
+        minimum_level = finalist_policy.get("minimum_evaluation_level")
+        holdout_policy = finalist_policy.get("holdout_policy")
+        require(minimum_level in EVAL_LEVELS, errors, "FINALIST_LEVEL", "finalist_policy.minimum_evaluation_level is invalid")
+        require(holdout_policy in FINALIST_HOLDOUT_POLICIES, errors, "FINALIST_HOLDOUT", "finalist_policy.holdout_policy is invalid")
+        if minimum_level in EVAL_LEVELS and seen:
+            require(minimum_level in seen, errors, "FINALIST_LEVEL", "finalist minimum evaluation level must exist in levels")
+        if holdout_policy == "blind-pass-required":
+            require(minimum_level == "L5-holdout", errors, "FINALIST_HOLDOUT", "blind-pass-required finalist policy requires L5-holdout")
+    return errors, {"target_identity": target_identity, "levels": seen, "finalist_policy": finalist_policy}
 
 
 def main() -> int:

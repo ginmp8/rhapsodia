@@ -56,9 +56,9 @@ def _validate_integration_manifest(root: Path, manifest: dict) -> list[str]:
     if not isinstance(exports, list):
         return errors + ["integration-manifest:exports"]
     expected_exports = {
-        "skill-opt.evolution-search-contract": 3,
+        "skill-opt.evolution-search-contract": 4,
         "skill-opt.candidate-request": 2,
-        "skill-opt.search-state": 3,
+        "skill-opt.search-state": 4,
         "skill-opt.candidate-evaluation": 2,
     }
     seen_exports: dict[str, int] = {}
@@ -109,8 +109,8 @@ def main() -> int:
         text = skill.read_text(encoding="utf-8")
         if not re.search(r"(?m)^name:\s*skill-evolution\s*$", text):
             errors.append("frontmatter:name")
-        if "contract v3" not in text.lower() and "v3 search contract" not in text.lower():
-            errors.append("skill:missing_v3_contract_guidance")
+        if "contract v4" not in text.lower() and "v4 search contract" not in text.lower():
+            errors.append("skill:missing_v4_contract_guidance")
         for path in re.findall(r"\]\(([^)]+)\)", text):
             if "://" not in path and not path.startswith("#") and not (root / path).exists():
                 errors.append(f"broken-link:{path}")

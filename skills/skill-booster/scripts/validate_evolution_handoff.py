@@ -4,16 +4,17 @@ from pathlib import Path
 DIRS={'maximize','minimize'}
 LEVELS={'L0-structural','L1-deterministic','L2-focused','L3-harness','L4-benchmark','L5-holdout'}
 OPS={'transformation-merge','backcross','repair-crossover','bounded-mutation'}
+FINALIST_HOLDOUT_POLICIES={'not-required','blind-pass-required'}
 
 def _nonempty(v):return isinstance(v,str) and bool(v.strip())
 def validate(d):
  e=[]
- required=('handoff_version','contract_version','search_id','mode','target_identity','target_class','baseline_candidate_id','canonical_candidate_id','artifact_refs','evaluation_identity','hard_gates','objectives','budget','mutation_interface','evaluation_interface','allowed_evaluation_levels','allowed_operators','preserve_roles','selection_policy')
+ required=('handoff_version','contract_version','search_id','mode','target_identity','target_class','baseline_candidate_id','canonical_candidate_id','artifact_refs','evaluation_identity','hard_gates','objectives','budget','mutation_interface','evaluation_interface','allowed_evaluation_levels','allowed_operators','preserve_roles','selection_policy','finalist_policy')
  for k in required:
   if k not in d:e.append(f'missing:{k}')
  if e:return sorted(set(e))
- if d['handoff_version']!=3:e.append('handoff_version:unsupported')
- if d['contract_version']!=3:e.append('contract_version:unsupported')
+ if d['handoff_version']!=4:e.append('handoff_version:unsupported')
+ if d['contract_version']!=4:e.append('contract_version:unsupported')
  if d['mode']!='evolutionary-optimization':e.append('mode:invalid')
  for k in ('search_id','target_identity','target_class','baseline_candidate_id','canonical_candidate_id'):
   if not _nonempty(d.get(k)):e.append(f'{k}:invalid')
@@ -69,13 +70,21 @@ def validate(d):
   n=p.get('novelty_policy',{})
   if not isinstance(n,dict) or n.get('id')!='transformation-jaccard-v1' or n.get('source')!='derived':e.append('selection_policy.novelty_policy:invalid')
   if p.get('uncertainty_policy')!='margin-plus-min-delta-v1':e.append('selection_policy.uncertainty_policy:invalid')
+ fp=d.get('finalist_policy',{})
+ if not isinstance(fp,dict):e.append('finalist_policy:invalid')
+ else:
+  minimum=fp.get('minimum_evaluation_level');holdout=fp.get('holdout_policy')
+  if minimum not in LEVELS:e.append('finalist_policy.minimum_evaluation_level:invalid')
+  elif isinstance(levels,list) and minimum not in levels:e.append('finalist_policy.minimum_evaluation_level:not_allowed')
+  if holdout not in FINALIST_HOLDOUT_POLICIES:e.append('finalist_policy.holdout_policy:invalid')
+  if holdout=='blind-pass-required' and minimum!='L5-holdout':e.append('finalist_policy:blind_holdout_requires_l5')
  return sorted(set(e))
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('handoff');p.add_argument('--json-output');a=p.parse_args()
  try:d=json.loads(Path(a.handoff).read_text(encoding='utf-8'));e=validate(d)
  except Exception as exc:d={};e=[f'handoff:unreadable:{exc.__class__.__name__}']
- r={'status':'pass' if not e else 'fail','handoff_version':3,'errors':e};s=json.dumps(r,indent=2,sort_keys=True)+"\n"
+ r={'status':'pass' if not e else 'fail','handoff_version':4,'errors':e};s=json.dumps(r,indent=2,sort_keys=True)+"\n"
  if a.json_output:Path(a.json_output).write_text(s,encoding='utf-8')
  print(s,end='');return 0 if not e else 2
 if __name__=='__main__':sys.exit(main())

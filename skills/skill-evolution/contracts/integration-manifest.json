@@ -4,7 +4,7 @@
   "exports": [
     {
       "contract_id": "skill-opt.evolution-search-contract",
-      "version": 3,
+      "version": 4,
       "role": "owner",
       "surface_paths": [
         "assets/templates/search-contract.json.template",
@@ -24,7 +24,7 @@
     },
     {
       "contract_id": "skill-opt.search-state",
-      "version": 3,
+      "version": 4,
       "role": "owner",
       "surface_paths": [
         "assets/templates/search-state.json.template",

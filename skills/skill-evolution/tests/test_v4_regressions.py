@@ -17,9 +17,9 @@ def load(name, path):
     return mod
 
 
-selection = load("selection_v3_reg", SCRIPTS / "select_survivors.py")
-state_mod = load("state_v3_reg", SCRIPTS / "validate_search_state.py")
-checkpoint = load("checkpoint_v3_reg", SCRIPTS / "checkpoint_search_state.py")
+selection = load("selection_v4_reg", SCRIPTS / "select_survivors.py")
+state_mod = load("state_v4_reg", SCRIPTS / "validate_search_state.py")
+checkpoint = load("checkpoint_v4_reg", SCRIPTS / "checkpoint_search_state.py")
 
 
 def template(name):
@@ -45,9 +45,9 @@ def candidate(base, cid, level="L4-benchmark", evidence_type="measured", quality
     return c
 
 
-def test_templates_use_v3_search_contract_and_state():
-    assert template("search-contract.json.template")["contract_version"] == 3
-    assert template("search-state.json.template")["state_version"] == 3
+def test_templates_use_v4_search_contract_and_state():
+    assert template("search-contract.json.template")["contract_version"] == 4
+    assert template("search-state.json.template")["state_version"] == 4
 
 
 def test_planned_evidence_is_not_selection_eligible():
@@ -55,7 +55,7 @@ def test_planned_evidence_is_not_selection_eligible():
     base = template("search-state.json.template")["candidates"][0]
     measured = candidate(base, "C_MEASURED", evidence_type="measured", quality=0.90, token_cost=1000)
     planned = candidate(base, "C_PLANNED", evidence_type="planned", quality=0.99, token_cost=800, transform="T002")
-    result = selection.select(contract, {"state_version": 3, "search_id": contract["search_id"], "round": 0, "stagnant_rounds": 0, "status": "active", "candidates": [measured, planned], "pareto_archive": [], "finalists": [], "termination_reason": None})
+    result = selection.select(contract, {"state_version": 4, "search_id": contract["search_id"], "round": 0, "stagnant_rounds": 0, "status": "active", "candidates": [measured, planned], "pareto_archive": [], "finalists": [], "termination_reason": None})
     assert result["status"] == "pass"
     assert result["eligible"] == ["C_MEASURED"]
     assert result["ineligible_evidence"] == ["C_PLANNED"]
@@ -67,7 +67,7 @@ def test_blind_fail_is_never_selection_eligible():
     good = candidate(base, "C_GOOD", level="L4-benchmark", quality=0.90)
     failed = candidate(base, "C_FAIL", level="L5-holdout", quality=0.99, transform="T002")
     failed["evaluation"]["holdout_status"] = "blind-fail"
-    result = selection.select(contract, {"state_version": 3, "search_id": contract["search_id"], "round": 0, "stagnant_rounds": 0, "status": "active", "candidates": [good, failed], "pareto_archive": [], "finalists": [], "termination_reason": None})
+    result = selection.select(contract, {"state_version": 4, "search_id": contract["search_id"], "round": 0, "stagnant_rounds": 0, "status": "active", "candidates": [good, failed], "pareto_archive": [], "finalists": [], "termination_reason": None})
     assert result["status"] == "pass"
     assert "C_FAIL" not in result["eligible"]
     assert result["eliminated_holdout"] == ["C_FAIL"]
@@ -78,7 +78,7 @@ def test_different_evaluation_levels_do_not_dominate_each_other():
     base = template("search-state.json.template")["candidates"][0]
     l4 = candidate(base, "C_L4", level="L4-benchmark", quality=0.90, token_cost=1000)
     l2 = candidate(base, "C_L2", level="L2-focused", quality=0.99, token_cost=800, transform="T002")
-    result = selection.select(contract, {"state_version": 3, "search_id": contract["search_id"], "round": 0, "stagnant_rounds": 0, "status": "active", "candidates": [l4, l2], "pareto_archive": [], "finalists": [], "termination_reason": None})
+    result = selection.select(contract, {"state_version": 4, "search_id": contract["search_id"], "round": 0, "stagnant_rounds": 0, "status": "active", "candidates": [l4, l2], "pareto_archive": [], "finalists": [], "termination_reason": None})
     assert set(result["pareto_frontier"]) == {"C_L2", "C_L4"}
 
 

@@ -74,7 +74,7 @@ Required semantics when the artifact is material:
 - capability map: semantic capabilities, owners, consumers, validators, invariants;
 - transformation registry: bounded changes classified as `repair`, `optimization`, or `experiment` and tied to capability/evidence ids;
 - experiment registry: parent/candidate/transformation/evaluator identities plus outcome, including rejected/inconclusive candidates;
-- evaluation plan: staged `L0` through `L5` ladder and promotion evidence requirement.
+- evaluation plan: schema v2 staged `L0` through `L5` ladder, frozen finalist policy, and promotion evidence requirement.
 
 These are experiment-state artifacts, not benchmark fixtures. Keep them outside the candidate mutation surface so a candidate cannot rewrite its own history or acceptance evidence.
 

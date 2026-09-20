@@ -15,7 +15,7 @@ Require all of: explicit evolutionary intent; immutable baseline identity; valid
 
 ## Handoff
 
-Create a v3 `evolution-handoff.json` from `assets/templates/evolution-handoff.json.template` and validate it with `scripts/validate_evolution_handoff.py`. Then compile the caller-owned capability map, validated hypothesis pool, transformation registry, and evaluation plan into the Skill Evolution v3 search contract with `scripts/build_evolution_contract.py`. Validate that compiled contract with the Skill Evolution contract validator before search. This adapter keeps Booster-owned schemas out of the search controller while preserving exact artifact identities, including the evaluation-plan identity.
+Create a v4 `evolution-handoff.json` from `assets/templates/evolution-handoff.json.template` and validate it with `scripts/validate_evolution_handoff.py`. Then compile the caller-owned capability map, validated hypothesis pool, transformation registry, and evaluation plan into the Skill Evolution v4 search contract with `scripts/build_evolution_contract.py`. Validate that compiled contract with the Skill Evolution contract validator before search. This adapter keeps Booster-owned schemas out of the search controller while preserving exact artifact identities, including the evaluation-plan identity. The evaluation plan is schema v2 and carries the finalist policy; the v4 handoff repeats that policy, and the compiler rejects any handoff/evaluation-plan drift before producing the v4 search contract.
 
 The canonical strategy/result remains a protected comparator and may be used for backcross. The immutable original baseline remains the cumulative regression reference.
 
@@ -26,7 +26,7 @@ The canonical strategy/result remains a protected comparator and may be used for
 3. validate each `candidate-request-v2`, then dispatch it to exactly one mutation owner that declares compatibility with `skill-opt.candidate-request` v2;
 4. run required change-gate/evaluation levels;
 5. normalize identity-bound evaluator evidence to candidate-evaluation v2 (use `scripts/build_candidate_evaluation.py` when filesystem execution is available), validate it against the frozen search contract, and return it to Skill Evolution;
-6. repeat until Skill Evolution returns finalists/termination;
+6. repeat until Skill Evolution returns finalists/termination; a `sufficient-finalists` stop is valid only when the frozen finalist quota and policy are satisfied;
 7. Booster independently reruns the final required proof gates;
 8. Booster alone freezes/promotes/packages the accepted target candidate.
 
@@ -43,4 +43,4 @@ A target-level search win is evidence for that target, not automatic policy. Cro
 
 ## Contract evolution
 
-The v3 handoff/search contract is a public integration surface. Its version and the candidate-request/evaluation interfaces are declared in `contracts/integration-manifest.json`. Before changing any of those surfaces, use `references/integration-impact-contract.md` and gate all known peer consumers. Do not silently upgrade one side of the handoff.
+The v4 handoff/search contract is a public integration surface. Its version and the candidate-request/evaluation interfaces are declared in `contracts/integration-manifest.json`. Before changing any of those surfaces, use `references/integration-impact-contract.md` and gate all known peer consumers. Do not silently upgrade one side of the handoff.
