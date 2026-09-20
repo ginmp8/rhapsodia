@@ -1,0 +1,17 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-testing-and-validation",
+  "exports": [
+    {
+      "contract_id": "skill-opt.validation-gate-receipt",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "SKILL.md",
+        "references/acceptance-criteria.md",
+        "scripts/run_gate.py"
+      ]
+    }
+  ],
+  "imports": []
+}

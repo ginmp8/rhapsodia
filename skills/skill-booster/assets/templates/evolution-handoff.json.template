@@ -1,34 +1,27 @@
 {
-  "handoff_version": 1,
+  "handoff_version": 2,
+  "contract_version": 2,
   "mode": "evolutionary-optimization",
+  "search_id": "search-001",
   "target_identity": "sha256-or-immutable-ref",
   "target_class": "orchestration-meta",
   "baseline_candidate_id": "BASELINE",
   "canonical_candidate_id": "C_CANONICAL",
-  "capability_map_ref": "capability-map.json",
-  "transformation_registry_ref": "transformation-registry.json",
-  "experiment_registry_ref": "experiment-registry.json",
-  "evaluation_plan_ref": "evaluation-plan.json",
+  "artifact_refs": {
+    "capability_map": "capability-map.json",
+    "hypothesis_pool": "hypothesis-backlog.json",
+    "transformation_registry": "transformation-registry.json",
+    "evaluation_plan": "evaluation-plan.json"
+  },
   "evaluation_identity": {
     "evaluator_id": "frozen-evaluator-id",
-    "scenario_set_id": "frozen-scenario-id"
+    "scenario_set_id": "frozen-scenario-id",
+    "policy_id": "frozen-evaluation-policy-id"
   },
-  "hard_gates": [
-    "activation",
-    "semantics",
-    "safety",
-    "evaluator_integrity",
-    "validation"
-  ],
+  "hard_gates": ["activation", "semantics", "safety", "evaluator_integrity", "validation"],
   "objectives": [
-    {
-      "name": "quality",
-      "direction": "maximize"
-    },
-    {
-      "name": "token_cost",
-      "direction": "minimize"
-    }
+    {"name": "quality", "direction": "maximize", "min_delta": 0.02},
+    {"name": "token_cost", "direction": "minimize", "min_delta": 25}
   ],
   "budget": {
     "initial_variants": 4,
@@ -40,22 +33,22 @@
   },
   "mutation_interface": {
     "owner": "caller-routed",
-    "contract": "candidate-request-v1"
+    "contract_id": "skill-opt.candidate-request",
+    "version": 2,
+    "interface_id": "candidate-generation-v2"
   },
   "evaluation_interface": {
     "owner": "caller-routed",
-    "contract": "candidate-evaluation-v1"
+    "contract_id": "skill-opt.candidate-evaluation",
+    "version": 2,
+    "interface_id": "candidate-evaluation-v2"
   },
-  "contract_version": 1,
-  "search_id": "search-001",
-  "allowed_operators": [
-    "transformation-merge",
-    "backcross",
-    "repair-crossover",
-    "bounded-mutation"
-  ],
-  "preserve_roles": [
-    "canonical"
-  ],
-  "selection_policy": "pareto-then-novelty"
+  "allowed_evaluation_levels": ["L0-structural", "L1-deterministic", "L2-focused", "L3-harness", "L4-benchmark", "L5-holdout"],
+  "allowed_operators": ["transformation-merge", "backcross", "repair-crossover", "bounded-mutation"],
+  "preserve_roles": ["canonical"],
+  "selection_policy": {
+    "id": "pareto-then-novelty-v2",
+    "novelty_policy": {"id": "transformation-jaccard-v1", "source": "derived"},
+    "uncertainty_policy": "margin-plus-min-delta-v1"
+  }
 }

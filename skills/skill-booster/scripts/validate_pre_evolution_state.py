@@ -112,6 +112,9 @@ def validate_transformations(data: Any) -> tuple[list[str], dict[str, Any]]:
             require(item.get("status") in TRANSFORMATION_STATUS, errors, "TRANSFORM_STATUS", f"{subject}.status is invalid")
             for field in ("parent_candidate_ids", "capability_refs", "files", "evaluator_refs", "depends_on", "conflicts_with", "evidence_refs"):
                 require(string_list(item.get(field)), errors, "TRANSFORM_LIST_FIELD", f"{subject}.{field} must be a list of non-empty strings")
+            for field in ("capability_effects", "violates_invariants", "addresses"):
+                if field in item:
+                    require(string_list(item.get(field)), errors, "TRANSFORM_EVOLUTION_FIELD", f"{subject}.{field} must be a list of non-empty strings when present")
             for field in ("operation_summary", "expected_effect"):
                 require(nonempty_str(item.get(field)), errors, "TRANSFORM_TEXT", f"{subject}.{field} is required")
             if string_list(item.get("capability_refs")):

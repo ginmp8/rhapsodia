@@ -1,0 +1,13 @@
+{
+  "receipt_version": 2,
+  "candidate_id": "C007",
+  "candidate_identity": "sha256-or-immutable-ref",
+  "request_signature": "request-signature-sha256",
+  "base_parent_id": "C003",
+  "donor_parent_ids": ["C005"],
+  "operator": "transformation-merge",
+  "transformation_ids": ["T002", "T008"],
+  "changed_files": ["SKILL.md"],
+  "validation_status": "pass",
+  "causal_limitations": []
+}

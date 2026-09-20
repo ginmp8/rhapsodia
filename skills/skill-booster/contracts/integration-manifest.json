@@ -1,0 +1,109 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-booster",
+  "exports": [
+    {
+      "contract_id": "skill-opt.evolution-handoff",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "assets/templates/evolution-handoff.json.template",
+        "scripts/validate_evolution_handoff.py",
+        "references/evolutionary-search-routing.md"
+      ]
+    }
+  ],
+  "imports": [
+    {
+      "contract_id": "skill-opt.evolution-search-contract",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.candidate-request",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization:candidate-dispatch"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.candidate-evaluation",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization:candidate-evaluation"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.search-candidate-context",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization:change-gate"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.hypothesis-pool",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.benchmark-candidate-evidence",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization:L4"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.harness-multi-candidate-evidence",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization:L3"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.change-gate-result",
+      "accepted_versions": [
+        1
+      ],
+      "required_for": [
+        "candidate-acceptance",
+        "final-proof"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.validation-gate-receipt",
+      "accepted_versions": [
+        1
+      ],
+      "required_for": [
+        "validation-when-used"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.candidate-generation-receipt",
+      "accepted_versions": [
+        2
+      ],
+      "required_for": [
+        "evolutionary-optimization"
+      ]
+    }
+  ]
+}

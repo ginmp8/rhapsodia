@@ -1,0 +1,17 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-harness",
+  "exports": [
+    {
+      "contract_id": "skill-opt.harness-multi-candidate-evidence",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/multi-candidate-execution.md",
+        "assets/templates/multi-candidate-manifest.json.template",
+        "scripts/validate_multi_candidate_manifest.py"
+      ]
+    }
+  ],
+  "imports": []
+}

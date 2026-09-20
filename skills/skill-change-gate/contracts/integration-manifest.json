@@ -1,0 +1,27 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-change-gate",
+  "exports": [
+    {
+      "contract_id": "skill-opt.change-gate-result",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "SKILL.md",
+        "references/gate-rubric.md",
+        "scripts/static_change_gate.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.search-candidate-context",
+      "version": 2,
+      "role": "owner",
+      "surface_paths": [
+        "assets/templates/search-candidate-context.json.template",
+        "scripts/validate_search_candidate_context.py",
+        "references/search-candidate-gate.md"
+      ]
+    }
+  ],
+  "imports": []
+}

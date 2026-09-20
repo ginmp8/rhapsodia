@@ -192,5 +192,12 @@ class ValidatorRegressionTests(unittest.TestCase):
         self.assertEqual(first, second)
 
 
+    def test_v2_emits_stable_hypothesis_pool_id(self) -> None:
+        data = backlog()
+        first = validator.validate(data)
+        second = validator.validate(copy.deepcopy(data))
+        self.assertTrue(first["hypothesis_pool_id"].startswith("sha256:"))
+        self.assertEqual(first["hypothesis_pool_id"], second["hypothesis_pool_id"])
+
 if __name__ == "__main__":
     unittest.main()

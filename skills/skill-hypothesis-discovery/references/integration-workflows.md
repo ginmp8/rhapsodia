@@ -7,6 +7,7 @@ The portable core uses Agent Skills conventions and relative package resources. 
 Downstream mutation/testing receives, at minimum:
 
 - target baseline identity;
+- `hypothesis_pool_id` derived from the exact canonical v2 backlog bytes after validation;
 - evidence snapshot id;
 - selected hypothesis id and canonical dedupe key;
 - exact evidence refs;
@@ -66,3 +67,6 @@ Specialist findings become evidence only when their target/version is identified
 - `skill-hardening` -> maturity/package signals.
 
 Do not require those skills to know this skill. Discovery remains a planner/orchestrator concern.
+
+
+For evolutionary optimization, the validated backlog is the `skill-opt.hypothesis-pool` v2 surface declared in `contracts/integration-manifest.json`. Pass the validator-derived `hypothesis_pool_id`; do not let the orchestrator invent a different identity for the same backlog.

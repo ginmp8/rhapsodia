@@ -1,0 +1,17 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-hypothesis-discovery",
+  "exports": [
+    {
+      "contract_id": "skill-opt.hypothesis-pool",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/hypothesis-schema.md",
+        "scripts/validate_hypothesis_backlog.py",
+        "assets/templates/hypothesis-backlog.json.template"
+      ]
+    }
+  ],
+  "imports": []
+}

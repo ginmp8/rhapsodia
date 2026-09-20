@@ -73,6 +73,8 @@ Load only what the active gate needs:
 - [`references/integration-with-skill-improver.md`](references/integration-with-skill-improver.md) for experiment/self-improvement loops.
 - [`references/capability-preservation-and-parent-provenance.md`](references/capability-preservation-and-parent-provenance.md) when capability maps, transformation ids/change intent, or direct-parent attribution are supplied.
 - [`references/search-candidate-gate.md`](references/search-candidate-gate.md) when the candidate belongs to a multi-candidate/evolution search and lineage/search provenance is supplied.
+- `scripts/validate_search_candidate_context.py` validates the current v2 search candidate context before a search candidate is gated.
+- `contracts/integration-manifest.json` declares ownership of the search-candidate-context schema and change-gate result surface for ecosystem impact analysis.
 - `scripts/static_change_gate.py` when a compatible Python runtime and filesystem access are available.
 - [`examples/usage-examples.md`](examples/usage-examples.md) for compact outcome examples.
 - [`evals/activation-scenarios.json`](evals/activation-scenarios.json) for planned activation/non-activation coverage; never call it executed evidence until actually run.
