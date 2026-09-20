@@ -99,11 +99,13 @@ The command should emit JSON containing at least `score`:
 <PYTHON> scripts/skill_improver_loop.py \
   --target <TARGET> \
   --evaluator command \
-  --eval-command '<PYTHON> ../../evals/eval.py --target .' \
-  --benchmark-lock-path ../../evals/eval.py \
+  --eval-command '<PYTHON> <SKILL_IMPROVER_ROOT>/examples/eval_skill.py --target .' \
+  --benchmark-lock-path <SKILL_IMPROVER_ROOT>/examples/eval_skill.py \
   --required-gate packaging \
   --max-iterations 3
 ```
+
+`<SKILL_IMPROVER_ROOT>` must be replaced with the absolute canonical path of the installed `skill-improver` package. For a concrete package-owned evaluator, use that exact same canonical path in both `--eval-command` and `--benchmark-lock-path`; relative paths are intentionally avoided because command evaluation runs from the target while benchmark locks are resolved from the git root.
 
 Prefer `status`, `gates`, and stable diagnostics in evaluator output.
 

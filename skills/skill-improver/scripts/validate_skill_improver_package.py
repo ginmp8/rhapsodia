@@ -20,6 +20,8 @@ REQUIRED_FILES = [
     'references/harness-design.md',
     'references/report-template.md',
     'references/execution-runbook.md',
+    'examples/sample-run.md',
+    'examples/eval_skill.py',
     'scripts/skill_improver_loop.py',
     'scripts/static_skill_score.py',
     'scripts/validate_skill_improver_package.py',
@@ -179,6 +181,78 @@ def validate_python_scripts(root: Path) -> list[str]:
             errors.append(f'{script.relative_to(root)}: {exc}')
     return errors
 
+def validate_command_evaluator_examples(root: Path) -> list[str]:
+    """Validate concrete package-owned command-evaluator examples.
+
+    A command evaluator runs with the target skill as cwd, while benchmark-lock
+    paths are resolved from the git root. Concrete package-owned examples must
+    therefore use one absolute package-root placeholder for both surfaces so
+    the executed evaluator and frozen evaluator identity cannot diverge.
+    """
+    errors: list[str] = []
+    fence_pattern = re.compile(r'```(?:text|bash|sh)?\n(.*?)```', re.DOTALL)
+    eval_pattern = re.compile(r"--eval-command\s+(['\"])(.*?)\1", re.DOTALL)
+    lock_pattern = re.compile(r"--benchmark-lock-path\s+([^\s\\]+)")
+    python_path_pattern = re.compile(r'(?P<path><SKILL_IMPROVER_ROOT>/[^\s\"\']+\.py|(?:\.{0,2}/)[^\s\"\']+\.py)')
+    package_prefix = '<SKILL_IMPROVER_ROOT>/'
+
+    for doc in [root / 'examples' / 'sample-run.md', root / 'references' / 'execution-runbook.md']:
+        if not doc.is_file():
+            continue
+        for index, block_match in enumerate(fence_pattern.finditer(read_text(doc)), 1):
+            block = block_match.group(1)
+            if '--evaluator command' not in block or '--eval-command' not in block:
+                continue
+
+            eval_match = eval_pattern.search(block)
+            if not eval_match:
+                continue
+            eval_command = eval_match.group(2)
+            path_match = python_path_pattern.search(eval_command)
+            if not path_match:
+                # Generic placeholders such as <EVALUATOR COMMAND> are allowed.
+                continue
+
+            evaluator_path = path_match.group('path')
+            lock_match = lock_pattern.search(block)
+            subject = f'{doc.relative_to(root)} fenced command #{index}'
+            if not lock_match:
+                errors.append(f'{subject}: concrete evaluator example is missing --benchmark-lock-path')
+                continue
+            lock_path = lock_match.group(1).strip("'\"")
+
+            if not evaluator_path.startswith(package_prefix):
+                errors.append(
+                    f'{subject}: concrete package evaluator must use '
+                    f'{package_prefix}... instead of relative path {evaluator_path}'
+                )
+                continue
+            if not lock_path.startswith(package_prefix):
+                errors.append(
+                    f'{subject}: benchmark lock must use the same absolute package-root '
+                    f'placeholder as evaluator path; got {lock_path}'
+                )
+                continue
+            if evaluator_path != lock_path:
+                errors.append(
+                    f'{subject}: evaluator path and benchmark lock differ: '
+                    f'{evaluator_path} != {lock_path}'
+                )
+                continue
+
+            relative = evaluator_path[len(package_prefix):]
+            resolved = (root / relative).resolve()
+            try:
+                resolved.relative_to(root.resolve())
+            except ValueError:
+                errors.append(f'{subject}: evaluator escapes package root: {evaluator_path}')
+                continue
+            if not resolved.is_file():
+                errors.append(f'{subject}: evaluator file does not exist: {relative}')
+
+    return errors
+
+
 def validate_template_consumption(root: Path) -> list[str]:
     errors: list[str] = []
     runner = root / 'scripts' / 'skill_improver_loop.py'
@@ -260,6 +334,10 @@ def main() -> int:
     template_errors = validate_template_consumption(root)
     gates['asset_templates_consumed'] = 'pass' if not template_errors else 'fail'
     errors.extend(template_errors)
+
+    evaluator_example_errors = validate_command_evaluator_examples(root)
+    gates['command_evaluator_examples'] = 'pass' if not evaluator_example_errors else 'fail'
+    errors.extend(evaluator_example_errors)
 
     disallowed_names = {'.DS_Store', 'test-results.json', 'skill-benchmark.md'}
     disallowed_suffixes = {'.pyc', '.pyo', '.zip'}

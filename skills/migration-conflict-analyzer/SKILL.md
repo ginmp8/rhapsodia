@@ -1,6 +1,6 @@
 ---
 name: migration-conflict-analyzer
-description: Analyze EF Core migration files and diffs for reproducible conflict, ordering, destructive-change, snapshot, raw-SQL, and deployment hazards with exact input identity, stable findings, bounded heuristics, and machine-readable receipts.
+description: Use when asked to analyze Entity Framework Core (.NET) migration files or migration changes in pull requests for schema conflicts, ordering hazards, data-loss or destructive changes, duplicate operations, runtime migration deployment hazards including concurrent Database.Migrate or Database.MigrateAsync execution, model snapshot divergence, raw SQL risks, and expand/contract compatibility issues. Use for uploaded migration .cs files, repository paths, Git diffs, pull requests, or pasted migration code, with reproducible findings tied to exact input identity. Do not use for generic EF Core tutorials, general database design, or ordinary application code review unless migration-specific conflict or deployment-risk analysis is requested.
 ---
 
 # Migration Conflict Analyzer

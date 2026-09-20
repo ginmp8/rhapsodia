@@ -23,12 +23,14 @@ def load_json(path: Path) -> Any:
 
 
 def normalize_payload(data: Any) -> tuple[list[dict], dict, str]:
-    if isinstance(data, list):
-        return data, {}, 'legacy-array'
-    if isinstance(data, dict) and isinstance(data.get('scenarios'), list):
-        meta = {key: value for key, value in data.items() if key != 'scenarios'}
-        return data['scenarios'], meta, 'envelope-v2'
-    raise ValueError('scenario results must be a JSON array or an object with a scenarios array')
+    if not isinstance(data, dict):
+        raise ValueError('scenario results must use the versioned v2 object envelope')
+    if data.get('schema_version') != 2:
+        raise ValueError('scenario results must declare schema_version: 2')
+    if not isinstance(data.get('scenarios'), list):
+        raise ValueError('scenario results must include a scenarios array')
+    meta = {key: value for key, value in data.items() if key != 'scenarios'}
+    return data['scenarios'], meta, 'envelope-v2'
 
 
 def is_bool_or_null(value: Any) -> bool:
@@ -147,10 +149,8 @@ def validate_payload(data: Any) -> dict[str, Any]:
                 errors.append('candidate target_identity_sha256 must match self_improvement.candidate_identity_sha256')
             if arm == 'baseline' and meta.get('target_identity_sha256') and baseline_id != meta.get('target_identity_sha256'):
                 errors.append('baseline target_identity_sha256 must match self_improvement.baseline_identity_sha256')
-    provenance_status = 'pinned' if shape == 'envelope-v2' and all(meta.get(field) for field in ('target_identity_sha256', 'evaluator_identity_sha256', 'scenario_suite_sha256')) else 'unpinned'
-    if shape == 'legacy-array':
-        warnings.append('legacy array accepted for compatibility; results are not bound to target/evaluator identities')
-    elif provenance_status != 'pinned':
+    provenance_status = 'pinned' if all(meta.get(field) for field in ('target_identity_sha256', 'evaluator_identity_sha256', 'scenario_suite_sha256')) else 'unpinned'
+    if provenance_status != 'pinned':
         warnings.append('scenario envelope is valid but target/evaluator identity is incomplete; comparison claims must remain unpinned')
     if incomplete_rows:
         warnings.append(f'{incomplete_rows} rows are incomplete and cannot support fully measured behavioral metrics')

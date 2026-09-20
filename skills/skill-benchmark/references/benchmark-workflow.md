@@ -78,10 +78,6 @@ If Python cannot run, manual/static inspection may continue, but script gates ar
 
 Read `integrity-and-recovery.md` for failure/recovery semantics.
 
-## Legacy Node helper
-
-`scripts/generate_benchmark_report.js` is retained only for backwards compatibility. It is not part of the portable core execution path and must not be required for multi-platform readiness.
-
 ## Evidence hierarchy
 
 1. Frozen target bytes and command output.

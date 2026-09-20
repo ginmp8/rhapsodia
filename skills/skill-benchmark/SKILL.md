@@ -81,7 +81,6 @@ Load only branch-relevant resources:
 - [`scripts/validate_portability.py`](scripts/validate_portability.py): structural portability validator.
 - [`scripts/package_skill.py`](scripts/package_skill.py): deterministic portable package builder with atomic receipt.
 
-`scripts/generate_benchmark_report.js` remains only for backwards compatibility; it is not required by the portable workflow.
 
 ## Workflow
 
@@ -123,7 +122,7 @@ Validate scenario evidence before metrics:
 <PYTHON> scripts/validate_scenario_results.py --results <RESULTS_JSON> --json-output <WORK>/scenario-validation.json
 ```
 
-Prefer the v2 identity-bound envelope in [`references/test-scenarios.md`](references/test-scenarios.md). Record `arm_type`, trace identity when available, and evaluator visibility/leakage status when hidden graders or holdouts are used. Legacy arrays are accepted for compatibility but remain `unpinned` and cannot support strict before/after improvement claims.
+Require the v2 identity-bound envelope in [`references/test-scenarios.md`](references/test-scenarios.md). Record `arm_type`, trace identity when available, and evaluator visibility/leakage status when hidden graders or holdouts are used. Reject top-level arrays and any unversioned scenario-result shape.
 
 Never invent activation precision/recall, robustness, output conformance, criteria coverage, quality scores, or rework rate.
 

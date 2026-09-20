@@ -24,6 +24,21 @@ REQUIRED_SCENARIOS = {
 }
 REQUIRED_RULE_FIELDS = {"severity", "confidence", "gate", "hazard_type", "title"}
 
+ACTIVATION_DESCRIPTION_CLUSTERS = {
+    "migration-artifacts": (r"\bmigration", r"\.cs\b|repository paths?|pasted migration code"),
+    "pull-request-or-diff": (r"pull requests?|\bprs?\b", r"git diffs?|\bdiffs?\b"),
+    "schema-and-ordering": (r"schema conflicts?", r"ordering hazards?"),
+    "destructive-and-duplicate": (r"data[- ]loss|destructive", r"duplicate operations?"),
+    "runtime-deployment": (r"runtime migration|deployment hazards?", r"database\.migrate(?:async)?|concurrent"),
+    "snapshot-rawsql-expand-contract": (r"model snapshot|snapshot divergence", r"raw sql", r"expand/contract|expand[- ]contract"),
+    "non-trigger-boundaries": (
+        r"do not use",
+        r"generic ef core",
+        r"database design",
+        r"application code review",
+    ),
+}
+
 
 def load_json(path: Path, errors: list[str]):
     try:
@@ -127,8 +142,28 @@ def main() -> int:
         if phrase not in skill_text:
             errors.append(f"SKILL.md missing contract phrase: {phrase}")
 
+    frontmatter_match = re.match(r"\A---\n(?P<frontmatter>.*?)\n---\n", skill_text, flags=re.S)
+    if not frontmatter_match:
+        errors.append("SKILL.md missing valid YAML frontmatter block")
+        activation_description = ""
+    else:
+        frontmatter = frontmatter_match.group("frontmatter")
+        description_match = re.search(r"(?m)^description:\s*(?P<description>.+)$", frontmatter)
+        if not description_match:
+            errors.append("SKILL.md frontmatter missing description")
+            activation_description = ""
+        else:
+            activation_description = description_match.group("description").strip().lower()
+
+    for cluster, patterns in ACTIVATION_DESCRIPTION_CLUSTERS.items():
+        missing_patterns = [pattern for pattern in patterns if not re.search(pattern, activation_description, flags=re.I)]
+        if missing_patterns:
+            errors.append(
+                f"frontmatter activation description missing {cluster} capability cluster: {missing_patterns}"
+            )
+
     report = {
-        "validator_version": "1.0.0",
+        "validator_version": "1.1.0",
         "status": "fail" if errors else ("warn" if warnings else "pass"),
         "errors": errors,
         "warnings": warnings,

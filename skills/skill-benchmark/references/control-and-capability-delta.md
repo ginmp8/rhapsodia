@@ -92,4 +92,4 @@ Do not collapse capability delta into one composite score unless a frozen rubric
 - Candidate vs without-skill supports incremental-value claims.
 - Baseline vs without-skill can show whether the prior skill already added value.
 - A static score delta is not a behavioral capability delta.
-- Planned scenarios, unpinned legacy evidence, changed evaluators, or leaked hidden graders do not support strict capability-delta claims.
+- Planned scenarios, unpinned evidence, changed evaluators, or leaked hidden graders do not support strict capability-delta claims.
