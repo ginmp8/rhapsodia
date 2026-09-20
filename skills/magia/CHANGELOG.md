@@ -2,6 +2,7 @@
 
 ## [1.10.0] - 2026-09-19
 
+- Integrate execution-profile, failure-taxonomy, and resumable-run-state resources into progressive loading and fail-closed reachability validation; structurally gate the frozen booster activation corpus without claiming live-model metrics.
 - Add a frozen, package-local cross-skill reproducibility contract/suite covering routing, handoffs, ownership, priority, privacy, freshness, replay, closure, and safe reruns.
 - Preserve Magia as execution/validation owner only while strengthening deterministic route identity, wrong-owner rejection evidence, package receipts, and handoff-ledger last-known-good recovery/receipts.
 - Add explicit ownership contract and coordinated migration path without peer runtime reads/imports.

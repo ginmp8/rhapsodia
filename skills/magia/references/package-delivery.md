@@ -1,5 +1,8 @@
 # Package Delivery
 
+The package gate must run `scripts/validate_resource_integration.py` and `scripts/validate_booster_activation_scenarios.py`. The booster gate validates frozen corpus structure, category coverage, authority boundaries, and evidence-integrity criteria only; it must report `behavior_measured=false` unless independent live-model observations are supplied by a separate harness.
+
+
 Load only to validate, export, or package MAGIA itself.
 
 ## Archive Shape
