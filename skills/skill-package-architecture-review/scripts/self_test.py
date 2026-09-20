@@ -130,12 +130,24 @@ def test_report_validator_accepts_contract_and_rejects_missing_identity() -> Non
         assert any("package_identity_sha256" in err for err in payload["errors"]), payload
 
 
+
+def test_portability_validator_passes_current_package() -> None:
+    root = Path(__file__).resolve().parents[1]
+    validator_path = root / "scripts" / "validate_portability.py"
+    namespace: dict[str, object] = {"__name__": "portability_self_test"}
+    exec(compile(validator_path.read_text(encoding="utf-8"), str(validator_path), "exec"), namespace)
+    result = namespace["validate"](root)
+    assert result["status"] == "pass", result
+    assert result["checks"]["package_identity_path_independent"] is True
+
+
 def main() -> int:
     tests = [
         test_package_identity_is_path_independent,
         test_resource_and_consumer_maps_are_explicit,
         test_ownership_and_progressive_loading_maps_are_stable,
         test_report_validator_accepts_contract_and_rejects_missing_identity,
+        test_portability_validator_passes_current_package,
     ]
     failures: list[str] = []
     for test in tests:

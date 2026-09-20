@@ -70,8 +70,16 @@ Read target `SKILL.md` first. Then load only what the active mode needs:
 - [`scripts/inventory_skill_package.py`](scripts/inventory_skill_package.py): deterministic structural evidence and package SHA-256.
 - [`scripts/validate_architecture_report.py`](scripts/validate_architecture_report.py): machine-readable report gate.
 - [`scripts/self_test.py`](scripts/self_test.py): deterministic helper self-test.
+- [`scripts/validate_portability.py`](scripts/validate_portability.py): deterministic portable-core and runtime-assumption gate.
+- [`references/host-portability.md`](references/host-portability.md): capability-based behavior and host-neutral execution contract.
 
-Keep the portable semantic core in `SKILL.md`, references, scripts, assets, and evals. Treat `agents/openai.yaml` and equivalent host metadata as optional adapters unless package evidence proves the semantic workflow depends on them.
+Keep the semantic core host-neutral. `agents/openai.yaml` is optional; OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, and Cursor must rely on the same portable workflow rather than vendor-private APIs. Load [`references/host-portability.md`](references/host-portability.md) when runtime compatibility matters, resolve Python 3.10+ as `<PYTHON>`, and close mechanically checkable portability with:
+
+```text
+<PYTHON> scripts/validate_portability.py --target <SKILL_ROOT>
+```
+
+Treat a pass as evidence only for the checks performed, not proof that every host exposes identical capabilities.
 
 ## Workflow
 
