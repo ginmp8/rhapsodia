@@ -1,5 +1,5 @@
 {
-  "contract_version": 2,
+  "contract_version": 3,
   "candidates": [
     {
       "candidate_id": "C001",
@@ -11,8 +11,14 @@
       "policy_id": "frozen-scoring-policy-id",
       "evaluation_level": "L4-benchmark",
       "metrics": {
-        "quality": {"value": 0.91, "uncertainty": 0.02},
-        "token_cost": {"value": 1000, "uncertainty": 0}
+        "quality": {
+          "value": 0.91,
+          "uncertainty": 0.02
+        },
+        "token_cost": {
+          "value": 1000,
+          "uncertainty": 0
+        }
       }
     }
   ]
