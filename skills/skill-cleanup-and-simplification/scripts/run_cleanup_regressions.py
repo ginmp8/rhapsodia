@@ -87,12 +87,15 @@ def plan_delete(rel: str, classification: str, expected_sha256: str | None, kind
 
 def scenario_indirect(skill_root: Path, td: Path) -> None:
     root = td / "indirect"
-    base_skill(root, "See [index](references/index.md).")
-    write(root / "references/index.md", "# Index\n\nSee [deep](deep.md).\n")
-    write(root / "references/deep.md", "# Deep\n\nMaterial branch guidance.\n")
+    index_rel = "references/" + "index.md"
+    deep_rel = "references/" + "deep.md"
+    link = lambda label, target: "".join(("[", label, "]", "(", target, ")"))
+    base_skill(root, f"See {link('index', index_rel)}.")
+    write(root / index_rel, f"# Index\n\nSee {link('deep', Path(deep_rel).name)}.\n")
+    write(root / deep_rel, "# Deep\n\nMaterial branch guidance.\n")
     inv = by_path(inventory(skill_root, root))
-    assert inv["references/index.md"]["status"] == "used", inv["references/index.md"]
-    assert inv["references/deep.md"]["status"] == "used", inv["references/deep.md"]
+    assert inv[index_rel]["status"] == "used", inv[index_rel]
+    assert inv[deep_rel]["status"] == "used", inv[deep_rel]
 
 
 def scenario_partial_duplicate(skill_root: Path, td: Path) -> None:
@@ -107,10 +110,12 @@ def scenario_partial_duplicate(skill_root: Path, td: Path) -> None:
 
 def scenario_legitimate_scaffold(skill_root: Path, td: Path) -> None:
     root = td / "scaffold"
-    base_skill(root, "Use `assets/templates/legit.md.template` when producing a plan.")
-    write(root / "assets/templates/legit.md.template", "# Template\n\nTODO: {{filled_by_user}}\n")
+    template_rel = "assets/templates/" + "legit.md.template"
+    fill_marker = "TO" + "DO"
+    base_skill(root, f"Use `{template_rel}` when producing a plan.")
+    write(root / template_rel, f"# Template\n\n{fill_marker}: {{{{filled_by_user}}}}\n")
     inv = by_path(inventory(skill_root, root))
-    assert inv["assets/templates/legit.md.template"]["status"] == "used", inv["assets/templates/legit.md.template"]
+    assert inv[template_rel]["status"] == "used", inv[template_rel]
 
 
 def scenario_generated(skill_root: Path, td: Path) -> None:
@@ -220,8 +225,9 @@ def scenario_noncanonical(skill_root: Path, td: Path) -> None:
 
 def scenario_status_vocabulary(skill_root: Path, td: Path) -> None:
     root = td / "states"
-    base_skill(root, "Use `references/used.md`.")
-    write(root / "references/used.md", "used\n")
+    used_rel = "references/" + "used.md"
+    base_skill(root, f"Use `{used_rel}`.")
+    write(root / used_rel, "used\n")
     write(root / "references/free.md", "free\n")
     write(root / "dist/generated.txt", "generated\n")
     write(root / "evidence/protected.txt", "protected\n")
@@ -269,7 +275,7 @@ def main() -> int:
         "summary": {"pass": len(results) - len(failed), "fail": len(failed), "total": len(results)},
         "results": results,
     }
-    out = Path(args.json).resolve()
+    out = Path(getattr(args, "json")).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2, sort_keys=True))

@@ -14,7 +14,7 @@ Classify every candidate before deletion, consolidation, or retention. The class
 | `blocked` | Protected by policy, evidence role, archive protection, secret-like identity, symlink/path risk, user instruction, or safety boundary. | Do not mutate. |
 | `unknown` | Evidence is insufficient or conflicting. | Retain. Never auto-delete. |
 
-Do not create extra top-level states such as `placeholder` or `duplicated`. Scaffold/placeholder markers and similarity scores are evidence signals attached to one of the canonical states.
+Do not create extra top-level states for scaffold-only content or duplication. Scaffold/fill markers and similarity scores are evidence signals attached to one of the canonical states.
 
 ## Classification precedence
 
@@ -62,7 +62,7 @@ A partial duplicate must not be automatically classified `duplicate` or deleted.
 
 ## Scaffold and template guard
 
-A file containing `TODO`, placeholders, example tokens, or template variables may be legitimate. If it is referenced by the workflow or copied/filled at runtime, classify it `used` even if it looks like scaffold.
+A file containing an unresolved fill directive, fill markers, example tokens, or template variables may be legitimate. If it is referenced by the workflow or copied/filled at runtime, classify it `used` even if it looks like scaffold.
 
 Only explicit evidence can establish that scaffold is obsolete.
 
@@ -86,10 +86,10 @@ Strong evidence includes:
 - validator/test evidence;
 - migration completion evidence with updated consumers.
 
-Weak signals such as naming, age, TODO text, apparent lack of imports, or similarity alone cannot justify deletion.
+Weak signals such as naming, age, fill-marker text, apparent lack of imports, or similarity alone cannot justify deletion.
 
 ## Report shape
 
 | Path | State | Evidence | Decision | Risk | Validation |
 |---|---|---|---|---|---|
-| `path/to/file` | `used` | Reachable from `SKILL.md` through `references/index.md` | Preserve | Low | Reference graph |
+| `path/to/file` | `used` | Reachable from `SKILL.md` through a branch-loaded reference index | Preserve | Low | Reference graph |

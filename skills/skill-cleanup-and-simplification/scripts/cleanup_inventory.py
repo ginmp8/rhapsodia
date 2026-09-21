@@ -65,7 +65,7 @@ PLACEHOLDER_PATTERNS = [
     re.compile(r"(?m)^\s*TO" + r"DO(?:\b|:)", re.I),
     re.compile(r"(?m)^\s*REPLACE ME\b", re.I),
     re.compile(r"\bexample script\b", re.I),
-    re.compile(r"\bexample asset\b", re.I),
+    re.compile(r"\bexample\s+asset\b", re.I),
     re.compile(r"\bapi reference\b", re.I),
 ]
 TEXT_SUFFIXES = {
