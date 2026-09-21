@@ -56,7 +56,7 @@ Classify evidence by area before creating any candidate:
 
 ## 4. Classify the backlog item before ranking
 
-Use the taxonomy from `hypothesis-schema.md`:
+Use the taxonomy from `references/hypothesis-schema.md`:
 
 - `testable-hypothesis` only when the evidence and measurement path satisfy the minimum gate;
 - `evidence-gap` when more evidence/evaluator/metric is needed;
@@ -103,7 +103,7 @@ If the primary metric is saturated:
 
 ## 8. Score and rank
 
-Use the formula and tie-breakers in `hypothesis-schema.md`. Scores help order already-eligible candidates; they do not convert weak evidence into a valid hypothesis.
+Use the formula and tie-breakers in `references/hypothesis-schema.md`. Scores help order already-eligible candidates; they do not convert weak evidence into a valid hypothesis.
 
 Blocking correctness/safety/validation/package issues are ranked before non-blocking opportunities through `gate_effect`, but still require evidence and an evaluator.
 
