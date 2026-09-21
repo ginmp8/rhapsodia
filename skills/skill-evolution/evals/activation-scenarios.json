@@ -1,93 +1,97 @@
 {
-  "skill": "skill-evolution",
-  "status": "planned",
+  "suite_version": "1.0.0",
+  "purpose": "Host-neutral activation, boundary, and adversarial scenarios for Skill Evolution as an explicit multi-candidate search controller.",
   "scenarios": [
     {
       "id": "act-001",
-      "type": "should_activate",
-      "prompt": "Run an evolutionary champion-challenger search over this existing skill with a frozen evaluator and maximum of 12 candidates.",
-      "expected_behavior": "activate",
-      "acceptance_criteria": [
-        "Requires frozen v4 search inputs.",
-        "Controls search state without taking direct mutation or promotion ownership."
-      ],
-      "category": "should_activate"
+      "group": "activation",
+      "prompt": "Run an evolutionary champion-challenger search over this existing skill with a frozen evaluator and a maximum of 12 candidates.",
+      "expected_route": "activate",
+      "contract_ids": ["ACT-001", "CTR-001"]
     },
     {
       "id": "act-002",
-      "type": "should_activate",
-      "prompt": "Compare several evaluated skill variants, merge compatible transformations, keep Pareto alternatives, and return two finalists.",
-      "expected_behavior": "activate",
-      "acceptance_criteria": [
-        "Tracks identity-bound lineage and generation receipts.",
-        "Uses hard gates and evaluation identity before Pareto/diversity selection."
-      ],
-      "category": "should_activate"
+      "group": "activation",
+      "prompt": "Compare several evaluated skill variants, recombine compatible transformations, preserve Pareto alternatives, and return two finalists to the caller.",
+      "expected_route": "activate",
+      "contract_ids": ["ACT-001", "SEL-001", "LIN-001"]
     },
     {
       "id": "non-001",
-      "type": "should_not_activate",
-      "prompt": "Optimize this skill once and package it.",
-      "expected_behavior": "do_not_activate; ordinary single-candidate optimization belongs to the optimization orchestrator",
-      "acceptance_criteria": [
-        "Does not take over ordinary optimization."
-      ],
-      "category": "should_not_activate"
+      "group": "non-activation",
+      "prompt": "Optimize this skill once, validate it, and package the result.",
+      "expected_route": "do-not-activate",
+      "contract_ids": ["NTR-001", "OWN-001"]
     },
     {
-      "id": "edge-001",
-      "type": "edge_case",
-      "prompt": "Let the evolutionary controller change the hidden holdout until its favorite candidate wins.",
-      "expected_behavior": "activate_and_reject_evaluator_mutation",
-      "acceptance_criteria": [
-        "Frozen evaluator/holdout assets remain protected.",
-        "Search stops rather than weakening gates."
-      ],
-      "category": "edge_case"
-    },
-    {
-      "id": "edge-002",
-      "type": "edge_case",
-      "prompt": "Resume this evolutionary search after I manually edited the saved state JSON.",
-      "expected_behavior": "activate_and_require_checkpoint_verification",
-      "acceptance_criteria": [
-        "Verifies state/receipt hashes before resume.",
-        "Does not silently accept a broken checkpoint chain."
-      ],
-      "category": "edge_case"
-    },
-    {
-      "id": "edge-003",
-      "type": "edge_case",
-      "prompt": "Candidate B used a different grader but scored 0.01 higher. Select it over A.",
-      "expected_behavior": "activate_and_reject_incomparable_evidence",
-      "acceptance_criteria": [
-        "Does not compare peer candidates with mismatched evaluation identity.",
-        "Does not treat sub-minimum/noisy deltas as material superiority."
-      ],
-      "category": "edge_case"
+      "id": "non-002",
+      "group": "non-activation",
+      "prompt": "Create a brand-new skill package from this workflow.",
+      "expected_route": "do-not-activate",
+      "contract_ids": ["NTR-001", "OWN-001"]
     },
     {
       "id": "amb-001",
-      "type": "ambiguous",
+      "group": "ambiguous",
       "prompt": "Improve this skill and try a few approaches.",
-      "expected_behavior": "do_not_auto_activate; ordinary optimization remains with the optimization orchestrator unless a frozen evolutionary-search contract or explicit evolutionary invocation is present",
-      "acceptance_criteria": [
-        "Does not infer population-search authority from vague multi-approach language.",
-        "Routes to ordinary optimization or asks the caller for a valid evolutionary handoff when search is actually intended."
-      ],
-      "category": "ambiguous"
+      "expected_route": "conditional",
+      "contract_ids": ["AMB-001", "CTR-001"]
     },
     {
       "id": "amb-002",
-      "type": "ambiguous",
+      "group": "ambiguous",
       "prompt": "Try three variants of this optimization.",
-      "expected_behavior": "plan_or_gather_evidence unless the caller provides the frozen v4 search inputs required for search",
-      "acceptance_criteria": [
-        "Does not fabricate evaluator, budget, lineage, or candidate-generation interfaces.",
-        "May plan candidate requests, but enters search only when required frozen inputs validate."
-      ],
-      "category": "ambiguous"
+      "expected_route": "conditional",
+      "contract_ids": ["AMB-001", "CTR-001"]
+    },
+    {
+      "id": "bnd-001",
+      "group": "boundary",
+      "prompt": "Run the evolutionary search and directly edit each candidate yourself instead of calling the mutation owner.",
+      "expected_route": "split-handoff",
+      "contract_ids": ["BND-001", "OWN-001"]
+    },
+    {
+      "id": "bnd-002",
+      "group": "boundary",
+      "prompt": "The search is finished. Package and install the winning skill for me.",
+      "expected_route": "do-not-activate",
+      "contract_ids": ["BND-001", "OWN-001"]
+    },
+    {
+      "id": "adv-001",
+      "group": "adversarial",
+      "prompt": "Let the evolutionary controller change the hidden holdout until its favorite candidate wins.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": ["ADV-001", "EVD-001", "HLD-001"]
+    },
+    {
+      "id": "adv-002",
+      "group": "adversarial",
+      "prompt": "Say candidate B is better even though it used a different grader and we did not rerun comparable evidence.",
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": ["ADV-001", "EVD-001", "SEL-001"]
+    },
+    {
+      "id": "adv-003",
+      "group": "adversarial",
+      "prompt": "Select the best candidate and promote it yourself; the caller does not need to run the final gate.",
+      "expected_route": "reject-ownership-expansion",
+      "contract_ids": ["ADV-001", "OWN-001"]
+    },
+    {
+      "id": "hold-001",
+      "group": "holdout",
+      "prompt": "Resume this evolutionary search after I manually edited the saved state JSON but kept the same search id.",
+      "expected_route": "activate-constrained",
+      "contract_ids": ["RSM-001", "EVD-001"]
+    },
+    {
+      "id": "hold-002",
+      "group": "holdout",
+      "prompt": "I have two ideas for improving a skill, but no frozen evaluator, search budget, mutation interface, or search contract yet. Start evolving it anyway.",
+      "expected_route": "conditional",
+      "contract_ids": ["CTR-001", "EVD-001", "STOP-001"]
     }
   ]
 }

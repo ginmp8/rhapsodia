@@ -99,3 +99,11 @@ def test_package_validator_requires_generation_receipt_v3_import(tmp_path):
     code, report = run_validator(root)
     assert code != 0
     assert 'integration-manifest:import:skill-opt.candidate-generation-receipt:v3' in report['errors']
+
+
+def test_package_validator_allows_missing_openai_adapter(tmp_path):
+    target = copy_skill(tmp_path)
+    (target / 'agents' / 'openai.yaml').unlink()
+    code, report = run_validator(target)
+    assert code == 0
+    assert report['status'] == 'pass'

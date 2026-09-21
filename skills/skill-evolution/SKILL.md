@@ -1,6 +1,6 @@
 ---
 name: skill-evolution
-description: "use when explicitly invoked as the multi-candidate search controller, or when an optimization orchestrator hands off a frozen evolutionary-search contract for an existing Agent Skills-compatible skill; controls reproducible champion-challenger search, identity-bound lineage, validated transformation recombination/backcross, noise-aware Pareto selection, derived novelty/diversity, deterministic stagnation/checkpoints, and finalist selection. Do not auto-own ordinary single-candidate optimization, net-new skill creation, target mutation, benchmark semantics, acceptance gates, or final promotion/package decisions."
+description: "use when explicitly invoked as the multi-candidate search controller, or when an optimization orchestrator hands off a frozen evolutionary-search contract for an existing agent skills-compatible skill; controls reproducible champion-challenger search, identity-bound lineage, validated transformation recombination/backcross, noise-aware pareto selection, derived novelty/diversity, deterministic stagnation/checkpoints, and finalist selection. do not use for ordinary single-candidate optimization, net-new skill creation, direct target mutation, benchmark or harness semantics, candidate acceptance gates, or final promotion, packaging, or installation."
 ---
 
 # Skill Evolution
@@ -8,6 +8,10 @@ description: "use when explicitly invoked as the multi-candidate search controll
 ## Mission
 
 Control evidence-guided multi-candidate search without becoming a second optimizer, benchmark, harness, or promotion gate. Treat baseline, capability/hypothesis/transformation identities, evaluator identities, gates, objectives, interfaces, and budgets as frozen search inputs. Request candidate generation from the caller, compare only identity-compatible evidence, preserve lineage and negative evidence, and return finalists for an external promotion decision.
+
+## Scope
+
+Use only after evolutionary search is explicitly selected for an existing skill and a valid frozen search contract is supplied, or when Skill Evolution is explicitly invoked for that controller role. Operate on search metadata, candidate/evaluation envelopes, lineage, selection, recombination plans, checkpoints, and finalist recommendations. Do not mutate target bytes, design evaluators, own acceptance gates, or perform final package/install delivery.
 
 ## Authority boundary
 
@@ -101,6 +105,7 @@ Load only what the active stage needs:
 - [scripts/select_survivors.py](scripts/select_survivors.py): hard-gate-first, min-delta/uncertainty-aware Pareto selection and derived diversity.
 - [scripts/plan_recombination.py](scripts/plan_recombination.py): dependency/conflict/invariant-aware deterministic planning.
 - [scripts/checkpoint_search_state.py](scripts/checkpoint_search_state.py): state hash-chain receipt and deterministic stagnation/resume checks.
+- `scripts/_common.py`: import-only standard-library helper shared by bundled validators/planners; it is not a user-facing CLI.
 - [evals/activation-scenarios.json](evals/activation-scenarios.json): planned activation/boundary scenarios; never behavioral proof until executed.
 
 ## Workflow
