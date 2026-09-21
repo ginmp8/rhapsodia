@@ -82,7 +82,7 @@ def validate(data: Any) -> dict[str, Any]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("receipt")
-    ap.add_argument("--json")
+    ap.add_argument("--json", dest="json_output")
     args = ap.parse_args()
     try:
         data = json.loads(Path(args.receipt).read_text(encoding="utf-8"))
@@ -90,8 +90,8 @@ def main() -> int:
     except Exception as exc:
         report = {"status": "fail", "errors": [str(exc)], "warnings": [], "checks": {}}
     payload = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
-    if args.json:
-        Path(args.json).write_text(payload, encoding="utf-8")
+    if args.json_output:
+        Path(args.json_output).write_text(payload, encoding="utf-8")
     print(payload, end="")
     return 0 if report["status"] == "pass" else 1
 

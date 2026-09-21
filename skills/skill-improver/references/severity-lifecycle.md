@@ -48,7 +48,6 @@ Use these final states consistently:
 
 Cancellation preserves the last accepted state and never converts an in-flight or rejected candidate into completion.
 
-The legacy marker `<skill-improvement-complete>` is not part of the canonical contract. A compatibility shim may emit it only when the canonical result is `accepted` or `completed` and all required validation ran.
 
 ## Review-fix-review loop
 

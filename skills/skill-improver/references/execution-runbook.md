@@ -13,16 +13,7 @@ Use for CLI execution details, autonomous adapters, evidence snapshots, packagin
 
 ## Runtime capability check
 
-Before mutation, record whether the host provides:
-
-- filesystem read/write;
-- Python 3.10+ or equivalent script execution;
-- command execution;
-- network/research when current external facts are required;
-- independent evaluator/subagent support;
-- artifact delivery/persistence.
-
-Missing capabilities downgrade only the checks that depend on them. Never silently convert `not-run` into `pass`.
+Use `references/host-portability.md` for the canonical capability matrix, Python/runtime rules, adapter semantics, degradation policy, and package portability. Missing required capabilities remain `not-run`/`blocked`, never implicit passes.
 
 ## Skill path resolution
 
@@ -58,9 +49,9 @@ If no bounded hypothesis exists, or the current score is saturated/ambiguous, us
 
 A good backlog may conclude `no mutation recommended` or `gather evidence`; respect that result.
 
-## Autonomous runner: Codex adapter
+## Optional Codex adapter
 
-Backward-compatible Codex execution:
+Optional Codex execution:
 
 ```text
 <PYTHON> scripts/skill_improver_loop.py \
@@ -89,7 +80,7 @@ For another agent CLI, provide an argv template:
   --max-iterations 3
 ```
 
-The template is tokenized by `shlex` and executed without a shell. It must contain `{prompt}` and may contain `{cwd}` and `{target}`. If the external CLI cannot safely receive the prompt/path as normal argv, use the host's native action mechanism rather than forcing this adapter.
+The template follows the argv/no-shell argument contract in `references/host-portability.md`.
 
 ## Custom evaluator
 
@@ -104,6 +95,8 @@ The command should emit JSON containing at least `score`:
   --required-gate packaging \
   --max-iterations 3
 ```
+
+Evaluator and change-gate command strings are tokenized into argv and are **not** executed through a shell. If a command requires pipes, redirection, or compound shell syntax, place that logic in an explicit script and invoke the script as a normal argv command.
 
 `<SKILL_IMPROVER_ROOT>` must be replaced with the absolute canonical path of the installed `skill-improver` package. For a concrete package-owned evaluator, use that exact same canonical path in both `--eval-command` and `--benchmark-lock-path`; relative paths are intentionally avoided because command evaluation runs from the target while benchmark locks are resolved from the git root.
 

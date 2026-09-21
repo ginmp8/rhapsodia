@@ -26,7 +26,7 @@ REQUIRED_FILES = [
     'scripts/static_skill_score.py',
     'scripts/validate_skill_improver_package.py',
     'scripts/package_skill.py',
-    'evals/skill-improver-scenarios.json',
+    'evals/activation-scenarios.json',
     'assets/templates/improvement-run-report.md.template',
     'assets/templates/patch-decision-record.md.template',
     'references/evolution-candidate-execution.md',
@@ -126,54 +126,47 @@ def find_placeholder_markers(root: Path) -> list[str]:
 def validate_scenarios(path: Path) -> tuple[dict[str, int], list[str]]:
     errors: list[str] = []
     try:
-        data = json.loads(read_text(path))
+        payload = json.loads(read_text(path))
     except Exception as exc:
         return {}, [f'scenario JSON could not be parsed: {exc}']
 
+    if not isinstance(payload, dict):
+        return {}, ['scenario file must contain an object']
+    if payload.get('target_skill') != 'skill-improver':
+        errors.append('scenario target_skill must be skill-improver')
+    if payload.get('status') not in {'planned', 'measured'}:
+        errors.append('scenario suite status must be planned or measured')
+    data = payload.get('scenarios')
     if not isinstance(data, list):
-        return {}, ['scenario file must contain a list']
+        return {}, errors + ['scenario file must contain a scenarios list']
 
     counts = {name: 0 for name in REQUIRED_CATEGORIES}
     ids: set[str] = set()
-    required_fields = [
-        'id',
-        'category',
-        'prompt',
-        'expected_behavior',
-        'evaluator_focus',
-        'status',
-    ]
+    required_fields = ['id', 'type', 'prompt', 'expected_behavior', 'acceptance_criteria']
 
     for idx, item in enumerate(data):
         if not isinstance(item, dict):
             errors.append(f'scenario at index {idx} is not an object')
             continue
-
         for field in required_fields:
-            if not item.get(field):
+            if field not in item or item[field] in (None, '', []):
                 errors.append(f'scenario {idx} missing {field}')
-
         sid = str(item.get('id', ''))
         if sid in ids:
             errors.append(f'duplicate scenario id {sid}')
         ids.add(sid)
-
-        category = item.get('category')
+        category = item.get('type')
         if category in counts:
             counts[category] += 1
         else:
-            errors.append(f'scenario {sid or idx} has unknown category {category}')
-
-        if item.get('status') not in {'planned', 'measured'}:
-            errors.append(f'scenario {sid or idx} has invalid status')
+            errors.append(f'scenario {sid or idx} has unknown type {category}')
+        criteria = item.get('acceptance_criteria')
+        if not isinstance(criteria, list) or not criteria or any(not isinstance(x, str) or not x.strip() for x in criteria):
+            errors.append(f'scenario {sid or idx} has invalid acceptance_criteria')
 
     for category, minimum in REQUIRED_CATEGORIES.items():
         if counts.get(category, 0) < minimum:
-            errors.append(
-                f'category {category} has {counts.get(category, 0)} scenarios, '
-                f'expected at least {minimum}'
-            )
-
+            errors.append(f'category {category} has {counts.get(category, 0)} scenarios, expected at least {minimum}')
     return counts, errors
 
 
@@ -365,7 +358,7 @@ def main() -> int:
         errors.append('missing referenced files: ' + ', '.join(missing_refs))
 
     scenario_counts, scenario_errors = validate_scenarios(
-        root / 'evals' / 'skill-improver-scenarios.json'
+        root / 'evals' / 'activation-scenarios.json'
     )
     gates['scenario_suite'] = 'pass' if not scenario_errors else 'fail'
     errors.extend(scenario_errors)
