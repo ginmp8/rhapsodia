@@ -48,7 +48,7 @@ def main() -> int:
     has_assets = 'assets' in dirs and any(r.startswith('assets/') for r in rels)
     validator_files = [r for r in rels if re.search(r'(validate|validator|check|lint|test)', Path(r).name, re.I)]
     schema_files = [r for r in rels if re.search(r'(schema|contract)', Path(r).name, re.I)]
-    package_files = [r for r in rels if re.search(r'(package|build).*(\.py|\.js|\.mjs|\.sh)$', Path(r).name, re.I)]
+    package_files = [r for r in rels if re.search(r'(package|build)', Path(r).stem, re.I) and Path(r).suffix.lower() in {'.py', '.js', '.mjs', '.sh'}]
 
     signals = {
         'activation_description_present': bool(fm.get('description')) and ('to' + 'do') not in fm.get('description','').lower(),

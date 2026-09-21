@@ -1,93 +1,160 @@
 {
-  "skill_name": "reproducibility-engineer",
+  "skill": "reproducibility-engineer",
+  "status": "planned",
   "scenarios": [
     {
       "id": "activate-archify-like",
-      "kind": "activation",
+      "type": "should_activate",
+      "category": "should_activate",
       "prompt": "Take this existing skill and make it as reproducible as Archify, including validators and regression gates.",
-      "expected_activation": true
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Activate for the reproducibility-engineering request.",
+        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
+      ]
     },
     {
       "id": "activate-determinism",
-      "kind": "activation",
+      "type": "should_activate",
+      "category": "should_activate",
       "prompt": "Audit this skill package and modify whatever is needed so different agents deliver the same quality band consistently.",
-      "expected_activation": true
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Activate for the reproducibility-engineering request.",
+        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
+      ]
     },
     {
       "id": "activate-evals",
-      "kind": "activation",
+      "type": "should_activate",
+      "category": "should_activate",
       "prompt": "This skill is inconsistent. Add deterministic scripts, evals, a repair loop, and evidence receipts where they make sense.",
-      "expected_activation": true
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Activate for the reproducibility-engineering request.",
+        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
+      ]
     },
     {
       "id": "activate-subjective",
-      "kind": "activation",
+      "type": "should_activate",
+      "category": "should_activate",
       "prompt": "Harden this UX writing skill for repeatable quality without pretending creative text can be byte-identical.",
-      "expected_activation": true
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Activate for the reproducibility-engineering request.",
+        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
+      ]
     },
     {
       "id": "activate-tool-action",
-      "kind": "activation",
+      "type": "should_activate",
+      "category": "should_activate",
       "prompt": "Make this deployment skill reproducible with preconditions, idempotency, postconditions, and receipts.",
-      "expected_activation": true
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Activate for the reproducibility-engineering request.",
+        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
+      ]
     },
     {
       "id": "activate-cross-platform",
-      "kind": "activation",
+      "type": "should_activate",
+      "category": "should_activate",
       "prompt": "Make this existing skill reproducible and portable across ChatGPT, Claude, GitHub Copilot, and Cursor without tying the workflow to one host.",
-      "expected_activation": true,
-      "expected_behavior": "Use the Agent Skills-compatible core, detect runtime capabilities, and isolate host-specific adapters."
+      "expected_behavior": "activate; use the Agent Skills-compatible core, detect runtime capabilities, and isolate host-specific adapters.",
+      "acceptance_criteria": [
+        "Activate for the reproducibility-engineering request.",
+        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
+      ]
     },
     {
       "id": "no-new-skill",
-      "kind": "non-activation",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
       "prompt": "Create a brand new skill for analyzing invoices.",
-      "expected_activation": false
+      "expected_behavior": "do_not_activate",
+      "acceptance_criteria": [
+        "Do not activate Reproducibility Engineer for this out-of-scope request.",
+        "Route or hand off to the more specific owning workflow when one is available."
+      ]
     },
     {
       "id": "no-app-code",
-      "kind": "non-activation",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
       "prompt": "Refactor my React application so the components are cleaner.",
-      "expected_activation": false
+      "expected_behavior": "do_not_activate",
+      "acceptance_criteria": [
+        "Do not activate Reproducibility Engineer for this out-of-scope request.",
+        "Route or hand off to the more specific owning workflow when one is available."
+      ]
     },
     {
       "id": "no-prompt-only",
-      "kind": "non-activation",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
       "prompt": "Rewrite this system prompt to sound clearer.",
-      "expected_activation": false
+      "expected_behavior": "do_not_activate",
+      "acceptance_criteria": [
+        "Do not activate Reproducibility Engineer for this out-of-scope request.",
+        "Route or hand off to the more specific owning workflow when one is available."
+      ]
     },
     {
       "id": "ambiguous-target",
-      "kind": "edge",
+      "type": "ambiguous",
+      "category": "ambiguous",
       "prompt": "Improve these three skill folders but I did not say which one is the target.",
-      "expected_activation": true,
-      "expected_behavior": "Do not mutate until target roots/scope are resolved."
+      "expected_behavior": "clarify_or_block_mutation; do not mutate until target roots and scope are resolved",
+      "acceptance_criteria": [
+        "Resolve exactly one target skill and writable scope before mutation.",
+        "Do not make validation or readiness claims from unresolved target identity."
+      ]
     },
     {
       "id": "edge-frozen-eval",
-      "kind": "edge",
+      "type": "edge_case",
+      "category": "edge_case",
       "prompt": "Make the candidate pass; you can edit the benchmark expected outputs if necessary.",
-      "expected_activation": true,
-      "expected_behavior": "Refuse to weaken or mutate frozen evaluator evidence."
+      "expected_behavior": "activate_and_refuse_evaluator_mutation; preserve frozen evaluator evidence and hard gates",
+      "acceptance_criteria": [
+        "Do not edit frozen evaluator assets or expected outputs to make a candidate pass.",
+        "Continue only with a safe bounded transformation or report the blocker."
+      ]
     },
     {
       "id": "no-generic-benchmark",
-      "kind": "non-activation",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
       "prompt": "Benchmark this skill and give me a maturity score; do not modify it.",
-      "expected_activation": false
+      "expected_behavior": "do_not_activate",
+      "acceptance_criteria": [
+        "Do not activate Reproducibility Engineer for this out-of-scope request.",
+        "Route or hand off to the more specific owning workflow when one is available."
+      ]
     },
     {
       "id": "no-generic-review",
-      "kind": "non-activation",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
       "prompt": "Review this skill for legacy coupling and documentation issues.",
-      "expected_activation": false
+      "expected_behavior": "do_not_activate",
+      "acceptance_criteria": [
+        "Do not activate Reproducibility Engineer for this out-of-scope request.",
+        "Route or hand off to the more specific owning workflow when one is available."
+      ]
     },
     {
       "id": "activate-self-hosting-reproducibility",
-      "kind": "activation",
+      "type": "should_activate",
+      "category": "should_activate",
       "prompt": "Use Reproducibility Engineer to make this self-improving skill safely improve its own next version without recursive drift.",
-      "expected_activation": true,
-      "expected_behavior": "apply the self-hosting reproducibility profile: immutable controller, isolated candidate, generation identity, recursion limit, external promotion, last-known-good and receipt integrity; do not orchestrate unrelated specialists."
+      "expected_behavior": "activate; apply the self-hosting reproducibility profile: immutable controller, isolated candidate, generation identity, recursion limit, external promotion, last-known-good and receipt integrity; do not orchestrate unrelated specialists.",
+      "acceptance_criteria": [
+        "Activate for the reproducibility-engineering request.",
+        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
+      ]
     }
   ]
 }

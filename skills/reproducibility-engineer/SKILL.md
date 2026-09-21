@@ -57,6 +57,8 @@ Use bundled scripts as deterministic helpers. Their outputs are evidence, not su
 
 Treat the open Agent Skills format as the canonical core. Do not make the workflow semantically depend on ChatGPT, Claude, GitHub Copilot, Cursor, or any other single host. When the user asks about cross-platform behavior, the host is uncertain, or runtime assumptions affect execution, read [`references/host-portability.md`](references/host-portability.md).
 
+### Runtime capabilities
+
 Before running bundled scripts:
 
 1. detect capabilities rather than branching only on product name: readable/writable filesystem, Python 3.10+, command execution, network access, subagents, and artifact delivery;
@@ -115,7 +117,7 @@ Prefer the lowest reliable control layer:
 
 `runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`.
 
-Do not move judgment into code merely to appear deterministic.
+Do not move judgment into code merely to appear deterministic. Apply the control-placement matrix in `references/reproducibility-model.md` when the lane is ambiguous.
 
 ### 4. Create and freeze the transformation contract
 
