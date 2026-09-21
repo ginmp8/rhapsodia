@@ -364,8 +364,8 @@
     },
     {
       "id": "core-001",
-      "category": "core_behavior",
-      "type": "core_behavior",
+      "category": "should_activate",
+      "type": "should_activate",
       "prompt": "Review and directly improve this README using the adjacent CLI script as source truth, then verify the edited Markdown.",
       "expected_activation": true,
       "expected_behavior": "Freeze the review contract, inspect the CLI source, run applicable mechanical checks, apply bounded edits, rerun the same checks, and separate source-fidelity evidence from editorial judgment.",

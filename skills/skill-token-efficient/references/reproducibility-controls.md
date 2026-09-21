@@ -1,74 +1,31 @@
 # Reproducibility Controls
 
-## Evidence model
+## Evidence and identities
 
-Keep four claims separate:
+Keep **token evidence**, **structural evidence**, **behavioral evidence**, and **runtime evidence** separate; a pass in one layer proves no other layer.
 
-- **token evidence**: counts produced by one pinned method on baseline and candidate;
-- **structural evidence**: files, local refs, protected literals, schemas, scripts, package shape, hashes;
-- **behavioral/semantic evidence**: activation, scope, output behavior, invariant equivalence, readability;
-- **runtime evidence**: actual host/tool execution when required.
+Before edits preserve exact baseline bytes/tree identity outside the mutation workspace and capture exact material source bytes as an immutable source snapshot or pinned VCS evidence when external inputs affect equivalence. `apply` mutates an isolated copy; baseline, frozen evaluators, fixtures, expected outputs, and generated baseline evidence stay protected. Failure normally discards the candidate and keeps installed/last-good bytes; if in-place mutation is unavoidable, require byte-for-byte backup and restore first.
 
-A pass in one layer does not imply another.
+## Tokenization
 
-## Baseline and candidate
+Pin one method and comparison scope before baseline measurement and keep both unchanged across arms. `estimator-v1` is deterministic/portable but approximate. `tiktoken:<encoding>` is optional and exact only for the identified encoding/package version; never silently fall back. Prefer `instructions` for instruction optimization; `entrypoint` means only `SKILL.md`; `all-text` includes scripts/evals/config text.
 
-Before any edit, preserve exact baseline bytes outside the mutation workspace and record a deterministic tree identity. `apply` should mutate a staged candidate copied from that baseline. The baseline, frozen evaluators, fixtures, expected outputs, and generated baseline evidence are protected.
+## Refactor contract and evaluator freeze
 
-Rollback is normally promotion-by-replacement: if the candidate fails, discard it and keep the installed/last-good target unchanged. If in-place mutation is unavoidable, record a byte-for-byte backup and restore plan before editing; stop if reliable restore is unavailable.
+Fill/validate `assets/templates/refactor-contract.json` before mutation. It must cover activation, scope, safety, validation, evidence/citation, compatibility, output contract, readability, progressive loading, and protected URLs/paths/commands/env vars/schemas/flags/proper nouns/versions/numbers. `manual` and `scenario` checks remain hard gates until supported by real evidence.
 
-## Tokenization contract
+Freeze exact deciding scenarios, fixtures, expected outputs, validators/graders, thresholds, and comparison configuration. Candidate code must not change them. If an evaluator is wrong, invalidate the comparison, version/freeze the corrected evaluator, and re-baseline.
 
-Pin the method before comparison and use it unchanged for both arms.
+## Progressive loading and source integrity
 
-- `estimator-v1`: standard-library deterministic lexical estimator; portable and reproducible, but not exact for a specific model.
-- `tiktoken:<encoding>`: optional exact count for that encoding when `tiktoken` is installed. Record encoding and package version. Do not silently fall back.
+`SKILL.md` is the control plane. Detail may move to one-level references only with an explicit loading edge. Deterministically fail broken local refs or unauthorized loss of a baseline-reachable instruction reference; never create apparent savings by orphaning required content.
 
-Never label `estimator-v1` as an exact model-token count. Cross-host comparisons should prefer a portable pinned method unless a model-specific count is the explicit goal.
+## Delivery integrity
 
-Pin the comparison scope too: `entrypoint` counts only `SKILL.md`; `instructions` counts `SKILL.md` plus progressively reachable references/examples/templates; `all-text` also counts scripts/evals/config text. Use `instructions` for prompt/instruction optimization and report `all-text` separately when package-source size matters.
+Before package/receipt writes, canonicalize destinations and reject output aliases with target/input, protected evidence, or sibling receipt. Preflight before mutation so failure leaves last-good bytes unchanged.
 
-## Refactor contract
+After all gates pass: compute final candidate tree identity; make no further edits; stage and validate exact package bytes; compute package SHA-256; emit a durable receipt (`receipt_version` + hashes) tied to exact candidate/package identities; commit atomically where supported. A post-pass edit invalidates freeze; failed packaging must not replace last-good artifacts.
 
-Create/fill `assets/templates/refactor-contract.json` for the target, then validate it before mutation. The contract must identify:
+## Host-neutral root
 
-- tokenization method;
-- semantic invariants for activation, scope, safety, validation, evidence/citation, compatibility, output contract, readability, and progressive loading;
-- verification type for each invariant: `contains`, `regex`, `local_reference`, `manual`, or `scenario`;
-- protected literals for URLs, paths, commands, env vars, schemas, flags, proper nouns, versions, and numbers.
-
-`manual` and `scenario` are intentionally not converted into fake mechanical proof. They remain hard gates until real review/execution evidence is recorded.
-
-## Evaluator freeze
-
-Freeze the exact scenario prompts, fixtures, expected outputs, validators/graders, thresholds, and comparison configuration that will decide acceptance. Candidate code must not modify the frozen copy. If a frozen evaluator is wrong, invalidate that comparison, fix/freeze a new evaluator, and restart.
-
-## Local references and progressive loading
-
-`SKILL.md` is the control plane. Detailed rules may move to one-level references when the load rule remains explicit. Validation must build a deterministic local-reference graph, fail broken local refs, and fail when a baseline-reachable instruction reference becomes unreachable without an explicitly authorized migration.
-
-Do not reduce apparent context cost by orphaning required references.
-
-## Source and output integrity
-
-When external files or repository evidence materially determine equivalence, capture the exact source bytes and hashes before analysis; for pinned VCS evidence, prefer immutable revision reads over a mutable working tree. Re-baseline if source identity changes.
-
-Before packaging or writing receipts, canonicalize output paths and reject output aliases with the target/input, protected evidence, or sibling receipt. Preflight must happen before mutation. A failed preflight leaves last-good bytes unchanged.
-
-## Final freeze and receipt
-
-After every applicable gate passes:
-
-1. compute the final candidate tree identity;
-2. make no further edits;
-3. stage the package privately;
-4. validate the staged package;
-5. compute package SHA-256;
-6. emit a parseable receipt tied to the exact candidate/package bytes;
-7. commit outputs atomically where supported.
-
-A post-pass edit invalidates the freeze. A failed package must not replace the last-good artifact. Preserve recovery paths if rollback is incomplete.
-
-## Host-neutral skill root
-
-Resolve `<skill-root>` from the current package containing `SKILL.md`; never require one host-specific install directory. Hosts such as GitHub Copilot or Cursor may place the same Agent Skills-compatible package under locations such as `skills/`, `.agents/skills/`, `.github/skills/`, `.cursor/skills/`, or `.claude/skills/`. These are placement adapters, not workflow semantics. Keep relative references inside the package and treat `agents/openai.yaml` or other host metadata as optional adapters unless the target explicitly makes them part of its contract.
+Resolve `<skill-root>` from the package containing `SKILL.md`; never require a host-specific install directory. GitHub Copilot, Cursor, Codex, Claude, and OpenAI may discover the same Agent Skills-compatible package in different locations. Treat those locations and `agents/openai.yaml` as placement/metadata adapters, not semantic workflow dependencies. Keep package references relative and required capabilities explicit.

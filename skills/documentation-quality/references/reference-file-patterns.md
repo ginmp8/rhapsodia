@@ -73,7 +73,7 @@ Inputs:
 Command:
 
 ```bash
-python path/to/script.py --target path/to/target --output report.json
+<PYTHON> path/to/script.py --target path/to/target --output report.json
 ```
 
 Outputs:

@@ -32,7 +32,7 @@ Score each dimension only when requested or useful. Use integers 1-5 and cite pr
 | authority/conflicts | conflicts hidden | some precedence implied | authority, exceptions, and tie-breakers explicit |
 | tool/source behavior | missing/unsafe triggers | partial rules | triggers, limits, fallback, evidence rules explicit |
 | output contract | absent | partly testable | syntax/sections/error behavior testable |
-| examples | misleading or harmful | useful but incomplete | representative, consistent, placeholder-safe |
+| examples | misleading or harmful | useful but incomplete | representative, consistent, safe for user-supplied variables |
 | safety/privacy | unsafe or secret-leaking | basic safeguards | relevant safety/privacy boundaries explicit |
 | validation readiness | success cannot be observed | some observable criteria | frozen/defined criteria make pass/fail reviewable |
 | efficiency | large redundancy obscures rules | moderate redundancy | concise without semantic loss |

@@ -4,9 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import sys
+import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -136,11 +139,19 @@ def should_exclude(rel_path: str) -> tuple[bool, str | None]:
     return False, None
 
 
-def iter_package_files(target: Path) -> tuple[list[Path], list[dict[str, str]]]:
+def iter_package_files(target: Path, *, exclude_paths: set[Path] | None = None) -> tuple[list[Path], list[dict[str, str]]]:
     files: list[Path] = []
     excluded: list[dict[str, str]] = []
+    excluded_resolved = {path.resolve(strict=False) for path in (exclude_paths or set())}
     for path in sorted(target.rglob("*")):
+        if path.is_symlink():
+            rel = path.relative_to(target).as_posix()
+            excluded.append({"path": rel, "reason": "symlink"})
+            continue
         if not path.is_file():
+            continue
+        if path.resolve(strict=False) in excluded_resolved:
+            excluded.append({"path": path.relative_to(target).as_posix(), "reason": "output path"})
             continue
         rel = path.relative_to(target).as_posix()
         skip, reason = should_exclude(rel)
@@ -191,22 +202,69 @@ def validate_folder(target: Path) -> list[str]:
     return errors
 
 
-def build_package(target: Path, output: Path) -> dict[str, Any]:
-    files, excluded = iter_package_files(target)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    if output.exists():
-        output.unlink()
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def fsync_directory(path: Path) -> None:
+    if os.name == "nt":
+        return
+    try:
+        fd = os.open(path, os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(fd)
+    except OSError:
+        pass
+    finally:
+        os.close(fd)
+
+
+def write_deterministic_zip(target: Path, output: Path, files: list[Path]) -> None:
     root_name = target.name
-    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for file_path in files:
             rel = file_path.relative_to(target).as_posix()
-            zf.write(file_path, f"{root_name}/{rel}")
-    return {
-        "output": str(output),
-        "file_count": len(files),
-        "excluded": excluded,
-        "size_bytes": output.stat().st_size,
-    }
+            archive_name = f"{root_name}/{rel}"
+            info = zipfile.ZipInfo(archive_name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            mode = 0o755 if file_path.suffix.lower() in {".py", ".sh"} else 0o644
+            info.external_attr = mode << 16
+            zf.writestr(info, file_path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+
+
+def build_package(target: Path, output: Path, *, validate: bool = False) -> tuple[dict[str, Any], dict[str, Any]]:
+    files, excluded = iter_package_files(target, exclude_paths={output})
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".tmp", dir=output.parent)
+    os.close(fd)
+    staged = Path(temp_name)
+    try:
+        write_deterministic_zip(target, staged, files)
+        archive_result = validate_archive(staged) if validate else {"status": "not_run"}
+        if archive_result.get("status") == "fail":
+            raise RuntimeError("staged archive validation failed")
+        os.replace(staged, output)
+        fsync_directory(output.parent)
+        return ({
+            "output": str(output),
+            "file_count": len(files),
+            "excluded": excluded,
+            "size_bytes": output.stat().st_size,
+            "sha256": sha256_file(output),
+            "atomic_replace": True,
+            "deterministic_metadata": True,
+        }, archive_result)
+    except Exception:
+        if staged.exists():
+            staged.unlink()
+        raise
 
 
 def read_archive_text(zf: zipfile.ZipFile, name: str) -> str:
@@ -302,16 +360,26 @@ def main(argv: list[str] | None = None) -> int:
             result = {"mode": "package", "status": "fail", "folder_errors": folder_errors, "target": str(target), "output": str(output)}
             status = "fail"
         else:
-            package_info = build_package(target, output)
-            archive_result = validate_archive(output) if args.validate else {"status": "not_run"}
-            status = "pass" if archive_result.get("status") in {"pass", "not_run"} else "fail"
-            result = {
-                "mode": "package",
-                "status": status,
-                "target": str(target),
-                "package": package_info,
-                "archive": archive_result,
-            }
+            try:
+                package_info, archive_result = build_package(target, output, validate=args.validate)
+                status = "pass" if archive_result.get("status") in {"pass", "not_run"} else "fail"
+                result = {
+                    "mode": "package",
+                    "status": status,
+                    "target": str(target),
+                    "package": package_info,
+                    "archive": archive_result,
+                }
+            except Exception as exc:
+                status = "fail"
+                result = {
+                    "mode": "package",
+                    "status": "fail",
+                    "target": str(target),
+                    "output": str(output),
+                    "error": str(exc),
+                    "last_good_preserved_on_failure": output.exists(),
+                }
     if args.json_output:
         out = Path(args.json_output)
         out.parent.mkdir(parents=True, exist_ok=True)

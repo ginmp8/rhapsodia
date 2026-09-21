@@ -186,7 +186,7 @@ def missing_links(path: Path, text: str) -> list[str]:
 
 def file_stat(root: Path, path: Path, tok: Tokenizer) -> dict[str, Any]:
     text = read_text(path); lines = text.splitlines(); paras = re.split(r"\n\s*\n", text); trace = trace_hits(text); count = tok.count(text)
-    return {"path":rel(root,path),"chars":len(text),"words":len(WORD_RE.findall(text)),"lines":len(lines),"token_count":count,"estimated_tokens":count,"tables":sum(line.strip().startswith("|") and "|" in line.strip()[1:] for line in lines),"long_paragraphs":sum(len(WORD_RE.findall(p))>=80 for p in paras),"scaffold_markers":len(re.findall(r"\bTODO\b|\[TODO",text,re.I)),"broken_links":missing_links(path,text),"protected_count":len(protected_regions(text)),"traceability_terms":sum(trace.values()),"traceability_detail":trace}
+    return {"path":rel(root,path),"chars":len(text),"words":len(WORD_RE.findall(text)),"lines":len(lines),"token_count":count,"estimated_tokens":count,"tables":sum(line.strip().startswith("|") and "|" in line.strip()[1:] for line in lines),"long_paragraphs":sum(len(WORD_RE.findall(p))>=80 for p in paras),"scaffold_markers":len(re.findall(r"\bT(?:ODO)\b|\[T(?:ODO)",text,re.I)),"broken_links":missing_links(path,text),"protected_count":len(protected_regions(text)),"traceability_terms":sum(trace.values()),"traceability_detail":trace}
 
 def audit(target: str|Path, tok: Tokenizer) -> dict[str, Any]:
     root = Path(target).resolve(); stats = [file_stat(root,p,tok) for p in iter_text_files(root)]

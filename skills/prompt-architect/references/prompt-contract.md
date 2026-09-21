@@ -16,7 +16,7 @@ The contract should make these stable before wording is optimized:
 - assumptions/conflicts;
 - validation identity and claim level.
 
-Use [`assets/templates/prompt-contract.json.template`](../assets/templates/prompt-contract.json.template) as the canonical scaffold and validate it with `scripts/validate_prompt_contract.py`.
+Use [`assets/templates/prompt-contract.json.template`](../assets/templates/prompt-contract.json.template) as the canonical scaffold and validate it with [`../scripts/validate_prompt_contract.py`](../scripts/validate_prompt_contract.py).
 
 ## Requirement authority
 

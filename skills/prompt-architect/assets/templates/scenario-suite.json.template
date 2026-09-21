@@ -1,32 +1,27 @@
 {
   "schema_version": 2,
+  "suite_version": "2.0",
   "suite_id": "[suite-id]",
-  "target_identity": "[prompt-name-or-hash]",
+  "target_identity": "[target-prompt-or-skill]",
   "status": "planned",
+  "contracts": {
+    "PA-001": "[contract description]"
+  },
   "scenarios": [
     {
-      "id": "core-001",
-      "group": "core",
-      "priority": "high",
-      "input": "[representative request]",
-      "expected": {
-        "activation": "yes",
-        "hard_gates": ["[gate]"],
-        "observables": ["[observable behavior]"],
-        "forbidden": ["[forbidden behavior]"]
-      }
-    },
-    {
-      "id": "non-activation-001",
-      "group": "non-activation",
-      "priority": "medium",
-      "input": "[adjacent request outside scope]",
-      "expected": {
-        "activation": "no",
-        "hard_gates": ["[gate]"],
-        "observables": ["[observable behavior]"],
-        "forbidden": []
-      }
+      "id": "scenario-001",
+      "type": "should_activate",
+      "group": "activation",
+      "prompt": "[user request]",
+      "expected_route": "activate",
+      "contract_ids": [
+        "PA-001"
+      ],
+      "expected_behavior": "[observable expected behavior]",
+      "acceptance_criteria": [
+        "[criterion]"
+      ],
+      "priority": "high"
     }
   ]
 }

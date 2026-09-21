@@ -85,7 +85,7 @@ A changed activation surface must be checked against distinct scenario classes:
 - `ambiguous` — cases requiring clarification/conservative routing;
 - `boundary` — mixed-scope or constrained-ownership cases;
 - `adversarial` — attempts to weaken scope, evidence, or stop rules;
-- `holdout` — cases not used while authoring the candidate when stronger robustness claims are desired.
+- `holdout` — cases reserved from candidate authoring when stronger robustness claims are desired; bundled seed cases are candidate-visible and cannot serve as blind holdouts by themselves.
 
 Do not substitute many paraphrases of one easy case for distinct coverage.
 

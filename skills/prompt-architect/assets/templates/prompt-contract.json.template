@@ -6,11 +6,17 @@
     "executor": "[model-or-agent]",
     "language": "[language]"
   },
-  "mode": "[create|improve|review-only|validation-only|package-guidance]",
+  "mode": "create",
   "inputs": {
-    "available": ["[input]"],
-    "tools": ["[tool]"],
-    "sources": ["[source-id]"]
+    "available": [
+      "[input]"
+    ],
+    "tools": [
+      "[tool]"
+    ],
+    "sources": [
+      "[source-id]"
+    ]
   },
   "requirements": [
     {
@@ -24,18 +30,22 @@
     }
   ],
   "output": {
-    "format": "[markdown|json|text|other]",
-    "sections": ["[section]"],
+    "format": "markdown",
+    "sections": [
+      "[section]"
+    ],
     "language": "[language]",
-    "citations": "[required|optional|forbidden|not-applicable]",
+    "citations": "not-applicable",
     "ordering": "[ordering rule]",
     "unknown_or_error_behavior": "[rule]"
   },
-  "success_criteria": ["[observable criterion]"],
+  "success_criteria": [
+    "[observable criterion]"
+  ],
   "assumptions": [],
   "unresolved_conflicts": [],
   "validation": {
-    "suite_id": "[suite-id-or-empty]",
+    "suite_id": "",
     "freeze_state": "planned",
     "claim_level": "structural"
   }

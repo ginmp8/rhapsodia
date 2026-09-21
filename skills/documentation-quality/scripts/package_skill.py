@@ -67,8 +67,14 @@ def package_skill(skill_path: Path, output_dir: Path) -> Path:
     zip_path = output_dir / "skill.zip"
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as archive:
         for file_path in sorted(skill_path.rglob("*")):
-            if file_path.is_file() and should_include(file_path):
-                archive.write(file_path, file_path.relative_to(skill_path.parent))
+            if not file_path.is_file() or not should_include(file_path):
+                continue
+            archive_name = file_path.relative_to(skill_path.parent).as_posix()
+            info = zipfile.ZipInfo(archive_name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, file_path.read_bytes())
     size = zip_path.stat().st_size
     if size > MAX_ZIP_BYTES:
         raise ValueError(f"skill.zip exceeds 25 MiB upload limit: {size} bytes")

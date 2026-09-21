@@ -1,120 +1,62 @@
 #!/usr/bin/env python3
-"""Validate Prompt Architect scenario-suite JSON, including legacy v1 suites."""
-
+"""Validate the canonical Prompt Architect scenario-suite v2 contract."""
 from __future__ import annotations
-
-import argparse
-import json
+import argparse, json, re
 from pathlib import Path
 
-GROUPS = {"activation", "non-activation", "core", "boundary", "ambiguous", "conflict", "regression", "adversarial", "runtime", "holdout"}
-PRIORITIES = {"low", "medium", "high", "critical"}
-ACTIVATION = {"yes", "no", "ambiguous", "not-applicable"}
-LEGACY_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
+TYPES={"should_activate","should_not_activate","ambiguous","edge_case","regression","adversarial"}
+GROUPS={"activation","non-activation","ambiguous","boundary","adversarial","holdout"}
+ROUTES={"activate","do-not-activate","conditional","activate-constrained","split-handoff","reject-scope-weakening","reject-fabricated-evidence","reject-ownership-expansion"}
+CONTRACT_ID=re.compile(r"^[A-Z]{2,5}-\d{3}$")
 
 
-def validate_v2(data: dict, errors: list[str], warnings: list[str]) -> None:
-    if data.get("schema_version") != 2:
-        errors.append("schema_version must be 2")
-    if not isinstance(data.get("suite_id"), str) or not data.get("suite_id", "").strip():
-        errors.append("suite_id must be a non-empty string")
-    if not isinstance(data.get("target_identity"), str) or not data.get("target_identity", "").strip():
-        errors.append("target_identity must be a non-empty string")
-    scenarios = data.get("scenarios")
-    if not isinstance(scenarios, list) or not scenarios:
-        errors.append("scenarios must be a non-empty list")
-        return
-    ids: set[str] = set()
-    for i, s in enumerate(scenarios):
-        p = f"scenarios[{i}]"
-        if not isinstance(s, dict):
-            errors.append(f"{p} must be an object")
-            continue
-        sid = s.get("id")
-        if not isinstance(sid, str) or not sid.strip():
-            errors.append(f"{p}.id must be a non-empty string")
-        elif sid in ids:
-            errors.append(f"duplicate scenario id: {sid}")
-        else:
-            ids.add(sid)
-        if s.get("group") not in GROUPS:
-            errors.append(f"{p}.group is invalid")
-        if s.get("priority") not in PRIORITIES:
-            errors.append(f"{p}.priority is invalid")
-        if not isinstance(s.get("input"), str) or not s.get("input", "").strip():
-            errors.append(f"{p}.input must be a non-empty string")
-        expected = s.get("expected")
-        if not isinstance(expected, dict):
-            errors.append(f"{p}.expected must be an object")
-            continue
-        if expected.get("activation") not in ACTIVATION:
-            errors.append(f"{p}.expected.activation is invalid")
-        for key in ("hard_gates", "observables", "forbidden"):
-            value = expected.get(key)
-            if not isinstance(value, list):
-                errors.append(f"{p}.expected.{key} must be a list")
-        if not expected.get("hard_gates") and not expected.get("observables"):
-            warnings.append(f"{p} has no hard gates or observables")
-        if s.get("group") == "holdout":
-            warnings.append(f"{p} is stored in the visible package; treat it as authoring coverage, not a genuine hidden holdout")
-
-
-def validate_legacy(data: dict, errors: list[str], warnings: list[str]) -> None:
-    scenarios = data.get("scenarios")
-    if not isinstance(data.get("suite_name"), str) or not data.get("suite_name", "").strip():
-        errors.append("legacy suite_name must be a non-empty string")
-    if not isinstance(scenarios, list) or not scenarios:
-        errors.append("legacy scenarios must be a non-empty list")
-        return
-    ids: set[str] = set()
-    for i, s in enumerate(scenarios):
-        p = f"scenarios[{i}]"
-        if not isinstance(s, dict):
-            errors.append(f"{p} must be an object")
-            continue
-        sid = s.get("id")
-        if not isinstance(sid, str) or not sid.strip():
-            errors.append(f"{p}.id must be a non-empty string")
-        elif sid in ids:
-            errors.append(f"duplicate scenario id: {sid}")
-        else:
-            ids.add(sid)
-        if s.get("type") not in LEGACY_TYPES:
-            errors.append(f"{p}.type is invalid")
-        if not isinstance(s.get("prompt"), str) or not s.get("prompt", "").strip():
-            errors.append(f"{p}.prompt must be a non-empty string")
-        if not isinstance(s.get("expected_behavior"), str) or not s.get("expected_behavior", "").strip():
-            errors.append(f"{p}.expected_behavior must be a non-empty string")
-        ac = s.get("acceptance_criteria")
-        if not isinstance(ac, list) or not ac:
-            errors.append(f"{p}.acceptance_criteria must be a non-empty list")
-    warnings.append("legacy scenario-suite format accepted for compatibility; new reusable suites should use schema_version=2")
-
-
-def main() -> int:
-    ap = argparse.ArgumentParser(description="Validate a Prompt Architect scenario suite.")
-    ap.add_argument("suite")
-    args = ap.parse_args()
-    path = Path(args.suite)
-    errors: list[str] = []
-    warnings: list[str] = []
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except Exception as exc:
-        print(json.dumps({"status": "fail", "format": "unknown", "errors": [f"invalid JSON: {exc}"], "warnings": []}, indent=2))
-        return 1
-
-    if data.get("schema_version") == 2:
-        fmt = "v2"
-        validate_v2(data, errors, warnings)
+def validate(data:dict)->list[str]:
+    errors=[]
+    if data.get("schema_version") != 2: errors.append("schema_version must be 2")
+    if not isinstance(data.get("suite_version"),str) or not data["suite_version"].strip(): errors.append("suite_version must be a non-empty string")
+    for key in ("suite_id","target_identity","status"):
+        if not isinstance(data.get(key),str) or not data[key].strip(): errors.append(f"{key} must be a non-empty string")
+    contracts=data.get("contracts")
+    if not isinstance(contracts,dict) or not contracts: errors.append("contracts must be a non-empty object")
     else:
-        fmt = "legacy-v1"
-        validate_legacy(data, errors, warnings)
+        for cid,desc in contracts.items():
+            if not CONTRACT_ID.fullmatch(str(cid)): errors.append(f"invalid contract id: {cid}")
+            if not isinstance(desc,str) or not desc.strip(): errors.append(f"contract {cid} description must be non-empty")
+    scenarios=data.get("scenarios")
+    if not isinstance(scenarios,list) or not scenarios:
+        errors.append("scenarios must be a non-empty list"); return errors
+    ids=set()
+    for i,s in enumerate(scenarios):
+        p=f"scenarios[{i}]"
+        if not isinstance(s,dict): errors.append(f"{p} must be an object"); continue
+        sid=s.get("id")
+        if not isinstance(sid,str) or not sid.strip(): errors.append(f"{p}.id must be non-empty")
+        elif sid in ids: errors.append(f"duplicate scenario id: {sid}")
+        else: ids.add(sid)
+        if s.get("type") not in TYPES: errors.append(f"{p}.type is invalid")
+        if s.get("group") not in GROUPS: errors.append(f"{p}.group is invalid")
+        if s.get("expected_route") not in ROUTES: errors.append(f"{p}.expected_route is invalid")
+        for key in ("prompt","expected_behavior"):
+            if not isinstance(s.get(key),str) or not s[key].strip(): errors.append(f"{p}.{key} must be non-empty")
+        ac=s.get("acceptance_criteria")
+        if not isinstance(ac,list) or not ac or any(not isinstance(x,str) or not x.strip() for x in ac): errors.append(f"{p}.acceptance_criteria must be a non-empty string list")
+        cids=s.get("contract_ids")
+        if not isinstance(cids,list) or not cids: errors.append(f"{p}.contract_ids must be non-empty")
+        else:
+            for cid in cids:
+                if not isinstance(cid,str) or not CONTRACT_ID.fullmatch(cid): errors.append(f"{p}.contract_ids contains invalid id")
+                elif isinstance(contracts,dict) and cid not in contracts: errors.append(f"{p}.contract_ids references unknown {cid}")
+    return errors
 
-    status = "fail" if errors else ("warn" if warnings else "pass")
-    print(json.dumps({"status": status, "format": fmt, "errors": errors, "warnings": warnings}, indent=2, ensure_ascii=False, sort_keys=True))
+
+def main()->int:
+    ap=argparse.ArgumentParser(description="Validate a Prompt Architect scenario suite v2.")
+    ap.add_argument("suite")
+    args=ap.parse_args()
+    try: data=json.loads(Path(args.suite).read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(json.dumps({"status":"fail","format":"unknown","errors":[f"invalid JSON: {exc}"],"warnings":[]},indent=2)); return 1
+    errors=validate(data)
+    print(json.dumps({"status":"fail" if errors else "pass","format":"v2","errors":errors,"warnings":[]},indent=2,ensure_ascii=False,sort_keys=True))
     return 1 if errors else 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+if __name__ == "__main__": raise SystemExit(main())
