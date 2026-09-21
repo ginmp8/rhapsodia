@@ -156,7 +156,7 @@ Do not edit tests/evaluators to bless a candidate.
 
 ## 9. Decide whether specialist reproducibility work is still needed
 
-After applying this design pass, use `reproducibility-routing.md`.
+After applying this design pass, use `references/reproducibility-routing.md`.
 
 Invoke `reproducibility-engineer` only when material gaps remain or the user explicitly requests deeper reproducibility engineering. Typical triggers:
 

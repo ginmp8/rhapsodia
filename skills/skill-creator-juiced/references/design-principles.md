@@ -92,7 +92,7 @@ Reproducibility mechanisms are justified only when they eliminate observed varia
 
 During creation or material redesign, classify the skill's reproducibility ceiling and map material variance before deciding resources. A simple text skill may need only activation, defaults, and a rubric; an objective-artifact or tool-action skill may justify schemas, deterministic helpers, validators, immutable evidence, canonical output preflight, last-good preservation, recovery, and receipts.
 
-Read `reproducibility-by-design.md` for the proportional control checklist. Apply the local design pass even when `reproducibility-engineer` is `not-applicable`; invoke the specialist only when material gaps remain or the user requires deeper reproducibility engineering.
+Read `references/reproducibility-by-design.md` for the proportional control checklist. Apply the local design pass even when `reproducibility-engineer` is `not-applicable`; invoke the specialist only when material gaps remain or the user requires deeper reproducibility engineering.
 
 For evidence-driven skills, keep source, evaluator, candidate, artifact, and receipt identities separate. For mutating skills, validate resolved output destinations before writes and preserve recovery evidence when rollback is incomplete.
 

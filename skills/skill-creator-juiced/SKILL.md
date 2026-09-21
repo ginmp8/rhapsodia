@@ -9,7 +9,8 @@ description: Create, redesign, substantially upgrade, validate, and package port
 
 Create high-quality reusable skills as operational packages, not generic instruction dumps. Keep the semantic core portable across Agent Skills-compatible hosts, reduce avoidable model freedom with objective mechanisms, preserve model judgment where it is useful, and validate before delivery.
 
-This skill owns net-new skill creation, major redesigns, portability normalization, specialist orchestration, acceptance gates, and final package delivery. `PORTABILITY_OWNER = skill-creator-juiced`: do not create a parallel portability specialist unless this responsibility is deliberately extracted in a future architecture change. It does not replace the specialists it routes to.
+In standalone use, this skill owns net-new skill creation, major redesigns, portability normalization, specialist orchestration, acceptance gates, and final package delivery. `PORTABILITY_OWNER = skill-creator-juiced`: do not create a parallel portability specialist unless this responsibility is deliberately extracted in a future architecture change. It does not replace the specialists it routes to.
+
 
 ## Scope
 
@@ -40,6 +41,11 @@ Default to the open Agent Skills format as the canonical core. Detect capabiliti
 | `portability` | host-neutralization or multi-host compatibility is the main goal, including Booster handoff for host-coupled external skills | portable core plus optional adapters and explicit compatibility matrix |
 | `package` | final archive requested | validated `skill.zip` |
 | `explain-or-route` | the request is not actually skill work | concise handoff |
+
+## Authority Boundary
+
+- **Standalone:** own creation/redesign/portability, acceptance, and package delivery within this skill's scope.
+- **Delegated:** when an upstream orchestrator calls this skill, mutate only the assigned batch, preserve frozen evaluator/peer contracts, return candidate evidence, and leave global sequencing, final promotion, installation, and policy authority to the caller. A breaking peer contract requires a coordinated change set.
 
 ## Core Rules
 

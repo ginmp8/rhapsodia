@@ -2,6 +2,10 @@
 
 Use this reference to select and sequence specialist passes. Specialists are owners of bounded concerns, not decorative checklist items.
 
+## Caller Authority
+
+When an upstream orchestrator delegates a bounded task, the caller remains the global orchestrator and promotion owner. Mutate only the assigned batch, preserve frozen evaluators/search policy/peer contracts, return candidate evidence and blockers, and require a coordinated change set for breaking peer contracts.
+
 ## Specialist Map
 
 | Phase | Specialist | Use when | Ownership |
@@ -33,8 +37,8 @@ For ordinary new skills:
 2. package architecture;
 3. activation/boundary review;
 4. draft the package and define a small realistic evaluation set;
-5. reproducibility decision gate from `reproducibility-routing.md`;
-6. use `evaluation-and-generalization.md` to select `without-skill` baseline when meaningful, separate objective from subjective evaluation, and protect against eval-specific fixes;
+5. reproducibility decision gate from `references/reproducibility-routing.md`;
+6. use `references/evaluation-and-generalization.md` to select `without-skill` baseline when meaningful, separate objective from subjective evaluation, and protect against eval-specific fixes;
 7. documentation, testing, security, consistency, cleanup, and token efficiency only as applicable;
 8. expand to held-out scenarios before strong behavioral or activation-improvement claims;
 9. advisory change gate only when useful for a net-new package.
@@ -51,14 +55,14 @@ Recommended order:
 4. `reproducibility-engineer` in the selected mode when applicable;
 5. code/documentation/testing/security/consistency/cleanup/token passes as needed;
 6. harness and benchmark when paired baseline/candidate execution, holdouts, or measurement are requested;
-7. use `evaluation-and-generalization.md` to reject eval-specific fixes and separate objective from subjective evidence;
+7. use `references/evaluation-and-generalization.md` to reject eval-specific fixes and separate objective from subjective evidence;
 8. hypothesis discovery and measured improvement only when a real optimization loop is warranted;
 9. `skill-change-gate` before acceptance;
 10. hardening/final validation when requested or material.
 
 ## Reproducibility Handoff Rules
 
-- Read `reproducibility-routing.md` before invoking `reproducibility-engineer`.
+- Read `references/reproducibility-routing.md` before invoking `reproducibility-engineer`.
 - `audit-only` findings can feed hypothesis discovery; they do not authorize mutation by themselves.
 - When `apply` owns a reproducibility patch, other specialists review or validate that patch rather than independently reimplementing it.
 - Do not claim behavioral improvement from structural hardening alone.
