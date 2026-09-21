@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate hardening readiness gates for a ChatGPT skill folder."""
+"""Validate hardening readiness gates for an Agent Skills-compatible folder."""
 
 from __future__ import annotations
 
@@ -35,11 +35,13 @@ def scenario_summary(target: Path) -> dict[str, Any]:
         target / "examples" / "hardening-scenarios.json",
         target / "evals" / "activation-scenarios.json",
     ]
-    categories: dict[str, int] = {}
+    types: dict[str, int] = {}
     files: list[dict[str, Any]] = []
     total = 0
     errors: list[str] = []
-    required_fields = {"id", "category", "prompt", "expected_behavior"}
+    required_fields = {"id", "type", "prompt", "expected_behavior", "acceptance_criteria"}
+    allowed_types = {"should_activate", "should_not_activate", "ambiguous", "edge_case", "regression", "adversarial"}
+    required_types = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
     ids: set[str] = set()
 
     for path in paths:
@@ -49,7 +51,7 @@ def scenario_summary(target: Path) -> dict[str, Any]:
         items, error = _load_scenario_items(path)
         if error:
             errors.append(f"{path}: {error}")
-        file_categories: dict[str, int] = {}
+        file_types: dict[str, int] = {}
         for item in items:
             missing = sorted(required_fields - set(item))
             if missing:
@@ -59,17 +61,24 @@ def scenario_summary(target: Path) -> dict[str, Any]:
                 errors.append(f"{path}: duplicate scenario id {sid}")
             if sid:
                 ids.add(sid)
-            category = str(item.get("category", "unknown"))
-            categories[category] = categories.get(category, 0) + 1
-            file_categories[category] = file_categories.get(category, 0) + 1
+            scenario_type = str(item.get("type", "unknown"))
+            if scenario_type not in allowed_types:
+                errors.append(f"{path}: scenario {sid or '<missing-id>'} has invalid type {scenario_type!r}")
+            else:
+                types[scenario_type] = types.get(scenario_type, 0) + 1
+                file_types[scenario_type] = file_types.get(scenario_type, 0) + 1
+            criteria = item.get("acceptance_criteria")
+            if not isinstance(criteria, list) or not criteria or not all(isinstance(value, str) and value.strip() for value in criteria):
+                errors.append(f"{path}: scenario {sid or '<missing-id>'} has invalid acceptance_criteria")
         total += len(items)
-        files.append({"path": str(path), "exists": True, "count": len(items), "categories": file_categories})
+        files.append({"path": str(path), "exists": True, "count": len(items), "types": file_types})
 
     return {
         "paths": files,
         "exists": any(item.get("exists") for item in files),
         "count": total,
-        "categories": categories,
+        "types": types,
+        "missing_required_types": sorted(required_types - set(types)),
         "errors": errors,
     }
 
@@ -139,9 +148,9 @@ def run_validation(target: Path, min_score: int, package_output: str | None = No
     })
     gates.append({
         "name": "scenario_suite_present",
-        "passed": scenarios.get("exists") and scenarios.get("count", 0) >= 20 and len(scenarios.get("categories", {})) >= 4 and not scenarios.get("errors"),
-        "severity": "minor",
-        "evidence": f"count={scenarios.get('count')}, categories={scenarios.get('categories')}, errors={len(scenarios.get('errors', []))}",
+        "passed": scenarios.get("exists") and scenarios.get("count", 0) >= 20 and not scenarios.get("missing_required_types") and not scenarios.get("errors"),
+        "severity": "major",
+        "evidence": f"count={scenarios.get('count')}, types={scenarios.get('types')}, missing_required_types={scenarios.get('missing_required_types')}, errors={len(scenarios.get('errors', []))}",
     })
     gates.append({
         "name": "unreferenced_resource_budget",
@@ -182,7 +191,7 @@ def run_validation(target: Path, min_score: int, package_output: str | None = No
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate a hardened ChatGPT skill folder.")
+    parser = argparse.ArgumentParser(description="Validate a hardened Agent Skills-compatible folder.")
     parser.add_argument("--target", required=True, help="Path to the target skill folder.")
     parser.add_argument("--min-score", type=int, default=85, help="Minimum hardening audit score. Default: 85.")
     parser.add_argument("--package-output", help="Optional skill.zip path to validate as part of readiness.")

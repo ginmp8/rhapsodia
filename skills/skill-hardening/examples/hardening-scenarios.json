@@ -1,151 +1,184 @@
 {
-  "execution_defaults": {
-    "actual_activation": null,
-    "output_conforms": null,
-    "quality_score": null,
-    "needs_rework": null,
-    "notes": "planned"
-  },
   "scenarios": [
     {
       "id": "A001",
-      "category": "should_activate",
+      "type": "should_activate",
       "prompt": "Harden this uploaded skill package and return a validated skill.zip.",
-      "expected_activation": true,
-      "expected_behavior": "Inspect the package, audit, apply bounded package-level improvements, validate, and package only after gates pass."
+      "expected_behavior": "Inspect the package, audit, apply bounded package-level improvements, validate, and package only after gates pass.",
+      "acceptance_criteria": [
+        "select skill-hardening for this existing-skill request"
+      ]
     },
     {
       "id": "A002",
-      "category": "should_activate",
+      "type": "should_activate",
       "prompt": "Improve the invoice-parser skill beyond SKILL.md, including references, validators, examples, and packaging hygiene.",
-      "expected_activation": true,
-      "expected_behavior": "Treat the target as a full reusable skill package and produce file-level changes with validation evidence."
+      "expected_behavior": "Treat the target as a full reusable skill package and produce file-level changes with validation evidence.",
+      "acceptance_criteria": [
+        "select skill-hardening for this existing-skill request"
+      ]
     },
     {
       "id": "A003",
-      "category": "should_activate",
+      "type": "should_activate",
       "prompt": "Audit this ChatGPT skill folder for activation boundaries, output contract, resource integration, and validation gates.",
-      "expected_activation": true,
-      "expected_behavior": "Run structural inventory and hardening audit, then return prioritized findings and gates."
+      "expected_behavior": "Run structural inventory and hardening audit, then return prioritized findings and gates.",
+      "acceptance_criteria": [
+        "select skill-hardening for this existing-skill request"
+      ]
     },
     {
       "id": "A004",
-      "category": "should_activate",
+      "type": "should_activate",
       "prompt": "Refactor my lightweight skill into a mature package with scripts, templates, references, scenarios, and validators.",
-      "expected_activation": true,
-      "expected_behavior": "Select apply-hardening mode, build a hardening map, mutate only the allowed skill folder, and validate."
+      "expected_behavior": "Select apply-hardening mode, build a hardening map, mutate only the allowed skill folder, and validate.",
+      "acceptance_criteria": [
+        "select skill-hardening for this existing-skill request"
+      ]
     },
     {
       "id": "A005",
-      "category": "should_activate",
+      "type": "should_activate",
       "prompt": "Package the hardened skill and verify the zip does not contain caches, generated reports, or secrets.",
-      "expected_activation": true,
-      "expected_behavior": "Use package mode, run folder validation, build skill.zip, validate archive contents, and report evidence."
+      "expected_behavior": "Use package mode, run folder validation, build skill.zip, validate archive contents, and report evidence.",
+      "acceptance_criteria": [
+        "select skill-hardening for this existing-skill request"
+      ]
     },
     {
       "id": "N001",
-      "category": "should_not_activate",
+      "type": "should_not_activate",
       "prompt": "Refactor this C# service to use dependency injection correctly.",
-      "expected_activation": false,
-      "expected_behavior": "Do not use this skill because the artifact is general application code, not a reusable skill package."
+      "expected_behavior": "Do not use this skill because the artifact is general application code, not a reusable skill package.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as the primary owner"
+      ]
     },
     {
       "id": "N002",
-      "category": "should_not_activate",
+      "type": "should_not_activate",
       "prompt": "Write a product requirements document for a new onboarding dashboard.",
-      "expected_activation": false,
-      "expected_behavior": "Do not activate for product planning unless the target artifact is a skill package."
+      "expected_behavior": "Do not activate for product planning unless the target artifact is a skill package.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as the primary owner"
+      ]
     },
     {
       "id": "N003",
-      "category": "should_not_activate",
+      "type": "should_not_activate",
       "prompt": "Summarize this PDF in five bullets.",
-      "expected_activation": false,
-      "expected_behavior": "Do not activate for ordinary document summarization."
+      "expected_behavior": "Do not activate for ordinary document summarization.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as the primary owner"
+      ]
     },
     {
       "id": "N004",
-      "category": "should_not_activate",
+      "type": "should_not_activate",
       "prompt": "Create a slide deck about our Q2 roadmap.",
-      "expected_activation": false,
-      "expected_behavior": "Do not activate for slide generation unless the requested artifact is a skill package."
+      "expected_behavior": "Do not activate for slide generation unless the requested artifact is a skill package.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as the primary owner"
+      ]
     },
     {
       "id": "N005",
-      "category": "should_not_activate",
+      "type": "should_not_activate",
       "prompt": "Debug this Python error in my FastAPI endpoint.",
-      "expected_activation": false,
-      "expected_behavior": "Do not activate for normal software debugging outside a skill package."
+      "expected_behavior": "Do not activate for normal software debugging outside a skill package.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as the primary owner"
+      ]
     },
     {
       "id": "M001",
-      "category": "ambiguous",
+      "type": "ambiguous",
       "prompt": "Can you improve my skill?",
-      "expected_activation": true,
-      "expected_behavior": "Activate cautiously, ask for or infer the target skill path if missing, then proceed only with a concrete skill target."
+      "expected_behavior": "Activate cautiously, ask for or infer the target skill path if missing, then proceed only with a concrete skill target.",
+      "acceptance_criteria": [
+        "resolve the target and skill-package scope before mutation"
+      ]
     },
     {
       "id": "M002",
-      "category": "ambiguous",
+      "type": "ambiguous",
       "prompt": "Benchmark this package and tell me what is weak.",
-      "expected_activation": true,
-      "expected_behavior": "Activate if the package is a skill; otherwise ask for clarification before mutating anything."
+      "expected_behavior": "Activate if the package is a skill; otherwise ask for clarification before mutating anything.",
+      "acceptance_criteria": [
+        "resolve the target and skill-package scope before mutation"
+      ]
     },
     {
       "id": "M003",
-      "category": "ambiguous",
+      "type": "ambiguous",
       "prompt": "The validator says my package is brittle. Fix it.",
-      "expected_activation": true,
-      "expected_behavior": "Activate when the context indicates a skill package, inspect validator evidence, and apply bounded fixes."
+      "expected_behavior": "Activate when the context indicates a skill package, inspect validator evidence, and apply bounded fixes.",
+      "acceptance_criteria": [
+        "resolve the target and skill-package scope before mutation"
+      ]
     },
     {
       "id": "M004",
-      "category": "ambiguous",
+      "type": "ambiguous",
       "prompt": "Make this prompt reusable and installable.",
-      "expected_activation": true,
-      "expected_behavior": "Activate only if the intended deliverable is a skill; otherwise clarify the target artifact."
+      "expected_behavior": "Activate only if the intended deliverable is a skill; otherwise clarify the target artifact.",
+      "acceptance_criteria": [
+        "resolve the target and skill-package scope before mutation"
+      ]
     },
     {
       "id": "M005",
-      "category": "ambiguous",
+      "type": "ambiguous",
       "prompt": "This skill scored 100, but I still want a harder version.",
-      "expected_activation": true,
-      "expected_behavior": "Use saturated-score handling and add auxiliary metrics instead of claiming improvement from the unchanged score alone."
+      "expected_behavior": "Use saturated-score handling and add auxiliary metrics instead of claiming improvement from the unchanged score alone.",
+      "acceptance_criteria": [
+        "resolve the target and skill-package scope before mutation"
+      ]
     },
     {
       "id": "E001",
-      "category": "edge_case",
+      "type": "edge_case",
       "prompt": "Harden the skill, but do not edit anything outside its folder and do not touch benchmark outputs or secrets.",
-      "expected_activation": true,
-      "expected_behavior": "Enforce mutation scope, preserve blocked paths, and report protected areas."
+      "expected_behavior": "Enforce mutation scope, preserve blocked paths, and report protected areas.",
+      "acceptance_criteria": [
+        "enforce the stated hard gate, protection, or stop condition"
+      ]
     },
     {
       "id": "E002",
-      "category": "edge_case",
+      "type": "edge_case",
       "prompt": "Package the skill even if validation fails.",
-      "expected_activation": true,
-      "expected_behavior": "Refuse to claim readiness or deliver a validated package until blocking validation failures are fixed."
+      "expected_behavior": "Refuse to claim readiness or deliver a validated package until blocking validation failures are fixed.",
+      "acceptance_criteria": [
+        "enforce the stated hard gate, protection, or stop condition"
+      ]
     },
     {
       "id": "E003",
-      "category": "edge_case",
+      "type": "edge_case",
       "prompt": "Improve the skill by deleting every template that no script reads.",
-      "expected_activation": true,
-      "expected_behavior": "Classify assets first and integrate useful agent-filled templates instead of deletion-only hardening."
+      "expected_behavior": "Classify assets first and integrate useful agent-filled templates instead of deletion-only hardening.",
+      "acceptance_criteria": [
+        "enforce the stated hard gate, protection, or stop condition"
+      ]
     },
     {
       "id": "E004",
-      "category": "edge_case",
+      "type": "edge_case",
       "prompt": "Move the detailed benchmark fixtures into the skill and update expected outputs while hardening it.",
-      "expected_activation": true,
-      "expected_behavior": "Treat benchmark fixtures and expected outputs as blocked unless explicitly scoped and safe."
+      "expected_behavior": "Treat benchmark fixtures and expected outputs as blocked unless explicitly scoped and safe.",
+      "acceptance_criteria": [
+        "enforce the stated hard gate, protection, or stop condition"
+      ]
     },
     {
       "id": "E005",
-      "category": "edge_case",
+      "type": "edge_case",
       "prompt": "The target folder has two SKILL.md files. Harden both together.",
-      "expected_activation": true,
-      "expected_behavior": "Stop and report a blocker because the target must contain exactly one root skill definition."
+      "expected_behavior": "Stop and report a blocker because the target must contain exactly one root skill definition.",
+      "acceptance_criteria": [
+        "enforce the stated hard gate, protection, or stop condition"
+      ]
     }
   ]
 }

@@ -8,7 +8,7 @@ Use when deciding which support files a target skill needs.
 - `scripts/`: deterministic checks or transformations needing repeatability, parsing, schemas, filesystem checks, or generated output. Do not add for pure judgment or missing context.
 - `assets/templates/`: reusable output skeletons that the agent or scripts fill/copy. Do not add for free-form or explanatory guidance.
 - `evals/`, `examples/`, `references/scenario-suite.md`: behavioral validation for activation, output conformance, robustness. Do not add for static-only structural passes.
-- `agents/openai.yaml`: package UI metadata for ChatGPT. Skip for internal drafts.
+- `agents/openai.yaml`: optional OpenAI host adapter/UI metadata. It must not be required by the portable semantic core; skip it when OpenAI-specific metadata is unnecessary.
 
 ## Hardening map shape
 

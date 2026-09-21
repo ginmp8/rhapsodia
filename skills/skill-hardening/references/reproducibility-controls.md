@@ -23,7 +23,7 @@ Before material edits:
 4. keep generated evidence outside the target package.
 
 ```text
-python3 -S scripts/reproducibility_controls.py tree-hash --target <TARGET> --json-output <REPORT_DIR>/identity-before.json
+<PYTHON> scripts/reproducibility_controls.py tree-hash --target <TARGET> --json-output <REPORT_DIR>/identity-before.json
 ```
 
 Recompute the identity after validation. A hash proves byte identity of included files, not behavioral quality.
@@ -33,7 +33,7 @@ Recompute the identity after validation. A hash proves byte identity of included
 Copy and fill `assets/templates/hardening-contract.json.template` before material mutation when the run changes behavior, validators, scenarios, or packaging. Validate it:
 
 ```text
-python3 -S scripts/reproducibility_controls.py validate-contract --contract <REPORT_DIR>/hardening-contract.json --json-output <REPORT_DIR>/contract-validation.json
+<PYTHON> scripts/reproducibility_controls.py validate-contract --contract <REPORT_DIR>/hardening-contract.json --json-output <REPORT_DIR>/contract-validation.json
 ```
 
 The contract records target/baseline identity, ceiling, protected paths, variability controls, evaluators, hard gates, acceptance rules, and delivery requirements. Every change must trace to an observed variance, supported hypothesis, or required gate.
@@ -43,8 +43,8 @@ The contract records target/baseline identity, ceiling, protected paths, variabi
 Freeze only assets that will decide candidate acceptance: prompts, fixtures, expected outputs, grader rules, thresholds, and independent validator files. Do not freeze candidate generators or implementation files that the plan must change.
 
 ```text
-python3 -S scripts/reproducibility_controls.py freeze --root <TARGET> --path evals --path tests/fixtures --output <REPORT_DIR>/evaluator-manifest.json
-python3 -S scripts/reproducibility_controls.py verify --root <TARGET> --manifest <REPORT_DIR>/evaluator-manifest.json --json-output <REPORT_DIR>/evaluator-verification.json
+<PYTHON> scripts/reproducibility_controls.py freeze --root <TARGET> --path evals --path tests/fixtures --output <REPORT_DIR>/evaluator-manifest.json
+<PYTHON> scripts/reproducibility_controls.py verify --root <TARGET> --manifest <REPORT_DIR>/evaluator-manifest.json --json-output <REPORT_DIR>/evaluator-verification.json
 ```
 
 If a frozen evaluator is wrong, invalidate the comparison. Repair and refreeze it as a separate baseline step; never edit it after seeing candidate results and continue the same experiment.
@@ -86,4 +86,4 @@ Use `measured`, `observed`, `derived`, `supplied`, `planned`, or `blocked`. Plan
 
 ## Freeze after pass
 
-After all acceptance gates pass, record the candidate identity and treat it as frozen. Any subsequent edit invalidates affected validation and requires rerunning it. Package only that frozen candidate. The package receipt must contain the candidate tree SHA-256, archive SHA-256, archive file count, and validation result.
+After all acceptance gates pass, record the candidate identity and treat it as frozen. Any subsequent edit invalidates affected validation and requires rerunning it. Package only that frozen candidate. The package receipt must retain candidate tree SHA-256, archive SHA-256, archive file count, and validation result, and should also bind the committed stage, receipt version, last-good preservation, and recovery state to the delivered bytes. Package/receipt outputs must resolve outside the frozen target and must not alias each other.
