@@ -31,6 +31,8 @@ REQUIRED_PATHS = [
     "assets/templates/implementation-response.md.template",
     "assets/templates/code-review-response.md.template",
     "scripts/package_skill.py",
+    "scripts/test_package_skill.py",
+    "contracts/integration-manifest.json",
 ]
 
 REQUIRED_SCENARIO_CATEGORIES = {

@@ -1,6 +1,6 @@
 # Activation Evaluation Protocol
 
-Protocol version: `1.0.0`
+Protocol version: `1.1.0`
 
 Use this protocol when activation/boundary text changes or when a user asks for evidence beyond static review. It is deliberately host-neutral: a host adapter or external harness may execute routing, but the evidence contract remains the same.
 
@@ -17,7 +17,7 @@ Only `host-routing` may support activation precision/recall or routing-regressio
 
 ## Canonical suite
 
-`evals/activation-scenarios.json` is the package's canonical seed suite. For a target-specific review, add only scenarios needed for the changed surface and preserve the original scenario IDs/expectations used in the comparison.
+`evals/activation-scenarios.json` is the package's canonical seed suite. It uses the portable Harness scenario envelope (`type`, mirrored `category`, `expected_behavior`, `acceptance_criteria`) while retaining `group`, `expected_route`, and `contract_ids` for routing-specific adjudication. Because this file ships with the skill, its cases are candidate-visible calibration; a true blind holdout must be supplied outside candidate-visible inputs. For a target-specific review, add only scenarios needed for the changed surface and preserve the original scenario IDs/expectations used in the comparison.
 
 Before baseline execution:
 

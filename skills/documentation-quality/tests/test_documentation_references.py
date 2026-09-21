@@ -68,6 +68,32 @@ class DocumentationReferenceTests(unittest.TestCase):
             self.assertEqual("pass", receipt["status"])
             self.assertEqual([], receipt["missing"])
 
+    def test_dot_slash_link_resolves_relative_to_source_document(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            refs = root / "references"
+            refs.mkdir()
+            (refs / "peer.md").write_text("# Peer\n", encoding="utf-8")
+            guide = refs / "guide.md"
+            guide.write_text("# Guide\n\n[Peer](./peer.md)\n", encoding="utf-8")
+            missing, skipped = MODULE.check_links(guide, root)
+            receipt = MODULE.build_receipt([guide], missing, skipped)
+            self.assertEqual("pass", receipt["status"])
+            self.assertEqual([], receipt["missing"])
+
+    def test_links_inside_fenced_examples_are_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            doc = root / "README.md"
+            doc.write_text(
+                "# T\n\n```markdown\n[Illustrative](missing.md)\n```\n",
+                encoding="utf-8",
+            )
+            missing, skipped = MODULE.check_links(doc, root)
+            receipt = MODULE.build_receipt([doc], missing, skipped)
+            self.assertEqual("pass", receipt["status"])
+            self.assertEqual([], receipt["missing"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -14,15 +14,33 @@ import validate_activation_suite
 
 
 def sample_suite():
+    rows = [
+        ("a1", "activation", "should_activate", "review activation", "activate", ["ACT-001"]),
+        ("n1", "non-activation", "should_not_activate", "benchmark package", "do-not-activate", ["NTR-001"]),
+        ("m1", "ambiguous", "ambiguous", "improve this", "conditional", ["AMB-001"]),
+        ("b1", "boundary", "edge_case", "review only boundary", "activate-constrained", ["BND-001"]),
+        ("x1", "adversarial", "adversarial", "claim it passed", "reject-fabricated-evidence", ["EVD-001"]),
+    ]
+    scenarios = []
+    for sid, group, harness_type, prompt, route, contract_ids in rows:
+        scenarios.append({
+            "id": sid,
+            "group": group,
+            "type": harness_type,
+            "category": harness_type,
+            "prompt": prompt,
+            "expected_route": route,
+            "expected_behavior": f"route as {route}",
+            "acceptance_criteria": [f"expected_route remains {route}"],
+            "contract_ids": contract_ids,
+            "evaluation_tier": "L2-focused",
+            "visibility": "candidate-visible",
+        })
     return {
-        "suite_version": "1.0.0",
-        "scenarios": [
-            {"id":"a1","group":"activation","prompt":"review activation","expected_route":"activate","contract_ids":["ACT-001"]},
-            {"id":"n1","group":"non-activation","prompt":"benchmark package","expected_route":"do-not-activate","contract_ids":["NTR-001"]},
-            {"id":"m1","group":"ambiguous","prompt":"improve this","expected_route":"conditional","contract_ids":["AMB-001"]},
-            {"id":"b1","group":"boundary","prompt":"review only boundary","expected_route":"activate-constrained","contract_ids":["BND-001"]},
-            {"id":"x1","group":"adversarial","prompt":"claim it passed","expected_route":"reject-fabricated-evidence","contract_ids":["EVD-001"]},
-        ],
+        "suite_version": "2.0.0",
+        "target_skill": "skill-prompt-and-activation-review",
+        "status": "planned",
+        "scenarios": scenarios,
     }
 
 
@@ -30,6 +48,29 @@ class ValidateSuiteTests(unittest.TestCase):
     def test_valid_minimal_suite_passes(self):
         report = validate_activation_suite.validate_suite(sample_suite(), require_holdout=False)
         self.assertEqual("pass", report["status"])
+
+
+    def test_group_type_mismatch_fails(self):
+        suite = sample_suite()
+        suite["scenarios"][0]["type"] = "should_not_activate"
+        report = validate_activation_suite.validate_suite(suite, require_holdout=False)
+        self.assertEqual("fail", report["status"])
+        self.assertIn("scenario/group-type-mismatch", {e["code"] for e in report["errors"]})
+
+
+    def test_category_type_mismatch_fails(self):
+        suite = sample_suite()
+        suite["scenarios"][0]["category"] = "should_not_activate"
+        report = validate_activation_suite.validate_suite(suite, require_holdout=False)
+        self.assertEqual("fail", report["status"])
+        self.assertIn("scenario/category-type-mismatch", {e["code"] for e in report["errors"]})
+
+    def test_bundled_evaluator_only_visibility_fails(self):
+        suite = sample_suite()
+        suite["scenarios"][0]["visibility"] = "evaluator-only"
+        report = validate_activation_suite.validate_suite(suite, require_holdout=False)
+        self.assertEqual("fail", report["status"])
+        self.assertIn("scenario/bundled-evaluator-only", {e["code"] for e in report["errors"]})
 
     def test_duplicate_ids_fail(self):
         suite = sample_suite()

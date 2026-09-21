@@ -1,6 +1,6 @@
 ---
 name: skill-prompt-and-activation-review
-description: use when asked to review, improve, rewrite, validate statically, or stress-test existing prompt and activation surfaces such as skill frontmatter descriptions, trigger/non-trigger boundaries, handoffs, overlap rules, stop conditions, reusable agent instructions, activation scenarios, or output contracts. focus on precise routing, scope ownership, adversarial resistance, and evidence-aware claims. do not use for generic prompt creation, full benchmarking/harness execution, package-wide hardening or consistency repair, repository implementation, or unrelated writing/code review.
+description: use when reviewing, improving, rewriting, statically validating, or stress-testing existing skill or agent prompt/activation surfaces: frontmatter descriptions, trigger/non-trigger rules, scope/ownership boundaries, handoffs/overlap, stop conditions, reusable instructions, activation scenarios, or output/evidence contracts. do not use for net-new prompt authoring, package-wide benchmark/harness/hardening/consistency work, repository implementation, deployment, or unrelated writing/code review.
 ---
 
 # Skill Prompt and Activation Review
@@ -10,6 +10,10 @@ description: use when asked to review, improve, rewrite, validate statically, or
 Review prompt and activation surfaces for reusable Agent Skills, agents, chat modes, and instruction packages. Preserve the linguistic judgment needed for prompt review while making activation/boundary criteria, evidence identity, scenario comparison, and claims reproducible.
 
 This skill is a focused reviewer. It may propose or apply bounded rewrites inside the target prompt/activation surface and may validate evidence contracts. It does not own full benchmark, harness execution infrastructure, package hardening, consistency repair, repository implementation, or deployment.
+
+## Required Inputs
+
+Resolve the exact prompt/activation surface, requested review action, allowed mutation scope, evidence available for comparison, and any host/runtime capability that materially changes validation. If the artifact or ownership is missing, stop the affected branch rather than inferring authority.
 
 ## Portable Core
 
@@ -27,7 +31,10 @@ Load only what the active branch needs:
 - `references/adversarial-scenarios.md` — scenario design and evidence labels.
 - `references/evaluation-protocol.md` — evaluator freeze, baseline/candidate pairing, self-generated candidate provenance, hidden-evaluator visibility, trace provenance, result schema, metrics eligibility, and claim gates.
 - `references/evaluator-visibility.md` — candidate-visible vs evaluator-only boundaries, blind-evaluation leakage rules, and capability-based isolation guidance.
-- `evals/activation-scenarios.json` — canonical host-neutral seed scenarios. Presence is not execution evidence.
+- `evals/activation-scenarios.json` — canonical host-neutral seed scenarios using the current portable Harness fields (`type`, `category`, `expected_behavior`, `acceptance_criteria`) plus this skill's richer `group`, `expected_route`, and `contract_ids`. Presence is not execution evidence.
+- `examples/good-and-bad-descriptions.md` — optional activation-description calibration when wording quality is disputed.
+- `examples/prompt-review-cases.md` — optional finding/ownership calibration for prompt-review cases.
+- `tests/test_activation_eval_tools.py` — deterministic regression tests for suite validation, evaluator freeze, and evidence-comparison gates.
 - `assets/templates/review-report.md.template` — formal durable report when useful.
 
 ## Modes
@@ -73,64 +80,29 @@ Validate a scenario suite:
 Freeze evaluator assets before baseline execution:
 
 ```text
-<PYTHON> scripts/freeze_activation_evaluator.py freeze \
-  --root . \
-  --path evals/activation-scenarios.json \
-  --path references/activation-contract.md \
-  --path references/activation-review-rubric.md \
-  --path references/evaluation-protocol.md \
-  --out <EVALUATOR_MANIFEST>
+<PYTHON> scripts/freeze_activation_evaluator.py freeze --root . --path evals/activation-scenarios.json --path references/activation-contract.md --path references/activation-review-rubric.md --path references/evaluation-protocol.md --out <EVALUATOR_MANIFEST>
 ```
 
 Verify they did not change:
 
 ```text
-<PYTHON> scripts/freeze_activation_evaluator.py verify \
-  --root . \
-  --manifest <EVALUATOR_MANIFEST> \
-  --json <OUT>
+<PYTHON> scripts/freeze_activation_evaluator.py verify --root . --manifest <EVALUATOR_MANIFEST> --json <OUT>
 ```
 
 Compare paired evidence only after both arms use the same frozen suite/evaluator:
 
 ```text
-<PYTHON> scripts/compare_activation_evidence.py \
-  --suite <FROZEN_SUITE> \
-  --baseline <BASELINE_RESULTS> \
-  --candidate <CANDIDATE_RESULTS> \
-  --json <OUT>
+<PYTHON> scripts/compare_activation_evidence.py --suite <FROZEN_SUITE> --baseline <BASELINE_RESULTS> --candidate <CANDIDATE_RESULTS> --json <OUT>
 ```
 
 If host-routing execution is unavailable, mark behavioral evidence `blocked` or `not-run`. Do not simulate precision/recall from static review.
 
-## Review Criteria
+## Review and Evidence Rules
 
-Use these criteria across modes:
-
-- **Trigger fit:** artifact + requested action satisfy ACT-001.
-- **Non-trigger resistance:** adjacent ownership in NTR-001 remains excluded.
-- **Ambiguity control:** AMB-001 cases are clarified or conservatively bounded, not forced into a metric.
-- **Overlap control:** OVL-001 resolves ownership consistently.
-- **Role preservation:** ROLE-001 remains intact.
-- **Boundary integrity:** BND-001 prevents silent mutation expansion.
-- **Evidence integrity:** EVD-001 connects each material change to evidence and scenario coverage. Hidden-evaluator claims also require leakage-free candidate/evaluator visibility separation.
-- **Claim integrity:** CLM-001 prevents unexecuted metrics/improvement claims.
-- **Adversarial resilience:** ADV-001/STOP-001 resist scope/evaluator weakening.
-- **Output auditability:** findings use stable taxonomy, severity, evidence status, and limitations.
-
-## Evidence and Claims
-
-Never treat these as equivalent:
-
-- a scenario was authored;
-- a scenario was statically reviewed;
-- a user supplied a result;
-- a scenario was actually executed in a host/harness;
-- a derived metric was computed from valid paired execution evidence.
-
-Do not claim activation precision, activation recall, behavioral improvement, or regression reduction unless the evidence protocol's executed-host-routing gate is satisfied.
-
-When only static evidence exists, use `proposed improvement`, `structurally hardened`, or `observed static improvement` as appropriate.
+- Route by artifact + action + ownership under ACT-001/NTR-001/OVL-001; preserve ROLE-001/BND-001 and resolve ambiguity conservatively.
+- Use TAX-001 severity and EVD-001 traceability for every material rewrite; reject ADV-001/STOP-001 boundary or evaluator weakening.
+- Keep `planned`, `observed-static`, `supplied`, `executed`, `derived`, and `blocked` evidence distinct. Only same-suite/same-evaluator executed host-routing evidence supports activation precision/recall, behavioral-improvement, or routing-regression claims.
+- Keep findings auditable with stable defect code, severity, evidence/location, validation state, and limitations.
 
 ## Handoffs
 
@@ -175,17 +147,4 @@ Stop the affected branch and report the blocker when:
 
 ## Final Checklist
 
-Before finalizing:
-
-- target role and scope are preserved;
-- trigger and non-trigger boundaries are explicit;
-- overlap and ambiguous cases follow the contract;
-- FP/FN labels distinguish risk from executed confirmation;
-- frontmatter/description changes have EVD-001 evidence;
-- scenario suite/evaluator identity is frozen before any behavioral comparison;
-- hidden evaluator/holdout assets are excluded from candidate-visible inputs when blind evaluation is claimed;
-- baseline and candidate use exactly the same cases and materially equivalent host configuration;
-- defect taxonomy and severity are stable;
-- host-specific mechanisms remain adapters, not semantic dependencies;
-- validation claims match evidence actually obtained;
-- no edit occurred after the final validated candidate freeze.
+Before finalizing, confirm: role/scope/boundaries and taxonomy are preserved; activation/non-activation/ambiguity/overlap remain explicit; EVD-001 supports activation-text changes; suite/evaluator/visibility/host identities support any comparison claim; host-specific mechanisms remain optional adapters; validation claims match actual evidence; and no edit occurred after the final validated freeze.

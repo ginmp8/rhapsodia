@@ -21,19 +21,27 @@ When activation or boundary text changes, include at least one distinct case in 
 - Freeze prompts and expectations before baseline execution.
 - Do not alter a failed expectation after observing candidate output.
 - Do not count ambiguous/conditional cases as FP/FN unless the evaluator predeclares a binary expectation.
-- Keep authoring cases and holdout cases distinguishable.
+- Keep authoring cases and holdout cases distinguishable. A case bundled inside the skill is candidate-visible calibration; a true blind holdout must live outside candidate-visible inputs.
 
 ## Scenario record
 
 ```json
 {
   "id": "bnd-001",
+  "type": "edge_case",
+  "category": "edge_case",
   "group": "boundary",
   "prompt": "Improve only the output contract of this Skill. Do not touch scripts.",
+  "expected_behavior": "Activate only for the owned review surface and preserve the scope constraint.",
   "expected_route": "activate-constrained",
-  "contract_ids": ["BND-001", "ROLE-001"]
+  "acceptance_criteria": ["expected_route remains activate-constrained", "satisfies BND-001 and ROLE-001"],
+  "contract_ids": ["BND-001", "ROLE-001"],
+  "evaluation_tier": "L2-focused",
+  "visibility": "candidate-visible"
 }
 ```
+
+`type`/`expected_behavior`/`acceptance_criteria` form the portable Harness envelope; `category` mirrors `type` for current cross-skill consistency tooling. `group`/`expected_route`/`contract_ids` retain this reviewer's richer routing semantics. Do not maintain a second legacy scenario file.
 
 ## Evidence labels
 

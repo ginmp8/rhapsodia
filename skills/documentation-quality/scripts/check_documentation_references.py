@@ -20,6 +20,7 @@ RECEIPT_VERSION = 1
 STAGE = "documentation-reference-check"
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 CODE_SPAN_PATTERN = re.compile(r"`([^`]+)`")
+FENCE_RE = re.compile(r"^\s*(```+|~~~+)(.*)$")
 FILE_LIKE_PATTERN = re.compile(
     r"(?:^|\s)((?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]+\.(?:md|py|sh|json|ya?ml|txt|template))"
 )
@@ -63,26 +64,50 @@ def is_external(reference: str) -> bool:
 
 def resolve_reference(source_file: Path, reference: str, root: Path | None) -> Path:
     ref = normalize_reference(reference)
-    if root and ref.startswith(("/", "./")):
-        return (root / ref.lstrip("/./")).resolve()
+    if root and ref.startswith("/"):
+        return (root / ref.lstrip("/")).resolve()
     return (source_file.parent / ref).resolve()
+
+
+def iter_non_fenced_lines(text: str) -> Iterable[str]:
+    in_fence = False
+    fence_marker = ""
+    fence_length = 0
+    for line in text.splitlines():
+        match = FENCE_RE.match(line)
+        if match:
+            marker, info = match.groups()
+            marker_char = marker[0]
+            marker_length = len(marker)
+            if not in_fence:
+                in_fence = True
+                fence_marker = marker_char
+                fence_length = marker_length
+            elif marker_char == fence_marker and marker_length >= fence_length and not info.strip():
+                in_fence = False
+                fence_marker = ""
+                fence_length = 0
+            continue
+        if not in_fence:
+            yield line
 
 
 def check_links(md_file: Path, root: Path | None) -> tuple[list[MissingReference], list[SkippedReference]]:
     missing: list[MissingReference] = []
     skipped: list[SkippedReference] = []
     text = md_file.read_text(encoding="utf-8")
-    for match in LINK_PATTERN.finditer(text):
-        raw = match.group(1).strip()
-        if is_external(raw):
-            skipped.append(SkippedReference(str(md_file), raw, "external_or_anchor"))
-            continue
-        if "*" in raw:
-            skipped.append(SkippedReference(str(md_file), raw, "glob_pattern"))
-            continue
-        resolved = resolve_reference(md_file, raw, root)
-        if not resolved.exists():
-            missing.append(MissingReference(str(md_file), raw, str(resolved), "markdown_link"))
+    for line in iter_non_fenced_lines(text):
+        for match in LINK_PATTERN.finditer(line):
+            raw = match.group(1).strip()
+            if is_external(raw):
+                skipped.append(SkippedReference(str(md_file), raw, "external_or_anchor"))
+                continue
+            if "*" in raw:
+                skipped.append(SkippedReference(str(md_file), raw, "glob_pattern"))
+                continue
+            resolved = resolve_reference(md_file, raw, root)
+            if not resolved.exists():
+                missing.append(MissingReference(str(md_file), raw, str(resolved), "markdown_link"))
     return missing, skipped
 
 

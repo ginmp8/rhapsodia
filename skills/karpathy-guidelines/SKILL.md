@@ -181,15 +181,14 @@ Stop, narrow the response, or report a blocker when:
 
 ## Package maintenance
 
-When editing this skill package itself:
+When editing this skill package:
 
-1. mutate only files under the `karpathy-guidelines` skill folder;
-2. keep `SKILL.md` compact and route detailed rules to `references/`, `assets/templates/`, `examples/`, `evals/`, or `scripts/`;
-3. run `python3 -S scripts/validate_contract.py <skill-folder>`;
-4. run `python3 -S scripts/validate_decision_variance.py <skill-folder>`;
-5. when packaging is requested, run `python3 -S scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
-6. record the artifact path only after `skill.zip` exists and folder plus archive validation pass;
-7. do not claim package readiness unless folder and archive validation pass.
+1. mutate only `karpathy-guidelines`; keep details in lazy-loaded resources;
+2. resolve `<PYTHON>` from host capabilities and keep the core vendor-neutral;
+3. run `<PYTHON> -S scripts/validate_contract.py <skill-folder>`, `<PYTHON> -S scripts/validate_decision_variance.py <skill-folder>`, and after packager edits `<PYTHON> -S scripts/test_package_skill.py <skill-folder>`;
+4. package with `<PYTHON> -S scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
+5. stage deterministic output and preserve last-good on failure;
+6. report the artifact only after folder, packager, and archive gates pass.
 
 ## Supporting references
 

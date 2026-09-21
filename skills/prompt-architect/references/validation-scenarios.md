@@ -63,7 +63,9 @@ Recommended machine-readable fields:
 }
 ```
 
-Validate reusable suites with `scripts/validate_scenario_suite.py`.
+The canonical package suite is [`../evals/activation-scenarios.json`](../evals/activation-scenarios.json). It uses schema v2 and one superset scenario shape so the target validator, current Skill Harness, and current Prompt/Activation Review validator can inspect the same scenario identities without migration fallback.
+
+Validate reusable suites with [`../scripts/validate_scenario_suite.py`](../scripts/validate_scenario_suite.py). Obsolete v1 suite shapes are intentionally rejected; migrate them before use rather than keeping a permissive compatibility branch.
 
 ## Defect taxonomy
 

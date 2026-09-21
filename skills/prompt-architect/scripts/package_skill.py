@@ -10,6 +10,7 @@ import os
 import re
 import shutil
 import stat
+import subprocess
 import sys
 import tempfile
 import zipfile
@@ -117,11 +118,23 @@ def atomic_json(path: Path, payload: dict) -> None:
         raise
 
 
+
+def validate_package_contract(skill_dir: Path) -> None:
+    validator = skill_dir / "scripts" / "validate_skill.py"
+    if not validator.is_file():
+        raise ValueError("scripts/validate_skill.py not found")
+    result = subprocess.run([sys.executable, str(validator), "--target", str(skill_dir)], text=True, capture_output=True)
+    if result.returncode != 0:
+        detail = (result.stdout + result.stderr).strip()
+        raise ValueError(f"package validation failed: {detail}")
+
+
 def package(skill_dir: Path, output_dir: Path) -> tuple[Path, Path]:
     skill_dir = skill_dir.resolve()
     if not skill_dir.is_dir():
         raise ValueError("skill_dir must be a directory")
     meta = validate_skill(skill_dir)
+    validate_package_contract(skill_dir)
 
     output_dir.mkdir(parents=True, exist_ok=True)
     output_dir = output_dir.resolve()

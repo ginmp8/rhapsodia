@@ -87,6 +87,7 @@ For complex work, build a requirement ledger using [prompt-contract.md](referenc
 For `improve`, `review-only`, and `validation-only`:
 
 - identify the exact target prompt/version;
+- preserve an immutable baseline copy or source snapshot before material rewriting;
 - preserve the original before rewriting;
 - record protected regions and compatibility commitments;
 - if behavioral comparison will be claimed, freeze the scenarios/evaluator **before** editing the prompt.
@@ -130,6 +131,8 @@ Use imperative, testable instructions. Define defaults and tie-breakers where re
 
 ### 5. Apply deterministic checks where available
 
+Resolve `<PYTHON>` to an available Python 3.10+ launcher for the current host; do not assume the executable is named `python` or `python3`. Bundled helpers use only the standard library, and sibling script calls must use the active interpreter. If process execution or Python is unavailable, mark deterministic gates `blocked` rather than fabricating a pass.
+
 When the prompt is available as a file, run:
 
 ```text
@@ -147,6 +150,8 @@ For scenario assets:
 ```text
 <PYTHON> scripts/validate_scenario_suite.py <SCENARIO_JSON>
 ```
+
+Bundled deterministic helpers: [prompt_lint.py](scripts/prompt_lint.py), [validate_prompt_contract.py](scripts/validate_prompt_contract.py), and [validate_scenario_suite.py](scripts/validate_scenario_suite.py).
 
 These checks prove only the properties they inspect. A lint pass is not a behavioral benchmark.
 
@@ -180,25 +185,7 @@ For reusable files, package only the frozen bytes. Use **atomic delivery** where
 
 ## Evidence and claim rules
 
-Label validation evidence accurately:
-
-- `measured`: an actual command, scenario executor, model run, or evaluator was executed;
-- `observed`: direct inspection of prompt/source/output;
-- `derived`: deterministic calculation from measured/observed evidence;
-- `supplied`: result provided by the user or another system but not independently run here;
-- `planned`: scenario or validator exists but was not executed;
-- `blocked`: required evidence could not be obtained.
-
-A manual "literal simulation" is `observed` or `planned`, not `measured runtime behavior`. Keep **structural evidence**, **behavioral evidence**, and **runtime evidence** separate; perceptual/editorial evidence is a fourth layer when subjective review is material.
-
-Use these claim boundaries:
-
-- **structurally hardened**: contracts/rules/checks improved and applicable deterministic gates pass;
-- **validation-ready**: evaluation assets exist but were not executed;
-- **behaviorally improved**: baseline and candidate were actually compared with a frozen evaluator and predeclared acceptance rule;
-- **runtime validated**: the intended executor/tools actually ran successfully.
-
-Do not upgrade one evidence layer into another.
+Use [evidence-and-claims.md](references/evidence-and-claims.md) whenever validation or comparison claims are material. Keep structural, behavioral, runtime, and perceptual evidence separate; never upgrade a weaker evidence layer into a stronger claim.
 
 ## Output contracts
 
@@ -248,15 +235,16 @@ Load only what the active mode needs:
 - [assets/templates/prompt-contract.json.template](assets/templates/prompt-contract.json.template): reusable contract scaffold.
 - [assets/templates/prompt-review-report.md.template](assets/templates/prompt-review-report.md.template): review report scaffold.
 - [assets/templates/scenario-suite.json.template](assets/templates/scenario-suite.json.template): scenario suite scaffold.
-- [evals/activation-scenarios-v2.json](evals/activation-scenarios-v2.json): canonical v2 authoring/regression scenarios; planned until actually executed.
-- [evals/activation-scenarios.json](evals/activation-scenarios.json): legacy v1 compatibility suite; preserve for existing consumers until migrated.
+- [evals/activation-scenarios.json](evals/activation-scenarios.json): canonical v2 host-neutral activation/regression suite; planned until actually executed. It intentionally carries the shared fields required by the current Harness and Prompt/Activation Review validators.
 - [examples/prompt-architect-scenarios.md](examples/prompt-architect-scenarios.md): human-readable usage examples.
 
 ## Portability
 
 Keep the core host-neutral. Do not make prompt semantics depend on ChatGPT, Claude, GitHub Copilot, Cursor, or another host unless the user targets that host explicitly.
 
-Treat `agents/openai.yaml` as an optional OpenAI adapter. For host-specific prompts, isolate host-specific tool names, file conventions, and invocation rules in clearly labeled sections so the semantic core remains portable when possible.
+Treat [`agents/openai.yaml`](agents/openai.yaml) as an optional OpenAI adapter; it may reference the optional UI asset [`assets/icon.svg`](assets/icon.svg). The portable core targets the common Agent Skills package model and must remain usable on OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, and Cursor when the host provides the capabilities required by the selected mode. For host-specific prompts, isolate host-specific tool names, file conventions, and invocation rules in clearly labeled sections so the semantic core remains portable when possible.
+
+Before claiming package readiness, run [`scripts/validate_skill.py`](scripts/validate_skill.py) and the applicable portability validator. Packaging uses [`scripts/package_skill.py`](scripts/package_skill.py), which invokes the target validator before committing the archive.
 
 ## Stop conditions
 

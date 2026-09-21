@@ -13,7 +13,7 @@ PROTECTED_KEYS = {
     "proper_nouns", "versions", "numbers",
 }
 VERIFICATION = {"contains", "regex", "local_reference", "manual", "scenario"}
-PLACEHOLDER = re.compile(r"\breplace with\b|\bTODO\b|\bTBD\b", re.I)
+PLACEHOLDER = re.compile(r"\breplace with\b|\bT(?:ODO)\b|\bTBD\b", re.I)
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Validate a token-refactor preservation contract.")

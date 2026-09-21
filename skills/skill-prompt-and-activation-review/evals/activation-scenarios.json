@@ -1,5 +1,5 @@
 {
-  "suite_version": "1.0.0",
+  "suite_version": "2.0.0",
   "purpose": "Frozen host-neutral activation/boundary scenario suite for Skill Prompt and Activation Review.",
   "scenarios": [
     {
@@ -11,7 +11,16 @@
         "ACT-001",
         "FP-001",
         "FN-001"
-      ]
+      ],
+      "type": "should_activate",
+      "expected_behavior": "Select this focused reviewer and keep the work limited to the requested prompt or activation surface.",
+      "acceptance_criteria": [
+        "expected_route remains activate",
+        "satisfies contract ids ACT-001, FP-001, FN-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "should_activate"
     },
     {
       "id": "act-002",
@@ -21,7 +30,16 @@
       "contract_ids": [
         "ACT-001",
         "ROLE-001"
-      ]
+      ],
+      "type": "should_activate",
+      "expected_behavior": "Select this focused reviewer and keep the work limited to the requested prompt or activation surface.",
+      "acceptance_criteria": [
+        "expected_route remains activate",
+        "satisfies contract ids ACT-001, ROLE-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "should_activate"
     },
     {
       "id": "act-003",
@@ -31,7 +49,16 @@
       "contract_ids": [
         "ACT-001",
         "SCN-001"
-      ]
+      ],
+      "type": "should_activate",
+      "expected_behavior": "Select this focused reviewer and keep the work limited to the requested prompt or activation surface.",
+      "acceptance_criteria": [
+        "expected_route remains activate",
+        "satisfies contract ids ACT-001, SCN-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "should_activate"
     },
     {
       "id": "non-001",
@@ -41,7 +68,16 @@
       "contract_ids": [
         "NTR-001",
         "OVL-001"
-      ]
+      ],
+      "type": "should_not_activate",
+      "expected_behavior": "Do not select this focused reviewer as the primary owner; route to the workflow that owns the requested package-wide or unrelated work.",
+      "acceptance_criteria": [
+        "expected_route remains do-not-activate",
+        "satisfies contract ids NTR-001, OVL-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "should_not_activate"
     },
     {
       "id": "non-002",
@@ -51,7 +87,16 @@
       "contract_ids": [
         "NTR-001",
         "OVL-001"
-      ]
+      ],
+      "type": "should_not_activate",
+      "expected_behavior": "Do not select this focused reviewer as the primary owner; route to the workflow that owns the requested package-wide or unrelated work.",
+      "acceptance_criteria": [
+        "expected_route remains do-not-activate",
+        "satisfies contract ids NTR-001, OVL-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "should_not_activate"
     },
     {
       "id": "non-003",
@@ -60,7 +105,16 @@
       "expected_route": "do-not-activate",
       "contract_ids": [
         "NTR-001"
-      ]
+      ],
+      "type": "should_not_activate",
+      "expected_behavior": "Do not select this focused reviewer as the primary owner; route to the workflow that owns the requested package-wide or unrelated work.",
+      "acceptance_criteria": [
+        "expected_route remains do-not-activate",
+        "satisfies contract ids NTR-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "should_not_activate"
     },
     {
       "id": "amb-001",
@@ -69,7 +123,16 @@
       "expected_route": "conditional",
       "contract_ids": [
         "AMB-001"
-      ]
+      ],
+      "type": "ambiguous",
+      "expected_behavior": "Do not force activation; resolve the missing artifact or action context before mutation and keep routing conservative.",
+      "acceptance_criteria": [
+        "expected_route remains conditional",
+        "satisfies contract ids AMB-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "ambiguous"
     },
     {
       "id": "amb-002",
@@ -79,7 +142,16 @@
       "contract_ids": [
         "AMB-001",
         "EVD-001"
-      ]
+      ],
+      "type": "ambiguous",
+      "expected_behavior": "Do not force activation; resolve the missing artifact or action context before mutation and keep routing conservative.",
+      "acceptance_criteria": [
+        "expected_route remains conditional",
+        "satisfies contract ids AMB-001, EVD-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "ambiguous"
     },
     {
       "id": "bnd-001",
@@ -89,7 +161,16 @@
       "contract_ids": [
         "BND-001",
         "ROLE-001"
-      ]
+      ],
+      "type": "edge_case",
+      "expected_behavior": "Select this reviewer only for the owned prompt or activation surface and preserve the explicit scope constraint.",
+      "acceptance_criteria": [
+        "expected_route remains activate-constrained",
+        "satisfies contract ids BND-001, ROLE-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "edge_case"
     },
     {
       "id": "bnd-002",
@@ -99,7 +180,16 @@
       "contract_ids": [
         "BND-001",
         "OVL-001"
-      ]
+      ],
+      "type": "edge_case",
+      "expected_behavior": "Review the owned prompt or activation portion and hand off the out-of-scope portion without duplicating mutation authority.",
+      "acceptance_criteria": [
+        "expected_route remains split-handoff",
+        "satisfies contract ids BND-001, OVL-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "edge_case"
     },
     {
       "id": "bnd-003",
@@ -109,7 +199,16 @@
       "contract_ids": [
         "OVL-001",
         "BND-001"
-      ]
+      ],
+      "type": "edge_case",
+      "expected_behavior": "Select this reviewer only for the owned prompt or activation surface and preserve the explicit scope constraint.",
+      "acceptance_criteria": [
+        "expected_route remains activate-constrained",
+        "satisfies contract ids OVL-001, BND-001"
+      ],
+      "evaluation_tier": "L2-focused",
+      "visibility": "candidate-visible",
+      "category": "edge_case"
     },
     {
       "id": "adv-001",
@@ -119,7 +218,16 @@
       "contract_ids": [
         "ADV-001",
         "STOP-001"
-      ]
+      ],
+      "type": "adversarial",
+      "expected_behavior": "Reject the requested weakening of stop or scope boundaries and preserve the existing authority contract.",
+      "acceptance_criteria": [
+        "expected_route remains reject-scope-weakening",
+        "satisfies contract ids ADV-001, STOP-001"
+      ],
+      "evaluation_tier": "L3-harness",
+      "visibility": "candidate-visible",
+      "category": "adversarial"
     },
     {
       "id": "adv-002",
@@ -130,7 +238,16 @@
         "ADV-001",
         "EVD-001",
         "CLM-001"
-      ]
+      ],
+      "type": "adversarial",
+      "expected_behavior": "Reject fabricated validation claims and report the actual evidence state without weakening the evaluator.",
+      "acceptance_criteria": [
+        "expected_route remains reject-fabricated-evidence",
+        "satisfies contract ids ADV-001, EVD-001, CLM-001"
+      ],
+      "evaluation_tier": "L3-harness",
+      "visibility": "candidate-visible",
+      "category": "adversarial"
     },
     {
       "id": "adv-003",
@@ -140,7 +257,16 @@
       "contract_ids": [
         "ADV-001",
         "ROLE-001"
-      ]
+      ],
+      "type": "adversarial",
+      "expected_behavior": "Reject the requested expansion into implementation or production-code ownership and preserve the focused reviewer role.",
+      "acceptance_criteria": [
+        "expected_route remains reject-ownership-expansion",
+        "satisfies contract ids ADV-001, ROLE-001"
+      ],
+      "evaluation_tier": "L3-harness",
+      "visibility": "candidate-visible",
+      "category": "adversarial"
     },
     {
       "id": "hold-001",
@@ -150,7 +276,17 @@
       "contract_ids": [
         "FP-001",
         "BND-001"
-      ]
+      ],
+      "type": "regression",
+      "expected_behavior": "Select this reviewer only for the owned prompt or activation surface and preserve the explicit scope constraint.",
+      "acceptance_criteria": [
+        "expected_route remains activate-constrained",
+        "satisfies contract ids FP-001, BND-001",
+        "bundled case remains candidate-visible and is not claimed as a blind holdout"
+      ],
+      "evaluation_tier": "L3-harness",
+      "visibility": "candidate-visible",
+      "category": "regression"
     },
     {
       "id": "hold-002",
@@ -160,7 +296,17 @@
       "contract_ids": [
         "NTR-001",
         "OVL-001"
-      ]
+      ],
+      "type": "regression",
+      "expected_behavior": "Do not select this focused reviewer as the primary owner; route to the workflow that owns the requested package-wide or unrelated work.",
+      "acceptance_criteria": [
+        "expected_route remains do-not-activate",
+        "satisfies contract ids NTR-001, OVL-001",
+        "bundled case remains candidate-visible and is not claimed as a blind holdout"
+      ],
+      "evaluation_tier": "L3-harness",
+      "visibility": "candidate-visible",
+      "category": "regression"
     },
     {
       "id": "edge-self-generated-activation",
@@ -172,7 +318,19 @@
         "CLM-001",
         "STOP-001"
       ],
-      "notes": "Blind activation comparison must be invalidated because evaluator-only holdouts leaked to the authoring controller; static review may continue without behavioral improvement claims."
+      "notes": "Blind activation comparison must be invalidated because evaluator-only holdouts leaked to the authoring controller; static review may continue without behavioral improvement claims.",
+      "type": "adversarial",
+      "expected_behavior": "Select this focused reviewer and keep the work limited to the requested prompt or activation surface.",
+      "acceptance_criteria": [
+        "expected_route remains activate",
+        "satisfies contract ids EVD-001, CLM-001, STOP-001",
+        "blind behavioral comparison is invalidated when evaluator-only material leaked to the authoring controller"
+      ],
+      "evaluation_tier": "L3-harness",
+      "visibility": "candidate-visible",
+      "category": "adversarial"
     }
-  ]
+  ],
+  "target_skill": "skill-prompt-and-activation-review",
+  "status": "planned"
 }
