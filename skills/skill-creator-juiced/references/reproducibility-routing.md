@@ -6,7 +6,7 @@ Use this reference to decide whether `reproducibility-engineer` should participa
 
 Use reproducibility engineering only when it can materially reduce avoidable variance or create stronger evidence. Do not add schemas, scripts, evaluators, or repair machinery merely because those mechanisms are available.
 
-Skill Creator Juiced always performs the lightweight local design pass in `reproducibility-by-design.md` for substantive creation/redesign. This routing file decides whether a dedicated `reproducibility-engineer` pass is still warranted after those proportional controls are considered.
+Skill Creator Juiced always performs the lightweight local design pass in `references/reproducibility-by-design.md` for substantive creation/redesign. This routing file decides whether a dedicated `reproducibility-engineer` pass is still warranted after those proportional controls are considered.
 
 ## Decision gate
 

@@ -55,7 +55,31 @@ def test_creator_owns_portability_transformation_not_a_third_specialist() -> Non
     assert "portable-core,openai,codex,claude,copilot,cursor" in text
 
 
+
+def test_portability_validator_rejects_private_core_token_without_self_false_positive() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = make_skill(Path(td))
+        refs = skill / "references"
+        refs.mkdir()
+        private_token = "functions" + ".exec"
+        (refs / "runtime.md").write_text(f"Use {private_token} directly.\n", encoding="utf-8")
+        result = run_validator(skill, "all")
+        assert result.returncode == 1, result.stdout
+        report = json.loads(result.stdout)
+        assert any(item.get("code") == "HOST_PRIVATE_CORE" for item in report.get("errors", []))
+
+
+def test_delegated_authority_boundary_is_explicit() -> None:
+    skill_text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+    orchestration = (ROOT / "references" / "specialist-orchestration.md").read_text(encoding="utf-8")
+    assert "upstream orchestrator" in skill_text.lower()
+    assert "final promotion" in skill_text.lower()
+    assert "caller remains the global orchestrator" in orchestration.lower()
+
+
 if __name__ == "__main__":
     test_portability_mode_validates_all_default_hosts()
     test_creator_owns_portability_transformation_not_a_third_specialist()
+    test_portability_validator_rejects_private_core_token_without_self_false_positive()
+    test_delegated_authority_boundary_is_explicit()
     print("ok")

@@ -23,6 +23,58 @@ PLACEHOLDER_PATTERNS = [
 REQUIRED_BODY_TERMS = ["workflow", "output contract", "stop condition"]
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 TEXT_SUFFIXES = {".md", ".txt", ".py", ".yaml", ".yml", ".json", ".template", ".sh"}
+ACTIVATION_GROUPS = {"activation", "non-activation", "ambiguous", "boundary", "adversarial", "holdout"}
+ACTIVATION_ROUTES = {
+    "activate", "do-not-activate", "conditional", "activate-constrained", "split-handoff",
+    "reject-scope-weakening", "reject-fabricated-evidence", "reject-ownership-expansion",
+}
+ACTIVATION_CONTRACT_ID = re.compile(r"^[A-Z]{2,5}-\d{3}$")
+
+
+def validate_activation_suite_file(path: Path) -> list[str]:
+    errors: list[str] = []
+    if not path.is_file():
+        return ["activation suite missing: evals/activation-scenarios.json"]
+    try:
+        data = json.loads(read_text(path))
+    except json.JSONDecodeError as exc:
+        return [f"activation suite invalid JSON: {exc}"]
+    if not isinstance(data.get("suite_version"), str) or not data["suite_version"].strip():
+        errors.append("activation suite requires non-empty suite_version")
+    scenarios = data.get("scenarios")
+    if not isinstance(scenarios, list) or not scenarios:
+        return errors + ["activation suite requires non-empty scenarios"]
+    seen: set[str] = set()
+    groups: set[str] = set()
+    for index, row in enumerate(scenarios):
+        if not isinstance(row, dict):
+            errors.append(f"activation scenario {index} must be an object")
+            continue
+        sid = row.get("id")
+        if not isinstance(sid, str) or not sid.strip():
+            errors.append(f"activation scenario {index} requires id")
+        elif sid in seen:
+            errors.append(f"activation scenario id duplicated: {sid}")
+        else:
+            seen.add(sid)
+        group = row.get("group")
+        if group not in ACTIVATION_GROUPS:
+            errors.append(f"activation scenario {sid or index} has invalid group: {group}")
+        else:
+            groups.add(group)
+        if not isinstance(row.get("prompt"), str) or not row["prompt"].strip():
+            errors.append(f"activation scenario {sid or index} requires prompt")
+        if row.get("expected_route") not in ACTIVATION_ROUTES:
+            errors.append(f"activation scenario {sid or index} has invalid expected_route: {row.get('expected_route')}")
+        contract_ids = row.get("contract_ids")
+        if not isinstance(contract_ids, list) or not contract_ids:
+            errors.append(f"activation scenario {sid or index} requires contract_ids")
+        elif any(not isinstance(value, str) or not ACTIVATION_CONTRACT_ID.fullmatch(value) for value in contract_ids):
+            errors.append(f"activation scenario {sid or index} has invalid contract_ids")
+    missing = sorted(ACTIVATION_GROUPS - groups)
+    if missing:
+        errors.append("activation suite missing groups: " + ", ".join(missing))
+    return errors
 
 
 def local_markdown_links(target: Path, markdown_file: Path):
@@ -55,6 +107,8 @@ def run_gate(target: Path, profile: str, hosts: str | None = None) -> dict:
         host_portability = validate_portability(target, normalize_hosts(hosts))
         errors.extend(item["evidence"] for item in host_portability["errors"])
         warnings.extend(item["evidence"] for item in host_portability["warnings"])
+
+    errors.extend(validate_activation_suite_file(target / "evals" / "activation-scenarios.json"))
 
     skill_md = target / "SKILL.md"
     inspected.append(str(skill_md))

@@ -30,11 +30,11 @@ Decide whether the target should remain:
 - multiple skills;
 - a prompt or documentation asset rather than a skill.
 
-Use `design-principles.md`. Preserve one skill across hosts when the operational responsibility is the same. Do not fork by vendor without a semantic reason.
+Use `references/design-principles.md`. Preserve one skill across hosts when the operational responsibility is the same. Do not fork by vendor without a semantic reason.
 
 ## Phase 3: Portable package architecture
 
-Design the host-neutral core first. During this phase also read `reproducibility-by-design.md` and classify the skill's reproducibility ceiling before selecting deterministic resources:
+Design the host-neutral core first. During this phase also read `references/reproducibility-by-design.md` and classify the skill's reproducibility ceiling before selecting deterministic resources:
 
 - `SKILL.md`: compact control plane and Agent Skills frontmatter;
 - `references/`: detailed rules, contracts, schemas, host notes, workflow branches;
@@ -44,7 +44,7 @@ Design the host-neutral core first. During this phase also read `reproducibility
 - `evals/`: planned or executable scenarios;
 - `agents/openai.yaml`: optional OpenAI adapter, not portable core.
 
-Read `host-portability.md` when more than one host is requested or host behavior is material. Keep install paths outside the semantic contract. For evidence-driven or mutating skills, decide now whether exact source snapshots, immutable VCS provenance, canonical output preflight, recovery-aware delivery, or durable receipts are justified; do not bolt them on only after failures.
+Read `references/host-portability.md` when more than one host is requested or host behavior is material. Keep install paths outside the semantic contract. For evidence-driven or mutating skills, decide now whether exact source snapshots, immutable VCS provenance, canonical output preflight, recovery-aware delivery, or durable receipts are justified; do not bolt them on only after failures.
 
 ## Phase 4: Draft or update and define evaluation
 
@@ -60,13 +60,13 @@ Write in this order:
 
 For existing skills, make the smallest coherent update that satisfies the requested capability. Preserve unrelated behavior.
 
-Apply the local `reproducibility-by-design.md` checklist before specialist routing. Record material variance as mechanical, constrained heuristic, model judgment, or external nondeterminism. Move only objective/fragile behavior downward; preserve judgment where it is the point of the skill.
+Apply the local `references/reproducibility-by-design.md` checklist before specialist routing. Record material variance as mechanical, constrained heuristic, model judgment, or external nondeterminism. Move only objective/fragile behavior downward; preserve judgment where it is the point of the skill.
 
-Read `evaluation-and-generalization.md` when behavioral quality matters. Define a small realistic seed set and the evaluator type appropriate to each property. Keep objective assertions for objectively checkable behavior and use independent/human/perceptual review for subjective properties. Do not force subjective quality into artificial numeric checks.
+Read `references/evaluation-and-generalization.md` when behavioral quality matters. Define a small realistic seed set and the evaluator type appropriate to each property. Keep objective assertions for objectively checkable behavior and use independent/human/perceptual review for subjective properties. Do not force subjective quality into artificial numeric checks.
 
 ## Phase 5: Reproducibility decision
 
-Apply `reproducibility-routing.md` after architecture, activation boundaries, and the local reproducibility-by-design pass are understood.
+Apply `references/reproducibility-routing.md` after architecture, activation boundaries, and the local reproducibility-by-design pass are understood.
 
 - Ordinary net-new text skills can remain specialist `not-applicable` when the local design pass finds no material gap.
 - Objective-artifact, tool-action, repository-evidence, benchmark, and package-building skills should be re-evaluated after drafting, especially for source identity, output aliases, receipts, and recovery.
@@ -77,7 +77,7 @@ Do not require reproducibility machinery when it does not remove a real source o
 
 ## Phase 6: Specialist passes
 
-Apply `specialist-orchestration.md`. Use the smallest set that owns real risk.
+Apply `references/specialist-orchestration.md`. Use the smallest set that owns real risk.
 
 For redesign or quality-upgrade work with several possible directions, use `skill-hypothesis-discovery` before measured optimization. For modified existing skills, use `skill-change-gate` before accepting the final candidate.
 
