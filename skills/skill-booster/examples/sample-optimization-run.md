@@ -5,10 +5,10 @@ User: “Optimize `<target-skill-root>` completely and return a validated `skill
 Response shape:
 
 1. Resolve requested hosts/capabilities/Python launcher, preflight target root, and run portability validation when claimed.
-2. Freeze evaluator/scenarios/fixtures before mutation; when external evidence matters, snapshot/pin the exact source bytes before analysis.
+2. Freeze evaluator/scenarios/fixtures before transformation; when external evidence matters, snapshot/pin the exact source bytes before analysis.
 3. Collect benchmark/harness evidence, classify reproducibility, then run the remaining diagnostic providers in passbook order: quality, package architecture, context, prompt/activation, prompt architecture, consistency, documentation, code, security, testing, cleanup, and token/context analysis.
 4. Reconcile all diagnostic evidence, then run `skill-hypothesis-discovery` and rank 5-10 bounded hypotheses.
-5. Apply one selected bounded transformation with one declared mutation owner; avoid duplicate ownership when a reproducibility `apply` batch is delegated.
+5. Apply one selected bounded transformation with one declared transformation owner; avoid duplicate ownership when a reproducibility `apply` batch is delegated.
 6. Run candidate `skill-change-gate`, then `skill-testing-and-validation`, before accepting material changes.
 7. Harden, run final change gate, final benchmark, final improver lifecycle closure, and final token-efficiency closure.
 8. For complete/full optimization, resolve every material actionable finding to `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`; if final token closure finds material avoidable waste, open another bounded batch and rerun affected gates instead of deferring it.
