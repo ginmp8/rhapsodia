@@ -77,7 +77,7 @@ For explicit obsolete cleanup also include:
   "classification": "obsolete",
   "approval": "explicit",
   "evidence": [
-    {"kind": "replacement-verified", "value": "references/new.md replaces references/old.md and all consumers were updated"}
+    {"kind": "replacement-verified", "value": "replacement reference supersedes the legacy reference and all consumers were updated"}
   ]
 }
 ```
@@ -147,7 +147,7 @@ When consolidating:
 
 ## Rollback minimum for manual mutations
 
-If a mutation cannot use `cleanup_apply.py`, record:
+If a mutation cannot use `scripts/cleanup_apply.py`, record:
 
 - files changed/removed;
 - baseline identity and backup location;

@@ -3,7 +3,7 @@
   "scenarios": [
     {"id":"indirect-reference","group":"regression","observable":"transitive reference graph classifies indirectly referenced resource as used"},
     {"id":"partial-duplicate","group":"regression","observable":"similar-but-not-identical resources are not auto-classified duplicate"},
-    {"id":"legitimate-scaffold","group":"regression","observable":"referenced template/scaffold with TODO marker stays used"},
+    {"id":"legitimate-scaffold","group":"regression","observable":"referenced template/scaffold with an unresolved fill marker stays used"},
     {"id":"generated-artifact","group":"core","observable":"generated residue is classified generated and dry-run is non-mutating"},
     {"id":"protected-evidence","group":"adversarial","observable":"protected evidence cannot be deleted even when plan claims removable status"},
     {"id":"symlink","group":"edge","observable":"symlink and canonical-path alias risks fail closed"},
