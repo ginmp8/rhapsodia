@@ -15,7 +15,7 @@ def load(name, path):
 
 build_mod = load("build_v4_finalist", ROOT / "scripts" / "build_evolution_contract.py")
 handoff_mod = load("handoff_v4_finalist", ROOT / "scripts" / "validate_evolution_handoff.py")
-pre_mod = load("pre_v4_finalist", ROOT / "scripts" / "validate_pre_evolution_state.py")
+opt_mod = load("opt_v4_finalist", ROOT / "scripts" / "validate_optimization_state.py")
 
 
 def handoff_template():
@@ -51,7 +51,7 @@ def test_evaluation_plan_v2_declares_finalist_policy():
         "minimum_evaluation_level": "L4-benchmark",
         "holdout_policy": "not-required",
     }
-    errors, _ = pre_mod.validate_evaluation_plan(plan)
+    errors, _ = opt_mod.validate_evaluation_plan(plan)
     assert errors == []
 
 
@@ -87,3 +87,11 @@ def test_build_rejects_handoff_policy_drift_from_evaluation_plan(tmp_path):
         assert "finalist policy mismatch" in str(exc)
     else:
         assert False, "expected finalist policy mismatch"
+
+
+def test_canonical_validator_allows_plan_without_search_finalist_policy():
+    plan = evaluation_plan_template()
+    plan.pop("finalist_policy")
+    errors, meta = opt_mod.validate_evaluation_plan(plan)
+    assert errors == []
+    assert meta["finalist_policy"] is None

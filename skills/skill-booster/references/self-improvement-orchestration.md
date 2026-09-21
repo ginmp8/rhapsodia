@@ -12,7 +12,7 @@ A specialist may know another specialist when the relationship is direct and sta
 
 | Need | Primary provider | Booster consumes |
 |---|---|---|
-| generation lifecycle, isolated candidate mutation, rollback/promotion state | `skill-improver` | controller/baseline/candidate identities, hypothesis decision, promotion receipt |
+| candidate lifecycle, isolated target transformation, rollback/promotion state | `skill-improver` | controller/baseline/candidate identities, hypothesis decision, promotion receipt |
 | isolated behavioral execution, evaluator-only visibility, leakage/trace evidence | `skill-harness` | execution-evidence envelope and leakage status |
 | baseline/candidate/without-skill comparison and metric deltas | `skill-benchmark` | comparable-arm report, provenance, capability metric delta |
 | semantic capability preservation or loss | `skill-quality-reviewer` | capability-delta matrix: added/preserved/regressed/removed/redundant/unproven |
@@ -25,9 +25,9 @@ Use only the providers whose evidence is material to the candidate. Complete opt
 
 ## Routing rules
 
-1. **Detect self-improvement** when the target package is the same logical skill responsible for the requested mutation, or the request explicitly asks the skill to improve itself.
-2. **Freeze the controller before routing mutation work.** The active controller/evaluator must remain outside the candidate mutation surface.
-3. **Route generation ownership to the experiment owner.** The Booster does not mutate the active controller in place and does not reimplement candidate lifecycle logic.
+1. **Detect self-improvement** when the target package is the same logical skill responsible for the requested transformation, or the request explicitly asks the skill to improve itself.
+2. **Freeze the controller before routing transformation work.** The active controller/evaluator must remain outside the candidate transformation surface.
+3. **Route candidate-change ownership to the transformation owner.** The Booster does not edit the active controller in place and does not reimplement candidate lifecycle logic.
 4. **Route evidence by touched surface:**
    - behavioral execution or hidden graders -> Harness;
    - comparative performance claim -> Benchmark;
@@ -38,13 +38,13 @@ Use only the providers whose evidence is material to the candidate. Complete opt
 6. **Final acceptance remains independent.** Improvement score or specialist approval never overrides a blocking change-gate result.
 7. **Promote only exact frozen bytes.** Package/install receipts must match the candidate identity accepted by the final gates.
 
-## Pre-evolution state ownership
+## Optimization state ownership
 
-For self-improvement, keep capability, transformation, experiment, and evaluation-plan artifacts outside the candidate mutation surface. The Booster owns aggregation/orchestration of these records. Providers may emit compatible records for their own outputs, but they must not rewrite global history or promote workflow policy.
+For self-improvement, keep capability, transformation, and evaluation-plan artifacts outside the candidate transformation surface; keep experiment artifacts only when actual experiments or multi-candidate comparisons run. The Booster owns aggregation/orchestration of these records. Providers may emit compatible records for their own outputs, but they must not rewrite global history or promote workflow policy.
 
 A self-generated target win can support target promotion after frozen gates pass. It is not sufficient on its own to change the Booster's canonical workflow; workflow-policy promotion is a separate cross-target decision.
 
-## Ordering for a self-improvement generation
+## Ordering for a self-improvement cycle
 
 A proportional default is:
 

@@ -43,7 +43,7 @@ source_integrity:
 
 ## Freeze rules
 
-After baseline, do not change scenarios, expected outputs, evaluator scripts, scoring config, benchmark inputs, fixtures, generated baseline reports, or metric logic to make results pass. If evaluator design is itself in scope, normalize it as a separate hypothesis and state whether criteria changed or only schema/compatibility changed. When external files or repository evidence materially determine the experiment, capture exact source bytes before analysis and keep that source identity frozen as well.
+After baseline, do not change scenarios, expected outputs, evaluator scripts, scoring config, benchmark inputs, fixtures, generated baseline reports, or metric logic to make results pass. If evaluator design is itself in scope, normalize it as a separate hypothesis and state whether criteria changed or only schema/compatibility changed. When external files or repository evidence materially determine the decision, capture exact source bytes before analysis and keep that source identity frozen as well.
 
 After the last passing final gate, freeze the candidate content with `scripts/freeze_candidate.py`. Any later target edit invalidates final evidence and requires affected validation plus a new manifest. Packaging must verify the same frozen candidate immediately before archive creation.
 
@@ -65,18 +65,18 @@ Rules:
 
 Do not invoke merely because the target has scripts, evals, validators, or a complex workflow. The specialist must remove an observed source of variance or add useful evidence.
 
-## Pre-evolution state contract
+## Optimization state contract
 
-For complete optimization, keep an external work-state record that can later support multi-candidate comparison without changing the target package. Use the templates from `assets/templates/` and validate them with `scripts/validate_pre_evolution_state.py`.
+For complete optimization, keep external work-state records that preserve capability, change, evaluator, and acceptance identities without changing the target package. Use the templates from `assets/templates/` and validate them with `scripts/validate_optimization_state.py`.
 
-Required semantics when the artifact is material:
+Required semantics when material:
 
 - capability map: semantic capabilities, owners, consumers, validators, invariants;
 - transformation registry: bounded changes classified as `repair`, `optimization`, or `experiment` and tied to capability/evidence ids;
-- experiment registry: parent/candidate/transformation/evaluator identities plus outcome, including rejected/inconclusive candidates;
-- evaluation plan: schema v2 staged `L0` through `L5` ladder, frozen finalist policy, and promotion evidence requirement.
+- evaluation plan: staged `L0` through `L5` evidence and target-promotion requirements;
+- experiment registry: optional; create it only when an experiment or multi-candidate comparison actually runs, retaining rejected/inconclusive evidence when present.
 
-These are experiment-state artifacts, not benchmark fixtures. Keep them outside the candidate mutation surface so a candidate cannot rewrite its own history or acceptance evidence.
+Keep these records outside the candidate transformation surface so a candidate cannot rewrite its own history or acceptance evidence. Search-only fields carried for adapter compatibility are ignored by canonical optimization unless the evolutionary branch is active.
 
 Cross-run experiment history may influence discovery only as provenance-bound evidence. Do not convert a previous target's result into a universal policy without comparable target class, capability surface, evaluator contract, and environment.
 
@@ -98,7 +98,7 @@ Prefer multiple signals: structure validity, requested-host portability, host ca
 
 ## Skill-hypothesis-discovery contract
 
-Use `skill-hypothesis-discovery` after initial benchmark/harness and reproducibility-routing evidence when possible. It must generate evidence-backed hypotheses, not random edits. A normal full-optimization pass should produce 5-10 candidate hypotheses, dedupe and rank them, and recommend the next 1-3 for the current cycle. Reproducibility audit findings, when present, are candidate evidence rather than automatically accepted patches. If no useful mutation is justified, record `no-mutation-recommended` and avoid experimental patches unless the user supplies a concrete hypothesis or a required repair exists.
+Use `skill-hypothesis-discovery` after initial benchmark/harness and reproducibility-routing evidence when possible. It must generate evidence-backed hypotheses, not random edits. A normal full-optimization pass should produce 5-10 candidate hypotheses, dedupe and rank them, and recommend the next 1-3 for the current cycle. Reproducibility audit findings, when present, are candidate evidence rather than automatically accepted patches. If no useful change is justified, record `no-mutation-recommended` and avoid experimental patches unless the user supplies a concrete hypothesis or a required repair exists.
 
 ```yaml
 hypothesis_discovery_result:
@@ -123,7 +123,7 @@ status: <accepted|rejected|blocked|planned>
 evidence: <score, gates, or rationale>
 ```
 
-Accept only when the hypothesis came from the discovery backlog or was explicitly supplied/justified, required gates pass, `skill-change-gate` reports no blocking regression, blocked/frozen paths are protected, no activation/safety/output regression appears, and required metrics meet the threshold. Reject or revert when gates fail, score worsens without accepted trade-off, compression removes protected duties, scope expands beyond target, or a duplicated owner attempts to mutate the same batch independently.
+Accept only when the hypothesis came from the discovery backlog or was explicitly supplied/justified, required gates pass, `skill-change-gate` reports no blocking regression, blocked/frozen paths are protected, no activation/safety/output regression appears, and required metrics meet the threshold. Reject or revert when gates fail, score worsens without accepted trade-off, compression removes protected duties, scope expands beyond target, or a duplicated owner attempts to change the same batch independently.
 
 ## Skill-change-gate contract
 

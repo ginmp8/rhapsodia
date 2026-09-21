@@ -177,6 +177,64 @@ def diagnostic_from_message(message: str, severity: str) -> dict:
     }
 
 
+
+def check_booster_strategy_isolation(root: Path, frontmatter: dict[str, str]) -> list[str]:
+    if frontmatter.get("name") != "skill-booster":
+        return []
+
+    errors: list[str] = []
+    compatibility_aliases = {
+        root / "references" / "pre-evolution-foundation.md": "compatibility alias",
+        root / "references" / "mutation-and-safety-policy.md": "compatibility alias",
+        root / "scripts" / "validate_pre_evolution_state.py": "compatibility shim",
+    }
+    for path, marker in compatibility_aliases.items():
+        if path.exists() and marker not in read_text(path).lower():
+            errors.append(f"legacy path must be compatibility-only: {path.relative_to(root)}")
+
+    foundation_path = root / "references" / "optimization-foundation.md"
+    workflow_path = root / "references" / "optimization-workflow.md"
+    skill_path = root / "SKILL.md"
+    if not foundation_path.exists():
+        errors.append("missing strategy-neutral optimization foundation")
+        return errors
+    if not workflow_path.exists():
+        errors.append("missing canonical optimization workflow")
+        return errors
+
+    foundation = read_text(foundation_path).lower()
+    workflow = read_text(workflow_path)
+    skill = read_text(skill_path)
+
+    required_foundation = [
+        "## 5. Strategy gate",
+        "Evolutionary readiness is not a quality gate",
+        "A deterministic repair does not require an experiment registry",
+    ]
+    foundation_original = read_text(foundation_path)
+    for phrase in required_foundation:
+        if phrase not in foundation_original:
+            errors.append(f"strategy isolation invariant missing from optimization foundation: {phrase}")
+
+    for term in ("population management", "crossover", "recombination", "pareto", "novelty", "offspring"):
+        if term in foundation:
+            errors.append(f"evolution-specific concept leaked into canonical optimization foundation: {term}")
+
+    if "## Phase 4: Transform" not in workflow or "## Phase 4: Mutate" in workflow:
+        errors.append("canonical workflow must use Transform rather than Mutate as phase 4")
+    if "Evolutionary readiness is not a completion criterion" not in workflow:
+        errors.append("canonical workflow is missing the evolutionary-readiness isolation invariant")
+
+    required_skill = [
+        "must remain fully functional without Skill Evolution",
+        "Evolutionary readiness is never a completion requirement",
+        "Maintain an experiment registry only when real experiments or multi-candidate comparisons are executed",
+    ]
+    for phrase in required_skill:
+        if phrase not in skill:
+            errors.append(f"SKILL.md strategy isolation invariant missing: {phrase}")
+    return errors
+
 def validate(root: Path) -> dict:
     root = root.resolve()
     errors: list[str] = []
@@ -227,6 +285,7 @@ def validate(root: Path) -> dict:
                         break
 
     errors.extend(check_links(root))
+    errors.extend(check_booster_strategy_isolation(root, fm))
     unique_errors = sorted(set(errors))
     unique_warnings = sorted(set(warnings))
     diagnostics = [diagnostic_from_message(message, "error") for message in unique_errors]

@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts" / "validate_pre_evolution_state.py"
+SCRIPT = ROOT / "scripts" / "validate_optimization_state.py"
 TEMPLATES = ROOT / "assets" / "templates"
 
 
@@ -34,3 +34,15 @@ def test_unknown_capability_reference_fails(tmp_path):
     result = run("--capability-map", str(cap_path), "--transformation-registry", str(trans_path))
     assert result.returncode != 0
     assert "CAPABILITY_REF_UNKNOWN" in result.stdout
+
+
+def test_canonical_templates_validate_without_experiment_registry():
+    result = run(
+        "--capability-map", str(TEMPLATES / "capability-map.json.template"),
+        "--transformation-registry", str(TEMPLATES / "transformation-registry.json.template"),
+        "--evaluation-plan", str(TEMPLATES / "evaluation-plan.json.template"),
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    report = json.loads(result.stdout)
+    assert report["status"] == "pass"
+    assert "experiment_registry" not in report["details"]
