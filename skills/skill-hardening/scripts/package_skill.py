@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and validate an installable ChatGPT skill zip package."""
+"""Build and validate an installable Agent Skills-compatible zip package."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 import tempfile
 import zipfile
@@ -134,12 +135,37 @@ def should_exclude(rel_path: str) -> tuple[bool, str | None]:
     if any(part in EXCLUDED_DIR_NAMES for part in parts[:-1]):
         return True, "excluded directory"
     name = parts[-1]
-    if name in EXCLUDED_FILE_NAMES or name.endswith(("~", ".swp", ".swo")):
+    if name in EXCLUDED_FILE_NAMES or name.endswith(("~", ".swp", ".swo", ".pyc")) or name.lower().endswith(".zip"):
         return True, "excluded file"
     if is_sensitive_name(name):
         return True, "sensitive-looking file name"
     return False, None
 
+
+
+
+def _is_within(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
+def validate_output_paths(target: Path, output: Path, json_output: Path | None = None) -> list[str]:
+    """Reject delivery paths that can mutate or contaminate the frozen target tree."""
+    target = target.resolve()
+    output = output.resolve()
+    errors: list[str] = []
+    if _is_within(output, target):
+        errors.append("package output must be outside the target skill tree")
+    if json_output is not None:
+        json_output = json_output.resolve()
+        if _is_within(json_output, target):
+            errors.append("JSON receipt/evidence output must be outside the target skill tree")
+        if json_output == output:
+            errors.append("package output and JSON output must be different paths")
+    return errors
 
 def find_symlinks(target: Path) -> list[str]:
     """Return symlink paths because packages must not read outside target scope."""
@@ -190,6 +216,23 @@ def tree_sha256(target: Path, files: list[Path]) -> str:
     return digest.hexdigest()
 
 
+def ecosystem_tree_sha256(target: Path) -> str:
+    """Return the current cross-skill tree identity used by integration gates."""
+    noise_dirs = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
+    rows: list[dict[str, object]] = []
+    for path in sorted(target.rglob("*")):
+        rel_path = path.relative_to(target)
+        if any(part in noise_dirs for part in rel_path.parts):
+            continue
+        rel = rel_path.as_posix()
+        if path.is_symlink():
+            rows.append({"path": rel, "type": "symlink", "target": os.readlink(path)})
+        elif path.is_file():
+            rows.append({"path": rel, "type": "file", "size": path.stat().st_size, "sha256": sha256_file(path)})
+    payload = json.dumps(rows, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def scan_folder_markers(target: Path, files: list[Path]) -> list[dict[str, Any]]:
     hits: list[dict[str, Any]] = []
     for path in files:
@@ -238,10 +281,12 @@ def build_package(target: Path, output: Path, validate: bool) -> dict[str, Any]:
     output.parent.mkdir(parents=True, exist_ok=True)
     root_name = target.name
     candidate_tree_sha256 = tree_sha256(target, files)
+    target_tree_sha256 = ecosystem_tree_sha256(target)
     fd, temp_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".tmp", dir=output.parent)
     os.close(fd)
     temp_path = Path(temp_name)
-    replaced = False
+    backup_path: Path | None = None
+    committed = False
     try:
         with zipfile.ZipFile(temp_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
             for file_path in files:
@@ -257,23 +302,46 @@ def build_package(target: Path, output: Path, validate: bool) -> dict[str, Any]:
             raise ValueError("temporary archive validation failed: " + "; ".join(pre_replace_validation.get("errors", [])[:5]))
         package_sha256 = sha256_file(temp_path)
         size_bytes = temp_path.stat().st_size
+        if output.exists():
+            fd, backup_name = tempfile.mkstemp(prefix=f".{output.name}.last-good.", suffix=".bak", dir=output.parent)
+            os.close(fd)
+            backup_path = Path(backup_name)
+            shutil.copyfile(output, backup_path)
         os.replace(temp_path, output)
-        replaced = True
+        committed = True
+        commit_validation = validate_archive(output) if validate else {"status": "not_run"}
+        if commit_validation.get("status") not in {"pass", "not_run"}:
+            if backup_path is not None and backup_path.exists():
+                os.replace(backup_path, output)
+                backup_path = None
+            elif output.exists():
+                output.unlink()
+            committed = False
+            raise ValueError("committed archive validation failed; prior output restored when available")
+        if backup_path is not None and backup_path.exists():
+            backup_path.unlink()
+            backup_path = None
         return {
             "output": str(output),
             "file_count": len(files),
             "excluded": excluded,
             "size_bytes": size_bytes,
             "candidate_tree_sha256": candidate_tree_sha256,
+            "target_tree_sha256": target_tree_sha256,
             "package_sha256": package_sha256,
             "zip_format_version": ZIP_FORMAT_VERSION,
             "zip_timestamp": "1980-01-01T00:00:00",
             "atomic_replace": True,
+            "last_good_preserved_on_failure": True,
+            "recovery": [],
             "pre_replace_validation": pre_replace_validation,
+            "commit_validation": commit_validation,
         }
     finally:
-        if not replaced and temp_path.exists():
+        if not committed and temp_path.exists():
             temp_path.unlink()
+        if backup_path is not None and backup_path.exists():
+            backup_path.unlink()
 
 
 def read_archive_text(zf: zipfile.ZipFile, name: str) -> str:
@@ -344,7 +412,7 @@ def validate_archive(zip_path: Path) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build and validate a ChatGPT skill package zip.")
+    parser = argparse.ArgumentParser(description="Build and validate an Agent Skills-compatible package zip.")
     parser.add_argument("--target", help="Path to the target skill folder.")
     parser.add_argument("--output", help="Path to write skill.zip.")
     parser.add_argument("--validate", action="store_true", help="Validate the folder before packaging and the zip after packaging.")
@@ -364,9 +432,11 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         target = Path(args.target).resolve()
         output = Path(args.output).resolve()
+        json_output_path = Path(args.json_output).resolve() if args.json_output else None
+        output_errors = validate_output_paths(target, output, json_output_path)
         folder_errors = validate_folder(target) if args.validate else []
-        if folder_errors:
-            result = {"mode": "package", "status": "fail", "folder_errors": folder_errors, "target": str(target), "output": str(output)}
+        if output_errors or folder_errors:
+            result = {"mode": "package", "status": "fail", "output_errors": output_errors, "folder_errors": folder_errors, "target": str(target), "output": str(output)}
             status = "fail"
         else:
             try:
@@ -393,13 +463,19 @@ def main(argv: list[str] | None = None) -> int:
                     "target": str(target),
                     "package": package_info,
                     "archive": archive_result,
+                    "target_tree_sha256": package_info["target_tree_sha256"],
                     "receipt": {
                         "schema_version": 1,
+                        "receipt_version": 2,
+                        "stage": "committed",
                         "candidate_tree_sha256": package_info["candidate_tree_sha256"],
+                        "target_tree_sha256": package_info["target_tree_sha256"],
                         "package_sha256": package_info["package_sha256"],
                         "file_count": package_info["file_count"],
                         "zip_format_version": package_info["zip_format_version"],
                         "atomic_replace": package_info["atomic_replace"],
+                        "last_good_preserved_on_failure": package_info["last_good_preserved_on_failure"],
+                        "recovery": package_info["recovery"],
                         "validation_status": archive_result.get("status"),
                         "output": package_info["output"],
                     },

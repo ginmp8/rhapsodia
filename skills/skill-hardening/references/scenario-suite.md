@@ -1,46 +1,43 @@
 # Scenario Suite
 
-Use when creating behavioral tests for a hardened skill.
+Use when creating planned behavioral tests for a hardened skill. The package contract follows the current host-neutral Harness scenario shape; execution evidence stays outside the scenario definition.
 
 ## Minimum set
 
-Create at least 20 scenarios: 5 `should_activate`, 5 `should_not_activate`, 5 `ambiguous`, 5 `edge_case`.
+Create at least 20 scenarios: 5 `should_activate`, 5 `should_not_activate`, 5 `ambiguous`, and 5 `edge_case`. Add `regression` or `adversarial` cases when material.
 
-## JSON schema
+## JSON contract
+
+Each scenario requires `id`, `type`, `prompt`, `expected_behavior`, and a non-empty string list `acceptance_criteria`. Allowed `type` values are `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`, `regression`, and `adversarial`.
 
 ```json
-[
-  {
-    "id": "A001",
-    "category": "should_activate",
-    "prompt": "Harden the uploaded invoice-parser skill and package it.",
-    "expected_activation": true,
-    "expected_behavior": "Runs audit, applies package-level improvements, validates, and packages only after gates pass.",
-    "actual_activation": null,
-    "output_conforms": null,
-    "quality_score": null,
-    "needs_rework": null,
-    "notes": "planned"
-  }
-]
+{
+  "target_skill": "skill-hardening",
+  "status": "planned",
+  "schema_version": "2.0",
+  "scenarios": [
+    {
+      "id": "A001",
+      "type": "should_activate",
+      "prompt": "Harden the uploaded invoice-parser skill and package it.",
+      "expected_behavior": "Runs audit, applies package-level improvements, validates, and packages only after gates pass.",
+      "acceptance_criteria": [
+        "skill-hardening is selected for an existing skill package",
+        "package success is claimed only after applicable gates pass"
+      ]
+    }
+  ]
+}
 ```
 
-## Scoring
+Do not keep legacy `category`/`expected_activation` fields solely for backward compatibility once all active consumers use the current `type` contract. If an active consumer requires another schema, treat that as an explicit peer-contract migration rather than silently maintaining two sources of truth.
 
-Metrics are measured only after scenario execution or user-supplied execution results.
+## Evidence and scoring
 
-- Activation precision = correct actual activations / all actual activations.
-- Activation recall = correct actual activations / all expected activations.
-- Output conformance = conforming outputs / executed scenarios.
-- Robustness = passed edge cases / executed edge cases.
-- Rework rate = scenarios needing rework / executed scenarios.
+Scenario files are planned definitions until executed. Record actual activation/output results in external run evidence tied to the exact suite/evaluator identity; do not mutate the planned suite after baseline freeze to make a candidate pass.
 
-## Quality bar
-
-Targets: activation precision >= 90%; recall >= 85%; output conformance >= 90%; robustness >= 75%; rework rate <= 10%.
+Metrics are measured only from executed or supplied results: activation precision, activation recall, output conformance, edge-case robustness, and rework rate. Static schema validation never proves these behavioral metrics.
 
 ## Placement
 
-For package-level hardening, keep reusable planned scenarios under `examples/` unless the target owns a stricter path. Scenario examples must be referenced from `SKILL.md`, cover all four core categories, and keep execution fields null until measured; repeated null execution fields may be stored once as shared defaults.
-
-`examples/hardening-scenarios.json` is calibration, not evidence that another target skill's scenarios passed.
+Use `evals/activation-scenarios.json` as the package's planned activation/boundary suite. `examples/hardening-scenarios.json` is calibration only. `assets/templates/scenario-suite.json.template` is the reusable starting shape.

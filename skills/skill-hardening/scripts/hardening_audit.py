@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit package-level hardening maturity for a ChatGPT skill."""
+"""Audit package-level hardening maturity for an Agent Skills-compatible skill."""
 
 from __future__ import annotations
 
@@ -248,7 +248,7 @@ def audit_target(target: Path) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Audit hardening maturity for a ChatGPT skill folder.")
+    parser = argparse.ArgumentParser(description="Audit hardening maturity for an Agent Skills-compatible folder.")
     parser.add_argument("--target", required=True, help="Path to target skill folder.")
     parser.add_argument("--output", help="Optional Markdown report path.")
     parser.add_argument("--json-output", help="Optional JSON report path.")

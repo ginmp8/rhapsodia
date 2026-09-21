@@ -1,17 +1,17 @@
 ---
 name: skill-hardening
-description: harden existing chatgpt or agent skill packages by auditing skill.md, agents, references, scripts, templates, scenarios, validators, output contracts, gates, and packaging hygiene. use for skill repair, maturity review, validation, hardening, and skill.zip delivery; not for net-new skills, generic repos, product planning, or benchmark-only scoring.
+description: harden existing agent skills-compatible packages by auditing skill.md, adapters, references, scripts, templates, scenarios, validators, output contracts, gates, and packaging hygiene. use when asked to repair, validate, mature, harden, or package an existing skill; do not use for net-new skills, generic repositories, product planning, ordinary documentation, or benchmark-only scoring.
 ---
 
 # Skill Hardening
 
 ## Purpose
 
-Harden an existing ChatGPT or Agent skill as a reusable package. Own `SKILL.md`, `agents/openai.yaml`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, output contracts, gates, and package hygiene.
+Harden an existing Agent Skills-compatible skill as a reusable package. Own `SKILL.md`, optional host adapters such as `agents/openai.yaml`, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, output contracts, gates, and package hygiene.
 
 Use only for reusable skill packages. Do not use for generic repo refactors, product planning, ordinary docs, non-skill implementation work, or net-new skill creation without an existing package.
 
-## Inputs
+## Required Inputs
 
 Resolve or infer before mutation:
 
@@ -26,6 +26,12 @@ Resolve or infer before mutation:
 9. Gates: audit score, required commands, evaluator integrity, package validation, no scaffold markers, all referenced files present, optional executed benchmark/scenario evidence.
 
 Default for “harden it”: inspect -> audit -> map -> apply one bounded package-level batch -> validate -> package only when requested or clearly expected.
+
+## Authority Boundary
+
+- **Standalone:** own hardening, validation, freeze, and package delivery within the target skill only.
+- **Delegated:** when an upstream orchestrator supplies frozen evaluators, peer contracts, scope, or promotion rules, treat them as protected inputs. Mutate only the assigned target batch, do not change peer-facing schemas/CLIs/handoffs silently, and return hardening evidence to the caller. Global sequencing, ecosystem promotion, and installation remain with the caller.
+- If a sound fix requires a breaking peer contract, stop independent promotion and report the affected contract/consumers for a coordinated change set. Do not add legacy adapters merely to preserve an obsolete contract the caller has retired.
 
 ## Modes
 
@@ -59,7 +65,8 @@ Use one primary mode. For mixed requests: inspect -> audit -> harden -> validate
 - `scripts/hardening_audit.py`: maturity scorecard.
 - `scripts/validate_hardened_skill.py`: readiness gates.
 - `scripts/reproducibility_controls.py`: tree identity, contract validation, evaluator freeze, and evaluator verification.
-- `scripts/package_skill.py`: `skill.zip` builder and archive validator.
+- `scripts/package_skill.py`: deterministic `skill.zip` builder, alias preflight, rollback-safe commit, receipt, and archive validator.
+- `tests/test_skill_hardening.py`: standard-library regression tests for scenario validation and package delivery invariants.
 
 Keep `SKILL.md` as router/control plane. Move detailed rubrics, schemas, commands, examples, and script contracts to lazy-loaded resources.
 

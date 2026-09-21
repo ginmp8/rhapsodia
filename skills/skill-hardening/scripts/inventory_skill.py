@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a deterministic inventory for a ChatGPT skill folder."""
+"""Create a deterministic inventory for an Agent Skills-compatible folder."""
 
 from __future__ import annotations
 
@@ -221,7 +221,7 @@ def inventory(root: Path) -> SkillInventory:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Inventory a ChatGPT skill folder.")
+    parser = argparse.ArgumentParser(description="Inventory an Agent Skills-compatible folder.")
     parser.add_argument("--target", required=True, help="Path to the target skill folder.")
     parser.add_argument("--output", help="Optional path for inventory JSON.")
     parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON.")
