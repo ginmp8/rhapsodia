@@ -62,7 +62,7 @@ At minimum consider:
 - adversarial/anti-cheating;
 - holdout scenarios not used while authoring.
 
-See `scenario-design.md`.
+See `references/scenario-design.md`.
 
 ## Metrics
 
@@ -91,7 +91,7 @@ For strong claims:
 - keep prompts/files identical between paired arms;
 - randomize presentation order for human/judge comparison when possible;
 - record ties rather than forcing a winner;
-- use `paired_sign_test.py` as an optional simple one-sided paired win/loss check.
+- use `scripts/paired_sign_test.py` as an optional simple one-sided paired win/loss check.
 
 The default `--min-pairs 12` is a heuristic power warning, not a universal statistical guarantee.
 

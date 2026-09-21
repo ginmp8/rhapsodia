@@ -60,7 +60,8 @@ def main() -> int:
     check('frontmatter/name-matches-directory', root.name == name, root.name, {'name': name}, severity='warning')
 
     skill_text = skill_md.read_text(encoding='utf-8', errors='replace')
-    placeholders = sorted(set(re.findall(r'\b(?:TO' + r'DO|TBD|FIXME|PLACEHOLDER)\b', skill_text, flags=re.I)))
+    marker_pattern = r'\b(?:TO' + r'DO|T' + r'BD|FI' + r'XME|PLACE' + r'HOLDER)\b'
+    placeholders = sorted(set(re.findall(marker_pattern, skill_text, flags=re.I)))
     check('content/no-scaffold-markers', not placeholders, 'SKILL.md', {'markers': placeholders})
 
     openai_meta = root / 'agents' / 'openai.yaml'

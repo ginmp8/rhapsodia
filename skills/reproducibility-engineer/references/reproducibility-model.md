@@ -80,6 +80,19 @@ Map each material decision to one class:
 | model judgment | interpretation, editorial choices, visual taste | evidence + rubric + independent review |
 | external nondeterminism | changing web data, tool state, versions, clocks | pin/snapshot/version/record identity |
 
+## Control placement
+
+Use the lowest reliable control that preserves the kind of reasoning the task actually needs:
+
+| Variance | Control |
+|---|---|
+| mechanical | script, schema, or validator; keep repeated mechanics out of free-form generation |
+| constrained heuristic | defaults, deterministic ordering/tie-breakers, bounded options, and stop limits |
+| model judgment | explicit criteria, evidence, and rubric; keep legitimate judgment visible |
+| subjective/perceptual | independent evaluation or review; never compile taste into fake determinism |
+
+Do not promote a variance source to a stronger control layer unless the stronger layer preserves the target semantics and evaluation contract.
+
 ## Maturity levels
 
 These are structural maturity levels, not behavioral benchmark scores.
