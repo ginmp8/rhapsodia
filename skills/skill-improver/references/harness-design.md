@@ -24,7 +24,7 @@ Out of scope unless requested: modifying locked fixtures/expected outputs during
 
 ## Scenario suite
 
-Use `evals/skill-improver-scenarios.json` as the frozen planned suite. A measured suite may derive from it, but measured results must be locked before candidate edits. Required categories: `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`, `regression`.
+Use `evals/activation-scenarios.json` as the frozen planned suite. A measured suite may derive from it, but measured results must be locked before candidate edits. Required categories: `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`, `regression`.
 
 ## Evaluators
 

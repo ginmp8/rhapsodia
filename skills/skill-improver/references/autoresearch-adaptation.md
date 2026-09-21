@@ -21,7 +21,7 @@
 
 ## Host neutrality
 
-The semantic loop is host-neutral. `scripts/skill_improver_loop.py` ships a Codex adapter for backward compatibility and a generic command adapter for other agent CLIs. Host-specific adapters are execution details, not part of the acceptance contract.
+Use `references/host-portability.md` as the authority for runtime capabilities and adapters. The generic command adapter remains the default; Codex remains optional.
 
 ## Skill-specific risk
 

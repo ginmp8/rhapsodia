@@ -1,135 +1,81 @@
 ---
 name: skill-improver
-description: use for existing agent skills-compatible packages across chatgpt/codex, claude, github copilot, cursor, or similar hosts when asked to audit, review-fix-review, improve, harden, self-improve, validate, benchmark, package, install, migrate legacy skill-improvement workflows, or run bounded hypothesis-driven experiments. preserve immutable baselines, freeze evaluators, use deterministic severity/lifecycle rules, reject regressions through structural gates, preserve rollback evidence, and freeze validated candidates. do not use for new skills, ordinary repository refactors, evaluator-fixture edits, or unbounded automation without an explicit disposable sandbox and budget.
+description: use for existing agent skills-compatible packages across chatgpt/codex, claude, github copilot, cursor, or similar hosts when asked to audit, review-fix-review, improve, harden, self-improve, validate, benchmark, package, install, materialize evolution/search candidates, or run bounded hypothesis-driven experiments. preserve immutable baselines, freeze evaluators, use deterministic severity/lifecycle rules, reject regressions through structural gates, preserve rollback evidence, and freeze validated candidates. do not use for new skills, ordinary repository refactors, evaluator-fixture edits, or unbounded automation without an explicit disposable sandbox and budget.
 ---
 
 # Skill Improver
 
-## Purpose
+## Mission and boundaries
 
-Improve an existing skill through controlled, reproducible experiments. Preserve a baseline, freeze the evaluator, snapshot material external evidence when it affects the decision, measure the baseline, test one bounded hypothesis, re-run the same evaluator, apply an independent structural change gate, and accept only when the predeclared rule passes without weakening semantics, safety, compatibility, validation, or evidence. Freeze the accepted candidate before delivery; any later edit invalidates the affected evidence and requires revalidation.
+Improve one existing skill through bounded, reproducible experiments. Preserve an immutable baseline, freeze deciding evidence before mutation, test an evidence-backed hypothesis, compare with the same evaluator, apply an independent structural gate, retain rejected evidence, and freeze only an accepted candidate. Never improve a score by weakening activation, semantics, safety, compatibility, validation, evidence, or protected fixtures.
 
-Treat `SKILL.md` as the compact control plane. Load branch-specific references only when needed.
+Use only for existing skill packages: audit/benchmark, bounded patching or automation, reproducibility hardening, self-improvement, validation, installation, packaging, and caller-routed evolution/search candidate materialization. Do not own net-new skill creation, generic repositories/application code, broad specialist orchestration, evaluator-fixture edits, secrets, generated evidence, or unbounded automation.
 
-## Scope
+Reproducibility means repeated runs on the same supported inputs/environment satisfy the same semantic contract and gates; subjective/model judgment need not produce identical prose. Keep evidence layers distinct: **structural** (package/schema/hash), **behavioral** (executed scenarios), **runtime** (actual tool/app execution), and **perceptual** (independent subjective review). Never promote a weaker layer into a stronger claim.
 
-Use for existing skill packages when the task is benchmarking, auditing, scoring, manual improvement, bounded autonomous improvement, reproducibility hardening, self-improvement with safeguards, validation, installation, or packaging.
-
-Do not use for new skill creation, generic repository refactors, ordinary application-code work, edits to evaluator fixtures or expected outputs, generated evidence, secrets, unrelated paths, or unbounded/yolo automation outside an acknowledged disposable sandbox.
-
-## Reproducibility boundary
-
-The target may contain subjective or model-judgment behavior. Reproducibility means repeated runs against the same supported inputs and environment satisfy the same semantic contract and gates; it does not require byte-identical prose unless the target domain can guarantee that.
-
-Use these evidence labels separately:
-- **structural**: package shape, links, schemas, validators, frozen hashes;
-- **behavioral**: executed scenarios/evaluators against the target behavior;
-- **runtime**: actual tool/browser/application execution;
-- **perceptual**: independent human or image-capable review for subjective quality.
-
-Do not claim a stronger layer from a weaker one.
-
-## Inputs and default policy
+## Required inputs and defaults
 
 Resolve before mutation:
-1. `TARGET_SKILL_PATH`: folder or extracted archive containing exactly one target `SKILL.md`.
-2. Mode: `benchmark-only`, `manual-patch`, `automated-loop`, `package-install`, or `self-improvement`.
-3. Runtime capability profile: filesystem read/write, Python 3.10+, command execution, network/research when freshness matters, independent evaluator/subagent support, artifact delivery.
-4. Evaluator contract: command or benchmark, score direction, minimum delta, required gates, locks, blocked paths, auxiliary metric when the primary metric is saturated.
-5. Hypothesis source: user-supplied hypothesis, supplied backlog, `skill-hypothesis-discovery`, or built-in catalog fallback. When supplied, also resolve `change_intent`, transformation id, affected capability ids, parent candidate identity, and prior experiment evidence.
-6. Material source evidence: external files/repository content whose exact bytes affect the hypothesis or acceptance decision.
-7. Budget and safety posture: iteration/time budget, sandbox/manual-review posture, allowed mutation scope.
-8. Structural change-gate policy: `disabled`, `advisory`, or `required`.
-9. Final artifact and delivery paths: report, patched folder, installed folder, package zip, optional receipt.
 
-Defaults: preserve a baseline before mutation; one bounded manual patch or max three automated iterations; `--min-delta 1.0`; target-folder-only mutation; evaluator files, fixtures, reports, generated evidence, packages, caches, `.git`, credentials, and secrets blocked; snapshot material external source bytes before analysis; runner change-gate policy resolves to `required` when a gate command is supplied and otherwise `advisory`; manual patches may explicitly use advisory; manual review unless a stronger sandbox exists; final candidate frozen after pass; package/output paths preflighted before writes.
+- `TARGET_SKILL_PATH`: exactly one existing skill root or extracted archive.
+- mode: `benchmark-only`, `manual-patch`, `automated-loop`, `package-install`, or `self-improvement`.
+- runtime capabilities: read/write filesystem, Python 3.10+, command execution, optional network/research, independent evaluation, artifact delivery.
+- evaluator contract: command/benchmark, direction, minimum delta, required gates, frozen/blocked paths, and a non-saturated auxiliary metric when needed.
+- hypothesis source: user/backlog/`skill-hypothesis-discovery`/fallback; when supplied, preserve change intent, transformation/capability ids, parent identity, and prior evidence.
+- material source evidence, mutation scope, finite budget, safety posture, change-gate policy, and delivery paths.
 
-## Mode selection
+Defaults: snapshot before mutation; one bounded manual patch or at most three automated iterations; `--min-delta 1.0`; mutate target folder only; protect fixtures/expected outputs/evaluators/reports/evidence/packages/caches/`.git`/credentials/secrets; source-snapshot material evidence; require the runner change gate when a gate command exists, otherwise advisory; freeze the final pass before delivery.
 
-- `benchmark-only`: run the frozen evaluator and report; do not mutate.
-- `manual-patch`: baseline -> freeze -> select one bounded hypothesis -> minimal patch -> evaluate -> change gate -> accept/reject -> freeze final candidate.
-- `automated-loop`: require clean working copy, evaluator hash, hypothesis source, budget, rollback log, blocked paths, stop condition, and an agent adapter supported by the current host.
-- `package-install`: validate a frozen candidate, preflight destinations, then atomically package/install with hash/receipt evidence.
-- `self-improvement`: follow `references/self-improvement-protocol.md`; freeze an immutable controller and baseline, mutate only an isolated candidate, default self-recursion depth to 1, preserve last-known-good, and require final validation/promotion outside the candidate mutation surface.
+## Modes
 
-## Resource loading
+| Mode | Contract |
+|---|---|
+| `benchmark-only` | frozen evaluation/report only; no mutation |
+| `manual-patch` | baseline -> one bounded hypothesis -> minimal candidate -> evaluate/gate -> accept/reject -> freeze |
+| `automated-loop` | require clean working copy, frozen evaluator identity, hypothesis source, finite budget, rollback/blocked paths, stop condition, supported agent adapter |
+| `package-install` | validate/freeze first; package/install atomically with hashes/receipt |
+| `self-improvement` | immutable external controller + baseline, isolated candidate, recursion depth 1 by default, external promotion gate, last-known-good preservation |
+
+## Progressive resources
 
 Load only what the active branch needs:
-- `references/evaluation-contract.md`: evaluator schema, freeze rules, acceptance, metric gates, hypothesis policy, structural change-gate policy.
-- `references/transformation-records-and-ablation.md`: portable transformation records, one-causal-batch discipline, parent-child provenance, and bounded ablation rules.
-- `references/evolution-candidate-execution.md`: local contract for materializing a caller/search-controller candidate request without taking ownership of population selection or promotion.
-- `references/severity-lifecycle.md`: stable severity taxonomy, deterministic triage, iteration state, completion/cancellation semantics, and max-iteration rules.
-- `references/legacy-migration.md`: migration map from the deprecated `skill-improvement` workflow and compatibility commitments.
-- `references/reproducibility-controls.md`: source snapshots, repair rules, freeze-after-pass, canonical path preflight, recovery-aware delivery, durable receipts, evidence layers.
-- `references/self-improvement-protocol.md`: controller/baseline/candidate separation, generation identity, recursion limit, promotion, last-known-good, and self-improvement receipt rules.
-- `references/host-portability.md`: portable Agent Skills core, capability-first execution, Python/CLI portability, optional host adapters.
-- `references/benchmark-integration.md`: benchmark integration and saturated-score handling.
-- `references/hypothesis-catalog.md`: fallback hypotheses and expected evidence.
-- `skill-hypothesis-discovery` or compatible backlog JSON: use when no bounded hypothesis is supplied, metrics are saturated, or the next candidate is unclear.
-- `references/autoresearch-adaptation.md`: bounded autonomous-loop mechanics.
-- `references/execution-runbook.md`: CLI modes, agent adapters, packaging, rollback, source snapshots.
-- `references/harness-design.md`: scenario metrics and auxiliary evidence.
-- `references/report-template.md`: final report contract.
-- `evals/skill-improver-scenarios.json`: planned activation/negative/ambiguous/edge/regression suite; treat as frozen during candidate optimization unless benchmark design is the task.
-- `scripts/evidence_snapshot.py`: deterministic capture/verify/hash helper for material source evidence and candidate identity.
-- `scripts/skill_improver_status.py`: read-only status derivation from canonical `.skill-improver/` run evidence; it does not maintain a parallel session store.
-- `scripts/skill_improver_loop.py`: optional autonomous runner; its Codex adapter is not the portable semantic core.
-- `scripts/static_skill_score.py`: deterministic starter evaluator; saturated scores are gates only.
-- `scripts/validate_self_improvement_receipt.py`: deterministic gate for controller/candidate separation and promotion-receipt integrity in self-improvement mode.
-- `scripts/validate_transformation_record.py`: validates the portable parent/transformation/change-intent record before a mutating experiment uses it as provenance.
-- `scripts/validate_candidate_request.py`: validates the current candidate-request v2 envelope before mutation.
-- `scripts/validate_generation_receipt.py`: validates generation-receipt v3 before returning a materialized search candidate.
-- `contracts/integration-manifest.json`: declares the v2 request / v3 receipt integration surfaces for orchestrator impact analysis.
-- `skill-change-gate` or compatible command: independent structural regression gate.
-- `scripts/validate_skill_improver_package.py` and `scripts/package_skill.py`: package validation and recovery-aware packaging.
-- `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template`: templates consumed by the runner.
-- `assets/templates/transformation-record.json.template`: portable example for parent/capability/transformation provenance; validate with `scripts/validate_transformation_record.py`.
+
+- evaluation and mutation: [evaluation contract](references/evaluation-contract.md), [transformation/ablation](references/transformation-records-and-ablation.md), [severity lifecycle](references/severity-lifecycle.md), [reproducibility controls](references/reproducibility-controls.md), [self-improvement protocol](references/self-improvement-protocol.md).
+- evolution/search: [candidate execution](references/evolution-candidate-execution.md), `scripts/validate_candidate_request.py`, `scripts/validate_generation_receipt.py`, and `contracts/integration-manifest.json`.
+- portability/runtime: [host portability](references/host-portability.md), [execution runbook](references/execution-runbook.md), [autoresearch adaptation](references/autoresearch-adaptation.md).
+- evaluation design: [benchmark integration](references/benchmark-integration.md), [hypothesis catalog](references/hypothesis-catalog.md), [harness design](references/harness-design.md), `skill-hypothesis-discovery`, and canonical planned scenarios in `evals/activation-scenarios.json`.
+- state/delivery: `scripts/evidence_snapshot.py`, `scripts/skill_improver_status.py`, `scripts/skill_improver_loop.py`, `scripts/static_skill_score.py`, `scripts/validate_self_improvement_receipt.py`, `scripts/validate_transformation_record.py`, `scripts/validate_skill_improver_package.py`, `scripts/package_skill.py`, [report contract](references/report-template.md), [generation receipt template](assets/templates/generation-receipt.json.template), [transformation template](assets/templates/transformation-record.json.template), [improvement report template](assets/templates/improvement-run-report.md.template), and [patch decision template](assets/templates/patch-decision-record.md.template).
+
+The command adapter is the portable runner default; optional Codex support is an adapter, never part of the semantic core. Static scores are regression gates when saturated, not improvement evidence.
 
 ## Workflow
 
-1. **Identify and snapshot**: resolve one target root; record target identity, requested objective, runtime capabilities, writable scope, protected paths, and final delivery expectation. Preserve an immutable baseline before edits. In `self-improvement`, also freeze `controller_identity`, `generation_id`, `last_known_good_identity`, isolated candidate path, and `max_self_recursion_depth` before mutation; never edit the active controller in place.
-2. **Freeze evaluation**: define evaluator/metric contract; hash evaluator scripts, scenarios, expected outputs, scoring config, benchmark inputs, and blocked paths. A frozen evaluator must not change to make a candidate pass.
-3. **Snapshot material sources**: when external files or repository evidence affect the patch or acceptance decision, capture their exact bytes before analysis and verify them again before final acceptance. If they changed, explicitly re-baseline or invalidate the comparison.
-4. **Measure baseline**: record score, status, gates, evaluator hash, source snapshot identity, command, report path, and unresolved risks. If the primary metric is saturated, keep it as a gate and define a non-saturated auxiliary metric before claiming improvement.
-5. **Diagnose and triage**: use `references/severity-lifecycle.md` to classify findings as `critical`, `major`, `minor`, or `needs-verification`, apply its tie-breakers, and process blocking severity first. Prefer observable failure signals over taste; never auto-fix an unverified suspicion.
-6. **Discover/select one hypothesis**: state change intent (`repair`, `optimization`, or `experiment`), mechanism, evidence signal, affected capability ids/files, transformation id, parent identity, expected effect, validation method, accept/reject rule, rollback plan, and expected reproducibility control. Use evidence-backed discovery before built-in fallback when the next candidate is unclear.
-7. **Apply the smallest coherent candidate**: when a caller supplies a search/evolution candidate request, validate and follow `references/evolution-candidate-execution.md`; otherwise follow `references/transformation-records-and-ablation.md`. Prefer one causal transformation per candidate and preserve parent/transformation provenance. Mutate only allowed paths. Move mechanical/repetitive rules into scripts/schemas/validators when that reduces variance; keep model judgment only where it is genuinely needed. Never weaken evaluator, safety, activation, output, compatibility, or package gates.
-8. **Repair by diagnosis**: run the narrowest failing validator, identify one causal subject, apply the smallest supported fix, rerun the same gate, then adjacent gates. Stop a branch after two consecutive non-improving rounds on the same objective error set unless new evidence appears.
-9. **Evaluate and change-gate**: re-run the same frozen evaluator and verify protected/source identities. Reject if hashes changed, blocked paths changed, evaluator gates fail, the metric misses the threshold, or the structural gate finds a blocking regression.
-10. **Accept, rollback, or stop**: keep accepted changes only. Revert rejected candidates while preserving the last accepted state and rejection evidence. In `self-improvement`, the candidate cannot authorize its own promotion; require the frozen external/change-gate surface, emit and validate the self-improvement receipt, and promote only the exact frozen candidate. Use the canonical termination states in `references/severity-lifecycle.md`; honor explicit stop files between iterations; cancellation must not fabricate completion.
-11. **Freeze final candidate**: once final validation passes, compute/record the exact candidate identity and make no unvalidated cleanup edits. Any later edit requires revalidation from the affected gate.
-12. **Deliver atomically**: preflight authored and canonical output/receipt paths; reject aliases with inputs, evaluators, protected files, or sibling outputs; stage outputs privately; validate; compute hashes; commit with recovery; emit a complete receipt tied to the exact committed bytes. Preserve last-good/recovery artifacts when commit or rollback fails.
-13. **Report truthfully**: distinguish structural, behavioral, runtime, and perceptual evidence; mark unavailable checks `not-run` or `blocked` rather than implying a pass.
-
-## Legacy compatibility
-
-Treat `skill-improvement` as a deprecated compatibility surface, not a second implementation owner. When an explicit legacy invocation reaches this skill, preserve user-supplied parameters, use `references/legacy-migration.md`, and execute the canonical `skill-improver` workflow. Do not create new `.skill-improvement/` state or maintain a duplicate reviewer/loop.
-
-## Stop conditions
-
-Stop, revert, or return a bounded partial result when: target identity is ambiguous; no safe baseline can be preserved; required source truth is unavailable; a required evaluator cannot be frozen; evaluator/protected inputs change during a candidate; mutation requires blocked fixtures, expected outputs, secrets, or unrelated paths; a required capability is unavailable for a hard gate; a required change gate fails or cannot run; the same objective repair fails to improve after two rounds; output/receipt paths alias inputs/protected paths/sibling outputs; validation/package checks fail; source snapshots no longer match and cannot be re-baselined; or the only route to green weakens a hard gate.
+1. **Establish** one target, objective, runtime profile, writable/protected scope, finite budget and delivery expectation. Snapshot the baseline. For self-improvement also freeze controller, generation, last-known-good and isolated candidate identities; never edit the active controller.
+2. **Freeze deciding evidence**: evaluator scripts/scenarios/expected outputs/scoring config/blocked paths plus any material external source bytes. If deciding evidence changes, invalidate or explicitly re-baseline the experiment.
+3. **Measure and diagnose**: record baseline metrics/gates/identities and unresolved risk. Treat saturated metrics as gates and add an active auxiliary metric. Use deterministic severity/tie-break rules; do not patch unverified suspicions.
+4. **Select one bounded hypothesis or inseparable batch**: record change intent (`repair|optimization|experiment`), mechanism/evidence, transformation and capability ids, parent, expected effect, evaluator/acceptance rule, rollback, and mutation owner.
+5. **Materialize the smallest candidate**. Caller-routed search requests must satisfy [candidate execution](references/evolution-candidate-execution.md); otherwise follow [transformation records](references/transformation-records-and-ablation.md). Preserve parent/transformation provenance and move only genuinely mechanical variance into scripts/schemas/validators.
+6. **Evaluate/repair** with the frozen evaluator and protected/source identities. Repair one diagnosed cause, rerun the narrowest failed gate, then adjacent gates. Stop a branch after two consecutive non-improving repairs on the same objective error set unless new evidence appears.
+7. **Decide**: reject on identity/protected-path drift, failed required gates, missed acceptance threshold, blocking structural regression, or weakened semantics/safety. Keep accepted changes only and preserve rejection evidence/last-good state. A self-improving candidate cannot authorize its own promotion.
+8. **Freeze and deliver** the exact passing candidate. Any later edit reopens affected validation. Canonicalize output/receipt paths, reject aliases with protected inputs, stage/validate/hash before commit, preserve recovery artifacts on failure, and emit a receipt tied to committed bytes.
+9. **Report truthfully**: identify parent/transformation/candidate/evaluator/scenario identities, baseline/final metrics, commands and outcomes, accepted/rejected hypotheses, gate decision, protected paths, termination/rollback, evidence layers, residual risk, and package/receipt hashes only when actually validated.
 
 ## Output contract
 
-For any mutating experiment, include parent candidate identity, transformation id(s), change intent, affected capability refs when supplied, candidate identity, evaluator/scenario identity, acceptance decision, and causal limitations. For a search/evolution request also include candidate-request v2 identity (`request_signature`), base parent id, donor parent ids, operator, expected capability effects, and a validated generation-receipt v3 proving that the materialized candidate corresponds to the requested transformation set. If ablation was run, list each ablation candidate as a separate experiment result.
+For substantive mutating runs report target/mode/objective and baseline identity; frozen evaluator/source identities and baseline/final metrics; selected/accepted/rejected hypotheses with transformation/capability refs; changed files; exact validation commands and outcomes; change-gate decision; protected paths and rollback/recovery; final frozen candidate identity; termination state; evidence-layer limits; residual risk; and package/install/receipt hashes only when produced and validated. Search candidates additionally report request signature, parent/donor ids, operator, transformations, expected capability effects, and validated generation-receipt v3. Self-improvement additionally reports controller/generation/last-known-good identities and external promotion status.
 
+## Evolution/search contract
 
-For substantive improvement/hardening runs include:
-1. target, mode, objective, baseline identity, runtime capability profile, and final artifact;
-2. evaluator contract, frozen inputs/hash, source snapshot identity/verification, baseline/final scores, auxiliary metric, and delta;
-3. hypothesis source, selected hypothesis, accepted/rejected/deferred hypotheses, expected mechanism, changed files, validation method, and decision evidence;
-4. exact commands with `pass` / `fail` / `not-run` / `blocked` outcomes;
-5. structural change-gate result and decision impact;
-6. protected paths, rollback/recovery evidence, final frozen candidate hash/identity;
-7. canonical termination status/reason, package/install result, authored/canonical output paths, artifact hash, receipt path/status, and last-good preservation result when applicable;
-8. evidence-layer summary and residual nondeterminism/risks;
-9. for `self-improvement`, controller/baseline/candidate identities, generation ID, recursion limit, last-known-good identity, external-validation status, promotion decision, and self-improvement receipt validation.
+When a caller supplies an evolution request, preserve its v2 identity (`request_signature`, base/donor parents, operator, transformations, expected capability effects), validate before mutation, and return a validated **generation-receipt v3** for the materialized candidate. `skill-improver` owns candidate materialization only; population/search state, selection and promotion remain external. Current peer contracts in `contracts/integration-manifest.json` are public compatibility surfaces.
 
-## Validation checklist
+## Stop conditions
 
-Before declaring success, verify: the same frozen evaluator produced baseline and final evidence; saturated metrics have auxiliary evidence before improvement claims; source snapshots are verified or deliberately re-baselined; required target validators passed; required structural change gate passed; blocked paths are unchanged; modified scripts were executed or syntax-checked; repair loops respected the bounded stop rule; no template residue/cache/generated report/secret/credential/package artifact entered the target; final candidate was not edited after its final pass; package/output paths passed canonical alias preflight; artifact/receipt hashes refer to the committed bytes; package scope is accurate; and scenario rates are reported only from captured outputs.
+Stop/revert/return a bounded partial result when target or baseline identity is unsafe/ambiguous; required source truth or frozen evaluator is unavailable; protected evidence changes; mutation needs blocked fixtures/secrets/unrelated paths; a required runtime/gate is unavailable; the same objective repair fails twice without new evidence; output paths alias protected inputs; validation/package/source verification fails; or passing requires weakening a hard gate. Report `blocked`/`not-run` rather than inventing success.
 
+## Final checklist
+
+Before success, verify the same frozen evaluator covered baseline and candidate; source snapshots still match or were deliberately re-baselined; saturated metrics used auxiliary evidence for improvement claims; target validators/tests and independent change gate passed; blocked paths stayed unchanged; modified scripts ran or were syntax-checked; final candidate was untouched after freeze; output aliases were rejected; committed artifact/receipt hashes match exact bytes; package scope is exact; and scenario rates are claimed only from captured executions. For self-improvement, additionally validate external controller/promotion separation and the self-improvement receipt.
 
 ## Orchestration boundary
 
-This skill owns bounded improvement experiments and self-improvement generation state. It may use directly related evaluator, hypothesis, or change-gate contracts already declared by this package, but it must not discover, select, or sequence a broad catalog of improvement specialists. A caller/orchestrator may supply additional review evidence; consume that evidence through its declared contract without absorbing the provider's orchestration logic.
+Own bounded improvement experiments and self-improvement generation state only. Consume directly related evaluator, hypothesis, change-gate and caller-supplied review evidence through declared contracts; do not discover, sequence, or absorb a broad specialist catalog. The caller/orchestrator retains global routing and final promotion authority.

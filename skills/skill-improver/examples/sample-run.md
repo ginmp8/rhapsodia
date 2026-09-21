@@ -1,6 +1,7 @@
 # Sample runs
 
 Use the host's Python 3.10+ execution method for `<PYTHON>`.
+ The generic `command` adapter is the default portable path; the Codex adapter is optional. Evaluator and change-gate command strings are argv-tokenized and never interpreted by a shell.
 
 ## Bounded run with evidence-backed backlog
 
@@ -8,7 +9,7 @@ Use the host's Python 3.10+ execution method for `<PYTHON>`.
 <PYTHON> scripts/skill_improver_loop.py \
   --target <TARGET_SKILL_ROOT> \
   --evaluator skill-benchmark \
-  --hypothesis-backlog ./reports/hypothesis-backlog.json \
+  --hypothesis-backlog <HYPOTHESIS_BACKLOG_JSON> \
   --max-iterations 3 \
   --min-delta 1.0 \
   --agent-adapter codex \
@@ -42,8 +43,8 @@ The generic template is executed as argv without a shell. It must contain `{prom
   --target <TARGET_SKILL_ROOT> \
   --evaluator skill-benchmark \
   --source-root <REPOSITORY_ROOT> \
-  --source-lock-path docs/requirements.md \
-  --source-lock-path reports/prior-audit.json \
+  --source-lock-path <SOURCE_REQUIREMENTS_PATH> \
+  --source-lock-path <PRIOR_AUDIT_PATH> \
   --max-iterations 3
 ```
 
@@ -55,8 +56,8 @@ The runner captures these source bytes before baseline evaluation and verifies t
 <PYTHON> scripts/skill_improver_loop.py \
   --target <TARGET_SKILL_ROOT> \
   --evaluator skill-benchmark \
-  --skill-benchmark-results /path/to/frozen-scenario-results.json \
-  --benchmark-lock-path /path/to/frozen-scenario-results.json \
+  --skill-benchmark-results <FROZEN_SCENARIO_RESULTS_JSON> \
+  --benchmark-lock-path <FROZEN_SCENARIO_RESULTS_JSON> \
   --blocked-path ./evals \
   --max-iterations 3 \
   --min-delta 1.0
@@ -90,8 +91,8 @@ Cancel without deleting accepted changes:
 
 <PYTHON> scripts/package_skill.py \
   --target <TARGET_SKILL_ROOT> \
-  --output ./skill.zip \
-  --receipt ./skill.zip.receipt.json
+  --output <OUTPUT_SKILL_ZIP> \
+  --receipt <OUTPUT_RECEIPT_JSON>
 ```
 
 Do not edit the target between the final validation/hash and packaging without rerunning affected gates.

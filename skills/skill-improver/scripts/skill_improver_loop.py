@@ -235,18 +235,21 @@ class IterationResult:
     change_gate_notes: str = ""
 
 
+def command_argv(cmd: str | list[str]) -> list[str]:
+    if isinstance(cmd, list):
+        return [str(x) for x in cmd]
+    # Shell syntax is intentionally not interpreted. Callers that need pipes,
+    # redirection, or compound commands should wrap them in an explicit script.
+    return shlex.split(cmd, posix=(os.name != "nt"))
+
 def run(cmd: str | list[str], cwd: Path, timeout: int | None = None, check: bool = False) -> subprocess.CompletedProcess[str]:
-    if isinstance(cmd, str):
-        shell = True
-        display = cmd
-    else:
-        shell = False
-        display = " ".join(shlex.quote(x) for x in cmd)
+    argv = command_argv(cmd)
+    display = " ".join(shlex.quote(x) for x in argv)
     print(f"[run] cwd={cwd} cmd={display}", flush=True)
     completed = subprocess.run(
-        cmd,
+        argv,
         cwd=str(cwd),
-        shell=shell,
+        shell=False,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -668,10 +671,11 @@ def run_change_gate(args: argparse.Namespace, target: Path, git_root: Path, file
         }
     )
     print(f"[change-gate] policy={args.change_gate_policy} cmd={args.change_gate_command}", flush=True)
+    change_gate_argv = command_argv(args.change_gate_command)
     completed = subprocess.run(
-        args.change_gate_command,
+        change_gate_argv,
         cwd=str(git_root),
-        shell=True,
+        shell=False,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -805,7 +809,7 @@ def choose_hypothesis(iteration: int, rejected_ids: set[str], strategy: str, hyp
     return candidates[(iteration - 1) % len(candidates)]
 
 
-def build_codex_prompt(args: argparse.Namespace, target: Path, baseline: EvalResult, hypothesis: dict[str, Any]) -> str:
+def build_patch_prompt(args: argparse.Namespace, target: Path, baseline: EvalResult, hypothesis: dict[str, Any]) -> str:
     constraints = "\n".join(f"- {c}" for c in hypothesis.get("constraints", []))
     blocked = "\n".join(f"- {p}" for p in (args.blocked_path or [])) or "- Do not modify evaluator files, benchmark fixtures, scoring scripts, lockfiles, git configuration, or secrets."
     return textwrap.dedent(
@@ -1186,7 +1190,7 @@ def main() -> int:
     parser.add_argument("--blocked-path", action="append", type=Path, default=[], help="Path the patching agent must not modify, even if inside allowed scope. Can be repeated.")
     parser.add_argument("--source-root", type=Path, help="Root used for material source snapshots. Defaults to the git root.")
     parser.add_argument("--source-lock-path", action="append", type=Path, default=[], help="Material source path to capture before analysis and verify before acceptance. Can be repeated.")
-    parser.add_argument("--agent-adapter", choices=["codex", "command"], default="codex", help="Patching-agent adapter. 'command' is host-neutral and uses --agent-command-template without a shell.")
+    parser.add_argument("--agent-adapter", choices=["command", "codex"], default="command", help="Patching-agent adapter. 'command' is the host-neutral default and uses --agent-command-template without a shell; 'codex' is an optional host adapter.")
     parser.add_argument("--agent-command-template", help="Generic argv template tokenized with shlex; must contain {prompt}; supports {cwd} and {target}.")
     parser.add_argument("--codex-bin", default="codex")
     parser.add_argument("--codex-model")
@@ -1200,7 +1204,7 @@ def main() -> int:
     parser.add_argument("--extra-allowed-path", action="append", type=Path, default=[])
     parser.add_argument("--commit-accepted", action="store_true", help="Commit accepted patches.")
     parser.add_argument("--report-path", type=Path, help="Optional Markdown run report path. Defaults to state-dir/improvement-report.md.")
-    parser.add_argument("--dry-run", action="store_true", help="Build prompts and evaluate but do not invoke Codex.")
+    parser.add_argument("--dry-run", action="store_true", help="Build prompts and evaluate but do not invoke the patching agent.")
     args = parser.parse_args()
 
     # Keep runner defaults aligned with the portable contract: use a required
@@ -1284,7 +1288,7 @@ def main() -> int:
         require_clean_git(git_root, [state_dir])
         rejected_ids = load_rejected_ids(log_path)
         hypothesis = choose_hypothesis(iteration, rejected_ids, args.strategy, hypothesis_pool)
-        prompt = build_codex_prompt(args, target, best, hypothesis)
+        prompt = build_patch_prompt(args, target, best, hypothesis)
 
         print(f"[iteration {iteration}] hypothesis={hypothesis['id']} {hypothesis['name']}", flush=True)
         if args.dry_run:
