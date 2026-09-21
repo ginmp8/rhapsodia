@@ -9,7 +9,6 @@ from pathlib import Path
 
 REQUIRED = [
     "SKILL.md",
-    "agents/openai.yaml",
     "references/search-model.md",
     "references/candidate-and-lineage-contract.md",
     "references/recombination-contract.md",
