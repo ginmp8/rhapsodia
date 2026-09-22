@@ -22,7 +22,7 @@ The mode never derives a current identity from a legacy ULID, renames a legacy i
 7. For repository-facing output, also run `validate_board_paths.py`.
 
 ```bash
-python scripts/adapt_governance.py legacy-ops.yaml canonical-ops.yaml \
+<PYTHON> scripts/adapt_governance.py legacy-ops.yaml canonical-ops.yaml \
   --spec-id spec-2026-07-20-feature-key \
   --spec-id-provenance registry/spec-2026-07-20-feature-key.yaml \
   --profile governed \

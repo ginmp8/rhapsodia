@@ -14,8 +14,8 @@ Allowed states are `created`, `accepted`, `consumed`, `superseded`, and `replaye
 - Last-known-good is transport recovery evidence, not a competing source of product/planning/execution truth.
 
 ```text
-python -B scripts/handoff_ledger.py init --ledger <ledger.json> --workflow-id <workflow-id> --receipt <receipt.json>
-python -B scripts/handoff_ledger.py record --ledger <ledger.json> --handoff <handoff.json> --state created --receipt <receipt.json>
-python -B scripts/handoff_ledger.py validate --ledger <ledger.json>
-python -B scripts/handoff_ledger.py recover --ledger <ledger.json> --receipt <receipt.json>
+<PYTHON> -B scripts/handoff_ledger.py init --ledger <ledger.json> --workflow-id <workflow-id> --receipt <receipt.json>
+<PYTHON> -B scripts/handoff_ledger.py record --ledger <ledger.json> --handoff <handoff.json> --state created --receipt <receipt.json>
+<PYTHON> -B scripts/handoff_ledger.py validate --ledger <ledger.json>
+<PYTHON> -B scripts/handoff_ledger.py recover --ledger <ledger.json> --receipt <receipt.json>
 ```

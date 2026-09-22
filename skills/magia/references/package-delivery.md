@@ -29,9 +29,9 @@ A version bump, changelog entry, or successful zip command is not evidence of be
 ## Standard Commands
 
 ```text
-python scripts/validate_skill_package.py --target <skill-root>
-python scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate
-python scripts/validate_skill_package.py --target <skill-root> --zip <output-dir>/skill.zip
+<PYTHON> scripts/validate_skill_package.py --target <skill-root>
+<PYTHON> scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip --validate
+<PYTHON> scripts/validate_skill_package.py --target <skill-root> --zip <output-dir>/skill.zip
 ```
 
 Folder and archive validators must pass before readiness is claimed.

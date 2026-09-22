@@ -5,8 +5,8 @@ Use a dependency-wave projection when the canonical task plan is complete enough
 ## Command
 
 ```bash
-python -B scripts/render_execution_waves.py <package>/tasks.md --output <external-path>.json
-python -B scripts/render_execution_waves.py <package>/tasks.md --format markdown --output <external-path>.md
+<PYTHON> -B scripts/render_execution_waves.py <package>/tasks.md --output <external-path>.json
+<PYTHON> -B scripts/render_execution_waves.py <package>/tasks.md --format markdown --output <external-path>.md
 ```
 
 ## Deterministic rules

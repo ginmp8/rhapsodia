@@ -14,8 +14,8 @@ A handoff does not require nomia to invent a spec identity. `candidate_spec_id` 
 When governance facts are ready for transfer, build a `nomia_to_mago` envelope rather than relying on prose interpretation:
 
 ```bash
-python scripts/ecosystem_handoff.py build --direction nomia_to_mago --payload <payload.json> --source <roadmap-or-feature-map> --authority nomia --evidence-ref <ref> --output <handoff.json>
-python scripts/ecosystem_handoff.py validate --input <handoff.json> --operation produce
+<PYTHON> scripts/ecosystem_handoff.py build --direction nomia_to_mago --payload <payload.json> --source <roadmap-or-feature-map> --authority nomia --evidence-ref <ref> --output <handoff.json>
+<PYTHON> scripts/ecosystem_handoff.py validate --input <handoff.json> --operation produce
 ```
 
 The payload keeps `business_priority` as Nomia-owned evidence and may include an externally evidenced `candidate_spec_id`; it must not contain technical design, tasks, validation plans, technical criticality, or execution sequence. Mago validates the same envelope locally before consuming it.

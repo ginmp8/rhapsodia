@@ -41,20 +41,20 @@ Print clear errors/warnings. Exit non-zero on errors. Use scaffold writers and v
 ## Commands
 
 ```bash
-python <skill-root>/scripts/guide_intake.py path/to/intake.yaml --as-of 2026-07-21T12:00:00+00:00
-python <skill-root>/scripts/evaluate_governance.py --handoff path/to/handoff.yaml --as-of 2026-07-21T12:00:00+00:00 --json-output path/to/handoff-result.json
-python <skill-root>/scripts/project_governance_views.py path/to/ops.yaml --as-of 2026-07-21T12:00:00+00:00
-python <skill-root>/scripts/write_artifact_scaffold.py path/to/status.md
-python <skill-root>/scripts/validate_artifact.py path/to/status.md
-python <skill-root>/scripts/validate_ops.py path/to/ops.yaml
-python <skill-root>/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec-2026-04-20-sample-feature --spec-id-provenance user-supplied
-python <skill-root>/scripts/validate_roadmap.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml
-python <skill-root>/scripts/validate_reporting.py --feature-report path/to/feature-report.md --release-notes path/to/release-notes.md --internal-notes path/to/internal-notes.md
-python <skill-root>/scripts/validate_portfolio.py --portfolio-yaml path/to/portfolio.yaml --portfolio-md path/to/portfolio.md
-python <skill-root>/scripts/validate_contracts.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml --execution-evidence path/to/execution-evidence.yaml
-python <skill-root>/scripts/validate_contracts.py --actor magia --changed-files path/to/changed-files.txt
-python <skill-root>/scripts/validate_board_paths.py --changed-files path/to/changed-files.txt
-python <skill-root>/scripts/normalize_human_artifacts.py path/to/ops.yaml path/to/feature-report.md
+<PYTHON> <skill-root>/scripts/guide_intake.py path/to/intake.yaml --as-of 2026-07-21T12:00:00+00:00
+<PYTHON> <skill-root>/scripts/evaluate_governance.py --handoff path/to/handoff.yaml --as-of 2026-07-21T12:00:00+00:00 --json-output path/to/handoff-result.json
+<PYTHON> <skill-root>/scripts/project_governance_views.py path/to/ops.yaml --as-of 2026-07-21T12:00:00+00:00
+<PYTHON> <skill-root>/scripts/write_artifact_scaffold.py path/to/status.md
+<PYTHON> <skill-root>/scripts/validate_artifact.py path/to/status.md
+<PYTHON> <skill-root>/scripts/validate_ops.py path/to/ops.yaml
+<PYTHON> <skill-root>/scripts/write_ops_scaffold.py path/to/ops.yaml --spec-id spec-2026-04-20-sample-feature --spec-id-provenance user-supplied
+<PYTHON> <skill-root>/scripts/validate_roadmap.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml
+<PYTHON> <skill-root>/scripts/validate_reporting.py --feature-report path/to/feature-report.md --release-notes path/to/release-notes.md --internal-notes path/to/internal-notes.md
+<PYTHON> <skill-root>/scripts/validate_portfolio.py --portfolio-yaml path/to/portfolio.yaml --portfolio-md path/to/portfolio.md
+<PYTHON> <skill-root>/scripts/validate_contracts.py --roadmap path/to/roadmap.yaml --feature-map path/to/feature-map.yaml --execution-evidence path/to/execution-evidence.yaml
+<PYTHON> <skill-root>/scripts/validate_contracts.py --actor magia --changed-files path/to/changed-files.txt
+<PYTHON> <skill-root>/scripts/validate_board_paths.py --changed-files path/to/changed-files.txt
+<PYTHON> <skill-root>/scripts/normalize_human_artifacts.py path/to/ops.yaml path/to/feature-report.md
 ```
 
 ## Validator Coverage

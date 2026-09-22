@@ -5,8 +5,8 @@ The planning compass is a disposable, non-authoritative view derived from one ca
 ## Command
 
 ```bash
-python -B scripts/render_planning_compass.py <package> --output <external-path>.json
-python -B scripts/render_planning_compass.py <package> --format markdown --output <external-path>.md
+<PYTHON> -B scripts/render_planning_compass.py <package> --output <external-path>.json
+<PYTHON> -B scripts/render_planning_compass.py <package> --format markdown --output <external-path>.md
 ```
 
 The output path must be outside the canonical package. Existing output is not overwritten unless `--force` is explicit.

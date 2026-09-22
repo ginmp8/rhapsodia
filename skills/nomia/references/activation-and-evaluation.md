@@ -51,9 +51,9 @@ When activation behavior or examples change: update the smallest scenario set; k
 ## Packaging Gate
 
 ```bash
-python <skill-root>/scripts/validate_activation_scenarios.py <skill-root>/examples/activation-scenarios.json
-python <skill-root>/scripts/validate_skill_package.py --target <skill-root>
-python <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root>
+<PYTHON> <skill-root>/scripts/validate_activation_scenarios.py <skill-root>/examples/activation-scenarios.json
+<PYTHON> <skill-root>/scripts/validate_skill_package.py --target <skill-root>
+<PYTHON> <skill-root>/scripts/validate_golden_examples.py --skill-root <skill-root>
 ```
 
 Prefer `scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip`; it reruns structural, activation, and golden gates before writing.

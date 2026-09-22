@@ -80,8 +80,8 @@ When technical design is triggered, record at least two explicit `OPTION` record
 Render a temporary, non-authoritative matrix outside `BOARD_ROOT`:
 
 ```bash
-python scripts/render_traceability.py <package-path> --output <external-dir>/traceability.json
-python scripts/validate_traceability.py <external-dir>/traceability.json --profile governed
+<PYTHON> scripts/render_traceability.py <package-path> --output <external-dir>/traceability.json
+<PYTHON> scripts/validate_traceability.py <external-dir>/traceability.json --profile governed
 ```
 
 The renderer reads canonical artifacts; the JSON is a disposable validation projection and must never replace PRD, design, tasks, validation, manifest, registry, or source repository truth. Delete or exclude it after validation.

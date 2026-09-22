@@ -8,9 +8,9 @@ Use this contract for every Mago write step that can touch more than one canonic
 Use `scripts/mutation_transaction.py` for Mago-owned multi-artifact writes. The workspace must be outside the canonical package. A normal sequence is:
 
 ```bash
-python scripts/mutation_transaction.py begin --package <package> --workspace <external-tx-dir> --write prd.md --write tasks.md
-python scripts/mutation_transaction.py stage --workspace <external-tx-dir> --source-dir <prepared-files>
-python scripts/mutation_transaction.py promote --workspace <external-tx-dir>
+<PYTHON> scripts/mutation_transaction.py begin --package <package> --workspace <external-tx-dir> --write prd.md --write tasks.md
+<PYTHON> scripts/mutation_transaction.py stage --workspace <external-tx-dir> --source-dir <prepared-files>
+<PYTHON> scripts/mutation_transaction.py promote --workspace <external-tx-dir>
 ```
 
 Use `resume` after an interruption that left the transaction `in_progress`. Use `rollback` after `rollback_required` or cancellation. The runner fingerprints all canonical package files and canonical manifest fields, records backups, rejects path traversal and symlinks, updates the manifest after every promoted file, detects unrelated drift, and verifies restored hashes before returning the manifest to `clean`. `--interrupt-after` and `--fail-after` exist for deterministic recovery testing and must not be used as production workflow shortcuts.

@@ -17,8 +17,8 @@ Validate `mago_to_magia` with local `scripts/ecosystem_handoff.py` before treati
 After execution, build `magia_to_mago` when implementation findings require planning reconciliation and `magia_to_nomia` when current execution or validation evidence has delivery impact. The producer automatically adds contract-v3 state projections for Nomia. Do not freehand `complete` or `passed` governance-facing states, and do not use the envelope to close governance or accept business risk.
 
 ```text
-python scripts/ecosystem_handoff.py validate --input <mago-handoff.json> --operation consume
-python scripts/ecosystem_handoff.py build --direction magia_to_mago --payload <payload.json> --source <validation-evidence> --authority magia --evidence-ref <ref> --output <handoff.json>
+<PYTHON> scripts/ecosystem_handoff.py validate --input <mago-handoff.json> --operation consume
+<PYTHON> scripts/ecosystem_handoff.py build --direction magia_to_mago --payload <payload.json> --source <validation-evidence> --authority magia --evidence-ref <ref> --output <handoff.json>
 ```
 
 ## Non-Blockers

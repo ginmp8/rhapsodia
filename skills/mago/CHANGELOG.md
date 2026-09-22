@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.1] - 2026-09-22
+
+- Make the portable Agent Skills core explicit and normalize documented Python invocations to the host-resolved `<PYTHON>` launcher.
+- Remove generated cache/bytecode residue from the distributable source tree; no planning authority, activation, routing, handoff, artifact, or validation semantics changed.
+- Compatibility impact: compatible coordinated patch; shared contract schemas remain unchanged and exact-version policy requires all three 1.10.1 packages together.
+
 ## [1.10.0] - 2026-09-19
 
 - Integrate artifact-decision-matrix and planning-experience validators into the canonical package/distribution gate with regression coverage for negative failures.

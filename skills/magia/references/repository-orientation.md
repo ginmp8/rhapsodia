@@ -19,7 +19,7 @@ Identify enough current repository context to choose the smallest safe execution
 Use:
 
 ```text
-python scripts/inspect_repository_context.py --root <repository-root> --format json
+<PYTHON> scripts/inspect_repository_context.py --root <repository-root> --format json
 ```
 
 Use `--format markdown` for a human-readable view and `--output <path>` only when a durable, explicitly requested projection is useful. The script:
