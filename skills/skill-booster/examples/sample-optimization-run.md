@@ -62,7 +62,7 @@ finalization_allowed: true
 ```yaml
 id: H1
 statement: If branch detail moves to references, context cost drops while behavior remains stable.
-files: [SKILL.md, references/workflow.md]
+files: [SKILL.md, references/optimization-workflow.md]
 expected_effect: lower token estimate with validation passing
 validation: structure validator plus activation scenario review
 status: accepted

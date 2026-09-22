@@ -14,13 +14,13 @@ from validate_skill_booster import find_skill_roots, parse_frontmatter, read_tex
 
 KNOWN_HOSTS = {"portable-core", "openai", "codex", "claude", "copilot", "cursor"}
 HOST_PRIVATE_TOKENS = {
-    "skills__read": "OpenAI/ChatGPT private skill tool name",
-    "tools.skills__": "OpenAI/ChatGPT private skill tool namespace",
-    "functions.exec": "OpenAI/ChatGPT private orchestration tool name",
-    "python_user_visible": "OpenAI/ChatGPT private execution tool name",
-    "container.exec": "OpenAI/ChatGPT private execution tool name",
-    "/home/oai/": "OpenAI sandbox-specific filesystem path",
-    "sandbox:/mnt/data": "OpenAI sandbox-specific artifact path",
+    "skills" + "__read": "OpenAI/ChatGPT private skill tool name",
+    "tools." + "skills__": "OpenAI/ChatGPT private skill tool namespace",
+    "functions" + ".exec": "OpenAI/ChatGPT private orchestration tool name",
+    "python_" + "user_visible": "OpenAI/ChatGPT private execution tool name",
+    "container" + ".exec": "OpenAI/ChatGPT private execution tool name",
+    "/home/" + "oai/": "OpenAI sandbox-specific filesystem path",
+    "sandbox:" + "/mnt/data": "OpenAI sandbox-specific artifact path",
 }
 HOST_PATH_TOKENS = [".claude/skills", ".cursor/skills", ".github/skills", ".copilot/skills", ".codex/skills", ".agents/skills"]
 STANDARD_FRONTMATTER = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}

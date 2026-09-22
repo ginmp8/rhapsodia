@@ -30,6 +30,9 @@ def test_clean_external_skill_is_inspected_without_execution() -> None:
         assert report["target_code_executed"] is False
         assert report["executable_surface_count"] == 1
         assert report["decision"] == "pass"
+        (skill / "notes.md").write_text("Use " + "functions" + ".exec directly.\n", encoding="utf-8")
+        report = json.loads(run(skill).stdout)
+        assert any(f["code"] == "HOST_COUPLING" for f in report["findings"])
 
 
 def test_traversal_zip_fails_closed() -> None:

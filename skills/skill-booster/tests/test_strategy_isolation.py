@@ -29,11 +29,13 @@ def test_skill_declares_evolution_isolation_invariants():
     assert "Maintain an experiment registry only when real experiments or multi-candidate comparisons are executed" in skill
 
 
-def test_legacy_paths_are_compatibility_only_and_not_canonical():
+def test_retired_legacy_paths_are_absent():
     skill = read("SKILL.md")
-    assert "references/pre-evolution-foundation.md" not in skill
-    assert "references/mutation-and-safety-policy.md" not in skill
-    assert "scripts/validate_pre_evolution_state.py" not in skill
-    assert "compatibility alias" in read("references/pre-evolution-foundation.md").lower()
-    assert "compatibility alias" in read("references/mutation-and-safety-policy.md").lower()
-    assert "compatibility shim" in read("scripts/validate_pre_evolution_state.py").lower()
+    retired = [
+        "references/pre-evolution-foundation.md",
+        "references/mutation-and-safety-policy.md",
+        "scripts/validate_pre_evolution_state.py",
+    ]
+    for path in retired:
+        assert path not in skill
+        assert not (ROOT / path).exists()

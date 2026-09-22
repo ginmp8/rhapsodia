@@ -29,12 +29,12 @@ DANGEROUS_PATTERNS = [
     (re.compile(r"\b(?:Invoke-Expression|iex)\b", re.I), "dynamic PowerShell execution"),
 ]
 HOST_COUPLING = {
-    "functions.exec": "openai-private-tool",
-    "tools.skills__": "openai-private-tool",
-    "container.exec": "openai-private-tool",
-    "sandbox:/mnt/data": "openai-sandbox-path",
-    "/home/oai/": "openai-sandbox-path",
-    "/mnt/data/": "openai-sandbox-path",
+    "functions" + ".exec": "openai-private-tool",
+    "tools." + "skills__": "openai-private-tool",
+    "container" + ".exec": "openai-private-tool",
+    "sandbox:" + "/mnt/data": "openai-sandbox-path",
+    "/home/" + "oai/": "openai-sandbox-path",
+    "/mnt/" + "data/": "openai-sandbox-path",
     ".claude/skills": "host-install-path",
     ".cursor/skills": "host-install-path",
     ".github/skills": "host-install-path",

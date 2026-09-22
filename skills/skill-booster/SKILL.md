@@ -1,6 +1,6 @@
 ---
 name: skill-booster
-description: "use when optimizing, improving, benchmarking, hardening, compressing, validating, normalizing portability, packaging, or running explicit evidence-guided evolutionary/multi-candidate optimization on an existing Agent Skills-compatible or SKILL.md-based skill, including third-party skills downloaded from the internet, across ChatGPT/OpenAI, Codex, Claude, GitHub Copilot, Cursor, or another compatible host; owns global optimization orchestration, trust intake, specialist routing, bounded transformation/evaluation, optional Skill Evolution search, final promotion gates, freeze, and atomic packaging; do not use for net-new skill creation, generic repository refactors, or unsupported measured-improvement claims"
+description: "use when optimizing, improving, benchmarking, hardening, compressing, validating, normalizing portability, packaging, or running explicit evidence-guided evolutionary/multi-candidate optimization on an existing agent skills-compatible or skill.md-based skill, including third-party skills downloaded from the internet, across chatgpt/openai, codex, claude, github copilot, cursor, or another compatible host; owns global optimization orchestration, trust intake, specialist routing, bounded transformation/evaluation, optional skill evolution search, final promotion gates, freeze, and atomic packaging; do not use for net-new skill creation, generic repository refactors, or unsupported measured-improvement claims"
 ---
 
 # Skill Booster

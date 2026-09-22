@@ -43,4 +43,4 @@ When optimizing a catalog skill-by-skill, preserve the latest validated manifest
 
 ## Self-optimization
 
-When Booster optimizes itself, run the active immutable Booster controller against the candidate Booster manifest and frozen peer manifests. A candidate Booster must not waive its own integration failures.
+When Booster optimizes itself, run the active immutable Booster controller against the candidate Booster manifest and frozen peer manifests. Exclude catalog-discovered alternate target versions from peer-owner checks; compare them only as baselines. Explicit peers remain explicit. A candidate Booster must not waive its own integration failures.
