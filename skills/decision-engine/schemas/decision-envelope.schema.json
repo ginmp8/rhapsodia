@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentskills.example/decision-engine/decision-envelope.schema.json",
+  "title": "Decision Engine Result",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "materiality",
+    "decision",
+    "confidence",
+    "evidence_refs",
+    "rationale",
+    "calibration",
+    "next_action"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "const": "decision-engine/1"
+    },
+    "decision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "materiality": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "question",
+            "status",
+            "value"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "noul"
+            },
+            "question": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "enum": [
+                "decided",
+                "undetermined",
+                "blocked",
+                "escalate"
+              ]
+            },
+            "value": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "question",
+            "status",
+            "options",
+            "selected"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "choice"
+            },
+            "question": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "enum": [
+                "decided",
+                "undetermined",
+                "blocked",
+                "escalate"
+              ]
+            },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "selected": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "question",
+            "status",
+            "scale",
+            "score"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "score"
+            },
+            "question": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "enum": [
+                "decided",
+                "undetermined",
+                "blocked",
+                "escalate"
+              ]
+            },
+            "scale": {
+              "type": "object",
+              "required": [
+                "min",
+                "max",
+                "meaning"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "meaning": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "score": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "confidence": {
+      "type": "object",
+      "required": [
+        "level",
+        "basis"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "calibration": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "none"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value",
+            "source",
+            "calibration_ref"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "calibrated_probability"
+            },
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "calibration_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "next_action": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

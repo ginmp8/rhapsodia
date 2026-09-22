@@ -1,0 +1,2255 @@
+{
+  "cases": [
+    {
+      "id": "valid-choice",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-noul",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-score",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": 3
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-choice-no-decision-id",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-undetermined-noul",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "undetermined",
+          "value": null
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "missing evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": "Gather evidence."
+      }
+    },
+    {
+      "id": "valid-blocked-choice",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "blocked",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": null
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "capability unavailable"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": "Use an authorized source."
+      }
+    },
+    {
+      "id": "valid-escalate-score",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "high",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "escalate",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": null
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "authoritative conflict"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": "Escalate to independent review."
+      }
+    },
+    {
+      "id": "valid-calibrated",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "calibrated_probability",
+          "value": 0.87,
+          "source": "evaluator-v2",
+          "calibration_ref": "eval-2026-09"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-probability-zero",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "calibrated_probability",
+          "value": 0.0,
+          "source": "evaluator-v2",
+          "calibration_ref": "eval-2026-09"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-probability-one",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "calibrated_probability",
+          "value": 1.0,
+          "source": "evaluator-v2",
+          "calibration_ref": "eval-2026-09"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-high-medium-confidence",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "high",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "valid-decided-with-next-action",
+      "valid": true,
+      "expected_codes": [],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": "Execute the selected route."
+      }
+    },
+    {
+      "id": "invalid-root-not-object",
+      "valid": false,
+      "expected_codes": [
+        "DE000"
+      ],
+      "data": []
+    },
+    {
+      "id": "invalid-missing-next-action",
+      "valid": false,
+      "expected_codes": [
+        "DE001A"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "invalid-extra-root",
+      "valid": false,
+      "expected_codes": [
+        "DE001"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null,
+        "probabilities": {}
+      }
+    },
+    {
+      "id": "invalid-contract-version",
+      "valid": false,
+      "expected_codes": [
+        "DE002"
+      ],
+      "data": {
+        "contract_version": "decision-engine/2",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-decision-id-number",
+      "valid": false,
+      "expected_codes": [
+        "DE002A"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": 123,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-decision-id-empty",
+      "valid": false,
+      "expected_codes": [
+        "DE002A"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "",
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-decision-id-whitespace",
+      "valid": false,
+      "expected_codes": [
+        "DE002A"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": " d1 ",
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-materiality",
+      "valid": false,
+      "expected_codes": [
+        "DE003"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "critical",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-decision-not-object",
+      "valid": false,
+      "expected_codes": [
+        "DE004"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": "choice",
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-type",
+      "valid": false,
+      "expected_codes": [
+        "DE005"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "rank",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-status",
+      "valid": false,
+      "expected_codes": [
+        "DE006"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "maybe",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-question-empty",
+      "valid": false,
+      "expected_codes": [
+        "DE007"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-question-whitespace",
+      "valid": false,
+      "expected_codes": [
+        "DE007"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": " q? ",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-noul-missing-value",
+      "valid": false,
+      "expected_codes": [
+        "DE009"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided"
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-noul-extra-field",
+      "valid": false,
+      "expected_codes": [
+        "DE010"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true,
+          "selected": "x"
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-noul-decided-null",
+      "valid": false,
+      "expected_codes": [
+        "DE011"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": null
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-noul-nondecided-value",
+      "valid": false,
+      "expected_codes": [
+        "DE012"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "undetermined",
+          "value": false
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-choice-missing-selected",
+      "valid": false,
+      "expected_codes": [
+        "DE019"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "undetermined",
+          "options": [
+            "answer",
+            "search"
+          ]
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-choice-extra-field",
+      "valid": false,
+      "expected_codes": [
+        "DE020"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search",
+          "value": true
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-choice-one-option",
+      "valid": false,
+      "expected_codes": [
+        "DE021"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "A"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-choice-whitespace-option",
+      "valid": false,
+      "expected_codes": [
+        "DE021"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "A",
+            " B "
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-choice-duplicate-option",
+      "valid": false,
+      "expected_codes": [
+        "DE022"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "A",
+            "A"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-choice-outside-options",
+      "valid": false,
+      "expected_codes": [
+        "DE023"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "refuse"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-choice-nondecided-selection",
+      "valid": false,
+      "expected_codes": [
+        "DE024"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "escalate",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": "Review."
+      }
+    },
+    {
+      "id": "invalid-score-missing-score",
+      "valid": false,
+      "expected_codes": [
+        "DE029"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "undetermined",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          }
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-score-extra-field",
+      "valid": false,
+      "expected_codes": [
+        "DE030"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": 3,
+          "value": 2
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-scale-not-object",
+      "valid": false,
+      "expected_codes": [
+        "DE031"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": "1-4",
+          "score": 3
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-scale-missing-meaning",
+      "valid": false,
+      "expected_codes": [
+        "DE031A"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 1,
+            "max": 4
+          },
+          "score": 3
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-scale-extra-field",
+      "valid": false,
+      "expected_codes": [
+        "DE031B"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical",
+            "step": 1
+          },
+          "score": 3
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-scale-equal-bounds",
+      "valid": false,
+      "expected_codes": [
+        "DE032"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 4,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": 3
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-scale-boolean-bound",
+      "valid": false,
+      "expected_codes": [
+        "DE032"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": true,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": 3
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-scale-meaning-whitespace",
+      "valid": false,
+      "expected_codes": [
+        "DE033"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": " risk "
+          },
+          "score": 3
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-score-boolean",
+      "valid": false,
+      "expected_codes": [
+        "DE034"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": true
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-score-out-of-range",
+      "valid": false,
+      "expected_codes": [
+        "DE035"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "decided",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": 5
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-score-nondecided-value",
+      "valid": false,
+      "expected_codes": [
+        "DE036"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "s1",
+        "materiality": "medium",
+        "decision": {
+          "type": "score",
+          "question": "risk?",
+          "status": "undetermined",
+          "scale": {
+            "min": 1,
+            "max": 4,
+            "meaning": "1 low, 4 critical"
+          },
+          "score": 3
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "criteria mostly converge"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Two material controls are missing.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-confidence-not-object",
+      "valid": false,
+      "expected_codes": [
+        "DE040"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": "high",
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-confidence-missing-basis",
+      "valid": false,
+      "expected_codes": [
+        "DE040A"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-confidence-extra",
+      "valid": false,
+      "expected_codes": [
+        "DE040B"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence",
+          "probability": 0.9
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-confidence-level",
+      "valid": false,
+      "expected_codes": [
+        "DE041"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "certain",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-confidence-basis-whitespace",
+      "valid": false,
+      "expected_codes": [
+        "DE042"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": " direct "
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-nondecided-medium-confidence",
+      "valid": false,
+      "expected_codes": [
+        "DE043"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "undetermined",
+          "value": null
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-high-low-confidence",
+      "valid": false,
+      "expected_codes": [
+        "DE044"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "high",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-evidence-not-list",
+      "valid": false,
+      "expected_codes": [
+        "DE050"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": "E1",
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-evidence-whitespace",
+      "valid": false,
+      "expected_codes": [
+        "DE050"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          " E1 "
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-evidence-duplicate",
+      "valid": false,
+      "expected_codes": [
+        "DE051"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1",
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-high-no-evidence",
+      "valid": false,
+      "expected_codes": [
+        "DE052"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "high",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "decided",
+          "value": true
+        },
+        "confidence": {
+          "level": "medium",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-rationale-empty",
+      "valid": false,
+      "expected_codes": [
+        "DE060"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-calibration-not-object",
+      "valid": false,
+      "expected_codes": [
+        "DE070"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": "none",
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-none-with-value",
+      "valid": false,
+      "expected_codes": [
+        "DE071"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none",
+          "value": 0.9
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-calibrated-missing-ref",
+      "valid": false,
+      "expected_codes": [
+        "DE072"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "calibrated_probability",
+          "value": 0.8,
+          "source": "x"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-calibrated-out-of-range",
+      "valid": false,
+      "expected_codes": [
+        "DE073"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "calibrated_probability",
+          "value": 1.1,
+          "source": "x",
+          "calibration_ref": "r"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-calibrated-source-empty",
+      "valid": false,
+      "expected_codes": [
+        "DE074"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "calibrated_probability",
+          "value": 0.8,
+          "source": "",
+          "calibration_ref": "r"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-calibrated-ref-whitespace",
+      "valid": false,
+      "expected_codes": [
+        "DE074"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "calibrated_probability",
+          "value": 0.8,
+          "source": "x",
+          "calibration_ref": " r "
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-calibration-kind",
+      "valid": false,
+      "expected_codes": [
+        "DE075"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "self_estimate"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-next-action-empty",
+      "valid": false,
+      "expected_codes": [
+        "DE080"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "decided",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": "search"
+        },
+        "confidence": {
+          "level": "high",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": ""
+      }
+    },
+    {
+      "id": "invalid-blocked-no-next",
+      "valid": false,
+      "expected_codes": [
+        "DE081"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": null,
+        "materiality": "low",
+        "decision": {
+          "type": "choice",
+          "question": "route?",
+          "status": "blocked",
+          "options": [
+            "answer",
+            "search"
+          ],
+          "selected": null
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "direct evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "Current data is required.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    },
+    {
+      "id": "invalid-escalate-no-next",
+      "valid": false,
+      "expected_codes": [
+        "DE081"
+      ],
+      "data": {
+        "contract_version": "decision-engine/1",
+        "decision_id": "d1",
+        "materiality": "medium",
+        "decision": {
+          "type": "noul",
+          "question": "safe?",
+          "status": "escalate",
+          "value": null
+        },
+        "confidence": {
+          "level": "low",
+          "basis": "direct rule and evidence"
+        },
+        "evidence_refs": [
+          "E1"
+        ],
+        "rationale": "The criterion is satisfied.",
+        "calibration": {
+          "kind": "none"
+        },
+        "next_action": null
+      }
+    }
+  ]
+}
