@@ -11,6 +11,8 @@ The repository is intended to make skill creation, review, hardening, testing, p
 ## Repository structure
 
 ```text
+agents/                   # Source custom-agent profiles
+  *.agent.md
 skills/
   <skill-name>/
     SKILL.md          # Main skill instructions and activation contract
@@ -37,6 +39,108 @@ Typical workflows include:
 - organizing delivery, planning, and execution workflows.
 
 When a skill includes scripts, read the local instructions before running them. Some scripts are intended for validation, packaging, inventory, or report generation and may have package-specific assumptions.
+
+## Rhapsodia Agents for VS Code
+
+Rhapsodia includes a VS Code-first custom-agent layer for coordinating the existing Nomia, Mago, and Magia Agent Skills through native subagent delegation. It does not merge or fork those skills and does not require an external orchestration runtime.
+
+### Included package
+
+```text
+agents/
+  rhapsodia-supervisor.agent.md
+  nomia.agent.md
+  mago.agent.md
+  magia.agent.md
+
+docs/agents/
+  ARCHITECTURE.md
+  SOURCES.md
+  contracts/
+    rhapsodia-agent-system.json
+
+scripts/
+  validate_agents.py
+
+tests/
+  agent-scenarios.json
+  test_validate_agents.py
+```
+
+The [agent architecture](docs/agents/ARCHITECTURE.md) is the detailed source of truth for ownership, authority, routing budgets, lifecycle recovery, and handoff boundaries. The [agent sources](docs/agents/SOURCES.md) document the host-specific mechanics and compatibility evidence.
+
+### Required skills
+
+The package expects the current `nomia`, `mago`, and `magia` Agent Skills to be available through the host's native skill discovery. It does not bundle or fork those skills. The RhapsodIA repository keeps the source skills under `skills/`. When using this package in a target repository, install each skill in one of the following host-supported locations:
+
+```text
+.github/skills/<skill-name>/SKILL.md
+.claude/skills/<skill-name>/SKILL.md
+.agents/skills/<skill-name>/SKILL.md
+```
+
+Install each skill once in one supported location. Do not copy the full skill instructions into the custom agents.
+
+### Install and use
+
+Copy the profiles from `agents/` into `.github/agents/` in the target repository, then open that repository in VS Code with GitHub Copilot and agent support enabled. Use the custom-agent configuration or diagnostics UI to confirm that the four agents and the three required Agent Skills are discovered.
+
+The primary user-facing entry point is `Rhapsodia Supervisor`. Nomia, Mago, and Magia use `user-invocable: false`; they are native subagents of the supervisor rather than independent user-selected modes.
+
+### Native-only runtime policy
+
+Normal operation requires only host-native capabilities:
+
+- repository read and search;
+- scoped editing in specialist workers;
+- bounded command execution in specialist workers;
+- native custom-agent/subagent invocation in the supervisor;
+- native Agent Skills discovery.
+
+The core package does not depend on MCP, LangGraph, CrewAI, AutoGen, Orca, a provider SDK, or a custom orchestration service. An optional integration may still be used by a host if separately configured, but it is not a package requirement.
+
+### Tool scoping
+
+| Agent                | Tools                               | Purpose                                    |
+| -------------------- | ----------------------------------- | ------------------------------------------ |
+| Rhapsodia Supervisor | `read`, `search`, `agent`           | Read-only routing and native delegation    |
+| Nomia                | `read`, `search`, `edit`, `execute` | Governance artifacts and Nomia validators  |
+| Mago                 | `read`, `search`, `edit`, `execute` | Planning artifacts and Mago validators     |
+| Magia                | `read`, `search`, `edit`, `execute` | Bounded implementation and execution proof |
+
+Workers intentionally do not receive the `agent` tool, which prevents recursive worker-to-worker orchestration. Capability does not grant authority beyond the role-specific Agent Skill contract.
+
+### Governed lifecycle
+
+```text
+Nomia -> Mago -> Magia -> Mago -> Nomia
+```
+
+This is a lifecycle, not a requirement to replay every phase. The supervisor may resume from the middle when canonical state and valid typed evidence establish the active phase. A bounded Magia ADHOC request may bypass the governed lifecycle only when no governed board or package is involved and the direct repository scope and proof are explicit.
+
+Two handoff layers coexist:
+
+- `handoff/v1`: agent-control delegation from the supervisor to a worker;
+- ecosystem handoff v3: skill-owned evidence transfer between Nomia, Mago, and Magia.
+
+The supervisor does not generate or repair ecosystem handoff v3. The [portable agent-system contract](docs/agents/contracts/rhapsodia-agent-system.json) defines the semantic boundary.
+
+### Host configuration
+
+No profile pins a `model`; the selected host model is inherited so the package does not depend on a model identifier that varies across accounts, hosts, or time. The package also deliberately avoids global `AGENTS.md` or `copilot-instructions.md` files so Mago, Magia, and Nomia rules apply only when their agents or skills are active.
+
+### Validation and evidence
+
+Run the package validator and tests with an available Python 3 interpreter:
+
+```text
+python scripts/validate_agents.py --target .
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+The validator checks the agent profiles, portable contract, scenario coverage, and package documentation. The included tests and scenarios prove structure and selected policy invariants; `tests/agent-scenarios.json` remains `planned` evidence until executed by an actual model and host harness. Structural validation must not be interpreted as measured runtime routing precision or autonomous reliability.
+
+VS Code is the primary, structurally validated adapter. GitHub Copilot surfaces share common frontmatter and tool aliases, but VS Code-specific subagent allowlisting may not behave identically everywhere. The semantic contract is reusable by Cursor, Claude, Codex, and Visual Studio, but this package does not include host-specific runtime validation for those environments.
 
 ## Validation
 

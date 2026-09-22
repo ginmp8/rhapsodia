@@ -1,0 +1,212 @@
+{
+  "contract": "agent-system-contract/v1",
+  "system": {
+    "name": "rhapsodia-mago-magia-nomia",
+    "objective": "Coordinate governed product delivery, technical planning, and bounded implementation through Nomia, Mago, and Magia while preserving role ownership, typed evidence, least authority, and native-host portability.",
+    "autonomy": "policy-bounded-autonomous"
+  },
+  "authority": {
+    "may_decide": [
+      "current lifecycle owner when repository state and typed evidence resolve ownership unambiguously",
+      "whether to continue an already-authorized low-risk lifecycle transition",
+      "bounded implementation details that remain inside the active specialist skill authority"
+    ],
+    "may_recommend": [
+      "business or delivery decisions that remain Nomia-owned",
+      "technical architecture or planning changes that remain Mago-owned",
+      "execution alternatives that remain Magia-owned until validated"
+    ],
+    "may_execute": [
+      "Nomia-owned governance artifact changes through the Nomia worker",
+      "Mago-owned planning artifact changes through the Mago worker",
+      "Magia-owned repository changes and validation through the Magia worker",
+      "local package-owned validators and bounded repository verification commands"
+    ],
+    "must_not_execute": [
+      "cross-owner artifact mutation",
+      "production deployment or release without explicit external authority",
+      "financial, identity, access-control, or irreversible external actions",
+      "secret disclosure or credential propagation",
+      "self-modification of ownership, approval policy, validators, or acceptance criteria during an active run",
+      "third-party orchestration runtime installation as a prerequisite for normal operation"
+    ],
+    "must_escalate": [
+      "owner or authority is unresolved",
+      "business-risk acceptance or delivery commitment is required",
+      "destructive, privileged, production, or externally communicative action lacks explicit authorization",
+      "material architecture, public contract, data, security, sequencing, or user-behavior change crosses the active role boundary",
+      "canonical evidence conflicts or privacy lineage is insufficient",
+      "required validation cannot be performed truthfully",
+      "routing, retry, or repair budget is exhausted"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "repository-read",
+      "required": true,
+      "effect": "read-only",
+      "scope": ["current workspace", "installed Agent Skills", "explicitly supplied evidence"],
+      "approval": "none",
+      "idempotency": "not-applicable"
+    },
+    {
+      "id": "specialist-delegation",
+      "required": true,
+      "effect": "read-only",
+      "scope": ["Nomia", "Mago", "Magia"],
+      "approval": "none",
+      "idempotency": "required"
+    },
+    {
+      "id": "governance-write",
+      "required": true,
+      "effect": "local-write",
+      "scope": ["Nomia-owned canonical governance artifacts only"],
+      "approval": "policy",
+      "idempotency": "required"
+    },
+    {
+      "id": "planning-write",
+      "required": true,
+      "effect": "local-write",
+      "scope": ["Mago-owned canonical planning artifacts only"],
+      "approval": "policy",
+      "idempotency": "required"
+    },
+    {
+      "id": "repository-write",
+      "required": true,
+      "effect": "local-write",
+      "scope": ["Magia-authorized repository and execution artifacts only"],
+      "approval": "policy",
+      "idempotency": "reconcile-before-retry"
+    },
+    {
+      "id": "bounded-process-execution",
+      "required": true,
+      "effect": "local-write",
+      "scope": ["skill validators", "tests", "build or lint commands explicitly allowed by the active role"],
+      "approval": "policy",
+      "idempotency": "reconcile-before-retry"
+    },
+    {
+      "id": "external-side-effect",
+      "required": false,
+      "effect": "external-write",
+      "scope": ["only an explicitly authorized action outside the normal agent lifecycle"],
+      "approval": "human",
+      "idempotency": "reconcile-before-retry"
+    }
+  ],
+  "state": {
+    "durable": false,
+    "terminal_states": ["completed", "blocked", "escalated", "failed"]
+  },
+  "budgets": {
+    "max_hops": 12,
+    "max_reentries_per_owner": 2,
+    "max_identical_handoff_repeats": 0
+  },
+  "verification": [
+    "every worker must return role-owned artifacts or evidence plus exact validation status",
+    "ecosystem handoff v3 must be generated and validated by the owning skill before the supervisor routes the next governed phase",
+    "the supervisor must not convert planned checks into executed evidence",
+    "a repeated materially identical delegation is a stop condition",
+    "final completion requires all required current-phase validation to be pass or an explicit blocked/escalated result"
+  ],
+  "stop_conditions": [
+    "required Agent Skill is unavailable",
+    "current owner cannot be resolved without inventing facts",
+    "a governed workflow would shortcut Nomia directly to Magia",
+    "a worker attempts recursive delegation or cross-owner mutation",
+    "a required typed handoff is malformed, stale, mixed-version, privacy-invalid, or authority-invalid",
+    "hop, repair, or identical-state budget is exhausted",
+    "continuation would require unsupported host capability or third-party runtime dependency"
+  ],
+  "agents": [
+    {
+      "id": "rhapsodia-supervisor",
+      "owns": ["routing", "orchestration-state", "delegation", "transition-validation", "cycle-safety", "final-integration-summary"],
+      "capabilities": ["repository-read", "specialist-delegation"]
+    },
+    {
+      "id": "nomia",
+      "owns": ["product-delivery-governance", "roadmap-status-decisions", "governance-closure", "nomia-owned-evidence"],
+      "capabilities": ["repository-read", "governance-write", "bounded-process-execution"]
+    },
+    {
+      "id": "mago",
+      "owns": ["technical-planning", "requirements-design-tasks-validation-plan", "planning-reconciliation", "mago-owned-evidence"],
+      "capabilities": ["repository-read", "planning-write", "bounded-process-execution"]
+    },
+    {
+      "id": "magia",
+      "owns": ["bounded-implementation", "debugging-tests-validation", "execution-evidence", "magia-owned-technical-docs"],
+      "capabilities": ["repository-read", "repository-write", "bounded-process-execution"]
+    }
+  ],
+  "routing": {
+    "type": "centralized-supervisor",
+    "max_hops": 12,
+    "reentry_requires_state_change": true
+  },
+  "hosts": [
+    {
+      "host": "vscode",
+      "status": "supported",
+      "capability_mapping": {
+        "repository-read": "read + search tool aliases",
+        "specialist-delegation": "agent tool with agents allowlist",
+        "governance-write": "edit tool in Nomia worker",
+        "planning-write": "edit tool in Mago worker",
+        "repository-write": "edit tool in Magia worker",
+        "bounded-process-execution": "execute tool under worker authority",
+        "external-side-effect": "host/user approval plus explicit external authority"
+      },
+      "limitations": [
+        "runtime behavior still depends on the selected model and installed skills",
+        "orchestration state is session-scoped unless canonical workflow artifacts provide resumable evidence"
+      ]
+    },
+    {
+      "host": "github-copilot",
+      "status": "degraded",
+      "capability_mapping": {
+        "repository-read": "read + search aliases",
+        "specialist-delegation": "agent/custom-agent mechanism where available",
+        "governance-write": "edit alias",
+        "planning-write": "edit alias",
+        "repository-write": "edit alias",
+        "bounded-process-execution": "execute alias"
+      },
+      "limitations": [
+        "the VS Code-specific agents allowlist is an adapter optimization and may be ignored by other Copilot surfaces",
+        "this package is validated primarily for VS Code custom-agent discovery"
+      ]
+    },
+    {
+      "host": "cursor",
+      "status": "unverified",
+      "capability_mapping": {},
+      "limitations": ["portable semantics are reusable but no Cursor-specific adapter is included"]
+    },
+    {
+      "host": "claude",
+      "status": "unverified",
+      "capability_mapping": {},
+      "limitations": ["portable semantics are reusable but no Claude-specific agent adapter is included"]
+    },
+    {
+      "host": "codex",
+      "status": "unverified",
+      "capability_mapping": {},
+      "limitations": ["portable semantics are reusable but no Codex-specific agent adapter is included"]
+    },
+    {
+      "host": "visual-studio",
+      "status": "unverified",
+      "capability_mapping": {},
+      "limitations": ["the package does not claim runtime parity with VS Code without host-specific validation"]
+    }
+  ]
+}
