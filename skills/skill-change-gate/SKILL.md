@@ -54,12 +54,12 @@ Proceed with explicit assumptions when evidence is partial, but use `insufficien
 
 ## Modes
 
-| Mode | Use when | Primary decision |
-|---|---|---|
-| `candidate-gate` | a candidate change exists and must be accepted or rejected | pass/fail decision with regressions |
-| `preflight-gate` | a workflow needs required evidence before patching | evidence checklist and blockers |
+| Mode                   | Use when                                                            | Primary decision                     |
+| ---------------------- | ------------------------------------------------------------------- | ------------------------------------ |
+| `candidate-gate`       | a candidate change exists and must be accepted or rejected          | pass/fail decision with regressions  |
+| `preflight-gate`       | a workflow needs required evidence before patching                  | evidence checklist and blockers      |
 | `post-validation-gate` | validators/benchmark already ran and need structural interpretation | decision impact of supplied evidence |
-| `advisory-review` | non-blocking quality feedback only | warnings and follow-up hypotheses |
+| `advisory-review`      | non-blocking quality feedback only                                  | warnings and follow-up hypotheses    |
 
 Default to `candidate-gate` when a changed package, diff, or hypothesis is present.
 
@@ -73,7 +73,7 @@ Load only what the active gate needs:
 - [`references/integration-with-skill-improver.md`](references/integration-with-skill-improver.md) for experiment/self-improvement loops.
 - [`references/capability-preservation-and-parent-provenance.md`](references/capability-preservation-and-parent-provenance.md) when capability maps, transformation ids/change intent, or direct-parent attribution are supplied.
 - [`references/search-candidate-gate.md`](references/search-candidate-gate.md) when the candidate belongs to a multi-candidate/evolution search and lineage/search provenance is supplied.
-- `scripts/validate_search_candidate_context.py` validates the current v2 search candidate context before a search candidate is gated.
+- `scripts/validate_search_candidate_context.py` validates the current v3 search candidate context before a search candidate is gated.
 - `contracts/integration-manifest.json` declares ownership of the search-candidate-context schema and change-gate result surface for ecosystem impact analysis.
 - `scripts/static_change_gate.py` when a compatible Python runtime and filesystem access are available.
 - [`examples/usage-examples.md`](examples/usage-examples.md) for compact outcome examples.
@@ -106,12 +106,7 @@ For frozen experiments, add applicable evidence controls:
 --artifact-receipt <PACKAGE_RECEIPT_JSON>
 ```
 
-Treat helper output as mechanical evidence, not the full decision.
-6. **Review semantically.** Use the rubric to inspect activation intent, authority, safety, evidence discipline, validation truthfulness, output semantics, compatibility, and whether removed/changed resources still have valid owners/consumers.
-7. **Review portability.** Under `portable`, fail or warn when core semantics depend on one host's private runtime. Optional host adapters are acceptable when ignoring them leaves the core workflow intact.
-8. **Classify findings.** Mark each as blocking regression, material concern, non-blocking trade-off, false positive, or follow-up hypothesis. For search candidates, gate each candidate independently using `references/search-candidate-gate.md`; do not choose survivors, rank peers, or waive a regression because another candidate is worse. State whether it is candidate-introduced, pre-existing, or unknown when material.
-9. **Decide.** Blocking regressions fail. Under `strict`, unresolved material concerns also fail unless explicitly waived. `pass` requires sufficient applicable evidence, not merely a clean static report.
-10. **Report for the caller.** State accept, reject, repair-before-accept, gather-evidence, or advisory-only. Keep measured improvement separate from quality acceptance.
+Treat helper output as mechanical evidence, not the full decision. 6. **Review semantically.** Use the rubric to inspect activation intent, authority, safety, evidence discipline, validation truthfulness, output semantics, compatibility, and whether removed/changed resources still have valid owners/consumers. 7. **Review portability.** Under `portable`, fail or warn when core semantics depend on one host's private runtime. Optional host adapters are acceptable when ignoring them leaves the core workflow intact. 8. **Classify findings.** Mark each as blocking regression, material concern, non-blocking trade-off, false positive, or follow-up hypothesis. For search candidates, gate each candidate independently using `references/search-candidate-gate.md`; do not choose survivors, rank peers, or waive a regression because another candidate is worse. State whether it is candidate-introduced, pre-existing, or unknown when material. 9. **Decide.** Blocking regressions fail. Under `strict`, unresolved material concerns also fail unless explicitly waived. `pass` requires sufficient applicable evidence, not merely a clean static report. 10. **Report for the caller.** State accept, reject, repair-before-accept, gather-evidence, or advisory-only. Keep measured improvement separate from quality acceptance.
 
 ## Decision rules
 
@@ -141,6 +136,7 @@ Return this structure for every substantive gate:
 - decision for caller: accept | reject | repair-before-accept | gather-evidence | advisory-only
 
 ### Evidence identities
+
 - stable baseline tree:
 - direct parent tree: `<same-as-baseline | identity | not-supplied>`
 - candidate tree:
@@ -151,6 +147,7 @@ Return this structure for every substantive gate:
 - self-improvement generation/controller/promotion receipt: `<not-applicable | supplied evidence>`
 
 ### Evidence inspected
+
 - target evidence:
 - candidate evidence:
 - commands/results:
@@ -158,26 +155,32 @@ Return this structure for every substantive gate:
 - missing evidence:
 
 ### Capability preservation
+
 | capability | classification | evidence | decision impact |
-|---|---|---|---|
+| ---------- | -------------- | -------- | --------------- |
 
 ### Findings
+
 | severity | area | origin | finding | decision impact |
-|---|---|---|---|---|
+| -------- | ---- | ------ | ------- | --------------- |
 
 ### Portability
+
 - portable core:
 - optional host adapters:
 - host-specific dependencies:
 
 ### Accepted trade-offs and false positives
-- 
+
+-
 
 ### Required fixes before accept
-- 
+
+-
 
 ### Follow-up hypotheses
-- 
+
+-
 ```
 
 Use concise entries. Never invent command results, hashes, benchmark scores, or runtime support.
