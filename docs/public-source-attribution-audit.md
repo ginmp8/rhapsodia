@@ -1,6 +1,6 @@
 # Public Source Attribution Audit
 
-Date: 2026-05-12
+Date: 2026-09-22
 
 ## Purpose
 
@@ -80,6 +80,14 @@ The repository already contained `skills/context-architect/references/upstream-s
 
 PR #8 added the missing root README entry.
 
+### `skills/decision-engine/`
+
+Status: newly documented.
+
+The package is an original RhapsodIA implementation conceptually inspired by JEV's structured decision approach. The repository currently records no copied JEV text, code, templates, or other license-bearing material in the package. The package is therefore documented as conceptual inspiration rather than as an official JEV implementation or a runtime-compatible derivative.
+
+This audit records the attribution boundary: any future change that copies or closely adapts JEV material must identify the exact source URL or repository, version or commit, copyright holder, license, and affected files before distribution.
+
 ### `skills/skill-creator-juiced/`
 
 Status: covered by PR #8.
@@ -144,19 +152,20 @@ Decision: no new attribution required.
 
 ## Decision summary
 
-No additional root README attribution entries are required beyond the cases already documented by PR #8:
+The current root README attribution entries are:
 
 - `skills/skill-creator/`
 - `skills/streamlit/`
 - `skills/context-architect/`
 - `skills/skill-creator-juiced/`
 - `skills/karpathy-guidelines/`
+- `skills/decision-engine/`
 
-The public review found common names and category-level overlaps, but no additional strong evidence of copied or closely adapted third-party skill content.
+The public review found common names and category-level overlaps, but no additional strong evidence of copied or closely adapted third-party skill content. The decision-engine entry records conceptual JEV inspiration without asserting third-party license rights or runtime compatibility.
 
 ## Follow-up policy
 
-Add or update a local source note when future changes do any of the following:
+Add or update an attribution note in the root README, this audit, or relevant package metadata when future changes do any of the following:
 
 1. copy upstream text, examples, scripts, or templates;
 2. closely adapt upstream structure, workflow, or section wording;
