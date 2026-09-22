@@ -1,6 +1,7 @@
 ---
 name: skill-prompt-and-activation-review
-description: use when reviewing, improving, rewriting, statically validating, or stress-testing existing skill or agent prompt/activation surfaces: frontmatter descriptions, trigger/non-trigger rules, scope/ownership boundaries, handoffs/overlap, stop conditions, reusable instructions, activation scenarios, or output/evidence contracts. do not use for net-new prompt authoring, package-wide benchmark/harness/hardening/consistency work, repository implementation, deployment, or unrelated writing/code review.
+description: >-
+  use when reviewing, improving, rewriting, statically validating, or stress-testing existing skill or agent prompt/activation surfaces: frontmatter descriptions, trigger/non-trigger rules, scope/ownership boundaries, handoffs/overlap, stop conditions, reusable instructions, activation scenarios, or output/evidence contracts. do not use for net-new prompt authoring, package-wide benchmark/harness/hardening/consistency work, repository implementation, deployment, or unrelated writing/code review.
 ---
 
 # Skill Prompt and Activation Review

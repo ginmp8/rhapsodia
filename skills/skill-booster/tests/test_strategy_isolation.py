@@ -39,3 +39,15 @@ def test_retired_legacy_paths_are_absent():
     for path in retired:
         assert path not in skill
         assert not (ROOT / path).exists()
+
+
+def test_prove_requires_fresh_canonical_validation_receipt_before_final_gate():
+    skill = read("SKILL.md")
+    workflow = read("references/optimization-workflow.md")
+    passbook = read("references/specialist-passbook.md")
+    phrase = "fresh passing `skill-opt.validation-gate-receipt` v1"
+    assert phrase in skill
+    assert phrase in workflow
+    assert phrase in passbook
+    assert "do not replace this requirement with a Booster-local parser" in skill
+    assert "final `skill-change-gate`" in workflow

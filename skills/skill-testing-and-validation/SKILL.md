@@ -112,6 +112,8 @@ Never replace a higher-precedence command merely because a lower-precedence comm
 
 ### 4. Execute gates with receipts
 
+For Agent Skills packages, the canonical structural validator is `scripts/validate_skill_package.py`. It validates the root `SKILL.md`, parses YAML frontmatter with a real YAML parser when available and a conservative portable fallback otherwise, and rejects malformed frontmatter before package promotion. `discover_commands.py` selects this validator as the default `validator` gate whenever a root `SKILL.md` is present.
+
 For safe argv-based commands, use:
 
 ```text

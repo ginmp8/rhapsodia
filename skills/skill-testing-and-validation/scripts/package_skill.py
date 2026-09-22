@@ -12,6 +12,8 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+from validate_skill_package import validate as validate_skill_package
+
 EXCLUDE_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules", "dist", "build"}
 EXCLUDE_SUFFIXES = {".pyc", ".pyo", ".log", ".tmp", ".zip"}
 MAX_BYTES = 25 * 1024 * 1024
@@ -45,13 +47,8 @@ def iter_package_files(root: Path):
 
 
 def validate_root(root: Path) -> list[str]:
-    errors: list[str] = []
-    if not (root / "SKILL.md").exists():
-        errors.append("SKILL.md missing")
-    if len(list(root.glob("SKILL.md"))) != 1:
-        errors.append("expected exactly one root SKILL.md")
-    if not skill_name(root):
-        errors.append("portable lowercase skill name missing from SKILL.md frontmatter")
+    structural = validate_skill_package(root)
+    errors = list(structural.get("errors") or [])
     for path in sorted(root.rglob("*")):
         if path.is_symlink():
             errors.append(f"symlink inputs are not package-safe: {path.relative_to(root).as_posix()}")

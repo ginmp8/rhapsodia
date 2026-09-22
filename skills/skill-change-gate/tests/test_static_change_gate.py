@@ -42,6 +42,35 @@ def test_self_check_emits_stable_tree_hash() -> None:
         assert ra["target_tree_sha256"] == rb["target_tree_sha256"]
 
 
+def test_invalid_unquoted_yaml_mapping_separator_is_blocking() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = Path(td) / "demo-skill"
+        skill.mkdir()
+        (skill / "SKILL.md").write_text(
+            "---\nname: demo-skill\ndescription: review prompt surfaces: frontmatter descriptions and activation boundaries across compatible agent hosts with explicit evidence, immutable candidate identities, regression checks, portability review, and safe delivery acceptance\n---\n\n# Demo\n",
+            encoding="utf-8",
+        )
+        result = run("--target", str(skill), "--policy", "strict")
+        report = parse(result)
+        assert result.returncode == 1
+        assert report["status"] == "fail"
+        assert any(f["code"] == "frontmatter/yaml-invalid" for f in report["findings"])
+
+
+def test_quoted_yaml_scalar_with_colon_is_valid() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = Path(td) / "demo-skill"
+        skill.mkdir()
+        (skill / "SKILL.md").write_text(
+            '---\nname: demo-skill\ndescription: "review prompt surfaces: frontmatter descriptions and activation boundaries across compatible agent hosts with explicit evidence, immutable candidate identities, regression checks, portability review, and safe delivery acceptance"\n---\n\n# Demo\n',
+            encoding="utf-8",
+        )
+        result = run("--target", str(skill), "--policy", "strict")
+        report = parse(result)
+        assert result.returncode == 0, report
+        assert report["status"] == "pass"
+
+
 def test_block_scalar_description_and_optional_adapter_are_portable() -> None:
     with tempfile.TemporaryDirectory() as td:
         skill = Path(td) / "demo-skill"
@@ -164,6 +193,8 @@ def test_token_efficiency_filename_is_not_treated_as_secret() -> None:
 if __name__ == "__main__":
     tests = [
         test_self_check_emits_stable_tree_hash,
+        test_invalid_unquoted_yaml_mapping_separator_is_blocking,
+        test_quoted_yaml_scalar_with_colon_is_valid,
         test_block_scalar_description_and_optional_adapter_are_portable,
         test_protected_path_change_is_blocking,
         test_expected_hash_mismatch_is_blocking,

@@ -93,7 +93,8 @@
         1
       ],
       "required_for": [
-        "validation-when-used"
+        "candidate-validation",
+        "final-prove-validation"
       ]
     },
     {

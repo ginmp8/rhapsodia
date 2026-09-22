@@ -33,6 +33,7 @@ For required gates:
 For reusable skill packages, additionally check when relevant:
 
 - one root `SKILL.md`;
+- `SKILL.md` YAML frontmatter passes the canonical structural validator; malformed YAML is a hard failure, not a warning;
 - portable lowercase `name`/description frontmatter;
 - referenced local files exist and remain within package root;
 - non-template files have no unresolved scaffold markers;

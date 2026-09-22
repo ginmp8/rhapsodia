@@ -181,6 +181,16 @@ def discover(root: Path) -> dict[str, Any]:
 
     if (root / "SKILL.md").exists():
         markers.append("SKILL.md")
+        canonical_skill_validator = Path(__file__).resolve().parent / "validate_skill_package.py"
+        add(
+            candidates,
+            "validator",
+            "<PYTHON> <skill-testing-and-validation>/scripts/validate_skill_package.py . --format json",
+            "canonical Agent Skills structural validator",
+            "high",
+            5,
+            argv=[sys.executable, str(canonical_skill_validator), ".", "--format", "json"],
+        )
         validator = root / "scripts" / "validate_artifact_integrity.py"
         if validator.exists():
             add(candidates, "validator", "<PYTHON> scripts/validate_artifact_integrity.py . --format json", "skill integrity validator", "high", 20, argv=[sys.executable, "scripts/validate_artifact_integrity.py", ".", "--format", "json"])
