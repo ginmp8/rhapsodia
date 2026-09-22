@@ -69,7 +69,16 @@ def discover_peers(args,target):
     if p.is_dir():add(p,True)
  return roots
 
-def analyze(target:Path,baseline:Path|None,peer_roots:list[Path])->dict:
+def peer_catalog_fingerprint(peers:list[tuple[Path,dict]])->str|None:
+ if not peers:return None
+ rows=[]
+ for root,m in peers:
+  manifest=root/MANIFEST
+  digest=hashlib.sha256(manifest.read_bytes()).hexdigest() if manifest.is_file() else 'missing'
+  rows.append(f"{m.get('skill','?')}|{root.resolve()}|{digest}")
+ return hashlib.sha256("\n".join(sorted(rows)).encode('utf-8')).hexdigest()
+
+def analyze(target:Path,baseline:Path|None,peer_roots:list[Path],require_peer_catalog:bool=False)->dict:
  errors=[];warnings=[]
  tm,te=load_root(target);errors.extend(te)
  bm=None
@@ -80,7 +89,9 @@ def analyze(target:Path,baseline:Path|None,peer_roots:list[Path])->dict:
  for root in peer_roots:
   m,e=load_root(root);errors.extend(e)
   if m:peers.append((root,m))
- if not peers:warnings.append('peer_catalog:empty:ecosystem_compatibility_not_proven')
+ if not peers:
+  if require_peer_catalog:errors.append('peer_catalog:required_but_empty:ecosystem_compatibility_not_proven')
+  else:warnings.append('peer_catalog:empty:ecosystem_compatibility_not_proven')
  if tm:
   catalog=[(target,tm)]+peers
   owners={}
@@ -109,12 +120,12 @@ def analyze(target:Path,baseline:Path|None,peer_roots:list[Path])->dict:
      if version not in accepted:errors.append(f'contract:{cid}:consumer_incompatible:{m.get("skill")}:owner_{owner_skill}_v{version}:accepts_{accepted}')
     elif len(rows)==0 and peers:errors.append(f'contract:{cid}:unresolved_import:{m.get("skill")}:accepts_{accepted}')
  status='fail' if errors else ('pass-with-warnings' if warnings else 'pass')
- return {'status':status,'target':str(target),'baseline':str(baseline) if baseline else None,'peer_count':len(peers),'errors':sorted(set(errors)),'warnings':sorted(set(warnings))}
+ return {'status':status,'target':str(target),'baseline':str(baseline) if baseline else None,'peer_count':len(peers),'peer_roots':[str(root.resolve()) for root,_ in peers],'peer_catalog_fingerprint':peer_catalog_fingerprint(peers),'peer_catalog_required':require_peer_catalog,'errors':sorted(set(errors)),'warnings':sorted(set(warnings))}
 
 def main()->int:
- ap=argparse.ArgumentParser();ap.add_argument('--target',required=True);ap.add_argument('--baseline');ap.add_argument('--peer',action='append');ap.add_argument('--catalog-root');ap.add_argument('--json-output');a=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--target',required=True);ap.add_argument('--baseline');ap.add_argument('--peer',action='append');ap.add_argument('--catalog-root');ap.add_argument('--require-peer-catalog',action='store_true');ap.add_argument('--json-output');a=ap.parse_args()
  target=Path(a.target).resolve();baseline=Path(a.baseline).resolve() if a.baseline else None
- report=analyze(target,baseline,discover_peers(a,target));payload=json.dumps(report,indent=2,sort_keys=True)+'\n'
+ report=analyze(target,baseline,discover_peers(a,target),require_peer_catalog=a.require_peer_catalog);payload=json.dumps(report,indent=2,sort_keys=True)+'\n'
  if a.json_output:Path(a.json_output).write_text(payload,encoding='utf-8')
  print(payload,end='');return 0 if report['status']!='fail' else 2
 if __name__=='__main__':sys.exit(main())

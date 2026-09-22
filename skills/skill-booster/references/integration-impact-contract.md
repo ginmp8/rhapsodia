@@ -17,7 +17,7 @@ A manifest is required only when the skill has a peer-facing machine-readable co
 
 1. Inspect the target for an existing integration manifest.
 2. Trace explicit cross-skill handoffs, schemas, receipts, versioned JSON envelopes, required CLIs, and direct peer references. Use architecture/consistency evidence when available.
-3. Resolve a peer catalog from supplied roots, a sibling skill catalog, or host capability when available. Do not assume a vendor-private catalog path.
+3. Resolve a peer catalog from supplied roots, a sibling skill catalog, or host capability when available. For an ecosystem-safe or package promotion claim, resolve the **deployment catalog**: the exact peer versions that will coexist after installation (currently installed peers plus every candidate promoted in the same block). Do not assume a vendor-private catalog path.
 4. If an evidenced peer-facing surface exists but no manifest exists, create a **provisional integration map outside the target** before mutation. Promote it into `contracts/integration-manifest.json` only when ownership and consumers are sufficiently evidenced.
 5. If no peer-facing surface is evidenced, record `not-applicable`; do not force a manifest.
 
@@ -27,13 +27,14 @@ Before finalizing a candidate whose public surface may have changed:
 
 1. preserve the baseline target and manifest when one exists;
 2. freeze the peer-manifest/catalog identity used for the decision;
-3. run `scripts/analyze_integration_impacts.py`;
+3. run `scripts/analyze_integration_impacts.py`; for ecosystem-safe/package promotion use `--require-peer-catalog` against the frozen deployment catalog;
 4. treat multiple owners for one contract id as blocking;
 5. treat a changed owned surface with no version bump as blocking;
 6. treat an owner version rejected by a known importer as blocking;
 7. treat a removed owned contract with known importers as blocking;
 8. treat an unresolved required import as blocking when the peer catalog is available;
-9. when no peer catalog is available, local optimization may continue, but report integration compatibility as `not-proven` and do not claim ecosystem-safe delivery.
+9. when no peer catalog is available, local optimization may continue, but report integration compatibility as `not-proven` and do not claim ecosystem-safe delivery; `--require-peer-catalog` makes this condition blocking for final ecosystem proof.
+10. preserve the returned `peer_catalog_fingerprint` with the decision so a later install-set change invalidates the ecosystem proof.
 
 When a breaking change is intentional, update the owner and all impacted importers in one governed change set or preserve an explicit compatibility adapter. Internal target tests are necessary but never sufficient for an ecosystem-safe contract change.
 
