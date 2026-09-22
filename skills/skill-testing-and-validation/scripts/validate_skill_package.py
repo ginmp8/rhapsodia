@@ -35,12 +35,34 @@ def _decode_quoted(value: str) -> str:
     return value
 
 
+def _strip_inline_comment(value: str) -> str:
+    # YAML plain-scalar comments start at whitespace followed by '#'.
+    match = re.search(r"[ \t]+#", value)
+    return value[: match.start()].rstrip() if match else value.rstrip()
+
+
+def _implicit_non_string_kind(value: str) -> str | None:
+    lower = value.lower()
+    if lower in {"null", "~", "true", "false", "yes", "no", "on", "off"}:
+        return "implicit YAML null/boolean"
+    if re.fullmatch(r"[-+]?\d+", value):
+        return "implicit YAML integer"
+    if re.fullmatch(r"[-+]?(?:\d+\.\d*|\d*\.\d+)(?:[eE][-+]?\d+)?", value):
+        return "implicit YAML float"
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return "implicit YAML date"
+    return None
+
+
 def _validate_plain_scalar(value: str) -> str | None:
-    value = value.strip()
+    value = _strip_inline_comment(value.strip())
     if not value or value[0] in {"'", '"', "[", "{"}:
         return None
     if re.search(r":(?:[ \t]|$)", value):
         return "unquoted plain scalar contains a mapping separator ': '; quote it or use a block scalar"
+    implicit = _implicit_non_string_kind(value)
+    if implicit:
+        return f"{implicit} is not allowed for portable string frontmatter; quote it explicitly"
     return None
 
 
@@ -66,6 +88,8 @@ def _portable_parse(raw: str) -> tuple[dict[str, Any], list[str]]:
             continue
         key = match.group(1)
         value = (match.group(2) or "").strip()
+        if value and value[0] not in {"'", '"'}:
+            value = _strip_inline_comment(value)
         if value in BLOCK_MARKERS:
             folded = value.startswith(">")
             block: list[str] = []
@@ -90,6 +114,8 @@ def _portable_parse(raw: str) -> tuple[dict[str, Any], list[str]]:
                     i += 1
                     continue
                 nested_value = (nested_match.group(2) or "").strip()
+                if nested_value and nested_value[0] not in {"'", '"'}:
+                    nested_value = _strip_inline_comment(nested_value)
                 scalar_error = _validate_plain_scalar(nested_value)
                 if scalar_error:
                     errors.append(f"invalid YAML for '{key}.{nested_match.group(1)}': {scalar_error}")
@@ -107,7 +133,7 @@ def _portable_parse(raw: str) -> tuple[dict[str, Any], list[str]]:
     return data, errors
 
 
-def parse_frontmatter(skill_md: Path) -> tuple[dict[str, Any], list[str], str]:
+def parse_frontmatter(skill_md: Path, parser_mode: str = "auto") -> tuple[dict[str, Any], list[str], str]:
     text = read_text(skill_md)
     match = FRONTMATTER_RE.match(text)
     if not match:
@@ -115,12 +141,18 @@ def parse_frontmatter(skill_md: Path) -> tuple[dict[str, Any], list[str], str]:
     raw = match.group(1)
 
     fallback_data, fallback_errors = _portable_parse(raw)
-    if fallback_errors:
+    if parser_mode not in {"auto", "portable-conservative", "pyyaml"}:
+        return {}, [f"unsupported parser mode: {parser_mode}"], "none"
+    # The portable subset is the cross-host acceptance floor. If it cannot
+    # validate the document safely, every host must reject it consistently.
+    if fallback_errors or parser_mode == "portable-conservative":
         return fallback_data, fallback_errors, "portable-conservative"
 
     try:
         import yaml  # type: ignore
     except Exception:
+        if parser_mode == "pyyaml":
+            return {}, ["PyYAML parser requested but unavailable"], "pyyaml-unavailable"
         return fallback_data, [], "portable-conservative"
 
     try:
@@ -129,10 +161,14 @@ def parse_frontmatter(skill_md: Path) -> tuple[dict[str, Any], list[str], str]:
         return {}, [f"invalid YAML frontmatter: {exc}"], "pyyaml"
     if not isinstance(parsed, dict):
         return {}, ["frontmatter must parse to a YAML mapping"], "pyyaml"
+    # Reject parser disagreement instead of allowing host-dependent acceptance.
+    for key in set(fallback_data) | set(parsed):
+        if fallback_data.get(key) != parsed.get(key):
+            return {}, [f"frontmatter parser disagreement for '{key}'; use an explicit quoted/block scalar"], "pyyaml"
     return parsed, [], "pyyaml"
 
 
-def validate(root: Path) -> dict[str, Any]:
+def validate_with_parser_mode(root: Path, parser_mode: str = "auto") -> dict[str, Any]:
     root = root.resolve()
     errors: list[str] = []
     warnings: list[str] = []
@@ -150,10 +186,16 @@ def validate(root: Path) -> dict[str, Any]:
         errors.append(f"nested SKILL.md files make the package root ambiguous: {len(nested)}")
 
     if root_skill.is_file():
-        data, parse_errors, parser = parse_frontmatter(root_skill)
+        data, parse_errors, parser = parse_frontmatter(root_skill, parser_mode)
         errors.extend(parse_errors)
-        name = str(data.get("name") or "").strip()
-        description = str(data.get("description") or "").strip()
+        raw_name = data.get("name")
+        raw_description = data.get("description")
+        if raw_name is not None and not isinstance(raw_name, str):
+            errors.append("frontmatter.name must be a string")
+        if raw_description is not None and not isinstance(raw_description, str):
+            errors.append("frontmatter.description must be a string")
+        name = raw_name.strip() if isinstance(raw_name, str) else ""
+        description = raw_description.strip() if isinstance(raw_description, str) else ""
         if not name:
             errors.append("frontmatter.name is required")
         elif not NAME_RE.fullmatch(name):
@@ -174,12 +216,17 @@ def validate(root: Path) -> dict[str, Any]:
     }
 
 
+def validate(root: Path) -> dict[str, Any]:
+    return validate_with_parser_mode(root, "auto")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Validate Agent Skills package structure and YAML frontmatter.")
     ap.add_argument("target", nargs="?", default=".")
     ap.add_argument("--format", choices=("json", "text"), default="json")
+    ap.add_argument("--parser-mode", choices=("auto", "portable-conservative", "pyyaml"), default="auto")
     args = ap.parse_args()
-    result = validate(Path(args.target))
+    result = validate_with_parser_mode(Path(args.target), args.parser_mode)
     if args.format == "json":
         print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
     else:

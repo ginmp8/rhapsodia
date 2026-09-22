@@ -55,6 +55,15 @@ PERMISSIVE_CODE_RE = re.compile(
 SUSPICIOUS_FILENAME_RE = re.compile(r"(?i)(?:^|[_-])(?:legacy|deprecated|obsolete|old|v1|backup|copy|new)(?:[_\.-]|$)")
 
 SCENARIO_COVERAGE_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
+SCENARIO_TYPE_MAP = {
+    "should_activate": "should_activate",
+    "should_not_activate": "should_not_activate",
+    "ambiguous": "ambiguous",
+    "edge_case": "edge_case",
+    "adversarial": "edge_case",
+    "regression": "edge_case",
+    "holdout": "edge_case",
+}
 SCENARIO_GROUP_MAP = {
     "activation": "should_activate",
     "non-activation": "should_not_activate",
@@ -66,9 +75,12 @@ SCENARIO_GROUP_MAP = {
     "edge-case": "edge_case",
     "edge_case": "edge_case",
     "adversarial": "edge_case",
+    "holdout": "edge_case",
 }
 SCENARIO_ROUTE_MAP = {
     "activate": "should_activate",
+    "activate-constrained": "should_activate",
+    "activate_constrained": "should_activate",
     "do-not-activate": "should_not_activate",
     "do_not_activate": "should_not_activate",
     "conditional": "ambiguous",
@@ -77,17 +89,44 @@ SCENARIO_ROUTE_MAP = {
 }
 
 
-def scenario_coverage_type(item: dict[str, object]) -> str:
+def scenario_schema_issues(item: dict[str, object]) -> list[dict[str, str]]:
+    """Return explicit routing-schema drift without treating domain categories as routing fields."""
+    issues: list[dict[str, str]] = []
+    type_value = str(item.get("type") or "").strip().lower()
+    if type_value and type_value not in SCENARIO_TYPE_MAP:
+        issues.append({"kind": "unknown-value", "field": "type", "value": type_value})
+    group = str(item.get("group") or "").strip().lower()
+    if group and group not in SCENARIO_GROUP_MAP:
+        issues.append({"kind": "unknown-value", "field": "group", "value": group})
+    route = str(item.get("expected_route") or "").strip().lower()
+    if route and route not in SCENARIO_ROUTE_MAP and not route.startswith(("reject-", "reject_")):
+        issues.append({"kind": "unknown-value", "field": "expected_route", "value": route})
+    coverage = scenario_coverage_type(item, _skip_issue_check=True)
+    # category is historically both a routing alias and a domain subcategory. Only
+    # treat it as schema drift when no stronger routing field can be interpreted.
+    category = str(item.get("category") or "").strip().lower()
+    if not coverage and category and category not in SCENARIO_TYPE_MAP and category not in SCENARIO_GROUP_MAP:
+        issues.append({"kind": "unknown-value", "field": "category", "value": category})
+    if not coverage:
+        issues.append({"kind": "uninterpretable-schema", "field": "scenario", "value": str(item.get("id") or "<unknown>")})
+    return issues
+
+
+def scenario_coverage_type(item: dict[str, object], _skip_issue_check: bool = False) -> str:
     """Normalize heterogeneous activation-scenario schemas into coverage classes.
 
     Prefer explicit canonical ``type``/``category`` values, then legacy/richer
     ``group`` semantics, and finally route semantics. This is coverage
     normalization only; it does not rewrite or judge the scenario contract.
     """
-    for key in ("type", "category"):
-        value = str(item.get(key) or "").strip().lower()
-        if value in SCENARIO_COVERAGE_TYPES:
-            return value
+    type_value = str(item.get("type") or "").strip().lower()
+    if type_value in SCENARIO_TYPE_MAP:
+        return SCENARIO_TYPE_MAP[type_value]
+    category = str(item.get("category") or "").strip().lower()
+    if category in SCENARIO_TYPE_MAP:
+        return SCENARIO_TYPE_MAP[category]
+    if category in SCENARIO_GROUP_MAP:
+        return SCENARIO_GROUP_MAP[category]
     group = str(item.get("group") or "").strip().lower()
     if group in SCENARIO_GROUP_MAP:
         return SCENARIO_GROUP_MAP[group]
@@ -498,6 +537,22 @@ def inspect(root: Path, source_kind: str, host_profile: str = "auto") -> dict[st
                 for item in scenarios if isinstance(item, dict)
                 if scenario_coverage_type(item)
             })
+            schema_issues: list[tuple[int, dict[str, str]]] = []
+            for index, item in enumerate(scenarios):
+                if isinstance(item, dict):
+                    schema_issues.extend((index, issue) for issue in scenario_schema_issues(item))
+            hard_schema_issues = [(index, issue) for index, issue in schema_issues if issue["kind"] == "uninterpretable-schema"]
+            soft_schema_issues = [(index, issue) for index, issue in schema_issues if issue["kind"] == "unknown-value"]
+            if hard_schema_issues:
+                examples = ", ".join(f"#{index}:{issue['value']}" for index, issue in hard_schema_issues[:5])
+                add(findings, "EVAL004", "MAJOR", "evals/activation-scenarios.json",
+                    "Activation scenarios use an uninterpretable schema: " + examples,
+                    "Add or document a supported type/category/group/expected_route mapping before treating the suite as coverage evidence.")
+            if soft_schema_issues:
+                examples = ", ".join(f"#{index}:{issue['field']}={issue['value']}" for index, issue in soft_schema_issues[:5])
+                add(findings, "EVAL005", "MINOR", "evals/activation-scenarios.json",
+                    "Activation scenarios contain unknown routing values: " + examples,
+                    "Version or map the new routing semantics explicitly; do not silently infer them from unrelated fields.")
             required_categories = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
             missing = sorted(required_categories - set(eval_categories))
             if missing:

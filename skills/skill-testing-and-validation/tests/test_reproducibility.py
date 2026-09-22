@@ -164,6 +164,39 @@ class ReproducibilityTests(unittest.TestCase):
             self.assertFalse(result["passed"])
             self.assertTrue(any("symlink inputs are not package-safe" in item for item in result["errors"]))
 
+    def test_frontmatter_parser_modes_agree_on_portable_corpus(self) -> None:
+        from validate_skill_package import validate_with_parser_mode
+
+        corpus = [
+            ("---\nname: demo\ndescription: simple text\n---\n", "pass"),
+            ("---\nname: demo\ndescription: \"text: with colon\"\n---\n", "pass"),
+            ("---\nname: demo\ndescription: >-\n  folded text\n---\n", "pass"),
+            ("---\nname: demo\ndescription: hello # inline comment\n---\n", "pass"),
+            ("---\nname: demo\ndescription: bad: plain scalar\n---\n", "fail"),
+            ("---\nname: true\ndescription: text\n---\n", "fail"),
+            ("---\nname: demo\ndescription: 2026-09-22\n---\n", "fail"),
+        ]
+        for text, expected in corpus:
+            with self.subTest(text=text):
+                with tempfile.TemporaryDirectory() as td:
+                    skill = Path(td) / "demo"
+                    skill.mkdir()
+                    (skill / "SKILL.md").write_text(text, encoding="utf-8")
+                    portable = validate_with_parser_mode(skill, "portable-conservative")
+                    auto = validate_with_parser_mode(skill, "auto")
+                    self.assertEqual(expected, portable["status"])
+                    self.assertEqual(portable["status"], auto["status"])
+                    self.assertEqual(portable["frontmatter"], auto["frontmatter"])
+
+    def test_runner_timeout_is_blocked_not_pass(self) -> None:
+        argv = [sys.executable, "-c", "import time; time.sleep(1)"]
+        with tempfile.TemporaryDirectory() as td:
+            receipt, code = make_receipt(Path(td), "test", argv, True, 0.01)
+        self.assertEqual("blocked", receipt["status"])
+        self.assertEqual("environment", receipt["classification"])
+        self.assertEqual("environment/timeout", receipt["result"]["diagnostic"]["code"])
+        self.assertNotEqual(0, code)
+
 
 if __name__ == "__main__":
     unittest.main()
