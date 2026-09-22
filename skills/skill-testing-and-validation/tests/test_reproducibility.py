@@ -16,6 +16,7 @@ from environment_fingerprint import fingerprint  # noqa: E402
 from package_skill import package as package_skill  # noqa: E402
 from run_gate import make_receipt  # noqa: E402
 from validate_protected_paths import validate as validate_protected  # noqa: E402
+from validate_skill_package import validate as validate_skill_package  # noqa: E402
 
 
 class ReproducibilityTests(unittest.TestCase):
@@ -44,6 +45,38 @@ class ReproducibilityTests(unittest.TestCase):
             (tests / "test_demo.py").write_text("import unittest\nclass T(unittest.TestCase):\n    def test_ok(self): self.assertTrue(True)\n", encoding="utf-8")
             result = discover(root)
             self.assertEqual([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"], result["selected"]["test"]["argv"])
+
+    def test_skill_discovery_selects_canonical_structural_validator(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "demo-skill"
+            root.mkdir()
+            (root / "SKILL.md").write_text("---\nname: demo-skill\ndescription: >-\n  valid structural skill description for deterministic validation across compatible hosts\n---\n", encoding="utf-8")
+            result = discover(root)
+            selected = result["selected"]["validator"]
+            self.assertIn("validate_skill_package.py", selected["argv"][1])
+
+    def test_skill_validator_rejects_invalid_yaml_plain_scalar(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "demo-skill"
+            root.mkdir()
+            (root / "SKILL.md").write_text(
+                "---\nname: demo-skill\ndescription: review surfaces: frontmatter and activation boundaries across compatible hosts\n---\n",
+                encoding="utf-8",
+            )
+            result = validate_skill_package(root)
+            self.assertEqual("fail", result["status"])
+            self.assertTrue(any("mapping separator" in item or "invalid YAML" in item for item in result["errors"]))
+
+    def test_skill_validator_accepts_block_scalar_and_nested_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "demo-skill"
+            root.mkdir()
+            (root / "SKILL.md").write_text(
+                "---\nname: demo-skill\ndescription: >-\n  review surfaces: frontmatter and activation boundaries across compatible hosts\nmetadata:\n  short-description: Demo validator\n---\n",
+                encoding="utf-8",
+            )
+            result = validate_skill_package(root)
+            self.assertEqual("pass", result["status"], result)
 
     def test_environment_fingerprint_has_no_timestamp_and_repeats(self) -> None:
         with tempfile.TemporaryDirectory() as td:

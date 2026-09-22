@@ -32,9 +32,9 @@ During `diagnose`, specialists are evidence providers by default. They may inspe
 | 17 | select | `skill-hypothesis-discovery` | planner | dedupe evidence into 5-10 bounded candidates, classify repair/optimization/experiment, select top 1-3/current next |
 | 18 | transform | `skill-improver` | default transformer | apply one selected bounded transformation, preserve baseline/evaluator, and record experiment identity only when an experiment actually runs |
 | 19 | evaluate | `skill-change-gate` | independent gate | candidate regression/acceptance decision; blocking regressions reject or require repair |
-| 20 | evaluate | `skill-testing-and-validation` | validator | rerun affected deterministic gates and candidate validation after transformation |
-| 21 | prove | `skill-hardening` | closure provider/transformer only if explicitly delegated | final package maturity, integration, validation, scope exactness; any target transformation reopens affected gates |
-| 22 | prove | final `skill-change-gate` | independent gate | final no-blocking-regression acceptance after hardening/closure |
+| 20 | evaluate | `skill-testing-and-validation` | validator | rerun affected deterministic gates and candidate validation after transformation; for skill packages, include canonical structural/package validation |
+| 21 | prove | `skill-hardening` | closure provider/transformer only if explicitly delegated | final package maturity, integration, validation, scope exactness; any target transformation invalidates the prior validation receipt and reopens affected gates |
+| 22 | prove | final `skill-change-gate` | independent gate | run only after a fresh passing `skill-opt.validation-gate-receipt` v1 identifies the exact final candidate; then perform final no-blocking-regression acceptance |
 | 23 | prove | final `skill-benchmark` | provider | baseline/candidate delta at the evidence level required by the claim; include parent/control when relevant |
 | 24 | prove | final `skill-improver` closure | lifecycle owner | close accept/reject/revert state, rollback evidence, candidate identity, promotion receipt readiness |
 | 25 | prove | final `skill-token-efficient` closure | provider by default | audit final avoidable context waste; if it mutates, rerun affected validation and final gate before freeze |

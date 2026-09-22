@@ -54,6 +54,50 @@ PERMISSIVE_CODE_RE = re.compile(
 )
 SUSPICIOUS_FILENAME_RE = re.compile(r"(?i)(?:^|[_-])(?:legacy|deprecated|obsolete|old|v1|backup|copy|new)(?:[_\.-]|$)")
 
+SCENARIO_COVERAGE_TYPES = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
+SCENARIO_GROUP_MAP = {
+    "activation": "should_activate",
+    "non-activation": "should_not_activate",
+    "non_activation": "should_not_activate",
+    "nonactivation": "should_not_activate",
+    "ambiguous": "ambiguous",
+    "boundary": "edge_case",
+    "edge": "edge_case",
+    "edge-case": "edge_case",
+    "edge_case": "edge_case",
+    "adversarial": "edge_case",
+}
+SCENARIO_ROUTE_MAP = {
+    "activate": "should_activate",
+    "do-not-activate": "should_not_activate",
+    "do_not_activate": "should_not_activate",
+    "conditional": "ambiguous",
+    "split-handoff": "edge_case",
+    "split_handoff": "edge_case",
+}
+
+
+def scenario_coverage_type(item: dict[str, object]) -> str:
+    """Normalize heterogeneous activation-scenario schemas into coverage classes.
+
+    Prefer explicit canonical ``type``/``category`` values, then legacy/richer
+    ``group`` semantics, and finally route semantics. This is coverage
+    normalization only; it does not rewrite or judge the scenario contract.
+    """
+    for key in ("type", "category"):
+        value = str(item.get(key) or "").strip().lower()
+        if value in SCENARIO_COVERAGE_TYPES:
+            return value
+    group = str(item.get("group") or "").strip().lower()
+    if group in SCENARIO_GROUP_MAP:
+        return SCENARIO_GROUP_MAP[group]
+    route = str(item.get("expected_route") or "").strip().lower()
+    if route in SCENARIO_ROUTE_MAP:
+        return SCENARIO_ROUTE_MAP[route]
+    if route.startswith("reject-") or route.startswith("reject_"):
+        return "edge_case"
+    return ""
+
 
 @dataclass
 class Finding:
@@ -450,8 +494,9 @@ def inspect(root: Path, source_kind: str, host_profile: str = "auto") -> dict[st
             if not isinstance(scenarios, list):
                 raise ValueError("scenarios must be a list")
             eval_categories = sorted({
-                str(item.get("category") or item.get("type") or "")
+                scenario_coverage_type(item)
                 for item in scenarios if isinstance(item, dict)
+                if scenario_coverage_type(item)
             })
             required_categories = {"should_activate", "should_not_activate", "ambiguous", "edge_case"}
             missing = sorted(required_categories - set(eval_categories))

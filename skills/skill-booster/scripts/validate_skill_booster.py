@@ -224,11 +224,15 @@ def check_booster_strategy_isolation(root: Path, frontmatter: dict[str, str]) ->
         errors.append("canonical workflow must use Transform rather than Mutate as phase 4")
     if "Evolutionary readiness is not a completion criterion" not in workflow:
         errors.append("canonical workflow is missing the evolutionary-readiness isolation invariant")
+    if "fresh passing `skill-opt.validation-gate-receipt` v1" not in workflow:
+        errors.append("canonical Prove workflow must require a fresh validation-gate receipt before final change gate")
 
     required_skill = [
         "must remain fully functional without Skill Evolution",
         "Evolutionary readiness is never a completion requirement",
         "Maintain an experiment registry only when real experiments or multi-candidate comparisons are executed",
+        "fresh passing `skill-opt.validation-gate-receipt` v1",
+        "do not replace this requirement with a Booster-local parser",
     ]
     for phrase in required_skill:
         if phrase not in skill:

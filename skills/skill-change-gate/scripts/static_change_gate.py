@@ -176,6 +176,22 @@ def _strip_yaml_scalar(value: str) -> str:
     return value
 
 
+def _validate_plain_yaml_scalar(value: str) -> str | None:
+    """Return a portable YAML syntax error for common invalid plain scalars.
+
+    Agent Skills frontmatter is intentionally simple. YAML reserves ``: `` inside
+    an unquoted plain scalar as a mapping separator, so descriptions containing
+    that sequence must be quoted or expressed as a block scalar. This catches the
+    class of syntax error that a line-split parser would otherwise silently accept.
+    """
+    stripped = value.strip()
+    if not stripped or stripped[0] in {"'", '"', "[", "{"}:
+        return None
+    if re.search(r":(?:[ \t]|$)", stripped):
+        return "unquoted plain scalar contains a mapping separator ': '; quote it or use a block scalar"
+    return None
+
+
 def parse_frontmatter(text: str, findings: list[Finding]) -> dict[str, str]:
     match = FRONTMATTER_RE.match(text)
     if not match:
@@ -208,6 +224,11 @@ def parse_frontmatter(text: str, findings: list[Finding]) -> dict[str, str]:
                 i += 1
             data[key] = ("\n" if mode == "|" else " ").join(parts).strip()
             continue
+        scalar_error = _validate_plain_yaml_scalar(raw_value)
+        if scalar_error:
+            findings.append(Finding("blocking", "frontmatter", "frontmatter/yaml-invalid", f"invalid YAML for '{key}': {scalar_error}"))
+        if raw_value.startswith(("'", '"')) and (len(raw_value) < 2 or raw_value[-1] != raw_value[0]):
+            findings.append(Finding("blocking", "frontmatter", "frontmatter/yaml-invalid", f"invalid YAML for '{key}': unterminated quoted scalar"))
         data[key] = _strip_yaml_scalar(raw_value)
         i += 1
 
