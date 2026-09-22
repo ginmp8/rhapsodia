@@ -4,8 +4,8 @@ Verified on 2026-09-22. These sources justify only the VS Code/GitHub Copilot ad
 
 ## VS Code
 
-- Repository source profiles live in `agents/*.agent.md`.
-- Install those profiles under `.github/agents/` in a target repository for VS Code discovery.
+- Repository source profiles live in `agents/*.agent.md`; this is the canonical distribution source, not a discovery location.
+- Install only those four profiles under `.github/agents/` in a target repository for VS Code discovery. Source docs/contracts/tests are not runtime prerequisites.
 - Custom agents: https://code.visualstudio.com/docs/agent-customization/custom-agents
   - workspace custom agents under `.github/agents`;
   - `.agent.md` format;
