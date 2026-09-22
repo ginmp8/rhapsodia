@@ -137,9 +137,15 @@ On resume:
 3. resolve current owner;
 4. do not replay a completed side effect simply because conversation context is missing.
 
+## Installation boundary
+
+The RhapsodIA source package keeps canonical profiles in `agents/`. VS Code discovers workspace custom agents from `.github/agents/`, so installation copies only the four `.agent.md` profiles to that destination. Documentation, tests, validators, and the portable contract remain source-package artifacts and do not need to be copied into the consuming repository.
+
+The three Agent Skills are prerequisites and are intentionally not bundled here. They must already be discoverable from one supported project skill root (`.github/skills/`, `.claude/skills/`, or `.agents/skills/`).
+
 ## Host boundary
 
-The semantic source of truth is `docs/agents/contracts/rhapsodia-agent-system.json`.
+The portable design/build contract is `docs/agents/contracts/rhapsodia-agent-system.json`. It validates the source package and future adapters, but it is not a runtime dependency in target repositories. Runtime authority comes from the installed custom-agent profiles plus the installed Nomia, Mago, and Magia Agent Skills.
 
 The repository stores the source profiles in `agents/*.agent.md`. For VS Code/Copilot use, copy those profiles into the target repository's `.github/agents/` discovery directory. Future adapters must translate capabilities and file conventions without changing ownership, authority, termination, or evidence semantics.
 

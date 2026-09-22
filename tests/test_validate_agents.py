@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import hashlib
 import json
 import shutil
 import subprocess
@@ -94,6 +95,14 @@ class ValidatorTests(unittest.TestCase):
                 + "\nAn optional host integration may use LangGraph.\n",
                 encoding="utf-8",
             )
+            manifest = dst / "MANIFEST.json"
+            mdoc = json.loads(manifest.read_text(encoding="utf-8"))
+            rel = "agents/magia.agent.md"
+            record = next(item for item in mdoc["files"] if item["path"] == rel)
+            data = p.read_bytes()
+            record["size"] = len(data)
+            record["sha256"] = hashlib.sha256(data).hexdigest()
+            manifest.write_text(json.dumps(mdoc, indent=2) + "\n", encoding="utf-8")
             rc, doc = run_validator(dst)
             self.assertEqual(rc, 0, doc)
             self.assertEqual(doc["status"], "pass")
@@ -150,6 +159,20 @@ class ValidatorTests(unittest.TestCase):
             rc, result = run_validator(dst)
             self.assertNotEqual(rc, 0)
             self.assert_code(result, "VSCODE_HOST")
+        finally:
+            td.cleanup()
+
+    def test_stale_manifest_is_rejected(self):
+        td, dst = self.copy_package()
+        try:
+            manifest = dst / "MANIFEST.json"
+            doc = json.loads(manifest.read_text(encoding="utf-8"))
+            target = next(item for item in doc["files"] if item["path"] == "agents/magia.agent.md")
+            target["sha256"] = "0" * 64
+            manifest.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+            rc, result = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(result, "MANIFEST_INTEGRITY")
         finally:
             td.cleanup()
 

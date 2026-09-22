@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import ast
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -181,6 +182,45 @@ def validate_contract(path, findings):
         add(findings, "VSCODE_DELEGATION", path, "VS Code delegation must map to native agent tool plus allowlist")
 
 
+def validate_manifest(root, path, findings):
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        add(findings, "MANIFEST_INTEGRITY", path, f"invalid manifest JSON: {exc}")
+        return
+    files = doc.get("files")
+    if not isinstance(files, list):
+        add(findings, "MANIFEST_INTEGRITY", path, "manifest files must be a list")
+        return
+    declared = {}
+    for item in files:
+        if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+            add(findings, "MANIFEST_INTEGRITY", path, "manifest contains an invalid file record")
+            continue
+        rel = item["path"]
+        if rel in declared:
+            add(findings, "MANIFEST_INTEGRITY", path, f"manifest contains duplicate path: {rel}")
+            continue
+        declared[rel] = item
+    actual = {}
+    for artifact in root.rglob("*"):
+        if not artifact.is_file() or artifact.name == "MANIFEST.json":
+            continue
+        if "__pycache__" in artifact.parts or artifact.suffix in {".pyc", ".pyo"}:
+            continue
+        actual[artifact.relative_to(root).as_posix()] = artifact
+    missing = sorted(set(declared) - set(actual))
+    extra = sorted(set(actual) - set(declared))
+    if missing or extra:
+        add(findings, "MANIFEST_INTEGRITY", path, f"manifest file set mismatch: missing={missing}, extra={extra}")
+    for rel in sorted(set(declared) & set(actual)):
+        artifact = actual[rel]
+        data = artifact.read_bytes()
+        item = declared[rel]
+        if item.get("size") != len(data) or item.get("sha256") != hashlib.sha256(data).hexdigest():
+            add(findings, "MANIFEST_INTEGRITY", path, f"manifest hash/size mismatch: {rel}")
+
+
 def validate_scenarios(path, findings):
     try:
         doc = json.loads(path.read_text(encoding="utf-8"))
@@ -241,6 +281,16 @@ def validate(target):
         validate_contract(contract, findings)
     else:
         add(findings, "CONTRACT_MISSING", contract, "portable agent-system contract is missing")
+
+    manifest = root / "MANIFEST.json"
+    if manifest.is_file():
+        validate_manifest(root, manifest, findings)
+    else:
+        add(findings, "MANIFEST_INTEGRITY", manifest, "agent package manifest is missing")
+
+    installer = root / "scripts" / "install_agents.py"
+    if not installer.is_file():
+        add(findings, "INSTALLER_MISSING", installer, "agent installer is missing")
 
     scenarios = root / "tests" / "agent-scenarios.json"
     if scenarios.is_file():

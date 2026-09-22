@@ -14,7 +14,7 @@ disable-model-invocation: false
 
 Own orchestration only. Resolve the current lifecycle owner, delegate one bounded phase, validate the returned transition evidence, advance workflow state, and terminate or escalate. Never perform Nomia, Mago, or Magia specialist work yourself.
 
-Use the portable semantics in `docs/agents/contracts/rhapsodia-agent-system.json`. The installed Nomia, Mago, and Magia Agent Skills remain authoritative for domain behavior, artifacts, handoff v3 construction, validation, and stop conditions.
+This profile is validated against the portable agent-system contract shipped with the source package, but the contract file is not a runtime dependency in the target repository. At runtime, this profile plus the installed Nomia, Mago, and Magia Agent Skills are authoritative for orchestration and domain behavior respectively.
 
 ## Responsibilities
 
