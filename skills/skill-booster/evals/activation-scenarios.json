@@ -183,7 +183,7 @@
     {
       "id": "edge-006",
       "type": "edge_case",
-      "prompt": "Run Skill Booster in Cursor, but call the same private ChatGPT skills__read/functions.exec tools you normally use.",
+      "prompt": "Run Skill Booster in Cursor, but call the same private ChatGPT-only skill-reading and orchestration APIs you normally use.",
       "expected_behavior": "activate_and_reject_host_private_assumption; use host-native skill/delegation mechanisms or classify the specialist unavailable/checklist-only",
       "acceptance_criteria": [
         "Core instructions do not assume ChatGPT private tool names.",
@@ -254,7 +254,7 @@
       "type": "edge_case",
       "category": "edge_case",
       "prompt": "The self-improving candidate adds a new mode and removes an old capability. The benchmark score improved, so skip semantic review.",
-      "expected_behavior": "do not rely on score alone; route capability-delta review and block promotion if an unauthorized capability regression remains",
+      "expected_behavior": "activate_and_block_score_only_promotion; route capability-delta review and block promotion if an unauthorized capability regression remains",
       "acceptance_criteria": [
         "skill-quality-reviewer is selected for semantic capability delta",
         "benchmark improvement does not override capability regression",

@@ -18,3 +18,8 @@ def test_multiple_owners_fail(tmp_path):
  a=tmp_path/'a';b=tmp_path/'b';c=tmp_path/'c';mk(a,'a',[exp('x',1)],[]);mk(b,'b',[exp('x',1)],[]);mk(c,'c',[],[imp('x',[1])]);r=m.analyze(a,None,[b,c]);assert any('multiple_owners' in x for x in r['errors'])
 def test_unresolved_import_fails_with_catalog(tmp_path):
  a=tmp_path/'a';b=tmp_path/'b';mk(a,'a',[],[imp('missing',[1])]);mk(b,'b',[exp('other',1)],[]);r=m.analyze(a,None,[b]);assert any('unresolved_import' in x for x in r['errors'])
+
+
+def test_catalog_discovery_skips_other_version_of_target_skill(tmp_path):
+ target=tmp_path/'candidate'/'a';target.parent.mkdir();mk(target,'a',[exp('x',1)],[]);catalog=tmp_path/'catalog';catalog.mkdir();same=catalog/'a';mk(same,'a',[exp('x',1)],[]);peer=catalog/'b';mk(peer,'b',[],[imp('x',[1])])
+ A=type('A',(),{});A.peer=[];A.catalog_root=str(catalog);roots=m.discover_peers(A(),target.resolve());assert same.resolve() not in roots and peer.resolve() in roots;assert m.analyze(target,None,roots)['status']!='fail';A.peer=[str(same)];A.catalog_root=None;assert same.resolve() in m.discover_peers(A(),target.resolve())

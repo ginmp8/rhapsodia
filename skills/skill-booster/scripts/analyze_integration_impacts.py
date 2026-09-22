@@ -55,15 +55,18 @@ def surface_digest(root:Path,export:dict)->str|None:
  except OSError:return None
 
 def discover_peers(args,target):
- roots=[]
- for raw in args.peer or []:
-  p=Path(raw).resolve()
-  if p!=target and p not in roots:roots.append(p)
+ roots=[];target_manifest,_=load_root(target);target_skill=(target_manifest or {}).get('skill',target.name)
+ def add(p,skip_same=False):
+  p=Path(p).resolve()
+  if p==target or p in roots or not (p/MANIFEST).is_file():return
+  if skip_same and (load_root(p)[0] or {}).get('skill')==target_skill:return
+  roots.append(p)
+ for p in args.peer or []:add(p)
  if args.catalog_root:
   cr=Path(args.catalog_root).resolve()
   if cr.is_dir():
    for p in sorted(cr.iterdir()):
-    if p.is_dir() and p!=target and (p/MANIFEST).is_file() and p not in roots:roots.append(p)
+    if p.is_dir():add(p,True)
  return roots
 
 def analyze(target:Path,baseline:Path|None,peer_roots:list[Path])->dict:

@@ -183,14 +183,14 @@ def check_booster_strategy_isolation(root: Path, frontmatter: dict[str, str]) ->
         return []
 
     errors: list[str] = []
-    compatibility_aliases = {
-        root / "references" / "pre-evolution-foundation.md": "compatibility alias",
-        root / "references" / "mutation-and-safety-policy.md": "compatibility alias",
-        root / "scripts" / "validate_pre_evolution_state.py": "compatibility shim",
-    }
-    for path, marker in compatibility_aliases.items():
-        if path.exists() and marker not in read_text(path).lower():
-            errors.append(f"legacy path must be compatibility-only: {path.relative_to(root)}")
+    retired_legacy_paths = [
+        root / "references" / "pre-evolution-foundation.md",
+        root / "references" / "mutation-and-safety-policy.md",
+        root / "scripts" / "validate_pre_evolution_state.py",
+    ]
+    for path in retired_legacy_paths:
+        if path.exists():
+            errors.append(f"retired legacy path must not be packaged: {path.relative_to(root)}")
 
     foundation_path = root / "references" / "optimization-foundation.md"
     workflow_path = root / "references" / "optimization-workflow.md"

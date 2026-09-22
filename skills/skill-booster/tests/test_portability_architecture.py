@@ -24,7 +24,7 @@ def run_validator(target: Path, hosts: str) -> subprocess.CompletedProcess[str]:
 
 def make_skill(base: Path) -> Path:
     skill = base / "demo-skill"
-    skill.mkdir()
+    skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
         "---\nname: demo-skill\ndescription: Portable demo used to validate multi-host profiles.\n---\n\n# Demo\n",
         encoding="utf-8",
@@ -46,6 +46,10 @@ def test_all_profiles_include_codex() -> None:
             "cursor",
         ]
         assert report["host_results"]["codex"]["status"] == "pass"
+        skill = make_skill(Path(td) / "private")
+        (skill / "notes.md").write_text("Use " + "functions" + ".exec directly.\n", encoding="utf-8")
+        private_report = json.loads(run_validator(skill, "portable-core").stdout)
+        assert any(item.get("code") == "HOST_PRIVATE_CORE" for item in private_report["errors"])
 
 
 def test_complete_optimization_contract_requires_default_multi_host_gate() -> None:
