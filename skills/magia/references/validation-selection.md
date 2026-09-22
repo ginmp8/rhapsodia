@@ -32,7 +32,7 @@ Provide a temporary JSON request outside canonical evidence:
 Run:
 
 ```text
-python scripts/select_validation_checks.py --input <request.json> --format json
+<PYTHON> scripts/select_validation_checks.py --input <request.json> --format json
 ```
 
 The selector emits:

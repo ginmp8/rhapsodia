@@ -42,7 +42,7 @@ Render with `scripts/render_registry_views.py <board_root> --output <external-di
 For a complete distribution check, use one external command:
 
 ```bash
-python -B scripts/validate_distribution.py \
+<PYTHON> -B scripts/validate_distribution.py \
   --target <skill-root> \
   --output-dir <external-output>/distribution \
   --report <external-output>/distribution-validation.json \

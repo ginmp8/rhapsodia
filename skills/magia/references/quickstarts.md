@@ -20,7 +20,7 @@ For non-trivial work, begin with the [execution start card](execution-entry.md).
 2. For an unfamiliar repository, run:
 
    ```text
-   python scripts/inspect_repository_context.py --root <repository-root> --format markdown
+   <PYTHON> scripts/inspect_repository_context.py --root <repository-root> --format markdown
    ```
 
 3. Reproduce or inspect before editing.
@@ -57,10 +57,10 @@ For non-trivial changes, use [validation selection](validation-selection.md). A 
 
 ```text
 # Preliminary only, when you have changed files/risk signals but not explicit surfaces:
-python scripts/select_validation.py --input <change-descriptor.json>
+<PYTHON> scripts/select_validation.py --input <change-descriptor.json>
 
 # Canonical once surfaces and available checks are explicit:
-python scripts/select_validation_checks.py --input <request.json> --format markdown
+<PYTHON> scripts/select_validation_checks.py --input <request.json> --format markdown
 ```
 
 The result selects categories only. It does not execute checks or prove success.

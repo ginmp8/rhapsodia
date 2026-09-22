@@ -18,8 +18,8 @@ When several records are open, rank and batch them through [clarification priori
 ## Validation
 
 ```bash
-python -B scripts/validate_clarification_readiness.py <package>/notes.md --require-v2
-python -B scripts/validate_clarification_readiness.py <package>/notes.md --require-v2 --handoff
+<PYTHON> -B scripts/validate_clarification_readiness.py <package>/notes.md --require-v2
+<PYTHON> -B scripts/validate_clarification_readiness.py <package>/notes.md --require-v2 --handoff
 ```
 
 The validator checks structure and handoff readiness. It does not resolve questions, prove evidence, assign governance authority, or convert an assumption into fact.

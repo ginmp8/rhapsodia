@@ -99,6 +99,6 @@ Planning, execution, validation, and release use the dimension-specific values i
 Validate canonical records with:
 
 ```bash
-python scripts/validate_ops.py <ops.yaml> --require-canonical
-python scripts/project_governance_views.py <ops.yaml> --generated-at <ISO-8601>
+<PYTHON> scripts/validate_ops.py <ops.yaml> --require-canonical
+<PYTHON> scripts/project_governance_views.py <ops.yaml> --generated-at <ISO-8601>
 ```

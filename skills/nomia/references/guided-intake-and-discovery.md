@@ -34,8 +34,8 @@ Keep supplied statements distinguishable:
 Use:
 
 ```bash
-python <skill-root>/scripts/guide_intake.py path/to/partial-intake.yaml
-python <skill-root>/scripts/guide_intake.py path/to/partial-intake.yaml --output path/to/guidance.json
+<PYTHON> <skill-root>/scripts/guide_intake.py path/to/partial-intake.yaml
+<PYTHON> <skill-root>/scripts/guide_intake.py path/to/partial-intake.yaml --output path/to/guidance.json
 ```
 
 The guide returns a non-authoritative profile, lifecycle, mode, blocking questions, unknowns, escalation reasons, repository-write readiness, possible Mago handoff readiness, next action, and next responsible skill. It never writes canonical governance records and never certifies technical readiness.

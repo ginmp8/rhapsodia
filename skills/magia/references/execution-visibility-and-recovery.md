@@ -9,7 +9,7 @@ For resumable execution state, checkpoints, fingerprints, cancellation, retry, r
 Run:
 
 ```bash
-python scripts/summarize_execution_state.py <board-root> --spec-id <spec-id> --format markdown
+<PYTHON> scripts/summarize_execution_state.py <board-root> --spec-id <spec-id> --format markdown
 ```
 
 The projection reports task checkboxes, execution-record status, check/evidence counts, traceability presence, canonical state-validation errors, lock ownership class, journal state, blockers, and the next safe action. It does not execute tests, recover transactions, mutate state, or certify completion.

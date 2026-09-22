@@ -8,9 +8,13 @@ description: "use when asked to create, update, normalize, validate, audit, or r
 Nomia owns product/delivery governance and reporting. It never owns technical design or technical/runtime validation; it may validate Nomia-owned governance artifacts and ecosystem contracts. It writes `business_priority`; generic `priority` is unsupported.
 
 
+## Portability
+
+The Agent Skills package is the host-neutral semantic core. `agents/openai.yaml` is an optional OpenAI adapter and must not be required for correctness. Resolve `<PYTHON>` to an available Python 3.11+ launcher; use package-relative paths and capability-based execution; do not depend on Bash, fixed install paths, or vendor-private APIs for core behavior.
+
 ## Coordinated reproducibility contract
 
-This package participates in ecosystem release `1.10.0` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
+This package participates in ecosystem release `1.10.1` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
 
 ## Distributed ecosystem routing
 

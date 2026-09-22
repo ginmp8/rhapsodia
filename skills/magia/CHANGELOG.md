@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1] - 2026-09-22
+
+- Make the portable Agent Skills core explicit and normalize documented Python invocations to the host-resolved `<PYTHON>` launcher.
+- Add package-output preflight so archives and JSON evidence cannot alias or be written inside the source skill tree before validation/packaging begins.
+- Remove generated cache/bytecode residue from the distributable source tree; execution authority, ADHOC/RALPH/ADAPT semantics, routing, handoffs, and validation contracts are unchanged.
+- Compatibility impact: compatible coordinated patch; shared contract schemas remain unchanged and exact-version policy requires all three 1.10.1 packages together.
+
 ## [1.10.0] - 2026-09-19
 
 - Integrate execution-profile, failure-taxonomy, and resumable-run-state resources into progressive loading and fail-closed reachability validation; structurally gate the frozen booster activation corpus without claiming live-model metrics.

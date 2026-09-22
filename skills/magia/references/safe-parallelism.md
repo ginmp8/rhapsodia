@@ -36,7 +36,7 @@ Use a temporary JSON input outside canonical planning artifacts:
 Run:
 
 ```text
-python scripts/analyze_execution_waves.py --input <tasks.json> --format json
+<PYTHON> scripts/analyze_execution_waves.py --input <tasks.json> --format json
 ```
 
 The analyzer is read-only. It validates graph shape, detects cycles, builds topological layers, and serializes a layer when explicit permission, write scope, or contract isolation is missing. It does not execute tasks, edit `tasks.md`, or certify merge safety.

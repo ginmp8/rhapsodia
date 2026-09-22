@@ -30,5 +30,5 @@ Generated adapters may project an OpenSpec-style ADDED/MODIFIED/REMOVED view fro
 Use `assets/templates/change-delta.md.template` and validate with:
 
 ```bash
-python scripts/validate_change_delta.py <external-change-delta.md>
+<PYTHON> scripts/validate_change_delta.py <external-change-delta.md>
 ```

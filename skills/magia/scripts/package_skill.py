@@ -26,6 +26,27 @@ def iter_package_files(target: Path) -> tuple[list[Path], list[dict[str, str]]]:
     return files, excluded
 
 
+def validate_output_paths(target: Path, output: Path, json_output: Path | None = None) -> list[str]:
+    """Reject package/report destinations that can mutate or alias the source tree."""
+    errors: list[str] = []
+
+    def inside(path: Path, parent: Path) -> bool:
+        try:
+            path.relative_to(parent)
+            return True
+        except ValueError:
+            return False
+
+    if inside(output, target):
+        errors.append("package output must resolve outside the target skill tree")
+    if json_output is not None:
+        if inside(json_output, target):
+            errors.append("json output must resolve outside the target skill tree")
+        if json_output == output:
+            errors.append("json output must not alias the package output")
+    return errors
+
+
 def build_package(target: Path, output: Path) -> dict[str, Any]:
     files, excluded = iter_package_files(target)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -54,14 +75,23 @@ def main(argv: list[str] | None = None) -> int:
 
     target = Path(args.target).resolve()
     output = Path(args.output).resolve()
+    json_output = Path(args.json_output).resolve() if args.json_output else None
     result: dict[str, Any] = {"target": str(target), "output": str(output)}
+
+    output_errors = validate_output_paths(target, output, json_output)
+    if output_errors:
+        result["status"] = "fail"
+        result["output_errors"] = output_errors
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 1
 
     security_errors = validate_skill_package.scan_package_candidates(target)
     if security_errors:
         result["status"] = "fail"
         result["security_errors"] = security_errors
-        if args.json_output:
-            Path(args.json_output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        if json_output:
+            json_output.parent.mkdir(parents=True, exist_ok=True)
+            json_output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps(result, indent=2, sort_keys=True))
         return 1
 
@@ -70,8 +100,9 @@ def main(argv: list[str] | None = None) -> int:
         result["folder_validation"] = folder
         if folder["status"] != "pass":
             result["status"] = "fail"
-            if args.json_output:
-                Path(args.json_output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            if json_output:
+                json_output.parent.mkdir(parents=True, exist_ok=True)
+                json_output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             print(json.dumps(result, indent=2, sort_keys=True))
             return 1
 
@@ -84,10 +115,9 @@ def main(argv: list[str] | None = None) -> int:
     else:
         result["status"] = "pass"
 
-    if args.json_output:
-        out = Path(args.json_output)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if json_output:
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["status"] == "pass" else 1
 

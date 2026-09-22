@@ -7,14 +7,14 @@ A distributed archive contains exactly one top-level `mago/` directory. Extract 
 Install the declared runtime dependencies before validation:
 
 ```bash
-python -m pip install -r requirements.txt
-python -B scripts/validate_runtime_dependencies.py .
+<PYTHON> -m pip install -r requirements.txt
+<PYTHON> -B scripts/validate_runtime_dependencies.py .
 ```
 
 Validate and build a distribution from outside the skill folder:
 
 ```bash
-python -B scripts/validate_distribution.py \
+<PYTHON> -B scripts/validate_distribution.py \
   --target . \
   --output-dir <external-output>/distribution \
   --report <external-output>/distribution-validation.json \
@@ -24,9 +24,9 @@ python -B scripts/validate_distribution.py \
 For installation-only verification of an extracted package:
 
 ```bash
-python -B scripts/validate_runtime_dependencies.py .
-python -B scripts/validate_release_metadata.py .
-python -B scripts/validate_skill_package.py .
+<PYTHON> -B scripts/validate_runtime_dependencies.py .
+<PYTHON> -B scripts/validate_release_metadata.py .
+<PYTHON> -B scripts/validate_skill_package.py .
 ```
 
 The output directory must be outside the skill root. Reports, caches, credentials, generated evidence, transaction workspaces, and old archives are excluded.
@@ -47,7 +47,7 @@ Mago remains an independent package, but exact ecosystem compatibility requires 
 Use the release-time coordinator as the canonical proof that the same three staged candidates, local suites, archives, contracts, and ecosystem harnesses passed together:
 
 ```bash
-python -B scripts/validate_ecosystem_release.py \
+<PYTHON> -B scripts/validate_ecosystem_release.py \
   --mago <mago-root> --magia <magia-root> --nomia <nomia-root> \
   --output-dir <external-output>/coordinated-release \
   --json-output <external-output>/coordinated-release-ledger.json

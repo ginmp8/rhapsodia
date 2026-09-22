@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.1] - 2026-09-22
+
+- Make the portable Agent Skills core explicit and normalize documented Python invocations to the host-resolved `<PYTHON>` launcher.
+- Remove generated cache/bytecode residue from the distributable source tree; governance authority, activation, routing, handoff, projection, and validation semantics are unchanged.
+- Compatibility impact: compatible coordinated patch; shared contract schemas remain unchanged and exact-version policy requires all three 1.10.1 packages together.
+
 ## [1.10.0] - 2026-09-19
 
 - Add a frozen, package-local cross-skill reproducibility contract/suite covering routing, handoffs, ownership, priority, privacy, freshness, replay, closure, and safe reruns.

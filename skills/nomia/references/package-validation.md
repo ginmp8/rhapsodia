@@ -5,8 +5,8 @@ Use for structural edits, identity/path changes, golden examples, preservation c
 ## Canonical Command
 
 ```bash
-python <skill-root>/scripts/validate_priority_contract.py --target <skill-root>
-python <skill-root>/scripts/validate_all.py --target <skill-root> --json-output <report.json>
+<PYTHON> <skill-root>/scripts/validate_priority_contract.py --target <skill-root>
+<PYTHON> <skill-root>/scripts/validate_all.py --target <skill-root> --json-output <report.json>
 ```
 
 The ledger runs under an isolated local `PYTHONPATH`, disables bytecode writes, records every gate, maps executed gate results to the machine-readable assurance claims, and groups correlated failed gates under deterministic `root_cause_id` entries without hiding the individual gate results.
@@ -25,7 +25,7 @@ The ledger runs in order:
 8. `validate_contract_preservation.py`: original files, headings, public script symbols, protected bytes, and authorized migration continuity.
 9. `validate_documentation.py`: normalized local Markdown links with root-escape rejection.
 10. `validate_assurance_contract.py`: claim schema, evidence labels, validator references, and SDD gate coverage.
-11. isolated standard-library tests: `python -S -m unittest discover -s <skill-root>/tests -p 'test_*.py'`.
+11. isolated standard-library tests: `<PYTHON> -S -m unittest discover -s <skill-root>/tests -p 'test_*.py'`.
 
 Do not share, install, or score a release as ready when any applicable gate fails. Structural scenarios remain structural evidence until an independent prompt runner captures and evaluates model outputs.
 
@@ -34,7 +34,7 @@ Do not share, install, or score a release as ready when any applicable gate fail
 Run:
 
 ```bash
-python <skill-root>/scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip
+<PYTHON> <skill-root>/scripts/package_skill.py --target <skill-root> --output <output-dir>/skill.zip
 ```
 
 The package builder reruns the ledger-equivalent gates, excludes `.git`, caches, bytecode, temporary/system files, generated reports/evidence, and nested ZIPs, and fails closed on symlinks, environment or credential files, private-key containers, recognized private-key material, traversal, duplicate entries, or multiple archive roots.

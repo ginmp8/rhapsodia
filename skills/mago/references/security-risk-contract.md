@@ -22,7 +22,7 @@ Restricted assets and high- or critical-impact threats require at least one prot
 Run:
 
 ```bash
-python scripts/validate_security_risk.py <package>/security-and-risk-considerations.md --require-v2
+<PYTHON> scripts/validate_security_risk.py <package>/security-and-risk-considerations.md --require-v2
 ```
 
 The validator checks structure, unique identifiers, reference integrity, reciprocal control-validation links, threat/control/validation coverage, protective failure behavior, authority boundaries, risk-acceptance evidence, and sensitive logging expectations. It does not perform threat discovery, prove control effectiveness, or replace security/compliance review.

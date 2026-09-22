@@ -22,7 +22,7 @@ The machine-readable assurance source is [assurance-contract.json](assurance-con
 Validate it with:
 
 ```bash
-python scripts/validate_assurance_contract.py --target <skill-root> --json-output <report.json>
+<PYTHON> scripts/validate_assurance_contract.py --target <skill-root> --json-output <report.json>
 ```
 
 The complete ledger adds gate outcomes to every assurance claim. A structural scenario pass proves schema and category coverage only. Live activation precision, recall, output conformance, and adversarial robustness remain `planned` until an independent prompt runner captures and evaluates outputs.
@@ -57,8 +57,8 @@ Validation fails when:
 Run both gates:
 
 ```bash
-python scripts/validate_release_contract.py --target <skill-root>
-python scripts/validate_contract_preservation.py --target <skill-root>
+<PYTHON> scripts/validate_release_contract.py --target <skill-root>
+<PYTHON> scripts/validate_contract_preservation.py --target <skill-root>
 ```
 
 ## Documentation And Package Evidence

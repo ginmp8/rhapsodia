@@ -4,7 +4,7 @@ Applies to every Nomia/Mago/Magia transfer. [ecosystem-handoff-contract.json](ec
 
 ## Compatibility
 
-Release `1.10.0`; envelope `3.0.0`; mapping `2.0.0`; exact versions only. Legacy aliases and envelopes are rejected; adaptation must occur before a handoff is built. There is no runtime compatibility switch for pre-v3 envelopes.
+Release `1.10.1`; envelope `3.0.0`; mapping `2.0.0`; exact versions only. Legacy aliases and envelopes are rejected; adaptation must occur before a handoff is built. There is no runtime compatibility switch for pre-v3 envelopes.
 
 ## Envelope
 
