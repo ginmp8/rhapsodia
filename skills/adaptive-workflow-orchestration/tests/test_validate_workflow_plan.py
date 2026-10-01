@@ -232,5 +232,160 @@ class WorkflowPlanValidatorTests(unittest.TestCase):
         self.assertIn("E_STRATEGY_SHAPE", codes(report))
 
 
+def valid_v2_plan():
+    plan = valid_plan()
+    plan["contract"] = "workflow-plan/v2"
+    plan["strategy"] = "gated-convergence"
+    plan["authority"] = {
+        "owner": "magia",
+        "allowed_effects": ["read-only", "mutating"],
+        "forbidden_effects": ["external-side-effect"],
+        "write_scope": ["src/**"],
+    }
+    plan["stages"] = [
+        {
+            "id": "produce",
+            "mode": "single",
+            "work_source": "task:cp",
+            "depends_on": [],
+            "max_parallel": 1,
+            "isolation": "serial",
+            "effects": "mutating",
+            "read_set": ["src/**"],
+            "write_set": ["src/**"],
+            "success": "candidate produced",
+            "on_failure": "repair",
+        }
+    ]
+    plan["budgets"] = {
+        "max_workers": 2,
+        "max_parallel": 1,
+        "max_retries_per_unit": 1,
+        "max_reentries": 2,
+        "max_checkpoints": 3,
+        "max_checkpoint_repairs": 2,
+    }
+    plan["capabilities"] = {
+        "required": ["isolated-context"],
+        "optional": [],
+        "degradation": {},
+    }
+    plan["gates"] = [
+        {
+            "id": "proof",
+            "kind": "executable-proof",
+            "required": True,
+            "isolation": "fresh-context",
+            "evaluator_identity": "oracle:v1",
+            "on_failure": "repair",
+            "rerun_after_repair": True,
+            "max_attempts": 3,
+        },
+        {
+            "id": "review",
+            "kind": "adversarial-review",
+            "required": True,
+            "isolation": "fresh-context",
+            "evaluator_identity": "rubric:v1",
+            "on_failure": "repair",
+            "rerun_after_repair": True,
+            "max_attempts": 3,
+        },
+    ]
+    plan["checkpoints"] = [
+        {
+            "id": "cp-1",
+            "objective": "first increment",
+            "depends_on": [],
+            "producer_stage": "produce",
+            "gate_ids": ["proof", "review"],
+            "success": "required gates pass",
+        },
+        {
+            "id": "cp-2",
+            "objective": "second increment",
+            "depends_on": ["cp-1"],
+            "producer_stage": "produce",
+            "gate_ids": ["proof", "review"],
+            "success": "required gates pass",
+        },
+    ]
+    plan["promotion"] = {
+        "requires_all_required_gates": True,
+        "next_checkpoint_requires_promoted_dependencies": True,
+        "accepted_feedback_only": True,
+    }
+    return plan
+
+
+class WorkflowPlanV2ValidatorTests(unittest.TestCase):
+    def test_valid_v2_gated_convergence_passes(self):
+        report = mod.validate(valid_v2_plan())
+        self.assertEqual(report["status"], "pass", report)
+        self.assertEqual(report["validator"], "workflow-plan-validator/v2")
+
+    def test_v1_remains_supported(self):
+        report = mod.validate(valid_plan())
+        self.assertEqual(report["status"], "pass", report)
+        self.assertEqual(report["validator"], "workflow-plan-validator/v1")
+
+    def test_v2_requires_gated_convergence_strategy(self):
+        plan = valid_v2_plan()
+        plan["strategy"] = "sequential"
+        report = mod.validate(plan)
+        self.assertIn("E_V2_STRATEGY", codes(report))
+
+    def test_checkpoint_dependency_cycle_is_rejected(self):
+        plan = valid_v2_plan()
+        plan["checkpoints"][0]["depends_on"] = ["cp-2"]
+        report = mod.validate(plan)
+        self.assertIn("E_CHECKPOINT_CYCLE", codes(report))
+
+    def test_checkpoint_requires_at_least_one_required_gate(self):
+        plan = valid_v2_plan()
+        for gate in plan["gates"]:
+            gate["required"] = False
+        report = mod.validate(plan)
+        self.assertIn("E_CHECKPOINT_REQUIRED_GATE", codes(report))
+
+    def test_executable_proof_requires_independent_isolation(self):
+        plan = valid_v2_plan()
+        plan["gates"][0]["isolation"] = "same-context"
+        report = mod.validate(plan)
+        self.assertIn("E_GATE_INDEPENDENCE", codes(report))
+
+    def test_required_gate_capability_must_be_required(self):
+        plan = valid_v2_plan()
+        plan["gates"][0]["capability"] = "run-bounded-process"
+        plan["capabilities"]["optional"] = ["run-bounded-process"]
+        report = mod.validate(plan)
+        self.assertIn("E_REQUIRED_GATE_CAPABILITY", codes(report))
+
+    def test_repair_gate_requires_bounded_repairs(self):
+        plan = valid_v2_plan()
+        plan["budgets"]["max_checkpoint_repairs"] = 0
+        report = mod.validate(plan)
+        self.assertIn("E_REPAIR_BUDGET", codes(report))
+
+    def test_required_repair_gate_must_rerun(self):
+        plan = valid_v2_plan()
+        plan["gates"][0]["rerun_after_repair"] = False
+        report = mod.validate(plan)
+        self.assertIn("E_STALE_GATE_PASS", codes(report))
+
+    def test_promotion_invariant_cannot_be_disabled(self):
+        plan = valid_v2_plan()
+        plan["promotion"]["next_checkpoint_requires_promoted_dependencies"] = False
+        report = mod.validate(plan)
+        self.assertIn("E_PROMOTION_INVARIANT", codes(report))
+
+    def test_perceptual_recapture_is_valid_but_other_recapture_is_not(self):
+        plan = valid_v2_plan()
+        plan["gates"][0]["on_failure"] = "recapture"
+        report = mod.validate(plan)
+        self.assertIn("E_RECAPTURE_GATE", codes(report))
+
+
+
 if __name__ == "__main__":
     unittest.main()

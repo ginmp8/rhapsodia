@@ -1,0 +1,3 @@
+interface:
+  display_name: "Perceptual Validation"
+  short_description: "Compare reference and candidate visual artifacts safely"

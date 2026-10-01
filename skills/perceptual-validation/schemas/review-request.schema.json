@@ -1,0 +1,20 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://rhapsodia.local/schemas/perceptual-review-request-v1.schema.json",
+  "title":"Perceptual Review Request v1",
+  "type":"object","additionalProperties":false,
+  "required":["contract","review_id","artifact_kind","reference_identity","candidate_identity","reference_state","candidate_state","comparison_scope","rubric_categories","evaluator_identity","required_capability"],
+  "properties":{
+    "contract":{"const":"perceptual-review-request/v1"},
+    "review_id":{"type":"string","minLength":1},
+    "artifact_kind":{"enum":["screenshot","rendered-ui","page-render","pdf-page","slide","chart","diagram","image","other"]},
+    "reference_identity":{"type":"string","minLength":1},
+    "candidate_identity":{"type":"string","minLength":1},
+    "reference_state":{"type":"string","minLength":1},
+    "candidate_state":{"type":"string","minLength":1},
+    "comparison_scope":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "rubric_categories":{"type":"array","minItems":1,"uniqueItems":true,"items":{"enum":["content-presence","structure","layout","alignment","spacing","typography","hierarchy","component-shape","chart-encoding","diagram-relations","other"]}},
+    "evaluator_identity":{"type":"string","minLength":1},
+    "required_capability":{"type":"string","minLength":1}
+  }
+}

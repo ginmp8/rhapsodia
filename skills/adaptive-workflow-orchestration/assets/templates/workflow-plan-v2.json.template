@@ -1,0 +1,88 @@
+{
+  "contract": "workflow-plan/v2",
+  "workflow_id": "<workflow-id>",
+  "objective": "<bounded objective>",
+  "success_criteria": ["<terminal success criterion>"],
+  "strategy": "gated-convergence",
+  "authority": {
+    "owner": "<current-domain-owner>",
+    "allowed_effects": ["read-only", "mutating"],
+    "forbidden_effects": ["external-side-effect"],
+    "write_scope": ["<authorized-scope/**>"]
+  },
+  "stages": [
+    {
+      "id": "produce",
+      "mode": "single",
+      "work_source": "<frozen task/reference identity>",
+      "depends_on": [],
+      "max_parallel": 1,
+      "isolation": "serial",
+      "effects": "mutating",
+      "read_set": ["<source/**>"],
+      "write_set": ["<authorized-scope/**>"],
+      "success": "candidate increment produced",
+      "on_failure": "repair"
+    }
+  ],
+  "budgets": {
+    "max_workers": 3,
+    "max_parallel": 2,
+    "max_retries_per_unit": 1,
+    "max_reentries": 2,
+    "max_checkpoints": 4,
+    "max_checkpoint_repairs": 2
+  },
+  "termination": {
+    "success_predicate": "all required checkpoints are promoted",
+    "terminal_states": ["completed", "blocked", "escalated", "failed", "budget_exhausted"]
+  },
+  "capabilities": {
+    "required": ["isolated-context"],
+    "optional": ["parallelize-independent-work"],
+    "degradation": {"parallelize-independent-work": "serial"}
+  },
+  "evidence": {
+    "input_identity": "<input identity>",
+    "planner_identity": "<planner identity>",
+    "evaluator_identity": "<evaluation contract identity>",
+    "reference_identity": "<optional reference/source identity>"
+  },
+  "gates": [
+    {
+      "id": "proof",
+      "kind": "executable-proof",
+      "required": true,
+      "isolation": "fresh-context",
+      "evaluator_identity": "<oracle/evaluator identity>",
+      "on_failure": "repair",
+      "rerun_after_repair": true,
+      "max_attempts": 3
+    },
+    {
+      "id": "review",
+      "kind": "adversarial-review",
+      "required": true,
+      "isolation": "fresh-context",
+      "evaluator_identity": "<review rubric identity>",
+      "on_failure": "repair",
+      "rerun_after_repair": true,
+      "max_attempts": 3
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "cp-001",
+      "objective": "<small independently reviewable increment>",
+      "depends_on": [],
+      "producer_stage": "produce",
+      "gate_ids": ["proof", "review"],
+      "success": "required gates pass for the current candidate"
+    }
+  ],
+  "promotion": {
+    "requires_all_required_gates": true,
+    "next_checkpoint_requires_promoted_dependencies": true,
+    "accepted_feedback_only": true
+  }
+}

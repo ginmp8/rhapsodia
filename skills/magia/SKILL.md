@@ -48,7 +48,7 @@ Implementation decisions require inspected evidence, necessity, product-intent f
 
 1. Classify execution, blocker, documentation, or handoff.
 2. Load [canonical paths](references/canonical-paths.md), [common execution](references/common-execution.md), and [execution entry](references/execution-entry.md).
-3. When needed load [repository orientation](references/repository-orientation.md), [senior discipline](references/senior-engineering-discipline.md), and triggered [risk escalation](references/risk-and-change-escalation.md), [execution profiles](references/execution-profiles.md), [complexity reduction](references/complexity-reduction-execution.md), or [multi-repository execution](references/multi-repository-execution.md). Load [run state/recovery](references/run-state-and-recovery.md) only for resumable, stateful, interrupted, or governed execution, and [failure/recovery taxonomy](references/failure-recovery-taxonomy.md) only after a failed or blocked step requires a repair/retry/rollback/stop/handoff decision.
+3. When needed load [repository orientation](references/repository-orientation.md), [senior discipline](references/senior-engineering-discipline.md), and triggered [risk escalation](references/risk-and-change-escalation.md), [execution profiles](references/execution-profiles.md), [complexity reduction](references/complexity-reduction-execution.md), or [multi-repository execution](references/multi-repository-execution.md). Load [run state/recovery](references/run-state-and-recovery.md) only for resumable, stateful, interrupted, or governed execution. When a parent controller delegates a `workflow-plan/v2` checkpoint candidate/repair, also load [gated checkpoint execution](references/gated-checkpoint-execution.md). Load [failure/recovery taxonomy](references/failure-recovery-taxonomy.md) only after a failed or blocked step requires a repair/retry/rollback/stop/handoff decision.
 4. For RALPH load [board contract](references/board-contract.md), [planning handoff](references/planning-handoff.md), and optional [safe parallelism](references/safe-parallelism.md).
 5. Load exactly one mode: [ADHOC](references/modes/adhoc.md), [RALPH](references/modes/ralph.md), or [ADAPT](references/modes/adapt.md).
 6. Load [execution records](references/artifacts/execution-records.md), [evidence](references/artifacts/execution-evidence.md), [developer standards](references/developer-artifact-standards.md), and [technical documentation](references/technical-documentation.md) only when writing.
@@ -76,12 +76,13 @@ Risk profile is independent of mode; [execution profiles](references/execution-p
 
 1. Resolve mode, scope, risk, ownership, and compact start card.
 2. Define success; inspect relevant code, patterns, contracts, and evidence.
-3. Make the smallest sufficient change; avoid speculation and unrelated cleanup.
+3. Make the smallest sufficient change; avoid speculation and unrelated cleanup. For a gated checkpoint delegation, produce/repair only that checkpoint candidate and do not self-promote it or close the canonical phase.
 4. For simplification, establish a safety net, preserve behavior, remove one seam at a time, and record before/after evidence.
 5. Use deterministic local scripts and confined paths; reject traversal, symlink escape, stale state, and unsafe lock takeover.
 6. In RALPH, require task-to-intent/validation traceability and dependency-safe order; close only with a passed check and recoverable journaled state transaction.
-7. Validate incoming handoffs, run the narrowest proof plus applicable validators, and emit downstream envelopes only from current evidence.
-8. Report changes, checks, risk, privacy lineage, and handoff.
+7. Validate incoming handoffs, run the narrowest Magia-owned proof plus applicable validators, and emit downstream envelopes only from current evidence. An independently required verifier/reviewer gate remains separate from Magia self-validation.
+8. For checkpointed execution, return the candidate identity to the parent controller; repairs create a new candidate and invalidate affected prior gate passes. Final task/phase completion waits for all required checkpoint promotions plus normal Magia closure evidence.
+9. Report changes, checks, risk, privacy lineage, and handoff.
 
 ## Operating Rules
 

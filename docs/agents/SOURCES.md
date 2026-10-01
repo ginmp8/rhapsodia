@@ -1,6 +1,40 @@
-# Current Host Sources
+# Design and Host Sources
 
-Verified on 2026-10-01. These sources justify only host-adapter mechanics; Mago/Magia/Nomia semantics come from their installed skill contracts.
+Reviewed on 2026-10-01. These sources are **design evidence and inspiration**, not runtime dependencies. RhapsodIA keeps portable semantic contracts in its own Skills/agent-system contract and does not import vendor harnesses, named models, or third-party orchestration runtimes.
+
+## Original dynamic-workflow reference
+
+- Dynamic Workflows in Claude Code: How They Work: https://claudefa.st/blog/guide/development/dynamic-workflows
+  - motivates isolated contexts for long/wide/self-grading-prone work;
+  - describes `agent`, pipeline, parallel/barrier behavior, structured outputs, worktree isolation, budgets, resumability/cache, and six reusable patterns;
+  - distinguishes tasks that benefit from dynamic workflows from simple tasks where one agent is preferable;
+  - directly informed the original `adaptive-workflow-orchestration` and `Rhapsodia Analyst` design.
+
+RhapsodIA retains those principles while expressing them as host-neutral strategy, isolation, dependency, budget, and evidence contracts rather than Claude-specific JavaScript/runtime semantics.
+
+## Reliable-convergence and test-oracle references
+
+- Shopify Engineering, Helix: https://shopify.engineering/helix
+  - small ordered checkpoints;
+  - strict behavior, perceptual, adversarial-review, and human gates;
+  - failed required gates return to repair and are not bypassed;
+  - accepted feedback/evidence can improve later checkpoints;
+  - inspired `workflow-plan/v2` gated convergence and the distinction between candidate, gate evidence, and promotion.
+- Shopify Engineering, Building an agentic harness that outlasts the model: https://shopify.engineering/building-an-agentic-harness-that-outlasts-the-model
+  - executable test oracle for findings;
+  - independent/cross-model verification;
+  - deterministic scripts for structured critical mechanics;
+  - influenced `test-oracle-engineering` and the Rhapsodia Verifier separation.
+- Anthropic Engineering, Building effective agents: https://www.anthropic.com/engineering/building-effective-agents
+  - simple composable workflows, orchestrator-workers, parallelization, evaluator-optimizer, finite stopping conditions, and environment ground truth;
+  - supports RhapsodIA's least-complex-strategy rule.
+- Anthropic Engineering, Demystifying evals for AI agents: https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
+  - reinforces multi-turn environment-based evaluation and executable graders/tests.
+- OpenAI, Evaluate agent workflows: https://developers.openai.com/api/docs/guides/agent-evals
+  - trace-based workflow evaluation and graders;
+  - reinforces separation between workflow traces, tool/handoff behavior, and evaluation evidence.
+- OpenAI, Safety in building agents: https://developers.openai.com/api/docs/guides/agent-builder-safety
+  - supports structured-data boundaries, approvals for consequential tools, guardrails, and eval/trace review.
 
 ## VS Code
 
@@ -9,42 +43,41 @@ Verified on 2026-10-01. These sources justify only host-adapter mechanics; Mago/
   - profiles can declare explicit `tools` scopes;
   - `agents` can restrict which subagents are available from a parent custom agent;
   - `user-invocable: false` can keep a profile available as a subagent without exposing it as a normal picker choice;
-  - subagents can run with custom agents and operate in separate contexts;
-  - available behavior depends on the active agent harness.
+  - subagents operate in separate contexts subject to the active host harness.
 - Agent Skills: https://code.visualstudio.com/docs/agent-customization/agent-skills
   - project skills may be discovered from host-supported skill roots.
 - Custom instructions: https://code.visualstudio.com/docs/agent-customization/custom-instructions
-  - intentionally not used by this package because global workspace instructions would broaden scope unnecessarily.
+  - intentionally not used as the RhapsodIA semantic core because global workspace instructions broaden scope.
 
 ## GitHub Copilot
 
 - Custom agent configuration: https://docs.github.com/en/copilot/reference/custom-agents-configuration
-  - explicit `tools` lists restrict the tools available to a custom agent;
-  - omitted tools may expose all configured tools, so Rhapsodia profiles use explicit lists;
-  - tool aliases include read/search/edit/execute on supported Copilot surfaces;
-  - unsupported/unrecognized tools may be ignored by a surface, which is why runtime support remains host-specific evidence.
-- Custom agents and sub-agent orchestration: https://docs.github.com/en/copilot/how-tos/copilot-sdk/features/custom-agents
-  - custom subagents can have isolated context and scoped tools;
-  - GitHub documents read-only custom agents by giving them only read/search/view-style tools;
-  - parallel dispatch is a separate runtime capability and must not be assumed universally.
+- Custom agents/sub-agent orchestration: https://docs.github.com/en/copilot/how-tos/copilot-sdk/features/custom-agents
 - IDE subagents: https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/use-copilot-agents/use-subagents
-  - subagent enablement/invocation varies by editor and active surface.
 
-## Design implications used by Rhapsodia
+These sources justify the current VS Code/Copilot adapter mechanics only. Other hosts consume the portable Skill and `agent-system-contract/v2` semantics through host-specific adapters/capabilities; this package does not claim the `.agent.md` format is universal.
 
-1. `Rhapsodia Supervisor` remains read-only and owns orchestration state.
-2. `Rhapsodia Analyst` is a separate profile with only `read` and `search`, giving read-only work units a mechanically narrower tool surface than Nomia/Mago/Magia writers.
-3. Write-capable Nomia/Mago/Magia workers are never used as a parallel fan-out pool.
-4. Parallel analyst dispatch is optional. If the active host/surface cannot safely parallelize, execution degrades to serial analyst work or one canonical worker.
-5. `adaptive-workflow-orchestration` is an optional semantic skill, not a required third-party runtime.
+## Design implications used by RhapsodIA
+
+1. `Rhapsodia Supervisor` remains read-only and owns orchestration/promotion state.
+2. `Rhapsodia Analyst` remains read/search-only for isolated analysis and adversarial review.
+3. `Rhapsodia Verifier` is separate from Magia: it may write verification-only artifacts and execute bounded test oracles, but never production repairs or acceptance-criteria changes.
+4. Nomia/Mago/Magia remain the only canonical domain owners; gated convergence is nested inside one already-resolved Magia phase.
+5. `adaptive-workflow-orchestration` preserves the original dynamic-workflow patterns and adds v2 gated convergence without removing v1.
+6. `test-oracle-engineering` owns executable proof contracts; `perceptual-validation` owns optional visual/perceptual evidence. Neither changes domain ownership.
+7. Required gates are non-overridable. Repair creates a new candidate identity and affected gates rerun.
+8. Parallelism is optional; serial fallback is preferred to installing an external orchestration runtime.
+9. Host/model names are adapters/evidence only, never semantic core dependencies.
 
 ## Evidence boundary
-
-The package has structural validation for its source profiles, contract, scenarios, installer, and manifest. Official documentation establishes declared host capabilities; it does not prove runtime equivalence for every editor, model, account, or Copilot surface.
 
 Keep these claims separate:
 
 - structural package validation;
 - documented host capability;
-- observed host behavior;
-- measured runtime behavior.
+- executed local validator/test evidence;
+- observed host/runtime behavior;
+- behavioral model eval evidence;
+- perceptual/human review evidence.
+
+A structurally portable package does not prove runtime parity across editors/models. Planned scenario files are not measured behavioral evidence until executed by an appropriate harness.

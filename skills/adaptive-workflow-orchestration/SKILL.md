@@ -1,6 +1,6 @@
 ---
 name: adaptive-workflow-orchestration
-description: Design and operate bounded task-specific execution workflows when runtime topology should adapt to an already-authorized objective. Use for choosing and validating single, sequential, classify-route, fan-out/synthesize, pipeline, adversarial verification, generate/filter, tournament, or bounded-loop strategies; decomposing dependency-aware work; controlling parallelism, isolation, budgets, retries, state, verification, and termination; or compiling a portable workflow plan to native host capabilities. Do not use for reusable agent-role/topology design, domain ownership decisions, ordinary bounded choices, or simple tasks that do not benefit from orchestration.
+description: Design and operate bounded task-specific execution workflows when runtime topology should adapt to an already-authorized objective. Use for choosing and validating single, sequential, classify-route, fan-out/synthesize, pipeline, adversarial verification, generate/filter, tournament, bounded-loop, or gated-convergence strategies; decomposing dependency-aware work; controlling parallelism, isolation, budgets, retries, state, verification, and termination; or compiling a portable workflow plan to native host capabilities. Do not use for reusable agent-role/topology design, domain ownership decisions, ordinary bounded choices, or simple tasks that do not benefit from orchestration.
 ---
 
 # Adaptive Workflow Orchestration
@@ -18,7 +18,7 @@ Own:
 - task-specific strategy selection inside an existing authority envelope;
 - work-unit decomposition, dependencies, barriers, and safe concurrency;
 - read/write-set, isolation, retry, budget, and termination policy;
-- `workflow-plan/v1` generation and validation;
+- `workflow-plan/v1` and backward-compatible `workflow-plan/v2` generation and validation;
 - host-capability mapping and explicit degradation;
 - plan/run evidence identity and orchestration-state discipline.
 
@@ -77,12 +77,13 @@ Choose one primary strategy. Compose stages only when each added stage solves a 
 | `generate-filter` | several candidates are useful and filtering is reliable | diversity provides no value |
 | `tournament` | alternatives can be compared by one frozen evaluator | evaluator is weak or changes between arms |
 | `bounded-loop` | an objective predicate requires iteration | termination is subjective or unbounded |
+| `gated-convergence` | small increments must prove required behavior/review gates before downstream work may consume them | a single bounded worker can finish and validate the task directly |
 
 Load [references/orchestration-patterns.md](references/orchestration-patterns.md) for composition rules and anti-patterns.
 
-## Portable plan contract
+## Portable plan contracts
 
-Use `workflow-plan/v1` for material workflows. Load [references/workflow-plan-contract.md](references/workflow-plan-contract.md) before emitting or accepting a plan.
+Use `workflow-plan/v1` for existing material workflows. Use `workflow-plan/v2` only when checkpoint promotion and non-overridable quality gates are required. Load [references/workflow-plan-contract.md](references/workflow-plan-contract.md) for v1 and [references/workflow-plan-v2-contract.md](references/workflow-plan-v2-contract.md) for gated convergence. v1 remains supported and is not silently upgraded.
 
 A valid plan includes:
 
@@ -94,7 +95,7 @@ A valid plan includes:
 - required/optional capabilities plus degradation;
 - source/planner/evaluator identities.
 
-Use [assets/templates/workflow-plan.json.template](assets/templates/workflow-plan.json.template) as a skeleton and [schemas/workflow-plan.schema.json](schemas/workflow-plan.schema.json) as the portable structural contract.
+Use [assets/templates/workflow-plan.json.template](assets/templates/workflow-plan.json.template) with [schemas/workflow-plan.schema.json](schemas/workflow-plan.schema.json) for v1. For gated convergence use [assets/templates/workflow-plan-v2.json.template](assets/templates/workflow-plan-v2.json.template) with [schemas/workflow-plan-v2.schema.json](schemas/workflow-plan-v2.schema.json).
 
 When Python 3 is available, validate every material plan before execution with [scripts/validate_workflow_plan.py](scripts/validate_workflow_plan.py):
 
@@ -102,7 +103,7 @@ When Python 3 is available, validate every material plan before execution with [
 <PYTHON> scripts/validate_workflow_plan.py <PLAN.json> --json <REPORT.json>
 ```
 
-The validator checks semantic invariants that JSON Schema alone cannot express, including dependency cycles, budget bounds, authority/write scope, independent verification isolation, and unordered read/write conflicts.
+The validator auto-detects v1/v2 and checks semantic invariants that JSON Schema alone cannot express, including dependency cycles, budget bounds, authority/write scope, independent verification isolation, unordered read/write conflicts, checkpoint DAGs, gate independence/capability requirements, bounded repairs, and promotion invariants.
 
 ## Workflow
 
@@ -110,14 +111,15 @@ The validator checks semantic invariants that JSON Schema alone cannot express, 
 2. **Resolve capabilities.** Record actual runtime primitives; do not infer support from another host.
 3. **Map work.** Identify units, work source, dependencies, shared reads, writes, barriers, and isolation needs. Consume an existing Context Architect parallelization map when available.
 4. **Select the least-complex strategy.** Use a bounded decision helper only when alternatives are explicit and genuinely tied; it does not own orchestration.
-5. **Build `workflow-plan/v1`.** Keep the authority envelope unchanged.
+5. **Build the smallest contract.** Use `workflow-plan/v1` unless the task needs checkpoint promotion; use `workflow-plan/v2` with `gated-convergence` only for that case. Keep the authority envelope unchanged.
 6. **Validate mechanically.** Reject invalid authority, conflicts, cycles, missing identities, or budget violations before dispatch.
 7. **Freeze the accepted plan.** Record the validator-provided plan hash before measured/repeatability runs.
 8. **Compile to native capabilities.** Use the strongest safe native host mechanism. Apply only declared degradation.
 9. **Execute centrally.** Keep orchestration state in the parent/controller; workers receive only bounded context and authority.
-10. **Verify independently when required.** Do not leak producer reasoning/history or evaluator-only answers into an independence claim.
-11. **Terminate by evidence.** Stop on success predicate, explicit blocker/escalation, or exhausted budget.
-12. **Report plan vs run.** Keep planned topology, actual trace, and final result identity separate.
+10. **Verify independently when required.** Do not leak producer reasoning/history or evaluator-only answers into an independence claim. For gated convergence, bind every gate result to the current candidate identity.
+11. **Promote only proven checkpoints.** A failed, blocked, invalid, stale, or not-run required gate cannot be overridden. Repair within budget and rerun affected gates; downstream checkpoints wait for promoted dependencies. Carry forward only explicitly accepted feedback/evidence with source identity.
+12. **Terminate by evidence.** Stop on success predicate, explicit blocker/escalation, or exhausted budget.
+13. **Report plan vs run.** Keep planned topology, actual trace, and final result identity separate.
 
 ## Parallelism and mutation
 
@@ -168,7 +170,9 @@ Stop with `blocked` or `escalated` when:
 - work source/evidence needed for decomposition is missing;
 - a required work pair has unresolved resource conflict with no safe ordering;
 - a proposed stage mutates outside the allowed write scope;
-- a required verifier cannot satisfy declared independence;
+- a required verifier/reviewer cannot satisfy declared independence;
+- a gated-convergence checkpoint lacks current passing evidence for every required gate;
+- a required gate capability is unavailable or a repair budget is exhausted;
 - a loop/retry/re-entry branch is unbounded;
 - required capability is unavailable and declared degradation changes semantics;
 - required budget is undefined or exhausted;
@@ -181,7 +185,7 @@ For a substantive orchestration request return, as applicable:
 
 1. objective and current authority owner;
 2. selected strategy and why it is the least-complex valid option;
-3. validated `workflow-plan/v1` or a concise equivalent for trivial single-stage work;
+3. validated `workflow-plan/v1`, validated `workflow-plan/v2` for gated convergence, or a concise equivalent for trivial single-stage work;
 4. plan validation status and plan SHA-256 when executed;
 5. host capability/degradation mapping;
 6. execution status/trace evidence when execution actually occurred;

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Add optional gated-checkpoint execution guidance for externally orchestrated `workflow-plan/v2` runs without changing Magia domain ownership or the ecosystem handoff schema.
+- Separate intermediate checkpoint candidate/repair evidence from canonical task/phase completion.
+- Preserve independent verifier/reviewer gates: Magia may repair production code but must not self-promote a failed or stale gate.
+- Release metadata remains at the current coordinated ecosystem release until Mago/Nomia/Magia are intentionally released together.
+- Compatibility impact: backward-compatible execution guidance only; no shared schema, ownership contract, routing contract, or coordinated release identity changes.
+
 ## [1.10.1] - 2026-09-22
 
 - Make the portable Agent Skills core explicit and normalize documented Python invocations to the host-resolved `<PYTHON>` launcher.

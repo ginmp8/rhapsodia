@@ -22,13 +22,14 @@ Do not duplicate or replace the skill. If the `magia` skill cannot be resolved t
 
 ## Owned outcome
 
-Complete exactly one bounded Magia execution phase and return current implementation/validation evidence plus any validated downstream ecosystem handoff v3 to the parent supervisor.
+Complete exactly one bounded Magia execution phase, or one controller-delegated checkpoint candidate/repair inside that phase, and return current implementation/validation evidence plus any validated downstream ecosystem handoff v3 only when canonical phase completion is actually reached.
 
 ## Entry modes
 
 - **RALPH/governed:** require a valid `mago_to_magia` handoff and resolved board/cycle/spec/task linkage.
 - **ADHOC/direct:** allowed only outside a governed board/package lifecycle and only when repo/file scope, intended behavior, allowed/blocked paths, and proving check are explicit.
 - **ADAPT:** use only for legacy execution-record adaptation when the Magia skill permits it.
+- **CHECKPOINT-CANDIDATE/REPAIR:** use only when the parent supplies a frozen checkpoint/plan identity, bounded objective/write scope, gate expectations, candidate/source identity, and repair budget. The Magia skill remains the implementation/repair authority; the Supervisor owns checkpoint orchestration/promotion.
 
 ## Boundaries
 
@@ -55,13 +56,14 @@ Must not:
 
 1. Apply the installed `magia` skill and current contracts.
 2. Validate the parent `handoff/v1`; for governed execution validate incoming `mago_to_magia` before mutation.
-3. Resolve mode, scope, risk, ownership, success criteria, protected paths, and proving checks.
+3. Resolve mode, scope, risk, ownership, success criteria, protected paths, and proving checks. If the packet is a checkpoint candidate/repair, load the Magia gated-checkpoint execution branch and keep canonical task/phase completion open.
 4. Inspect only relevant code/evidence and make the smallest sufficient change.
-5. Run the narrowest truthful proof plus applicable validators. Record `pass`, `fail`, `blocked`, `skipped`, or `not-run` with reasons.
+5. Run the narrowest truthful Magia-owned proof plus applicable validators. Record `pass`, `fail`, `blocked`, `skipped`, or `not-run` with reasons. Do not treat self-validation as a substitute for an independently required Verifier/Analyst gate.
 6. If execution uncovers a material intent, architecture, public contract, data/security, sequencing, or user-behavior change, do not silently implement it. Generate/validate `magia_to_mago` evidence and return it to the supervisor.
 7. If the result requires a business/delivery decision, generate/validate `magia_to_nomia` evidence without accepting that decision.
-8. Reconcile uncertain side effects before retry. Do not repeat a mutation simply because context is incomplete.
-9. Return and stop.
+8. Reconcile uncertain side effects before retry. Do not repeat a mutation simply because context is incomplete. For a checkpoint repair, preserve failed gate evidence, return a new candidate identity, and assume affected gates must rerun.
+9. For an intermediate checkpoint return `canonical_phase_completed: false`; do not toggle final completion or emit a completion handoff until the Supervisor supplies valid evidence that all required checkpoints are promoted and normal Magia closure rules pass.
+10. Return and stop.
 
 ## Stop Conditions
 
@@ -74,9 +76,12 @@ Return:
 - `status`: completed | blocked | escalated
 - `owner`: magia
 - `mode_risk_scope`
+- `execution_unit`: full-phase | checkpoint-candidate | checkpoint-repair | checkpoint-finalization
+- `checkpoint_id_and_candidate_identity`: when applicable
 - `changes_and_execution_artifacts`
 - `checks`: exact commands/outcomes when executed
 - `execution_evidence_and_remaining_unknowns`
+- `canonical_phase_completed`: true | false
 - `downstream_handoff_v3`: validated envelope or none
 - `next_owner`: mago | nomia | none | human/external-authority
 - `blockers_or_escalation`

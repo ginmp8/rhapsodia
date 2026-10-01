@@ -38,6 +38,12 @@ Freeze the evaluator before candidate generation. Candidate diversity is useful 
 
 Require an objective predicate plus finite iterations/retries. Re-entry without changed evidence/state is a stop condition.
 
+### Gated convergence
+
+Use small dependency-ordered checkpoints when a candidate must accumulate proof before later work can consume it. A controller may invoke a producer, executable verifier, isolated reviewer, optional perceptual evaluator, or human approval gate according to one frozen plan. Failed required gates return to bounded repair; they are never converted into a pass by synthesis. Any repair that can affect a prior gate invalidates that pass and requires rerun. Downstream checkpoints wait for promoted dependencies.
+
+Do not use gated convergence for routine one-shot work. It is justified when the cost of a late large failure is materially higher than validating small increments.
+
 ## Anti-patterns
 
 - parallel writers touching the same resource;
@@ -45,6 +51,8 @@ Require an objective predicate plus finite iterations/retries. Re-entry without 
 - using multiple agents because multiple agents are available;
 - treating a reviewer with the producer's full hidden history as independent;
 - changing evaluator or success criteria after seeing a candidate;
+- allowing a downstream checkpoint to consume an unpromoted dependency;
+- carrying forward inferred or unaccepted feedback as durable workflow memory;
 - allowing workers to update global orchestration state directly;
 - using generated arbitrary code as the only representation of authority or workflow policy;
 - installing an external orchestrator solely to reproduce a native host capability.

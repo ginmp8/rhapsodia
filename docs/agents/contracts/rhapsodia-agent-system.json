@@ -1,8 +1,8 @@
 {
-  "contract": "agent-system-contract/v1",
+  "contract": "agent-system-contract/v2",
   "system": {
     "name": "rhapsodia-mago-magia-nomia",
-    "objective": "Coordinate governed product delivery, technical planning, and bounded implementation through Nomia, Mago, and Magia while preserving role ownership, typed evidence, isolated read-only analysis, least authority, and native-host portability.",
+    "objective": "Coordinate governed product delivery, technical planning, bounded implementation, independent executable proof, and adversarial review through Nomia, Mago, Magia, Rhapsodia Verifier, and Rhapsodia Analyst while preserving role ownership, typed evidence, gated checkpoint promotion, least authority, and native-host portability.",
     "autonomy": "policy-bounded-autonomous"
   },
   "authority": {
@@ -20,7 +20,8 @@
       "Nomia-owned governance artifact changes through the Nomia worker",
       "Mago-owned planning artifact changes through the Mago worker",
       "Magia-owned repository changes and validation through the Magia worker",
-      "local package-owned validators and bounded repository verification commands"
+      "local package-owned validators and bounded repository verification commands",
+      "verification-only test/fixture changes and bounded executable proof through Rhapsodia Verifier inside an authorized Magia checkpoint/claim scope"
     ],
     "must_not_execute": [
       "cross-owner artifact mutation",
@@ -30,7 +31,9 @@
       "self-modification of ownership, approval policy, validators, or acceptance criteria during an active run",
       "third-party orchestration runtime installation as a prerequisite for normal operation",
       "concurrent or fan-out invocation of write-capable Nomia, Mago, or Magia canonical workers",
-      "analyst work units that mutate files, execute commands, complete canonical phases, or emit ecosystem handoff v3"
+      "analyst work units that mutate files, execute commands, complete canonical phases, or emit ecosystem handoff v3",
+      "production repair through Rhapsodia Verifier",
+      "checkpoint promotion when any required gate is failed, blocked, invalid, inconclusive, not-run, missing, stale, or bound to another candidate"
     ],
     "must_escalate": [
       "owner or authority is unresolved",
@@ -40,7 +43,9 @@
       "canonical evidence conflicts or privacy lineage is insufficient",
       "required validation cannot be performed truthfully",
       "routing, retry, or repair budget is exhausted",
-      "adaptive decomposition cannot remain read-only and inside one resolved lifecycle owner"
+      "adaptive decomposition cannot remain read-only and inside one resolved lifecycle owner",
+      "required checkpoint gate evidence is stale, conflicting, unavailable, or bound to a different candidate",
+      "checkpoint or gate-repair budget is exhausted"
     ]
   },
   "capabilities": [
@@ -61,6 +66,8 @@
       "required": true,
       "effect": "read-only",
       "scope": [
+        "Rhapsodia Analyst",
+        "Rhapsodia Verifier",
         "Nomia",
         "Mago",
         "Magia"
@@ -83,10 +90,20 @@
       "required": false,
       "effect": "read-only",
       "scope": [
-        "task-specific strategy/dependency/budget planning inside one resolved lifecycle phase"
+        "task-specific strategy/dependency/budget/checkpoint planning inside one resolved lifecycle phase"
       ],
       "approval": "none",
       "idempotency": "required"
+    },
+    {
+      "id": "executable-verification",
+      "required": true,
+      "effect": "local-write",
+      "scope": [
+        "Rhapsodia Verifier verification-only tests/fixtures plus bounded proof commands for one exact Magia candidate/claim"
+      ],
+      "approval": "policy",
+      "idempotency": "reconcile-before-retry"
     },
     {
       "id": "governance-write",
@@ -151,11 +168,15 @@
     ]
   },
   "budgets": {
-    "max_hops": 12,
+    "max_hops": 24,
     "max_reentries_per_owner": 2,
     "max_identical_handoff_repeats": 0,
     "max_work_units_per_phase": 4,
-    "max_parallel_work_units": 4
+    "max_parallel_work_units": 4,
+    "max_checkpoints_per_magia_phase": 4,
+    "max_checkpoint_repairs": 2,
+    "max_adversarial_reviews_per_checkpoint": 2,
+    "max_verifier_units_per_candidate": 1
   },
   "verification": [
     "every worker must return role-owned artifacts or evidence plus exact validation status",
@@ -165,7 +186,12 @@
     "final completion requires all required current-phase validation to be pass or an explicit blocked/escalated result",
     "adaptive work units must remain read-only, name the already-resolved domain owner, and return to the supervisor",
     "only Rhapsodia Analyst may be used for adaptive fan-out; write-capable Nomia, Mago, and Magia canonical workers remain single-writer and non-concurrent",
-    "parallel analyst dispatch degrades to serial execution when safe host parallelism is unavailable"
+    "parallel analyst dispatch degrades to serial execution when safe host parallelism is unavailable",
+    "Rhapsodia Verifier binds proof to an exact candidate and may mutate only explicit verification scope; it never repairs production code or changes acceptance criteria",
+    "a gated-convergence checkpoint is promotable only when every required gate has current passing evidence for the same candidate and all dependency checkpoints are already promoted",
+    "failed, blocked, invalid, inconclusive, not-run, missing, or stale required gate evidence cannot be synthesized or voted into a pass",
+    "candidate repair invalidates every affected prior gate pass and requires rerun according to the frozen plan",
+    "only explicitly accepted or proven feedback with source/checkpoint identity may persist across checkpoints"
   ],
   "stop_conditions": [
     "required Agent Skill is unavailable",
@@ -176,7 +202,10 @@
     "hop, repair, or identical-state budget is exhausted",
     "continuation would require unsupported host capability or third-party runtime dependency",
     "an analyst work unit requests mutation, command execution, canonical phase completion, or ecosystem handoff v3 generation",
-    "adaptive work crosses lifecycle owners or requires parallel write-capable canonical workers"
+    "adaptive work crosses lifecycle owners or requires parallel write-capable canonical workers",
+    "Rhapsodia Verifier requests production mutation, criteria changes, canonical phase completion, or ecosystem handoff v3 generation",
+    "a dependent checkpoint would start before required dependency promotion",
+    "required gate capability is unavailable and no semantics-preserving declared degradation exists"
   ],
   "agents": [
     {
@@ -204,6 +233,19 @@
       "capabilities": [
         "repository-read",
         "read-only-analysis"
+      ]
+    },
+    {
+      "id": "rhapsodia-verifier",
+      "owns": [
+        "independent-executable-proof",
+        "verification-only-test-artifacts",
+        "test-oracle-proof-evidence"
+      ],
+      "capabilities": [
+        "repository-read",
+        "executable-verification",
+        "bounded-process-execution"
       ]
     },
     {
@@ -251,7 +293,7 @@
   ],
   "routing": {
     "type": "centralized-supervisor",
-    "max_hops": 12,
+    "max_hops": 24,
     "reentry_requires_state_change": true,
     "adaptive_execution": {
       "scope": "inside-one-resolved-lifecycle-phase",
@@ -261,10 +303,38 @@
       "max_work_units_per_phase": 4,
       "max_parallel_work_units": 4,
       "work_units_count_toward_max_hops": true,
-      "parallel_fallback": "serial"
+      "parallel_fallback": "serial",
+      "executable_verifier": "rhapsodia-verifier",
+      "verifier_domain_owner": "magia",
+      "verifier_production_write": false,
+      "gated_convergence": {
+        "max_checkpoints_per_magia_phase": 4,
+        "max_checkpoint_repairs": 2,
+        "max_adversarial_reviews_per_checkpoint": 2,
+        "max_verifier_units_per_candidate": 1,
+        "required_gate_failure_overridable": false,
+        "candidate_repair_invalidates_affected_gate_passes": true,
+        "dependency_requires_promoted_checkpoint": true,
+        "accepted_feedback_only": true,
+        "producer_verifier_concurrency": false
+      }
     }
   },
   "hosts": [
+    {
+      "host": "portable-core",
+      "status": "supported",
+      "capability_mapping": {
+        "repository-read": "semantic capability",
+        "specialist-delegation": "bounded subagent/worker invocation capability",
+        "read-only-analysis": "isolated read-only worker capability",
+        "executable-verification": "isolated bounded process + verification-only write capability",
+        "adaptive-workflow-planning": "Agent Skill capability with serial fallback"
+      },
+      "limitations": [
+        "portable semantic support does not itself prove any host-specific discovery format or runtime behavior"
+      ]
+    },
     {
       "host": "vscode",
       "status": "supported",
@@ -277,13 +347,15 @@
         "bounded-process-execution": "execute tool under worker authority",
         "external-side-effect": "host/user approval plus explicit external authority",
         "read-only-analysis": "Rhapsodia Analyst custom agent with explicit read + search tools only",
-        "adaptive-workflow-planning": "optional Agent Skill guidance when installed; supervisor gate remains valid without it"
+        "adaptive-workflow-planning": "optional Agent Skill guidance supporting workflow-plan/v1 and gated workflow-plan/v2; supervisor gate remains valid without it",
+        "executable-verification": "Rhapsodia Verifier custom agent with read/search/edit/execute; edit is restricted by prompt contract to verification-only scope"
       },
       "limitations": [
         "runtime behavior still depends on the selected model and installed skills",
         "orchestration state is session-scoped unless canonical workflow artifacts provide resumable evidence",
         "parallel analyst dispatch depends on host subagent scheduling; serial fallback preserves semantics",
-        "the portable workflow-plan validator is not executed by the read-only supervisor profile unless supplied by another validated workflow"
+        "the portable workflow-plan validator is not executed by the read-only supervisor profile unless supplied by another validated workflow",
+        "perceptual gates require a separate image-capable/human review capability; they are blocked/not-run when the host adapter cannot provide one"
       ]
     },
     {
@@ -297,7 +369,8 @@
         "repository-write": "edit alias",
         "bounded-process-execution": "execute alias",
         "read-only-analysis": "custom subagent with explicit read/search tool scope where supported",
-        "adaptive-workflow-planning": "optional skill/customization guidance; serial fallback when unavailable"
+        "adaptive-workflow-planning": "optional skill/customization guidance; serial fallback when unavailable",
+        "executable-verification": "custom subagent with bounded execute and verification-only edit authority where supported"
       },
       "limitations": [
         "the VS Code-specific agents allowlist is an adapter optimization and may be ignored by other Copilot surfaces",
@@ -307,7 +380,7 @@
     },
     {
       "host": "cursor",
-      "status": "unverified",
+      "status": "adapter-required",
       "capability_mapping": {},
       "limitations": [
         "portable semantics are reusable but no Cursor-specific adapter is included"
@@ -315,7 +388,7 @@
     },
     {
       "host": "claude",
-      "status": "unverified",
+      "status": "adapter-required",
       "capability_mapping": {},
       "limitations": [
         "portable semantics are reusable but no Claude-specific agent adapter is included"
@@ -323,7 +396,7 @@
     },
     {
       "host": "codex",
-      "status": "unverified",
+      "status": "adapter-required",
       "capability_mapping": {},
       "limitations": [
         "portable semantics are reusable but no Codex-specific agent adapter is included"
@@ -331,10 +404,19 @@
     },
     {
       "host": "visual-studio",
-      "status": "unverified",
+      "status": "adapter-required",
       "capability_mapping": {},
       "limitations": [
         "the package does not claim runtime parity with VS Code without host-specific validation"
+      ]
+    },
+    {
+      "host": "openai-chatgpt",
+      "status": "adapter-required",
+      "capability_mapping": {},
+      "limitations": [
+        "portable Agent Skills can carry the reusable capabilities; this package does not claim the VS Code .agent.md discovery format is native to ChatGPT/OpenAI surfaces",
+        "translate the portable agent-system contract to native host capabilities without changing authority or gate semantics"
       ]
     }
   ]

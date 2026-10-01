@@ -11,6 +11,7 @@ INSTALLER = ROOT / "scripts" / "install_agents.py"
 AGENT_NAMES = {
     "rhapsodia-supervisor.agent.md",
     "rhapsodia-analyst.agent.md",
+    "rhapsodia-verifier.agent.md",
     "nomia.agent.md",
     "mago.agent.md",
     "magia.agent.md",
@@ -31,7 +32,7 @@ class InstallerTests(unittest.TestCase):
         td = tempfile.TemporaryDirectory()
         target = Path(td.name) / "repo"
         target.mkdir()
-        for name in ("nomia", "mago", "magia"):
+        for name in ("nomia", "mago", "magia", "test-oracle-engineering"):
             p = target / ".github" / "skills" / name
             p.mkdir(parents=True, exist_ok=True)
             (p / "SKILL.md").write_text(f"---\\nname: {name}\\ndescription: test\\n---\\n", encoding="utf-8")

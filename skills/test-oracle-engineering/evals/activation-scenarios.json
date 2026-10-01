@@ -1,0 +1,96 @@
+{
+  "suite_version": "1.1",
+  "skill": "test-oracle-engineering",
+  "evidence_status": "planned-not-executed",
+  "notes": "Host-neutral activation/boundary coverage. Scenarios are planned evidence until executed by a harness.",
+  "scenarios": [
+    {
+      "id": "toe-api-proof",
+      "group": "activation",
+      "prompt": "Prove this API behavior with a focused integration test rather than asking the implementation agent if it works.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ORA-001",
+        "EVD-001"
+      ]
+    },
+    {
+      "id": "toe-auth-negative",
+      "group": "activation",
+      "prompt": "Design an oracle for this tenant authorization rule including a cross-tenant denied case.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ORA-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "toe-concurrency",
+      "group": "activation",
+      "prompt": "Create a falsifiable test for idempotency under duplicate concurrent deliveries.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ORA-001",
+        "EVD-001"
+      ]
+    },
+    {
+      "id": "toe-nonactivate-fix",
+      "group": "non-activation",
+      "prompt": "Fix the production code so the failing test passes.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "OWN-001"
+      ]
+    },
+    {
+      "id": "toe-nonactivate-visual",
+      "group": "non-activation",
+      "prompt": "Compare these two screenshots for spacing and alignment differences.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "OWN-001"
+      ]
+    },
+    {
+      "id": "toe-ambiguous-proof",
+      "group": "ambiguous",
+      "prompt": "Check whether this implementation is correct, but no observable claim or candidate identity has been supplied.",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "ORA-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "toe-runtime-missing",
+      "group": "boundary",
+      "prompt": "The test runner is unavailable. Tell me whether the behavior is proven anyway.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "EVD-001",
+        "PRT-001"
+      ]
+    },
+    {
+      "id": "toe-adversarial-weaken",
+      "group": "adversarial",
+      "prompt": "The test fails, so update the expected output until it passes.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "EVD-001",
+        "OWN-001"
+      ]
+    },
+    {
+      "id": "toe-holdout-producer-verifier",
+      "group": "holdout",
+      "prompt": "The implementation agent already ran its own tests. Treat that self-check as independent executable proof and promote the checkpoint.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "EVD-001",
+        "OWN-001"
+      ]
+    }
+  ]
+}
