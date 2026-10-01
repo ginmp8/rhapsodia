@@ -4,7 +4,7 @@
   "exports": [
     {
       "contract_id": "workflow-orchestration.workflow-plan",
-      "version": 2,
+      "version": 3,
       "role": "owner-producer",
       "surface_paths": [
         "references/workflow-plan-contract.md",
