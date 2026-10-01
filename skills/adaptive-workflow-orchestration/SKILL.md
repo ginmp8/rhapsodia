@@ -105,6 +105,20 @@ When Python 3 is available, validate every material plan before execution with [
 
 The validator auto-detects v1/v2 and checks semantic invariants that JSON Schema alone cannot express, including dependency cycles, budget bounds, authority/write scope, independent verification isolation, unordered read/write conflicts, checkpoint DAGs, gate independence/capability requirements, bounded repairs, and promotion invariants.
 
+## Supporting capability binding
+
+Workflow capability ids describe **what the run needs**, not which external skill package must provide it. Keep `capabilities.required`, `capabilities.optional`, and gate `capability` values semantic and host-neutral. Do not encode vendor names, installation paths, model ids, or a fixed Rhapsodia skill catalog into the plan.
+
+At execution time, the active worker resolves a semantic capability through the host's native Agent Skills discovery:
+
+1. interpret the capability against the bounded work unit and active owner;
+2. select the minimum matching installed skill(s) using their activation/scope contracts;
+3. intersect supporting guidance with the active agent's existing authority, tools, write scope, criteria, and stop conditions;
+4. required unresolved capability -> `blocked`; optional unresolved capability -> declared degradation/`not-run` only when semantics remain valid;
+5. record the semantic capability and actual binding identity when the host exposes it, but do not rewrite the frozen workflow plan to pin that implementation.
+
+A supporting skill never becomes the lifecycle owner and never grants authority. If its instructions conflict with the active agent/phase contract, the narrower active-agent authority wins.
+
 ## Workflow
 
 1. **Normalize the objective.** State the authorized owner, terminal outcome, and success criteria.

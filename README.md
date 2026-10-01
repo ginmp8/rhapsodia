@@ -140,6 +140,14 @@ Install each required Skill in exactly one supported root. Install the **complet
 
 This Agent distribution verifies the prerequisite but never copies or mutates those Skills.
 
+### External supporting Agent Skills
+
+Rhapsodia does not maintain a catalog of language, framework, security, database, cloud, testing, or other specialist skills. When a phase needs extra expertise, the Supervisor/accepted workflow expresses the need as a **semantic capability** and the active worker resolves a matching installed Agent Skill through the host's native discovery mechanism.
+
+The canonical skill remains authoritative for the phase. A supporting skill cannot change lifecycle ownership, tools, write scope, acceptance criteria, handoff direction, approval policy, or stop conditions. Missing required capability blocks the affected unit; missing optional capability is recorded as `not-run`/degraded only when the workflow remains semantically valid.
+
+This keeps external skills independently installable and replaceable. No external skill package name, repository path, vendor, model, or fixed mapping is required by Rhapsodia.
+
 ### Optional orchestration and perceptual Skills
 
 `adaptive-workflow-orchestration` is optional. When installed, the Supervisor may use `workflow-plan/v1` for classic dynamic patterns and `workflow-plan/v2` for gated checkpoint convergence inside an already-resolved lifecycle phase. The canonical lifecycle remains functional without it and falls back to conservative single/serial execution.
@@ -175,7 +183,7 @@ python scripts/install_agents.py --target <TARGET_REPOSITORY> --force
 
 Manual installation is also valid: copy the six profiles from `agents/` to `.github/agents/` in the target repository.
 
-After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that the six custom agents plus the four required Agent Skills are discovered.
+After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that the six custom agents plus the four required canonical Agent Skills are discovered. Any additional installed Agent Skills remain independently discoverable as supporting semantic capabilities; they do not need to be copied into Rhapsodia.
 
 The primary user-facing entry point is **Rhapsodia Supervisor**. Rhapsodia Analyst, Nomia, Mago, and Magia are configured as subagents rather than normal user-selected modes; Analyst is read-only and hidden from ordinary user selection.
 
@@ -198,6 +206,8 @@ The deployed runtime requires only:
   magia/
   test-oracle-engineering/
 ```
+
+Additional supporting Agent Skills are optional runtime inputs discovered by the active host/worker when a semantic capability requires them; they are deliberately outside this fixed prerequisite set.
 
 The portable JSON contract shipped in this archive is a **design/build-time validation contract**, not a runtime dependency that must be copied to every target repository.
 

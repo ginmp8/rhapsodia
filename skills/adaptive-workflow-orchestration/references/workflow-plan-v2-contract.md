@@ -23,7 +23,7 @@ Each gate declares:
 - whether repair invalidates prior pass evidence and forces rerun;
 - finite `max_attempts`.
 
-`executable-proof` and `adversarial-review` require independent isolation (`fresh-context`, `workspace`, `process`, or `host-native`). `human-approval` uses `human` isolation. A required gate that depends on an unavailable capability blocks progression; it never silently degrades to `not-run`.
+`executable-proof` and `adversarial-review` require independent isolation (`fresh-context`, `workspace`, `process`, or `host-native`). `human-approval` uses `human` isolation. A gate `capability` is a semantic requirement, not a pinned external skill identity. The active verifier/reviewer resolves it through host-native capability/Agent Skill discovery inside its existing authority. A required gate that depends on an unavailable capability blocks progression; it never silently degrades to `not-run`.
 
 `recapture` is reserved for perceptual/state-alignment failures where the compared states are invalid rather than semantically different.
 

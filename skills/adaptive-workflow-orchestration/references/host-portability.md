@@ -19,6 +19,21 @@ Common capabilities:
 
 Use host-native agents/subagents, tool scoping, approvals, workspaces, or process execution when they satisfy the plan. Keep adapters thin: they translate a semantic capability but do not redefine ownership, authority, budgets, termination, or evidence.
 
+## Supporting Agent Skill discovery
+
+When a plan declares a semantic capability that can be supplied by an Agent Skill, resolve it through the current host's native skill discovery. The plan must not require a particular external skill package name, repository path, vendor, or model.
+
+Resolution rules:
+
+- keep the lifecycle/domain owner unchanged;
+- choose the minimum matching installed skill(s), not every potentially relevant skill;
+- treat supporting skill instructions as guidance inside the active agent's existing authority;
+- never let a supporting skill add tools, write scope, approval, delegation, or external-side-effect authority;
+- record the semantic capability result and resolved skill identity when observable;
+- do not persist the resolved implementation into the portable plan as a new hard dependency.
+
+This is late binding: a different compatible skill may satisfy the same semantic capability on another host without changing the workflow contract.
+
 ## Degradation
 
 - no parallel dispatch -> serial execution when the same stage semantics remain valid;

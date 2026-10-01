@@ -96,11 +96,11 @@ Every stage `max_parallel` must be `<=` both global ceilings. A `retry` failure 
 
 ## Capabilities and degradation
 
-`required` and `optional` are unique semantic capability ids and must not overlap.
+`required` and `optional` are unique **semantic capability ids** and must not overlap. They describe behavior the workflow needs; they are not external Agent Skill package names, vendor identifiers, installation paths, or model ids.
 
 When `max_parallel > 1` and `parallelize-independent-work` is optional rather than required, `degradation.parallelize-independent-work` must be `serial` or `blocked`.
 
-Do not infer host support from the plan. Host resolution is a separate step.
+Do not infer host support from the plan. Host resolution is a separate late-binding step: the active worker may satisfy a semantic capability with a matching host-discovered Agent Skill, but that supporting skill remains subordinate to the active worker's authority and does not become lifecycle owner. Required unresolved capability blocks; optional unresolved capability follows only the declared semantics-preserving degradation.
 
 ## Evidence identities
 

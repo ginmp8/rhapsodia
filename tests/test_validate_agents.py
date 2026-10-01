@@ -128,6 +128,52 @@ class ValidatorTests(unittest.TestCase):
         finally:
             td.cleanup()
 
+    def test_supporting_capability_resolution_rejects_fixed_catalog(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "docs" / "agents" / "contracts" / "rhapsodia-agent-system.json"
+            doc = json.loads(p.read_text(encoding="utf-8"))
+            doc["routing"]["supporting_capability_resolution"] = {
+                "selection": "semantic-capability",
+                "binding": "host-native-agent-skill-discovery",
+                "fixed_skill_catalog": True,
+                "authority_precedence": "active-agent-contract",
+                "ownership_precedence": "canonical-lifecycle-owner",
+                "required_unavailable": "blocked",
+                "optional_unavailable": "continue-with-not-run",
+                "supporting_skill_may_expand_authority": False,
+                "supporting_skill_may_change_owner": False,
+            }
+            p.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+            rc, result = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(result, "SUPPORTING_CAPABILITY_RESOLUTION")
+        finally:
+            td.cleanup()
+
+    def test_required_supporting_capability_must_fail_closed(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "docs" / "agents" / "contracts" / "rhapsodia-agent-system.json"
+            doc = json.loads(p.read_text(encoding="utf-8"))
+            doc["routing"]["supporting_capability_resolution"] = {
+                "selection": "semantic-capability",
+                "binding": "host-native-agent-skill-discovery",
+                "fixed_skill_catalog": False,
+                "authority_precedence": "active-agent-contract",
+                "ownership_precedence": "canonical-lifecycle-owner",
+                "required_unavailable": "continue-with-not-run",
+                "optional_unavailable": "continue-with-not-run",
+                "supporting_skill_may_expand_authority": False,
+                "supporting_skill_may_change_owner": False,
+            }
+            p.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+            rc, result = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(result, "SUPPORTING_CAPABILITY_RESOLUTION")
+        finally:
+            td.cleanup()
+
     def test_worker_delegation_tool_is_rejected(self):
         td, dst = self.copy_package()
         try:

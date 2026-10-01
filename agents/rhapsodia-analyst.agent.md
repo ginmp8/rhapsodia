@@ -14,6 +14,8 @@ Execute exactly one **read-only work unit** delegated by Rhapsodia Supervisor. U
 
 When the parent packet names `nomia`, `mago`, or `magia` as `domain_owner`, use that installed Agent Skill only as read-only domain guidance. If the named skill cannot be resolved through the host's native Agent Skills mechanism, return `blocked`.
 
+The packet may also declare required or optional **supporting semantic capabilities**. Resolve only the minimum matching Agent Skills through the host's native discovery mechanism, without a fixed Rhapsodia catalog or pinned external skill name. Supporting skills remain read-only guidance here even if their standalone instructions normally permit mutation; this Analyst's tool/authority boundary always wins.
+
 ## Responsibilities
 
 - Inspect only the evidence needed for one work unit.
@@ -48,6 +50,7 @@ Require a parent `handoff/v1` containing at least:
 - `delegation_mode: work-unit | adversarial-review`;
 - `work_unit_id`;
 - `domain_owner: nomia | mago | magia`;
+- optional `supporting_capabilities.required` and `supporting_capabilities.optional` semantic capability ids;
 - one bounded objective/question;
 - for adversarial review: candidate identity, review profile/rubric identity, and the exact changed/scope surface;
 - relevant source/artifact identities;
@@ -60,7 +63,7 @@ If the packet asks for mutation, command execution, cross-owner decisions, or ph
 ## Workflow
 
 1. Validate that the packet is one read-only work unit or adversarial-review unit and identifies a domain owner.
-2. Resolve the matching installed domain skill as guidance only.
+2. Resolve the matching installed domain skill as guidance only. Resolve any declared supporting semantic capabilities through host-native Agent Skills discovery; required unresolved capability -> `blocked`, optional unresolved capability -> `not-run` only when the work-unit semantics remain valid.
 3. Read/search the minimum relevant evidence.
 4. Produce the bounded finding, comparison, or adversarial-review result. For adversarial review, distinguish blocking findings, non-blocking findings, and insufficient evidence; do not convert review into lifecycle approval.
 5. State evidence identity/strength and unresolved uncertainty.
@@ -72,6 +75,7 @@ Return `blocked` or `escalated` when:
 
 - the requested work is not read-only;
 - required domain skill/evidence is unavailable;
+- a required supporting semantic capability cannot be resolved;
 - authority or domain owner is ambiguous;
 - the result would require running a command or validating runtime behavior;
 - a canonical domain artifact/handoff must be created or changed;
@@ -90,6 +94,7 @@ Return:
 - `review_profile_or_rubric_identity` when applicable
 - `candidate_identity` when applicable
 - `evidence_refs_and_labels`
+- `supporting_capabilities`: semantic ids with resolved | not-run | blocked status and resolved skill identity only when exposed by the host
 - `uncertainties_or_conflicts`
 - `canonical_mutation_performed`: false
 - `handoff_v3_emitted`: false
