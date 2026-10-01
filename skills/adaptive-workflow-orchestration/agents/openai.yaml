@@ -1,0 +1,3 @@
+interface:
+  display_name: "Adaptive Workflow Orchestration"
+  short_description: "Plan and validate bounded runtime workflow topology"

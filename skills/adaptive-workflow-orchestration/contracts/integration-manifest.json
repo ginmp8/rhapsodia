@@ -1,0 +1,18 @@
+{
+  "manifest_version": 1,
+  "skill": "adaptive-workflow-orchestration",
+  "exports": [
+    {
+      "contract_id": "workflow-orchestration.workflow-plan",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/workflow-plan-contract.md",
+        "schemas/workflow-plan.schema.json",
+        "scripts/validate_workflow_plan.py",
+        "assets/templates/workflow-plan.json.template"
+      ]
+    }
+  ],
+  "imports": []
+}

@@ -2,7 +2,7 @@
   "contract": "agent-system-contract/v1",
   "system": {
     "name": "rhapsodia-mago-magia-nomia",
-    "objective": "Coordinate governed product delivery, technical planning, and bounded implementation through Nomia, Mago, and Magia while preserving role ownership, typed evidence, least authority, and native-host portability.",
+    "objective": "Coordinate governed product delivery, technical planning, and bounded implementation through Nomia, Mago, and Magia while preserving role ownership, typed evidence, isolated read-only analysis, least authority, and native-host portability.",
     "autonomy": "policy-bounded-autonomous"
   },
   "authority": {
@@ -28,7 +28,9 @@
       "financial, identity, access-control, or irreversible external actions",
       "secret disclosure or credential propagation",
       "self-modification of ownership, approval policy, validators, or acceptance criteria during an active run",
-      "third-party orchestration runtime installation as a prerequisite for normal operation"
+      "third-party orchestration runtime installation as a prerequisite for normal operation",
+      "concurrent or fan-out invocation of write-capable Nomia, Mago, or Magia canonical workers",
+      "analyst work units that mutate files, execute commands, complete canonical phases, or emit ecosystem handoff v3"
     ],
     "must_escalate": [
       "owner or authority is unresolved",
@@ -37,7 +39,8 @@
       "material architecture, public contract, data, security, sequencing, or user-behavior change crosses the active role boundary",
       "canonical evidence conflicts or privacy lineage is insufficient",
       "required validation cannot be performed truthfully",
-      "routing, retry, or repair budget is exhausted"
+      "routing, retry, or repair budget is exhausted",
+      "adaptive decomposition cannot remain read-only and inside one resolved lifecycle owner"
     ]
   },
   "capabilities": [
@@ -45,7 +48,11 @@
       "id": "repository-read",
       "required": true,
       "effect": "read-only",
-      "scope": ["current workspace", "installed Agent Skills", "explicitly supplied evidence"],
+      "scope": [
+        "current workspace",
+        "installed Agent Skills",
+        "explicitly supplied evidence"
+      ],
       "approval": "none",
       "idempotency": "not-applicable"
     },
@@ -53,7 +60,31 @@
       "id": "specialist-delegation",
       "required": true,
       "effect": "read-only",
-      "scope": ["Nomia", "Mago", "Magia"],
+      "scope": [
+        "Nomia",
+        "Mago",
+        "Magia"
+      ],
+      "approval": "none",
+      "idempotency": "required"
+    },
+    {
+      "id": "read-only-analysis",
+      "required": true,
+      "effect": "read-only",
+      "scope": [
+        "isolated evidence, analysis, and verification work units under one resolved domain owner"
+      ],
+      "approval": "none",
+      "idempotency": "required"
+    },
+    {
+      "id": "adaptive-workflow-planning",
+      "required": false,
+      "effect": "read-only",
+      "scope": [
+        "task-specific strategy/dependency/budget planning inside one resolved lifecycle phase"
+      ],
       "approval": "none",
       "idempotency": "required"
     },
@@ -61,7 +92,9 @@
       "id": "governance-write",
       "required": true,
       "effect": "local-write",
-      "scope": ["Nomia-owned canonical governance artifacts only"],
+      "scope": [
+        "Nomia-owned canonical governance artifacts only"
+      ],
       "approval": "policy",
       "idempotency": "required"
     },
@@ -69,7 +102,9 @@
       "id": "planning-write",
       "required": true,
       "effect": "local-write",
-      "scope": ["Mago-owned canonical planning artifacts only"],
+      "scope": [
+        "Mago-owned canonical planning artifacts only"
+      ],
       "approval": "policy",
       "idempotency": "required"
     },
@@ -77,7 +112,9 @@
       "id": "repository-write",
       "required": true,
       "effect": "local-write",
-      "scope": ["Magia-authorized repository and execution artifacts only"],
+      "scope": [
+        "Magia-authorized repository and execution artifacts only"
+      ],
       "approval": "policy",
       "idempotency": "reconcile-before-retry"
     },
@@ -85,7 +122,11 @@
       "id": "bounded-process-execution",
       "required": true,
       "effect": "local-write",
-      "scope": ["skill validators", "tests", "build or lint commands explicitly allowed by the active role"],
+      "scope": [
+        "skill validators",
+        "tests",
+        "build or lint commands explicitly allowed by the active role"
+      ],
       "approval": "policy",
       "idempotency": "reconcile-before-retry"
     },
@@ -93,26 +134,38 @@
       "id": "external-side-effect",
       "required": false,
       "effect": "external-write",
-      "scope": ["only an explicitly authorized action outside the normal agent lifecycle"],
+      "scope": [
+        "only an explicitly authorized action outside the normal agent lifecycle"
+      ],
       "approval": "human",
       "idempotency": "reconcile-before-retry"
     }
   ],
   "state": {
     "durable": false,
-    "terminal_states": ["completed", "blocked", "escalated", "failed"]
+    "terminal_states": [
+      "completed",
+      "blocked",
+      "escalated",
+      "failed"
+    ]
   },
   "budgets": {
     "max_hops": 12,
     "max_reentries_per_owner": 2,
-    "max_identical_handoff_repeats": 0
+    "max_identical_handoff_repeats": 0,
+    "max_work_units_per_phase": 4,
+    "max_parallel_work_units": 4
   },
   "verification": [
     "every worker must return role-owned artifacts or evidence plus exact validation status",
     "ecosystem handoff v3 must be generated and validated by the owning skill before the supervisor routes the next governed phase",
     "the supervisor must not convert planned checks into executed evidence",
     "a repeated materially identical delegation is a stop condition",
-    "final completion requires all required current-phase validation to be pass or an explicit blocked/escalated result"
+    "final completion requires all required current-phase validation to be pass or an explicit blocked/escalated result",
+    "adaptive work units must remain read-only, name the already-resolved domain owner, and return to the supervisor",
+    "only Rhapsodia Analyst may be used for adaptive fan-out; write-capable Nomia, Mago, and Magia canonical workers remain single-writer and non-concurrent",
+    "parallel analyst dispatch degrades to serial execution when safe host parallelism is unavailable"
   ],
   "stop_conditions": [
     "required Agent Skill is unavailable",
@@ -121,34 +174,95 @@
     "a worker attempts recursive delegation or cross-owner mutation",
     "a required typed handoff is malformed, stale, mixed-version, privacy-invalid, or authority-invalid",
     "hop, repair, or identical-state budget is exhausted",
-    "continuation would require unsupported host capability or third-party runtime dependency"
+    "continuation would require unsupported host capability or third-party runtime dependency",
+    "an analyst work unit requests mutation, command execution, canonical phase completion, or ecosystem handoff v3 generation",
+    "adaptive work crosses lifecycle owners or requires parallel write-capable canonical workers"
   ],
   "agents": [
     {
       "id": "rhapsodia-supervisor",
-      "owns": ["routing", "orchestration-state", "delegation", "transition-validation", "cycle-safety", "final-integration-summary"],
-      "capabilities": ["repository-read", "specialist-delegation"]
+      "owns": [
+        "routing",
+        "orchestration-state",
+        "delegation",
+        "transition-validation",
+        "cycle-safety",
+        "final-integration-summary"
+      ],
+      "capabilities": [
+        "repository-read",
+        "specialist-delegation",
+        "adaptive-workflow-planning"
+      ]
+    },
+    {
+      "id": "rhapsodia-analyst",
+      "owns": [
+        "read-only-work-unit-analysis",
+        "independent-read-only-verification-evidence"
+      ],
+      "capabilities": [
+        "repository-read",
+        "read-only-analysis"
+      ]
     },
     {
       "id": "nomia",
-      "owns": ["product-delivery-governance", "roadmap-status-decisions", "governance-closure", "nomia-owned-evidence"],
-      "capabilities": ["repository-read", "governance-write", "bounded-process-execution"]
+      "owns": [
+        "product-delivery-governance",
+        "roadmap-status-decisions",
+        "governance-closure",
+        "nomia-owned-evidence"
+      ],
+      "capabilities": [
+        "repository-read",
+        "governance-write",
+        "bounded-process-execution"
+      ]
     },
     {
       "id": "mago",
-      "owns": ["technical-planning", "requirements-design-tasks-validation-plan", "planning-reconciliation", "mago-owned-evidence"],
-      "capabilities": ["repository-read", "planning-write", "bounded-process-execution"]
+      "owns": [
+        "technical-planning",
+        "requirements-design-tasks-validation-plan",
+        "planning-reconciliation",
+        "mago-owned-evidence"
+      ],
+      "capabilities": [
+        "repository-read",
+        "planning-write",
+        "bounded-process-execution"
+      ]
     },
     {
       "id": "magia",
-      "owns": ["bounded-implementation", "debugging-tests-validation", "execution-evidence", "magia-owned-technical-docs"],
-      "capabilities": ["repository-read", "repository-write", "bounded-process-execution"]
+      "owns": [
+        "bounded-implementation",
+        "debugging-tests-validation",
+        "execution-evidence",
+        "magia-owned-technical-docs"
+      ],
+      "capabilities": [
+        "repository-read",
+        "repository-write",
+        "bounded-process-execution"
+      ]
     }
   ],
   "routing": {
     "type": "centralized-supervisor",
     "max_hops": 12,
-    "reentry_requires_state_change": true
+    "reentry_requires_state_change": true,
+    "adaptive_execution": {
+      "scope": "inside-one-resolved-lifecycle-phase",
+      "read_only_worker": "rhapsodia-analyst",
+      "canonical_writer_count": 1,
+      "write_capable_worker_fanout": false,
+      "max_work_units_per_phase": 4,
+      "max_parallel_work_units": 4,
+      "work_units_count_toward_max_hops": true,
+      "parallel_fallback": "serial"
+    }
   },
   "hosts": [
     {
@@ -161,11 +275,15 @@
         "planning-write": "edit tool in Mago worker",
         "repository-write": "edit tool in Magia worker",
         "bounded-process-execution": "execute tool under worker authority",
-        "external-side-effect": "host/user approval plus explicit external authority"
+        "external-side-effect": "host/user approval plus explicit external authority",
+        "read-only-analysis": "Rhapsodia Analyst custom agent with explicit read + search tools only",
+        "adaptive-workflow-planning": "optional Agent Skill guidance when installed; supervisor gate remains valid without it"
       },
       "limitations": [
         "runtime behavior still depends on the selected model and installed skills",
-        "orchestration state is session-scoped unless canonical workflow artifacts provide resumable evidence"
+        "orchestration state is session-scoped unless canonical workflow artifacts provide resumable evidence",
+        "parallel analyst dispatch depends on host subagent scheduling; serial fallback preserves semantics",
+        "the portable workflow-plan validator is not executed by the read-only supervisor profile unless supplied by another validated workflow"
       ]
     },
     {
@@ -177,36 +295,47 @@
         "governance-write": "edit alias",
         "planning-write": "edit alias",
         "repository-write": "edit alias",
-        "bounded-process-execution": "execute alias"
+        "bounded-process-execution": "execute alias",
+        "read-only-analysis": "custom subagent with explicit read/search tool scope where supported",
+        "adaptive-workflow-planning": "optional skill/customization guidance; serial fallback when unavailable"
       },
       "limitations": [
         "the VS Code-specific agents allowlist is an adapter optimization and may be ignored by other Copilot surfaces",
-        "this package is validated primarily for VS Code custom-agent discovery"
+        "this package is validated primarily for VS Code custom-agent discovery",
+        "parallel subagent behavior varies by Copilot surface; serial fallback is required when unavailable"
       ]
     },
     {
       "host": "cursor",
       "status": "unverified",
       "capability_mapping": {},
-      "limitations": ["portable semantics are reusable but no Cursor-specific adapter is included"]
+      "limitations": [
+        "portable semantics are reusable but no Cursor-specific adapter is included"
+      ]
     },
     {
       "host": "claude",
       "status": "unverified",
       "capability_mapping": {},
-      "limitations": ["portable semantics are reusable but no Claude-specific agent adapter is included"]
+      "limitations": [
+        "portable semantics are reusable but no Claude-specific agent adapter is included"
+      ]
     },
     {
       "host": "codex",
       "status": "unverified",
       "capability_mapping": {},
-      "limitations": ["portable semantics are reusable but no Codex-specific agent adapter is included"]
+      "limitations": [
+        "portable semantics are reusable but no Codex-specific agent adapter is included"
+      ]
     },
     {
       "host": "visual-studio",
       "status": "unverified",
       "capability_mapping": {},
-      "limitations": ["the package does not claim runtime parity with VS Code without host-specific validation"]
+      "limitations": [
+        "the package does not claim runtime parity with VS Code without host-specific validation"
+      ]
     }
   ]
 }

@@ -31,7 +31,8 @@ Use this section order for full maps:
 8. Ripple effects and risks
 9. Coverage and closure
 10. Suggested sequence
-11. Open questions or blockers
+11. Parallelization map, when execution topology is material
+12. Open questions or blockers
 
 Ordering inside tables:
 
@@ -95,6 +96,9 @@ Ordering inside tables:
 1. [first dependency-safe change]
 2. [next change]
 3. [validation]
+
+### Parallelization map
+- [optional: independent units, ordered edges, shared reads, write conflicts, barriers, isolation, merge owner, evidence gaps]
 
 ### Open questions or blockers
 - [only questions that change file selection, safety, or acceptance]

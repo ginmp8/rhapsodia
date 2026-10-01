@@ -7,6 +7,7 @@ from pathlib import Path
 
 AGENT_FILES = (
     "rhapsodia-supervisor.agent.md",
+    "rhapsodia-analyst.agent.md",
     "nomia.agent.md",
     "mago.agent.md",
     "magia.agent.md",
@@ -126,7 +127,7 @@ def main():
             for error in errors:
                 print(f"ERROR: {error}", file=sys.stderr)
             return 1
-        print("PASS: four agent profiles match the package source and nomia/mago/magia skills are discoverable.")
+        print("PASS: five agent profiles match the package source and nomia/mago/magia skills are discoverable.")
         return 0
 
     errors, plan = install(target, dry_run=args.dry_run, force=args.force)
@@ -140,7 +141,7 @@ def main():
     if args.dry_run:
         print("PASS: dry-run only; target was not modified.")
     else:
-        print("PASS: agent profiles installed to .github/agents/. Skills were verified but not copied.")
+        print("PASS: five agent profiles installed to .github/agents/. Required skills were verified but not copied.")
     return 0
 
 

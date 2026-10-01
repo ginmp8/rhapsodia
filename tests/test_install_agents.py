@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALLER = ROOT / "scripts" / "install_agents.py"
 AGENT_NAMES = {
     "rhapsodia-supervisor.agent.md",
+    "rhapsodia-analyst.agent.md",
     "nomia.agent.md",
     "mago.agent.md",
     "magia.agent.md",

@@ -1,6 +1,6 @@
 ---
 name: agent-design
-description: use when asked to design, review, improve, validate, or structure custom agents, agent prompts, agent routing/orchestration, authority boundaries, tool contracts, handoffs, state/termination, governance, or repository agentic structures. especially useful for github copilot/vs code agents, routers, supervisors, review/governance agents, controlled executors, and skill-agent coordination. do not use to create/package skills or to execute the downstream technical task itself.
+description: use when asked to design, review, improve, validate, or structure reusable custom agents, agent prompts, router/supervisor/worker topology, authority boundaries, tool contracts, handoffs, state/termination, governance, or repository agentic structures. especially useful for github copilot/vs code agents, routers, supervisors, review/governance agents, controlled executors, and skill-agent coordination. do not use to create/package skills, execute the downstream technical task, or plan/operate a task-specific runtime workflow after agent roles and authority are already defined.
 ---
 
 # Agent Design
@@ -28,6 +28,7 @@ Do **not** own the request when the primary outcome is:
 - implementing/debugging the downstream repository task rather than designing its future agent;
 - merely writing a normal prompt with no agent role, authority, state, routing, or operating contract;
 - executing a production/deployment/financial/identity/security action that belongs to another authorized workflow.
+- planning or operating a task-specific adaptive runtime workflow after roles/authority are already defined; use `adaptive-workflow-orchestration` for that execution-layer concern.
 
 For mixed requests, design the Agent portion and hand the capability/execution portion to the configured owner. Do not duplicate another Skill or specialist's instructions inside the Agent.
 
@@ -37,6 +38,7 @@ For mixed requests, design the Agent portion and hand the capability/execution p
 - Design only the authority actually required by the mission. Missing high-impact authority is a blocker, not implicit permission.
 - Separate design/review from downstream execution unless the requested artifact itself is a controlled-executor design.
 - Keep routers thin: classify, select, emit `handoff/v1`, and stop.
+- Keep reusable agent topology/authority design separate from task-specific runtime orchestration. Agent Design defines the policy envelope; it does not decide or execute a per-run adaptive workflow.
 - Never assume tools, MCP servers, repository access, network access, write permissions, or background execution.
 - Stateful or multi-agent designs require finite termination and cycle/re-entry behavior.
 - Planned scenarios are not measured behavioral validation.

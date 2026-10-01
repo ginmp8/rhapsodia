@@ -11,8 +11,14 @@ EXPECTED = {
         "name": "Rhapsodia Supervisor",
         "tools": {"read", "search", "agent"},
         "user_invocable": True,
-        "agents": ["Nomia", "Mago", "Magia"],
+        "agents": ["Rhapsodia Analyst", "Nomia", "Mago", "Magia"],
         "profile": "supervisor",
+    },
+    "rhapsodia-analyst.agent.md": {
+        "name": "Rhapsodia Analyst",
+        "tools": {"read", "search"},
+        "user_invocable": False,
+        "profile": "analyst",
     },
     "nomia.agent.md": {
         "name": "Nomia",
@@ -125,14 +131,33 @@ def validate_agent_file(path, spec, findings):
             add(findings, "SUPERVISOR_AGENT_TOOL", path, "supervisor requires the native agent tool")
         if fm.get("agents") != spec["agents"]:
             add(findings, "SUPERVISOR_ALLOWLIST", path, f"agents allowlist must be exactly {spec['agents']}")
+        normalized_body = body.replace("`", "")
         for phrase in (
-            "maximum 12 specialist delegations",
+            "maximum 12 total subagent delegations",
+            "maximum 4 analyst work units",
             "maximum 2 re-entries",
-            "zero materially identical handoff repeats",
+            "zero materially identical canonical handoff or analyst work-unit repeats",
+            "Rhapsodia Analyst is the only profile eligible for adaptive read-only fan-out",
             "Never create, repair, or modify ecosystem handoff v3 yourself",
         ):
+            if phrase not in normalized_body:
+                add(findings, "SUPERVISOR_INVARIANT", path, f"missing required supervisor invariant: {phrase}")
+    elif spec["profile"] == "analyst":
+        if toolset != {"read", "search"}:
+            add(findings, "ANALYST_TOOL_SCOPE", path, "analyst must expose only read and search")
+        if "agent" in toolset or "edit" in toolset or "execute" in toolset:
+            add(findings, "ANALYST_TOOL_SCOPE", path, "analyst must not receive agent/edit/execute tools")
+        if "agents" in fm:
+            add(findings, "ANALYST_ALLOWLIST", path, "analyst must not declare a subagent allowlist")
+        for phrase in (
+            "read-only work unit",
+            "Must not:",
+            "emit ecosystem handoff v3",
+            "invoke another custom agent directly",
+            "canonical_mutation_performed`: false",
+        ):
             if phrase not in body:
-                add(findings, "SUPERVISOR_BUDGET_TEXT", path, f"missing required supervisor invariant: {phrase}")
+                add(findings, "ANALYST_INVARIANT", path, f"missing required analyst invariant: {phrase}")
     else:
         if "agent" in toolset:
             add(findings, "WORKER_DELEGATION_TOOL", path, "workers must not receive the native agent tool")
@@ -171,8 +196,23 @@ def validate_contract(path, findings):
         add(findings, "REENTRY_BUDGET", path, "max_reentries_per_owner must be 2")
     if budgets.get("max_identical_handoff_repeats") != 0:
         add(findings, "IDENTICAL_REPEAT_BUDGET", path, "identical handoff repeats must be zero")
+    if budgets.get("max_work_units_per_phase") != 4:
+        add(findings, "WORK_UNIT_BUDGET", path, "max_work_units_per_phase must be 4")
+    if budgets.get("max_parallel_work_units") != 4:
+        add(findings, "WORK_UNIT_BUDGET", path, "max_parallel_work_units must be 4")
+    adaptive = routing.get("adaptive_execution", {})
+    if adaptive.get("scope") != "inside-one-resolved-lifecycle-phase":
+        add(findings, "ADAPTIVE_SCOPE", path, "adaptive execution must remain inside one resolved lifecycle phase")
+    if adaptive.get("read_only_worker") != "rhapsodia-analyst":
+        add(findings, "ADAPTIVE_WORKER", path, "adaptive read-only worker must be rhapsodia-analyst")
+    if adaptive.get("canonical_writer_count") != 1:
+        add(findings, "SINGLE_WRITER", path, "adaptive execution must keep exactly one canonical writer")
+    if adaptive.get("write_capable_worker_fanout") is not False:
+        add(findings, "WRITE_FANOUT", path, "write-capable canonical worker fan-out must be false")
+    if adaptive.get("parallel_fallback") != "serial":
+        add(findings, "ADAPTIVE_FALLBACK", path, "parallel fallback must be serial")
     ids = [a.get("id") for a in doc.get("agents", [])]
-    if ids != ["rhapsodia-supervisor", "nomia", "mago", "magia"]:
+    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "nomia", "mago", "magia"]:
         add(findings, "AGENT_CONTRACT_SET", path, "contract agent ids/order do not match the package")
     vscode = next((h for h in doc.get("hosts", []) if h.get("host") == "vscode"), None)
     if not vscode or vscode.get("status") != "supported":
@@ -180,6 +220,9 @@ def validate_contract(path, findings):
     mappings = (vscode or {}).get("capability_mapping", {})
     if mappings.get("specialist-delegation") != "agent tool with agents allowlist":
         add(findings, "VSCODE_DELEGATION", path, "VS Code delegation must map to native agent tool plus allowlist")
+    analyst_mapping = mappings.get("read-only-analysis", "")
+    if "read + search" not in analyst_mapping:
+        add(findings, "VSCODE_ANALYST_SCOPE", path, "VS Code read-only analysis must map to an explicit read + search-only analyst profile")
 
 
 def validate_manifest(root, path, findings):
@@ -203,12 +246,23 @@ def validate_manifest(root, path, findings):
             continue
         declared[rel] = item
     actual = {}
+    full_repo = (root / "skills").is_dir()
     for artifact in root.rglob("*"):
         if not artifact.is_file() or artifact.name == "MANIFEST.json":
             continue
         if "__pycache__" in artifact.parts or artifact.suffix in {".pyc", ".pyo"}:
             continue
-        actual[artifact.relative_to(root).as_posix()] = artifact
+        rel = artifact.relative_to(root).as_posix()
+        if full_repo:
+            in_agent_surface = (
+                rel in {"README.md", "LICENSE", "scripts/install_agents.py", "scripts/validate_agents.py",
+                        "tests/agent-scenarios.json", "tests/test_install_agents.py", "tests/test_validate_agents.py"}
+                or rel.startswith("agents/")
+                or rel.startswith("docs/agents/")
+            )
+            if not in_agent_surface:
+                continue
+        actual[rel] = artifact
     missing = sorted(set(declared) - set(actual))
     extra = sorted(set(actual) - set(declared))
     if missing or extra:
