@@ -40,6 +40,7 @@ For "make this skill Archify-like/reproducible", default to `apply`, then valida
 Read target `SKILL.md` first. Then load only the references needed for the active stage:
 
 - [`references/reproducibility-model.md`](references/reproducibility-model.md): ceilings, maturity levels, and variability taxonomy.
+- [`references/workflow-reproducibility.md`](references/workflow-reproducibility.md): planner/accepted-plan/execution-trace identity separation, planning versus execution variance, fresh-context evidence, and adaptive-workflow comparison rules.
 - [`references/transformation-playbook.md`](references/transformation-playbook.md): concrete Archify-style transformation patterns and repair order.
 - [`references/evaluation-contract.md`](references/evaluation-contract.md): frozen evaluators, comparison arms, metrics, acceptance, and claim rules.
 - [`references/validator-patterns.md`](references/validator-patterns.md): validator design by output/workflow class and receipt contract.
@@ -103,6 +104,8 @@ State the ceiling explicitly. Do not promise byte-level determinism for stochast
 Map every material source of variance across:
 
 `activation -> input normalization -> mode/router -> reference loading -> decisions -> generation -> validation -> repair -> delivery -> packaging`
+
+For adaptive/model-generated orchestration, also separate `planner identity -> accepted workflow plan -> execution trace -> evaluator`; load `references/workflow-reproducibility.md` so plan-generation variance is not confused with same-plan execution variance.
 
 For self-hosted workflows, extend the map with `controller freeze -> candidate isolation -> evaluator visibility -> generation identity -> promotion -> rollback/last-known-good`.
 

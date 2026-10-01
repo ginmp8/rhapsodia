@@ -53,6 +53,7 @@ Load only phase-relevant files:
 - [references/evaluation-contract.md](references/evaluation-contract.md): freeze rules, metrics, hypothesis records, reproducibility routing evidence, and change-gate integration.
 - [references/reproducibility-routing.md](references/reproducibility-routing.md): material-signal test, optional `reproducibility-engineer` modes, ownership, and decision record.
 - [references/self-improvement-orchestration.md](references/self-improvement-orchestration.md): global provider routing for self-improvement, evidence ownership, sequencing, and anti-coupling rules.
+- [references/adaptive-orchestration.md](references/adaptive-orchestration.md): optional safe read-only provider/evaluator fan-out, fresh-context challenge, barriers, trace rules, and serial fallback without changing six-phase ownership.
 - [references/host-compatibility.md](references/host-compatibility.md): portable Agent Skills core, default host matrix, capability model, installation/discovery notes, Python launcher policy, and optional host adapters.
 - [references/external-skill-intake.md](references/external-skill-intake.md): quarantine/trust preflight for downloaded or otherwise external skill packages before any target-owned executable code is run.
 - [references/transformation-and-safety-policy.md](references/transformation-and-safety-policy.md): allowed edits, blocked paths, rollback, and security floor.
@@ -81,6 +82,8 @@ Load only phase-relevant files:
 ## Workflow
 
 Use `references/optimization-workflow.md` as the detailed contract. The canonical architecture is six phases; the passbook is an execution ledger inside those phases.
+
+When the active host exposes safe subagent/parallel capabilities, `references/adaptive-orchestration.md` may be used for independent read-only providers or evaluators against the same frozen identities. This is an execution optimization, not a change to phase order, transformation ownership, evaluator identity, or promotion gates; serial execution remains the portable fallback.
 
 1. **Establish**: resolve one target, source trust, host/runtime capabilities, `TARGET_CLASS`, writable/protected scope, portable-core requirements, baseline identity, evaluator/scenario identity, and material external-source snapshots. Run Booster-owned structural/trust/portability preflight before target-owned code when required. Build or consume a capability map when semantic-loss risk is material. If the target declares `contracts/integration-manifest.json` or exposes machine-readable handoffs/CLIs consumed by peer skills, preserve the baseline manifest and resolve available peer roots/catalog for later impact gating.
 2. **Diagnose**: run the evidence providers needed for the target class and touched surfaces. Initial benchmark/harness and the reproducibility decision happen here. Quality, architecture/context, activation/prompt, consistency, docs, code, security, validation, cleanup, and token specialists are read-only/audit/checklist providers by default in this phase. They emit evidence; they do not independently rewrite the candidate.

@@ -19,7 +19,7 @@ The design goal is not to create one universal agent. It is to preserve clear ow
 
 This archive is the **Agent-layer distribution** of RhapsodIA. It intentionally contains only:
 
-- the four Mago/Magia/Nomia custom-agent profiles;
+- the five Mago/Magia/Nomia custom-agent profiles, including the read-only Rhapsodia Analyst;
 - the portable agent-system contract;
 - architecture and host-source documentation directly related to those agents;
 - the deterministic installer;
@@ -80,6 +80,7 @@ Nomia Agent  = bounded operator around Nomia
 Mago Agent   = bounded operator around Mago
 Magia Agent  = bounded operator around Magia
 Supervisor   = orchestration only; not a fourth domain capability
+Analyst      = read-only isolated work-unit operator; no domain ownership
 ```
 
 ## RhapsodIA Agents for VS Code
@@ -93,6 +94,7 @@ It does not merge or fork those Skills and does not require an external orchestr
 ```text
 agents/
   rhapsodia-supervisor.agent.md
+  rhapsodia-analyst.agent.md
   nomia.agent.md
   mago.agent.md
   magia.agent.md
@@ -134,6 +136,10 @@ Install each required Skill in exactly one supported root. Install the **complet
 
 This Agent distribution verifies the prerequisite but never copies or mutates those Skills.
 
+### Optional adaptive orchestration Skill
+
+`adaptive-workflow-orchestration` is optional. When installed, the Supervisor may use its portable task-specific strategy/dependency/budget contract for safe read-only decomposition inside an already-resolved lifecycle phase. The canonical lifecycle remains fully functional without it and falls back to serial/single-worker execution.
+
 ### Installation
 
 Preferred deterministic installation:
@@ -161,11 +167,11 @@ python scripts/install_agents.py --target <TARGET_REPOSITORY> --force
 - `--check`: verify the installed profiles against this package and confirm that Nomia, Mago, and Magia are discoverable.
 - `--force`: replace a differing existing agent profile. Without it, differing files fail closed.
 
-Manual installation is also valid: copy the four profiles from `agents/` to `.github/agents/` in the target repository.
+Manual installation is also valid: copy the five profiles from `agents/` to `.github/agents/` in the target repository.
 
-After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that the four custom agents plus the three required Agent Skills are discovered.
+After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that the five custom agents plus the three required Agent Skills are discovered.
 
-The primary user-facing entry point is **Rhapsodia Supervisor**. Nomia, Mago, and Magia are configured as specialist subagents rather than normal user-selected modes.
+The primary user-facing entry point is **Rhapsodia Supervisor**. Rhapsodia Analyst, Nomia, Mago, and Magia are configured as subagents rather than normal user-selected modes; Analyst is read-only and hidden from ordinary user selection.
 
 ### Runtime boundary
 
@@ -174,6 +180,7 @@ The deployed runtime requires only:
 ```text
 .github/agents/
   rhapsodia-supervisor.agent.md
+  rhapsodia-analyst.agent.md
   nomia.agent.md
   mago.agent.md
   magia.agent.md
@@ -188,7 +195,8 @@ The portable JSON contract shipped in this archive is a **design/build-time vali
 
 At runtime:
 
-- **Rhapsodia Supervisor** owns orchestration, owner resolution, bounded delegation, transition validation, cycle control, and terminal integration.
+- **Rhapsodia Supervisor** owns orchestration, owner resolution, bounded delegation, adaptive read-only work-unit synthesis, transition validation, cycle control, and terminal integration.
+- **Rhapsodia Analyst** owns one isolated read-only evidence/verification work unit and never owns canonical lifecycle state.
 - **Nomia** owns one product/delivery-governance phase through the Nomia Skill.
 - **Mago** owns one technical-planning or reconciliation phase through the Mago Skill.
 - **Magia** owns one bounded implementation/validation phase through the Magia Skill.
@@ -201,6 +209,7 @@ Normal operation requires only native host capabilities:
 - scoped editing in specialist workers;
 - bounded command execution in specialist workers;
 - native custom-agent/subagent invocation in the supervisor;
+- an explicit read/search-only analyst profile for isolated read-only work units;
 - native Agent Skills discovery.
 
 The package does not require Orca, LangGraph, CrewAI, AutoGen, MCP, a provider-specific Agents SDK, or a custom orchestration service.
@@ -211,7 +220,8 @@ Knowledge from those systems may inform design patterns, but they are not runtim
 
 | Agent | Tools | Purpose |
 |---|---|---|
-| Rhapsodia Supervisor | `read`, `search`, `agent` | Read-only routing and native delegation |
+| Rhapsodia Supervisor | `read`, `search`, `agent` | Read-only routing, synthesis, and native delegation |
+| Rhapsodia Analyst | `read`, `search` | Isolated read-only analysis/verification work units |
 | Nomia | `read`, `search`, `edit`, `execute` | Governance artifacts and Nomia validators |
 | Mago | `read`, `search`, `edit`, `execute` | Planning artifacts and Mago validators |
 | Magia | `read`, `search`, `edit`, `execute` | Bounded implementation and execution proof |
@@ -231,6 +241,13 @@ Nomia -> Mago -> Magia -> Mago -> Nomia
 This is a lifecycle, not a requirement to replay every phase on every invocation. The supervisor may resume in the middle when canonical state and valid typed evidence establish the active phase.
 
 A bounded Magia ADHOC task may bypass the governed lifecycle only when it is outside a governed board/package flow and the repository scope, intended behavior, protected paths, and proving check are explicit.
+
+
+### Adaptive execution inside a lifecycle phase
+
+The default remains one canonical worker. The Supervisor may decompose one already-owned phase only into independent **read-only** work units executed by Rhapsodia Analyst. Nomia, Mago, and Magia are never used as a parallel writer pool. Any canonical mutation, validator/command execution, phase completion, or ecosystem handoff v3 remains owned by exactly one canonical worker.
+
+If safe parallel subagent scheduling is unavailable, the same analyst units run serially. No third-party orchestrator is installed as a fallback.
 
 ### Delegation and evidence-transfer contracts
 
@@ -265,9 +282,11 @@ It must stop or escalate when, for example:
 The portable contract uses bounded routing rather than open-ended collaboration:
 
 ```text
-max specialist delegations: 12
-max re-entries per owner: 2
-materially identical handoff repeats: 0
+max total subagent delegations: 12
+max analyst work units per phase: 4
+max parallel analyst work units: 4 (host permitting; otherwise serial)
+max re-entries per canonical owner: 2
+materially identical handoff/work-unit repeats: 0
 ```
 
 A re-entry requires new evidence, changed state/artifact, a completed repair, or a new authorization decision.
@@ -295,9 +314,9 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 The Agent-layer validator checks, among other things:
 
-- exact four-agent source set;
+- exact five-agent source set;
 - frontmatter and tool boundaries;
-- Supervisor allowlist and finite routing invariants;
+- Supervisor allowlist, adaptive read-only fan-out, single-writer, and finite routing invariants;
 - worker non-delegation;
 - portable contract invariants;
 - scenario coverage;

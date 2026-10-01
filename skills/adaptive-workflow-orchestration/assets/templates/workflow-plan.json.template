@@ -1,0 +1,48 @@
+{
+  "contract": "workflow-plan/v1",
+  "workflow_id": "<stable-workflow-id>",
+  "objective": "<bounded objective>",
+  "success_criteria": ["<observable completion criterion>"],
+  "strategy": "single",
+  "authority": {
+    "owner": "<current owner>",
+    "allowed_effects": ["read-only"],
+    "forbidden_effects": ["mutating", "external-side-effect"],
+    "write_scope": []
+  },
+  "stages": [
+    {
+      "id": "stage-1",
+      "mode": "single",
+      "work_source": "<source/context identity>",
+      "depends_on": [],
+      "max_parallel": 1,
+      "isolation": "serial",
+      "effects": "read-only",
+      "read_set": ["<resource>"],
+      "write_set": [],
+      "success": "<stage completion predicate>",
+      "on_failure": "stop"
+    }
+  ],
+  "budgets": {
+    "max_workers": 1,
+    "max_parallel": 1,
+    "max_retries_per_unit": 0,
+    "max_reentries": 0
+  },
+  "termination": {
+    "success_predicate": "<workflow completion predicate>",
+    "terminal_states": ["completed", "blocked", "escalated", "failed", "budget_exhausted"]
+  },
+  "capabilities": {
+    "required": ["read-context"],
+    "optional": [],
+    "degradation": {}
+  },
+  "evidence": {
+    "input_identity": "<input/source identity>",
+    "planner_identity": "<planner/controller identity>",
+    "evaluator_identity": "<completion/evaluator identity>"
+  }
+}

@@ -56,6 +56,50 @@ class ValidatorTests(unittest.TestCase):
         finally:
             td.cleanup()
 
+
+    def test_analyst_write_tool_is_rejected(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "agents" / "rhapsodia-analyst.agent.md"
+            text = p.read_text(encoding="utf-8").replace(
+                'tools: ["read", "search"]',
+                'tools: ["read", "search", "edit"]',
+            )
+            p.write_text(text, encoding="utf-8")
+            rc, doc = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(doc, "ANALYST_TOOL_SCOPE")
+        finally:
+            td.cleanup()
+
+    def test_supervisor_allowlist_must_include_analyst(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "agents" / "rhapsodia-supervisor.agent.md"
+            text = p.read_text(encoding="utf-8").replace(
+                'agents: ["Rhapsodia Analyst", "Nomia", "Mago", "Magia"]',
+                'agents: ["Nomia", "Mago", "Magia"]',
+            )
+            p.write_text(text, encoding="utf-8")
+            rc, doc = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(doc, "SUPERVISOR_ALLOWLIST")
+        finally:
+            td.cleanup()
+
+    def test_write_capable_fanout_contract_is_rejected(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "docs" / "agents" / "contracts" / "rhapsodia-agent-system.json"
+            doc = json.loads(p.read_text(encoding="utf-8"))
+            doc["routing"]["adaptive_execution"]["write_capable_worker_fanout"] = True
+            p.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+            rc, result = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(result, "WRITE_FANOUT")
+        finally:
+            td.cleanup()
+
     def test_worker_delegation_tool_is_rejected(self):
         td, dst = self.copy_package()
         try:
@@ -114,13 +158,13 @@ class ValidatorTests(unittest.TestCase):
         try:
             p = dst / "agents" / "rhapsodia-supervisor.agent.md"
             text = p.read_text(encoding="utf-8").replace(
-                "maximum 12 specialist delegations",
-                "maximum specialist delegations are host-defined",
+                "maximum 12 total subagent delegations",
+                "maximum total subagent delegations are host-defined",
             )
             p.write_text(text, encoding="utf-8")
             rc, doc = run_validator(dst)
             self.assertNotEqual(rc, 0)
-            self.assert_code(doc, "SUPERVISOR_BUDGET_TEXT")
+            self.assert_code(doc, "SUPERVISOR_INVARIANT")
         finally:
             td.cleanup()
 

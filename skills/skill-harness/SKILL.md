@@ -57,9 +57,11 @@ Always read target `SKILL.md` first. Load only needed branches:
 - [`references/scenario-suite-guidelines.md`](references/scenario-suite-guidelines.md): activation, non-activation, ambiguous, edge, regression, adversarial scenario schema.
 - [`references/harness-quality-patterns.md`](references/harness-quality-patterns.md): entry-point coverage, determinism, isolation, observability, anti-patterns.
 - [`references/isolated-execution-contract.md`](references/isolated-execution-contract.md): candidate/evaluator visibility separation, isolated-run contract, trace evidence, leakage gates, control-arm rules, and optional self-hosted generation provenance.
+- [`references/workflow-execution-evidence.md`](references/workflow-execution-evidence.md): separate target-skill evidence from planner/accepted-plan/execution-trace evidence when a scenario uses adaptive orchestration.
 - [`references/report-contract.md`](references/report-contract.md): report shape and evidence labels.
 - [`references/cli-and-packaging-contract.md`](references/cli-and-packaging-contract.md): command contracts, profiles, exits, exclusions, packaging order.
 - [`assets/templates/harness-plan.md.template`](assets/templates/harness-plan.md.template), [`assets/templates/harness-report.md.template`](assets/templates/harness-report.md.template), [`assets/templates/scenario-suite.json.template`](assets/templates/scenario-suite.json.template), [`assets/templates/execution-evidence.json.template`](assets/templates/execution-evidence.json.template): copy/fill/render when useful.
+- [`assets/templates/workflow-execution-evidence.json.template`](assets/templates/workflow-execution-evidence.json.template): optional sidecar for orchestration-layer run identity and trace metadata.
 - [`scripts/skill_harness_snapshot.py`](scripts/skill_harness_snapshot.py): immutable baseline snapshot and identity verification.
 - [`scripts/skill_harness_inventory.py`](scripts/skill_harness_inventory.py), [`scripts/skill_harness_audit.py`](scripts/skill_harness_audit.py), [`scripts/skill_harness_portability.py`](scripts/skill_harness_portability.py), [`scripts/skill_harness_validate.py`](scripts/skill_harness_validate.py), [`scripts/skill_harness_package.py`](scripts/skill_harness_package.py): inventory, static audit, single-profile portability, validation, atomic packaging.
 - [`scripts/skill_harness_host_matrix.py`](scripts/skill_harness_host_matrix.py): dependency-free aggregate gate over the existing `portable`, `openai`, `claude`, `copilot`, and `cursor` portability profiles; it does not replace or weaken the underlying profile validator.
@@ -80,6 +82,10 @@ Define before editing: decision; object under test; portable core vs host adapte
 - `contracts/integration-manifest.json`: declares the base v4 multi-candidate evidence surface plus the additive strict v2 repeated-run evidence surface for cross-skill impact analysis.
 
 For evolutionary/search evidence, use `skill-opt.harness-multi-candidate-evidence` v4 for distinct candidates with candidate-byte uniqueness and trace-manifest provenance. Use `skill-opt.harness-multi-candidate-evidence-strict` v2 when repeated runs of the same candidate are required. Legacy v1/v2/v3 base envelopes remain readable outside the current evolutionary bridge but do not provide the v4 hash-shape guarantee.
+
+### Workflow-layer evidence
+
+When a scenario is executed through an adaptive multi-stage or multi-agent plan, keep target-skill evidence separate from orchestration evidence. Record planner identity, accepted plan identity, execution-trace identity, strategy/budgets, and verifier independence when those facts affect comparability or claims. Load `references/workflow-execution-evidence.md`. A changed workflow plan invalidates a same-plan execution comparison even when target skill bytes are unchanged.
 
 ## Workflow
 

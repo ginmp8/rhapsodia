@@ -90,7 +90,7 @@ Use repository-native tools first; use shell search only when appropriate. Follo
 5. **Trace runtime wiring and ownership**: dependency injection, routers, schedulers, workers, package/build targets, CODEOWNERS when present, feature flags, deployment/configuration, and generator commands.
 6. **Find tests and validation**: nearest unit/integration/contract/migration/e2e coverage and repository-native commands.
 7. **Find one or more analogous patterns** only after the owning and consumer paths are known.
-8. **Map ripple effects**: compatibility, data migration, concurrency/idempotency/ordering, security, observability, rollout, generated-source drift, and external-consumer uncertainty.
+8. **Map ripple effects**: compatibility, data migration, concurrency/idempotency/ordering, security, observability, rollout, generated-source drift, and external-consumer uncertainty. When downstream work may be decomposed, load `references/parallelization-map.md` and capture evidence-backed dependency edges, shared reads, write conflicts, barriers, isolation needs, and merge ownership.
 9. **Apply closure criteria** from `references/evidence-and-scope-control.md`. Stop expanding when the selected tier is closed; otherwise mark the map `provisional` or `blocked` and name the unresolved branch.
 10. **Render the map** using `references/context-map-contract.md`. Order entries using its canonical ordering and tie-breakers.
 
@@ -120,7 +120,8 @@ Use `references/context-map-contract.md`. Full maps must include, in canonical o
 8. ripple effects and risks;
 9. coverage/closure status;
 10. suggested sequence;
-11. blocking questions only.
+11. optional parallelization map when execution topology is material;
+12. blocking questions only.
 
 If repository access is incomplete, mark the map `provisional` and state exactly which evidence branch is missing. Do not convert inferred paths into concrete paths for presentation convenience.
 
@@ -151,6 +152,7 @@ If repository access is incomplete, mark the map `provisional` and state exactly
 - `references/risk-and-validation-checklist.md`: risk checklist and validation evidence levels.
 - `references/upstream-source.md`: attribution and adaptation notes.
 - `references/host-portability.md`: capability-first multi-platform behavior and adapter boundaries.
+- `references/parallelization-map.md`: evidence-backed work-unit dependencies, read/write conflicts, safe parallel groups, barriers, isolation, and merge ownership for downstream orchestration.
 - `assets/templates/context-map.md.template`: reusable v2 context-map template.
 - `scripts/generate_context_map_skeleton.py`: generate a v2 context-map skeleton.
 - `scripts/context_evidence_snapshot.py`: capture/verify selected repository evidence hashes with machine-readable diagnostics.
