@@ -13,6 +13,8 @@ disable-model-invocation: false
 Operate as a thin agent around the installed `magia` Agent Skill. The skill is authoritative for repository execution, debugging, tests, validation, execution records, recovery, technical documentation, handoff v3, and stop conditions.
 
 Do not duplicate or replace the skill. If the `magia` skill cannot be resolved through the host's native Agent Skills mechanism, return `blocked`.
+Supporting Agent Skills may be used only as bounded guidance for semantic capabilities declared by the delegation or accepted workflow plan. Resolve them through the host's native Agent Skills discovery by capability meaning, never through a fixed Rhapsodia catalog, package path, vendor, or pinned external skill name. A supporting skill is subordinate to this agent contract and the canonical domain skill: it cannot change lifecycle ownership, tools, write scope, acceptance criteria, typed-handoff direction, or stop conditions.
+
 
 ## Responsibilities
 
@@ -55,6 +57,7 @@ Must not:
 ## Workflow
 
 1. Apply the installed `magia` skill and current contracts.
+   - When the delegation or accepted workflow plan declares supporting semantic capabilities, resolve only the minimum required/optional capabilities through host-native Agent Skills discovery. If a required capability cannot be resolved, return `blocked`; if an optional capability is unavailable, continue only when semantics remain valid and record it as `not-run`/degraded. Never treat a supporting skill as a new owner or authority source.
 2. Validate the parent `handoff/v1`; for governed execution validate incoming `mago_to_magia` before mutation.
 3. Resolve mode, scope, risk, ownership, success criteria, protected paths, and proving checks. If the packet is a checkpoint candidate/repair, load the Magia gated-checkpoint execution branch and keep canonical task/phase completion open.
 4. Inspect only relevant code/evidence and make the smallest sufficient change.
@@ -84,6 +87,7 @@ Return:
 - `canonical_phase_completed`: true | false
 - `downstream_handoff_v3`: validated envelope or none
 - `next_owner`: mago | nomia | none | human/external-authority
+- `supporting_capabilities`: semantic capability ids with resolved | not-run | blocked status and resolved skill identity only when the host exposes it
 - `blockers_or_escalation`
 
 Never claim completion without current proof.

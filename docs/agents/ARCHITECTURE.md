@@ -106,6 +106,20 @@ The supervisor may inspect ecosystem handoff v3 but must never synthesize, repai
 
 A workflow plan cannot change lifecycle ownership, tool authority, budgets, or the single-writer rules in this contract.
 
+## Supporting semantic capabilities
+
+Rhapsodia distinguishes **canonical domain skills** from **supporting Agent Skills**. Nomia, Mago, Magia, and `test-oracle-engineering` remain the canonical skill owners for their phases. Any other installed Agent Skill is optional supporting guidance unless another explicit package contract says otherwise.
+
+Supporting skills are resolved **at runtime by semantic capability**, not by a fixed repository catalog:
+
+1. the Supervisor or accepted `workflow-plan` declares required/optional semantic capability ids;
+2. the active worker uses the host's native Agent Skills discovery to find the minimum matching skill(s);
+3. the worker intersects that guidance with its existing authority, tools, owner, write scope, acceptance criteria, handoff directions, and stop conditions;
+4. a required unresolved capability blocks the affected unit; an optional unresolved capability may be `not-run`/degraded only when semantics remain intact;
+5. the result records semantic capability status and, when the host exposes it, the actual skill identity used as execution evidence.
+
+There is intentionally **no external-skill allowlist, package-name mapping, vendor mapping, or installation-path dependency** in the portable contract. Supporting skills are not subagents and must not be added to the VS Code `agents:` allowlist. Their instructions cannot change lifecycle ownership or grant authority the active agent does not already have.
+
 ## Canonical governed lifecycle
 
 ```text
@@ -215,23 +229,28 @@ Do not load all skills into every worker context.
 
 Canonical workers load only:
 
-- their own Agent Skill;
+- their own canonical Agent Skill;
 - the compact parent delegation packet;
 - valid incoming ecosystem handoff evidence when applicable;
-- the minimum repository files required for the phase.
+- the minimum repository files required for the phase;
+- only the minimum supporting Agent Skills needed to satisfy declared semantic capabilities, resolved natively at runtime.
 
 Rhapsodia Analyst loads only:
 
-- one named domain skill as read-only guidance;
+- one named canonical domain skill as read-only guidance;
 - one work-unit/review packet;
-- the frozen candidate/source/rubric needed for that unit.
+- the frozen candidate/source/rubric needed for that unit;
+- only declared supporting semantic capabilities, still constrained to read/search authority.
 
 Rhapsodia Verifier loads only:
 
 - `test-oracle-engineering`;
 - one verifier-unit packet;
 - the exact candidate/source/oracle identity;
-- the minimum repository/runtime evidence needed to execute the proof.
+- the minimum repository/runtime evidence needed to execute the proof;
+- only gate-declared supporting semantic capabilities, constrained to verification authority.
+
+Do not preload all installed skills. Do not maintain a Rhapsodia catalog of external skill names. Capability binding belongs to the active host/worker and must preserve the agent-system authority envelope.
 
 This preserves context isolation, avoids self-preferential review, and prevents verification from inheriting production repair authority.
 
@@ -263,7 +282,7 @@ On resume:
 
 The RhapsodIA source package keeps canonical profiles in `agents/`. VS Code discovers workspace custom agents from `.github/agents/`, so installation copies the six `.agent.md` profiles to that destination. Documentation, tests, validators, and the portable contract remain source-package artifacts and do not need to be copied into the consuming repository.
 
-Nomia, Mago, Magia, and `test-oracle-engineering` Agent Skills are prerequisites for the full six-agent adapter. `adaptive-workflow-orchestration` is optional: installing it enables the reusable portable workflow-plan capability but is not required for the canonical serial lifecycle.
+Nomia, Mago, Magia, and `test-oracle-engineering` Agent Skills are prerequisites for the full six-agent adapter. `adaptive-workflow-orchestration` is optional: installing it enables the reusable portable workflow-plan capability but is not required for the canonical serial lifecycle. Additional Agent Skills may be installed independently and discovered as supporting semantic capabilities; they are not Rhapsodia package prerequisites and are never enumerated in the portable contract.
 
 ## Host boundary
 

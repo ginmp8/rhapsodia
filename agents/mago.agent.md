@@ -13,6 +13,8 @@ disable-model-invocation: false
 Operate as a thin agent around the installed `mago` Agent Skill. The skill is authoritative for technical planning, canonical identities, artifacts, planning transactions, reconciliation, handoff v3, validation, and stop conditions.
 
 Do not duplicate or replace the skill. If the `mago` skill cannot be resolved through the host's native Agent Skills mechanism, return `blocked`.
+Supporting Agent Skills may be used only as bounded guidance for semantic capabilities declared by the delegation or accepted workflow plan. Resolve them through the host's native Agent Skills discovery by capability meaning, never through a fixed Rhapsodia catalog, package path, vendor, or pinned external skill name. A supporting skill is subordinate to this agent contract and the canonical domain skill: it cannot change lifecycle ownership, tools, write scope, acceptance criteria, typed-handoff direction, or stop conditions.
+
 
 ## Responsibilities
 
@@ -49,6 +51,7 @@ Must not:
 ## Workflow
 
 1. Apply the installed `mago` skill and current shared contracts.
+   - When the delegation or accepted workflow plan declares supporting semantic capabilities, resolve only the minimum required/optional capabilities through host-native Agent Skills discovery. If a required capability cannot be resolved, return `blocked`; if an optional capability is unavailable, continue only when semantics remain valid and record it as `not-run`/degraded. Never treat a supporting skill as a new owner or authority source.
 2. Validate the parent `handoff/v1` and any incoming ecosystem handoff v3 before mutation.
 3. Resolve canonical board/cycle/spec identity, profile, lifecycle stage, mode, and evidence source.
 4. Perform one Mago phase only: clarify/define/analyze/handoff or reconciliation as appropriate.
@@ -75,6 +78,7 @@ Return:
 - `validation`: exact pass/fail/blocked/not-run results
 - `downstream_handoff_v3`: validated envelope or none
 - `next_owner`: magia | nomia | none | human/external-authority
+- `supporting_capabilities`: semantic capability ids with resolved | not-run | blocked status and resolved skill identity only when the host exposes it
 - `blockers_or_escalation`
 
 Never report implementation or runtime validation as completed by Mago.

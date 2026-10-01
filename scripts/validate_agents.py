@@ -217,6 +217,24 @@ def validate_contract(path, findings):
         add(findings, "MAX_HOPS", path, "routing.max_hops must be 24")
     if routing.get("reentry_requires_state_change") is not True:
         add(findings, "REENTRY", path, "re-entry must require a material state change")
+    supporting = routing.get("supporting_capability_resolution")
+    expected_supporting = {
+        "selection": "semantic-capability",
+        "binding": "host-native-agent-skill-discovery",
+        "fixed_skill_catalog": False,
+        "authority_precedence": "active-agent-contract",
+        "ownership_precedence": "canonical-lifecycle-owner",
+        "required_unavailable": "blocked",
+        "optional_unavailable": "continue-with-not-run",
+        "supporting_skill_may_expand_authority": False,
+        "supporting_skill_may_change_owner": False,
+    }
+    if not isinstance(supporting, dict):
+        add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, "routing.supporting_capability_resolution is required")
+    else:
+        for key, value in expected_supporting.items():
+            if supporting.get(key) != value:
+                add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, f"routing.supporting_capability_resolution.{key} must be {value!r}")
     budgets = doc.get("budgets", {})
     if budgets.get("max_reentries_per_owner") != 2:
         add(findings, "REENTRY_BUDGET", path, "max_reentries_per_owner must be 2")
@@ -267,6 +285,14 @@ def validate_contract(path, findings):
     ids = [a.get("id") for a in doc.get("agents", [])]
     if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia"]:
         add(findings, "AGENT_CONTRACT_SET", path, "contract agent ids/order do not match the package")
+    capability_ids = {c.get("id") for c in doc.get("capabilities", []) if isinstance(c, dict)}
+    if "supporting-capability-resolution" not in capability_ids:
+        add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, "supporting-capability-resolution capability must be declared")
+    for agent in doc.get("agents", []):
+        if not isinstance(agent, dict) or agent.get("id") == "rhapsodia-supervisor":
+            continue
+        if "supporting-capability-resolution" not in agent.get("capabilities", []):
+            add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, f"agent {agent.get('id')!r} must expose supporting-capability-resolution")
     vscode = next((h for h in doc.get("hosts", []) if h.get("host") == "vscode"), None)
     if not vscode or vscode.get("status") != "supported":
         add(findings, "VSCODE_HOST", path, "VS Code must be declared supported in the primary adapter contract")
@@ -279,6 +305,9 @@ def validate_contract(path, findings):
     verifier_mapping = mappings.get("executable-verification", "")
     if "Rhapsodia Verifier" not in verifier_mapping or "verification-only" not in verifier_mapping:
         add(findings, "VSCODE_VERIFIER_SCOPE", path, "VS Code executable verification must map to the bounded Rhapsodia Verifier profile")
+    support_mapping = mappings.get("supporting-capability-resolution", "")
+    if "host-native" not in support_mapping.lower() or "no fixed catalog" not in support_mapping.lower():
+        add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, "VS Code supporting capability resolution must use host-native Agent Skills with no fixed catalog")
 
 
 def validate_manifest(root, path, findings):

@@ -14,6 +14,8 @@ Execute exactly one **independent executable verification unit** delegated by Rh
 
 This role is intentionally separate from Magia: **Magia produces or repairs the candidate; Rhapsodia Verifier attempts to prove or reject it.** If `test-oracle-engineering` cannot be resolved through the host's native Agent Skills mechanism, return `blocked`.
 
+A verifier packet/gate may additionally require supporting semantic capabilities. Resolve them through host-native Agent Skills discovery by capability meaning, not from a fixed catalog or pinned external skill name. They may refine verification guidance only; they cannot authorize production mutation, broaden verification write scope, change the oracle/criteria, or acquire lifecycle ownership.
+
 ## Owned outcome
 
 Return executable proof for one bounded claim/checkpoint, bound to the exact candidate identity, without acquiring production implementation authority or canonical lifecycle ownership.
@@ -48,6 +50,7 @@ Require a parent `handoff/v1` containing at least:
 - oracle spec or enough evidence to create one without changing intent;
 - `verification_write_scope` and protected paths;
 - expected proof/evidence;
+- optional `supporting_capabilities.required` and `supporting_capabilities.optional` semantic capability ids derived from the frozen gate/plan;
 - stop conditions and remaining attempt budget.
 
 If the packet asks for production repair, cross-owner mutation, or changed criteria, return `blocked`.
@@ -55,7 +58,7 @@ If the packet asks for production repair, cross-owner mutation, or changed crite
 ## Workflow
 
 1. Validate scope, candidate identity, claim, authority, and attempt budget.
-2. Resolve `test-oracle-engineering`; freeze/validate the oracle semantics before execution.
+2. Resolve `test-oracle-engineering`; freeze/validate the oracle semantics before execution. Resolve only gate-declared supporting semantic capabilities through host-native Agent Skills discovery; required unresolved capability -> `blocked`, optional unresolved capability -> `not-run` only when the frozen gate semantics permit it.
 3. Prefer an existing focused test when it truly exercises the claim. Author a bounded verification artifact only when necessary and only inside `verification_write_scope`.
 4. Execute the selected oracle against the exact candidate. Preserve exact command, environment identity, result, and evidence refs.
 5. Return `proven | rejected | inconclusive | blocked | not-run` according to current evidence.
@@ -74,6 +77,7 @@ If the packet asks for production repair, cross-owner mutation, or changed crite
 Return `blocked` or `escalated` when:
 
 - required source/candidate identity is unavailable;
+- a required supporting semantic capability cannot be resolved;
 - the claim is ambiguous enough that verification would invent expected behavior;
 - the required runtime/credentials/environment cannot be used safely;
 - proving the claim requires production mutation or destructive/unapproved external action;
@@ -94,6 +98,7 @@ Return:
 - `checks`: exact commands/outcomes when executed
 - `verification_artifacts`
 - `evidence_refs_and_labels`
+- `supporting_capabilities`: semantic ids with resolved | not-run | blocked status and resolved skill identity only when exposed by the host
 - `production_mutation_performed`: false
 - `criteria_changed`: false
 - `canonical_phase_completed`: false

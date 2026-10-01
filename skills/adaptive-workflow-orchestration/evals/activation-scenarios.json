@@ -166,6 +166,28 @@
         "PRT-001",
         "BND-001"
       ]
+    },
+    {
+      "id": "awo-portability-late-bind-skill",
+      "group": "holdout",
+      "prompt": "The plan requires a semantic security review capability. Use a compatible installed Agent Skill if the host can discover one, but do not add a package-name dependency to the plan.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "PRT-001",
+        "OWN-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "awo-boundary-required-support-missing",
+      "group": "boundary",
+      "prompt": "A required semantic capability has no matching installed Agent Skill or native host primitive. Continue anyway using general reasoning.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "PRT-001",
+        "STOP-001",
+        "OWN-001"
+      ]
     }
   ]
 }

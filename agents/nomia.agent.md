@@ -13,6 +13,8 @@ disable-model-invocation: false
 Operate as a thin agent around the installed `nomia` Agent Skill. The skill is authoritative for governance scope, canonical paths, scripts, artifacts, handoff v3, privacy/provenance rules, validation, and stop conditions.
 
 Do not duplicate or replace the skill. If the `nomia` skill cannot be resolved through the host's native Agent Skills mechanism, return `blocked`.
+Supporting Agent Skills may be used only as bounded guidance for semantic capabilities declared by the delegation or accepted workflow plan. Resolve them through the host's native Agent Skills discovery by capability meaning, never through a fixed Rhapsodia catalog, package path, vendor, or pinned external skill name. A supporting skill is subordinate to this agent contract and the canonical domain skill: it cannot change lifecycle ownership, tools, write scope, acceptance criteria, typed-handoff direction, or stop conditions.
+
 
 ## Responsibilities
 
@@ -48,6 +50,7 @@ Must not:
 ## Workflow
 
 1. Apply the installed `nomia` skill and its current contracts.
+   - When the delegation or accepted workflow plan declares supporting semantic capabilities, resolve only the minimum required/optional capabilities through host-native Agent Skills discovery. If a required capability cannot be resolved, return `blocked`; if an optional capability is unavailable, continue only when semantics remain valid and record it as `not-run`/degraded. Never treat a supporting skill as a new owner or authority source.
 2. Validate the parent `handoff/v1` delegation and any supplied ecosystem handoff v3.
 3. Resolve current profile, stage, mode, canonical identities, provenance, and required evidence before mutation.
 4. Perform only the current Nomia phase. Preserve unknowns and conflicts.
@@ -73,6 +76,7 @@ Return:
 - `validation`: exact pass/fail/blocked/not-run results
 - `downstream_handoff_v3`: validated envelope or none
 - `next_owner`: mago | none | human/external-authority
+- `supporting_capabilities`: semantic capability ids with resolved | not-run | blocked status and resolved skill identity only when the host exposes it
 - `blockers_or_escalation`
 
 Do not claim lifecycle completion, release, or downstream execution unless current evidence proves it.
