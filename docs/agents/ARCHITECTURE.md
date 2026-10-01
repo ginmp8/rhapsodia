@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This package adds a VS Code-first agent layer around the existing Nomia, Mago, and Magia Agent Skills. It preserves one centralized orchestration owner and one canonical writer per lifecycle phase while allowing bounded, isolated read-only work units when decomposition materially helps.
+This package adds a portable semantic agent layer with a validated VS Code adapter around the Nomia, Mago, Magia, and test-oracle-engineering Agent Skills. It preserves one centralized orchestration owner and one canonical production writer per lifecycle phase while allowing bounded isolated analysis, adversarial review, and executable verification when they materially reduce false confidence.
 
 The architecture is native-first:
 
@@ -12,14 +12,17 @@ user/request
     v
 Rhapsodia Supervisor
     |
-    +--> Rhapsodia Analyst (optional read-only work units)
+    +--> Rhapsodia Analyst (read-only analysis / adversarial review)
     |       +--> uses Nomia/Mago/Magia skill context as read-only guidance
+    |
+    +--> Rhapsodia Verifier (independent executable proof)
+    |       +--> test-oracle-engineering Skill
     |
     +--> Nomia worker --> Nomia Skill
     |
     +--> Mago worker  --> Mago Skill
     |
-    +--> Magia worker --> Magia Skill
+    +--> Magia worker --> Magia Skill (producer / production repair)
 ```
 
 The VS Code adapter uses native custom agents and native subagent delegation. No external orchestration runtime is required.
@@ -64,6 +67,12 @@ It never owns a canonical lifecycle phase and cannot:
 
 This separate profile exists because current host custom-agent tool lists can mechanically enforce `read`/`search` only, instead of relying on a write-capable worker to obey a prompt-only read-only convention.
 
+### Rhapsodia Verifier
+
+Owns one independent executable proof unit for a Magia candidate/checkpoint. It uses `test-oracle-engineering`, may write only explicitly declared verification/test artifacts, and may run bounded proof commands. It cannot repair production code, change acceptance criteria, emit ecosystem handoff v3, or promote a checkpoint.
+
+This separation prevents the producer from being the sole judge of its own implementation while keeping verification authority narrower than Magia's production authority.
+
 ### Nomia worker
 
 Owns one product/delivery-governance phase through the Nomia Skill.
@@ -86,11 +95,12 @@ Adaptive decomposition is justified only for distinct context isolation, indepen
 
 The supervisor retains orchestration ownership and workers return results. This is delegation, not ownership transfer.
 
-Three distinct surfaces coexist:
+Four distinct surfaces coexist:
 
-1. `handoff/v1` - agent-layer delegation packet for canonical workers or analyst work units.
+1. `handoff/v1` - agent-layer delegation packet for canonical workers, analyst units, or verifier units.
 2. ecosystem handoff v3 - skill-layer evidence transfer between Nomia, Mago, and Magia domains.
-3. optional `workflow-plan/v1` - task-specific orchestration plan owned by `adaptive-workflow-orchestration` when that skill is installed and useful.
+3. optional `workflow-plan/v1` or `workflow-plan/v2` - task-specific orchestration plans owned by `adaptive-workflow-orchestration`; v2 is reserved for gated convergence.
+4. `test-oracle-spec/v1` / `test-oracle-proof/v1` - executable proof contracts owned by `test-oracle-engineering`.
 
 The supervisor may inspect ecosystem handoff v3 but must never synthesize, repair, or rewrite it. The owning canonical skill generates and validates that envelope.
 
@@ -120,6 +130,18 @@ A workflow may start in the middle when canonical repository evidence already pr
 
 Adaptive work units are **inside one box** in this lifecycle. They never create a second lifecycle or move ownership sideways.
 
+Inside the Magia box, a gated-convergence plan may use:
+
+```text
+Magia candidate
+    -> Rhapsodia Verifier executable proof
+    -> Rhapsodia Analyst adversarial review(s)
+    -> optional perceptual/human gate
+    -> promote checkpoint OR return failed evidence to Magia for bounded repair
+```
+
+A required gate is non-overridable. A repaired candidate invalidates every affected gate result and those gates rerun before promotion. A dependent checkpoint cannot start until its dependencies are promoted.
+
 ## Adaptive execution model
 
 The default is still one canonical worker.
@@ -135,7 +157,7 @@ A phase may be decomposed only when:
 - total and per-phase work-unit budgets remain finite;
 - serial fallback preserves semantics when parallel scheduling is unavailable.
 
-`adaptive-workflow-orchestration` is optional. When installed it can provide the portable strategy/dependency/budget plan. When absent the supervisor applies the same conservative gate directly and defaults to serial execution.
+`adaptive-workflow-orchestration` is optional. When installed it can provide the portable v1 strategy/dependency/budget plan or the v2 gated-convergence checkpoint plan. When absent the supervisor applies the conservative single/serial rules directly and must not improvise an unbounded checkpoint graph.
 
 ### Safe example
 
@@ -162,12 +184,15 @@ Write-capable canonical worker fan-out is not allowed.
 
 The routing contract is finite:
 
-- maximum total subagent delegations: 12;
+- maximum total subagent delegations: 24;
 - maximum analyst work units per lifecycle phase: 4;
 - maximum parallel analyst units when host-supported: 4;
-- maximum re-entries to the same canonical owner: 2;
-- materially identical canonical handoff repeats: 0;
-- materially identical analyst work-unit repeats: 0.
+- maximum gated checkpoints per Magia phase: 4;
+- maximum checkpoint repairs after an initial candidate: 2;
+- maximum adversarial Analyst reviews per checkpoint: 2;
+- maximum Verifier proof units per candidate attempt: 1;
+- maximum ordinary re-entries to the same canonical owner: 2;
+- materially identical canonical handoff/analyst/verifier repeats: 0.
 
 Analyst units count toward the total delegation budget. A re-entry requires new evidence, changed state/artifact, completed repair, or new authorization. Budget exhaustion is escalation, not permission to continue guessing.
 
@@ -177,6 +202,7 @@ Capability is not authorization.
 
 - Supervisor: `read`, `search`, `agent`; no edit/execute.
 - Rhapsodia Analyst: `read`, `search`; no edit/execute/agent.
+- Rhapsodia Verifier: `read`, `search`, `edit`, `execute`; edit is restricted to verification-only scope, execute to bounded oracle proof, and production repair/delegation are forbidden.
 - Nomia: read/search/edit/execute only inside governance authority.
 - Mago: read/search/edit/execute only for planning artifacts and planning validators; application tests/builds/deployments remain forbidden.
 - Magia: read/search/edit/execute for bounded implementation and proof; production/release/external actions remain approval-gated and outside the normal lifecycle.
@@ -197,26 +223,33 @@ Canonical workers load only:
 Rhapsodia Analyst loads only:
 
 - one named domain skill as read-only guidance;
-- one work-unit packet;
-- the minimum evidence required for that unit.
+- one work-unit/review packet;
+- the frozen candidate/source/rubric needed for that unit.
 
-This preserves context isolation and prevents a read-only work unit from inheriting unrelated write intent.
+Rhapsodia Verifier loads only:
+
+- `test-oracle-engineering`;
+- one verifier-unit packet;
+- the exact candidate/source/oracle identity;
+- the minimum repository/runtime evidence needed to execute the proof.
+
+This preserves context isolation, avoids self-preferential review, and prevents verification from inheriting production repair authority.
 
 ## Failure, cancellation, and partial results
 
 When a hard blocker, invalidated source identity, revoked authority, or exhausted budget occurs:
 
 1. stop dispatching new work units;
-2. cancel pending analyst work when the host safely supports cancellation;
+2. cancel pending analyst/verifier work when the host safely supports cancellation;
 3. preserve already-completed evidence with its original work-unit/source identity;
-4. do not treat a missing required unit as success;
+4. do not treat a missing/failed/blocked required gate or work unit as success;
 5. reconcile uncertain canonical side effects before retrying a write-capable worker.
 
 Parallelism is an optimization. Serial fallback is preferable to adding a third-party orchestration dependency.
 
 ## Recovery and resume
 
-The supervisor does not create a separate durable orchestration database. It relies on canonical repository artifacts, stable workflow/handoff identities, the current session route trace, optional workflow-plan identity, analyst work-unit ids, and skill-owned ledgers/evidence when present.
+The supervisor does not create a separate durable orchestration database. It relies on canonical repository artifacts, stable workflow/handoff identities, the current session route trace, optional workflow-plan/checkpoint/candidate identities, analyst/verifier work-unit ids, and skill-owned ledgers/evidence when present.
 
 On resume:
 
@@ -228,14 +261,14 @@ On resume:
 
 ## Installation boundary
 
-The RhapsodIA source package keeps canonical profiles in `agents/`. VS Code discovers workspace custom agents from `.github/agents/`, so installation copies the five `.agent.md` profiles to that destination. Documentation, tests, validators, and the portable contract remain source-package artifacts and do not need to be copied into the consuming repository.
+The RhapsodIA source package keeps canonical profiles in `agents/`. VS Code discovers workspace custom agents from `.github/agents/`, so installation copies the six `.agent.md` profiles to that destination. Documentation, tests, validators, and the portable contract remain source-package artifacts and do not need to be copied into the consuming repository.
 
-Nomia, Mago, and Magia Agent Skills remain prerequisites. `adaptive-workflow-orchestration` is optional: installing it enables the reusable portable workflow-plan capability but is not required for the canonical serial lifecycle.
+Nomia, Mago, Magia, and `test-oracle-engineering` Agent Skills are prerequisites for the full six-agent adapter. `adaptive-workflow-orchestration` is optional: installing it enables the reusable portable workflow-plan capability but is not required for the canonical serial lifecycle.
 
 ## Host boundary
 
-The portable design/build contract is `docs/agents/contracts/rhapsodia-agent-system.json`. It validates the source package and future adapters, but it is not a runtime dependency in target repositories. Runtime authority comes from the installed custom-agent profiles plus the installed Nomia, Mago, and Magia Agent Skills.
+The portable design/build contract is `docs/agents/contracts/rhapsodia-agent-system.json`. It validates the source package and future adapters, but it is not a runtime dependency in target repositories. Runtime authority comes from the installed custom-agent profiles plus the installed Nomia, Mago, Magia, and test-oracle-engineering Agent Skills. `perceptual-validation` is an optional capability when a plan includes a perceptual gate.
 
-The repository stores source profiles in `agents/*.agent.md`. For VS Code/Copilot use, copy those profiles into the target repository's `.github/agents/` discovery directory. Future adapters must translate capabilities and file conventions without changing ownership, authority, termination, single-writer, or evidence semantics.
+The repository stores source profiles in `agents/*.agent.md`. For VS Code/Copilot use, copy those profiles into the target repository's `.github/agents/` discovery directory. The JSON contract is the portable semantic core. Future/adapted host profiles for OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, Cursor, Visual Studio, or other hosts must translate capabilities and discovery conventions without changing ownership, authority, termination, producer/verifier separation, gate-promotion, single-writer, or evidence semantics. Structural portability is not a claim of runtime parity.
 
 No MCP server, LangGraph, CrewAI, AutoGen, Orca, or provider SDK is required by the core design.

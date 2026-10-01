@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rhapsodia.local/schemas/test-oracle-proof-v1.schema.json",
+  "title": "Test Oracle Proof v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract","oracle_id","oracle_spec_identity","candidate_identity","verifier_identity","environment_identity","execution_state","verdict","command_argv","exit_code","evidence_refs","test_artifacts","production_mutation_performed","criteria_changed"],
+  "properties": {
+    "contract":{"const":"test-oracle-proof/v1"},
+    "oracle_id":{"type":"string","minLength":1},
+    "oracle_spec_identity":{"type":"string","minLength":1},
+    "candidate_identity":{"type":"string","minLength":1},
+    "verifier_identity":{"type":"string","minLength":1},
+    "environment_identity":{"type":"string","minLength":1},
+    "execution_state":{"enum":["pass","fail","blocked","not-run"]},
+    "verdict":{"enum":["proven","rejected","inconclusive","blocked","not-run"]},
+    "command_argv":{"type":"array","items":{"type":"string","minLength":1}},
+    "exit_code":{"type":["integer","null"]},
+    "evidence_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "test_artifacts":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "production_mutation_performed":{"const":false},
+    "criteria_changed":{"const":false}
+  }
+}

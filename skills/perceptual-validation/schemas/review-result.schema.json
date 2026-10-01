@@ -1,0 +1,20 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://rhapsodia.local/schemas/perceptual-review-result-v1.schema.json",
+  "title":"Perceptual Review Result v1",
+  "type":"object","additionalProperties":false,
+  "required":["contract","review_id","request_identity","reference_identity","candidate_identity","evaluator_identity","state_alignment","verdict","review_executed","findings","evidence_refs"],
+  "properties":{
+    "contract":{"const":"perceptual-review-result/v1"},
+    "review_id":{"type":"string","minLength":1},
+    "request_identity":{"type":"string","minLength":1},
+    "reference_identity":{"type":"string","minLength":1},
+    "candidate_identity":{"type":"string","minLength":1},
+    "evaluator_identity":{"type":"string","minLength":1},
+    "state_alignment":{"enum":["matched","mismatched","unknown"]},
+    "verdict":{"enum":["pass","fail","invalid","blocked","inconclusive"]},
+    "review_executed":{"type":"boolean"},
+    "findings":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["region","category","difference","severity","confidence"],"properties":{"region":{"type":"string","minLength":1},"category":{"type":"string","minLength":1},"difference":{"type":"string","minLength":1},"severity":{"enum":["blocking","high","medium","low"]},"confidence":{"enum":["high","medium","low"]}}}},
+    "evidence_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}}
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rhapsodia.local/schemas/test-oracle-spec-v1.schema.json",
+  "title": "Test Oracle Spec v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract","oracle_id","claim","claim_type","source_identity","candidate_identity","target_scope","verification_write_scope","protected_paths","observable","execution","evaluator_identity","max_attempts"],
+  "properties": {
+    "contract": {"const": "test-oracle-spec/v1"},
+    "oracle_id": {"type": "string", "minLength": 1},
+    "claim": {"type": "string", "minLength": 1},
+    "claim_type": {"enum": ["behavior","authorization","api-contract","event-contract","data-invariant","migration","concurrency","idempotency","retry","cli","ui-behavior","security","other"]},
+    "source_identity": {"type": "string", "minLength": 1},
+    "candidate_identity": {"type": "string", "minLength": 1},
+    "target_scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type":"string","minLength":1}},
+    "verification_write_scope": {"type": "array", "uniqueItems": true, "items": {"type":"string","minLength":1}},
+    "protected_paths": {"type": "array", "uniqueItems": true, "items": {"type":"string","minLength":1}},
+    "observable": {
+      "type":"object","additionalProperties":false,
+      "required":["setup","input","action","expected","failure_signal"],
+      "properties": {
+        "setup":{"type":"string","minLength":1},"input":{"type":"string","minLength":1},"action":{"type":"string","minLength":1},"expected":{"type":"string","minLength":1},"failure_signal":{"type":"string","minLength":1}
+      }
+    },
+    "execution": {
+      "type":"object","additionalProperties":false,
+      "required":["layer","mode","requirements","command_argv"],
+      "properties": {
+        "layer":{"enum":["existing-focused-test","integration-public-stack","contract-boundary","component-unit","static"]},
+        "mode":{"enum":["design-only","existing-test","generated-test","integration","contract","static"]},
+        "requirements":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+        "working_directory":{"type":"string","minLength":1},
+        "command_argv":{"type":"array","uniqueItems":false,"items":{"type":"string","minLength":1}}
+      }
+    },
+    "evaluator_identity":{"type":"string","minLength":1},
+    "max_attempts":{"type":"integer","minimum":1,"maximum":10}
+  }
+}

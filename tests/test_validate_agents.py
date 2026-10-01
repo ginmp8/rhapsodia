@@ -72,13 +72,28 @@ class ValidatorTests(unittest.TestCase):
         finally:
             td.cleanup()
 
+    def test_verifier_agent_tool_is_rejected(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "agents" / "rhapsodia-verifier.agent.md"
+            text = p.read_text(encoding="utf-8").replace(
+                'tools: ["read", "search", "edit", "execute"]',
+                'tools: ["read", "search", "edit", "execute", "agent"]',
+            )
+            p.write_text(text, encoding="utf-8")
+            rc, doc = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(doc, "TOOLS")
+        finally:
+            td.cleanup()
+
     def test_supervisor_allowlist_must_include_analyst(self):
         td, dst = self.copy_package()
         try:
             p = dst / "agents" / "rhapsodia-supervisor.agent.md"
             text = p.read_text(encoding="utf-8").replace(
+                'agents: ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia"]',
                 'agents: ["Rhapsodia Analyst", "Nomia", "Mago", "Magia"]',
-                'agents: ["Nomia", "Mago", "Magia"]',
             )
             p.write_text(text, encoding="utf-8")
             rc, doc = run_validator(dst)
@@ -97,6 +112,19 @@ class ValidatorTests(unittest.TestCase):
             rc, result = run_validator(dst)
             self.assertNotEqual(rc, 0)
             self.assert_code(result, "WRITE_FANOUT")
+        finally:
+            td.cleanup()
+
+    def test_required_gate_override_contract_is_rejected(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "docs" / "agents" / "contracts" / "rhapsodia-agent-system.json"
+            doc = json.loads(p.read_text(encoding="utf-8"))
+            doc["routing"]["adaptive_execution"]["gated_convergence"]["required_gate_failure_overridable"] = True
+            p.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+            rc, result = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(result, "GATED_CONVERGENCE")
         finally:
             td.cleanup()
 
@@ -158,7 +186,7 @@ class ValidatorTests(unittest.TestCase):
         try:
             p = dst / "agents" / "rhapsodia-supervisor.agent.md"
             text = p.read_text(encoding="utf-8").replace(
-                "maximum 12 total subagent delegations",
+                "maximum 24 total subagent delegations",
                 "maximum total subagent delegations are host-defined",
             )
             p.write_text(text, encoding="utf-8")

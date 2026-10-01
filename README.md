@@ -17,17 +17,17 @@ The design goal is not to create one universal agent. It is to preserve clear ow
 
 ## Distribution scope
 
-This archive is the **Agent-layer distribution** of RhapsodIA. It intentionally contains only:
+This archive is a **complete RhapsodIA project snapshot** for the supplied feature branch. It contains the full Skill catalog present in the baseline plus the complete Agent layer, documentation, validators, tests, and manifests. Files that were not changed by this work are intentionally retained in the final archive.
 
-- the five Mago/Magia/Nomia custom-agent profiles, including the read-only Rhapsodia Analyst;
-- the portable agent-system contract;
-- architecture and host-source documentation directly related to those agents;
-- the deterministic installer;
-- validators, scenarios, tests, manifest, and license required to validate and distribute the agent layer.
+The root `MANIFEST.json` remains the deterministic manifest for the **Agent-layer distribution surface** (README, agent profiles, agent docs, installer/validator, and agent tests). Individual Skills own their own package/integration validation contracts. The full-project ZIP is therefore broader than the root Agent manifest by design.
 
-It does **not** bundle the full RhapsodIA skill catalog, benchmarks, unrelated validators, or other repository tooling.
+This update adds two host-neutral capabilities and one bounded operator:
 
-The reduced archive scope must not be confused with the scope of RhapsodIA itself. The sections below preserve the repository-level context needed to understand where these agents fit.
+- `test-oracle-engineering`: executable falsifiable proof contracts and receipts;
+- `perceptual-validation`: optional semantic visual comparison with explicit invalid-state handling;
+- `Rhapsodia Verifier`: independent executable proof operator around `test-oracle-engineering`.
+
+It also evolves `adaptive-workflow-orchestration` with backward-compatible `workflow-plan/v2` gated convergence while preserving `workflow-plan/v1`, and adds checkpoint-candidate semantics to the Magia execution surface.
 
 ## Full repository model
 
@@ -79,13 +79,16 @@ Magia Skill  = bounded repository execution/validation capability
 Nomia Agent  = bounded operator around Nomia
 Mago Agent   = bounded operator around Mago
 Magia Agent  = bounded operator around Magia
-Supervisor   = orchestration only; not a fourth domain capability
-Analyst      = read-only isolated work-unit operator; no domain ownership
+Supervisor   = orchestration/promotion only; not a fourth domain capability
+Analyst      = read-only isolated analysis/adversarial-review operator; no domain ownership
+Verifier     = executable proof operator; verification-only writes, no production repair
+Test Oracle  = reusable falsifiable proof capability
+Perceptual   = optional semantic visual evidence capability
 ```
 
-## RhapsodIA Agents for VS Code
+## RhapsodIA Agents
 
-This distribution provides a VS Code-first custom-agent layer for coordinating the existing Nomia, Mago, and Magia Agent Skills through native subagent delegation.
+The Agent layer has a portable semantic contract plus a validated VS Code-first custom-agent adapter for coordinating the existing Nomia, Mago, and Magia Agent Skills through native subagent delegation.
 
 It does not merge or fork those Skills and does not require an external orchestration runtime.
 
@@ -95,6 +98,7 @@ It does not merge or fork those Skills and does not require an external orchestr
 agents/
   rhapsodia-supervisor.agent.md
   rhapsodia-analyst.agent.md
+  rhapsodia-verifier.agent.md
   nomia.agent.md
   mago.agent.md
   magia.agent.md
@@ -124,7 +128,7 @@ The detailed agent architecture lives in [docs/agents/ARCHITECTURE.md](docs/agen
 
 ### Required Skills
 
-The target repository must already expose the current `nomia`, `mago`, and `magia` Agent Skills through one host-supported project skill root:
+The target repository must already expose the current `nomia`, `mago`, `magia`, and `test-oracle-engineering` Agent Skills through one host-supported project skill root:
 
 ```text
 .github/skills/<skill-name>/SKILL.md
@@ -136,9 +140,11 @@ Install each required Skill in exactly one supported root. Install the **complet
 
 This Agent distribution verifies the prerequisite but never copies or mutates those Skills.
 
-### Optional adaptive orchestration Skill
+### Optional orchestration and perceptual Skills
 
-`adaptive-workflow-orchestration` is optional. When installed, the Supervisor may use its portable task-specific strategy/dependency/budget contract for safe read-only decomposition inside an already-resolved lifecycle phase. The canonical lifecycle remains fully functional without it and falls back to serial/single-worker execution.
+`adaptive-workflow-orchestration` is optional. When installed, the Supervisor may use `workflow-plan/v1` for classic dynamic patterns and `workflow-plan/v2` for gated checkpoint convergence inside an already-resolved lifecycle phase. The canonical lifecycle remains functional without it and falls back to conservative single/serial execution.
+
+`perceptual-validation` is optional. A plan may require it only when semantic visual equivalence is part of acceptance and the active host exposes image-capable or human review. Missing required perceptual capability blocks that gate; optional perceptual gates may remain `not-run`.
 
 ### Installation
 
@@ -167,9 +173,9 @@ python scripts/install_agents.py --target <TARGET_REPOSITORY> --force
 - `--check`: verify the installed profiles against this package and confirm that Nomia, Mago, and Magia are discoverable.
 - `--force`: replace a differing existing agent profile. Without it, differing files fail closed.
 
-Manual installation is also valid: copy the five profiles from `agents/` to `.github/agents/` in the target repository.
+Manual installation is also valid: copy the six profiles from `agents/` to `.github/agents/` in the target repository.
 
-After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that the five custom agents plus the three required Agent Skills are discovered.
+After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that the six custom agents plus the four required Agent Skills are discovered.
 
 The primary user-facing entry point is **Rhapsodia Supervisor**. Rhapsodia Analyst, Nomia, Mago, and Magia are configured as subagents rather than normal user-selected modes; Analyst is read-only and hidden from ordinary user selection.
 
@@ -181,6 +187,7 @@ The deployed runtime requires only:
 .github/agents/
   rhapsodia-supervisor.agent.md
   rhapsodia-analyst.agent.md
+  rhapsodia-verifier.agent.md
   nomia.agent.md
   mago.agent.md
   magia.agent.md
@@ -189,6 +196,7 @@ The deployed runtime requires only:
   nomia/
   mago/
   magia/
+  test-oracle-engineering/
 ```
 
 The portable JSON contract shipped in this archive is a **design/build-time validation contract**, not a runtime dependency that must be copied to every target repository.
@@ -196,7 +204,8 @@ The portable JSON contract shipped in this archive is a **design/build-time vali
 At runtime:
 
 - **Rhapsodia Supervisor** owns orchestration, owner resolution, bounded delegation, adaptive read-only work-unit synthesis, transition validation, cycle control, and terminal integration.
-- **Rhapsodia Analyst** owns one isolated read-only evidence/verification work unit and never owns canonical lifecycle state.
+- **Rhapsodia Analyst** owns one isolated read-only analysis/adversarial-review unit and never owns canonical lifecycle state.
+- **Rhapsodia Verifier** owns one independent executable proof unit, may write only verification artifacts, and never repairs production code or promotes checkpoints.
 - **Nomia** owns one product/delivery-governance phase through the Nomia Skill.
 - **Mago** owns one technical-planning or reconciliation phase through the Mago Skill.
 - **Magia** owns one bounded implementation/validation phase through the Magia Skill.
@@ -210,6 +219,7 @@ Normal operation requires only native host capabilities:
 - bounded command execution in specialist workers;
 - native custom-agent/subagent invocation in the supervisor;
 - an explicit read/search-only analyst profile for isolated read-only work units;
+- an explicit verifier profile with verification-only edit/execute authority plus the `test-oracle-engineering` Skill;
 - native Agent Skills discovery.
 
 The package does not require Orca, LangGraph, CrewAI, AutoGen, MCP, a provider-specific Agents SDK, or a custom orchestration service.
@@ -221,7 +231,8 @@ Knowledge from those systems may inform design patterns, but they are not runtim
 | Agent | Tools | Purpose |
 |---|---|---|
 | Rhapsodia Supervisor | `read`, `search`, `agent` | Read-only routing, synthesis, and native delegation |
-| Rhapsodia Analyst | `read`, `search` | Isolated read-only analysis/verification work units |
+| Rhapsodia Analyst | `read`, `search` | Isolated read-only analysis/adversarial review |
+| Rhapsodia Verifier | `read`, `search`, `edit`, `execute` | Independent executable oracle proof; edit restricted to verification artifacts |
 | Nomia | `read`, `search`, `edit`, `execute` | Governance artifacts and Nomia validators |
 | Mago | `read`, `search`, `edit`, `execute` | Planning artifacts and Mago validators |
 | Magia | `read`, `search`, `edit`, `execute` | Bounded implementation and execution proof |
@@ -245,7 +256,7 @@ A bounded Magia ADHOC task may bypass the governed lifecycle only when it is out
 
 ### Adaptive execution inside a lifecycle phase
 
-The default remains one canonical worker. The Supervisor may decompose one already-owned phase only into independent **read-only** work units executed by Rhapsodia Analyst. Nomia, Mago, and Magia are never used as a parallel writer pool. Any canonical mutation, validator/command execution, phase completion, or ecosystem handoff v3 remains owned by exactly one canonical worker.
+The default remains one canonical worker. The Supervisor may decompose read-only evidence into Rhapsodia Analyst work units. Inside an accepted Magia gated-convergence plan it may additionally invoke Rhapsodia Verifier for independent executable proof. Nomia, Mago, and Magia are never used as a parallel writer pool. Any canonical production mutation, phase completion, or ecosystem handoff v3 remains owned by exactly one canonical worker; Verifier writes only explicit verification artifacts.
 
 If safe parallel subagent scheduling is unavailable, the same analyst units run serially. No third-party orchestrator is installed as a fallback.
 
@@ -282,11 +293,15 @@ It must stop or escalate when, for example:
 The portable contract uses bounded routing rather than open-ended collaboration:
 
 ```text
-max total subagent delegations: 12
+max total subagent delegations: 24
 max analyst work units per phase: 4
 max parallel analyst work units: 4 (host permitting; otherwise serial)
-max re-entries per canonical owner: 2
-materially identical handoff/work-unit repeats: 0
+max gated checkpoints per Magia phase: 4
+max checkpoint repairs after initial candidate: 2
+max adversarial Analyst reviews per checkpoint: 2
+max Verifier proof units per candidate attempt: 1
+max ordinary re-entries per canonical owner: 2
+materially identical handoff/analyst/verifier repeats: 0
 ```
 
 A re-entry requires new evidence, changed state/artifact, a completed repair, or a new authorization decision.
@@ -299,9 +314,9 @@ No profile pins a model. Model selection remains under the active host/account/u
 
 The package deliberately avoids global workspace instruction files such as AGENTS.md or `.github/copilot-instructions.md`. Mago/Magia/Nomia rules should apply when these agents/skills are active, not to every unrelated Copilot interaction in a repository.
 
-VS Code is the primary adapter. The semantic contract can inform future adapters for GitHub Copilot surfaces, Cursor, Claude, Codex, Visual Studio, or other compatible hosts without changing domain ownership.
+VS Code is the primary validated adapter. The Skills and `agent-system-contract/v2` form the portable semantic core for OpenAI/ChatGPT, Codex, Claude, GitHub Copilot/VS Code, Cursor, Visual Studio, and other capable hosts. Hosts with different custom-agent discovery formats require an adapter that preserves the same authority, gate, state, and termination semantics.
 
-A portable semantic contract does **not** by itself prove runtime parity on those hosts.
+A portable semantic contract does **not** by itself prove runtime parity on those hosts; unsupported adapters remain explicitly `adapter-required`.
 
 ### Validation and evidence
 
@@ -314,7 +329,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 The Agent-layer validator checks, among other things:
 
-- exact five-agent source set;
+- exact six-agent source set;
 - frontmatter and tool boundaries;
 - Supervisor allowlist, adaptive read-only fan-out, single-writer, and finite routing invariants;
 - worker non-delegation;
@@ -355,9 +370,20 @@ The repository-level policy is to preserve upstream notices and keep attribution
 - **llm-wiki-maintainer** is an original RhapsodIA skill that operationalizes and paraphrases the public `llm-wiki.md` pattern by Andrej Karpathy.
 - Other Skills may carry upstream/adaptation notes in their own reference files.
 
-Those packages are **not bundled in this Agent-only archive** unless explicitly present in the package tree. The list is retained because it is part of the RhapsodIA repository context and prevents this reduced distribution from appearing to represent the entirety of the repository or its licensing provenance.
+Those packages are present only when they exist in this complete snapshot. Their local notices remain authoritative; this README does not replace package-specific attribution or licensing metadata.
 
 The Agents in this archive are original RhapsodIA package content unless an included file states otherwise.
+
+## Design inspirations for this update
+
+The following sources informed the architecture but create **no runtime coupling**:
+
+- Dynamic Workflows in Claude Code: isolated contexts, pipeline/barrier semantics, adversarial verification, bounded loops, resumability, and the rule that simple work should remain simple.
+- Shopify Helix: small checkpoints, non-overridable gates, repair-before-progression, and accepted-feedback carry-forward.
+- Shopify's agentic test-oracle harness: executable proof, independent verification, deterministic critical mechanics, and model-independent harness design.
+- Anthropic agent workflow guidance and current agent-eval guidance from Anthropic/OpenAI: simple composable patterns, environment ground truth, evaluator separation, trace/eval evidence, and bounded approvals.
+
+See [docs/agents/SOURCES.md](docs/agents/SOURCES.md) for source URLs and the exact design/evidence boundary.
 
 ## License
 

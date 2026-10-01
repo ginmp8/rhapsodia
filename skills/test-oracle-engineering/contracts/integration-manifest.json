@@ -1,0 +1,9 @@
+{
+  "manifest_version": 1,
+  "skill": "test-oracle-engineering",
+  "exports": [
+    {"contract_id":"test-oracle.oracle-spec","version":1,"role":"owner-producer","surface_paths":["references/oracle-contract.md","schemas/oracle-spec.schema.json","scripts/validate_oracle_artifact.py"]},
+    {"contract_id":"test-oracle.proof-receipt","version":1,"role":"owner-producer","surface_paths":["references/oracle-contract.md","schemas/proof-receipt.schema.json","scripts/validate_oracle_artifact.py"]}
+  ],
+  "imports": []
+}

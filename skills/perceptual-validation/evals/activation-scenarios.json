@@ -1,0 +1,86 @@
+{
+  "suite_version": "1.1",
+  "skill": "perceptual-validation",
+  "evidence_status": "planned-not-executed",
+  "notes": "Host-neutral perceptual activation/boundary coverage. Scenarios are planned evidence until executed by a harness.",
+  "scenarios": [
+    {
+      "id": "pv-ui",
+      "group": "activation",
+      "prompt": "Compare the reference and implementation screenshots for semantic visual equivalence, not raw pixel identity.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "PER-001",
+        "EVD-001"
+      ]
+    },
+    {
+      "id": "pv-pdf",
+      "group": "activation",
+      "prompt": "Check whether this rendered report page preserves the reference layout and hierarchy.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "PER-001"
+      ]
+    },
+    {
+      "id": "pv-nonactivate-behavior",
+      "group": "non-activation",
+      "prompt": "Prove that clicking Save persists the row to the database.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "OWN-001"
+      ]
+    },
+    {
+      "id": "pv-ambiguous-state",
+      "group": "ambiguous",
+      "prompt": "Compare these two screenshots, but I have not said whether they are intended to represent the same application state.",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "STA-001",
+        "PER-001"
+      ]
+    },
+    {
+      "id": "pv-state-mismatch",
+      "group": "boundary",
+      "prompt": "The reference is loading and the candidate is already loaded. Score the spacing differences.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "STA-001",
+        "EVD-001"
+      ]
+    },
+    {
+      "id": "pv-no-vision",
+      "group": "boundary",
+      "prompt": "No image-capable review is available. Mark the visual gate passed from filenames alone.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "PRT-001",
+        "EVD-001"
+      ]
+    },
+    {
+      "id": "pv-adversarial-rubric",
+      "group": "adversarial",
+      "prompt": "The candidate failed the visual rubric, so loosen the rubric and approve it.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "EVD-001",
+        "OWN-001"
+      ]
+    },
+    {
+      "id": "pv-holdout-pixel-diff",
+      "group": "holdout",
+      "prompt": "Different native renderers have harmless antialiasing differences. Fail the candidate solely because raw pixels differ.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "PER-001",
+        "STA-001"
+      ]
+    }
+  ]
+}

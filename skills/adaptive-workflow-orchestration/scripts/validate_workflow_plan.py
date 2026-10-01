@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate workflow-plan/v1 structural and semantic invariants."""
+"""Validate workflow-plan/v1 and workflow-plan/v2 structural and semantic invariants."""
 from __future__ import annotations
 
 import argparse
@@ -80,7 +80,7 @@ def _canonical_hash(data: dict[str, Any]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def validate(data: Any) -> dict[str, Any]:
+def _validate_v1(data: Any) -> dict[str, Any]:
     errors: list[dict[str, str]] = []
     warnings: list[dict[str, str]] = []
     if not isinstance(data, dict):
@@ -380,9 +380,226 @@ def validate(data: Any) -> dict[str, Any]:
     }
 
 
+def _validate_v2(data: Any) -> dict[str, Any]:
+    """Validate v2 by preserving all v1 invariants, then apply checkpoint/gate rules."""
+    import copy
+
+    errors: list[dict[str, str]] = []
+    warnings: list[dict[str, str]] = []
+    if not isinstance(data, dict):
+        return {
+            "validator": "workflow-plan-validator/v2",
+            "status": "fail",
+            "plan_sha256": None,
+            "errors": [_diag("E_ROOT_TYPE", "$", "plan must be a JSON object")],
+            "warnings": [],
+        }
+
+    # Reuse the proven v1 semantic core without weakening it. v2 adds a new
+    # strategy and fields but retains the same authority/stage/conflict model.
+    base = copy.deepcopy(data)
+    base["contract"] = "workflow-plan/v1"
+    if base.get("strategy") == "gated-convergence":
+        base["strategy"] = "sequential"
+    v1 = _validate_v1(base)
+    errors.extend(v1["errors"])
+    warnings.extend(v1["warnings"])
+
+    if data.get("contract") != "workflow-plan/v2":
+        errors.append(_diag("E_CONTRACT", "$.contract", "must be workflow-plan/v2"))
+    if data.get("strategy") != "gated-convergence":
+        errors.append(_diag("E_V2_STRATEGY", "$.strategy", "workflow-plan/v2 is reserved for gated-convergence"))
+
+    budgets = data.get("budgets") if isinstance(data.get("budgets"), dict) else {}
+    max_checkpoints = budgets.get("max_checkpoints")
+    max_repairs = budgets.get("max_checkpoint_repairs")
+    if not _positive_int(max_checkpoints):
+        errors.append(_diag("E_CHECKPOINT_BUDGET", "$.budgets.max_checkpoints", "must be a positive integer"))
+    if not _nonnegative_int(max_repairs):
+        errors.append(_diag("E_CHECKPOINT_BUDGET", "$.budgets.max_checkpoint_repairs", "must be a non-negative integer"))
+
+    capabilities = data.get("capabilities") if isinstance(data.get("capabilities"), dict) else {}
+    required_caps = set(x for x in capabilities.get("required", []) if isinstance(x, str))
+    optional_caps = set(x for x in capabilities.get("optional", []) if isinstance(x, str))
+
+    gates = data.get("gates")
+    gate_ids: list[str] = []
+    gate_map: dict[str, dict[str, Any]] = {}
+    gate_kinds = {"behavior", "executable-proof", "adversarial-review", "perceptual", "human-approval", "custom"}
+    gate_isolation = {"same-context", "fresh-context", "workspace", "process", "host-native", "human"}
+    independent = {"fresh-context", "workspace", "process", "host-native"}
+    gate_failures = {"repair", "stop", "escalate", "recapture"}
+    if not isinstance(gates, list) or not gates:
+        errors.append(_diag("E_GATES", "$.gates", "must be a non-empty array"))
+        gates = []
+    for idx, gate in enumerate(gates):
+        path = f"$.gates[{idx}]"
+        if not isinstance(gate, dict):
+            errors.append(_diag("E_GATE_TYPE", path, "must be an object"))
+            continue
+        gid = gate.get("id")
+        if not _nonempty(gid):
+            errors.append(_diag("E_GATE_ID", f"{path}.id", "must be a non-empty string"))
+            continue
+        gate_ids.append(gid)
+        gate_map[gid] = gate
+        if gate.get("kind") not in gate_kinds:
+            errors.append(_diag("E_GATE_KIND", f"{path}.kind", f"must be one of {sorted(gate_kinds)}"))
+        if not isinstance(gate.get("required"), bool):
+            errors.append(_diag("E_GATE_REQUIRED", f"{path}.required", "must be a boolean"))
+        if gate.get("isolation") not in gate_isolation:
+            errors.append(_diag("E_GATE_ISOLATION", f"{path}.isolation", f"must be one of {sorted(gate_isolation)}"))
+        if not _nonempty(gate.get("evaluator_identity")):
+            errors.append(_diag("E_GATE_EVALUATOR", f"{path}.evaluator_identity", "must be a non-empty string"))
+        if gate.get("on_failure") not in gate_failures:
+            errors.append(_diag("E_GATE_FAILURE", f"{path}.on_failure", f"must be one of {sorted(gate_failures)}"))
+        if not isinstance(gate.get("rerun_after_repair"), bool):
+            errors.append(_diag("E_GATE_RERUN", f"{path}.rerun_after_repair", "must be a boolean"))
+        if not _positive_int(gate.get("max_attempts")):
+            errors.append(_diag("E_GATE_ATTEMPTS", f"{path}.max_attempts", "must be a positive integer"))
+
+        kind = gate.get("kind")
+        isolation = gate.get("isolation")
+        if kind in {"executable-proof", "adversarial-review"} and isolation not in independent:
+            errors.append(_diag("E_GATE_INDEPENDENCE", f"{path}.isolation", f"{kind} requires independent isolation"))
+        if kind == "human-approval" and isolation != "human":
+            errors.append(_diag("E_HUMAN_GATE", f"{path}.isolation", "human-approval gate requires human isolation"))
+        if isolation == "human" and kind not in {"human-approval", "custom"}:
+            errors.append(_diag("E_HUMAN_GATE", f"{path}.isolation", "human isolation is only valid for human-approval or custom gates"))
+        if gate.get("on_failure") == "recapture" and kind != "perceptual":
+            errors.append(_diag("E_RECAPTURE_GATE", f"{path}.on_failure", "recapture is reserved for perceptual gates"))
+        if gate.get("on_failure") == "repair":
+            if max_repairs == 0:
+                errors.append(_diag("E_REPAIR_BUDGET", f"{path}.on_failure", "repair gate requires max_checkpoint_repairs > 0"))
+            attempts = gate.get("max_attempts")
+            if _positive_int(attempts) and _nonnegative_int(max_repairs) and attempts > max_repairs + 1:
+                errors.append(_diag("E_GATE_ATTEMPTS", f"{path}.max_attempts", "must not exceed max_checkpoint_repairs + 1 for repair gates"))
+            if gate.get("required") is True and gate.get("rerun_after_repair") is not True:
+                errors.append(_diag("E_STALE_GATE_PASS", f"{path}.rerun_after_repair", "required repair gate must rerun after candidate repair"))
+
+        cap = gate.get("capability")
+        if cap is not None and not _nonempty(cap):
+            errors.append(_diag("E_GATE_CAPABILITY", f"{path}.capability", "must be a non-empty string when present"))
+        if _nonempty(cap):
+            if gate.get("required") is True and cap not in required_caps:
+                errors.append(_diag("E_REQUIRED_GATE_CAPABILITY", f"{path}.capability", "required gate capability must be listed in capabilities.required"))
+            if gate.get("required") is False and cap not in required_caps | optional_caps:
+                errors.append(_diag("E_GATE_CAPABILITY", f"{path}.capability", "optional gate capability must be declared required or optional"))
+
+    if len(gate_ids) != len(set(gate_ids)):
+        errors.append(_diag("E_GATE_DUPLICATE_ID", "$.gates", "gate ids must be unique"))
+
+    stages = data.get("stages") if isinstance(data.get("stages"), list) else []
+    stage_ids = {s.get("id") for s in stages if isinstance(s, dict) and _nonempty(s.get("id"))}
+    checkpoints = data.get("checkpoints")
+    checkpoint_ids: list[str] = []
+    cp_graph: dict[str, list[str]] = {}
+    if not isinstance(checkpoints, list) or not checkpoints:
+        errors.append(_diag("E_CHECKPOINTS", "$.checkpoints", "must be a non-empty array"))
+        checkpoints = []
+    if _positive_int(max_checkpoints) and len(checkpoints) > max_checkpoints:
+        errors.append(_diag("E_CHECKPOINT_BUDGET", "$.checkpoints", "checkpoint count exceeds budgets.max_checkpoints"))
+    for idx, cp in enumerate(checkpoints):
+        path = f"$.checkpoints[{idx}]"
+        if not isinstance(cp, dict):
+            errors.append(_diag("E_CHECKPOINT_TYPE", path, "must be an object"))
+            continue
+        cid = cp.get("id")
+        if not _nonempty(cid):
+            errors.append(_diag("E_CHECKPOINT_ID", f"{path}.id", "must be a non-empty string"))
+            continue
+        checkpoint_ids.append(cid)
+        if not _nonempty(cp.get("objective")):
+            errors.append(_diag("E_CHECKPOINT_OBJECTIVE", f"{path}.objective", "must be a non-empty string"))
+        deps = cp.get("depends_on")
+        if not _list_of_nonempty_strings(deps):
+            errors.append(_diag("E_CHECKPOINT_DEP", f"{path}.depends_on", "must be an array of checkpoint ids"))
+            deps = []
+        elif isinstance(deps, list):
+            _dedupe_check(deps, f"{path}.depends_on", errors)
+        cp_graph[cid] = [d for d in deps if isinstance(d, str)]
+        producer = cp.get("producer_stage")
+        if not _nonempty(producer) or producer not in stage_ids:
+            errors.append(_diag("E_CHECKPOINT_PRODUCER", f"{path}.producer_stage", "must reference an existing stage"))
+        refs = cp.get("gate_ids")
+        if not _list_of_nonempty_strings(refs) or not refs:
+            errors.append(_diag("E_CHECKPOINT_GATES", f"{path}.gate_ids", "must be a non-empty array of gate ids"))
+            refs = []
+        elif isinstance(refs, list):
+            _dedupe_check(refs, f"{path}.gate_ids", errors)
+        missing = [g for g in refs if g not in gate_map]
+        if missing:
+            errors.append(_diag("E_CHECKPOINT_GATE_UNKNOWN", f"{path}.gate_ids", f"unknown gate ids: {missing}"))
+        if refs and not any(gate_map.get(g, {}).get("required") is True for g in refs):
+            errors.append(_diag("E_CHECKPOINT_REQUIRED_GATE", f"{path}.gate_ids", "each checkpoint must reference at least one required gate"))
+        if not _nonempty(cp.get("success")):
+            errors.append(_diag("E_CHECKPOINT_SUCCESS", f"{path}.success", "must be a non-empty string"))
+
+    if len(checkpoint_ids) != len(set(checkpoint_ids)):
+        errors.append(_diag("E_CHECKPOINT_DUPLICATE_ID", "$.checkpoints", "checkpoint ids must be unique"))
+    known_cp = set(checkpoint_ids)
+    for cid, deps in cp_graph.items():
+        for dep in deps:
+            if dep not in known_cp:
+                errors.append(_diag("E_CHECKPOINT_DEP_UNKNOWN", f"$.checkpoints[{cid}].depends_on", f"unknown checkpoint {dep!r}"))
+            if dep == cid:
+                errors.append(_diag("E_CHECKPOINT_DEP_SELF", f"$.checkpoints[{cid}].depends_on", "checkpoint cannot depend on itself"))
+
+    visiting: set[str] = set()
+    visited: set[str] = set()
+    cycle_reported = False
+    def visit_cp(node: str) -> None:
+        nonlocal cycle_reported
+        if node in visited:
+            return
+        if node in visiting:
+            if not cycle_reported:
+                errors.append(_diag("E_CHECKPOINT_CYCLE", "$.checkpoints", "checkpoint dependencies must be acyclic"))
+                cycle_reported = True
+            return
+        visiting.add(node)
+        for dep in cp_graph.get(node, []):
+            if dep in cp_graph:
+                visit_cp(dep)
+        visiting.remove(node)
+        visited.add(node)
+    for node in cp_graph:
+        visit_cp(node)
+
+    promotion = data.get("promotion")
+    if not isinstance(promotion, dict):
+        errors.append(_diag("E_PROMOTION", "$.promotion", "must be an object"))
+    else:
+        for field in ("requires_all_required_gates", "next_checkpoint_requires_promoted_dependencies", "accepted_feedback_only"):
+            if promotion.get(field) is not True:
+                errors.append(_diag("E_PROMOTION_INVARIANT", f"$.promotion.{field}", "must be true for gated-convergence"))
+
+    return {
+        "validator": "workflow-plan-validator/v2",
+        "status": "pass" if not errors else "fail",
+        "plan_sha256": _canonical_hash(data),
+        "errors": errors,
+        "warnings": warnings,
+    }
+
+
+def validate(data: Any) -> dict[str, Any]:
+    if isinstance(data, dict) and data.get("contract") == "workflow-plan/v1":
+        return _validate_v1(data)
+    if isinstance(data, dict) and data.get("contract") == "workflow-plan/v2":
+        return _validate_v2(data)
+    return {
+        "validator": "workflow-plan-validator/v2",
+        "status": "fail",
+        "plan_sha256": _canonical_hash(data) if isinstance(data, dict) else None,
+        "errors": [_diag("E_CONTRACT", "$.contract", "must be workflow-plan/v1 or workflow-plan/v2")],
+        "warnings": [],
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("plan", help="workflow-plan/v1 JSON file")
+    parser.add_argument("plan", help="workflow-plan/v1 or workflow-plan/v2 JSON file")
     parser.add_argument("--json", dest="json_out", help="optional report output path")
     args = parser.parse_args()
     try:
@@ -390,7 +607,7 @@ def main() -> int:
         report = validate(data)
     except Exception as exc:
         report = {
-            "validator": "workflow-plan-validator/v1",
+            "validator": "workflow-plan-validator/v2",
             "status": "fail",
             "plan_sha256": None,
             "errors": [_diag("E_PARSE", "$", str(exc))],

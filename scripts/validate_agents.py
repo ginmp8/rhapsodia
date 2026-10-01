@@ -11,7 +11,7 @@ EXPECTED = {
         "name": "Rhapsodia Supervisor",
         "tools": {"read", "search", "agent"},
         "user_invocable": True,
-        "agents": ["Rhapsodia Analyst", "Nomia", "Mago", "Magia"],
+        "agents": ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia"],
         "profile": "supervisor",
     },
     "rhapsodia-analyst.agent.md": {
@@ -19,6 +19,13 @@ EXPECTED = {
         "tools": {"read", "search"},
         "user_invocable": False,
         "profile": "analyst",
+    },
+    "rhapsodia-verifier.agent.md": {
+        "name": "Rhapsodia Verifier",
+        "tools": {"read", "search", "edit", "execute"},
+        "user_invocable": False,
+        "profile": "verifier",
+        "skill": "test-oracle-engineering",
     },
     "nomia.agent.md": {
         "name": "Nomia",
@@ -133,11 +140,14 @@ def validate_agent_file(path, spec, findings):
             add(findings, "SUPERVISOR_ALLOWLIST", path, f"agents allowlist must be exactly {spec['agents']}")
         normalized_body = body.replace("`", "")
         for phrase in (
-            "maximum 12 total subagent delegations",
+            "maximum 24 total subagent delegations",
             "maximum 4 analyst work units",
+            "maximum 4 gated checkpoints",
+            "maximum 2 checkpoint repair re-entries",
             "maximum 2 re-entries",
-            "zero materially identical canonical handoff or analyst work-unit repeats",
+            "zero materially identical canonical handoff, analyst work-unit, or verifier work-unit repeats",
             "Rhapsodia Analyst is the only profile eligible for adaptive read-only fan-out",
+            "not promotable",
             "Never create, repair, or modify ecosystem handoff v3 yourself",
         ):
             if phrase not in normalized_body:
@@ -158,6 +168,22 @@ def validate_agent_file(path, spec, findings):
         ):
             if phrase not in body:
                 add(findings, "ANALYST_INVARIANT", path, f"missing required analyst invariant: {phrase}")
+    elif spec["profile"] == "verifier":
+        if toolset != {"read", "search", "edit", "execute"}:
+            add(findings, "VERIFIER_TOOL_SCOPE", path, "verifier tools must be exactly read/search/edit/execute")
+        if "agent" in toolset or "agents" in fm:
+            add(findings, "VERIFIER_DELEGATION", path, "verifier must not delegate to other custom agents")
+        for phrase in (
+            "installed `test-oracle-engineering` Agent Skill",
+            "Must not:",
+            "edit production implementation",
+            "production_mutation_performed`: false",
+            "criteria_changed`: false",
+            "canonical_phase_completed`: false",
+            "invoke another custom agent directly",
+        ):
+            if phrase not in body:
+                add(findings, "VERIFIER_INVARIANT", path, f"missing required verifier invariant: {phrase}")
     else:
         if "agent" in toolset:
             add(findings, "WORKER_DELEGATION_TOOL", path, "workers must not receive the native agent tool")
@@ -180,15 +206,15 @@ def validate_contract(path, findings):
     except Exception as exc:
         add(findings, "CONTRACT_JSON", path, f"invalid JSON: {exc}")
         return
-    if doc.get("contract") != "agent-system-contract/v1":
-        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v1")
+    if doc.get("contract") != "agent-system-contract/v2":
+        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v2")
     if doc.get("system", {}).get("autonomy") != "policy-bounded-autonomous":
         add(findings, "AUTONOMY", path, "system autonomy must remain policy-bounded-autonomous")
     routing = doc.get("routing", {})
     if routing.get("type") != "centralized-supervisor":
         add(findings, "ROUTING_TYPE", path, "routing must be centralized-supervisor")
-    if routing.get("max_hops") != 12:
-        add(findings, "MAX_HOPS", path, "routing.max_hops must be 12")
+    if routing.get("max_hops") != 24:
+        add(findings, "MAX_HOPS", path, "routing.max_hops must be 24")
     if routing.get("reentry_requires_state_change") is not True:
         add(findings, "REENTRY", path, "re-entry must require a material state change")
     budgets = doc.get("budgets", {})
@@ -200,6 +226,14 @@ def validate_contract(path, findings):
         add(findings, "WORK_UNIT_BUDGET", path, "max_work_units_per_phase must be 4")
     if budgets.get("max_parallel_work_units") != 4:
         add(findings, "WORK_UNIT_BUDGET", path, "max_parallel_work_units must be 4")
+    if budgets.get("max_checkpoints_per_magia_phase") != 4:
+        add(findings, "CHECKPOINT_BUDGET", path, "max_checkpoints_per_magia_phase must be 4")
+    if budgets.get("max_checkpoint_repairs") != 2:
+        add(findings, "CHECKPOINT_BUDGET", path, "max_checkpoint_repairs must be 2")
+    if budgets.get("max_adversarial_reviews_per_checkpoint") != 2:
+        add(findings, "CHECKPOINT_BUDGET", path, "max_adversarial_reviews_per_checkpoint must be 2")
+    if budgets.get("max_verifier_units_per_candidate") != 1:
+        add(findings, "CHECKPOINT_BUDGET", path, "max_verifier_units_per_candidate must be 1")
     adaptive = routing.get("adaptive_execution", {})
     if adaptive.get("scope") != "inside-one-resolved-lifecycle-phase":
         add(findings, "ADAPTIVE_SCOPE", path, "adaptive execution must remain inside one resolved lifecycle phase")
@@ -211,8 +245,27 @@ def validate_contract(path, findings):
         add(findings, "WRITE_FANOUT", path, "write-capable canonical worker fan-out must be false")
     if adaptive.get("parallel_fallback") != "serial":
         add(findings, "ADAPTIVE_FALLBACK", path, "parallel fallback must be serial")
+    if adaptive.get("executable_verifier") != "rhapsodia-verifier":
+        add(findings, "VERIFIER_ROUTING", path, "adaptive executable verifier must be rhapsodia-verifier")
+    if adaptive.get("verifier_domain_owner") != "magia" or adaptive.get("verifier_production_write") is not False:
+        add(findings, "VERIFIER_AUTHORITY", path, "verifier must remain Magia-scoped and forbidden from production writes")
+    gated = adaptive.get("gated_convergence", {})
+    expected_gated = {
+        "max_checkpoints_per_magia_phase": 4,
+        "max_checkpoint_repairs": 2,
+        "max_adversarial_reviews_per_checkpoint": 2,
+        "max_verifier_units_per_candidate": 1,
+        "required_gate_failure_overridable": False,
+        "candidate_repair_invalidates_affected_gate_passes": True,
+        "dependency_requires_promoted_checkpoint": True,
+        "accepted_feedback_only": True,
+        "producer_verifier_concurrency": False,
+    }
+    for key, value in expected_gated.items():
+        if gated.get(key) != value:
+            add(findings, "GATED_CONVERGENCE", path, f"routing.adaptive_execution.gated_convergence.{key} must be {value!r}")
     ids = [a.get("id") for a in doc.get("agents", [])]
-    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "nomia", "mago", "magia"]:
+    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia"]:
         add(findings, "AGENT_CONTRACT_SET", path, "contract agent ids/order do not match the package")
     vscode = next((h for h in doc.get("hosts", []) if h.get("host") == "vscode"), None)
     if not vscode or vscode.get("status") != "supported":
@@ -223,6 +276,9 @@ def validate_contract(path, findings):
     analyst_mapping = mappings.get("read-only-analysis", "")
     if "read + search" not in analyst_mapping:
         add(findings, "VSCODE_ANALYST_SCOPE", path, "VS Code read-only analysis must map to an explicit read + search-only analyst profile")
+    verifier_mapping = mappings.get("executable-verification", "")
+    if "Rhapsodia Verifier" not in verifier_mapping or "verification-only" not in verifier_mapping:
+        add(findings, "VSCODE_VERIFIER_SCOPE", path, "VS Code executable verification must map to the bounded Rhapsodia Verifier profile")
 
 
 def validate_manifest(root, path, findings):
@@ -374,7 +430,7 @@ def main():
     findings = validate(target)
     errors = [f for f in findings if f["severity"] == "error"]
     result = {
-        "validator": "rhapsodia-agent-validator/v1",
+        "validator": "rhapsodia-agent-validator/v2",
         "status": "pass" if not errors else "fail",
         "target": str(target.resolve()),
         "errors": len(errors),

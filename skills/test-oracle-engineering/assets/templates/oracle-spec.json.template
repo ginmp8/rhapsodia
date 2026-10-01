@@ -1,0 +1,26 @@
+{
+  "contract": "test-oracle-spec/v1",
+  "oracle_id": "oracle-001",
+  "claim": "<one bounded claim>",
+  "claim_type": "behavior",
+  "source_identity": "<requirement/contract/test identity>",
+  "candidate_identity": "unbound",
+  "target_scope": ["<source/**>"],
+  "verification_write_scope": ["<tests/**>"],
+  "protected_paths": ["<frozen expected outputs/fixtures if applicable>"],
+  "observable": {
+    "setup": "<state before action>",
+    "input": "<input>",
+    "action": "<action>",
+    "expected": "<observable success>",
+    "failure_signal": "<observable rejection>"
+  },
+  "execution": {
+    "layer": "integration-public-stack",
+    "mode": "design-only",
+    "requirements": ["run-bounded-process"],
+    "command_argv": []
+  },
+  "evaluator_identity": "<frozen evaluator/criteria identity>",
+  "max_attempts": 3
+}
