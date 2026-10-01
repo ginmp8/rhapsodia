@@ -1,9 +1,27 @@
 {
-  "manifest_version":1,
-  "skill":"perceptual-validation",
-  "exports":[
-    {"contract_id":"perceptual.review-request","version":1,"role":"owner-producer","surface_paths":["references/review-contract.md","schemas/review-request.schema.json","scripts/validate_perceptual_artifact.py"]},
-    {"contract_id":"perceptual.review-result","version":1,"role":"owner-producer","surface_paths":["references/review-contract.md","schemas/review-result.schema.json","scripts/validate_perceptual_artifact.py"]}
+  "manifest_version": 1,
+  "skill": "perceptual-validation",
+  "exports": [
+    {
+      "contract_id": "perceptual.review-request",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/review-contract.md",
+        "schemas/review-request.schema.json",
+        "scripts/validate_perceptual_artifact.py"
+      ]
+    },
+    {
+      "contract_id": "perceptual.review-result",
+      "version": 2,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/review-contract.md",
+        "schemas/review-result.schema.json",
+        "scripts/validate_perceptual_artifact.py"
+      ]
+    }
   ],
-  "imports":[]
+  "imports": []
 }

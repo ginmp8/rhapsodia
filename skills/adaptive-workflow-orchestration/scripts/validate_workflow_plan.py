@@ -22,6 +22,20 @@ TERMINAL = {"completed", "blocked", "escalated", "failed", "budget_exhausted"}
 DEGRADATION = {"serial", "blocked", "not-run"}
 INDEPENDENT_ISOLATION = {"fresh-context", "workspace", "process", "host-native"}
 
+V1_TOP_FIELDS = {"contract", "workflow_id", "objective", "success_criteria", "strategy", "authority", "stages", "budgets", "termination", "capabilities", "evidence"}
+V2_TOP_FIELDS = V1_TOP_FIELDS | {"gates", "checkpoints", "promotion"}
+AUTHORITY_FIELDS = {"owner", "allowed_effects", "forbidden_effects", "write_scope"}
+STAGE_FIELDS = {"id", "mode", "work_source", "depends_on", "max_parallel", "isolation", "effects", "read_set", "write_set", "success", "on_failure", "max_iterations"}
+V1_BUDGET_FIELDS = {"max_workers", "max_parallel", "max_retries_per_unit", "max_reentries"}
+V2_BUDGET_FIELDS = V1_BUDGET_FIELDS | {"max_checkpoints", "max_checkpoint_repairs"}
+TERMINATION_FIELDS = {"success_predicate", "terminal_states"}
+CAPABILITY_FIELDS = {"required", "optional", "degradation"}
+V1_EVIDENCE_FIELDS = {"input_identity", "planner_identity", "evaluator_identity"}
+V2_EVIDENCE_FIELDS = V1_EVIDENCE_FIELDS | {"reference_identity"}
+GATE_FIELDS = {"id", "kind", "required", "isolation", "evaluator_identity", "capability", "on_failure", "rerun_after_repair", "max_attempts"}
+CHECKPOINT_FIELDS = {"id", "objective", "depends_on", "producer_stage", "gate_ids", "success"}
+PROMOTION_FIELDS = {"requires_all_required_gates", "next_checkpoint_requires_promoted_dependencies", "accepted_feedback_only"}
+
 
 def _nonempty(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
@@ -41,6 +55,32 @@ def _list_of_nonempty_strings(value: Any) -> bool:
 
 def _diag(code: str, path: str, message: str) -> dict[str, str]:
     return {"code": code, "path": path, "message": message}
+
+
+def _reject_unknown_fields(value: Any, allowed: set[str], path: str, errors: list[dict[str, str]]) -> None:
+    if not isinstance(value, dict):
+        return
+    for key in sorted(set(value) - allowed):
+        errors.append(_diag("E_SCHEMA_ADDITIONAL_PROPERTY", f"{path}.{key}", "property is not allowed by the workflow-plan schema"))
+
+
+def _validate_schema_shape(data: dict[str, Any], version: int) -> list[dict[str, str]]:
+    errors: list[dict[str, str]] = []
+    _reject_unknown_fields(data, V2_TOP_FIELDS if version == 2 else V1_TOP_FIELDS, "$", errors)
+    _reject_unknown_fields(data.get("authority"), AUTHORITY_FIELDS, "$.authority", errors)
+    for idx, stage in enumerate(data.get("stages", []) if isinstance(data.get("stages"), list) else []):
+        _reject_unknown_fields(stage, STAGE_FIELDS, f"$.stages[{idx}]", errors)
+    _reject_unknown_fields(data.get("budgets"), V2_BUDGET_FIELDS if version == 2 else V1_BUDGET_FIELDS, "$.budgets", errors)
+    _reject_unknown_fields(data.get("termination"), TERMINATION_FIELDS, "$.termination", errors)
+    _reject_unknown_fields(data.get("capabilities"), CAPABILITY_FIELDS, "$.capabilities", errors)
+    _reject_unknown_fields(data.get("evidence"), V2_EVIDENCE_FIELDS if version == 2 else V1_EVIDENCE_FIELDS, "$.evidence", errors)
+    if version == 2:
+        for idx, gate in enumerate(data.get("gates", []) if isinstance(data.get("gates"), list) else []):
+            _reject_unknown_fields(gate, GATE_FIELDS, f"$.gates[{idx}]", errors)
+        for idx, checkpoint in enumerate(data.get("checkpoints", []) if isinstance(data.get("checkpoints"), list) else []):
+            _reject_unknown_fields(checkpoint, CHECKPOINT_FIELDS, f"$.checkpoints[{idx}]", errors)
+        _reject_unknown_fields(data.get("promotion"), PROMOTION_FIELDS, "$.promotion", errors)
+    return errors
 
 
 def _dedupe_check(values: list[str], path: str, errors: list[dict[str, str]]) -> None:
@@ -585,9 +625,15 @@ def _validate_v2(data: Any) -> dict[str, Any]:
 
 def validate(data: Any) -> dict[str, Any]:
     if isinstance(data, dict) and data.get("contract") == "workflow-plan/v1":
-        return _validate_v1(data)
+        report = _validate_v1(data)
+        report["errors"] = _validate_schema_shape(data, 1) + report["errors"]
+        report["status"] = "pass" if not report["errors"] else "fail"
+        return report
     if isinstance(data, dict) and data.get("contract") == "workflow-plan/v2":
-        return _validate_v2(data)
+        report = _validate_v2(data)
+        report["errors"] = _validate_schema_shape(data, 2) + report["errors"]
+        report["status"] = "pass" if not report["errors"] else "fail"
+        return report
     return {
         "validator": "workflow-plan-validator/v2",
         "status": "fail",

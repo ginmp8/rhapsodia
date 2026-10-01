@@ -15,4 +15,18 @@ class T(unittest.TestCase):
   d=res();d["verdict"]="fail";self.assertIn("E_FAIL_FINDINGS",{x['code'] for x in v.validate(d)['errors']})
  def test_pass_rejects_high_finding(self):
   d=res();d["findings"]=[{"region":"main","category":"spacing","difference":"x","severity":"high","confidence":"high"}];self.assertIn("E_PASS_FINDINGS",{x['code'] for x in v.validate(d)['errors']})
+
+
+class SchemaParityTests(unittest.TestCase):
+ def test_request_rejects_unexpected_property(self):
+  d=req();d["unexpected"]=True;self.assertIn("E_SCHEMA_ADDITIONAL_PROPERTY",{x['code'] for x in v.validate(d)['errors']})
+ def test_request_rejects_duplicate_comparison_scope(self):
+  d=req();d["comparison_scope"]=["main","main"];self.assertIn("E_DUPLICATE",{x['code'] for x in v.validate(d)['errors']})
+ def test_request_rejects_duplicate_rubric_categories(self):
+  d=req();d["rubric_categories"]=["spacing","spacing"];self.assertIn("E_DUPLICATE",{x['code'] for x in v.validate(d)['errors']})
+ def test_result_rejects_unexpected_finding_property(self):
+  d=res();d["findings"]=[{"region":"main","category":"spacing","difference":"x","severity":"low","confidence":"high","unexpected":True}];self.assertIn("E_SCHEMA_ADDITIONAL_PROPERTY",{x['code'] for x in v.validate(d)['errors']})
+ def test_result_rejects_duplicate_evidence_refs(self):
+  d=res();d["evidence_refs"]=["img:r","img:r"];self.assertIn("E_DUPLICATE",{x['code'] for x in v.validate(d)['errors']})
+
 if __name__=='__main__':unittest.main()

@@ -387,5 +387,22 @@ class WorkflowPlanV2ValidatorTests(unittest.TestCase):
 
 
 
+
+
+class SchemaParityTests(unittest.TestCase):
+    def test_rejects_unexpected_top_level_property(self):
+        plan = valid_plan()
+        plan["unexpected"] = True
+        report = mod.validate(plan)
+        self.assertEqual(report["status"], "fail")
+        self.assertIn("E_SCHEMA_ADDITIONAL_PROPERTY", codes(report))
+
+    def test_rejects_unexpected_nested_property(self):
+        plan = valid_plan()
+        plan["authority"]["unexpected"] = True
+        report = mod.validate(plan)
+        self.assertEqual(report["status"], "fail")
+        self.assertIn("E_SCHEMA_ADDITIONAL_PROPERTY", codes(report))
+
 if __name__ == "__main__":
     unittest.main()
