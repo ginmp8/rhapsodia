@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rhapsodia:artifact-actions:1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "owner",
+    "workflow_id",
+    "artifact_actions",
+    "validation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "workflow_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 25,
+          "pattern": "^workflow-[a-f0-9]{16}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "artifact_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "artifact_type",
+          "action",
+          "source_path",
+          "manifest_path",
+          "source_sha256",
+          "manifest_sha256",
+          "previous_manifest_sha256",
+          "reason"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*:[a-z0-9][a-z0-9:._-]*$"
+          },
+          "artifact_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "action": {
+            "enum": [
+              "created",
+              "updated",
+              "unchanged",
+              "deprecated",
+              "removed"
+            ]
+          },
+          "source_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "manifest_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1100
+          },
+          "source_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "manifest_sha256": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "previous_manifest_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      },
+      "maxItems": 10000
+    },
+    "validation": {
+      "const": "passed"
+    }
+  }
+}

@@ -1,5 +1,8 @@
 # Execution Records
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Load when execution updates tasks.md, registry/<spec_id>.yaml, manifest.yaml, validation-evidence.md, or implementation-notes.md.
 
 ## Ownership Boundary

@@ -1,5 +1,8 @@
 # Artifact Decision Matrix
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this matrix after selecting the rigor profile and before creating files. An artifact exists only when its trigger is true or a canonical identity/infrastructure rule requires it. Do not create an optional artifact merely because a template exists.
 
 | Artifact | Creation trigger | Owner | Consumer | Validation rule | Retention rule | Why it cannot be represented safely elsewhere | Minimum profile |

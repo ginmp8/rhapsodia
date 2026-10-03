@@ -1,5 +1,8 @@
 # Templates and Status
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Execution-oriented headings, metadata, and lifecycle values are downstream planning contracts; they do not make MAGO an execution skill.
 
 ## Template Use

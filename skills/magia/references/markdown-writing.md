@@ -1,5 +1,8 @@
 # Markdown Writing
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Apply to generated or updated MAGIA Markdown artifacts, especially implementation-notes.md and validation-evidence.md. Treat notes.md and validation.md as Mago-owned planning inputs; legacy execution content is read only by ADAPT mode during best-effort conversion to current MAGIA-owned artifacts.
 
 ## Rules

@@ -1,5 +1,8 @@
 # Governance Profiles And Lifecycle
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this reference before choosing a Nomia mode. The profile controls the minimum evidence, approval depth, output depth, and escalation rules. The mode still controls the artifact family.
 
 ## Profile Selection

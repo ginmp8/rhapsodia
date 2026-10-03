@@ -15,6 +15,7 @@ AGENT_NAMES = {
     "nomia.agent.md",
     "mago.agent.md",
     "magia.agent.md",
+    "rhapsodia-workspace.agent.md",
 }
 
 

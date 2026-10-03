@@ -1,5 +1,8 @@
 # Validation and Closure
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 ## Validation Policy
 
 Before mutation, require a concrete objective under a canonical objective/goal section, at least one criterion under a canonical acceptance/success section, a descriptive selected task, and a validation-plan check with both an executable action and explicit expected outcome through `scripts/validate_execution_readiness.py`. The selected task must also resolve to that current PRD intent and a planned check through shared canonical anchors or deterministic legacy domain-term linkage, and must be dependency-safe in listed order unless planning marks it `[parallel]` or `[independent]`. Negated declarations, `Non-Acceptance` headings, placeholders, meta commentary, unrelated co-located text, and checks without an expected result are not execution readiness. Run the smallest validation set that proves selected work: targeted unit/integration tests, build/compile, schema/parser checks, lint/format only when changed files participate or policy requires. If behavior changed and coverage tooling exists, run targeted coverage when available; otherwise record the gap in validation-evidence.md.

@@ -124,6 +124,36 @@ def resolve_runtime_path(repo_root: Path, override: str | Path) -> Path:
     return candidate.resolve()
 
 
+def validate_legacy_board_override(repo_root: Path, override: str | Path,
+                                   board_id: str | None, year: str | int | None,
+                                   cycle_id: str | None) -> Path:
+    """Validate the explicitly selected legacy layout before returning a path."""
+    repository = repo_root.resolve()
+    raw = Path(override)
+    candidate = raw if raw.is_absolute() else repository / raw
+    if any(part.is_symlink() for part in (candidate, *candidate.parents)):
+        raise ValueError("BOARD_ROOT symbolic links are not allowed")
+    resolved = candidate.resolve()
+    try:
+        parts = resolved.relative_to(repository).parts
+    except ValueError as exc:
+        raise ValueError("BOARD_ROOT must remain inside repository") from exc
+    if len(parts) != 6 or parts[:2] != ("docs", "boards") or parts[4] != "cycles":
+        raise ValueError("BOARD_ROOT must match docs/boards/<board_id>/<year>/cycles/<cycle_id>")
+    actual_board, actual_year, actual_cycle = parts[2], parts[3], parts[5]
+    import re
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", actual_board):
+        raise ValueError("BOARD_ROOT board_id must be lowercase slug-safe")
+    parsed_year = infer_year_from_cycle_id(actual_cycle)
+    if actual_year != parsed_year:
+        raise ValueError("BOARD_ROOT year conflicts with cycle_id creation year")
+    for label, supplied, actual in (("board_id", board_id, actual_board),
+                                    ("year", year, actual_year), ("cycle_id", cycle_id, actual_cycle)):
+        if supplied is not None and str(supplied) != actual:
+            raise ValueError(f"BOARD_ROOT {label} conflicts with supplied identity")
+    return resolved
+
+
 def resolve_board_root(
     repo_root: Path,
     *,
@@ -133,7 +163,7 @@ def resolve_board_root(
     cycle_id: str | None = None,
 ) -> Path:
     if board_root_override is not None:
-        return resolve_runtime_path(repo_root, board_root_override)
+        return validate_legacy_board_override(repo_root, board_root_override, board_id, year, cycle_id)
 
     board_error = validate_concrete_segment("board_id", board_id)
     if board_error:
@@ -146,7 +176,7 @@ def resolve_board_root(
     resolved_year = str(year) if year is not None else parsed_year
     if resolved_year != parsed_year:
         raise ValueError(f"year `{resolved_year}` conflicts with cycle_id creation year `{parsed_year}`")
-    return board_root(repo_root, board_id, resolved_year, cycle_id)
+    return validate_legacy_board_override(repo_root, board_root(repo_root, board_id, resolved_year, cycle_id), board_id, resolved_year, cycle_id)
 
 
 def find_canonical_root_index(parts: tuple[str, ...]) -> int | None:

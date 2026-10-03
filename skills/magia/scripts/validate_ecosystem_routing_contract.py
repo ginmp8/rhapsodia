@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Validate structural routing contracts and executable intent fixtures; live model activation is not measured here."""
-import argparse,importlib.util,json,re
+import argparse,hashlib,importlib.util,json,re
 from collections import Counter
 from pathlib import Path
 CATS={'single_owner','multi_intent','ambiguous','non_activation','adversarial','edge_case'}; OWNERS={'nomia','mago','magia','none'}
@@ -36,7 +36,7 @@ def validate(root):
  if contract.get('ecosystem_release')!=version: err.append('routing contract release does not match VERSION')
  
  frozen=((repro.get('frozen_evaluators') or {}).get('routing_corpus') or {}); frozen_release=frozen.get('ecosystem_release'); migration_from=((compatibility.get('migration') or {}).get('from'));
- if corpus.get('contract_id')!=contract.get('contract_id') or corpus.get('ecosystem_release')!=frozen_release or frozen_release!=migration_from: err.append('routing corpus frozen identity/migration mismatch')
+ if corpus.get('contract_id')!=contract.get('contract_id') or corpus.get('ecosystem_release')!=frozen_release or hashlib.sha256((root/frozen.get('path','')).read_bytes()).hexdigest()!=frozen.get('sha256'): err.append('routing corpus frozen identity/hash mismatch')
  allowed=set(contract.get('allowed_handoffs',[])); scenarios=corpus.get('scenarios',[]); counts=Counter(); seen=set(); executed=0
  if not isinstance(scenarios,list) or not scenarios: err.append('routing corpus must have scenarios'); scenarios=[]
  try: router=module(root)

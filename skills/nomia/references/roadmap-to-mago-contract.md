@@ -1,5 +1,8 @@
 # Roadmap to Mago Contract
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use only for nomia governance handoff from roadmap to Mago. nomia prepares handoff facts; Mago owns identity registration, the planning package, and technical decomposition.
 
 ## Handoff Preconditions

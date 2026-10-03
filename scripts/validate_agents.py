@@ -11,7 +11,7 @@ EXPECTED = {
         "name": "Rhapsodia Supervisor",
         "tools": {"read", "search", "agent"},
         "user_invocable": True,
-        "agents": ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia"],
+        "agents": ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia", "Rhapsodia Workspace"],
         "profile": "supervisor",
     },
     "rhapsodia-analyst.agent.md": {
@@ -47,6 +47,10 @@ EXPECTED = {
         "user_invocable": False,
         "profile": "worker",
         "skill": "magia",
+    },
+    "rhapsodia-workspace.agent.md": {
+        "name": "Rhapsodia Workspace", "tools": {"read", "search", "edit", "execute"},
+        "user_invocable": False, "profile": "workspace", "skill": "rhapsodia-workspace",
     },
 }
 
@@ -196,6 +200,15 @@ def validate_agent_file(path, spec, findings):
         if "invoke another custom agent directly" not in body:
             add(findings, "WORKER_RECURSION_BOUNDARY", path, "worker must explicitly prohibit direct custom-agent invocation")
 
+    if spec["profile"] == "workspace":
+        for marker in ("canonical_mutation_performed`: false", "domain_state_changed`: false", "derived outputs only", "emit ecosystem handoff v3"):
+            if marker not in body:
+                add(findings, "WORKSPACE_BOUNDARY", path, f"missing derived-only boundary: {marker}")
+    if spec["profile"] == "worker":
+        for marker in ("artifact_actions", "artifact-native", "Workspace is optional"):
+            if marker not in body:
+                add(findings, "ARTIFACT_OWNERSHIP", path, f"missing native artifact orchestration contract: {marker}")
+
     if len(body) > 30000:
         add(findings, "PROMPT_LENGTH", path, "agent body exceeds the documented 30,000 character prompt limit")
 
@@ -206,8 +219,8 @@ def validate_contract(path, findings):
     except Exception as exc:
         add(findings, "CONTRACT_JSON", path, f"invalid JSON: {exc}")
         return
-    if doc.get("contract") != "agent-system-contract/v2":
-        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v2")
+    if doc.get("contract") != "agent-system-contract/v3":
+        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v3")
     if doc.get("system", {}).get("autonomy") != "policy-bounded-autonomous":
         add(findings, "AUTONOMY", path, "system autonomy must remain policy-bounded-autonomous")
     routing = doc.get("routing", {})
@@ -282,8 +295,16 @@ def validate_contract(path, findings):
     for key, value in expected_gated.items():
         if gated.get(key) != value:
             add(findings, "GATED_CONVERGENCE", path, f"routing.adaptive_execution.gated_convergence.{key} must be {value!r}")
+    artifacts = doc.get("artifact_orchestration", {})
+    expected_artifacts = {"default_storage_profile": "artifact-native", "selection_owner": "domain-skill", "source_of_truth": "producer-owned-artifacts", "workspace_required_for_domain_execution": False, "projection_writeback": False, "domain_state_inference": False}
+    for key, expected in expected_artifacts.items():
+        if artifacts.get(key) != expected:
+            add(findings, "ARTIFACT_ORCHESTRATION", path, f"artifact_orchestration.{key} must be {expected!r}")
+    derived = routing.get("derived_workspace", {})
+    if derived.get("canonical_write") is not False or derived.get("trigger") != "explicit-visualization-request" or derived.get("max_refresh_attempts") != 2 or derived.get("concurrent_with_canonical_writer") is not False:
+        add(findings, "WORKSPACE_ROUTING", path, "workspace must be optional, derived-only, serial and bounded")
     ids = [a.get("id") for a in doc.get("agents", [])]
-    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia"]:
+    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia", "rhapsodia-workspace"]:
         add(findings, "AGENT_CONTRACT_SET", path, "contract agent ids/order do not match the package")
     capability_ids = {c.get("id") for c in doc.get("capabilities", []) if isinstance(c, dict)}
     if "supporting-capability-resolution" not in capability_ids:

@@ -1,10 +1,10 @@
 {
-  "breaking_changes": false,
+  "breaking_changes": true,
   "changelog": "CHANGELOG.md",
   "compatibility_policy": "references/installation-and-release.md",
   "development_requirements": "requirements-dev.txt",
   "ecosystem_contract": "references/ecosystem-compatibility.json",
-  "ecosystem_release": "1.10.1",
+  "ecosystem_release": "2.0.0",
   "name": "mago",
   "ownership_contract": "references/ecosystem-ownership-contract.json",
   "package_schema": "4",
@@ -16,7 +16,7 @@
   ],
   "provenance_contract": "references/ecosystem-contract-provenance.json",
   "python": ">=3.11",
-  "released_at": "2026-09-22",
+  "released_at": "2026-10-03",
   "reproducibility_contract": "references/ecosystem-reproducibility-contract.json",
   "routing_contract": "references/ecosystem-routing-contract.json",
   "runtime_dependencies": [
@@ -28,5 +28,5 @@
   ],
   "shared_contract_version": "1.0.0",
   "support_boundary": "technical planning artifacts and deterministic validators; no product-code execution or runtime evidence",
-  "version": "1.10.1"
+  "version": "2.0.0"
 }

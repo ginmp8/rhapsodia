@@ -1,5 +1,8 @@
 # Change-Delta Contract
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this contract when an existing spec version changes. The delta is a generated, non-authoritative comparison and never a second source of truth. Canonical intended state remains in the Mago registry and package artifacts.
 
 ## Required classes

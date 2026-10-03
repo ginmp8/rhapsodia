@@ -1,5 +1,8 @@
 # Define Mode
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 ## Canonical Rules
 
 `BOARD_ROOT` is required. The selected registry record is `BOARD_ROOT/registry/<spec_id>.yaml`; the selected package path is always `BOARD_ROOT/specs/<spec_id>/`. Prompt-provided `BOARD_ROOT` wins after validation. Write package artifacts only inside the selected package path and do not mutate unrelated registry records.

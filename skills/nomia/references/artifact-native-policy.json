@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "producer": "nomia",
+  "default_root": "docs/product",
+  "dimensions": [
+    "governance"
+  ],
+  "artifact_types": [
+    "feature",
+    "intake",
+    "ops",
+    "status",
+    "stakeholder-brief",
+    "replanning",
+    "portfolio",
+    "roadmap",
+    "feature-map",
+    "governance-rfc",
+    "governance-decision",
+    "release-notes",
+    "internal-notes",
+    "feature-report"
+  ],
+  "other_owner_roots": [
+    "docs/specs",
+    "docs/implementation"
+  ]
+}

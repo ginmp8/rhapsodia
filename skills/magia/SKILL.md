@@ -1,11 +1,16 @@
 ---
 name: magia
-description: use when asked to execute, implement, debug, test, validate, harden, document, unblock, refactor, simplify, de-abstract, adapt legacy execution records into current magia-owned artifacts, or package bounded target repository work from current code and selected mago specs. supports adhoc direct code/config/docs changes, ralph execution from board contracts, best-effort adapt of legacy execution logs into implementation-notes.md and validation-evidence.md, and execution-grounded technical documentation. do not use for product governance, stakeholder updates, roadmap bookkeeping, release notes, portfolio reporting, prd refinement, broad planning, or claims without current evidence.
+description: use when asked to execute, implement, debug, test, validate, harden, document, unblock, refactor, simplify, de-abstract, adapt legacy execution records into current magia-owned artifacts, or package bounded target repository work from current code and selected mago specs. supports adhoc direct code/config/docs changes, ralph execution from typed planning contracts without a required board, best-effort adapt of legacy execution logs into implementation-notes.md and validation-evidence.md, and execution-grounded technical documentation. do not use for product governance, stakeholder updates, roadmap bookkeeping, release notes, portfolio reporting, prd refinement, broad planning, or claims without current evidence.
 ---
 
 # MAGIA
 
-MAGIA owns bounded repository implementation, debugging, tests, validation, hardening, behavior-preserving simplification, execution-state sync, and execution-grounded technical documentation. Current code, runtime output, tests, and resolved board contracts are source of truth.
+MAGIA owns bounded repository implementation, debugging, tests, validation, hardening, behavior-preserving simplification, execution-state sync, and execution-grounded technical documentation. Current code, runtime output, tests, and validated owner-scoped input contracts are source of truth. Board contracts apply only in the explicit legacy profile.
+
+
+## Default storage and artifact orchestration
+
+Use [artifact-native operation](references/artifact-native.md) before all storage-specific guidance. Each domain decides its own files, writes only its own sources, validates content, publishes sidecars and returns uniform `artifact_actions`. No Workspace, Board, cycle or shared registry is required. Retained Board-specific commands/examples apply only to explicitly selected `legacy-board` maintenance/migration; their storage mechanics never override the native default. Preserve all domain authority, traceability, risk, privacy, recovery and evidence gates.
 
 
 ## Portability
@@ -14,7 +19,7 @@ The Agent Skills package is the host-neutral semantic core. `agents/openai.yaml`
 
 ## Coordinated reproducibility contract
 
-This package participates in ecosystem release `1.10.1` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
+This package participates in ecosystem release `2.0.0` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
 
 ## Distributed ecosystem routing
 
@@ -38,7 +43,7 @@ MAGIA does not own governance, roadmap/portfolio, stakeholder/release communicat
 
 ## Technical Artifact Ownership
 
-MAGIA may write `implementation-notes.md`, `complexity-reduction-evidence.md`, implementation ADRs, `validation-evidence.md`, `runbook.md`, migration/contract/observability/security notes, `troubleshooting.md`, and `technical-gap-note.md`. Follow [shared ownership](references/shared-artifact-ownership.md): Mago owns planning `notes.md`/`validation.md`; `tasks.md` permits only truthful toggling of existing checkboxes; manifest/registry permit evidence-backed technical state sync. Never rewrite planning intent.
+MAGIA may write `implementation-notes.md`, `complexity-reduction-evidence.md`, implementation ADRs, `validation-evidence.md`, `runbook.md`, migration/contract/observability/security notes, `troubleshooting.md`, and `technical-gap-note.md`. Native mode writes execution state/evidence only under its own artifact root; all Mago and Nomia artifacts are read-only, including planning `tasks.md`, `notes.md`, and `validation.md`. Narrow shared-surface sync in [legacy ownership](references/shared-artifact-ownership.md) applies only to explicit legacy-board maintenance. Never rewrite planning intent.
 
 ## Technical Decision Authority
 
@@ -49,7 +54,7 @@ Implementation decisions require inspected evidence, necessity, product-intent f
 1. Classify execution, blocker, documentation, or handoff.
 2. Load [canonical paths](references/canonical-paths.md), [common execution](references/common-execution.md), and [execution entry](references/execution-entry.md).
 3. When needed load [repository orientation](references/repository-orientation.md), [senior discipline](references/senior-engineering-discipline.md), and triggered [risk escalation](references/risk-and-change-escalation.md), [execution profiles](references/execution-profiles.md), [complexity reduction](references/complexity-reduction-execution.md), or [multi-repository execution](references/multi-repository-execution.md). Load [run state/recovery](references/run-state-and-recovery.md) only for resumable, stateful, interrupted, or governed execution. When a parent controller delegates a `workflow-plan/v2` checkpoint candidate/repair, also load [gated checkpoint execution](references/gated-checkpoint-execution.md). Load [failure/recovery taxonomy](references/failure-recovery-taxonomy.md) only after a failed or blocked step requires a repair/retry/rollback/stop/handoff decision.
-4. For RALPH load [board contract](references/board-contract.md), [planning handoff](references/planning-handoff.md), and optional [safe parallelism](references/safe-parallelism.md).
+4. For native RALPH load [native execution](references/artifact-native.md), [planning handoff](references/planning-handoff.md), and [safe parallelism](references/safe-parallelism.md) when parallel execution is selected. Load the [Board contract](references/board-contract.md) only for explicit legacy-board compatibility.
 5. Load exactly one mode: [ADHOC](references/modes/adhoc.md), [RALPH](references/modes/ralph.md), or [ADAPT](references/modes/adapt.md).
 6. Load [execution records](references/artifacts/execution-records.md), [evidence](references/artifacts/execution-evidence.md), [developer standards](references/developer-artifact-standards.md), and [technical documentation](references/technical-documentation.md) only when writing.
 7. Before closure load [validation selection](references/validation-selection.md) and [validation/closure](references/validation-and-closure.md). `scripts/select_validation.py` is preliminary; `scripts/select_validation_checks.py` is canonical once surfaces are known.
@@ -60,7 +65,7 @@ Implementation decisions require inspected evidence, necessity, product-intent f
 | Mode | Use | Closure |
 |---|---|---|
 | ADHOC | direct repo code/config/tests/scripts/developer docs | smallest safe change passes targeted proof |
-| RALPH | selected task or dependency-safe batch from a Mago contract | readiness, checks, traceability, state, and board gates pass |
+| RALPH | selected task or dependency-safe batch from a Mago contract | readiness, checks, traceability, and owner-local execution-state gates pass |
 | ADAPT | legacy execution records into current Magia evidence | current state validates or gaps stay explicit |
 
 Risk profile is independent of mode; [execution profiles](references/execution-profiles.md) are the canonical control-depth contract.
@@ -68,8 +73,8 @@ Risk profile is independent of mode; [execution profiles](references/execution-p
 ## Required Inputs Before Mutation
 
 - ADHOC: repo/file scope, behavior, allowed/blocked paths, proving check.
-- RALPH: board/cycle/spec/task, repo scope, PRD objective, acceptance criterion, planned validation/expected result, dependencies, validators, clues.
-- ADAPT: board/spec, readable legacy records, permission for Magia-owned outputs.
+- RALPH: validated planning handoff, source-bound spec/task/work-item, repo scope, PRD objective, acceptance criterion, planned validation/expected result, dependencies, validators, clues.
+- ADAPT: explicit legacy source and owner destination, readable legacy records, permission for Magia-owned outputs.
 - Docs/refactor/package: artifact/scope, evidence, preserved behavior, validation, rollback/stops, output path.
 
 ## Execution Workflow
@@ -90,15 +95,17 @@ Preserve unknowns; never invent behavior, ownership, state, branches/PRs/release
 
 ## Stop Conditions
 
-Stop/handoff when work belongs to planning/governance; inputs required by the selected mode cannot be resolved (ADHOC: repo/file scope, behavior, allowed/blocked paths, proving check; RALPH: board/cycle/spec/task linkage plus planned proof); execution requires changing intent, acceptance, task definition/order, architecture, public contract, data/security, or user behavior beyond authority; simplification lacks equivalence/rollback; state conflicts cannot be mechanically healed; writes escape scope; privacy lineage is absent; or no truthful validation alternative exists.
+Stop/handoff when work belongs to planning/governance; inputs required by the selected mode cannot be resolved (ADHOC: repo/file scope, behavior, allowed/blocked paths, proving check; RALPH: source-bound spec/task/work-item linkage plus planned proof); execution requires changing intent, acceptance, task definition/order, architecture, public contract, data/security, or user behavior beyond authority; simplification lacks equivalence/rollback; state conflicts cannot be mechanically healed; writes escape scope; privacy lineage is absent; or no truthful validation alternative exists.
 
 ## Output Contract
+
+Include the verified uniform `artifact_actions` array and `artifact_actions_validation` from native publication; report source changes separately from disposable projection refresh.
 
 Include only applicable sections: mode/risk/scope; changes; technical artifacts; checks (`pass`, `fail`, `blocked`, `skipped`, `not-run`, with a reason whenever status is not `pass`); execution-record changes; decisions/assumptions/blockers/risks/trade-offs; structured downstream evidence. Never claim completion without current proof.
 
 ## Package Requests
 
-For export load [package delivery](references/package-delivery.md), run `scripts/package_skill.py`, validate folder/archive with `scripts/validate_skill_package.py`, and require `scripts/validate_ecosystem_release.py` for coordinated release.
+For export load [packaging isolation](references/packaging-isolation.md), obtain externally executed tree-bound evidence, and run `scripts/package_skill.py`. Require `scripts/validate_ecosystem_release.py` for coordinated release. The packager never executes target code.
 
 ## Validation Checklist
 

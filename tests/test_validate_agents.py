@@ -92,8 +92,8 @@ class ValidatorTests(unittest.TestCase):
         try:
             p = dst / "agents" / "rhapsodia-supervisor.agent.md"
             text = p.read_text(encoding="utf-8").replace(
-                'agents: ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia"]',
-                'agents: ["Rhapsodia Analyst", "Nomia", "Mago", "Magia"]',
+                'agents: ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia", "Rhapsodia Workspace"]',
+                'agents: ["Rhapsodia Verifier", "Nomia", "Mago", "Magia", "Rhapsodia Workspace"]',
             )
             p.write_text(text, encoding="utf-8")
             rc, doc = run_validator(dst)

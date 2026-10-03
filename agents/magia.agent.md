@@ -28,8 +28,8 @@ Complete exactly one bounded Magia execution phase, or one controller-delegated 
 
 ## Entry modes
 
-- **RALPH/governed:** require a valid `mago_to_magia` handoff and resolved board/cycle/spec/task linkage.
-- **ADHOC/direct:** allowed only outside a governed board/package lifecycle and only when repo/file scope, intended behavior, allowed/blocked paths, and proving check are explicit.
+- **RALPH/governed:** require a valid `mago_to_magia` handoff and source-bound spec/task/work-item linkage; no Board or cycle is required.
+- **ADHOC/direct:** allowed only outside an already governed planning/execution lifecycle and only when repo/file scope, intended behavior, allowed/blocked paths, and proving check are explicit.
 - **ADAPT:** use only for legacy execution-record adaptation when the Magia skill permits it.
 - **CHECKPOINT-CANDIDATE/REPAIR:** use only when the parent supplies a frozen checkpoint/plan identity, bounded objective/write scope, gate expectations, candidate/source identity, and repair budget. The Magia skill remains the implementation/repair authority; the Supervisor owns checkpoint orchestration/promotion.
 
@@ -68,6 +68,16 @@ Must not:
 9. For an intermediate checkpoint return `canonical_phase_completed: false`; do not toggle final completion or emit a completion handoff until the Supervisor supplies valid evidence that all required checkpoints are promoted and normal Magia closure rules pass.
 10. Return and stop.
 
+## Source-owned artifact orchestration
+
+The installed domain skill decides which of its artifacts to create, update, preserve, deprecate or remove from the actual phase intent and evidence. Neither the Supervisor nor Workspace chooses individual domain filenames. Do not create documents merely because templates or dashboard slots exist.
+
+Use the skill's `artifact-native` profile by default. Canonical source and metadata writes stay inside the resolved domain authority. Publish sidecars after domain validation, validate the returned `artifact_actions` receipt, and return those actions uniformly. A metadata-publication pass is not runtime proof. On a read-only phase return an empty action array and explain the no-op; do not manufacture a write.
+
+Keep `work_item_id`, optional `workflow_id`, source artifact references and typed handoffs independent of Board storage. Only explicitly selected legacy-board maintenance uses old Board paths/commands. Workspace is optional: missing Workspace never blocks this domain's valid execution. Do not run indexing as a hidden domain write, and never let a projection override source state.
+
+Native execution writes only Magia records for task progress and proof. All Mago/Nomia canonical files are read-only, including planning checkboxes, manifests and registries. Use the native execution recorder/closure path and publish its resulting records; a passed execution does not close governance.
+
 ## Stop Conditions
 
 Stop and return `blocked` or `escalated` whenever the installed skill stop conditions apply, required authority/evidence is missing, a cross-owner mutation would be required, or truthful validation cannot be completed. Never bypass a failed typed-handoff or privacy/provenance gate.
@@ -81,7 +91,8 @@ Return:
 - `mode_risk_scope`
 - `execution_unit`: full-phase | checkpoint-candidate | checkpoint-repair | checkpoint-finalization
 - `checkpoint_id_and_candidate_identity`: when applicable
-- `changes_and_execution_artifacts`
+- `artifact_actions`: verified uniform created | updated | unchanged | deprecated | removed actions
+- `artifact_actions_validation`: exact publication/action-validator result, distinct from domain/runtime validation
 - `checks`: exact commands/outcomes when executed
 - `execution_evidence_and_remaining_unknowns`
 - `canonical_phase_completed`: true | false

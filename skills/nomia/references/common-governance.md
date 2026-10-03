@@ -1,5 +1,8 @@
 # Common Governance
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use nomia for human-ready governance around delivery work. It is self-contained and does not require Mago or Magia skill files.
 
 ## Roots

@@ -1,5 +1,8 @@
 # Technical Design Artifact
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 ## technical-design.md
 
 Optional spec-scoped MAGO planning artifact. Use it when a selected spec needs explicit architecture alignment before execution: new system boundaries, integrations, migrations, persistence shape, public contracts, security posture, observability, rollback, planned execution strategy, meaningful alternatives, or decisions that may require ADRs.

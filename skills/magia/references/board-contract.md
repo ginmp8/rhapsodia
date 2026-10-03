@@ -1,5 +1,8 @@
 # Canonical Board Contract
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 MAGIA carries this contract locally so it can execute planning packages without loading, importing, or running another skill.
 
 ```text

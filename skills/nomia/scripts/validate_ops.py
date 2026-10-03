@@ -360,6 +360,13 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
     if schema_version != 2:
         errors.append("`schema_version` must be 2 on the normal path; use governance-adapt for read-only schema 1 input")
 
+    native = data.get("storage_profile") == "artifact-native"
+    if "storage_profile" in data and data["storage_profile"] not in {"artifact-native", "legacy-board"}:
+        errors.append("unsupported storage_profile")
+    if native:
+        import re
+        if not isinstance(data.get("work_item_id"), str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", data["work_item_id"]):
+            errors.append("native work_item_id must be a stable feature key")
     spec_id = data.get("spec_id")
     spec_id_error = validate_spec_id_format(spec_id)
     if spec_id_error:
@@ -417,7 +424,7 @@ def validate(path: Path, require_canonical: bool = False) -> tuple[list[str], li
         errors,
     )
     if schema_version == 2:
-        validate_governed_extensions(data, errors, warnings, require_resolved=spec_id not in (None, ""))
+        validate_governed_extensions(data, errors, warnings, require_resolved=native or spec_id not in (None, ""))
     validate_enum("status.confidence", status.get("confidence"), VALID_CONFIDENCE, errors)
 
     for key in ("blockers", "risks", "replanning", "tags"):

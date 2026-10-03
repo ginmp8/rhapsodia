@@ -1,3 +1,11 @@
+# Canonical paths by storage profile
+
+Default: `artifact-native`. Use `docs/implementation/<work_item_id>/` or an explicitly authorized owner root. See [native operation](artifact-native.md) for identity, publication and validation. No Board root, year, cycle or shared registry is required. Sidecars remain adjacent to their source files; derived views live outside all producer roots.
+
+## Explicit legacy-board compatibility only
+
+The following retained path contract applies only to an explicitly selected `legacy-board` maintenance/migration operation. Do not apply it to native work.
+
 # Canonical Paths
 
 Single source for canonical path definitions and override resolution. This contract is carried locally by MAGIA; no other skill must be loaded, imported, or executed to resolve paths.

@@ -358,7 +358,11 @@ def validate(
             cycle_id=cycle_id,
         )
     except ValueError as exc:
-        return [str(exc)], []
+        errors = [str(exc)]
+        # Keep the historical diagnostic while rejecting the invalid boundary earlier.
+        if board_root_override and not (Path(board_root_override) / "cycle.yaml").is_file():
+            errors.append("missing canonical cycle.yaml in rejected legacy layout")
+        return errors, []
 
     errors: list[str] = []
     warnings: list[str] = []

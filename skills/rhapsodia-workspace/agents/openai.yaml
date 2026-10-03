@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rhapsodia Workspace"
+  short_description: "Inspect source-owned artifacts in a rebuildable offline workspace"
+  default_prompt: "Index the selected repository artifacts and build an offline view without changing any canonical source."
