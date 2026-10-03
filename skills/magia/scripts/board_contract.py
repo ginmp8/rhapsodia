@@ -66,10 +66,17 @@ def _cycle_errors(board_root: Path) -> tuple[dict[str, Any], list[str]]:
         errors.append("cycle_id creation year must match cycle.yaml year")
     if cycle.get("status") not in VALID_CYCLE_STATUSES:
         errors.append(f"cycle.yaml status must be one of {sorted(VALID_CYCLE_STATUSES)}")
+    created = _parse_timestamp(cycle.get("created_at"))
+    if created is None:
+        errors.append("cycle.yaml created_at must be a valid ISO-8601 timestamp")
+    elif parsed and created.date().isoformat() != parsed["date"]:
+        errors.append("cycle.yaml created_at date must match the date encoded in cycle_id")
     return cycle, errors
 
 
 def _parse_timestamp(value: Any) -> datetime | None:
+    if isinstance(value, datetime):
+        return value
     if not isinstance(value, str) or not value.strip():
         return None
     try:
@@ -163,8 +170,17 @@ def load_registry(board_root: Path) -> tuple[dict[str, dict[str, Any]], list[str
         if data.get("status") not in VALID_SPEC_STATUSES:
             errors.append(f"{path.name}: invalid status `{data.get('status')}`")
         errors.extend(validate_priority_semantics(data, path))
+        created = _parse_timestamp(data.get("created_at"))
+        if created is None:
+            errors.append(f"{path.name}: created_at must be a valid ISO-8601 timestamp")
+        elif created.date().isoformat() != parsed["date"]:
+            errors.append(f"{path.name}: created_at date must match the date encoded in spec_id")
         for dependency in _as_list(data.get("depends_on_specs"), f"{path.name}.depends_on_specs", errors):
-            if not isinstance(dependency, str) or not SPEC_ID_RE.fullmatch(dependency):
+            try:
+                if not isinstance(dependency, str):
+                    raise ValueError("dependency is not a string")
+                parse_spec_id(dependency)
+            except ValueError:
                 errors.append(f"{path.name}: invalid depends_on_specs entry `{dependency}`")
         records[spec_id] = data
     return records, errors
@@ -232,6 +248,15 @@ def manifest_errors(board_root: Path, records: dict[str, dict[str, Any]]) -> lis
         for key in ("spec_id", "cycle_id", "feature_key"):
             if manifest.get(key) != record.get(key):
                 errors.append(f"{spec_id}: manifest `{key}` must match registry")
+        created = _parse_timestamp(manifest.get("created_at"))
+        record_created = _parse_timestamp(record.get("created_at"))
+        if created is None:
+            errors.append(f"{spec_id}: manifest created_at must be a valid ISO-8601 timestamp")
+        else:
+            if created != record_created:
+                errors.append(f"{spec_id}: manifest created_at must match registry")
+            if created.date().isoformat() != parse_spec_id(spec_id)["date"]:
+                errors.append(f"{spec_id}: manifest created_at date must match spec_id")
         if manifest.get("phase") not in VALID_MANIFEST_PHASES:
             errors.append(f"{spec_id}: invalid manifest phase `{manifest.get('phase')}`")
     return errors

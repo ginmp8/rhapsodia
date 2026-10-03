@@ -1,8 +1,8 @@
 {
-  "contract": "agent-system-contract/v2",
+  "contract": "agent-system-contract/v3",
   "system": {
     "name": "rhapsodia-mago-magia-nomia",
-    "objective": "Coordinate governed product delivery, technical planning, bounded implementation, independent executable proof, adversarial review, and late-bound supporting semantic capabilities through Nomia, Mago, Magia, Rhapsodia Verifier, and Rhapsodia Analyst while preserving role ownership, typed evidence, gated checkpoint promotion, least authority, and native-host portability.",
+    "objective": "Coordinate governed product delivery, technical planning, bounded implementation, independent executable proof, adversarial review, and late-bound supporting semantic capabilities through Nomia, Mago, Magia, Rhapsodia Verifier, and Rhapsodia Analyst while preserving role ownership, typed evidence, gated checkpoint promotion, least authority, and native-host portability. Source-owned artifact orchestration and an optional derived-only Workspace preserve independent domain operation.",
     "autonomy": "policy-bounded-autonomous"
   },
   "authority": {
@@ -167,6 +167,10 @@
       ],
       "approval": "human",
       "idempotency": "reconcile-before-retry"
+    },
+    {
+      "id": "derived-output-write",
+      "authority": "write only explicitly authorized .rhapsodia/catalog and .rhapsodia/views; never canonical sources"
     }
   ],
   "state": {
@@ -309,6 +313,19 @@
         "repository-write",
         "bounded-process-execution"
       ]
+    },
+    {
+      "id": "rhapsodia-workspace",
+      "owns": [
+        "derived-artifact-catalog",
+        "offline-views"
+      ],
+      "capabilities": [
+        "repository-read",
+        "supporting-capability-resolution",
+        "derived-output-write",
+        "bounded-process-execution"
+      ]
     }
   ],
   "routing": {
@@ -349,6 +366,15 @@
       "optional_unavailable": "continue-with-not-run",
       "supporting_skill_may_expand_authority": false,
       "supporting_skill_may_change_owner": false
+    },
+    "derived_workspace": {
+      "agent": "rhapsodia-workspace",
+      "trigger": "explicit-visualization-request",
+      "canonical_write": false,
+      "max_refresh_attempts": 2,
+      "counts_toward_max_hops": true,
+      "concurrent_with_canonical_writer": false,
+      "missing_capability": "block-requested-presentation-only"
     }
   },
   "hosts": [
@@ -453,5 +479,23 @@
         "translate the portable agent-system contract to native host capabilities without changing authority or gate semantics"
       ]
     }
-  ]
+  ],
+  "artifact_orchestration": {
+    "default_storage_profile": "artifact-native",
+    "selection_owner": "domain-skill",
+    "source_of_truth": "producer-owned-artifacts",
+    "workspace_required_for_domain_execution": false,
+    "projection_writeback": false,
+    "domain_state_inference": false,
+    "actions_schema": "artifact-actions/v1",
+    "actions": [
+      "created",
+      "updated",
+      "unchanged",
+      "deprecated",
+      "removed"
+    ],
+    "metadata_validation_is_runtime_proof": false,
+    "legacy_profile": "explicit-legacy-board-maintenance-or-copy-migration"
+  }
 }

@@ -1,5 +1,8 @@
 # Roadmap Artifacts
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Roadmap artifacts belong to nomia. Mago may consume them as upstream evidence, but they do not replace `cycle.yaml`, `registry/<spec_id>.yaml`, `prd.md`, or Mago-owned planning artifacts. Generated catalog and queue projections are disposable views, not handoff write targets.
 
 ## roadmap.yaml

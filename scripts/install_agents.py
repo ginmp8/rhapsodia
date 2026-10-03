@@ -12,6 +12,7 @@ AGENT_FILES = (
     "nomia.agent.md",
     "mago.agent.md",
     "magia.agent.md",
+    "rhapsodia-workspace.agent.md",
 )
 REQUIRED_SKILLS = ("nomia", "mago", "magia", "test-oracle-engineering")
 SKILL_ROOTS = (Path(".github/skills"), Path(".claude/skills"), Path(".agents/skills"))

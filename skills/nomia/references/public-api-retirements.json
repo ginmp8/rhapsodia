@@ -1,0 +1,14 @@
+{
+  "from_version": "1.10.1",
+  "migration": "references/packaging-isolation.md",
+  "original_contract_sha256": "6847843f3109d8639b6a4a908da679e800c38f8e3bfdaa8b1f96b2b2f38d3d2f",
+  "retired_symbols": {
+    "scripts/package_skill.py": {
+      "command": "Target command construction no longer belongs to data-only packaging.",
+      "python_env": "Unsafe target execution was removed; use trusted validate_and_attest.py outside packaging.",
+      "run_gate": "Target execution is deliberately forbidden in the packager; trusted runner owns gates."
+    }
+  },
+  "schema_version": 1,
+  "to_version": "2.0.0"
+}

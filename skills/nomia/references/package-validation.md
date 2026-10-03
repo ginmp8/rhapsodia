@@ -1,5 +1,8 @@
 # Package Validation
 
+Use [data-only packaging](packaging-isolation.md) for current release commands. Old command examples below require the additional `--validation-evidence` argument; the packager does not execute target validators or tests. The trusted runner executes those gates separately.
+
+
 Use for structural edits, identity/path changes, golden examples, preservation checks, assurance review, or `skill.zip` delivery.
 
 ## Canonical Command

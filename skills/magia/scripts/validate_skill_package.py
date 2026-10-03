@@ -454,20 +454,7 @@ def validate_target(target: Path) -> dict[str, Any]:
     errors.extend(runtime_dependencies.get("errors", []))
     checks.append("runtime dependency contract")
 
-    if os.environ.get("MAGIA_TEST_SUITE_ACTIVE") == "1":
-        checks.append("complete pytest suite (nested execution suppressed by active suite)")
-    else:
-        with tempfile.TemporaryDirectory(prefix="magia-tests-") as tmp:
-            report_path = Path(tmp) / "pytest.json"
-            completed = subprocess.run([sys.executable, "-B", str(target / "scripts/run_test_suite.py"), "--target", str(target), "--output", str(report_path)], capture_output=True, text=True, check=False)
-            if completed.returncode != 0 or not report_path.exists():
-                errors.append(f"complete pytest suite failed: {completed.stdout} {completed.stderr}")
-            else:
-                test_report = json.loads(report_path.read_text(encoding="utf-8"))
-                if test_report.get("status") != "pass" or int(test_report.get("collected", 0)) == 0:
-                    errors.append(f"complete pytest suite attestation failed: {test_report.get('errors', [])}")
-                else:
-                    checks.append(f"complete pytest suite ({test_report.get('passed')} passed; digest {test_report.get('suite_digest')})")
+    checks.append("structural gate only; release packaging separately requires executed tests evidence")
 
     errors.extend(scan_package_candidates(target))
     checks.append("sensitive content and symlink scan")

@@ -7,7 +7,6 @@ import argparse
 import hashlib
 import json
 import os
-import subprocess
 import sys
 
 # Keep validation and packaging read-only with respect to the source tree.
@@ -17,6 +16,11 @@ import zipfile
 from dataclasses import asdict, dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
+import sys
+LOCAL_SCRIPTS = Path(__file__).resolve().parent
+if str(LOCAL_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(LOCAL_SCRIPTS))
+from package_evidence import deterministic_zip, verify_evidence, outside, atomic_bytes, json_bytes
 
 from nomia_utils import PRIVATE_KEY_HEADERS, atomic_write_text, sensitive_package_reason
 
@@ -49,38 +53,13 @@ class PackageResult:
     packaged_files: int
 
 
-def python_env(skill_root: Path) -> dict[str, str]:
-    env = dict(os.environ)
-    env["PYTHONDONTWRITEBYTECODE"] = "1"
-    python_paths: list[str] = [str(skill_root / "scripts")]
-    version = f"python{sys.version_info.major}.{sys.version_info.minor}"
-    venv_site = Path(sys.executable).resolve().parents[1] / "lib" / version / "site-packages"
-    purelib = sysconfig.get_paths().get("purelib")
-    platlib = sysconfig.get_paths().get("platlib")
-    for candidate in [venv_site if venv_site.exists() else None, purelib, platlib, env.get("PYTHONPATH")]:
-        if candidate:
-            python_paths.extend(str(candidate).split(os.pathsep))
-    deduped: list[str] = []
-    for value in python_paths:
-        if value and value not in deduped:
-            deduped.append(value)
-    env["PYTHONPATH"] = os.pathsep.join(deduped)
-    return env
 
 
-def command(skill_root: Path, script_name: str, *args: str) -> list[str]:
-    return [sys.executable, "-S", str(skill_root / "scripts" / script_name), *args]
 
 
-def run_gate(name: str, command_line: list[str], env: dict[str, str]) -> GateResult:
-    completed = subprocess.run(command_line, text=True, capture_output=True, env=env, check=False)
-    return GateResult(
-        name=name,
-        command=command_line,
-        returncode=completed.returncode,
-        stdout=completed.stdout.strip(),
-        stderr=completed.stderr.strip(),
-    )
+
+
+
 
 
 def should_package(path: Path, root: Path) -> bool:
@@ -191,86 +170,23 @@ def build_release_attestation(result: PackageResult) -> dict[str, Any]:
     }
 
 def zip_skill(skill_root: Path, output: Path) -> int:
-    root = skill_root.resolve()
-    destination = output.resolve()
+    """Low-level data-only ZIP utility; release callers must use validate_and_package."""
+    collect_package_files(skill_root)
+    info = deterministic_zip(skill_root, output, root_name="nomia", require_evidence=False, archive_validator=validate_archive)
+    return info["file_count"]
+
+
+def validate_and_package(skill_root: Path, output: Path, validation_evidence: Path | None = None) -> PackageResult:
+    gates = []
     try:
-        destination.relative_to(root)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("output zip must be outside the skill folder to avoid packaging itself")
-
-    files = collect_package_files(root)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
-    temporary.unlink(missing_ok=True)
-    try:
-        with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-            for path in files:
-                rel = f"nomia/{path.relative_to(root).as_posix()}"
-                info = zipfile.ZipInfo(rel, date_time=ZIP_TIMESTAMP)
-                info.compress_type = zipfile.ZIP_DEFLATED
-                info.external_attr = 0o644 << 16
-                archive.writestr(info, path.read_bytes())
-        os.replace(temporary, destination)
-    finally:
-        temporary.unlink(missing_ok=True)
-    return len(files)
-
-
-def validate_and_package(skill_root: Path, output: Path) -> PackageResult:
-    root = skill_root.resolve()
-    env = python_env(root)
-    gates = [
-        run_gate("package-structure", command(root, "validate_skill_package.py", "--target", str(root)), env),
-        run_gate("activation-scenarios", command(root, "validate_activation_scenarios.py", str(root / "examples" / "activation-scenarios.json")), env),
-        run_gate("governance-scenarios", command(root, "validate_governance_scenarios.py", str(root / "evals" / "governance-scenarios.json")), env),
-        run_gate("golden-examples", command(root, "validate_golden_examples.py", "--skill-root", str(root)), env),
-        run_gate("identity-contract", command(root, "validate_identity_contract.py", "--target", str(root)), env),
-        run_gate("contract-semantics", command(root, "validate_contract_semantics.py", "--target", str(root)), env),
-        run_gate("release-contract", command(root, "validate_release_contract.py", "--target", str(root)), env),
-        run_gate("contract-preservation", command(root, "validate_contract_preservation.py", "--target", str(root)), env),
-        run_gate("documentation-links", command(root, "validate_documentation.py", "--target", str(root)), env),
-        run_gate("assurance-contract", command(root, "validate_assurance_contract.py", "--target", str(root)), env),
-        run_gate(
-            "unit-tests",
-            [sys.executable, "-S", "-m", "unittest", "discover", "-s", str(root / "tests"), "-p", "test_*.py"],
-            env,
-        ),
-    ]
-    if any(gate.returncode != 0 for gate in gates):
-        return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)
-    try:
-        count = zip_skill(root, output)
-    except Exception as exc:
-        gates.append(GateResult("package-content", ["internal", "collect-package-files"], 1, "", str(exc)))
-        output.unlink(missing_ok=True)
-        return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)
-
-    archive_errors = validate_archive(output)
-    gates.append(
-        GateResult(
-            "archive-content",
-            ["internal", "validate-archive", str(output.resolve())],
-            1 if archive_errors else 0,
-            "archive content is safe" if not archive_errors else "",
-            "\n".join(archive_errors),
-        )
-    )
-    reproducibility_errors = validate_reproducible_archive(output)
-    gates.append(
-        GateResult(
-            "archive-reproducibility",
-            ["internal", "validate-reproducible-archive", str(output.resolve())],
-            1 if reproducibility_errors else 0,
-            "archive metadata is deterministic" if not reproducibility_errors else "",
-            "\n".join(reproducibility_errors),
-        )
-    )
-    if archive_errors or reproducibility_errors:
-        output.unlink(missing_ok=True)
-        return PackageResult(str(root), str(output.resolve()), "fail", gates, 0)
-    return PackageResult(str(root), str(output.resolve()), "pass", gates, count)
+        value = verify_evidence(skill_root, validation_evidence)
+        gates = [GateResult(g["name"], g["command"], g["returncode"], "external evidence verified", "") for g in value["gates"]]
+        collect_package_files(skill_root)
+        info = deterministic_zip(skill_root, output, root_name="nomia", evidence=validation_evidence, archive_validator=validate_archive)
+        return PackageResult(str(skill_root.resolve()), str(output.resolve()), "pass", gates, info["file_count"])
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        gates.append(GateResult("package-evidence", ["internal", "verify-external-evidence"], 1, "", str(exc)))
+        return PackageResult(str(skill_root.resolve()), str(output.resolve()), "fail", gates, 0)
 
 
 def to_jsonable(result: PackageResult) -> dict[str, Any]:
@@ -287,37 +203,38 @@ def to_jsonable(result: PackageResult) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate and package nomia as skill.zip.")
-    parser.add_argument("--target", default=str(Path(__file__).resolve().parents[1]), help="Path to the nomia skill root.")
-    parser.add_argument("--output", required=True, help="Destination zip path. Use skill.zip as the file name for release packaging.")
-    parser.add_argument("--json-output", help="Optional path for machine-readable package evidence.")
+    parser = argparse.ArgumentParser(description="Data-only package construction; external executed evidence is mandatory.")
+    parser.add_argument("--target")
+    parser.add_argument("--output")
+    parser.add_argument("--validation-evidence", type=Path)
+    parser.add_argument("--validate", action="store_true", help="Retained compatibility flag; evidence is always required.")
+    parser.add_argument("--validate-only", type=Path)
+    parser.add_argument("--json-output", type=Path)
     args = parser.parse_args(argv)
-
-    if Path(args.output).name != "skill.zip":
-        print("ERROR: output file name must be exactly skill.zip", file=sys.stderr)
-        return 2
-
-    result = validate_and_package(Path(args.target), Path(args.output))
-    payload = to_jsonable(result)
-    if args.json_output:
-        output = Path(args.json_output)
-        output.parent.mkdir(parents=True, exist_ok=True)
-        atomic_write_text(output, json.dumps(payload, indent=2, sort_keys=True) + "\n")
-
-    print(f"status: {result.status}")
-    print(f"target: {result.target}")
-    print(f"output: {result.output}")
-    for gate in result.gates:
-        print(f"{gate.status}: {gate.name}")
-        if gate.stdout:
-            for line in gate.stdout.splitlines():
-                print(f"  stdout: {line}")
-        if gate.stderr:
-            for line in gate.stderr.splitlines():
-                print(f"  stderr: {line}")
-    if result.status == "pass":
-        print(f"packaged_files: {result.packaged_files}")
-    return 0 if result.status == "pass" else 1
+    try:
+        if args.validate_only:
+            result = validate_archive(args.validate_only)
+            if isinstance(result, list):
+                result = {"status": "fail" if result else "pass", "errors": result}
+        else:
+            if not args.target or not args.output:
+                parser.error("--target and --output are required")
+            target, output = Path(args.target), Path(args.output)
+            if args.json_output:
+                report = outside(target, args.json_output)
+                if report == output.resolve() or (args.validation_evidence and report == args.validation_evidence.resolve()):
+                    raise ValueError("report must not alias archive or validation evidence")
+            info = deterministic_zip(target, output, evidence=args.validation_evidence, archive_validator=validate_archive)
+            result = {"status": "pass", "package": info}
+        if args.json_output:
+            if args.validate_only and args.json_output.resolve() == args.validate_only.resolve():
+                raise ValueError("report must not overwrite inspected archive")
+            atomic_bytes(args.json_output, json_bytes(result))
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0 if result.get("status") == "pass" else 1
+    except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile) as exc:
+        print(json.dumps({"status": "fail", "error": str(exc)}, sort_keys=True))
+        return 1
 
 
 if __name__ == "__main__":

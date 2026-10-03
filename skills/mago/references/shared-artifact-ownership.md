@@ -1,5 +1,8 @@
 # Shared Artifact Ownership
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this reference whenever MAGO touches artifacts that MAGIA also reads or updates during execution.
 
 ## Ownership Matrix

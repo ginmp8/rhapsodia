@@ -1,5 +1,8 @@
 # Contracts
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use for `validate-contracts` and cross-skill boundaries. nomia validates paths and artifact shapes without loading or modifying Mago or Magia skill files.
 
 ## Role Contract

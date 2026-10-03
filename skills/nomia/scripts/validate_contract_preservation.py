@@ -51,6 +51,23 @@ def validate(root: Path, contract_path: Path) -> list[str]:
             if heading not in current:
                 errors.append(f"original heading is missing from {rel}: {heading}")
 
+    retirements = {}
+    retirement_path = root / "references" / "public-api-retirements.json"
+    if retirement_path.exists():
+        retirement = load_contract(retirement_path)
+        expected_keys = {"schema_version", "from_version", "to_version", "original_contract_sha256", "migration", "retired_symbols"}
+        valid = (set(retirement) == expected_keys and retirement.get("schema_version") == 1
+                 and retirement.get("from_version") == "1.10.1"
+                 and retirement.get("to_version") == (root / "VERSION").read_text().strip() == "2.0.0"
+                 and retirement.get("original_contract_sha256") == sha256_file(contract_path)
+                 and retirement.get("migration") == "references/packaging-isolation.md"
+                 and (root / retirement["migration"]).is_file())
+        symbols = retirement.get("retired_symbols", {})
+        valid = valid and set(symbols) == {"scripts/package_skill.py"} and set(symbols.get("scripts/package_skill.py", {})) == {"python_env", "command", "run_gate"}
+        if not valid or any(not isinstance(v, str) or not v.strip() for v in symbols.get("scripts/package_skill.py", {}).values()):
+            errors.append("invalid major-release public API retirement contract")
+        else:
+            retirements = symbols
     replacements = contract.get("allowed_symbol_replacements", {})
     for rel, required in contract.get("required_public_symbols", {}).items():
         path = root / rel
@@ -60,6 +77,8 @@ def validate(root: Path, contract_path: Path) -> list[str]:
         mapping = replacements.get(rel, {}) if isinstance(replacements, dict) else {}
         for symbol in required:
             if symbol in current:
+                continue
+            if symbol in retirements.get(rel, {}):
                 continue
             replacement = mapping.get(symbol) if isinstance(mapping, dict) else None
             if replacement and replacement in current:

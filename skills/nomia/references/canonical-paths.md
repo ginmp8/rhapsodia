@@ -1,3 +1,11 @@
+# Canonical paths by storage profile
+
+Default: `artifact-native`. Use `docs/product/<work_item_id>/` or an explicitly authorized owner root. See [native operation](artifact-native.md) for identity, publication and validation. No Board root, year, cycle or shared registry is required. Sidecars remain adjacent to their source files; derived views live outside all producer roots.
+
+## Explicit legacy-board compatibility only
+
+The following retained path contract applies only to an explicitly selected `legacy-board` maintenance/migration operation. Do not apply it to native work.
+
 # Canonical Paths
 
 Single source for nomia path defaults and runtime root resolution.
@@ -11,13 +19,13 @@ Single source for nomia path defaults and runtime root resolution.
 A canonical cycle identity is immutable and uses:
 
 ```text
-cycle-<yyyy-mm-dd>-<cycle-key>
+cycle-YYYY-MM-DD-cycle-key
 ```
 
 A canonical spec identity is immutable and uses:
 
 ```text
-spec-<yyyy-mm-dd>-<feature-key>
+spec-YYYY-MM-DD-feature-key
 ```
 
 The `<year>` directory must match the date year encoded in `cycle_id`. Canonical ids are supplied by the user, received through handoff, or evidenced by an existing repository artifact. A non-null candidate uses `candidate_spec_id_provenance`. nomia records provenance, must not mint planning identities, and does not create, choose, correct, rename, register, or replace ids.

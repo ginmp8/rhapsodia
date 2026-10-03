@@ -54,7 +54,35 @@ def validate_one(path: Path) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate MAGIA artifacts through canonical board/state validators.")
     parser.add_argument("paths", nargs="+")
+    parser.add_argument("--repo-root", type=Path, help="Explicit repository root for artifact-native validation.")
+    parser.add_argument("--profile", choices=("quick", "standard", "governed"), default="standard")
     args = parser.parse_args(argv)
+    if args.repo_root:
+        from native_artifacts import policy, resolve_owned_root
+        from artifact_protocol import confined, load_json, validate_record
+        try:
+            repo = args.repo_root.resolve(strict=True)
+            for raw in args.paths:
+                path = Path(raw)
+                path = path if path.is_absolute() else repo / path
+                relative = path.relative_to(repo).as_posix()
+                path = confined(repo, relative, must_exist=True)
+                manifest = path if path.name.endswith(".artifact.json") else Path(str(path) + ".artifact.json")
+                item = load_json(manifest)
+                validate_record(item, repo, manifest)
+                if item["producer"] != policy()["producer"]:
+                    raise ValueError("artifact belongs to another producer")
+                root = resolve_owned_root(repo)
+                if not path.is_relative_to(root):
+                    raise ValueError("artifact is outside the producer root")
+                if item["artifact_type"] == "execution-receipt":
+                    from native_execution import validate_receipt
+                    validate_receipt(repo, confined(repo, item["source"]["path"], must_exist=True))
+            print("PASS: artifact-native validation")
+            return 0
+        except (ValueError, OSError, KeyError) as exc:
+            print(f"ERROR: {exc}")
+            return 1
     result = 0
     for raw in args.paths:
         result = max(result, validate_one(Path(raw).resolve()))

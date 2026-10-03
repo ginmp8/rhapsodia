@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -172,6 +173,19 @@ def build_guidance(data: dict[str, Any]) -> dict[str, Any]:
         "spec_id": spec_id,
         "spec_id_provenance": spec_id_provenance,
     }
+    storage_profile = data.get("storage_profile", "artifact-native")
+    if storage_profile not in {"artifact-native", "legacy-board"}:
+        identity_issues.append("unsupported storage_profile")
+    if storage_profile == "artifact-native":
+        repository_fields = {
+            "work_item_id": data.get("work_item_id"),
+            "source_provenance": dotted(data, "source_provenance", "evidence", "request.evidence"),
+        }
+        key = repository_fields["work_item_id"]
+        if key is not None and (not isinstance(key, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", key)):
+            identity_issues.append("native work_item_id must be a stable feature key")
+        if spec_id is not None:
+            repository_fields["spec_id_provenance"] = spec_id_provenance
     missing_repository_fields = [key for key, value in repository_fields.items() if missing(value)]
     repository_write_ready = (
         repository_write_requested
@@ -205,6 +219,7 @@ def build_guidance(data: dict[str, Any]) -> dict[str, Any]:
     return {
         "status": "pass",
         "authority": "non_authoritative_guidance",
+        "storage_profile": storage_profile,
         "profile": profile,
         "escalation_reasons": governed_reasons,
         "lifecycle": lifecycle,
