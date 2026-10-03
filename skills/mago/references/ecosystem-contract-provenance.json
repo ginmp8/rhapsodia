@@ -24,7 +24,7 @@
     "references/priority-contract.json": "0b72b31fdbc26ce9ca970dbaa0c4ed0d03dbaa1d6056b647b53d1cc85013d036",
     "references/priority-contract.md": "b048d94f7cc6398bad24968c5b55d7d4770d172fac571b48ccb5381b01aa2dbc",
     "requirements-dev.txt": "844c93dcd64c8ddf95b9d25292a16a11ec83de96309f787ee5e91684f48a8041",
-    "scripts/artifact_protocol.py": "c242a4ffd375ddc8c79d383503ae4d92958a77e11c449d2a7a8729fb24debb6d",
+    "scripts/artifact_protocol.py": "1e65ad7e9095eef5df23a15dcbc30b10577033aaa764f29a88dbc6716c45c2ff",
     "scripts/create_package_receipt.py": "859851876197c91fb01b2ae99b0bd79de3d1e440f751dcb002700a9098ee1343",
     "scripts/ecosystem_handoff.py": "f0d71b3bd1c1cc9849d5d05cd1d16454f4f8fd905d41e90c0ea0b57ad4ed5db3",
     "scripts/handoff_ledger.py": "bc2b863e74b0fa2cbad789461af8c29e24ee449b7c49054b4aeea42b99143a06",

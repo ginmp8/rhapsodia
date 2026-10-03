@@ -15,6 +15,8 @@ from artifact_protocol import (ContractError, atomic_write, canonical_bytes, con
                                digest, discover, exclusive_lock, load_json, source_bytes,
                                validate_actions, validate_record)
 
+from artifact_protocol import repository_root, SECRET_RE
+
 PACKAGE = Path(__file__).resolve().parents[1]
 
 def policy():
@@ -32,7 +34,9 @@ def resolve_owned_root(repo: Path, relative: str | None = None) -> Path:
             raise ContractError('CROSS_OWNER_ROOT')
     if root.exists():
         for descriptor in discover(repo, [root.relative_to(repo.resolve()).as_posix()]):
-            if load_json(descriptor).get('producer') != rules['producer']:
+            existing=load_json(descriptor)
+            validate_record(existing)
+            if existing['producer'] != rules['producer']:
                 raise ContractError('FOREIGN_PRODUCER_IN_OWNED_ROOT')
     return root
 
@@ -41,6 +45,8 @@ def publish(repo: Path, request: dict, artifact_root: str | None = None) -> dict
         raise ContractError('INVALID_PUBLICATION_REQUEST')
     if not isinstance(request['reason'], str) or not 1 <= len(request['reason']) <= 500:
         raise ContractError('INVALID_PUBLICATION_REASON')
+    if not request['reason'].strip() or SECRET_RE.search(request['reason']):
+        raise ContractError('INVALID_PUBLICATION_REASON')
     expected = request['expected_manifest_sha256']
     if expected is not None and (not isinstance(expected,str) or len(expected)!=64 or any(c not in '0123456789abcdef' for c in expected)):
         raise ContractError('INVALID_EXPECTED_REVISION')
@@ -48,7 +54,9 @@ def publish(repo: Path, request: dict, artifact_root: str | None = None) -> dict
     record = copy.deepcopy(request['artifact'])
     if not isinstance(record,dict) or record.get('producer') != rules['producer']:
         raise ContractError('CROSS_OWNER_PUBLICATION')
-    if record.get('artifact_type') not in rules['artifact_types'] or record.get('state',{}).get('dimension') not in rules['dimensions']:
+    if not isinstance(record.get('state'), dict):
+        raise ContractError('INVALID_PUBLICATION_STATE')
+    if record.get('artifact_type') not in rules['artifact_types'] or record['state'].get('dimension') not in rules['dimensions']:
         raise ContractError('OUTSIDE_PRODUCER_AUTHORITY')
     owned_root = resolve_owned_root(repo,artifact_root)
     try: source = confined(repo,record['source']['path'])
@@ -124,7 +132,7 @@ def main(argv=None):
     parser.add_argument('--artifact-root')
     args=parser.parse_args(argv)
     try:
-        repo=args.repo_root.resolve(strict=True)
+        repo=repository_root(args.repo_root)
         if args.command=='recover-lock': result=recover_lock(repo,args.artifact_root)
         else:
             if args.input is None:raise ContractError('INPUT_REQUIRED')

@@ -16,6 +16,7 @@ import sys
 from artifact_protocol import (ContractError,atomic_write,canonical_bytes,confined,digest,exclusive_lock,
                                load_json,source_bytes,timestamp,validate_record)
 from native_artifacts import policy,resolve_owned_root
+from artifact_protocol import repository_root, discover
 
 NAMES = {'magia': {'implementation-notes.md': 'implementation-notes', 'validation-evidence.md': 'validation-evidence', 'runbook.md': 'runbook', 'troubleshooting.md': 'troubleshooting', 'technical-gap-note.md': 'technical-gap-note', 'implementation-adr.md': 'implementation-adr', 'complexity-reduction-evidence.md': 'complexity-reduction-evidence', 'migration-execution-note.md': 'migration-execution-note', 'contract-change-note.md': 'contract-change-note', 'observability-note.md': 'observability-note', 'security-risk-note.md': 'security-risk-note'}}
 
@@ -75,12 +76,20 @@ def check_plan(repo:Path,value:dict)->tuple[Path,list]:
     if value['schema_version']!='1.0.0' or value['owner']!=rules['producer']:raise ContractError('MIGRATION_OWNER_MISMATCH')
     legacy=legacy_root(repo,value['legacy_root']);owned=resolve_owned_root(repo,value['artifact_root'])
     if not isinstance(value['items'],list) or len(value['items'])>10000:raise ContractError('MIGRATION_ITEM_LIMIT')
-    writes=[];seen=set()
+    writes=[];seen=set();artifact_ids=set()
     for item in value['items']:
         if not isinstance(item,dict) or set(item)!={'source','source_sha256','artifact'}:raise ContractError('INVALID_MIGRATION_ITEM')
         source=confined(repo,item['source'],must_exist=True,regular=True)
         if not source.is_relative_to(legacy):raise ContractError('MIGRATION_SOURCE_ESCAPE')
         record=item['artifact'];validate_record(record)
+        if record['artifact_id'] in artifact_ids:
+            raise ContractError('DUPLICATE_MIGRATION_ARTIFACT_ID')
+        artifact_ids.add(record['artifact_id'])
+        if (record['lifecycle'] != 'active' or record['state']['value'] != 'unknown'
+                or record['provenance']['kind'] != 'migrated'
+                or record['provenance']['evidence_refs'] != ['legacy:' + item['source'], 'sha256:' + item['source_sha256']]
+                or record['provenance']['source_handoff_id'] is not None):
+            raise ContractError('MIGRATION_CANNOT_ASSERT_DOMAIN_READINESS')
         if record['producer']!=rules['producer'] or record['artifact_type'] not in rules['artifact_types'] or record['state']['dimension'] not in rules['dimensions']:
             raise ContractError('MIGRATION_CROSS_OWNER')
         if NAMES[rules['producer']].get(source.name)!=record['artifact_type']:
@@ -94,6 +103,13 @@ def check_plan(repo:Path,value:dict)->tuple[Path,list]:
             seen.add(path)
             if path.exists() and source_bytes(path)!=payload:raise ContractError('MIGRATION_TARGET_CONFLICT')
             writes.append((path,payload,path.exists()))
+    planned_manifests = {str(Path(str(repo/item['artifact']['source']['path'])+'.artifact.json'))
+                         for item in value['items']}
+    for descriptor in discover(repo, [owned.relative_to(repo).as_posix()]):
+        existing = load_json(descriptor)
+        validate_record(existing)
+        if existing.get('artifact_id') in artifact_ids and str(descriptor) not in planned_manifests:
+            raise ContractError('DUPLICATE_MIGRATION_ARTIFACT_ID')
     return owned,writes
 
 def recover(repo:Path,artifact_root:str|None=None,*,expected_journal_sha256:str|None=None,internal:bool=False)->dict:
@@ -154,7 +170,7 @@ def main(argv=None):
     p.add_argument('--repo-root',required=True,type=Path);p.add_argument('--legacy-root');p.add_argument('--observed-at');p.add_argument('--artifact-root');p.add_argument('--plan',type=Path);p.add_argument('--journal-sha256')
     a=p.parse_args(argv)
     try:
-        repo=a.repo_root.resolve(strict=True)
+        repo=repository_root(a.repo_root)
         if a.command=='plan':
             if not a.legacy_root or not a.observed_at:raise ContractError('LEGACY_ROOT_AND_OBSERVED_AT_REQUIRED')
             result=plan(repo,a.legacy_root,a.observed_at,a.artifact_root)

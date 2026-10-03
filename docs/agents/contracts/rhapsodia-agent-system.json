@@ -70,7 +70,8 @@
         "Rhapsodia Verifier",
         "Nomia",
         "Mago",
-        "Magia"
+        "Magia",
+        "Rhapsodia Workspace"
       ],
       "approval": "none",
       "idempotency": "required"
@@ -170,7 +171,15 @@
     },
     {
       "id": "derived-output-write",
-      "authority": "write only explicitly authorized .rhapsodia/catalog and .rhapsodia/views; never canonical sources"
+      "authority": "write only explicitly authorized .rhapsodia/catalog and .rhapsodia/views; never canonical sources",
+      "required": false,
+      "effect": "local-write",
+      "scope": [
+        ".rhapsodia/catalog",
+        ".rhapsodia/views"
+      ],
+      "approval": "policy",
+      "idempotency": "required"
     }
   ],
   "state": {
@@ -387,7 +396,8 @@
         "read-only-analysis": "isolated read-only worker capability",
         "executable-verification": "isolated bounded process + verification-only write capability",
         "adaptive-workflow-planning": "Agent Skill capability with serial fallback",
-        "supporting-capability-resolution": "semantic capability -> host-native Agent Skill discovery; no fixed catalog"
+        "supporting-capability-resolution": "semantic capability -> host-native Agent Skill discovery; no fixed catalog",
+        "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden"
       },
       "limitations": [
         "portable semantic support does not itself prove any host-specific discovery format or runtime behavior"
@@ -407,7 +417,8 @@
         "read-only-analysis": "Rhapsodia Analyst custom agent with explicit read + search tools only",
         "adaptive-workflow-planning": "optional Agent Skill guidance supporting workflow-plan/v1 and gated workflow-plan/v2; supervisor gate remains valid without it",
         "executable-verification": "Rhapsodia Verifier custom agent with read/search/edit/execute; edit is restricted by prompt contract to verification-only scope",
-        "supporting-capability-resolution": "host-native Agent Skills semantic discovery inside the active custom agent; no fixed catalog and no authority expansion"
+        "supporting-capability-resolution": "host-native Agent Skills semantic discovery inside the active custom agent; no fixed catalog and no authority expansion",
+        "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden"
       },
       "limitations": [
         "runtime behavior still depends on the selected model and installed skills",
@@ -430,7 +441,8 @@
         "read-only-analysis": "custom subagent with explicit read/search tool scope where supported",
         "adaptive-workflow-planning": "optional skill/customization guidance; serial fallback when unavailable",
         "executable-verification": "custom subagent with bounded execute and verification-only edit authority where supported",
-        "supporting-capability-resolution": "host-native Agent Skills/customization discovery where available; no fixed catalog and no authority expansion"
+        "supporting-capability-resolution": "host-native Agent Skills/customization discovery where available; no fixed catalog and no authority expansion",
+        "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden"
       },
       "limitations": [
         "the VS Code-specific agents allowlist is an adapter optimization and may be ignored by other Copilot surfaces",

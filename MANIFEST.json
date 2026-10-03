@@ -62,8 +62,8 @@
     },
     {
       "path": "docs/agents/contracts/rhapsodia-agent-system.json",
-      "sha256": "1e0196d9017a1bcdacec9d626b223384effcbb60f098b7153a3887a8a22855d5",
-      "size": 20996
+      "sha256": "7dd335b2fdd36be459724ea949c5629ababa3b2b94b724fa60ddc5c9dd71216e",
+      "size": 21719
     },
     {
       "path": "scripts/install_agents.py",
@@ -72,8 +72,8 @@
     },
     {
       "path": "scripts/validate_agents.py",
-      "sha256": "e98b0e545440c90af06a33366eb4b67bd5fa9d8c2b0b8171d40837eb3f1363d4",
-      "size": 25046
+      "sha256": "7b3f4722866570912603106c2bcf596943876f1a4d3689130ffcfe9367210c40",
+      "size": 27546
     },
     {
       "path": "tests/agent-scenarios.json",

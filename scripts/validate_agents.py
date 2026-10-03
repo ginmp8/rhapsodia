@@ -307,6 +307,33 @@ def validate_contract(path, findings):
     if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia", "rhapsodia-workspace"]:
         add(findings, "AGENT_CONTRACT_SET", path, "contract agent ids/order do not match the package")
     capability_ids = {c.get("id") for c in doc.get("capabilities", []) if isinstance(c, dict)}
+    capabilities = doc.get("capabilities", [])
+    if len(capability_ids) != len(capabilities):
+        add(findings, "CAPABILITY_CONTRACT", path, "capability IDs must be unique")
+    for capability in capabilities:
+        if not isinstance(capability, dict):
+            add(findings, "CAPABILITY_CONTRACT", path, "each capability must be an object")
+            continue
+        valid = (isinstance(capability.get("id"), str)
+                 and type(capability.get("required")) is bool
+                 and capability.get("effect") in {"read-only", "local-write", "external-write"}
+                 and isinstance(capability.get("scope"), list) and capability["scope"]
+                 and all(isinstance(item, str) and item.strip() for item in capability["scope"])
+                 and capability.get("approval") in {"none", "policy", "human"}
+                 and capability.get("idempotency") in {"not-applicable", "required", "reconcile-before-retry"})
+        if not valid:
+            add(findings, "CAPABILITY_CONTRACT", path, "capability authority fields must be complete and typed")
+    for agent in doc.get("agents", []):
+        if isinstance(agent, dict) and any(cap not in capability_ids for cap in agent.get("capabilities", [])):
+            add(findings, "CAPABILITY_CONTRACT", path, "agent references an undeclared capability")
+    derived_cap = next((cap for cap in capabilities if isinstance(cap, dict) and cap.get("id") == "derived-output-write"), {})
+    if (derived_cap.get("required") is not False or derived_cap.get("effect") != "local-write"
+            or derived_cap.get("scope") != [".rhapsodia/catalog", ".rhapsodia/views"]
+            or derived_cap.get("approval") != "policy" or derived_cap.get("idempotency") != "required"):
+        add(findings, "WORKSPACE_CAPABILITY", path, "Workspace writes must be optional, policy-bounded and derived-only")
+    delegation = next((cap for cap in capabilities if isinstance(cap, dict) and cap.get("id") == "specialist-delegation"), {})
+    if "Rhapsodia Workspace" not in delegation.get("scope", []):
+        add(findings, "WORKSPACE_CAPABILITY", path, "Workspace must be included in declared delegation scope")
     if "supporting-capability-resolution" not in capability_ids:
         add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, "supporting-capability-resolution capability must be declared")
     for agent in doc.get("agents", []):
@@ -326,6 +353,9 @@ def validate_contract(path, findings):
     verifier_mapping = mappings.get("executable-verification", "")
     if "Rhapsodia Verifier" not in verifier_mapping or "verification-only" not in verifier_mapping:
         add(findings, "VSCODE_VERIFIER_SCOPE", path, "VS Code executable verification must map to the bounded Rhapsodia Verifier profile")
+    workspace_mapping = mappings.get("derived-output-write", "")
+    if not all(text in workspace_mapping for text in ("Rhapsodia Workspace", "derived-only", ".rhapsodia/catalog", ".rhapsodia/views")):
+        add(findings, "WORKSPACE_CAPABILITY", path, "VS Code must map the bounded Workspace write capability")
     support_mapping = mappings.get("supporting-capability-resolution", "")
     if "host-native" not in support_mapping.lower() or "no fixed catalog" not in support_mapping.lower():
         add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, "VS Code supporting capability resolution must use host-native Agent Skills with no fixed catalog")

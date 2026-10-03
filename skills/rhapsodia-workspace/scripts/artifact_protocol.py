@@ -50,6 +50,8 @@ def load_json(path: Path, limit: int = MAX_RECORD_BYTES) -> Any:
 def safe_relative(value: str) -> PurePosixPath:
     if not isinstance(value, str) or not value or len(value) > 1100 or '\\' in value or ':' in value:
         raise ContractError('INVALID_RELATIVE_PATH')
+    if any(c in value for c in '*?"<>|'):
+        raise ContractError('NONPORTABLE_PATH')
     parts = value.split('/')
     if any(not p or p in {'.', '..'} or p.endswith((' ', '.')) or any(ord(c) < 32 for c in p) for p in parts):
         raise ContractError('INVALID_RELATIVE_PATH')
@@ -62,10 +64,18 @@ def safe_relative(value: str) -> PurePosixPath:
         raise ContractError('PROTECTED_PATH')
     return path
 
-def confined(root: Path, relative: str, *, must_exist: bool = False, regular: bool = False) -> Path:
-    if root.is_symlink():
+def repository_root(root: Path) -> Path:
+    """Reject aliases before resolution erases evidence of a symlink ancestor."""
+    root = Path(root)
+    if any(part.is_symlink() for part in (root, *root.parents)):
         raise ContractError('SYMLINK_ROOT')
     base = root.resolve(strict=True)
+    if not base.is_dir():
+        raise ContractError('REPOSITORY_NOT_DIRECTORY')
+    return base
+
+def confined(root: Path, relative: str, *, must_exist: bool = False, regular: bool = False) -> Path:
+    base = repository_root(root)
     rel = safe_relative(relative)
     path = base
     for part in rel.parts:
@@ -238,6 +248,8 @@ def validate_actions(receipt: Any, repo: Path) -> None:
     errors = schema_errors(receipt, schema_for('artifact-actions.schema.json'))
     if errors:
         raise ContractError('INVALID_ACTIONS:' + ','.join(errors[:8]))
+    if SECRET_RE.search(json.dumps(receipt)):
+        raise ContractError('SECRET_ACTION_METADATA_REJECTED')
     identities = set()
     for action in receipt['artifact_actions']:
         if action['artifact_id'] in identities:
@@ -259,5 +271,16 @@ def validate_actions(receipt: Any, repo: Path) -> None:
             raise ContractError('ACTION_LIFECYCLE_MISMATCH')
         if action['action'] == 'deprecated' and record['lifecycle'] != 'deprecated':
             raise ContractError('ACTION_LIFECYCLE_MISMATCH')
-        if action['action'] == 'created' and action['previous_manifest_sha256'] is not None:
+        previous = action['previous_manifest_sha256']
+        current = action['manifest_sha256']
+        if not action['reason'].strip():
+            raise ContractError('EMPTY_ACTION_REASON')
+        if action['action'] == 'created' and previous is not None:
             raise ContractError('CREATED_WITH_PREVIOUS_RECORD')
+        if action['action'] == 'unchanged' and previous != current:
+            raise ContractError('UNCHANGED_REVISION_MISMATCH')
+        if action['action'] in {'updated', 'removed'} and (previous is None or previous == current):
+            raise ContractError('INVALID_ACTION_REVISION')
+        if action['action'] == 'deprecated' and previous == current:
+            raise ContractError('INVALID_ACTION_REVISION')
+

@@ -9,6 +9,8 @@ import sys
 from artifact_protocol import (ContractError, atomic_write, canonical_bytes, confined,
                                digest, discover, exclusive_lock, load_json, validate_record)
 
+from artifact_protocol import repository_root
+
 PACKAGE=Path(__file__).resolve().parents[1]
 
 def _dependency_cycles(records):
@@ -28,10 +30,14 @@ def _dependency_cycles(records):
     if visited!=len(edges):raise ContractError('DEPENDENCY_CYCLE')
 
 def build_catalog(repo: Path, roots: list[str] | None=None, destination='local') -> dict:
+    if destination not in {'local','internal','public'}:
+        raise ContractError('INVALID_DESTINATION')
     roots=sorted(set(roots or ['docs']))
-    repo=repo.resolve(strict=True)
+    repo=repository_root(repo)
     entries=[];ids=set();identities=[]
-    for path in discover(repo,roots):
+    manifests=discover(repo,roots)
+    for path in manifests:
+        initial_manifest_sha=digest(path.read_bytes())
         record=load_json(path);validate_record(record,repo,path)
         if record['artifact_id'] in ids:raise ContractError('DUPLICATE_ARTIFACT_ID')
         if destination not in record['privacy']['allowed_destinations']:
@@ -39,6 +45,7 @@ def build_catalog(repo: Path, roots: list[str] | None=None, destination='local')
         if destination=='public' and (record['privacy']['classification']!='public' or not record['privacy']['external_share_allowed']):
             raise ContractError('PUBLIC_EXPORT_DENIED')
         ids.add(record['artifact_id']);manifest_sha=digest(path.read_bytes())
+        if initial_manifest_sha!=manifest_sha:raise ContractError('SOURCE_CHANGED_DURING_PROJECTION')
         rel=path.relative_to(repo).as_posix()
         entries.append({'record':record,'manifest_path':rel,'manifest_sha256':manifest_sha})
         identities.append({'path':rel,'manifest_sha256':manifest_sha,'source_sha256':record['source']['sha256']})
@@ -53,6 +60,12 @@ def build_catalog(repo: Path, roots: list[str] | None=None, destination='local')
             if relation['target'] not in active_ids:
                 diagnostics.append({'severity':'warning','code':'UNRESOLVED_RELATION','artifact_id':record['artifact_id'],
                                     'target':relation['target']})
+    # Reject a torn multi-file snapshot, including new or removed descriptors.
+    if discover(repo,roots)!=manifests:raise ContractError('SOURCE_CHANGED_DURING_PROJECTION')
+    for entry in entries:
+        path=confined(repo,entry['manifest_path'],must_exist=True,regular=True)
+        if digest(path.read_bytes())!=entry['manifest_sha256']:raise ContractError('SOURCE_CHANGED_DURING_PROJECTION')
+        validate_record(entry['record'],repo,path)
     fingerprint=digest(canonical_bytes({'version':'1.0.0','roots':roots,'sources':identities,'destination':destination}))
     return {'schema_version':'1.0.0','kind':'derived-artifact-catalog','authority':'non-authoritative',
             'source_roots':roots,'destination':destination,'source_fingerprint':fingerprint,
@@ -89,7 +102,9 @@ def project(catalog: dict, view: str) -> dict:
 def render(catalog: dict) -> bytes:
     template=(PACKAGE/'assets/workspace.html').read_text(encoding='utf-8')
     data=canonical_bytes(catalog).decode('utf-8').replace('&','\\u0026').replace('<','\\u003c').replace('>','\\u003e')
-    return template.replace('__CATALOG_JSON__',data).encode('utf-8')
+    schema=(PACKAGE/'references/artifact-envelope.schema.json').read_text(encoding='utf-8')
+    schema=schema.replace('&','\\u0026').replace('<','\\u003c').replace('>','\\u003e')
+    return template.replace('__CATALOG_JSON__',data).replace('__ENVELOPE_SCHEMA_JSON__',schema).encode('utf-8')
 
 def derived_path(repo: Path,relative: str) -> Path:
     path=confined(repo,relative)
@@ -109,7 +124,7 @@ def main(argv=None):
     parser.add_argument('--output',help='Repository-relative path under .rhapsodia/catalog or .rhapsodia/views only')
     args=parser.parse_args(argv)
     try:
-        repo=args.repo_root.resolve(strict=True)
+        repo=repository_root(args.repo_root)
         if args.command=='discover':
             result={'authority':'non-authoritative','manifests':[p.relative_to(repo).as_posix() for p in discover(repo,args.roots or ['docs'])]}
         else:
@@ -120,7 +135,10 @@ def main(argv=None):
                 result=project(catalog,args.view)
                 if args.output:
                     output=derived_path(repo,args.output)
-                    with exclusive_lock(confined(repo,'.rhapsodia/.workspace-write.lock')):atomic_write(output,canonical_bytes(result))
+                    with exclusive_lock(confined(repo,'.rhapsodia/.workspace-write.lock')):
+                        if build_catalog(repo,args.roots,args.destination)!=catalog:
+                            raise ContractError('SOURCE_CHANGED_DURING_PROJECTION')
+                        atomic_write(output,canonical_bytes(result))
             else:
                 relative=args.output or ('.rhapsodia/views/index.html' if args.command=='render' else '.rhapsodia/catalog/catalog.json')
                 output=derived_path(repo,relative)
