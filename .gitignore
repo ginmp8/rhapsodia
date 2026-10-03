@@ -4,3 +4,5 @@ __pycache__/
 !.env.example
 /dist/
 /com.github.copilot/
+# Generated validation evidence
+/validation/

@@ -14,7 +14,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-from artifact_protocol import ContractError, atomic_write, canonical_bytes, confined, digest, exclusive_lock, load_json, source_bytes
+from artifact_protocol import ContractError, atomic_write, canonical_bytes, confined, digest, exclusive_lock, load_json, source_bytes, repository_root, safe_relative
 from native_artifacts import resolve_owned_root
 from magia_utils import parse_spec_id
 
@@ -26,12 +26,31 @@ def keyed(value,label):
     if not isinstance(value,str) or not re.fullmatch('[a-z0-9]+(?:-[a-z0-9]+)*',value):raise ContractError('INVALID_'+label)
     return value
 
-def tree(repo:Path,roots:list[str])->dict:
-    if not isinstance(roots,list) or not roots or len(roots)>50 or len(set(roots))!=len(roots):raise ContractError('INVALID_CANDIDATE_ROOTS')
-    files={}
+def overlaps(left: Path, right: Path) -> bool:
+    return left == right or left in right.parents or right in left.parents
+
+
+def candidate_scope(repo: Path, roots: list[str], *, must_exist: bool = True,
+                    owned: Path | None = None) -> list[Path]:
+    if (not isinstance(roots,list) or not 1 <= len(roots) <= 50
+            or not all(isinstance(root,str) for root in roots)
+            or len(set(roots)) != len(roots)):
+        raise ContractError('INVALID_CANDIDATE_ROOTS')
+    protected = [repo / name for name in ('docs/product','docs/specs','docs/implementation')]
+    if owned is not None:
+        protected.append(owned)
+    paths = []
     for rel in roots:
-        path=confined(repo,rel,must_exist=True)
-        if rel.startswith(('docs/product','docs/specs','docs/implementation','.')):raise ContractError('CANDIDATE_ROOT_OVERLAPS_ARTIFACTS')
+        path = confined(repo,rel,must_exist=must_exist)
+        if rel.startswith('.') or any(overlaps(path,other) for other in protected):
+            raise ContractError('CANDIDATE_ROOT_OVERLAPS_ARTIFACTS')
+        paths.append(path)
+    return paths
+
+
+def tree(repo:Path,roots:list[str])->dict:
+    files={}
+    for path in candidate_scope(repo,roots):
         paths=[path] if path.is_file() else []
         if path.is_dir():
             for current,dirs,names in os.walk(path,followlinks=False):
@@ -47,14 +66,14 @@ def tree(repo:Path,roots:list[str])->dict:
     if not files:raise ContractError('EMPTY_CANDIDATE_SCOPE')
     return dict(sorted(files.items()))
 
-def validate_request(repo:Path,data:dict,trail:frozenset[str]=frozenset())->dict:
+def validate_request(repo:Path,data:dict,trail:frozenset[str]=frozenset(), *, require_current_candidate:bool=True)->dict:
     fields={'schema_version','mode','work_item_id','spec_id','task_id','requirements','acceptance','validations','planning_sources','candidate_roots','checks','dependency_receipts'}
     if not isinstance(data,dict) or set(data)!=fields or data['schema_version']!='1.0.0':raise ContractError('INVALID_EXECUTION_REQUEST')
     keyed(data['work_item_id'],'WORK_ITEM_ID')
     if data['mode'] not in {'adhoc','ralph'}:raise ContractError('INVALID_EXECUTION_MODE')
     for name,prefix in [('requirements','REQ-'),('acceptance','AC-'),('validations','VAL-')]:
         values=data[name]
-        if not isinstance(values,list) or not values or len(set(values))!=len(values) or not all(isinstance(x,str) and re.fullmatch(prefix+'[0-9]{3}',x) for x in values):raise ContractError('INVALID_TRACEABILITY_'+name.upper())
+        if not isinstance(values,list) or not values or not all(isinstance(x,str) and re.fullmatch(prefix+'[0-9]{3}',x) for x in values) or len(set(values))!=len(values):raise ContractError('INVALID_TRACEABILITY_'+name.upper())
     if not isinstance(data['planning_sources'],list) or len(data['planning_sources'])>100:raise ContractError('INVALID_PLANNING_INPUTS')
     sources={}
     for ref in data['planning_sources']:
@@ -69,6 +88,8 @@ def validate_request(repo:Path,data:dict,trail:frozenset[str]=frozenset())->dict
         task_paths=[repo/p for p in sources if Path(p).name=='tasks.md']
         if len(task_paths)!=1:raise ContractError('EXACTLY_ONE_BOUND_TASK_SOURCE_REQUIRED')
         text=source_bytes(task_paths[0]).decode('utf-8')
+        task_ids=re.findall(r'(?m)^\s*-\s*\[[ xX]\]\s+(task[0-9]{3}):',text)
+        if len(task_ids)!=len(set(task_ids)):raise ContractError('DUPLICATE_TASK_IDENTITY')
         match=re.search(r'(?ms)^\s*-\s*\[[ xX]\]\s+'+data['task_id']+r':[^\n]*\n(.*?)(?=^\s*-\s*\[[ xX]\]\s+task[0-9]{3}:|^## |\Z)',text)
         if not match:raise ContractError('TASK_NOT_IN_PLANNING_SOURCE')
         for name,prefix in [('requirements','REQ-'),('acceptance','AC-'),('validations','VAL-')]:
@@ -76,6 +97,7 @@ def validate_request(repo:Path,data:dict,trail:frozenset[str]=frozenset())->dict
             if not field or set(data[name])!=set(re.findall(prefix+'[0-9]{3}',field.group(1))):raise ContractError('TASK_TRACEABILITY_MISMATCH')
         identities=[repo/p for p in sources if Path(p).name=='planning-identity.json']
         if len(identities)!=1:raise ContractError('PLANNING_IDENTITY_MISMATCH')
+        if identities[0].parent!=task_paths[0].parent:raise ContractError('PLANNING_SOURCE_IDENTITY_LOCATION_MISMATCH')
         ident=load_json(identities[0]);parsed=parse_spec_id(data['spec_id'])
         from artifact_protocol import timestamp
         if not isinstance(ident,dict) or set(ident)!={'schema_version','producer','work_item_id','spec_id','created_at'} or ident.get('schema_version')!='1.0.0' or ident.get('producer')!='mago' or ident.get('spec_id')!=data['spec_id'] or ident.get('work_item_id')!=data['work_item_id']:
@@ -106,19 +128,23 @@ def validate_request(repo:Path,data:dict,trail:frozenset[str]=frozenset())->dict
         seen.add(dep['task_id'])
         path=confined(repo,dep['path'],must_exist=True,regular=True)
         if digest(source_bytes(path))!=dep['sha256']:raise ContractError('DEPENDENCY_RECEIPT_DRIFT')
-        prior=validate_receipt(repo,path,trail)
-        if prior.get('status')!='passed' or prior.get('producer')!='magia' or prior.get('task_id')!=dep['task_id'] or prior.get('spec_id')!=data['spec_id']:raise ContractError('DEPENDENCY_NOT_VALIDATED')
+        prior=validate_receipt(repo,path,trail,require_current_candidate=False)
+        if prior.get('status')!='passed' or prior.get('producer')!='magia' or prior.get('task_id')!=dep['task_id'] or prior.get('spec_id')!=data['spec_id'] or prior.get('work_item_id')!=data['work_item_id']:raise ContractError('DEPENDENCY_NOT_VALIDATED')
     # Dependencies recorded by Mago are mandatory, not a selectable subset.
     if data['mode']=='ralph':
         dep_field=re.search(r'(?mi)^\s*-\s*dependencies:\s*([^\n]+)',match.group(1))
         planned=set(re.findall(r'task[0-9]{3}',dep_field.group(1))) if dep_field else set()
         if seen!=planned:raise ContractError('PLANNED_DEPENDENCY_MISMATCH')
     elif deps:raise ContractError('ADHOC_CANNOT_CLAIM_PLANNED_DEPENDENCIES')
-    return tree(repo,data['candidate_roots'])
+    if require_current_candidate:
+        return tree(repo,data['candidate_roots'])
+    candidate_scope(repo,data['candidate_roots'],must_exist=False)
+    return {}
 
 
 def run(repo:Path,data:dict,artifact_root:str|None=None)->dict:
     before=validate_request(repo,data);owned=resolve_owned_root(repo,artifact_root)
+    candidate_scope(repo,data['candidate_roots'],owned=owned)
     owned.mkdir(parents=True,exist_ok=True)
     # Serializes Magia writes only; no locks or edits in planning/governance roots.
     with exclusive_lock(owned/'.artifact-write.lock'):
@@ -148,7 +174,7 @@ def run(repo:Path,data:dict,artifact_root:str|None=None)->dict:
                 'evidence_level':'local-command-execution','global_delivery_completed':False}
 
 
-def validate_receipt(repo:Path,path:Path,trail:frozenset[str]=frozenset())->dict:
+def validate_receipt(repo:Path,path:Path,trail:frozenset[str]=frozenset(), *, require_current_candidate:bool=True)->dict:
     key=path.resolve().as_posix()
     if key in trail or len(trail)>=20:raise ContractError('DEPENDENCY_RECEIPT_CYCLE_OR_DEPTH')
     trail=trail|{key}
@@ -159,8 +185,20 @@ def validate_receipt(repo:Path,path:Path,trail:frozenset[str]=frozenset())->dict
     request=receipt['request']
     if receipt['request_sha256']!=digest(canonical_bytes(request)):raise ContractError('EXECUTION_REQUEST_CHANGED')
     if any(receipt[key]!=request[key] for key in ('work_item_id','spec_id','task_id')):raise ContractError('EXECUTION_IDENTITY_MISMATCH')
-    current=validate_request(repo,request,trail)
-    if receipt['candidate_files']!=current:raise ContractError('STALE_EXECUTION_EVIDENCE')
+    current=validate_request(repo,request,trail,require_current_candidate=require_current_candidate)
+    recorded=receipt['candidate_files']
+    if not isinstance(recorded,dict) or not 1 <= len(recorded) <= LIMIT:
+        raise ContractError('INVALID_RECORDED_CANDIDATE')
+    roots=candidate_scope(repo,request['candidate_roots'],must_exist=False)
+    for relative,sha in recorded.items():
+        item=confined(repo,relative)
+        if not isinstance(sha,str) or not re.fullmatch('[a-f0-9]{64}',sha):
+            raise ContractError('INVALID_RECORDED_CANDIDATE')
+        if not any(item==root or root in item.parents for root in roots):
+            raise ContractError('RECORDED_CANDIDATE_OUTSIDE_SCOPE')
+    # Historical prerequisites attest the exact earlier candidate. Only the
+    # current task's receipt can establish validation of today's source tree.
+    if require_current_candidate and recorded!=current:raise ContractError('STALE_EXECUTION_EVIDENCE')
     if receipt['status']!='passed' or not isinstance(receipt['checks'],list) or len(receipt['checks'])!=len(request['checks']):raise ContractError('EXECUTION_NOT_PASSED')
     for result,check in zip(receipt['checks'],request['checks']):
         if not isinstance(result,dict) or set(result)!={'validation_ref','argv','cwd','returncode','status','output_sha256'}:raise ContractError('INVALID_CHECK_RECEIPT')
@@ -196,7 +234,7 @@ def main(argv=None):
     p.add_argument('--trust-command',action='store_true');p.add_argument('--expected-state-sha256')
     a=p.parse_args(argv)
     try:
-        repo=a.repo_root.resolve(strict=True)
+        repo=repository_root(a.repo_root)
         if a.command=='run':
             if not a.trust_command:raise ContractError('EXPLICIT_COMMAND_TRUST_REQUIRED')
             result=run(repo,load_json(a.input,8*1024*1024),a.artifact_root)

@@ -27,6 +27,7 @@
 <footer class="footer"><span id="snapshot-note">Embedded, validated snapshot. Reindex to reflect source changes.</span><span>Update timeline shows file metadata, not a reconstructed execution history.</span></footer>
 </main>
 <script type="application/json" id="workspace-data">__CATALOG_JSON__</script>
+<script type="application/json" id="workspace-envelope-schema">__ENVELOPE_SCHEMA_JSON__</script>
 <script>
 (function(){
 'use strict';
@@ -36,11 +37,74 @@ const state={catalog:null,view:'portfolio',selected:null};
 const el=(tag,text,cls)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=String(text);if(cls)node.className=cls;return node;};
 const ownerLabels=new Map([['nomia','Nomia / governance'],['mago','Mago / planning'],['magia','Magia / execution']]);
 const labelOwner=p=>ownerLabels.get(p)||p;
-const safeString=v=>typeof v==='string'&&v.length<=1200;
+// The renderer embeds the same envelope schema used by the Python validator.
+const envelopeSchema=JSON.parse(document.getElementById('workspace-envelope-schema').textContent);
+function invalid(message){throw new Error(message+' Existing snapshot was preserved.');}
+function strictJson(text){
+ const value=JSON.parse(text);let index=0;
+ const whitespace=()=>{while(/\s/.test(text[index]||'')&&index<text.length)index++;};
+ function string(){const start=index++;while(index<text.length){if(text[index]==='\\'){index+=2;continue;}if(text[index++]==='"')break;}return JSON.parse(text.slice(start,index));}
+ function walk(depth){
+  if(depth>100)invalid('Catalog nesting exceeds the viewer limit.');whitespace();
+  if(text[index]==='{'){index++;whitespace();const keys=new Set();if(text[index]==='}'){index++;return;}while(index<text.length){whitespace();const key=string();if(keys.has(key))invalid('Duplicate JSON object key.');keys.add(key);whitespace();index++;walk(depth+1);whitespace();if(text[index++]==='}')break;}}
+  else if(text[index]==='['){index++;whitespace();if(text[index]===']'){index++;return;}while(index<text.length){walk(depth+1);whitespace();if(text[index++]===']')break;}}
+  else if(text[index]==='"')string();else{while(index<text.length&&!/[\s,}\]]/.test(text[index]))index++;}
+ }
+ walk(0);return value;
+}
+function schemaMatches(value,schema){
+ if(schema.anyOf&&!schema.anyOf.some(option=>schemaMatches(value,option)))return false;
+ if('const' in schema&&value!==schema.const)return false;
+ if(schema.enum&&!schema.enum.includes(value))return false;
+ const object=value!==null&&typeof value==='object'&&!Array.isArray(value);
+ if(schema.type&&({object:!object,array:!Array.isArray(value),string:typeof value!=='string',boolean:typeof value!=='boolean',null:value!==null,integer:!Number.isInteger(value)})[schema.type])return false;
+ if(object&&schema.properties){
+  if((schema.required||[]).some(key=>!Object.hasOwn(value,key)))return false;
+  if(schema.additionalProperties===false&&Object.keys(value).some(key=>!Object.hasOwn(schema.properties,key)))return false;
+  if(Object.entries(value).some(([key,item])=>schema.properties[key]&&!schemaMatches(item,schema.properties[key])))return false;
+ }
+ if(Array.isArray(value)){
+  if(value.length<(schema.minItems||0)||value.length>(schema.maxItems??Infinity))return false;
+  if(schema.items&&value.some(item=>!schemaMatches(item,schema.items)))return false;
+  if(schema.uniqueItems&&new Set(value.map(item=>JSON.stringify(item,Object.keys(item||{}).sort()))).size!==value.length)return false;
+ }
+ if(typeof value==='string'){
+  if([...value].length<(schema.minLength||0)||[...value].length>(schema.maxLength??Infinity)||(schema.pattern&&!new RegExp(schema.pattern).test(value)))return false;
+  if(schema.format==='date-time'&&!validTime(value))return false;
+ }
+ return true;
+}
+function validTime(value){const date=new Date(value);return value.slice(0,4)!=='0000'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)&&Number.isFinite(date.getTime())&&date.toISOString()===value.replace('Z','.000Z');}
+function relativePath(value){
+ if(typeof value!=='string'||!value||value.length>1100||/[\\:*?"<>|\x00-\x1f]/.test(value))return false;
+ const parts=value.split('/');const forbidden=new Set(['.git','.hg','.svn','node_modules','__pycache__','.venv','venv']);
+ return !parts.some(part=>!part||part==='.'||part==='..'||/[ .]$/.test(part)||forbidden.has(part.toLowerCase())||part.toLowerCase().startsWith('.env')||/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/i.test(part))&&!/\.(pem|key|p12|pfx|crt|kdbx)$/i.test(value);
+}
+function exactKeys(value,keys){return value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length===keys.length&&keys.every(key=>Object.hasOwn(value,key));}
 function validateCatalog(value){
- if(!value||value.schema_version!=='1.0.0'||value.kind!=='derived-artifact-catalog'||value.authority!=='non-authoritative'||!Array.isArray(value.entries)||value.entries.length>10000||!Array.isArray(value.diagnostics)||!safeString(value.source_fingerprint))throw new Error('Unsupported catalog. Use the Workspace CLI to generate a version 1 catalog.');
- const ids=new Set();
- for(const entry of value.entries){if(!entry||!safeString(entry.manifest_path)||!/^[a-f0-9]{64}$/.test(entry.manifest_sha256||''))throw new Error('Invalid manifest metadata.');const r=entry.record;if(!r||!safeString(r.artifact_id)||ids.has(r.artifact_id)||!safeString(r.producer)||!/^([a-z0-9]+-)*[a-z0-9]+$/.test(r.producer)||!safeString(r.title)||!safeString(r.work_item_id)||!safeString(r.artifact_type)||!r.source||!safeString(r.source.path)||!safeString(r.source.sha256)||!r.state||!safeString(r.state.dimension)||!safeString(r.state.value)||!safeString(r.created_at)||!safeString(r.updated_at)||!['active','deprecated','removed'].includes(r.lifecycle)||!Array.isArray(r.relations)||r.relations.length>1000||!r.privacy||!safeString(r.privacy.classification)||!r.provenance||!['authored','migrated','external'].includes(r.provenance.kind)||!Array.isArray(r.provenance.evidence_refs))throw new Error('Invalid artifact record. Existing snapshot was preserved.');ids.add(r.artifact_id);for(const relation of r.relations)if(!safeString(relation.target)||!safeString(relation.type))throw new Error('Invalid relationship.');}
+ const fields=['schema_version','kind','authority','source_roots','destination','source_fingerprint','latest_source_update','entries','diagnostics'];
+ if(!exactKeys(value,fields)||value.schema_version!=='1.0.0'||value.kind!=='derived-artifact-catalog'||value.authority!=='non-authoritative'||!Array.isArray(value.entries)||value.entries.length>10000||!Array.isArray(value.diagnostics)||!Array.isArray(value.source_roots)||!value.source_roots.length||value.source_roots.some(path=>!relativePath(path)||path.startsWith('.'))||new Set(value.source_roots).size!==value.source_roots.length||!['local','internal','public'].includes(value.destination)||!/^[a-f0-9]{64}$/.test(value.source_fingerprint||''))invalid('Unsupported catalog contract.');
+ const ids=new Set();const edges=new Map();let latest=null;
+ for(const entry of value.entries){
+  if(!exactKeys(entry,['record','manifest_path','manifest_sha256'])||!relativePath(entry.manifest_path)||!/^[a-f0-9]{64}$/.test(entry.manifest_sha256||''))invalid('Invalid manifest metadata.');
+  const r=entry.record;
+  if(!schemaMatches(r,envelopeSchema)||ids.has(r.artifact_id)||!r.artifact_id.startsWith(r.producer+':')||!relativePath(r.source.path)||r.source.path.startsWith('.rhapsodia/')||entry.manifest_path!==r.source.path+'.artifact.json'||r.created_at>r.updated_at||r.relations.some(edge=>edge.target===r.artifact_id))invalid('Invalid artifact record.');
+  const privacy=r.privacy;
+  if(!privacy.allowed_destinations.includes(value.destination)||(privacy.allowed_destinations.includes('public')&&(privacy.classification!=='public'||!privacy.external_share_allowed))||(privacy.classification!=='public'&&privacy.external_share_allowed))invalid('Privacy or destination policy rejected the catalog.');
+  if(/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})\b|\bBearer\s+[A-Za-z0-9._~+/-]{20,}/i.test(JSON.stringify(r)))invalid('Secret-like metadata is not permitted.');
+  ids.add(r.artifact_id);if(latest===null||r.updated_at>latest)latest=r.updated_at;
+  if(r.lifecycle!=='removed')edges.set(r.artifact_id,r.relations.filter(edge=>edge.type==='depends_on').map(edge=>edge.target));
+ }
+ if(latest!==value.latest_source_update)invalid('Catalog update metadata is inconsistent.');
+ const incoming=new Map([...edges.keys()].map(key=>[key,0]));
+ for(const targets of edges.values())for(const target of targets)if(incoming.has(target))incoming.set(target,incoming.get(target)+1);
+ const queue=[...incoming.keys()].filter(key=>incoming.get(key)===0);let visited=0;
+ while(queue.length){const key=queue.pop();visited++;for(const target of edges.get(key))if(incoming.has(target)){incoming.set(target,incoming.get(target)-1);if(incoming.get(target)===0)queue.push(target);}}
+ if(visited!==edges.size)invalid('Dependency cycle rejected.');
+ const diagnostics=[];
+ for(const {record:r} of value.entries)if(r.lifecycle!=='removed')for(const relation of r.relations)if(!edges.has(relation.target))diagnostics.push({severity:'warning',code:'UNRESOLVED_RELATION',artifact_id:r.artifact_id,target:relation.target});
+ const normalize=list=>list.map(item=>JSON.stringify([item.severity,item.code,item.artifact_id,item.target])).sort();
+ if(value.diagnostics.some(item=>!exactKeys(item,['severity','code','artifact_id','target']))||JSON.stringify(normalize(value.diagnostics))!==JSON.stringify(normalize(diagnostics)))invalid('Catalog relationship diagnostics are inconsistent.');
  return value;
 }
 function setCatalog(value,imported){
@@ -65,9 +129,9 @@ let darkTheme=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)'
 function setTheme(){document.documentElement.dataset.theme=darkTheme?'dark':'light';theme.textContent=darkTheme?'Light theme':'Dark theme';theme.setAttribute('aria-pressed',String(darkTheme));}
 theme.addEventListener('click',()=>{darkTheme=!darkTheme;setTheme();});setTheme();
 root.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;render();}));['search','producer','lifecycle'].forEach(id=>find(id).addEventListener(id==='search'?'input':'change',render));
-find('load-file').addEventListener('change',async function(){const file=this.files&&this.files[0];if(!file)return;try{if(file.size>16*1024*1024)throw new Error('Catalog exceeds the 16 MB viewer limit.');const value=JSON.parse(await file.text());setCatalog(value,true);}catch(error){find('message').hidden=false;find('message').textContent=error instanceof SyntaxError?'Invalid JSON. Existing snapshot was preserved.':error.message;}finally{this.value='';}});
+find('load-file').addEventListener('change',async function(){const file=this.files&&this.files[0];if(!file)return;try{if(file.size>16*1024*1024)throw new Error('Catalog exceeds the 16 MB viewer limit.');const value=strictJson(await file.text());setCatalog(value,true);}catch(error){find('message').hidden=false;find('message').textContent=error instanceof SyntaxError?'Invalid JSON. Existing snapshot was preserved.':error.message;}finally{this.value='';}});
 find('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state.catalog,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rhapsodia-catalog.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
-try{setCatalog(JSON.parse(document.getElementById('workspace-data').textContent),false);}catch(error){find('message').hidden=false;find('message').textContent='Embedded catalog is invalid. Open a valid generated catalog to continue.';}
+try{setCatalog(strictJson(document.getElementById('workspace-data').textContent),false);}catch(error){find('message').hidden=false;find('message').textContent='Embedded catalog is invalid. Open a valid generated catalog to continue.';}
 })();
 </script>
 </body>

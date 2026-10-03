@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 import re
 import sys
-from artifact_protocol import ContractError, atomic_write, canonical_bytes, confined, digest, exclusive_lock, load_json, source_bytes, timestamp, discover
+from artifact_protocol import ContractError, atomic_write, canonical_bytes, confined, digest, exclusive_lock, load_json, source_bytes, timestamp, discover, repository_root
 from native_artifacts import resolve_owned_root
 from mago_utils import parse_spec_id
 from validate_package import validate_task_contract, validate_conditional_artifacts, parse_tasks
@@ -50,23 +50,42 @@ def read_identity(path:Path,key:str)->dict:
     return value
 
 
-def validate(repo:Path,key:str,profile:str='standard',artifact_root:str|None=None)->dict:
+def planning_snapshot(repo: Path, root: Path) -> dict:
+    # Capture every owner-authored Markdown source, including conditional files,
+    # before any semantic validator can read it. Metadata is evidence too.
+    sources = [root / 'planning-identity.json']
+    if (root / 'artifact-decisions.json').exists():
+        sources.append(root / 'artifact-decisions.json')
+    sources.extend(sorted(root.rglob('*.md')))
+    if len(sources) > 10000:
+        raise ContractError('PLANNING_SOURCE_LIMIT')
+    return {path.relative_to(repo).as_posix(): digest(source_bytes(confined(
+        repo, path.relative_to(repo).as_posix(), must_exist=True, regular=True)))
+        for path in sources}
+
+
+def validate(repo:Path,key:str,profile:str='standard',artifact_root:str|None=None, *, handoff:bool=False)->dict:
     if profile not in {'quick','standard','governed'}:raise ContractError('INVALID_PROFILE')
-    root=work_root(repo,key,artifact_root);ident=read_identity(root/'planning-identity.json',key)
+    root=work_root(repo,key,artifact_root)
     discover(repo,[root.relative_to(repo).as_posix()])
+    bound=planning_snapshot(repo,root)
+    ident=read_identity(root/'planning-identity.json',key)
     required=['prd.md','tasks.md','validation.md']+(['notes.md'] if profile!='quick' else [])
-    errors=[];warnings=[];bound={}
+    errors=[];warnings=[]
     for name in required:
         try:
             path=confined(repo,(root/name).relative_to(repo).as_posix(),must_exist=True,regular=True)
             data=source_bytes(path)
             if len(data.strip())<20:errors.append(name+': substantive source content is required')
-            bound[path.relative_to(repo).as_posix()]=digest(data)
         except (ContractError,OSError):errors.append(name+': required planning artifact is missing or unsafe')
     if errors:return {'status':'fail','errors':errors,'warnings':warnings,'identity':ident}
     _,task_errors,task_warnings=validate_task_contract(root/'tasks.md',profile)
     errors.extend(task_errors);warnings.extend(task_warnings)
     errors.extend(validate_conditional_artifacts(root))
+    from validate_clarification_readiness import validate_notes
+    notes=root/'notes.md'
+    if notes.exists() or (profile=='governed' and handoff):
+        errors.extend(validate_notes(notes,require_v2=profile=='governed' and handoff,handoff=handoff))
     # Preserve the profile's requirements-to-proof contract without importing peer skills.
     from render_traceability import parse_file, FILES
     from validate_traceability import validate_projection
@@ -76,7 +95,6 @@ def validate(repo:Path,key:str,profile:str='standard',artifact_root:str|None=Non
         if path.exists():
             confined(repo,path.relative_to(repo).as_posix(),must_exist=True,regular=True)
             found,duplicate=parse_file(path,allowed);records.update(found);parse_errors.extend(duplicate)
-            bound[path.relative_to(repo).as_posix()]=digest(source_bytes(path))
     if profile!='quick':
         trace=validate_projection({'authoritative':False,'records':records,'render_errors':parse_errors},profile)
         errors.extend(trace['errors'])
@@ -91,28 +109,27 @@ def validate(repo:Path,key:str,profile:str='standard',artifact_root:str|None=Non
             if not isinstance(decisions,dict) or set(decisions)!=families:errors.append('artifact decisions must cover all governed trigger families')
             else:
                 for family,item in decisions.items():
-                    if not isinstance(item,dict) or set(item)!={'required','reason','evidence'} or type(item.get('required')) is not bool or not isinstance(item.get('reason'),str) or not item['reason'].strip() or not isinstance(item.get('evidence'),list) or not item['evidence']:
+                    if not isinstance(item,dict) or set(item)!={'required','reason','evidence'} or type(item.get('required')) is not bool or not isinstance(item.get('reason'),str) or not item['reason'].strip() or not isinstance(item.get('evidence'),list) or not item['evidence'] or not all(isinstance(ref,str) and ref.strip() for ref in item['evidence']):
                         errors.append(family+': explicit applicability, rationale and evidence are required');continue
                     if item['required'] and not (root/(family+'.md')).is_file():errors.append(family+': triggered artifact missing')
-            bound[decision_path.relative_to(repo).as_posix()]=digest(source_bytes(decision_path))
+    if planning_snapshot(repo,root)!=bound:raise ContractError('PLANNING_SOURCE_DRIFT')
     if errors:return {'status':'fail','errors':errors,'warnings':warnings,'identity':ident}
-    for path,old in bound.items():
-        if digest(source_bytes(confined(repo,path,must_exist=True,regular=True)))!=old:raise ContractError('PLANNING_SOURCE_DRIFT')
     return {'status':'pass','profile':profile,'identity':ident,'errors':[],'warnings':warnings,
-            'evidence_level':'static-planning-contract','source_hashes':bound,'runtime_validation_performed':False}
+            'evidence_level':'static-planning-contract','source_hashes':bound,'runtime_validation_performed':False,'handoff_validation_performed':handoff}
 
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['identity','validate'])
     p.add_argument('--repo-root',required=True,type=Path);p.add_argument('--work-item',required=True)
     p.add_argument('--artifact-root');p.add_argument('--created-at');p.add_argument('--profile',choices=['quick','standard','governed'],default='standard')
+    p.add_argument('--handoff',action='store_true',help='Enforce blocker closure before execution handoff.')
     a=p.parse_args(argv)
     try:
-        repo=a.repo_root.resolve(strict=True)
+        repo=repository_root(a.repo_root)
         if a.command=='identity':
             if not a.created_at:raise ContractError('CREATED_AT_REQUIRED')
             result=identity(repo,a.work_item,a.created_at,a.artifact_root)
-        else:result=validate(repo,a.work_item,a.profile,a.artifact_root)
+        else:result=validate(repo,a.work_item,a.profile,a.artifact_root,handoff=a.handoff)
         print(canonical_bytes(result).decode(),end='');return 1 if result['status']=='fail' else 0
     except (OSError,ValueError,KeyError,TypeError) as exc:
         print(json.dumps({'status':'fail','error':str(exc)}));return 1

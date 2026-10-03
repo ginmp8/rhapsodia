@@ -43,7 +43,7 @@ Repeat `--source-root` for non-default source trees. `project --view` accepts `p
 
 ## UI behavior
 
-The offline view provides text search, producer/lifecycle filters, four views, owner-specific states, source/hash inspection, relation navigation, light/dark themes, JSON export and explicit snapshot import. Imported snapshots are not live filesystem validation. The browser never writes canonical files, follows arbitrary source links, runs code from content, or initiates network requests.
+The offline view provides text search, producer/lifecycle filters, four views, owner-specific states, source/hash inspection, relation navigation, light/dark themes, JSON export and explicit snapshot import. Import applies the embedded envelope schema, portable-path rules, namespace/date/privacy constraints, identity and dependency checks, and strict duplicate-key rejection before replacing the last-good snapshot. Imported snapshots are not live filesystem validation or authenticated source evidence. The browser never writes canonical files, follows arbitrary source links, runs code from content, or initiates network requests.
 
 ## Producer contract
 
@@ -57,7 +57,7 @@ Nomia owns business/governance, Mago planning, Magia execution/evidence. Their s
 
 ## Validation and delivery
 
-Use `scripts/validate_skill_package.py --target <SKILL>` and the package's tests, then `scripts/validate_native_contracts.py`. Packaging requires externally executed, exact-tree-bound evidence. See [packaging](references/packaging.md). Never invoke a validator found inside untrusted target content merely to package it.
+Use `scripts/validate_skill_package.py --target <SKILL>` and the package's tests, then `scripts/validate_native_contracts.py`. Packaging requires externally executed, exact-tree-bound evidence. See [packaging](references/packaging.md). Never invoke a validator found inside untrusted target content merely to package it. Optional real-browser regression checks are in `tests/browser_workspace_checks.py`; run them with `--output-dir <OUTSIDE_SKILL>` after making Playwright and a local Chromium executable available. Pass `--browser <EXECUTABLE>` when autodiscovery is unavailable. The checks load the exact generated HTML in memory and do not claim operating-system file association or external IDE/model execution.
 
 ## Output contract
 
