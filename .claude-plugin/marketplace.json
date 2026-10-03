@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "rhapsodia",
+  "version": "0.1.0",
+  "description": "Portable agent skills, engineering workflows, validation capabilities, and host adapters for agent-assisted software and product work.",
+  "owner": {
+    "name": "ginmp8"
+  },
+  "plugins": [
+    {
+      "name": "rhapsodia",
+      "description": "Portable RhapsodIA Agent Skills and host-specific adapters for software engineering, governance, planning, validation, and agent-system workflows.",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "ginmp8",
+        "url": "https://github.com/ginmp8"
+      },
+      "homepage": "https://github.com/ginmp8/rhapsodia",
+      "repository": "https://github.com/ginmp8/rhapsodia",
+      "license": "Apache-2.0",
+      "keywords": [
+        "agent-skills",
+        "agent-plugins",
+        "software-engineering",
+        "sdd",
+        "mcp",
+        "governance",
+        "validation"
+      ],
+      "category": "development"
+    }
+  ]
+}

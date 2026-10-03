@@ -1,0 +1,20 @@
+{
+  "name": "rhapsodia",
+  "interface": {
+    "displayName": "RhapsodIA"
+  },
+  "plugins": [
+    {
+      "name": "rhapsodia",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/ginmp8/rhapsodia.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

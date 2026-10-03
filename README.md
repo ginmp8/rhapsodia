@@ -29,6 +29,36 @@ This update adds two host-neutral capabilities and one bounded operator:
 
 It also evolves `adaptive-workflow-orchestration` with backward-compatible `workflow-plan/v2` gated convergence while preserving `workflow-plan/v1`, and adds checkpoint-candidate semantics to the Magia execution surface.
 
+## Marketplace distribution
+
+RhapsodIA is distributed from **one canonical `skills/` tree and one canonical `agents/` tree**. Platform-specific files contain metadata and routing only; they do not own copies of Skill or Agent content.
+
+The repository deliberately does **not** keep a root Agent Plugins `plugin.json`. Agent Plugins 1.0 standardizes Skills and MCP servers, but not custom agents. Keeping that manifest at the repository root would force Copilot into Agent Plugins semantics and require a second `com.github.copilot/agents/` tree. Instead:
+
+- GitHub Copilot uses `.github/plugin/plugin.json` and points directly at `agents/` and `skills/`;
+- Cursor uses `.cursor-plugin/plugin.json` and points at the same canonical directories;
+- Claude Code uses `.claude-plugin/` with the canonical `agents/` and `skills/`;
+- OpenAI/ChatGPT/Codex uses `.codex-plugin/plugin.json` for the canonical Skills;
+- generic Agent Plugins 1.0 clients use a generated portable package containing Skills/MCP only.
+
+The canonical marketplace metadata lives in `marketplace/catalog.json`. Regenerate and verify host manifests with:
+
+```text
+python scripts/generate_marketplace_manifests.py
+python scripts/generate_marketplace_manifests.py --check
+python -m unittest tests.test_marketplace_manifests
+```
+
+Build the standards-based portable Agent Plugins artifact when needed:
+
+```text
+python scripts/build_portable_agent_plugin.py --output dist/agent-plugin/rhapsodia
+```
+
+`agents/` is the only source of custom-agent definitions. `com.github.copilot/agents/` is intentionally absent from the repository and guarded by tests.
+
+See [docs/marketplace.md](docs/marketplace.md) for platform files, installation commands, capability differences, and the portability rationale.
+
 ## Full repository model
 
 In the full RhapsodIA repository, the conceptual structure is:

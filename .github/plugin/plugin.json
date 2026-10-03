@@ -1,0 +1,23 @@
+{
+  "name": "rhapsodia",
+  "version": "0.1.0",
+  "description": "Portable RhapsodIA Agent Skills and host-specific adapters for software engineering, governance, planning, validation, and agent-system workflows.",
+  "author": {
+    "name": "ginmp8",
+    "url": "https://github.com/ginmp8"
+  },
+  "homepage": "https://github.com/ginmp8/rhapsodia",
+  "repository": "https://github.com/ginmp8/rhapsodia",
+  "license": "Apache-2.0",
+  "keywords": [
+    "agent-skills",
+    "agent-plugins",
+    "software-engineering",
+    "sdd",
+    "mcp",
+    "governance",
+    "validation"
+  ],
+  "agents": "agents/",
+  "skills": "skills/"
+}
