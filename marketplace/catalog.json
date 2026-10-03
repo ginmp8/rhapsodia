@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "marketplace": {
+    "name": "rhapsodia",
+    "display_name": "RhapsodIA",
+    "version": "0.1.0",
+    "description": "Portable agent skills, engineering workflows, validation capabilities, and host adapters for agent-assisted software and product work.",
+    "owner": {
+      "name": "ginmp8"
+    }
+  },
+  "plugin": {
+    "name": "rhapsodia",
+    "version": "0.1.0",
+    "description": "Portable RhapsodIA Agent Skills and host-specific adapters for software engineering, governance, planning, validation, and agent-system workflows.",
+    "author": {
+      "name": "ginmp8",
+      "url": "https://github.com/ginmp8"
+    },
+    "homepage": "https://github.com/ginmp8/rhapsodia",
+    "repository": "https://github.com/ginmp8/rhapsodia",
+    "repository_git": "https://github.com/ginmp8/rhapsodia.git",
+    "license": "Apache-2.0",
+    "keywords": [
+      "agent-skills",
+      "agent-plugins",
+      "software-engineering",
+      "sdd",
+      "mcp",
+      "governance",
+      "validation"
+    ]
+  },
+  "canonical": {
+    "skills": "skills/",
+    "agents": "agents/"
+  },
+  "platforms": {
+    "agent_plugins": {
+      "portable": true,
+      "build_script": "scripts/build_portable_agent_plugin.py",
+      "components": [
+        "skills",
+        "mcp"
+      ],
+      "agents": "not-portable-in-agent-plugins-1.0"
+    },
+    "github_copilot": {
+      "marketplace": ".github/plugin/marketplace.json",
+      "manifest": ".github/plugin/plugin.json",
+      "format": "legacy",
+      "agents": "agents/",
+      "skills": "skills/"
+    },
+    "openai": {
+      "marketplace": ".agents/plugins/marketplace.json",
+      "manifest": ".codex-plugin/plugin.json",
+      "products": [
+        "ChatGPT",
+        "Codex"
+      ],
+      "skills": "skills/",
+      "agents": "not-a-plugin-component"
+    },
+    "cursor": {
+      "marketplace": ".cursor-plugin/marketplace.json",
+      "manifest": ".cursor-plugin/plugin.json",
+      "agents": "agents/",
+      "skills": "skills/"
+    },
+    "claude_code": {
+      "marketplace": ".claude-plugin/marketplace.json",
+      "manifest": ".claude-plugin/plugin.json",
+      "agents": "agents/",
+      "skills": "skills/"
+    }
+  }
+}
