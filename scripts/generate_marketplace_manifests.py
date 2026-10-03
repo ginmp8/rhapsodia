@@ -167,7 +167,7 @@ def render_manifests(catalog: dict[str, Any]) -> dict[Path, bytes]:
         "plugins": [
             {
                 "name": plugin["name"],
-                "source": {"source": "local", "path": "."},
+                "source": {"source": "url", "url": plugin["repository_git"]},
                 "policy": {
                     "installation": "AVAILABLE",
                     "authentication": "ON_USE",

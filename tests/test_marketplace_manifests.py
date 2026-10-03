@@ -79,8 +79,11 @@ class MarketplaceManifestTests(unittest.TestCase):
         self.assertEqual("./", claude["plugins"][0]["source"])
 
         openai_plugin = openai["plugins"][0]
-        self.assertEqual("local", openai_plugin["source"]["source"])
-        self.assertEqual(".", openai_plugin["source"]["path"])
+        self.assertEqual("url", openai_plugin["source"]["source"])
+        self.assertEqual(
+            "https://github.com/ginmp8/rhapsodia.git",
+            openai_plugin["source"]["url"],
+        )
         self.assertEqual("AVAILABLE", openai_plugin["policy"]["installation"])
 
     def test_portable_agent_plugin_is_generated_without_agents(self):
