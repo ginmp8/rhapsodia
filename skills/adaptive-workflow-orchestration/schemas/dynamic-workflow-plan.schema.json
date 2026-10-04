@@ -1,0 +1,330 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rhapsodia.local/schemas/dynamic-workflow-plan-v1.schema.json",
+  "title": "RhapsodIA Dynamic Workflow Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "workflow_id",
+    "objective",
+    "authority",
+    "coverage",
+    "stages",
+    "runtime",
+    "budgets",
+    "verification",
+    "termination",
+    "capabilities",
+    "evidence"
+  ],
+  "properties": {
+    "contract": {
+      "const": "dynamic-workflow-plan/v1"
+    },
+    "workflow_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "owner",
+        "write_scope"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "write_scope": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "work_source",
+        "enumeration",
+        "max_items"
+      ],
+      "properties": {
+        "work_source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "enumeration": {
+          "enum": [
+            "static",
+            "runtime-discovery"
+          ]
+        },
+        "max_items": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "mode",
+          "depends_on",
+          "work_source",
+          "effects",
+          "read_set",
+          "write_set",
+          "max_parallel",
+          "output_contract",
+          "on_failure"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mode": {
+            "enum": [
+              "single",
+              "parallel",
+              "pipeline",
+              "verify",
+              "synthesize",
+              "loop",
+              "classify-route",
+              "generate-filter",
+              "tournament"
+            ]
+          },
+          "depends_on": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "work_source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effects": {
+            "enum": [
+              "read-only",
+              "mutating"
+            ]
+          },
+          "read_set": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "write_set": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "max_parallel": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "output_contract": {
+            "type": "string",
+            "minLength": 1
+          },
+          "isolation": {
+            "enum": [
+              "shared-readonly",
+              "fresh-context",
+              "workspace",
+              "process",
+              "host-native",
+              "serial"
+            ]
+          },
+          "on_failure": {
+            "enum": [
+              "stop",
+              "continue-independent",
+              "retry",
+              "repair",
+              "escalate"
+            ]
+          },
+          "max_iterations": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": [
+        "plan_owner",
+        "intermediate_state",
+        "resumption_semantics",
+        "deterministic_replay_required"
+      ],
+      "properties": {
+        "plan_owner": {
+          "const": "runtime-script"
+        },
+        "intermediate_state": {
+          "const": "runtime-external"
+        },
+        "resumption_semantics": {
+          "enum": [
+            "none",
+            "session-replay",
+            "durable-external"
+          ]
+        },
+        "deterministic_replay_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "required": [
+        "max_workers",
+        "max_parallel",
+        "max_total_agents",
+        "max_rounds",
+        "max_retries_per_unit"
+      ],
+      "properties": {
+        "max_workers": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_parallel": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_total_agents": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_rounds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_retries_per_unit": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "oracle_priority",
+        "independent_critic",
+        "same_model_independence_claim",
+        "unverified_claim_policy"
+      ],
+      "properties": {
+        "oracle_priority": {
+          "const": "deterministic-first"
+        },
+        "independent_critic": {
+          "type": "boolean"
+        },
+        "same_model_independence_claim": {
+          "const": false
+        },
+        "unverified_claim_policy": {
+          "enum": [
+            "mark-unverified",
+            "block"
+          ]
+        }
+      }
+    },
+    "termination": {
+      "type": "object",
+      "required": [
+        "success_predicate",
+        "no_progress_rounds",
+        "on_budget_exhaustion"
+      ],
+      "properties": {
+        "success_predicate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "no_progress_rounds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "on_budget_exhaustion": {
+          "enum": [
+            "stop",
+            "escalate"
+          ]
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "required": [
+        "required",
+        "optional"
+      ],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "optional": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "input_identity",
+        "planner_identity",
+        "evaluator_identity"
+      ],
+      "properties": {
+        "input_identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "planner_identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evaluator_identity": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

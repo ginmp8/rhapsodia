@@ -1,0 +1,25 @@
+{
+  "manifest_version": 1,
+  "skill": "checkpoint-convergence",
+  "exports": [
+    {
+      "contract_id": "checkpoint-convergence.convergence-plan",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "SKILL.md",
+        "schemas/convergence-plan.schema.json",
+        "assets/templates/convergence-plan.json.template",
+        "scripts/validate_convergence_plan.py",
+        "references/control-plane-composition.md"
+      ]
+    }
+  ],
+  "imports": [
+    {
+      "contract_id": "workflow-orchestration.dynamic-workflow-plan",
+      "version": 1,
+      "role": "optional-evidence-subflow"
+    }
+  ]
+}

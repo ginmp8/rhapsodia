@@ -107,3 +107,8 @@ Return:
 - `blockers_or_escalation`
 
 Never claim command/runtime proof because this profile has no execution tool.
+
+
+## Dual control-plane evidence
+
+For a dynamic workflow unit, return bounded structured evidence to the runtime owner and do not infer promotion authority. For a convergence checkpoint, derive/read oracle or adversarial evidence only within the frozen reference scope. Context isolation is useful, but do not describe another instance of the same model as an independent truth source. Prefer deterministic/executable evidence when available.

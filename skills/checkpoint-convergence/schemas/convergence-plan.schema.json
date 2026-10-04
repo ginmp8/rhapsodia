@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rhapsodia.local/schemas/convergence-plan-v1.schema.json",
+  "title": "RhapsodIA Convergence Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "convergence_id",
+    "objective",
+    "authority",
+    "reference",
+    "checkpoints",
+    "gates",
+    "budgets",
+    "promotion",
+    "evidence"
+  ],
+  "properties": {
+    "contract": {
+      "const": "convergence-plan/v1"
+    },
+    "convergence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "owner",
+        "producer",
+        "write_scope"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string"
+        },
+        "producer": {
+          "const": "magia"
+        },
+        "write_scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "required": [
+        "identity",
+        "freshness_policy"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "freshness_policy": {
+          "enum": [
+            "frozen-input",
+            "revalidate-before-mutation",
+            "revalidate-before-promotion",
+            "revalidate-at-closure"
+          ]
+        }
+      }
+    },
+    "checkpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "objective",
+          "depends_on",
+          "reference_scope",
+          "oracle_identity",
+          "context_mode",
+          "gate_ids",
+          "success"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "objective": {
+            "type": "string",
+            "minLength": 1
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reference_scope": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "oracle_identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "context_mode": {
+            "enum": [
+              "fresh-context",
+              "reuse-current"
+            ]
+          },
+          "gate_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "success": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "required",
+          "evaluator_identity",
+          "isolation",
+          "rerun_after_repair"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "executable",
+              "perceptual",
+              "adversarial-review",
+              "human-approval",
+              "policy-approval",
+              "closure-revalidation"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "evaluator_identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "isolation": {
+            "enum": [
+              "fresh-context",
+              "process",
+              "human",
+              "policy",
+              "serial"
+            ]
+          },
+          "rerun_after_repair": {
+            "type": "boolean"
+          },
+          "capability": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "required": [
+        "max_checkpoints",
+        "max_repairs_per_checkpoint",
+        "max_adversarial_reviewers"
+      ],
+      "properties": {
+        "max_checkpoints": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_repairs_per_checkpoint": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_adversarial_reviewers": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "promotion": {
+      "type": "object",
+      "required": [
+        "requires_all_required_gates",
+        "gate_order_is_binding",
+        "accepted_feedback_only",
+        "materialize_promoted_checkpoint",
+        "closure_revalidation",
+        "autonomy_policy",
+        "min_independent_adversarial_reviewers"
+      ],
+      "properties": {
+        "requires_all_required_gates": {
+          "const": true
+        },
+        "gate_order_is_binding": {
+          "const": true
+        },
+        "accepted_feedback_only": {
+          "const": true
+        },
+        "materialize_promoted_checkpoint": {
+          "type": "boolean"
+        },
+        "closure_revalidation": {
+          "type": "boolean"
+        },
+        "autonomy_policy": {
+          "enum": [
+            "human-required",
+            "human-default",
+            "policy-autonomous"
+          ]
+        },
+        "min_independent_adversarial_reviewers": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "plan_identity",
+        "oracle_freeze_identity"
+      ],
+      "properties": {
+        "plan_identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "oracle_freeze_identity": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

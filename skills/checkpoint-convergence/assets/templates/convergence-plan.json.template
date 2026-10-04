@@ -1,0 +1,71 @@
+{
+  "contract": "convergence-plan/v1",
+  "convergence_id": "replace-me",
+  "objective": "replace-me",
+  "authority": {
+    "owner": "convergence-controller",
+    "producer": "magia",
+    "write_scope": [
+      "target/**"
+    ]
+  },
+  "reference": {
+    "identity": "sha256:replace-me",
+    "freshness_policy": "revalidate-before-promotion"
+  },
+  "checkpoints": [
+    {
+      "id": "cp1",
+      "objective": "small reviewable increment",
+      "depends_on": [],
+      "reference_scope": [
+        "reference:cp1"
+      ],
+      "oracle_identity": "oracle:cp1:v1",
+      "context_mode": "fresh-context",
+      "gate_ids": [
+        "exec",
+        "adv"
+      ],
+      "success": "required gates pass for current candidate"
+    }
+  ],
+  "gates": [
+    {
+      "id": "exec",
+      "kind": "executable",
+      "required": true,
+      "evaluator_identity": "oracle:exec:v1",
+      "isolation": "process",
+      "rerun_after_repair": true,
+      "capability": "executable-verification"
+    },
+    {
+      "id": "adv",
+      "kind": "adversarial-review",
+      "required": true,
+      "evaluator_identity": "reviewer:independent:v1",
+      "isolation": "fresh-context",
+      "rerun_after_repair": true,
+      "capability": "read-only-analysis"
+    }
+  ],
+  "budgets": {
+    "max_checkpoints": 4,
+    "max_repairs_per_checkpoint": 2,
+    "max_adversarial_reviewers": 2
+  },
+  "promotion": {
+    "requires_all_required_gates": true,
+    "gate_order_is_binding": true,
+    "accepted_feedback_only": true,
+    "materialize_promoted_checkpoint": true,
+    "closure_revalidation": true,
+    "autonomy_policy": "human-default",
+    "min_independent_adversarial_reviewers": 1
+  },
+  "evidence": {
+    "plan_identity": "sha256:replace-me",
+    "oracle_freeze_identity": "sha256:replace-me"
+  }
+}

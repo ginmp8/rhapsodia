@@ -1,0 +1,86 @@
+{
+  "contract": "dynamic-workflow-plan/v1",
+  "workflow_id": "replace-me",
+  "objective": "replace-me",
+  "authority": {
+    "owner": "resolved-owner",
+    "write_scope": []
+  },
+  "coverage": {
+    "work_source": "repository:target-surface",
+    "enumeration": "runtime-discovery",
+    "max_items": 64
+  },
+  "stages": [
+    {
+      "id": "discover",
+      "mode": "parallel",
+      "depends_on": [],
+      "work_source": "coverage.work_source",
+      "effects": "read-only",
+      "read_set": [
+        "target"
+      ],
+      "write_set": [],
+      "max_parallel": 4,
+      "output_contract": "work-unit-result/v1",
+      "isolation": "fresh-context",
+      "on_failure": "continue-independent"
+    },
+    {
+      "id": "synthesize",
+      "mode": "synthesize",
+      "depends_on": [
+        "discover"
+      ],
+      "work_source": "discover.outputs",
+      "effects": "read-only",
+      "read_set": [
+        "discover.outputs"
+      ],
+      "write_set": [],
+      "max_parallel": 1,
+      "output_contract": "synthesis/v1",
+      "isolation": "serial",
+      "on_failure": "stop"
+    }
+  ],
+  "runtime": {
+    "plan_owner": "runtime-script",
+    "intermediate_state": "runtime-external",
+    "resumption_semantics": "session-replay",
+    "deterministic_replay_required": true
+  },
+  "budgets": {
+    "max_workers": 8,
+    "max_parallel": 4,
+    "max_total_agents": 32,
+    "max_rounds": 3,
+    "max_retries_per_unit": 1
+  },
+  "verification": {
+    "oracle_priority": "deterministic-first",
+    "independent_critic": true,
+    "same_model_independence_claim": false,
+    "unverified_claim_policy": "mark-unverified"
+  },
+  "termination": {
+    "success_predicate": "all required units resolved and required verification passes",
+    "no_progress_rounds": 1,
+    "on_budget_exhaustion": "stop"
+  },
+  "capabilities": {
+    "required": [
+      "read-context"
+    ],
+    "optional": [
+      "parallelize-independent-work",
+      "isolated-context"
+    ]
+  },
+  "evidence": {
+    "input_identity": "sha256:replace-me",
+    "planner_identity": "planner:replace-me",
+    "evaluator_identity": "evaluator:replace-me"
+  }
+}

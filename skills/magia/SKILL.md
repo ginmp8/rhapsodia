@@ -114,3 +114,14 @@ Confirm mode/ownership, authorized paths, required references, touched artifact 
 ## Activation Examples
 
 ADHOC: fix a failing parser test and run its targeted command. RALPH: execute one selected Mago task and sync evidence. Docs: record an implementation ADR forced by runtime evidence. Negative: PRD, roadmap, stakeholder status, release notes, governance decision. Ambiguous: resolve owner and the next safe action before mutation. Native scenario oracles use `expected_owner: mago|magia|nomia|none`, `expected_activation: true|false|null`, and boolean `diagnostic_entry_allowed`; `null` means owner is unresolved, not that Magia owns the request.
+
+
+## Dual workflow control planes
+
+Magia may consume either control-plane contract when the active owner/authority has already been resolved:
+
+- `dynamic-workflow-plan/v1`: runtime-adaptive topology owned by `adaptive-workflow-orchestration`; Magia remains the single canonical production writer and returns structured evidence to the runtime controller.
+- `convergence-plan/v1`: reference-grounded checkpoint progression owned by `checkpoint-convergence`; Magia is the canonical producer/repair owner, while oracle/gate/promotion state remains outside Magia.
+- `workflow-plan/v1` and `workflow-plan/v2`: compatibility contracts only; v2 is not the preferred contract for new convergence work.
+
+Never run both control planes as competing progression owners. A dynamic subflow nested inside a convergence checkpoint returns evidence only; it cannot promote the checkpoint or alter the frozen oracle.

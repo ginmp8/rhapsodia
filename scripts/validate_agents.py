@@ -219,8 +219,8 @@ def validate_contract(path, findings):
     except Exception as exc:
         add(findings, "CONTRACT_JSON", path, f"invalid JSON: {exc}")
         return
-    if doc.get("contract") != "agent-system-contract/v3":
-        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v3")
+    if doc.get("contract") != "agent-system-contract/v4":
+        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v4")
     if doc.get("system", {}).get("autonomy") != "policy-bounded-autonomous":
         add(findings, "AUTONOMY", path, "system autonomy must remain policy-bounded-autonomous")
     routing = doc.get("routing", {})
@@ -265,6 +265,15 @@ def validate_contract(path, findings):
         add(findings, "CHECKPOINT_BUDGET", path, "max_adversarial_reviews_per_checkpoint must be 2")
     if budgets.get("max_verifier_units_per_candidate") != 1:
         add(findings, "CHECKPOINT_BUDGET", path, "max_verifier_units_per_candidate must be 1")
+    control_planes = routing.get("control_planes", {})
+    if control_planes.get("progression_owner_rule") != "exactly-one":
+        add(findings, "CONTROL_PLANE_OWNER", path, "routing.control_planes.progression_owner_rule must be exactly-one")
+    dynamic = control_planes.get("dynamic_workflow", {})
+    if dynamic.get("contract") != "dynamic-workflow-plan/v1" or dynamic.get("canonical_writer_count") != 1 or dynamic.get("nested_convergence_promotion") is not False:
+        add(findings, "DYNAMIC_CONTROL_PLANE", path, "dynamic workflow control plane must preserve v1 contract, single writer, and no nested convergence promotion")
+    convergence = control_planes.get("checkpoint_convergence", {})
+    if convergence.get("contract") != "convergence-plan/v1" or convergence.get("canonical_producer") != "magia" or convergence.get("nested_dynamic_may_promote") is not False:
+        add(findings, "CONVERGENCE_CONTROL_PLANE", path, "checkpoint convergence must preserve v1 contract, Magia producer ownership, and evidence-only nested dynamic work")
     adaptive = routing.get("adaptive_execution", {})
     if adaptive.get("scope") != "inside-one-resolved-lifecycle-phase":
         add(findings, "ADAPTIVE_SCOPE", path, "adaptive execution must remain inside one resolved lifecycle phase")
