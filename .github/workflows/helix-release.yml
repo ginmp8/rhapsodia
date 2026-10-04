@@ -24,7 +24,11 @@ jobs:
           python skills/adaptive-workflow-orchestration/scripts/validate_dynamic_workflow.py skills/adaptive-workflow-orchestration/assets/templates/dynamic-workflow-plan.json.template
           python -m unittest discover -s skills/checkpoint-convergence/tests -p 'test_*.py' -v
           python skills/checkpoint-convergence/scripts/validate_convergence_plan.py skills/checkpoint-convergence/assets/templates/convergence-plan.json.template
+      - name: Clean generated Python caches
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
       - name: Validate agents and release metadata
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
         run: |
           python scripts/validate_agents.py --target .
           python -m unittest tests.test_validate_agents tests.test_install_agents tests.test_marketplace_manifests tests.test_workspace_agent_contract tests.test_release_versions -v

@@ -9,7 +9,7 @@ AGENT_SURFACE=(
 "LICENSE","README.md","agents/magia.agent.md","agents/mago.agent.md","agents/nomia.agent.md",
 "agents/rhapsodia-analyst.agent.md","agents/rhapsodia-supervisor.agent.md","agents/rhapsodia-verifier.agent.md",
 "agents/rhapsodia-workspace.agent.md","docs/agents/ARCHITECTURE.md","docs/agents/ARTIFACT-ORCHESTRATION.md",
-"docs/agents/SOURCES.md","docs/agents/contracts/rhapsodia-agent-system.json","scripts/generate_agent_manifest.py",
+"docs/agents/SOURCES.md","docs/agents/contracts/rhapsodia-agent-system.json",
 "scripts/install_agents.py","scripts/validate_agents.py","tests/agent-scenarios.json","tests/test_install_agents.py","tests/test_validate_agents.py")
 def sha256(p:Path)->str:return hashlib.sha256(p.read_bytes()).hexdigest()
 def render(version:str)->dict:
