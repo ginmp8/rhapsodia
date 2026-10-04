@@ -87,6 +87,15 @@ For substantive creation, redesign, quality-upgrade, or explicit reproducibility
 - subjective/stochastic ceilings are stated rather than disguised as determinism;
 - deterministic controls did not introduce eval-specific overfitting.
 
+## Research Traceability Gate
+
+When external research materially determines skill requirements or target changes:
+
+- identify or freeze the bounded research corpus before deriving mutations when feasible;
+- account for each material finding with an explicit disposition and trace accepted findings to requirements, implementation, and evaluation;
+- use `research-traceability` when available, or record equivalent checklist-only accounting when it is unavailable;
+- report structural trace completeness separately from semantic review and never treat corpus coverage as universal research completeness.
+
 ## Change Acceptance Gates
 
 For existing skills:

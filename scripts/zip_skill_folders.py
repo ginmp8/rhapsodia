@@ -1,6 +1,6 @@
-# py scripts/zip_skill_folders.py
 #!/usr/bin/env python3
 """Create one ZIP archive for each immediate subfolder of a directory."""
+# py scripts/zip_skill_folders.py
 
 from __future__ import annotations
 

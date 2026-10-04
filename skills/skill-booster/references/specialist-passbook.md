@@ -90,3 +90,8 @@ Finalization is blocked when a required specialist is unclassified, `not-run`, c
 ## Evolutionary mode branch
 
 `skill-evolution` is **not pass 26** and is not part of the canonical 25-pass ledger. It is a mode-specific search controller inserted after the Select phase when `evolutionary-optimization` is explicit. Booster services its candidate requests through the existing transformation/evaluation owners, then resumes the normal Prove phase for the finalist(s). Canonical mode must remain fully functional when Skill Evolution is unavailable.
+
+## Research traceability branch
+
+`research-traceability` is not an additional canonical numbered pass. When a bounded research corpus materially determines optimization requirements or candidate changes, invoke it as a conditional evidence/traceability branch before accepting research-backed mutation. Its source -> finding -> requirement/change -> evaluation accounting feeds hypothesis selection, transformation, and acceptance evidence. Keep the canonical 25-pass path fully functional when the specialist is unavailable; include it in `required_specialists` only when the user or active research-backed plan explicitly requires it.
+

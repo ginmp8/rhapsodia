@@ -132,7 +132,7 @@ The Juiced skill remains orchestrator and acceptance owner. `reproducibility-eng
 
 Read [references/specialist-orchestration.md](references/specialist-orchestration.md). Use the smallest useful set of specialists. A high-quality request does not justify running irrelevant passes.
 
-For existing-skill redesigns or quality upgrades, normally establish architecture and activation boundaries before the reproducibility gate. Run downstream testing, harness, benchmark, security, consistency, cleanup, and hardening against the resulting candidate. Use `skill-hypothesis-discovery` when several evidence-backed improvement directions compete, and `skill-change-gate` before accepting material changes.
+For existing-skill redesigns or quality upgrades, normally establish architecture and activation boundaries before the reproducibility gate. When external research materially determines requirements or changes, route the bounded source-to-finding-to-requirement/change accounting through `research-traceability` when available; keep it optional for ordinary non-research work. Run downstream testing, harness, benchmark, security, consistency, cleanup, and hardening against the resulting candidate. Use `skill-hypothesis-discovery` when several evidence-backed improvement directions compete, and `skill-change-gate` before accepting material changes.
 
 ## Quality Gates
 

@@ -1,6 +1,6 @@
-# py scripts/upload_zip_files.py --path .\skills --recursive --limit 0
 #!/usr/bin/env python3
 """Upload ZIP files to the ChatGPT skills upload endpoint."""
+# py scripts/upload_zip_files.py --path .\skills --recursive --limit 0
 
 from __future__ import annotations
 
