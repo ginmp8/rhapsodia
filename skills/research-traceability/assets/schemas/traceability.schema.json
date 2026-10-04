@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/research-traceability/traceability.schema.json",
+  "title": "Research-to-Skill Traceability Workspace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mode",
+    "scope",
+    "identities",
+    "sources",
+    "findings",
+    "requirements",
+    "changes",
+    "evaluations",
+    "conflicts"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "mode": {"enum": ["create", "improve", "audit", "refresh"]},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["research_question", "target", "completeness_boundary"],
+      "properties": {
+        "research_question": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "completeness_boundary": {"const": "corpus-bounded"}
+      }
+    },
+    "identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["research", "target_baseline", "evaluators"],
+      "properties": {
+        "research": {"$ref": "#/$defs/identity"},
+        "target_baseline": {"$ref": "#/$defs/identity"},
+        "evaluators": {"$ref": "#/$defs/identity"}
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source"}
+    },
+    "findings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/finding"}
+    },
+    "requirements": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/requirement"}
+    },
+    "changes": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/change"}
+    },
+    "evaluations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evaluation"}
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/conflict"}
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {"enum": ["none", "sha256", "manifest", "vcs", "version", "declared"]},
+        "value": {"type": "string"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "locator", "authority", "evidence_state", "identity"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^S-[0-9]{3,}$"},
+        "title": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1},
+        "authority": {"enum": ["primary", "official", "academic", "secondary", "community", "user-provided"]},
+        "evidence_state": {"enum": ["snapshotted", "pinned", "live", "user-provided"]},
+        "identity": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "source_ids", "confidence", "relevance", "disposition", "rationale", "requirement_ids", "conflict_ids"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^F-[0-9]{3,}$"},
+        "statement": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "confidence": {"enum": ["high", "medium", "low"]},
+        "relevance": {"enum": ["required", "useful", "contextual"]},
+        "disposition": {"enum": ["implement", "already-covered", "rejected", "not-applicable", "uncertain", "conflict"]},
+        "rationale": {"type": "string", "minLength": 1},
+        "requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "conflict_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "priority", "derived_from", "change_ids", "evaluation_ids"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^R-[0-9]{3,}$"},
+        "statement": {"type": "string", "minLength": 1},
+        "priority": {"enum": ["must", "should", "may"]},
+        "derived_from": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "change_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "evaluation_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "target", "summary", "status", "satisfies"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^C-[0-9]{3,}$"},
+        "kind": {"enum": ["existing", "add", "modify", "remove"]},
+        "target": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "status": {"enum": ["planned", "applied", "reverted"]},
+        "satisfies": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "description", "verifies", "status", "frozen", "evidence", "limitation"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^E-[0-9]{3,}$"},
+        "kind": {"enum": ["deterministic", "scenario", "review", "runtime", "perceptual"]},
+        "description": {"type": "string", "minLength": 1},
+        "verifies": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "status": {"enum": ["planned", "pass", "fail", "not-run"]},
+        "frozen": {"type": "boolean"},
+        "evidence": {"type": "string"},
+        "limitation": {"type": "string"}
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "finding_ids", "status", "resolution", "rationale"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^K-[0-9]{3,}$"},
+        "finding_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+        "status": {"enum": ["unresolved", "resolved"]},
+        "resolution": {"type": "string"},
+        "rationale": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
