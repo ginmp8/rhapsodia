@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:security-and-governance-review:control-evidence:1",
+  "title":"Runtime control evidence",
+  "type":"object",
+  "required":["control_evidence_version","controls"],
+  "properties":{
+    "control_evidence_version":{"const":"control-evidence-1"},
+    "controls":{"type":"array","items":{"type":"object","required":["id","action","resource_scope","policy_source","enforcement_point","disposition","failure_mode","effectiveness","evidence_refs"],"properties":{
+      "id":{"type":"string","minLength":1},
+      "action":{"type":"string","minLength":1},
+      "resource_scope":{"type":"string","minLength":1},
+      "policy_source":{"type":"string","minLength":1},
+      "enforcement_point":{"type":"string"},
+      "disposition":{"enum":["allow","deny","modify","ask","defer","not-applicable","unknown"]},
+      "failure_mode":{"enum":["fail-closed","fail-open","degrade","retry","unknown"]},
+      "effectiveness":{"enum":["declared","statically-present","behaviorally-demonstrated","runtime-observed"]},
+      "evidence_refs":{"type":"array","items":{"type":"object","required":["layer","source_identity"],"properties":{"layer":{"enum":["structural","behavioral","runtime","external_current"]},"source_identity":{"type":"string","minLength":1}}}}
+    }}}
+  }
+}

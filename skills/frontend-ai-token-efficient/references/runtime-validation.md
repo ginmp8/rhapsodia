@@ -51,6 +51,18 @@ Always label what was executed versus recommended.
 - gaps:
 ```
 
+## Playwright locator hierarchy
+
+Prefer locators that express user-visible behavior or an explicit testing contract:
+
+1. `getByRole` with accessible name for interactive controls and semantic regions;
+2. `getByLabel` for form controls;
+3. other user-facing locators (`getByText`, `getByAltText`, etc.) when semantically appropriate;
+4. `getByTestId` when the product defines a stable explicit test contract that is not naturally user-facing;
+5. CSS/XPath only when no stable user-facing or explicit contract exists.
+
+Avoid long DOM-structure selectors, `nth()` positioning, or implementation-class selectors as default locators. A locator passing does not replace an accessibility audit, but role/label-first tests often expose semantic regressions earlier.
+
 ## Modal and dialog checks
 
 - Initial focus moves into the modal.

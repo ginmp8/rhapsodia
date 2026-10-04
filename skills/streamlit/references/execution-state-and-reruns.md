@@ -2,99 +2,54 @@
 
 ## Mental model
 
-A Streamlit app renders by running the Python script. Most user interactions update widget state and rerun the script. This is simple, but bugs appear when code assumes a traditional long-lived web request handler model.
+Streamlit normally executes the script top-to-bottom. Widget interactions can update client/widget state and trigger a rerun. Design top-level code to be safe when repeated.
 
-## Design rules
+## State ownership
 
-1. Make top-level code safe to rerun.
-2. Put expensive work behind cache functions.
-3. Put writes behind explicit submit/action boundaries.
-4. Initialize session state before widgets that depend on it.
-5. Use callbacks for small state transitions, not for large hidden workflows.
-6. Use forms to batch input changes.
-7. Use fragments when a subsection should refresh independently.
-8. Use dialogs for focused confirmation or modal detail flows.
+- Use `st.session_state` for per-session state.
+- Use databases/object stores for durable state.
+- Use cached resources for intentionally shared process-level resources.
+- Avoid mutable module globals for user-specific state.
 
-## Session state patterns
+Initialize state before widgets that consume it. Use stable business identifiers for keys when lists can reorder.
 
-### Initialize explicitly
+## Widgets are not a security boundary
 
-```python
-DEFAULTS = {
-    "step": "upload",
-    "selected_customer_id": None,
-    "messages": [],
-    "last_error": None,
-}
-for key, value in DEFAULTS.items():
-    st.session_state.setdefault(key, value)
-```
+Options, min/max bounds, disabled controls, validation hints, and other browser constraints primarily improve UX. Revalidate values in Python before authorization decisions, database writes, file paths, quotas, financial limits, or tenant selection.
 
-### Update through functions
+## URL binding and persistence
 
-```python
-def select_customer(customer_id: str) -> None:
-    st.session_state.selected_customer_id = customer_id
-    st.session_state.step = "detail"
-```
+When the installed version supports `bind="query-params"`, prefer it over hand-written query-param synchronization for shareable widget state. Use `persist_state` when supported and the value should survive conditional rendering/page changes without appearing in the URL. Record version evidence before introducing either API.
 
-### Avoid mutable shared defaults
+Do not mix bound query params with competing manual writes to the same parameter.
 
-When default values are lists or dicts, create them intentionally. Do not share mutable globals across users.
+## Callbacks
 
-## Callback guidance
+Callbacks execute before the subsequent script rerun. Keep them small and explicit: state transitions, reset actions, or targeted rerun/navigation. Avoid hiding slow network/database workflows in callbacks unless the operation is intentionally guarded and observable.
 
-Callbacks run before the app rerenders from top to bottom. Keep callbacks short: update session state, clear a form, or set a selected ID. Avoid network calls, database writes, or large computations inside callbacks unless they are guarded and visibly handled.
+## Forms and no-rerun controls
 
-## Forms
-
-Forms batch widget changes until submit. Use them when multiple inputs should be validated together or when recalculating on every keystroke is wasteful.
-
-Use forms for:
-
-- search filters with many fields;
-- data submission;
-- review/approval comments;
-- configuration panels;
-- expensive calculations.
-
-Avoid forms when immediate interaction is the point, such as sliders driving a visual demo.
+Use forms when multiple values should commit together or intermediate changes would trigger expensive work. Use supported `on_change="ignore"` behavior when one control should update in the browser but Python should not rerun until another action occurs.
 
 ## Fragments
 
-Fragments isolate reruns for a part of the app. Use them when one component refreshes frequently or performs expensive redraws. Keep shared state explicit, because fragments can make control flow harder to reason about.
+Use `st.fragment` for sections with an independent rerun cadence. When supported, keyed fragment reruns can target one or several registered fragments from callbacks. Do not assume a fragment key exists if it was not rendered in the last completed full-app run.
 
-## Dialogs
+Use parallel fragments only for independent work. Treat them as concurrent execution: do not unsafely mutate the same session-state key or shared mutable object from multiple parallel fragments.
 
-Dialogs work well for confirmations, detail previews, and small forms that should not clutter the main page. Do not hide critical validation feedback only inside a dialog if the main page depends on the result.
+## Dialogs and focused flows
 
-## Common failure modes
+Dialogs are suitable for confirmations, detail previews, and compact forms. Keep critical validation/error state visible to the page flow that depends on it.
 
-### Button state disappears
+## Side effects
 
-A button returns true only for the run caused by its click. Persist the result into session state if later code needs it.
-
-### Widget resets unexpectedly
-
-Use stable keys and do not change widget type or options structure across reruns without preserving the selected value.
-
-### Duplicate widget key
-
-Every widget in a loop or repeated component needs a unique key derived from stable business identifiers, not the loop index when the order can change.
-
-### Expensive reload on every change
-
-Move data loading into `@st.cache_data` and resource creation into `@st.cache_resource`. Include only meaningful parameters in the cache key.
-
-### Side effect repeats
-
-Store a transaction ID, use a form submit button, and mark completion in session state after the write.
+Protect writes with explicit actions. For retried or externally delivered operations, use idempotency/deduplication where the backend supports it. A button is true only for the run caused by its click; persist durable workflow state separately.
 
 ## Debug procedure
 
-1. Print or display selected `st.session_state` keys temporarily.
-2. Identify which widget interaction triggers the rerun.
-3. Move expensive work into cached functions.
-4. Move persistent UI decisions into session state.
-5. Replace hidden callback work with explicit button/form logic when behavior is hard to follow.
-6. Add a regression test with `AppTest` when practical.
+1. Identify the interaction that triggers the surprising rerun.
+2. Inspect relevant session/widget state and keys.
+3. Separate repeated computation from repeated side effects.
+4. Move expensive deterministic work behind the correct cache.
+5. Choose form/no-rerun/fragment boundaries only when they match UX semantics.
+6. Add AppTest coverage when the behavior is representable headlessly; use browser/E2E for browser-owned behavior.

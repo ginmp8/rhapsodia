@@ -16,6 +16,18 @@ Prefer the simplest stack that satisfies real requirements. Do not choose a full
 | TanStack Start | teams already committed to TanStack ecosystem and comfortable with newer full-stack patterns | conservative enterprise apps or teams needing mature conventions | evaluate maturity, deployment constraints, and agent familiarity before adopting |
 | Astro | content-heavy sites, marketing pages, docs, partial islands | complex authenticated app workflows | excellent for content boundaries; less direct fit for interactive business apps |
 
+## Locality and context criteria
+
+Add these criteria to framework comparisons when AI-maintainability matters:
+
+- **ownership locality**: can one route/feature/module own its data, actions, errors, UI, and tests without broad navigation?
+- **client/server boundary visibility**: can the agent tell which code ships to the browser and which remains trusted server-side?
+- **contract locality**: are query keys, loaders/actions, schemas, and mappings discoverable near their owner?
+- **validation locality**: can the changed behavior be checked without running unrelated application surfaces?
+- **instruction load**: does the stack require large always-on framework guidance, or can the agent load rules only when relevant?
+
+Examples: keep Next.js client boundaries narrow; let React Router route modules own route behavior when appropriate; prefer TanStack Query option factories that keep query identity and function colocated. Do not penalize a valid framework-native structure merely for lacking `features/` or `shared/` folders.
+
 ## Recommendation defaults
 
 - For internal backoffice or dashboard apps, recommend Vite + React unless SSR, SEO, or server-side composition is required.

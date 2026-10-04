@@ -63,3 +63,34 @@ A critical flow gate passes only when:
 - DLQ/logs do not reveal secrets or avoidable sensitive data;
 - retry/backoff/ack behavior is intentional;
 - every residual gap is documented.
+
+## Reproducible fuzzing evidence
+
+When fuzzing is applicable, do not record only that a fuzzer ran. Preserve enough identity to replay the failure and compare later runs:
+
+- fuzz engine and version when material;
+- fuzz target or entrypoint identity;
+- seed corpus identity/hash and corpus size;
+- dictionaries/custom mutators when used;
+- sanitizer/instrumentation profile;
+- random seed when exposed by the engine;
+- run/budget limits such as executions or wall-clock ceiling;
+- coverage evidence appropriate to the target;
+- crash/timeout signature;
+- minimal reproducer identity/hash when minimization is supported;
+- regression corpus status after a confirmed fix.
+
+A corpus can be regression evidence only when its identity is preserved. Coverage is evidence that the target reaches code/state, not proof that all relevant properties were asserted.
+
+## Reproducible concurrency evidence
+
+Load/concurrency volume can reveal races but usually cannot reproduce a specific scheduler decision. For race-sensitive hypotheses, prefer a bounded schedule or interleaving strategy when the runtime/harness supports it:
+
+1. freeze initial state, inputs, clock, partitions/keys, worker count, retry configuration, and dependency behavior;
+2. define the synchronization points or event-order decisions that matter;
+3. explore a bounded set of interleavings, schedules, or controlled event orders rather than relying only on uncontrolled load;
+4. when a failure appears, preserve the exact failing schedule/event-order trace plus random seed if one exists;
+5. replay that schedule/trace before calling the defect reproducible;
+6. after the fix, rerun the same failing schedule plus the normal baseline.
+
+Do not claim deterministic concurrency proof from a one-off load test whose failing interleaving cannot be replayed. When schedule control is unavailable, label the evidence stochastic/observed and preserve the strongest available event trace.

@@ -89,3 +89,8 @@ except Exception as exc:
     st.error("The chart could not be rendered with the current data.")
     st.caption("Try narrowing the filters or contact support if this persists.")
 ```
+
+
+## Version-sensitive recipe rule
+
+Before using a recipe containing recently introduced APIs, resolve the project version with `references/version-and-source-resolution.md`. Recipes are patterns, not proof that the target runtime supports every parameter shown.

@@ -62,6 +62,28 @@ Expand when one of these is observed:
 
 Do not expand merely because more files exist.
 
+## Context-efficiency receipt
+
+When context economy is part of the claim, record enough evidence to distinguish useful selectivity from under-reading:
+
+```text
+quality_gate
+inspected_exact_sources
+orientation_or_summary_sources
+expansion_reasons
+expansion_rounds
+tokens_or_context_size   # when observable
+tool_turns               # when observable
+latency_or_cost          # when observable
+material_uninspected_dependencies
+```
+
+Interpretation order is fixed: the applicable correctness/security/validation gate must hold first. Only then compare context/tokens/turns/cost. A cheaper run that misses required evidence or fails the task is a regression, not an efficiency win.
+
+### Exact-source rule
+
+Summaries, repository maps, indexes, or generated architecture views may localize candidates. Before an edit or exact contract conclusion, inspect the authoritative source bytes and direct contract/tests that decide the behavior. Record a reason for material scope expansion using stable categories such as `dependency`, `contract-owner`, `cross-boundary`, `security-boundary`, `route-config`, `design-system`, or `failing-validation`.
+
 ## Stable finding contract
 
 For architecture, code, security, and UX findings, use these fields conceptually even when rendering prose:
@@ -102,6 +124,16 @@ Use:
 Avoid broad refactors while a focused gate is failing. If two consecutive repair rounds do not reduce the same objective failure set, stop that repair branch and report the unresolved evidence instead of trying unrelated changes.
 
 Do not fix a UI failure by hiding required content, weakening accessibility, lowering a test expectation, suppressing an error, or moving security responsibility into the frontend.
+
+## Freeze evaluator inputs before comparison
+
+When a frontend recommendation or candidate is being compared against a baseline, freeze evaluator inputs and the acceptance evidence before mutation whenever practical:
+
+- prompts/scenarios, relevant input fixtures, acceptance criteria, validator logic, and thresholds;
+- the target/source identity and material environment identity when they can affect the result;
+- any context-efficiency metric definitions used to compare baseline and candidate.
+
+If an evaluator must change after candidate results are visible, invalidate the affected comparison and explicitly re-baseline it. A planned scenario file is not executed behavioral evidence.
 
 ## Comparison discipline
 

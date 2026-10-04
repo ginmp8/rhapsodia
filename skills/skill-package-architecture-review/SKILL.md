@@ -1,13 +1,13 @@
 ---
 name: skill-package-architecture-review
-description: review, map, compare, or assess the internal architecture of an Agent Skills-compatible skill package, including SKILL.md control-plane design, references, scripts, assets, examples, evals, validators, dependency/resource/ownership maps, progressive loading, boundaries, handoffs, package cohesion, and whether to keep unified, split, extract a mode, create a router, merge resources, or make no structural change. use for evidence-based package architecture review, not generic implementation, hardening execution, benchmark ownership, or target-domain rewrites.
+description: review, map, compare, or assess the architecture of an Agent Skills-compatible skill package, including SKILL.md control-plane design, activation boundaries, architecture scope, references, scripts, assets, evals, validators, dependency/resource/ownership maps, progressive loading, evolution/change isolation, trust boundaries, handoffs, package cohesion, and whether to keep unified, split, extract a mode, create a router, merge resources, or make no structural change. use for evidence-based package architecture review, not generic implementation, hardening execution, benchmark ownership, full security audit, or target-domain rewrites.
 ---
 
 # Skill Package Architecture Review
 
 ## Purpose
 
-Review a reusable skill package as a system of control plane, resources, evidence, ownership boundaries, workflows, validators, and handoffs. Make repeated reviews of the same package materially comparable by starting from the same package identity, structural evidence model, rubric version, and report contract.
+Review a reusable skill package as a system of control plane, activation surface, resources, evidence, ownership boundaries, context loading, evolution paths, trust boundaries, workflows, validators, and handoffs. Make repeated reviews materially comparable by starting from the same package/evidence identities, structural evidence model, rubric version, and report contract.
 
 Preserve valid architecture. Reduce unjustified reviewer variance; do not replace context-dependent architectural judgment with rigid standardization.
 
@@ -21,8 +21,10 @@ Do not:
 - rewrite the target skill domain without package, repository, user, or supplied-source evidence;
 - mutate benchmark fixtures or expected outputs;
 - recommend deletion from filename, size, or absent direct `SKILL.md` reference alone;
-- call planned scenarios, static inspection, or rubric scores measured behavior;
-- force a preferred folder pattern when the existing design is coherent and maintainable.
+- call planned scenarios, static inspection, rubric scores, or unexecuted activation cases measured behavior;
+- force a preferred folder pattern when the existing design is coherent and maintainable;
+- infer adjacent catalog contents, repository history, or trust properties that were not inspected;
+- absorb detailed vulnerability/security analysis that belongs to a security review.
 
 ## Reproducibility ceiling
 
@@ -31,12 +33,12 @@ This is a research/analytic skill.
 Mechanically reproducible:
 
 - deterministic inventory and package identity;
-- dependency, resource, ownership-role, and direct loading maps;
+- dependency, resource, ownership-role, direct-loading, and context-topology maps;
 - local-link checks;
 - report field/schema validation;
-- scenario/evaluator identity.
+- scenario/evaluator/source identity when frozen.
 
-Bounded judgment remains necessary for cohesion, maintenance cost, ownership fit, future evolution, and trade-offs between valid architectures. Every such judgment must cite evidence and remain distinguishable from observation.
+Bounded judgment remains necessary for cohesion, activation fit, maintenance cost, ownership fit, future evolution, trust-boundary significance, and trade-offs between valid architectures. Every such judgment must cite evidence and remain distinguishable from observation.
 
 ## Modes
 
@@ -44,36 +46,41 @@ Use the smallest mode that answers the request. Explicit user mode wins.
 
 | Mode | Select when | Output |
 |---|---|---|
-| `package-map` | files, roles, dependencies, consumers, ownership surface, or package identity are the question | deterministic structural evidence |
-| `progressive-loading-review` | control-plane size, conditional references, hidden loading, or context efficiency is the question | loading findings |
+| `package-map` | files, roles, dependencies, consumers, ownership surface, context topology, or package identity are the question | deterministic structural evidence |
+| `progressive-loading-review` | control-plane size, conditional references, hidden loading, routing depth, or context efficiency is the question | loading/context findings |
+| `activation-architecture-review` | trigger overlap, adjacent skills, catalog routing, or single-skill vs family/package scope affects the decision | activation/scope findings |
+| `evolution-architecture-review` | likely change, change radius, sensitivity/tradeoff points, or optional VCS co-change evidence affects the decision | evolution findings |
 | `resource-integration-review` | orphan/duplicate/excess/misplacement/integration is the question | resource findings after consumer tracing |
-| `governance-boundary-review` | ownership, authority, handoffs, adjacent skills, or stop conditions are the question | boundary findings |
+| `governance-boundary-review` | ownership, authority, trust/privilege topology, handoffs, adjacent skills, or stop conditions are the question | boundary findings |
 | `content-quality-review` | reference clarity, actionability, flow, or maintainability is the question | content findings |
 | `repo-structure-review` | folder layout, package hygiene, validators, or artifact boundaries are the question | structure findings |
 | `architecture-recommendation` | user asks whether to keep, split, extract, route, merge, or change architecture | one primary architecture decision plus alternatives |
 | `review-report` | user asks for a complete/durable review across several areas | canonical report contract |
 
-If several modes could apply and the user asks for a complete architecture review, use `review-report`. Otherwise prefer the narrowest matching mode.
+If several modes apply and the user asks for a complete architecture review, use `review-report`. Otherwise prefer the narrowest matching mode.
 
 ## Progressive loading
 
 Read target `SKILL.md` first. Then load only what the active mode needs:
 
-- [`references/architecture-evidence-model.md`](references/architecture-evidence-model.md): evidence identity, deterministic maps, resource/ownership taxonomy, consumer tracing, and observation versus judgment.
-- [`references/package-architecture-rubric.md`](references/package-architecture-rubric.md): rubric v2.0.0, decision criteria, evidence minimums, tie-breakers, severity, and scoring when requested.
-- [`references/progressive-loading-patterns.md`](references/progressive-loading-patterns.md): loading review criteria and recommendation patterns.
+- [`references/architecture-evidence-model.md`](references/architecture-evidence-model.md): evidence identity, deterministic maps, resource/ownership taxonomy, architecture scope, and observation versus judgment.
+- [`references/package-architecture-rubric.md`](references/package-architecture-rubric.md): rubric v3.0.0, decision criteria, evidence minimums, tie-breakers, severity, and scoring when requested.
+- [`references/progressive-loading-patterns.md`](references/progressive-loading-patterns.md): loading/context-topology review criteria and recommendation patterns.
+- [`references/activation-architecture.md`](references/activation-architecture.md): focal-vs-catalog activation evidence, scope classification, collision states, and unknown-evidence discipline.
+- [`references/evolution-architecture.md`](references/evolution-architecture.md): bounded quality/change scenarios, sensitivity/tradeoff points, change isolation, and optional change-coupling evidence.
+- [`references/trust-boundary-topology.md`](references/trust-boundary-topology.md): executable/network/permission topology and security handoff boundary.
 - [`references/resource-integration-checklist.md`](references/resource-integration-checklist.md): integration/duplicate/orphan/deletion discipline.
 - [`references/governance-boundary-checklist.md`](references/governance-boundary-checklist.md): authority, ownership, handoffs, and adjacent-skill boundaries.
 - [`references/architecture-report-contract.md`](references/architecture-report-contract.md): stable logical report schema and claim vocabulary.
-- [`evals/architecture-review-scenarios.json`](evals/architecture-review-scenarios.json): frozen regression/activation suite; treat as planned until actually executed.
+- [`evals/architecture-review-scenarios.json`](evals/architecture-review-scenarios.json): regression/activation/metamorphic suite; treat cases as planned until actually executed.
 - [`assets/templates/package-review-report.md.template`](assets/templates/package-review-report.md.template): Markdown rendering skeleton for durable reports.
-- [`scripts/inventory_skill_package.py`](scripts/inventory_skill_package.py): deterministic structural evidence and package SHA-256.
-- [`scripts/validate_architecture_report.py`](scripts/validate_architecture_report.py): machine-readable report gate.
+- [`scripts/inventory_skill_package.py`](scripts/inventory_skill_package.py): deterministic structural/context evidence and package SHA-256.
+- [`scripts/validate_architecture_report.py`](scripts/validate_architecture_report.py): machine-readable report gate with legacy-report compatibility.
 - [`scripts/self_test.py`](scripts/self_test.py): deterministic helper self-test.
 - [`scripts/validate_portability.py`](scripts/validate_portability.py): deterministic portable-core and runtime-assumption gate.
 - [`references/host-portability.md`](references/host-portability.md): capability-based behavior and host-neutral execution contract.
 
-Keep the semantic core host-neutral. `agents/openai.yaml` is optional; OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, and Cursor must rely on the same portable workflow rather than vendor-private APIs. Load [`references/host-portability.md`](references/host-portability.md) when runtime compatibility matters, resolve Python 3.10+ as `<PYTHON>`, and close mechanically checkable portability with:
+Keep the semantic core host-neutral. `agents/openai.yaml` is optional; OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, and Cursor must rely on the same portable workflow rather than vendor-private APIs. Load `references/host-portability.md` when runtime compatibility matters, resolve Python 3.10+ as `<PYTHON>`, and close mechanically checkable portability with:
 
 ```text
 <PYTHON> scripts/validate_portability.py --target <SKILL_ROOT>
@@ -83,11 +90,19 @@ Treat a pass as evidence only for the checks performed, not proof that every hos
 
 ## Workflow
 
-### 1. Resolve the exact target
+### 1. Resolve the exact target and architecture scope
 
-Identify one package root containing the target `SKILL.md`. Record target path/source, selected mode, available capabilities, and missing evidence. If target identity is ambiguous, stop rather than combining packages.
+Identify one focal skill package containing the target `SKILL.md`. Record target path/source, selected mode, available capabilities, and missing evidence.
 
-### 2. Freeze structural identity before judgment
+Classify the context required for the question as exactly one of:
+
+- `single_skill` — the focal package is sufficient;
+- `skill_family` — adjacent skill descriptions/routing/ownership materially affect the decision;
+- `plugin_package` — the real issue belongs to a containing plugin/package/capability boundary.
+
+The focal skill remains the reviewed target. Do not combine several plausible roots merely because they are nearby. For `skill_family` or `plugin_package`, inspect only explicitly supplied/discovered context; otherwise keep the focal review bounded, mark missing catalog/package evidence, and hand off broader redesign when needed.
+
+### 2. Freeze identities before judgment
 
 When command execution and Python 3.10+ are available, run:
 
@@ -97,31 +112,32 @@ When command execution and Python 3.10+ are available, run:
 
 Record `package_identity_sha256` and inventory schema version. For repeated reviews, compare only reports tied to the same package identity unless the change is intentional and explicitly noted.
 
-If the script cannot run, build the same evidence classes manually, mark exact package identity `not-measured`, and do not claim exact-repeatability or package-hash equivalence.
+Freeze any scenario/evaluator or material external source identity that will decide a before/after comparison before candidate mutation. If the script cannot run, build the same evidence classes manually, mark exact package identity `not-measured`, and do not claim exact-repeatability or package-hash equivalence.
 
-### 3. Build the same evidence model
+### 3. Build the evidence model
 
 Use `references/architecture-evidence-model.md`.
 
 Capture, in deterministic path order when possible:
 
-1. file/resource inventory;
-2. dependency edges;
-3. resource role/taxonomy;
-4. ownership-role map;
-5. consumer evidence;
-6. `SKILL.md` direct progressive-loading declarations;
-7. local-link and package hygiene facts;
-8. validators, templates, evals, and host adapters.
+1. file/resource inventory and dependency edges;
+2. resource and ownership-role maps;
+3. consumer evidence;
+4. direct progressive-loading declarations and measured context topology;
+5. architecture scope and available activation/catalog evidence;
+6. validators, templates, evals, and host adapters;
+7. trust/privilege topology when executable/network/permission surfaces matter;
+8. local-link/package hygiene facts;
+9. material evidence gaps.
 
-Never interpret `unresolved-no-evidence` as `orphaned`.
+Never interpret `unresolved-no-evidence` as `orphaned`, or `unknown` activation/trust evidence as a negative finding.
 
 ### 4. Trace consumers before resource judgments
 
 Before `orphaned`, `obsolete`, `duplicate`, merge, deprecation, or deletion recommendations, trace:
 
 - direct `SKILL.md` references;
-- references and mode routing;
+- reference/mode routing;
 - script imports, reads, globs, path construction, templates, validators, and package commands;
 - eval/example consumers;
 - intentionally asset-only/runtime use;
@@ -129,11 +145,21 @@ Before `orphaned`, `obsolete`, `duplicate`, merge, deprecation, or deletion reco
 
 If consumers cannot be ruled out, classify the resource `unknown` or `weakly-integrated`, not removable.
 
-### 5. Analyze progressive loading
+### 5. Analyze context/progressive loading
 
-Apply `references/progressive-loading-patterns.md`. Separate observed loading facts from judgment about cognitive/context cost. Size alone is never a split criterion.
+Apply `references/progressive-loading-patterns.md`. Separate measured topology facts from judgment about cognitive/context cost. File size, line count, reference count, or reference depth alone is never a split criterion. Do not turn research about routing depth into an unsupported universal hard threshold.
 
-### 6. Apply rubric v2.0.0
+### 6. Analyze activation architecture when material
+
+Apply `references/activation-architecture.md` when adjacent skills/catalog routing can affect the conclusion. Keep internal cohesion separate from catalog-level activation evidence. If the catalog cannot be inspected, report activation evidence as `unknown`/`partial`; never fabricate competing skills or activation rates.
+
+### 7. Analyze evolution and trust boundaries when material
+
+Apply `references/evolution-architecture.md` for realistic change scenarios, sensitivity/tradeoff points, and change isolation. Repository change coupling is optional corroborating evidence and is never sufficient by itself for split, merge, extraction, routing, deletion, or ownership transfer.
+
+Apply `references/trust-boundary-topology.md` when authority differs across resources/modes. Map the boundary, then hand detailed security analysis to a security reviewer rather than duplicating that ownership.
+
+### 8. Apply rubric v3.0.0
 
 Use `references/package-architecture-rubric.md` for every `architecture-recommendation` and `review-report` decision.
 
@@ -146,11 +172,11 @@ Evaluate exactly these primary decisions:
 - `merge_resources`
 - `no_change`
 
-A handoff is a next action, not a seventh architecture decision.
+A handoff is a next action, not a seventh architecture decision. Architecture scope is evidence context, not another decision.
 
 Use the rubric's minimum evidence and tie-breaker order. When several architectures remain valid, prefer the smallest change that resolves an evidenced problem. If no evidenced problem requires structural change, `no_change` is valid and should not be treated as indecision.
 
-### 7. Separate observation from architectural judgment
+### 9. Separate observation from architectural judgment
 
 Every material claim must be one of:
 
@@ -160,7 +186,7 @@ Every material claim must be one of:
 
 Do not rewrite observations into stronger judgments without evidence.
 
-### 8. Validate and report
+### 10. Validate, freeze, and report
 
 For durable reports, follow `references/architecture-report-contract.md`. When emitting the canonical JSON companion, validate it:
 
@@ -168,42 +194,45 @@ For durable reports, follow `references/architecture-report-contract.md`. When e
 <PYTHON> scripts/validate_architecture_report.py <REPORT.json>
 ```
 
-Report exact package identity when measured, rubric version, evidence inspected, observations, judgments, decision, alternatives, measured commands/scenarios, and residual risks.
+Report exact package identity when measured, rubric version, architecture scope, evidence inspected/gaps, observations, judgments, decision, alternatives, relevant activation/context/evolution/trust evidence, measured commands/scenarios, and residual risks.
 
-### Evaluator and evidence freeze
+For before/after or repeated-review comparisons, treat the rubric version, report validator, scenario suite, target package identity, and material source snapshot as evaluator/evidence inputs. Do not edit them after seeing a candidate result and still call the comparison equivalent. If an evaluator changes, version it and start a new comparison.
 
-For before/after or repeated-review comparisons, treat the rubric version, report validator, scenario suite, target package identity, and any material external source snapshot as evaluator/evidence inputs. Do not edit them after seeing a candidate result and still call the comparison equivalent. If an evaluator must change, version it and start a new comparison.
-
-When external repository/files materially determine a judgment, capture the exact source bytes or immutable revision identity before analysis. Do not mix observations from one source version with a decision based on another without explicit re-baselining.
+After a durable report passes its final validator, treat that exact report as frozen for the recorded package/evidence identity. Any content edit after the pass requires affected revalidation before delivery or comparison claims.
 
 ### Diagnostic repair loop
 
-If inventory/report validation fails, repair the smallest diagnosed contract defect and rerun the same failing gate before adjacent checks. Never weaken the rubric, delete evidence, change frozen scenarios, or lower validation requirements to obtain a pass. After a durable report passes its final validator, treat that report as frozen for the recorded package/evidence identity; later edits require revalidation.
+If inventory/report validation fails, repair the smallest diagnosed contract defect and rerun the same failing gate before adjacent checks. Never weaken the rubric, delete evidence, change frozen scenarios/expected outcomes, or lower validation requirements to obtain a pass.
 
 ## Architectural invariants
 
 - Preserve a cohesive skill when one domain, activation surface, owner/evidence lifecycle, and progressive-loading model explain it.
-- Do not split because of file count, line count, reference count, or stylistic preference.
+- Do not split because of file count, line count, reference count, routing depth, or stylistic preference.
+- Keep internal cohesion distinct from catalog-level activation evidence.
+- Do not infer a skill-family/plugin architecture when adjacent package/catalog evidence is unavailable.
 - Do not merge resources merely because both are short or often adjacent; require overlapping decision ownership or drift evidence.
 - Do not create a router unless there are separable destinations and stable dispatch evidence.
 - Do not extract a mode unless it has meaningfully distinct activation and at least one independent lifecycle signal such as resources, validators, ownership, release cadence, or user expectation.
+- Treat VCS change coupling as corroborating evidence only, never as a sufficient architecture decision rule.
 - Do not recommend deletion until consumer tracing and retention purpose are checked.
 - Prefer integration, relocation, clearer routing, or no change before destructive cleanup when evidence is incomplete.
 - Preserve host-specific adapters when useful, but do not make them semantic core dependencies for a portable package.
+- Map trust/privilege boundaries when material; hand detailed security analysis to the security owner.
 
 ## Output contract
 
 Every substantive review must include:
 
-1. target, selected mode, package identity status, and rubric version;
+1. target, selected mode, architecture scope, package identity status, and rubric version;
 2. evidence inspected, commands executed, and missing evidence;
-3. mechanical observations: inventory, dependency/resource/ownership/consumer/loading facts;
-4. architectural judgments with evidence IDs and confidence;
-5. one primary decision from the six-decision enum when a decision is requested;
-6. alternatives considered and the tie-breaker used;
-7. recommendations with evidence, expected benefit, risk, and validation gate;
-8. measured versus unmeasured behavioral evidence;
-9. residual risks and next-action handoff when relevant.
+3. mechanical observations: inventory, dependency/resource/ownership/consumer/loading/context facts;
+4. relevant activation/catalog, evolution/scenario, and trust-boundary evidence, with unknown states explicit;
+5. architectural judgments with evidence IDs and confidence;
+6. one primary decision from the six-decision enum when a decision is requested;
+7. alternatives considered and the tie-breaker used;
+8. recommendations with evidence, expected benefit, risk, and validation gate;
+9. measured versus unmeasured behavioral evidence;
+10. residual risks and next-action handoff when relevant.
 
 Use the stable field definitions in `references/architecture-report-contract.md` for durable or machine-readable output.
 
@@ -211,11 +240,13 @@ Use the stable field definitions in `references/architecture-report-contract.md`
 
 Stop or return a bounded review when:
 
-- zero or multiple ambiguous target roots exist;
+- the focal target root is ambiguous;
 - exact package identity is required but the package bytes cannot be accessed;
-- the requested conclusion depends on benchmark/scenario evidence that was not supplied or executed;
+- the requested conclusion depends on benchmark/scenario/activation evidence that was not supplied or executed;
 - a split, merge, router, extraction, deletion, or domain rewrite lacks the rubric's minimum evidence;
+- a `skill_family`/`plugin_package` conclusion requires surrounding catalog/package evidence that cannot be inspected;
 - hidden/external consumers may exist and cannot be inspected for a destructive recommendation;
 - package files contain secrets/credentials or blocked paths that should not be opened;
+- detailed security conclusions are required but a security-review evidence path is unavailable;
 - the only way to reach a preferred architecture is to weaken validation, safety, ownership, or evidence requirements;
 - validation fails and the next change would require out-of-scope implementation.

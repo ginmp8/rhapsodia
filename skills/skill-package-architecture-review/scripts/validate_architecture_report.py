@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the machine-readable package architecture review contract."""
+"""Validate machine-readable package architecture review contracts."""
 
 from __future__ import annotations
 
@@ -9,16 +9,65 @@ import re
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = "1.0.0"
-RUBRIC_VERSION = "2.0.0"
+CURRENT_SCHEMA_VERSION = "2.0.0"
+CURRENT_RUBRIC_VERSION = "3.0.0"
+LEGACY_SCHEMA_VERSION = "1.0.0"
+LEGACY_RUBRIC_VERSION = "2.0.0"
 DECISIONS = {"keep_unified", "split", "extract_mode", "create_router", "merge_resources", "no_change"}
 OBSERVATION_KINDS = {"mechanical", "declared-contract", "behavioral", "supplied", "derived"}
 CONFIDENCE = {"low", "medium", "high"}
+ARCHITECTURE_SCOPES = {"single_skill", "skill_family", "plugin_package"}
+ACTIVATION_STATUSES = {"distinct", "overlap", "partial", "unknown"}
+HISTORY_STATUSES = {"observed", "partial", "not-inspected", "unknown"}
+TRUST_STATUSES = {"observed", "partial", "unknown"}
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def _nonempty(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _string_list(value: Any) -> bool:
+    return isinstance(value, list) and all(isinstance(item, str) for item in value)
+
+
+def _nonnegative_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _validate_evidence_records(
+    records: Any,
+    label: str,
+    all_ids: set[str],
+    errors: list[str],
+    *,
+    claim_field: str,
+    surfaces: bool = False,
+) -> None:
+    if not isinstance(records, list):
+        errors.append(f"{label} must be a list")
+        return
+    seen: set[str] = set()
+    for i, item in enumerate(records):
+        if not isinstance(item, dict):
+            errors.append(f"{label}[{i}] must be an object")
+            continue
+        rid = item.get("id")
+        if not _nonempty(rid):
+            errors.append(f"{label}[{i}].id is required")
+        elif rid in seen:
+            errors.append(f"duplicate {label} id: {rid}")
+        else:
+            seen.add(rid)
+        if not _nonempty(item.get(claim_field)):
+            errors.append(f"{label}[{i}].{claim_field} is required")
+        refs = item.get("evidence_ids")
+        if not isinstance(refs, list) or not refs:
+            errors.append(f"{label}[{i}].evidence_ids must be a non-empty list")
+        elif any(ref not in all_ids for ref in refs):
+            errors.append(f"{label}[{i}].evidence_ids contains unknown ids")
+        if surfaces and not _string_list(item.get("affected_surfaces")):
+            errors.append(f"{label}[{i}].affected_surfaces must be a list of strings")
 
 
 def validate(data: Any) -> dict[str, Any]:
@@ -27,10 +76,22 @@ def validate(data: Any) -> dict[str, Any]:
     if not isinstance(data, dict):
         return {"status": "fail", "errors": ["report root must be an object"], "warnings": []}
 
-    if data.get("schema_version") != SCHEMA_VERSION:
-        errors.append(f"schema_version must be {SCHEMA_VERSION}")
-    if data.get("rubric_version") != RUBRIC_VERSION:
-        errors.append(f"rubric_version must be {RUBRIC_VERSION}")
+    schema = data.get("schema_version")
+    rubric = data.get("rubric_version")
+    if schema == CURRENT_SCHEMA_VERSION:
+        if rubric != CURRENT_RUBRIC_VERSION:
+            errors.append(f"rubric_version must be {CURRENT_RUBRIC_VERSION} for schema {CURRENT_SCHEMA_VERSION}")
+        contract = "current"
+    elif schema == LEGACY_SCHEMA_VERSION:
+        if rubric != LEGACY_RUBRIC_VERSION:
+            errors.append(f"rubric_version must be {LEGACY_RUBRIC_VERSION} for legacy schema {LEGACY_SCHEMA_VERSION}")
+        contract = "legacy"
+        warnings.append("legacy report contract accepted; current architecture-scope/activation/evolution/trust fields are unavailable")
+    else:
+        errors.append(
+            f"schema_version must be {CURRENT_SCHEMA_VERSION} (current) or {LEGACY_SCHEMA_VERSION} (legacy)"
+        )
+        contract = "unknown"
 
     target = data.get("target")
     if not isinstance(target, dict):
@@ -44,6 +105,8 @@ def validate(data: Any) -> dict[str, Any]:
 
     if not _nonempty(data.get("mode")):
         errors.append("mode is required")
+    if contract == "current" and data.get("architecture_scope") not in ARCHITECTURE_SCOPES:
+        errors.append("architecture_scope must be one of: " + ", ".join(sorted(ARCHITECTURE_SCOPES)))
 
     snapshot = data.get("evidence_snapshot")
     if not isinstance(snapshot, dict):
@@ -104,8 +167,76 @@ def validate(data: Any) -> dict[str, Any]:
         if item.get("confidence") not in CONFIDENCE:
             errors.append(f"judgments[{i}].confidence must be low, medium, or high")
 
-    decision = data.get("decision")
     all_ids = observation_ids | judgment_ids
+
+    if contract == "current":
+        activation = data.get("activation_evidence")
+        if not isinstance(activation, dict):
+            errors.append("activation_evidence must be an object")
+        else:
+            if activation.get("status") not in ACTIVATION_STATUSES:
+                errors.append("activation_evidence.status is unsupported")
+            if not _string_list(activation.get("signals")):
+                errors.append("activation_evidence.signals must be a list of strings")
+            if not _nonempty(activation.get("catalog_scope")):
+                errors.append("activation_evidence.catalog_scope is required")
+
+        topology = data.get("context_topology")
+        required_topology = {
+            "skill_md_line_count",
+            "direct_declared_resource_count",
+            "reference_chain_max_depth",
+            "nested_reference_edge_count",
+        }
+        if not isinstance(topology, dict):
+            errors.append("context_topology must be an object")
+        else:
+            for field in sorted(required_topology):
+                if not _nonnegative_int(topology.get(field)):
+                    errors.append(f"context_topology.{field} must be a non-negative integer")
+
+        _validate_evidence_records(
+            data.get("quality_scenarios"), "quality_scenarios", all_ids, errors, claim_field="stimulus", surfaces=True
+        )
+        _validate_evidence_records(
+            data.get("sensitivity_points"), "sensitivity_points", all_ids, errors, claim_field="claim"
+        )
+        _validate_evidence_records(
+            data.get("tradeoff_points"), "tradeoff_points", all_ids, errors, claim_field="claim"
+        )
+
+        evolution = data.get("evolution_evidence")
+        if not isinstance(evolution, dict):
+            errors.append("evolution_evidence must be an object")
+        else:
+            if evolution.get("history_status") not in HISTORY_STATUSES:
+                errors.append("evolution_evidence.history_status is unsupported")
+            if not isinstance(evolution.get("change_coupling"), list):
+                errors.append("evolution_evidence.change_coupling must be a list")
+            if not _string_list(evolution.get("change_radius_notes")):
+                errors.append("evolution_evidence.change_radius_notes must be a list of strings")
+
+        trust = data.get("trust_boundary_map")
+        if not isinstance(trust, dict):
+            errors.append("trust_boundary_map must be an object")
+        else:
+            if trust.get("status") not in TRUST_STATUSES:
+                errors.append("trust_boundary_map.status is unsupported")
+            for field in (
+                "executable_resources",
+                "network_requirements",
+                "filesystem_write_requirements",
+                "external_tool_requirements",
+            ):
+                if not _string_list(trust.get(field)):
+                    errors.append(f"trust_boundary_map.{field} must be a list of strings")
+            if not isinstance(trust.get("security_handoff_required"), bool):
+                errors.append("trust_boundary_map.security_handoff_required must be boolean")
+
+        if not _string_list(data.get("evidence_gaps")):
+            errors.append("evidence_gaps must be a list of strings")
+
+    decision = data.get("decision")
     if not isinstance(decision, dict):
         errors.append("decision must be an object")
     else:
@@ -139,7 +270,12 @@ def validate(data: Any) -> dict[str, Any]:
 
     if not errors and not observations:
         warnings.append("report has no observations")
-    return {"status": "pass" if not errors else "fail", "errors": errors, "warnings": warnings}
+    return {
+        "status": "pass" if not errors else "fail",
+        "contract": contract,
+        "errors": errors,
+        "warnings": warnings,
+    }
 
 
 def main() -> int:

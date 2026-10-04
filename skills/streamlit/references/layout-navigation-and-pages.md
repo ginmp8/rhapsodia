@@ -2,59 +2,30 @@
 
 ## Layout principles
 
-Use layout to express decision hierarchy. A user should understand the current question, available controls, and result area without reading code.
+Use layout to express decision hierarchy. Prefer native containers and configuration over custom CSS. Read `references/design-accessibility-and-theme.md` when visual polish or accessibility is in scope.
 
-## Common layout patterns
+## Responsive grouping
 
-### Sidebar filters
+Use containers for semantic grouping and responsive horizontal rows when the resolved version supports them. Reserve columns for fixed grids or deliberate width ratios. Avoid deeply nested container hierarchies.
 
-Use for global controls that affect most of a page. Keep the sidebar short; group advanced filters in expanders.
+## Tabs and expanders
 
-### Top control strip
+Tabs are alternative views of related information, not independent applications. Hidden/collapsed content may still execute depending on version and container behavior; guard expensive work when the API provides an explicit open/selection state, or move independent workflows to pages/fragments.
 
-Use columns at the top when filters are few and important. This keeps the result area visually connected to controls.
+## Multipage default
 
-### KPI row plus detail tabs
+For new apps on versions that support it, prefer `st.navigation` + `st.Page` because page registration, role/feature filtering, URL behavior, shared layout, and testing are explicit. Treat the legacy `pages/` auto-discovery pattern primarily as compatibility for existing apps or older pins.
 
-Use columns for metrics and tabs for drilldowns. Keep expensive charts in tabs only when users need all tabs loaded together; otherwise use pages or conditional rendering.
+Keep page files direct and simple. Put shared business/data/security logic in modules, not in duplicated page wrappers.
 
-### Master-detail
+## Authorization and navigation
 
-Use a table or list selection on the left and details on the right. Store selected ID in session state.
-
-### Wizard
-
-Represent steps as explicit session-state values. Render one step at a time and keep transitions controlled by buttons/forms.
-
-## Containers
-
-Use `st.container` to group related UI and `st.empty` to replace content after an action. Avoid deeply nested containers unless they clarify ownership.
-
-## Tabs
-
-Tabs are useful for alternative views of the same data. They are less ideal for unrelated workflows. If each tab has independent state, URL, role, or data source, use pages.
-
-## Expanders and popovers
-
-Use expanders for optional details and diagnostics. Use popovers for compact controls. Do not hide primary actions or critical errors in collapsed UI.
-
-## Multipage apps
-
-Use programmatic navigation when page definitions depend on roles, feature flags, or dynamic availability. Use the pages directory for simple static page sets. Keep shared utilities outside page files.
+Dynamic navigation may hide unavailable pages, but hiding navigation is not authorization. Protected data/actions must perform backend authorization independently.
 
 ## Page state
 
-Cross-page state should be explicit and small: selected entity, current role, filter set, or authenticated user. Avoid stuffing full datasets into session state for page handoff.
-
-## Theme and configuration
-
-Use `.streamlit/config.toml` for theme and server/client defaults. Treat config as deployment input, not hidden business logic. Document settings that affect security, uploads, CORS, or error visibility.
+Keep cross-page state small and intentional. Use URL binding for shareable filters when supported, `persist_state` for session/page persistence when supported, and durable storage for data that must survive a session. Do not pass large datasets through session state merely to move between pages.
 
 ## UX review
 
-- Is the page title actionable?
-- Does the first screen show the app purpose?
-- Are controls grouped by what they affect?
-- Are empty, loading, error, and success states visible?
-- Is there a path back from detail states?
-- Would the app still be usable on a narrower screen?
+Check title/purpose, global vs local controls, loading/empty/error/success states, navigation back paths, narrow-screen usability, and whether expensive hidden content is computed unnecessarily.

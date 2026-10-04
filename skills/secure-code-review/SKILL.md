@@ -1,181 +1,212 @@
 ---
 name: secure-code-review
-description: review code, configuration, infrastructure-as-code, ci/cd, logs, examples, and technical documentation specifically for hardcoded secrets, credential exposure, sensitive logging, unsafe secret loading, and remediation. use for focused secret/credential review of pasted code, files, repositories, yaml, json, env examples, docker files, or deployment manifests. do not use as the primary reviewer for unrelated application-security flaws.
+description: Review code, configuration, CI/CD, infrastructure-as-code, build artifacts, Git history, logs, examples, documentation, and agent skills for hardcoded secrets, credential exposure paths, unsafe secret loading or persistence, sensitive logging, and post-exposure remediation. Use when the main question is about credentials or secret handling. Do not use as the primary reviewer for unrelated application-security flaws such as injection, authorization, dependency vulnerabilities, or cryptographic design.
 ---
 
 # Secure Code Review
 
 ## Purpose
 
-Review code, configuration, infrastructure-as-code, CI/CD, examples, logs, and technical documentation for **secret exposure and insecure credential handling**. Produce evidence-linked findings without copying usable credentials into the review itself.
+Review **secret and credential exposure** with explicit coverage, redacted evidence, contextual risk assessment, and lifecycle-aware remediation. Keep automated detection separate from final security judgment: a detector match is a candidate signal, not proof of credential validity or impact severity.
 
-This is a focused security skill. It is not the primary reviewer for injection, authorization logic, dependency vulnerabilities, cryptography design, threat modeling, or broad application-security posture unless those issues directly concern secrets or credentials.
+This skill is intentionally narrow. Route unrelated application-security findings to a broader security review skill.
+
+## Portable core and capabilities
+
+Keep the semantic workflow host-neutral and compatible with the open Agent Skills format. `SKILL.md`, relative `scripts/`, `references/`, `schemas/`, and `evals/` are the portable core. `agents/openai.yaml` is optional OpenAI adapter metadata and must not be required for correctness.
+
+Before executable review, detect capabilities rather than host names:
+
+- filesystem read/write;
+- Python 3.10+ or equivalent execution;
+- Git CLI for optional Git history scanning;
+- access to build artifacts, CI logs, container/image contents, or external validity metadata when those surfaces are requested.
+
+If a capability is unavailable, mark that surface `not-run` or `unavailable`; never convert missing coverage into a clean result.
 
 ## Activation boundaries
 
-Use this skill when the request is mainly about one or more of:
+Use this skill when the request is mainly about:
 
-- hardcoded passwords, tokens, API keys, client secrets, signing keys, private keys, certificates with private material, or credential-bearing connection strings;
-- secrets in source, configuration, IaC, CI/CD, tests, examples, screenshots, logs, or documentation;
-- unsafe credential loading, fallback secrets, long-lived static credentials, or secret redaction;
-- repository or file-tree scanning for likely secret exposure;
-- remediation after a secret appears to have been exposed.
+- hardcoded passwords, API keys, tokens, client secrets, signing/private keys, certificates with private material, session material, or credential-bearing connection strings;
+- secrets in source, configuration, generated/build artifacts, repository history, CI/CD, IaC, containers, logs, examples, documentation, or agent skill packages;
+- unsafe secret fallbacks, storage, injection, propagation, persistence, masking, rotation, or revocation;
+- repository/file-tree scanning for credential exposure;
+- remediation after a secret appears exposed.
 
-Do not use it as the primary skill for:
+Do not use it as the primary skill for SQL injection, XSS, authorization design, dependency CVEs, general threat modeling, exploit development, or broad secure-code posture unless the issue directly creates a credential exposure path.
 
-- a general secure-code review whose main risks are unrelated to credentials;
-- vulnerability research or exploit development;
-- validating whether a credential is live by attempting authentication;
-- generic code quality or architecture review with no secret-handling question.
-
-If the request spans broad security/governance plus credentials, keep this skill responsible only for the credential/secret portion or route to the broader security skill.
+Never attempt to authenticate with a discovered credential. Provider- or user-supplied **external validity** evidence may be consumed as evidence, but this skill does not create it by trying the credential.
 
 ## Modes and routing
 
-Choose one route before reviewing:
+Choose the smallest route that covers the requested surfaces:
 
-1. **Direct review** — pasted snippets, screenshots, or a small number of files. Review manually against the policy and output contract.
-2. **Filesystem review** — a readable file or directory is available. Run the bundled scanner first, validate its JSON result, then perform semantic review of the scanner findings and relevant surrounding code.
-3. **Mixed review** — both pasted context and a filesystem target exist. Scan the target and review the supplied context separately; merge findings by stable issue identity without duplicating the same exposure.
+1. **Direct review** — pasted snippets, screenshots, or a small set of files.
+2. **Working-tree review** — scan a readable file/directory with `scan_secrets.py`, then semantically review findings and nearby code.
+3. **Repository-history review** — when a Git repository is available and history matters, additionally run `scan_git_history.py`.
+4. **Artifact/platform review** — inspect build artifacts, CI/CD, Docker, Kubernetes, Terraform, or similar secret-flow surfaces; load `references/platform-secret-review.md`.
+5. **Agent skill review** — inspect an Agent Skill or agent workflow for credential leakage across instructions, scripts, tools, outputs, logs, and temporary files; load `references/agent-skill-credential-review.md`.
+6. **Mixed review** — combine applicable surfaces and deduplicate by credential/exposure identity.
 
-Do not invent repository coverage. If a requested file, history, log, branch, or external system is unavailable, say that surface was not inspected.
+Do not invent repository, history, artifact, log, image, or external-system coverage.
 
-## Evidence and safety contract
+## Coverage contract
 
-Before reporting a finding:
+Read `references/exposure-surfaces.md` for surface semantics. Track each material surface independently using:
 
-- distinguish a real or likely credential from synthetic examples, public identifiers, hashes, and random-looking non-secret IDs;
-- do not echo a full suspected credential in the answer, scanner evidence, logs, receipts, or examples;
-- use the minimum redacted fragment needed to locate the issue;
-- preserve file/line provenance when available;
-- separate **severity** from **confidence**;
-- do not attempt to authenticate with a discovered credential as part of this skill.
+`complete | partial | not-run | unavailable | not-applicable`
 
-A scanner match is supporting evidence, not proof that a credential is live. A manual finding still requires concrete source evidence.
+Typical surfaces include:
 
-## Severity and confidence
+- working tree / supplied files;
+- **Git history**;
+- generated files and **build artifacts**;
+- container/image contents;
+- CI/CD configuration and logs;
+- IaC/state/plan material;
+- documentation/examples/tickets when supplied;
+- agent skill instructions/scripts/stdout/stderr/tool arguments;
+- external secret stores or provider validity metadata.
 
-Use the versioned rules in [`references/security-policy.md`](references/security-policy.md).
+A `complete` working-tree scan means complete only for the scanner's supported text scope. It does not imply complete Git history, binary artifact, remote CI-log, external-system, or container-image coverage.
 
-Severity is one of:
+## Detection and risk contract
 
-`critical | high | medium | low`
+Keep three concepts separate:
 
-Confidence is one of:
+1. **Detector signal** — regex/format/context candidate emitted by a scanner.
+2. **Confidence** — how strongly available evidence indicates secret material: `confirmed | likely | possible`.
+3. **Severity** — potential security impact after context: `critical | high | medium | low`.
 
-`confirmed | likely | possible`
+Do not raise final severity merely because a string has high entropy, a known prefix, or a detector labels it strongly. Evaluate exposure surface, privilege/scope, environment, credential authority, lifetime, distribution breadth, and evidence of actual secret semantics. Use `references/security-policy.md`.
 
-`possible` replaces the old practice of using "needs verification" as if it were a severity. If authenticity is uncertain, keep the potential impact severity and lower confidence instead.
+## Evidence and safety invariants
 
-Order findings by:
+For every reported finding:
 
-`severity desc -> path -> line -> rule -> finding id`
+- preserve exact file/line/commit/section provenance when available;
+- redact the credential; never reproduce a usable full value in reports, receipts, examples, or logs;
+- distinguish real/likely credentials from placeholders, public identifiers, hashes, checksums, and synthetic fixtures;
+- do not execute untrusted code or an untrusted agent skill merely to determine whether it leaks credentials;
+- do not authenticate with discovered credentials;
+- keep provider validity metadata explicitly external/supplied;
+- state skipped/unavailable surfaces.
 
-Do not raise severity only because a string looks random. Exposure surface, privilege, environment, credential type, and evidence determine severity.
-
-## Review workflow
+## Workflow
 
 ### 1. Establish scope and coverage
 
-Record what was actually inspected: pasted content, exact files/directories, repository surface, logs, history, or screenshots. Note inaccessible or intentionally skipped surfaces.
+Record requested surfaces, available artifacts, capability limits, and the intended conclusion. If the user asks for "no secrets anywhere", expand coverage only to surfaces actually available and report the rest explicitly.
 
-### 2. Run deterministic scanning when files are available
+### 2. Run deterministic candidate detection
 
-```bash
-python3 scripts/scan_secrets.py /path/to/target --format json --output /tmp/secure-code-review-scan.json
-python3 scripts/validate_scan_result.py /tmp/secure-code-review-scan.json
+For a file or directory:
+
+```text
+<PYTHON> scripts/scan_secrets.py <TARGET> --format json --output <SCAN_JSON>
+<PYTHON> scripts/validate_scan_result.py <SCAN_JSON>
 ```
 
-The scanner:
+The working-tree scanner includes supported text files under common build/output directories; binary and unsupported formats remain outside its proof surface.
 
-- traverses files canonically;
-- does not follow symbolic-link files;
-- emits relative paths and stable finding IDs;
-- redacts matched credential material;
-- reports skipped files and scan counts;
-- does not claim that zero matches means zero secrets outside scanned coverage.
+For Git history when requested/available:
 
-Read [`references/scanner-contract.md`](references/scanner-contract.md) before interpreting partial coverage or scanner diagnostics.
+```text
+<PYTHON> scripts/scan_git_history.py <REPOSITORY> --format json --output <HISTORY_JSON>
+<PYTHON> scripts/validate_history_scan_result.py <HISTORY_JSON>
+```
 
-### 3. Review semantic context
+History scanning requires Git. Failure or absence of Git is `not-run`/`unavailable`, not a clean history result.
 
-For each candidate:
+### 3. Review semantic context and secret flow
 
-- determine whether the value is synthetic, public, redacted, encrypted, credential-bearing, or likely usable;
-- inspect how the value is loaded, transmitted, logged, persisted, and scoped;
-- look for related copies in nearby config, tests, CI/CD, examples, and logging code when those surfaces are available;
-- distinguish storage risk from exposure risk and post-exposure response.
+For every candidate or manually observed issue:
 
-Do not promote a scanner heuristic directly into a confirmed finding without reviewing context.
+- determine whether the material is synthetic, public, encrypted, redacted, credential-bearing, or likely usable;
+- trace where it comes from and where it flows: source/store -> process -> transport -> log/output/artifact/client;
+- inspect nearby config, CI/CD, examples, logs, generated output, and build artifacts when available;
+- consider transformed/derived credentials that simple masking may miss;
+- load `references/platform-secret-review.md` for CI/CD, Docker, Kubernetes, Terraform, or IaC;
+- load `references/agent-skill-credential-review.md` for agent skill / LLM workflow review.
 
-### 4. Deduplicate
+A scanner hit alone is never `confirmed` merely because it matched a provider prefix.
 
-Merge detections that describe the same source location and secret-handling defect. Prefer the more specific rule over a generic entropy/assignment rule. Keep separate findings when remediation, exposure surface, or credential identity materially differs.
+### 4. Assess final severity and confidence
 
-### 5. Recommend the safest practical remediation
+Apply `references/security-policy.md`. Keep severity and confidence independent. If authenticity is uncertain, lower confidence; do not automatically lower potential impact when the credential would be dangerous if real.
 
-Use [`references/remediation-playbook.md`](references/remediation-playbook.md). Preferred order:
+### 5. Deduplicate by defect and credential flow
 
-1. workload, instance, or federated identity;
-2. managed secret store;
-3. deployment-time secret injection;
-4. developer-local untracked configuration only when the stronger options do not fit the environment.
+Merge duplicate detector hits for the same source value/exposure path. Keep separate findings when remediation, exposure surface, credential authority, or post-exposure response materially differs.
 
-For likely exposed credentials, include rotation or revocation, reuse search, least-privilege review, and preventive scanning where applicable.
+### 6. Recommend lifecycle-aware remediation
 
-### 6. Validate claims
+Use `references/remediation-playbook.md`. Prefer eliminating static credentials through workload/managed/federated identity or short-lived credentials when the platform supports it. Managed secret storage or runtime injection is a fallback, not proof that every exposure path is safe.
 
-If the scanner reports skipped files, unreadable files, size limits, or unsupported surfaces, phrase the conclusion as coverage-bounded. Do not write "no secrets" unless the requested surface was completely inspected and the evidence supports that statement.
+For likely exposure, prioritize containment and rotation/revocation before optional history rewriting. Search available surfaces for copies/reuse and review privilege scope.
 
-## Output contract v2
+### 7. Validate the conclusion
+
+- validate scanner JSON before trusting counts;
+- if any requested/material surface is partial, unavailable, or not-run, keep the conclusion coverage-bounded;
+- say `no candidate secrets found in inspected coverage`, not `no secrets`, unless the requested surface is actually complete and the evidence supports that stronger statement.
+
+## Output contract v3
 
 Use this structure unless the user requests another format.
 
 ### Security summary
 
-One short paragraph stating the inspected scope, highest material risk, and any important coverage limitation.
+State inspected scope, highest material risk, and the most important coverage limitation.
 
 ### Findings
 
-For each finding:
+For each finding include:
 
-- **ID:** stable identifier when available
-- **Severity:** critical | high | medium | low
-- **Confidence:** confirmed | likely | possible
-- **Location:** file and line, or precise section when lines are unavailable
-- **Rule:** stable category such as `hardcoded_credential`, `credential_in_log`, `private_key_material`, or scanner rule ID
-- **Issue:** what is wrong
-- **Evidence:** redacted, minimum necessary evidence
-- **Risk:** concrete consequence if the credential is usable or the practice persists
-- **Fix:** safest practical replacement
-- **Post-exposure:** rotate/revoke and scope-audit actions when exposure is likely
+- **ID** — stable scanner/history ID when available;
+- **Severity** — `critical | high | medium | low`;
+- **Confidence** — `confirmed | likely | possible`;
+- **Location** — file/line, commit/path/line, or precise section;
+- **Rule** — narrow semantic category or detector rule;
+- **Issue** — what is wrong;
+- **Evidence** — minimum redacted evidence;
+- **Risk** — concrete consequence if usable/exploitable;
+- **Fix** — safest practical replacement;
+- **Post-exposure** — rotation/revocation, reuse search, privilege review, and cleanup actions when applicable;
+- **External validity** — `active | inactive | unknown | not-supplied` only when provider/user evidence exists; never self-derived by authentication.
 
 ### Coverage
 
-State scanned/inspected surfaces and any skipped or unavailable surfaces. Omit this section only when the scope is trivially complete from the user-provided snippet.
+Use a table with `surface | status | evidence/limitation`. Include every requested or materially relevant surface.
 
 ### Remediation checklist
 
-Order by containment first, then code/config cleanup, rotation/revocation, least privilege, and prevention.
+Order by containment -> rotation/revocation -> active-path cleanup -> privilege reduction -> secondary-copy/history cleanup -> prevention.
 
 ## Stop conditions
 
-Stop or return a bounded partial review when:
+Return a bounded partial review when:
 
-- the requested artifact is unavailable or unreadable;
-- following a symlink would leave the requested scan root;
-- a binary/unsupported format is material but cannot be inspected safely;
-- a file is skipped by the scanner size or type policy and manual inspection is not feasible;
-- determining whether a credential is live would require attempting authentication;
-- a conclusion would require repository history, CI logs, or external systems that were not provided or accessible.
+- the requested artifact/repository/surface is unavailable or unreadable;
+- safe inspection would require following a symlink outside scope;
+- a binary/unsupported artifact is material but cannot be inspected;
+- Git history is requested but Git/repository history is unavailable;
+- determining validity would require authenticating with the discovered credential;
+- a conclusion requires CI logs, remote artifacts, container images, secret stores, or external systems that were not supplied/accessible;
+- an agent skill would need to be executed despite being untrusted merely to inspect possible credential leakage.
 
-Report the missing evidence instead of inferring a clean result.
+Report missing evidence instead of inferring a clean result.
 
-## Progressive references
+## Progressive resources
 
-- [`references/security-policy.md`](references/security-policy.md): severity, confidence, evidence, tie-breakers, and finding taxonomy.
-- [`references/remediation-playbook.md`](references/remediation-playbook.md): containment and replacement guidance.
-- [`references/scanner-contract.md`](references/scanner-contract.md): deterministic scanner behavior and coverage semantics.
-- [`schemas/scan-result.schema.json`](schemas/scan-result.schema.json): machine-readable scanner output contract.
-- [`references/source-basis.md`](references/source-basis.md): external standards and primary-source basis used to ground the policy.
-- [`evals/review-scenarios.json`](evals/review-scenarios.json): planned activation/boundary/regression cases; these are scenario definitions, not executed behavioral evidence.
+- `references/security-policy.md` — final severity/confidence, semantic taxonomy, evidence rules.
+- `references/exposure-surfaces.md` — coverage model and completeness semantics.
+- `references/remediation-playbook.md` — containment, identity-first replacement, rotation and cleanup.
+- `references/platform-secret-review.md` — CI/CD, Docker, Kubernetes, Terraform and IaC secret-flow checks.
+- `references/agent-skill-credential-review.md` — agent skill / LLM credential leakage review.
+- `references/scanner-contract.md` — deterministic working-tree and history scanner contracts.
+- `references/source-basis.md` — research/standards basis and freshness boundary.
+- `schemas/scan-result.schema.json` — working-tree scanner JSON contract.
+- `schemas/history-scan-result.schema.json` — Git history scanner JSON contract.
+- `evals/review-scenarios.json` and `evals/research-regression-scenarios.json` — planned routing/regression scenarios; scenario definitions are not executed behavioral evidence.

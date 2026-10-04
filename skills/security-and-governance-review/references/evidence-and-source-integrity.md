@@ -51,3 +51,13 @@ Always distinguish:
 - **external-current evidence:** current scanner/advisory/policy source data.
 
 Do not let one layer stand in for another.
+
+## External-current freshness and framework identity
+
+For living standards, advisories, protocol security guidance, regulations, or threat catalogs, record the source locator plus version/date or retrieval date. Do not treat a framework name alone as current evidence. If the conclusion depends on present applicability and freshness cannot be established, use `needs-verification`.
+
+Framework mappings are interpretation metadata, not proof of compliance, exploitability, or severity. Use `references/framework-crosswalk-policy.md` when a crosswalk or regulatory conclusion is material.
+
+## Runtime composition identity
+
+For agentic systems whose effective model/tool/policy/MCP/runtime configuration can change independently of source bytes, pair the source-tree receipt with a runtime inventory identity from `references/runtime-control-and-inventory.md`. A tree hash does not establish which model, tool catalog, policy bundle, or remote server actually ran.

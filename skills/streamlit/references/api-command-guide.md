@@ -1,5 +1,7 @@
 # Streamlit API Command Guide
 
+> **Compatibility note:** This file is a broad discovery/topic guide, not the authority for exact current signatures. Resolve the target project's Streamlit version first with `references/version-and-source-resolution.md`; when available, prefer the matching local `streamlit docs st.<command>` or official version-pinned docs/source. Do not introduce an API solely because it appears in this guide.
+
 This guide is an original command-oriented reference. It links to official documentation for exact signatures and version-specific behavior.
 
 # Write Magic Text Status

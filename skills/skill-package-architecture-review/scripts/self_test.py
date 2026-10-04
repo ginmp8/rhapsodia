@@ -53,10 +53,11 @@ def test_package_identity_is_path_independent() -> None:
         write_fixture(b)
         ia = inventory(a)
         ib = inventory(b)
-        assert ia["schema_version"] == "2.0.0"
+        assert ia["schema_version"] == "2.1.0"
         assert ia["package_identity_sha256"] == ib["package_identity_sha256"], (
             ia.get("package_identity_sha256"), ib.get("package_identity_sha256")
         )
+        assert ia["context_topology"] == ib["context_topology"]
 
 
 def test_resource_and_consumer_maps_are_explicit() -> None:
@@ -90,7 +91,22 @@ def test_ownership_and_progressive_loading_maps_are_stable() -> None:
         assert "assets/templates/report.md.template" in declared
 
 
-def valid_report() -> dict:
+def test_context_topology_is_mechanical_not_a_decision() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td) / "pkg"
+        write_fixture(root)
+        data = inventory(root)
+        topology = data["context_topology"]
+        assert topology["skill_md_line_count"] > 0
+        assert topology["skill_md_word_count"] > 0
+        assert topology["direct_declared_resource_count"] == 2
+        assert topology["reference_chain_max_depth"] == 1
+        assert topology["nested_reference_edge_count"] == 0
+        assert topology["reachable_reference_count"] == 1
+        assert topology["unreachable_reference_count"] == 0
+
+
+def valid_legacy_report() -> dict:
     return {
         "schema_version": "1.0.0",
         "rubric_version": "2.0.0",
@@ -115,14 +131,54 @@ def valid_report() -> dict:
     }
 
 
-def test_report_validator_accepts_contract_and_rejects_missing_identity() -> None:
+def valid_current_report() -> dict:
+    report = valid_legacy_report()
+    report.update({
+        "schema_version": "2.0.0",
+        "rubric_version": "3.0.0",
+        "architecture_scope": "single_skill",
+        "activation_evidence": {"status": "unknown", "signals": [], "catalog_scope": "not-inspected"},
+        "context_topology": {
+            "skill_md_line_count": 20,
+            "direct_declared_resource_count": 3,
+            "reference_chain_max_depth": 1,
+            "nested_reference_edge_count": 0,
+        },
+        "quality_scenarios": [
+            {"id": "qs-1", "stimulus": "add a mode", "affected_surfaces": ["routing"], "evidence_ids": ["obs-1"]}
+        ],
+        "sensitivity_points": [
+            {"id": "sp-1", "claim": "Routing is sensitive to trigger overlap.", "evidence_ids": ["obs-1"]}
+        ],
+        "tradeoff_points": [
+            {"id": "tp-1", "claim": "Isolation can increase composition overhead.", "evidence_ids": ["obs-1"]}
+        ],
+        "evolution_evidence": {"history_status": "not-inspected", "change_coupling": [], "change_radius_notes": []},
+        "trust_boundary_map": {
+            "status": "observed",
+            "executable_resources": [],
+            "network_requirements": [],
+            "filesystem_write_requirements": [],
+            "external_tool_requirements": [],
+            "security_handoff_required": False,
+        },
+        "evidence_gaps": ["Adjacent catalog not inspected."],
+    })
+    return report
+
+
+def test_report_validator_accepts_legacy_and_current_contracts() -> None:
     with tempfile.TemporaryDirectory() as td:
         p = Path(td) / "report.json"
-        p.write_text(json.dumps(valid_report()), encoding="utf-8")
+        p.write_text(json.dumps(valid_legacy_report()), encoding="utf-8")
         code, payload = run_json([sys.executable, str(REPORT_VALIDATOR), str(p)])
-        assert code == 0 and payload["status"] == "pass", payload
+        assert code == 0 and payload["status"] == "pass" and payload["contract"] == "legacy", payload
 
-        broken = valid_report()
+        p.write_text(json.dumps(valid_current_report()), encoding="utf-8")
+        code, payload = run_json([sys.executable, str(REPORT_VALIDATOR), str(p)])
+        assert code == 0 and payload["status"] == "pass" and payload["contract"] == "current", payload
+
+        broken = valid_current_report()
         del broken["target"]["package_identity_sha256"]
         p.write_text(json.dumps(broken), encoding="utf-8")
         code, payload = run_json([sys.executable, str(REPORT_VALIDATOR), str(p)])
@@ -130,13 +186,11 @@ def test_report_validator_accepts_contract_and_rejects_missing_identity() -> Non
         assert any("package_identity_sha256" in err for err in payload["errors"]), payload
 
 
-
 def test_portability_validator_passes_current_package() -> None:
-    root = Path(__file__).resolve().parents[1]
-    validator_path = root / "scripts" / "validate_portability.py"
+    validator_path = ROOT / "scripts" / "validate_portability.py"
     namespace: dict[str, object] = {"__name__": "portability_self_test"}
     exec(compile(validator_path.read_text(encoding="utf-8"), str(validator_path), "exec"), namespace)
-    result = namespace["validate"](root)
+    result = namespace["validate"](ROOT)
     assert result["status"] == "pass", result
     assert result["checks"]["package_identity_path_independent"] is True
 
@@ -146,7 +200,8 @@ def main() -> int:
         test_package_identity_is_path_independent,
         test_resource_and_consumer_maps_are_explicit,
         test_ownership_and_progressive_loading_maps_are_stable,
-        test_report_validator_accepts_contract_and_rejects_missing_identity,
+        test_context_topology_is_mechanical_not_a_decision,
+        test_report_validator_accepts_legacy_and_current_contracts,
         test_portability_validator_passes_current_package,
     ]
     failures: list[str] = []

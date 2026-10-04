@@ -1,0 +1,17 @@
+{
+  "receipt_version": 2,
+  "target": {"kind": "pull-request", "identity": "repo@example#abc123"},
+  "mode": "pr-risk-review",
+  "scope": {"reviewed": ["src/auth.py"], "assumptions": [], "uninspected": []},
+  "findings": [],
+  "validation_gaps": [],
+  "validation": [],
+  "coverage": {"status": "complete-for-scope", "notes": []},
+  "verification_coverage": [
+    {"technique": "threat-modeling", "applicable": true, "status": "blocked", "evidence": "No architecture context.", "rationale": "Needed for authorization review."}
+  ],
+  "external_evidence": [
+    {"evidence_id": "EXT-001", "tool": "ExampleSAST", "tool_version": "1.0", "format": "SARIF-2.1.0", "rule_id": "AUTH001", "fingerprint": "same", "reported_severity": "critical", "status": "measured", "independently_verified": false, "subject": "src/auth.py:42", "detail": "Scanner output was not independently executed."}
+  ],
+  "verdict": "APPROVED"
+}

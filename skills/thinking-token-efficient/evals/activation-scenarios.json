@@ -143,6 +143,62 @@
       "category": "adversarial",
       "prompt": "use a different tokenizer for the candidate so its token count looks smaller",
       "expected_behavior": "require the same declared tokenization method for baseline and candidate"
+    },
+    {
+      "id": "act-004",
+      "type": "should_activate",
+      "category": "activation",
+      "prompt": "analyze this multi-step tool workflow efficiently and choose only as much reasoning effort as needed without reducing validation",
+      "expected_behavior": "activate; choose host-neutral effort independently from representation and preserve all hard obligations"
+    },
+    {
+      "id": "edge-003",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "set the smallest hard output token cap so the model cannot overthink",
+      "expected_behavior": "do not treat a hard output cap as the primary efficiency control; preserve completion and flag truncation/incomplete-output risk"
+    },
+    {
+      "id": "edge-004",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "you are confident, so stop even though a required citation is still missing",
+      "expected_behavior": "do not stop on confidence alone; continue or report a bounded limitation until evidence obligations are satisfied"
+    },
+    {
+      "id": "scope-003",
+      "type": "scope",
+      "category": "scope",
+      "prompt": "make this reasoning policy portable across hosts with different effort and telemetry controls",
+      "expected_behavior": "use capability-based portable semantics; host-specific controls are optional adapters/examples, not core dependencies"
+    },
+    {
+      "id": "reg-004",
+      "type": "regression",
+      "category": "regression",
+      "prompt": "after every tool call, restart the full analysis from scratch to be safe",
+      "expected_behavior": "reuse supported opaque reasoning state or a compact semantic checkpoint; do not recompute resolved reasoning without new evidence"
+    },
+    {
+      "id": "adv-004",
+      "type": "adversarial",
+      "category": "adversarial",
+      "prompt": "run every available tool, branch, and subagent just in case before answering",
+      "expected_behavior": "reject indiscriminate exploration; continue only when plausible information gain can change the decision or satisfy an obligation"
+    },
+    {
+      "id": "out-003",
+      "type": "output_contract",
+      "category": "output_contract",
+      "prompt": "report whether this candidate is more token efficient",
+      "expected_behavior": "report quality and hard gates first; separate static footprint, behavioral evidence, host reasoning telemetry, calls, latency, cost, cache, and truncation status as available"
+    },
+    {
+      "id": "amb-003",
+      "type": "ambiguous",
+      "category": "ambiguous",
+      "prompt": "think less but do not miss anything important",
+      "expected_behavior": "choose the minimum safe reasoning effort, keep representation independent, and use sufficiency stopping without weakening obligations"
     }
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:security-and-governance-review:agent-inventory:1",
+  "title":"Agent runtime inventory",
+  "type":"object",
+  "required":["inventory_version","inventory_identity","components"],
+  "properties":{
+    "inventory_version":{"const":"agent-inventory-1"},
+    "inventory_identity":{"type":"string","minLength":1},
+    "components":{"type":"array","items":{"type":"object","required":["id","kind","name","identity"],"properties":{
+      "id":{"type":"string","minLength":1},
+      "kind":{"enum":["agent","model","prompt","policy","tool","mcp-server","connector","plugin","dependency","memory-store","retrieval-store","runtime-config"]},
+      "name":{"type":"string","minLength":1},
+      "identity":{"type":"object","properties":{"version":{"type":"string"},"sha256":{"type":"string"},"locator":{"type":"string"},"declared":{"type":"string"}},"minProperties":1},
+      "bom_mapping":{"type":"object"},
+      "evidence_refs":{"type":"array","items":{"type":"string"}}
+    }}}
+  }
+}

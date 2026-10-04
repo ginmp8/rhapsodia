@@ -1,74 +1,76 @@
 # Secret Handling Remediation Playbook
 
-## Priority order
+## Preferred replacement order
 
-Use the least persistent credential mechanism that fits the platform:
+Use the least persistent credential mechanism that satisfies the platform:
 
-1. workload, instance, or federated identity;
-2. managed secret store with scoped access and rotation support;
-3. deployment-time secret injection;
-4. untracked developer-local configuration only when stronger platform mechanisms are unavailable.
+1. workload/instance/managed identity;
+2. federated identity or OIDC;
+3. dynamically issued short-lived credentials;
+4. managed secret store with scoped access and rotation;
+5. deployment/runtime injection;
+6. developer-local untracked configuration only when stronger mechanisms do not fit.
 
 Do not replace a hardcoded production secret with a different long-lived static secret and call the issue resolved.
 
+Environment variables are an injection mechanism, not a universal security boundary. Review process inheritance, debug/crash output, container metadata, command construction, and child processes before treating environment delivery as sufficient.
+
 ## Immediate containment after likely exposure
 
-When the material is likely real and exposed:
+1. rotate or revoke the credential using the owner/provider process;
+2. stop the active exposure path;
+3. search available neighboring surfaces for copies or reuse;
+4. review privileges and reduce scope;
+5. investigate relevant logs/access history when available and appropriate;
+6. prevent recurrence with scanning/push protection/CI guards where supported;
+7. consider history/artifact cleanup after containment.
 
-1. rotate or revoke it using the credential owner's supported process;
-2. remove it from active code/config/logging paths;
-3. search available neighboring surfaces for reuse or copies;
-4. review privileges and reduce scope where possible;
-5. determine whether repository history, CI logs, artifacts, tickets, screenshots, or documentation also contain it;
-6. enable preventive detection or push protection where the hosting platform supports it.
+Rotation/revocation is the primary control. Repository history rewriting is secondary and can disrupt clones, forks, links, and collaboration; it does not remove copies from other users' clones/forks.
 
-Removal from the latest source file does not by itself invalidate copies that already exist elsewhere.
+## External validity
+
+If trusted provider/user evidence says a discovered secret is `active`, prioritize containment. If `inactive`, still assess historical exposure. `unknown` is not proof of safety.
+
+This skill never performs its own authentication attempt with discovered material.
 
 ## Replacement patterns
 
 ### Runtime credentials
 
-Prefer identity-based access. Otherwise load from a managed secret store or deployment-time injection. Required secrets should fail closed when absent; do not add secret fallback literals.
+Prefer workload/federated identity. Otherwise use managed retrieval or short-lived issuance. Required secrets should fail closed when absent; do not add literal fallback secrets.
 
 ### Local development
 
-Keep local secret files untracked. Example configuration files should contain non-secret synthetic markers only. Prefer developer identity or local secret-management facilities when practical.
+Keep local secret files untracked. Examples must use clearly synthetic placeholders. Prefer developer identity/local secret-management facilities where practical.
 
-### Connection strings
+### CI/CD
 
-Separate credentials from committed endpoint/configuration data when the platform permits. Never emit full credential-bearing connection strings into logs or error messages.
+Use protected identity/secret mechanisms and least privilege. Keep privileged credentials away from untrusted code paths. Avoid exposing secrets through command lines, debug output, generated artifacts, or transformed values that masking will not reliably catch.
 
-### CI/CD and IaC
+### Docker builds
 
-Use the platform's protected secret/identity mechanism. Avoid plaintext values in workflow YAML, Terraform variable files, generated plans, build arguments, or artifact metadata.
+Do not pass build secrets through `ARG`/`ENV` when they may persist. Prefer BuildKit secret mounts or SSH mounts, and inspect built images/layers when supplied.
 
-### Logging
+### Kubernetes
 
-Do not log authorization headers, cookies, bearer/session values, API keys, private keys, or full connection strings. Use field-level redaction. If operational correlation is needed, use a non-secret identifier or a one-way fingerprint designed for that purpose rather than a recoverable credential fragment.
+Do not treat Base64 as encryption. Prefer least-privilege Secret access and cluster encryption-at-rest controls when cluster evidence is in scope. Review whether environment-variable injection expands process/log exposure.
 
-## Repository/history cleanup
+### Terraform
 
-Treat history rewriting as a separate operational decision: it can reduce accidental rediscovery but may disrupt clones, forks, links, and collaboration. Rotation/revocation is the immediate security control; history cleanup does not substitute for it.
+Do not treat `sensitive = true` as proof that data is absent from plan/state. Prefer ephemeral values and supported write-only arguments when persistence is unnecessary; protect state/plan storage and inspect them when available.
 
-## Finding-specific remediation
+### Logging and agent output
 
-| Finding | Preferred remediation |
-|---|---|
-| hardcoded credential | revoke/rotate if exposed; replace with identity or managed secret retrieval |
-| private key material | replace the keypair; remove private material from repository/artifacts; restrict new key storage |
-| credential in logs | revoke/rotate if usable; stop logging; redact existing accessible logs under retention/integrity policy |
-| client-side credential | assume retrievability; remove privileged static secret; redesign around server-side or public-client auth model |
-| unsafe fallback | remove fallback secret; fail closed or require explicit secure configuration |
-| weak redaction | redact at structured field boundaries; test that raw credential bytes never reach sinks |
+Do not log authorization headers, cookies, bearer/session values, API keys, private keys, connection strings, or secret-bearing structured objects. Redact at structured-field boundaries before serialization. Account for transformed/derived credentials and agent-visible stdout/stderr/tool traces.
 
 ## Completion evidence
 
-A remediation is stronger when the review can verify:
+A remediation is stronger when evidence verifies:
 
-- active code/config no longer contains the literal;
-- the credential was rotated/revoked when exposure was likely;
+- active code/config/artifact no longer contains or emits the credential;
+- exposed credentials were rotated/revoked when needed;
 - least privilege was reviewed;
-- logging/output paths are sanitized;
-- preventive scanning exists for recurrence.
+- output/log/tool paths are sanitized;
+- recurrence prevention exists.
 
-If those actions occur outside the available tools or evidence, mark them as recommended or user-supplied, not verified.
+Actions outside available evidence remain `recommended` or `user-supplied`, not `verified`.

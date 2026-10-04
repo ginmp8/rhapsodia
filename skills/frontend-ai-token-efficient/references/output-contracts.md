@@ -14,6 +14,13 @@ Use these formats to keep answers useful, auditable, and compact. Adapt section 
 ## Minimal changes
 - file/path: change and reason
 
+## Context evidence
+- exact sources inspected:
+- orientation/summary sources:
+- expansion reasons:
+- material uninspected dependencies:
+- tokens/turns/cost: only when observable and relevant
+
 ## Validation
 Executed:
 - command/result or "not executed"
@@ -25,6 +32,8 @@ Recommended:
 - risk/dependency
 - next highest-value step
 ```
+
+Context evidence is optional for small non-repository answers. When token/context efficiency is a stated objective, include it and place the applicable quality/validation result before cost metrics. Never present a lower token count as improvement when task success is unvalidated or worse.
 
 ## Framework selection
 

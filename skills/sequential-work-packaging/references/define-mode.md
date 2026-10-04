@@ -49,6 +49,7 @@ Rules:
 - include the YAML metadata block
 - be concrete and repository-aware
 - keep acceptance criteria testable
+- assign stable `reqNNN` identities to requirements that participate in execution handoff
 - do not turn the PRD into a task list
 
 ### `tasks.md`
@@ -64,6 +65,7 @@ Every actionable task must include:
 - `Validation`
 - `Expected result`
 - `Dependencies` when applicable
+- `Satisfies` with one or more `reqNNN` ids for requirement-bearing work
 
 Rules:
 - default to `low` or `medium`
@@ -72,7 +74,7 @@ Rules:
 - preserve execution readiness
 
 ### `validation.md`
-Keep proof expectations concrete and proportional.
+Keep proof expectations concrete and proportional. For execution-ready packages, give proof obligations stable `valNNN` identities and declare `Covers` references to the requirements they prove.
 
 ### `notes.md`
 Keep assumptions, findings, design decisions, risks, trade-offs, open questions, and execution context factual and distinct from requirements.
@@ -84,6 +86,7 @@ Review in this order:
 3. `validation.md`
 4. `notes.md`
 5. architecture impact when relevant
+6. requirement/task/validation coverage and derived readiness
 
 ## Reproducibility gates
 

@@ -1,5 +1,5 @@
 {
-  "suite_version": "1.0.0",
+  "suite_version": "2.0.0",
   "status": "frozen-inputs; behavioral execution not yet performed",
   "scenarios": [
     {
@@ -185,6 +185,54 @@
           "package-identity-recorded"
         ],
         "observable": "Report schema separates observed facts from judgment and ties decision to evidence IDs."
+      }
+    },
+    {
+      "id": "metamorphic-install-path-invariance",
+      "group": "metamorphic",
+      "prompt": "Review the same skill package bytes after moving the package to a different absolute installation directory.",
+      "files": [
+        "fixture:same-bytes-different-install-path"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "package-identity-path-independent",
+          "decision-not-path-dependent"
+        ],
+        "observable": "Package identity and architectural conclusion do not change merely because the absolute install path changed."
+      }
+    },
+    {
+      "id": "metamorphic-size-only-invariance",
+      "group": "metamorphic",
+      "prompt": "A cohesive reference grows substantially because explanatory examples were added, with no change to activation, ownership, consumers, authority, or validation lifecycle. Reassess the architecture.",
+      "files": [
+        "fixture:size-only-change-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "no-size-only-split",
+          "evidence-before-judgment"
+        ],
+        "observable": "The reviewer does not make split/extract eligible from length growth alone."
+      }
+    },
+    {
+      "id": "metamorphic-independent-lifecycle-sensitive",
+      "group": "metamorphic",
+      "prompt": "A mode that previously shared the parent lifecycle now gains its own distinct trigger language, dedicated validator, mode-only references, and independent authority boundary. Reassess whether extraction is eligible.",
+      "files": [
+        "fixture:lifecycle-signal-change-package"
+      ],
+      "expected": {
+        "activation": true,
+        "hard_gates": [
+          "decision-sensitive-to-material-evidence",
+          "extract-mode-minimum-evidence"
+        ],
+        "observable": "The reviewer allows extract_mode eligibility to change when independent activation/lifecycle evidence is introduced."
       }
     }
   ]

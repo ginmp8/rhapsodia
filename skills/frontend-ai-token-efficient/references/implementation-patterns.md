@@ -48,6 +48,18 @@ Bad hook responsibilities:
 - calling unrelated features;
 - returning very large objects that force broad rerenders and broad context reads.
 
+## React causal simplicity
+
+Prefer a single source of truth and the smallest state graph:
+
+- calculate derived values during render instead of storing synchronized duplicate state;
+- handle user-caused actions in event handlers rather than Effects;
+- use Effects to synchronize with external systems such as browser APIs, subscriptions, widgets, or imperative network lifecycles;
+- when two state values must remain synchronized, first consider removing one, deriving it, or lifting ownership rather than adding another Effect;
+- do not add memoization or state-management machinery without an observed cost or stable ownership need.
+
+These rules reduce runtime bugs and the amount of causal context an agent must reconstruct.
+
 ## Forms
 
 Form structure should make validation, UX, and API mapping explicit.
@@ -72,6 +84,15 @@ Guidelines:
 - Split long forms into steps only when it reduces cognitive load or supports saved progress.
 - Do not collect a field just because it might be useful later; tie it to value, compliance, or backend requirement.
 
+## TypeScript and runtime contracts
+
+- For new TypeScript projects, prefer `strict` unless a documented compatibility constraint requires otherwise. In an existing project, do not silently flip strictness as part of an unrelated change.
+- TypeScript types are erased at runtime. Treat API responses, URL/search params, storage, `postMessage`, third-party SDK data, and user-controlled serialized input as runtime data.
+- Validate runtime data at the boundary when malformed or malicious values could affect correctness, security, money, identity, or irreversible actions.
+- Keep runtime schemas close to the boundary they protect and map validated transport shapes into feature/UI models.
+- Generated API types improve static consistency but do not by themselves prove that a live response matches the generated contract.
+
+
 ## API layer
 
 Use an API layer for transport and contract handling.
@@ -87,7 +108,7 @@ Rules:
 
 - Components do not call HTTP clients directly.
 - Mappers own transformation between UI/domain models and transport DTOs.
-- Do not invent unknown fields. Use TODO or assumption notes when contract is unavailable.
+- Do not invent unknown fields. Use an explicit assumption/blocker note when the contract is unavailable.
 - Normalize API errors into UI-friendly states.
 - Do not leak raw backend errors to users or logs when they may contain sensitive data.
 

@@ -13,7 +13,7 @@ It standardizes:
 * macro versioning and release-item sequencing
 * work package identity
 * stable feature identity
-* semantic versioning rules
+* feature-version evolution rules
 * dependency modeling
 * catalog structure
 * filesystem structure
@@ -56,14 +56,14 @@ It is used to:
 * represent a larger initiative, cycle, milestone, or release line
 * create a stable top-level container for ordered work packages
 
-### 2.2 Semantic meaning of the macro version
+### 2.2 Meaning of the macro version
 
-Semantic Versioning already conveys whether an item is primarily a feature or a fix through major, minor, and patch evolution.
+`cycle_version` is an SWP fixed-width planning identifier, not Semantic Versioning. Its leading-zero form such as `01.00.00` is intentionally different from strict SemVer syntax.
 
-Therefore, `cycle_version` is not replacing semantic versioning. Instead:
+Use the identities separately:
 
 * the macro version organizes the top-level grouping
-* the feature or fix version expresses semantic evolution
+* the feature or fix version expresses SWP feature evolution
 * the ordered `spec_id` expresses execution sequence
 
 ### 2.3 Practical interpretation
@@ -76,7 +76,7 @@ Use this interpretation consistently:
 
 This means:
 
-* semantic versioning explains the nature of change
+* the SWP feature-version policy records the classified nature/evolution of change
 * `spec_id` explains the order of execution
 * `cycle_version` explains the container where that sequence lives
 
@@ -169,11 +169,11 @@ Use these rules:
 
 ---
 
-## 5. Semantic Versioning Rules
+## 5. Feature Versioning Rules
 
 ### 5.1 `feature_version`
 
-`feature_version` tracks the semantic evolution of the feature or fix.
+`feature_version` tracks the semantic evolution of the feature or fix. In schema version 1 its canonical serialization is an SWP token with a leading `v`; the numeric triple uses a SemVer-derived bump policy, but the serialized token itself is not strict SemVer 2.0.0 text.
 
 Format:
 
@@ -216,8 +216,9 @@ Format:
 
 ### 5.3 Rule summary
 
-* use Semantic Versioning for the technical evolution of the feature or fix
-* do not use semantic version numbers to define roadmap execution order
+* use the SWP `vMAJOR.MINOR.PATCH` policy for technical evolution of the feature or fix
+* changing this serialization requires an explicit schema migration; see `schema-evolution.md`
+* do not use feature version numbers to define roadmap execution order
 * execution order is defined by `order` and `spec_id`
 
 ---
@@ -300,7 +301,7 @@ Authoritative for:
 * feature mapping
 * dependency summary
 * high-level status
-* semantic version reference
+* feature-version reference
 
 ### 7.2 `manifest.yaml`
 
@@ -810,6 +811,7 @@ Rules:
 * be concrete
 * be repository-aware when repository context matters
 * keep acceptance criteria testable
+* assign stable `reqNNN` identities to requirements used for execution handoff
 * do not turn the PRD into a task list
 
 ### `tasks.md`
@@ -838,6 +840,7 @@ Recommended shape:
   - Why this reasoning is sufficient: ...
   - Specialist Support: none
   - Dependencies: ...
+  - Satisfies: req001
   - Validation: ...
   - Expected result: ...
 ```
@@ -888,6 +891,9 @@ Rules:
 * avoid vague statements
 * validation depth must match task reasoning
 * record concrete evidence expectations
+* for execution-ready handoff, assign stable `valNNN` identities and `Covers` references to the `reqNNN` requirements proved
+
+Read `traceability-contract.md` for compatibility and derived readiness semantics.
 
 ---
 
@@ -925,16 +931,18 @@ To guarantee future consistency, always:
 * keep `spec-catalog.yaml` as the source of truth for ordering
 * keep `manifest.yaml` mandatory inside each spec
 * use `order` in increments of 10
-* use Semantic Versioning only for feature or fix evolution
+* use the schema-v1 SWP `vMAJOR.MINOR.PATCH` token only for feature or fix evolution; do not call its serialized form strict SemVer
 * use the three-level dependency model
 * keep planning complete by default
 * keep tasks execution-ready
+* use stable `reqNNN` and `valNNN` trace identities for execution-ready handoff
+* require task `Satisfies` and validation `Covers` links before derived readiness becomes `execution_ready`
 * assign reasoning levels explicitly
 * perform final review before handoff
 
 Never:
 
-* use semantic version numbers to define roadmap order
+* use feature version numbers to define roadmap order
 * use `feature_key` as the execution identifier
 * mix `spec_id` and `feature_key`
 * renumber specs casually
@@ -958,6 +966,8 @@ The final standardized model is:
 * each `spec` folder contains `prd.md`, `tasks.md`, `notes.md`, and `validation.md`
 * dependencies exist at feature, spec, and task level
 * each task declares reasoning level and validation approach
+* execution-ready packages trace stable requirements to tasks and proof obligations
+* readiness is derived separately from lifecycle status
 * each spec ends with a mandatory final review
 * the model is intended for both human and AI use
 

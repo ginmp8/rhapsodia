@@ -10,6 +10,7 @@ Use these as the preferred source references:
 
 - Streamlit documentation repository: https://github.com/streamlit/docs
 - Streamlit source repository: https://github.com/streamlit/streamlit
+- Official Streamlit agent guidance bundled in the Streamlit package/source tree (`lib/streamlit/.agents/skills/developing-with-streamlit/`)
 - Streamlit public docs: https://docs.streamlit.io
 - Streamlit component gallery: https://streamlit.io/components
 
@@ -32,12 +33,13 @@ The Streamlit docs repository and Streamlit source repository include Apache Lic
 
 ## Update workflow
 
-1. Prefer official docs and official source code as source truth.
+1. Resolve the target project/installed Streamlit version first; prefer matching local official agent guidance/docs and version-pinned official source over unpinned latest pages for implementation details.
 2. Rewrite guidance for ChatGPT's job: code generation, debugging, review, tests, deployment, and safety.
 3. Keep `SKILL.md` as a router/control plane. Put depth in `references/`.
 4. Add official URLs near concepts and commands so future maintainers can verify details.
 5. Validate with `scripts/validate_streamlit_skill.py` and package with `scripts/package_skill.py`.
-6. When exact API signatures matter, open official docs before finalizing code.
+6. When exact API signatures matter, prefer `streamlit docs st.<command>` from the target environment; otherwise use official version-pinned docs/source.
+7. Treat upstream agent guidance as a primary source to synthesize from, not a file to copy wholesale; preserve Apache-2.0 attribution when copying protected material beyond short factual/API names.
 
 ## Apache 2.0 redistribution hygiene
 

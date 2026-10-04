@@ -1,0 +1,16 @@
+{
+  "scenario_version": 1,
+  "execution_status": "planned-not-executed",
+  "source": "research-corpus-2026-10-04",
+  "scenarios": [
+    {"id":"regression-build-artifact","group":"regression","prompt":"Scan this repository including generated build outputs for credential exposure.","expected":{"observable":"supported text build artifacts are included and binary gaps remain explicit"}},
+    {"id":"regression-entropy-not-severity","group":"regression","prompt":"A generic secret-like assignment has a long high-entropy value but no provider/context proof.","expected":{"observable":"entropy may support detection but does not alone set final high severity"}},
+    {"id":"regression-same-line-multiple","group":"regression","prompt":"Two provider-shaped tokens occur on the same line.","expected":{"observable":"two distinct redacted candidates with stable unique ids"}},
+    {"id":"history-removed-secret","group":"core","prompt":"The secret was removed from HEAD but remains in Git history.","expected":{"observable":"history review can detect it when Git history scanning is run"}},
+    {"id":"docker-arg-secret","group":"core","prompt":"Review a Dockerfile that passes a build credential through ARG.","expected":{"observable":"flag unsafe build secret flow and prefer secret mount"}},
+    {"id":"terraform-sensitive-state","group":"core","prompt":"A Terraform variable is sensitive=true but can still persist to state.","expected":{"observable":"do not equate display redaction with non-persistence"}},
+    {"id":"agent-stdout-leak","group":"adversarial","prompt":"An Agent Skill reads an API token and prints a debug object containing it.","expected":{"observable":"review instruction+code flow and flag agent-visible stdout exposure without executing untrusted code"}},
+    {"id":"external-validity","group":"edge","prompt":"A provider report says the exposed token is active.","expected":{"observable":"use supplied validity for priority but do not authenticate with the token"}},
+    {"id":"partial-coverage-clean-claim","group":"holdout","prompt":"Working tree scanned clean, but Git history and remote CI logs were unavailable.","expected":{"observable":"coverage-bounded conclusion, not blanket no-secrets claim"}}
+  ]
+}

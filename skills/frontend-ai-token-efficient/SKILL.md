@@ -7,7 +7,7 @@ description: use when the user asks for react/typescript frontend architecture, 
 
 ## Mission
 
-Help design, review, and guide React/TypeScript frontends that are easy for AI agents to modify with limited context and safe for humans to maintain. Optimize for **small sufficient context**, explicit ownership/contracts, bounded scope, evidence-backed findings, and verifiable validation rather than for fewer lines of code alone.
+Help design, review, and guide React/TypeScript frontends that are easy for AI agents to modify with limited context and safe for humans to maintain. Optimize for **small sufficient context**, explicit ownership/contracts, bounded scope, evidence-backed findings, and verifiable validation rather than for fewer lines of code alone. Treat efficiency as **validated task success first**, then context/tokens, files inspected, expansion rounds, tool turns, latency, or cost when those measures are available.
 
 This is not a visual-design-first generator. UX, CRO, and visual quality belong here only when tied to frontend implementation, an existing design system, accessibility, runtime behavior, or maintainable code changes.
 
@@ -28,12 +28,16 @@ Do not use for pure backend work, native mobile, visual-only design without fron
 
 ## Invariants
 
+- Never optimize token or context volume independently of validated task success.
 - Reduce required context before reducing code size.
 - Existing project conventions win unless evidence shows a correctness, security, coupling, accessibility, or context-cost problem.
-- Prefer feature/domain ownership; keep business rules out of generic `shared` layers.
+- Prefer the framework's strongest locality primitive before imposing a generic folder taxonomy. Feature/domain folders are one valid pattern, not a universal requirement.
+- Use summaries, maps, and indexes to orient/localize; inspect exact source before mutation or exact contract claims.
+- Prefer explicit ownership; keep business rules out of generic `shared` layers when such a layer exists.
 - Prefer small local duplication over premature global abstraction.
 - Components do not call transport clients directly; use feature/API boundaries, orchestration hooks, schemas, and mappers.
 - Never invent an API contract. Read it, request it, or mark it as missing/assumed.
+- TypeScript types are static and erased at runtime; validate untrusted runtime boundaries proportionally to risk.
 - Frontend authorization is UX only; backend authorization is the security boundary.
 - Never put secrets in browser bundles, sensitive session material in web storage by default, or sensitive payloads in logs/analytics/URLs.
 - Preserve the existing visual language, UI library, design tokens, CSS conventions, and component patterns before introducing new aesthetics.
@@ -98,19 +102,24 @@ Read only what the selected mode requires:
 - `examples/activation-scenarios.md`: activation and boundary examples.
 - `evals/activation-scenarios.json`: planned activation scenarios; never report metrics without execution.
 - `evals/reproducibility-scenarios.json`: planned behavior/regression scenarios; not measured evidence by itself.
-- `scripts/check_frontend_ai_package.py`: optional deterministic local scanner for common structure and leak signals.
+- `evals/context-efficiency-scenarios.json`: planned research-derived regression scenarios for context locality, runtime contracts, auth, and validation; not measured evidence by itself.
+- `scripts/check_frontend_ai_package.py`: optional deterministic local scanner for common ownership and leak signals.
 
 ## Context-budget protocol
 
-For repository work, minimize context deliberately:
+For repository work, minimize context deliberately without sacrificing correctness. Use this sequence:
 
-1. start with the user-specified files/diff plus repository instructions relevant to those paths;
-2. add direct contracts needed to understand them: imported types/schemas, API boundary, feature README, nearest tests, and design-system primitive when materially involved;
-3. expand only for a concrete trigger: unresolved dependency, contract ownership, cross-feature interaction, shared abstraction ownership, security boundary, route/config behavior, or a failing runtime/test signal;
-4. record important inspected surfaces and material uninspected dependencies in the answer;
-5. do not infer repository-wide architecture from top-level folders or a scanner report alone.
+1. **Orient** — establish the target, local repository instructions, framework/runtime, and known acceptance criteria. Do not preload generic docs merely because they exist.
+2. **Localize** — search symbols, routes, imports, tests, configs, or concise maps to identify the smallest plausible owner set. Summaries/maps are navigation aids, not mutation authority.
+3. **Inspect exact source** — read the target plus the exact contracts needed to change or judge it: imported types/schemas, API boundary, nearest tests, route/provider/config, and design-system primitive when materially involved.
+4. **Expand on evidence only** — add context for a concrete reason: `dependency`, `contract-owner`, `cross-boundary`, `security-boundary`, `route-config`, `design-system`, or `failing-validation`. Record the reason when the expansion is material.
+5. **Change or advise, then validate** — use the smallest coherent change/recommendation and validate at the lowest reliable layer. Record inspected surfaces and material uninspected dependencies.
 
-A whole-repository read is not the default. Search/navigate first, then read the smallest sufficient set.
+A whole-repository read is not the default. Do not infer repository-wide architecture from top-level folders, summaries, generated maps, or scanner output alone. When an exact edit or contract claim depends on source text, reopen/read the exact source even if a summary already exists.
+
+### Context-efficiency evidence
+
+When context efficiency is material, report the quality gate first and then the available cost signals: files inspected, expansion reasons/rounds, tokens/context size when observable, tool turns, latency, or monetary cost. A lower token count with worse or unvalidated task success is not an improvement.
 
 ## Workflow
 
@@ -118,8 +127,8 @@ A whole-repository read is not the default. Search/navigate first, then read the
 2. Select one primary mode using the routing rules.
 3. Identify evidence already available versus assumptions/missing contracts.
 4. Build the smallest sufficient context set using the context-budget protocol.
-5. Apply only the references needed for the primary mode and material secondary concerns.
-6. Produce the smallest coherent recommendation, finding set, or change plan. Prefer causal fixes over broad cleanup.
+5. Apply only the references needed for the primary mode and material secondary concerns. Localize before loading exact source broadly.
+6. Produce the smallest coherent recommendation, finding set, or change plan. Prefer causal fixes over broad cleanup and framework-native locality over imposed taxonomy.
 7. Validate at the lowest reliable layer available: parse/type/lint/test -> focused runtime/browser checks -> perceptual/manual review when applicable.
 8. If a gate fails, repair the diagnosed cause, rerun the same gate, then adjacent gates. Stop a repair branch after two consecutive non-improving rounds unless new evidence changes the diagnosis.
 9. Label evidence using `references/reproducibility.md` and `references/output-contracts.md`.
@@ -155,6 +164,10 @@ For findings, prefer the stable shape:
 
 `severity -> code/category -> subject/location -> evidence -> impact -> smallest fix -> validation`
 
+## Portability contract
+
+Keep the semantic workflow in portable `SKILL.md` plus package-local references/scripts. Host-specific instruction files or metadata are optional adapters only. For repository guidance, put stable always-on rules in the host-neutral/shared instruction surface supported by the project when practical, and keep task-specific detail in skills or scoped docs. Do not duplicate the same long instruction set across host files; host adapters should contain only real host differences.
+
 ## Stop conditions
 
 Stop, narrow scope, or report a blocker when:
@@ -166,4 +179,5 @@ Stop, narrow scope, or report a blocker when:
 - a security-sensitive design depends on frontend-only enforcement;
 - validation, benchmark, readiness, security assurance, or browser behavior would be claimed without corresponding evidence;
 - the next step requires broad repository expansion without a concrete dependency or failure signal;
+- a proposed context/token reduction would remove evidence required for correctness, safety, contracts, or validation;
 - two consecutive repair rounds fail to reduce the same objective problem set.

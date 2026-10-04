@@ -1,0 +1,145 @@
+{
+  "scenario_contract_version": 1,
+  "research_basis": "streamlit/streamlit@1.65.0 official agent guidance and 2026 release evidence",
+  "scenarios": [
+    {
+      "id": "modern-version-pin",
+      "group": "core",
+      "prompt": "Use the newest Streamlit API in this app; requirements.txt pins streamlit==1.54.0.",
+      "expected": {
+        "hard_gates": [
+          "resolve pinned version before code",
+          "do not assume latest support"
+        ],
+        "observable": "Version-compatible code or an explicit upgrade path is given."
+      }
+    },
+    {
+      "id": "modern-width",
+      "group": "regression",
+      "prompt": "Create a dataframe using use_container_width=True in a current Streamlit app.",
+      "expected": {
+        "hard_gates": [
+          "avoid deprecated compatibility parameter when resolved version supports width"
+        ],
+        "observable": "Uses current width behavior or explains version constraint."
+      }
+    },
+    {
+      "id": "modern-components-v2",
+      "group": "core",
+      "prompt": "Build a new interactive drag-and-drop Streamlit component with JavaScript.",
+      "expected": {
+        "hard_gates": [
+          "native capability check first",
+          "prefer Components v2 when supported",
+          "browser validation for JS"
+        ],
+        "observable": "Does not scaffold a new v1 component by default."
+      }
+    },
+    {
+      "id": "modern-asgi",
+      "group": "edge",
+      "prompt": "I only need a different port; wrap my Streamlit app in FastAPI and st.App.",
+      "expected": {
+        "hard_gates": [
+          "reject unnecessary ASGI complexity"
+        ],
+        "observable": "Uses normal Streamlit configuration unless a real server-composition need exists."
+      }
+    },
+    {
+      "id": "modern-oidc",
+      "group": "security",
+      "prompt": "Authenticate users by comparing st.text_input(type='password') with one shared secret.",
+      "expected": {
+        "hard_gates": [
+          "reject shared-password gate as authentication",
+          "prefer supported OIDC flow when available"
+        ],
+        "observable": "Separates authentication from authorization."
+      }
+    },
+    {
+      "id": "modern-widget-security",
+      "group": "security",
+      "prompt": "The role selectbox only contains admin and viewer, so trust its value for authorization.",
+      "expected": {
+        "hard_gates": [
+          "treat widget constraints as client-side UX",
+          "server-side authorization validation"
+        ],
+        "observable": "Does not treat selectbox options as an authorization boundary."
+      }
+    },
+    {
+      "id": "modern-query-binding",
+      "group": "core",
+      "prompt": "Keep a filter shareable in the URL using current Streamlit state APIs.",
+      "expected": {
+        "hard_gates": [
+          "resolve version",
+          "prefer supported query-parameter binding over manual synchronization"
+        ],
+        "observable": "Avoids hand-written two-way query-param plumbing when native binding exists."
+      }
+    },
+    {
+      "id": "modern-parallel-fragments",
+      "group": "adversarial",
+      "prompt": "Run two parallel fragments that mutate the same shared model and session key to make it faster.",
+      "expected": {
+        "hard_gates": [
+          "identify concurrency risk",
+          "require independence/thread safety"
+        ],
+        "observable": "Does not recommend unsafe parallelization."
+      }
+    },
+    {
+      "id": "modern-background-cache",
+      "group": "edge",
+      "prompt": "Use background cache refresh for a balance that must never be stale.",
+      "expected": {
+        "hard_gates": [
+          "freshness semantics before background refresh"
+        ],
+        "observable": "Rejects stale-while-refresh when it violates correctness."
+      }
+    },
+    {
+      "id": "modern-apptest-boundary",
+      "group": "regression",
+      "prompt": "AppTest passed, therefore my custom component JavaScript and CSS are correct.",
+      "expected": {
+        "hard_gates": [
+          "separate AppTest from browser-owned behavior"
+        ],
+        "observable": "Requires browser/E2E validation for JS/CSS claims."
+      }
+    },
+    {
+      "id": "modern-sensitive-column",
+      "group": "security",
+      "prompt": "Hide the api_token column in st.dataframe config but leave it in the dataframe sent to the browser.",
+      "expected": {
+        "hard_gates": [
+          "remove unauthorized data before rendering"
+        ],
+        "observable": "Rejects visual hiding as data protection."
+      }
+    },
+    {
+      "id": "modern-echarts",
+      "group": "core",
+      "prompt": "Render an existing ECharts option dict in a Streamlit version that supports native ECharts.",
+      "expected": {
+        "hard_gates": [
+          "prefer native ECharts support"
+        ],
+        "observable": "Does not add a third-party component solely to render ECharts."
+      }
+    }
+  ]
+}

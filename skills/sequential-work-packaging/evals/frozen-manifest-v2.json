@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "extends": "frozen-manifest.json",
+  "files": [
+    {
+      "path": "tests/test_research_regressions.py",
+      "sha256": "768f8bda3259324a0a8de20f99f577e5cffc4a412f8fba18fe8d93ef46b45785",
+      "size": 7434
+    },
+    {
+      "path": "evals/scenarios-v2.json",
+      "sha256": "18501d683113f1bb27a72e01bb227b669a8deb1c03ccb1bc75a83d52246be6b3",
+      "size": 1171
+    }
+  ]
+}

@@ -1,61 +1,29 @@
 # Dataframes, Charts, and Editors
 
-## Data display choices
+## Choose the native surface first
 
-Use `st.dataframe` when users need interactive exploration, sorting, scanning, or column resizing. Use `st.table` for small static output. Use `st.metric` for a few important numbers, not for dense tables.
+Use `st.dataframe` for interactive exploration, `st.table` for small static tables/key-value lists, and `st.data_editor` when editing is a first-class workflow. Prefer native Streamlit charts for common cases and declarative Vega/Altair for richer statistical charts. When the resolved version supports `st.echarts_chart`, use it for existing Apache ECharts/pyecharts definitions instead of adding a third-party component solely for ECharts.
 
-## Data editor design
+## Accessible names
 
-Use `st.data_editor` when editing is central to the app. Avoid using it as a casual display table because edited data introduces validation and save semantics.
+When supported, pass concise `alt=` text to charts, images, maps, media, iframes, PDFs, tables/dataframes/editors. The text should identify the content or takeaway, not repeat decorative surrounding copy. Verify the exact parameter against the installed version before adding it.
 
-Recommended editor pattern:
+## Sensitive frontend payloads
 
-1. Keep immutable source data.
-2. Add stable IDs.
-3. Configure visible and editable columns.
-4. Disable columns that should not change.
-5. Validate edited values.
-6. Compute and show a diff.
-7. Persist through an explicit save action.
+Visual hiding is not data removal. Before rendering/exporting, remove columns/rows/records the current user is not authorized to receive. Do not send secrets or hidden tenant data to the browser and rely on column configuration to conceal it.
 
-## Column configuration
+## Data editor workflow
 
-Use column configuration to communicate type and constraints. Configure numbers, dates, links, images, checkboxes, selectboxes, progress, and chart columns deliberately. This reduces user mistakes and improves readability.
+1. Keep immutable source data and stable row IDs.
+2. Configure visible/editable columns deliberately.
+3. Validate edited values in Python; browser constraints are not security controls.
+4. Compute/show the diff.
+5. Persist only behind an explicit save action with authorization/idempotency as needed.
 
-## Chart selection
+## Large datasets
 
-- Line chart: trend over an ordered dimension.
-- Bar chart: category comparison.
-- Area chart: stacked or cumulative magnitude over time.
-- Scatter chart: relationship between measures.
-- Map: geospatial points with latitude/longitude.
-- Altair/Vega-Lite: declarative statistical visualization and faceting.
-- Plotly: interactive dashboards with hover, zoom, legends, and complex figures.
-- PyDeck: geospatial layers and map-centric analysis.
-- Matplotlib: static plots and library compatibility.
+Push filtering/aggregation to the source when possible, cache bounded result sets, and avoid rendering huge raw tables by default. Use pagination/lazy-source features only when supported by the resolved version and when they preserve correctness.
 
-## Chart review checklist
+## Chart review
 
-- Does the chart answer one question?
-- Are axis labels and units clear?
-- Is the aggregation visible or explainable?
-- Is the time zone clear for time-series data?
-- Is the chart filtered by the same criteria as the table/metrics?
-- Is there a fallback for empty data?
-- Are large datasets sampled or aggregated responsibly?
-
-## Data loading and transformation
-
-Keep transformations pure and testable. Put I/O in cached functions. Keep chart-building functions separate from data-loading functions so chart tests can use small fixtures.
-
-## Handling large datasets
-
-- Push filtering and aggregation into the database when possible.
-- Cache result sets with TTL appropriate to freshness needs.
-- Avoid rendering huge raw tables by default.
-- Provide search/filter controls and summary metrics first.
-- Consider pagination, sampling, or grouped aggregates.
-
-## Geospatial data
-
-Check coordinate column names, numeric types, and coordinate validity. For maps, avoid rendering sensitive exact locations unless users are authorized and the business purpose is clear.
+Confirm question, units, aggregation, time zone, filter consistency, empty states, accessible naming, and whether sampling/aggregation changes interpretation.

@@ -161,3 +161,13 @@ Use this map to decide which reference file to load. The list follows the offici
 - For uploaded files, downloads, images, audio, video, and generated artifacts, use `references/files-uploads-downloads-and-media.md`.
 - For chatbots and RAG interfaces, use `references/llm-chat-and-rag-apps.md`.
 - For production reviews, use `references/production-review-rubric.md`.
+
+## Modern version-sensitive branches
+
+- Exact API/signature/version question -> `references/version-and-source-resolution.md`, then local/version-pinned official docs.
+- Visual polish/accessibility/theme -> `references/design-accessibility-and-theme.md`.
+- Interactive custom HTML/JavaScript/component -> `references/custom-components-v2.md`.
+- `st.App`, ASGI, FastAPI/Starlette, middleware, custom routes, lifespan -> `references/server-asgi.md`.
+- Parallel/keyed fragments, no-rerun controls, URL binding, state persistence -> `references/execution-state-and-reruns.md` + version resolution.
+
+Do not infer current API support from this topic map alone.

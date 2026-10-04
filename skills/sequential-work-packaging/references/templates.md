@@ -78,6 +78,9 @@ depends_on_specs: []
 
 # functional requirements
 
+- Requirement ID: req001
+  - Statement: <testable requirement>
+
 # non-functional requirements
 
 # constraints
@@ -101,6 +104,7 @@ depends_on_specs: []
   - Why this reasoning is sufficient: ...
   - Specialist Support: none
   - Dependencies: none
+  - Satisfies: req001
   - Validation: ...
   - Expected result: ...
 ```
@@ -129,6 +133,10 @@ depends_on_specs: []
 
 ```md
 # validation strategy
+
+- Validation ID: val001
+  - Covers: req001
+  - Evidence: <expected proof>
 
 # backward compatibility
 
@@ -161,6 +169,7 @@ Use this at the end of each spec package review:
 - architecture impact is checked when relevant
 - dependencies are modeled at the correct level
 - ids, casing, status, phase, and versions follow the convention
+- requirement/task/validation traceability is complete when handoff claims `execution_ready`
 ```
 
 

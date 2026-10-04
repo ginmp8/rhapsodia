@@ -15,11 +15,25 @@ UI_GUIDE.md
 SECURITY_FRONTEND.md
 UX_GUIDE.md
 RUNTIME_VALIDATION.md
-AGENTS.md or .github/copilot-instructions.md when the team's tool supports them
+AGENTS.md or another shared repository instruction surface when stable rules truly apply to most tasks
+host-specific instruction files only for real host-specific differences
 *.agent.md when specialized agents are versioned in the repo
 ```
 
 Create only files that will contain useful guidance. A short guide that agents actually read is better than long documentation that gets ignored. For tools that support file-level instructions or agents, keep those files versioned, small, and aligned with the same contracts as this skill.
+
+## Instruction layering for multiple hosts
+
+Use the smallest non-duplicated layer that fits the rule:
+
+- **task-specific workflow** -> Agent Skill (`SKILL.md` plus progressive references/scripts);
+- **stable cross-tool repository rule** -> shared repository instruction surface such as `AGENTS.md` when supported by the team's tools;
+- **path-scoped rule** -> the host/project's scoped instruction mechanism when it materially reduces always-on context;
+- **host-specific behavior** -> host adapter/instruction file containing only the difference.
+
+Do not copy the same long architecture guide into `AGENTS.md`, `CLAUDE.md`, Copilot instructions, Cursor rules, and a skill. Duplicate instructions drift and consume context. Prefer one canonical project document and short host adapters/imports/references where the host supports them.
+
+Repository instructions should point to detail conditionally (for example, architecture docs for boundary changes) rather than requiring every agent to preload every document for every edit.
 
 ## `AI_CONTEXT.md` template
 
