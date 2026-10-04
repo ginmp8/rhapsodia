@@ -1,6 +1,6 @@
 ---
 name: skill-harness
-description: use to design, run, audit, validate, compare, harden, or package evidence-based harnesses for existing Agent Skills-compatible skill packages, including ChatGPT/OpenAI, Claude, GitHub Copilot, Cursor, and other hosts. Supports portable-core validation, host adapters, auto/context/full research modes, audit-only/plan-only/apply/validation-only/package mutation, scenarios, isolated execution evidence, evaluator-visibility boundaries, trace manifests, metrics, gates, immutable baselines, recovery-aware packaging, and skill.zip delivery. Do not use for generic code, normal docs/reports, product planning, prompt advice, net-new skill creation, or skill explanations.
+description: use to design, run, audit, validate, compare, harden, or package evidence-based harnesses for existing Agent Skills-compatible skill packages across portable, OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, Cursor, and other hosts. Supports immutable baselines, target-trust preflight, portable-core validation, isolated execution, evaluator visibility, environment/provenance profiles, repeated stochastic trials, grader calibration, metamorphic scenarios, holdout exposure, trace/lineage evidence, gates, recovery-aware packaging, and skill.zip delivery. Do not use for generic code, ordinary docs/reports, product planning, one-off prompt advice, net-new skill creation, or skill explanations.
 ---
 
 # Skill Harness
@@ -11,13 +11,13 @@ Build an evidence harness around an existing Agent Skills-compatible skill so it
 
 ## Activate / Do Not Activate
 
-Use when asked to inspect, audit, harden, benchmark, validate, package, or harness an existing skill package; make an existing skill portable across agent hosts; edit a skill folder/extracted zip with evidence; define activation, non-activation, ambiguous, edge, regression, adversarial, or output-contract scenarios; create metrics, gates, evaluators, validators, reports, or packaging checks; or compare baseline/final skill quality after bounded edits.
+Use when asked to inspect, audit, harden, benchmark, validate, package, or harness an existing skill package; make an existing skill portable across agent hosts; edit a skill folder/extracted zip with evidence; define activation, non-activation, ambiguous, edge, regression, adversarial, metamorphic, or output-contract scenarios; create metrics, gates, evaluators, validators, provenance, or packaging checks; or compare baseline/final skill quality after bounded edits.
 
 Do not use for generic code review, application refactors, CI work, implementation outside a reusable skill, one-off prompt writing/advice, ordinary document/slide/spreadsheet/report generation, net-new skill creation, skill explanations, or autonomous mutation without a target, scope, protected paths, and gates. Use `skill-creator` for new skills or skill explanations.
 
 ## Inputs, Assumptions, Scope
 
-Resolve before mutation: `TARGET_SKILL_PATH` with exactly one target `SKILL.md`; harness mode `auto|context|full`; mutation mode `audit-only|plan-only|apply|validation-only|package`; portability profile `portable|openai|claude|copilot|cursor`; detected runtime capabilities; writable scope; protected paths; evidence policy/source list; gates; and final artifact.
+Resolve before mutation: `TARGET_SKILL_PATH` with exactly one target `SKILL.md`; source class `trusted-owned|trusted-local|external-untrusted|unknown`; harness mode `auto|context|full`; mutation mode `audit-only|plan-only|apply|validation-only|package`; portability profile `portable|openai|codex|claude|copilot|cursor`; detected runtime/isolation capabilities; writable scope; protected paths; evidence policy/source list; evaluator/scenario identities; environment sensitivity; gates; and final artifact.
 
 Defaults for “improve this skill”: `auto`, `apply`, `portable`, target-folder-only edits, protected fixtures/secrets, immutable baseline first, one bounded patch batch, validation, and package only when requested or clearly expected.
 
@@ -31,11 +31,11 @@ Mutation modes: `audit-only` reports inventory/audit findings without edits; `pl
 
 ## Host Portability
 
-Treat the open Agent Skills format as the canonical semantic core. Do not make correctness depend on ChatGPT/OpenAI, Claude, GitHub Copilot, Cursor, or another single host. Host metadata may be retained as optional adapters.
+Treat the open Agent Skills format as the canonical semantic core. Do not make correctness depend on ChatGPT/OpenAI, Codex, Claude, GitHub Copilot, Cursor, or another single host. Host metadata may be retained as optional adapters.
 
-Read [`references/host-portability.md`](references/host-portability.md) whenever portability is requested, the host is uncertain, or runtime capabilities affect execution. Detect capabilities before product names: filesystem read/write, Python 3.10+, command execution, network/research, independent evaluators, and artifact delivery.
+Read [`references/host-portability.md`](references/host-portability.md) whenever portability is requested, the host is uncertain, or runtime capabilities affect execution. Detect capabilities before product names: filesystem read/write, Python 3.10+, command execution, isolation boundary, network/research, independent evaluators, and artifact delivery.
 
-Use `<PYTHON>` as the logical token for the host's available Python 3.10+ execution method. Do not assume `python`, Bash, POSIX paths, or a specific product tool API.
+Use `<PYTHON>` as the logical token for the host's available Python 3.10+ execution method. Do not assume `python`, Bash, POSIX paths, Docker, or a specific product tool API.
 
 ## Skill Root Convention
 
@@ -48,102 +48,108 @@ Always read target `SKILL.md` first. Load only needed branches:
 - [`references/harness-principles.md`](references/harness-principles.md): harness map, integration, decisions, evidence.
 - [`references/host-portability.md`](references/host-portability.md): portable Agent Skills core, host adapters, capability contract, host profiles.
 - [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md): immutable baseline, VCS/source identity, output aliases, atomic commit, receipts, rollback.
-- [`references/mode-research-policy.md`](references/mode-research-policy.md): source policy and conflicts.
+- [`references/mode-research-policy.md`](references/mode-research-policy.md): source policy, research identity, and conflicts.
 - [`references/skill-improvement-playbook.md`](references/skill-improvement-playbook.md): bounded changes and common fixes.
-- [`references/evaluation-and-gates.md`](references/evaluation-and-gates.md): scores, required gates, saturated metrics, decisions.
-- [`references/evaluation-tiers-and-holdout.md`](references/evaluation-tiers-and-holdout.md): focused/harness/holdout scenario tiers, candidate-visible vs evaluator-only partitions, and holdout reuse rules.
-- [`references/multi-candidate-execution.md`](references/multi-candidate-execution.md): isolation/comparability rules for executing the same frozen scenario partition across several search candidates.
-- [`references/multi-candidate-execution-strict.md`](references/multi-candidate-execution-strict.md): additive strict contract for repeated runs of the same identity-bound candidate; base v4 provides distinct-candidate identity and trace-manifest provenance, while strict v2 adds repeated-run semantics with canonical SHA-256 references.
-- [`references/scenario-suite-guidelines.md`](references/scenario-suite-guidelines.md): activation, non-activation, ambiguous, edge, regression, adversarial scenario schema.
+- [`references/evaluation-and-gates.md`](references/evaluation-and-gates.md): evidence layers, outcome-first grading, grader calibration, scores, gates, and claims.
+- [`references/evaluation-tiers-and-holdout.md`](references/evaluation-tiers-and-holdout.md) and [`references/holdout-exposure.md`](references/holdout-exposure.md): focused/harness/holdout partitions, visibility, reuse, and lineage exposure.
+- [`references/scenario-suite-guidelines.md`](references/scenario-suite-guidelines.md): scenario schema plus reference-solution/oracle discipline.
+- [`references/metamorphic-evaluation.md`](references/metamorphic-evaluation.md): semantic-preserving transformations and relation checks.
+- [`references/evaluation-suite-health.md`](references/evaluation-suite-health.md): saturation, failure clustering, evaluator drift, and transcript sampling.
+- [`references/grader-calibration.md`](references/grader-calibration.md): LLM/human grader calibration, abstention, order-swap and verbosity probes.
+- [`references/environment-provenance.md`](references/environment-provenance.md): material execution-environment identity and comparability.
+- [`references/stochastic-evaluation.md`](references/stochastic-evaluation.md): repeated trials, Wilson uncertainty, reliability-under-repetition, and replication rules.
+- [`references/execution-lineage.md`](references/execution-lineage.md): multi-stage dependency identity, invalidation, replay, and canonical outputs.
+- [`references/evaluation-provenance.md`](references/evaluation-provenance.md): provenance-lite binding of harness, process, dependencies, identities, and outputs.
+- [`references/untrusted-target-execution.md`](references/untrusted-target-execution.md): trust classification and safe target-owned code execution.
+- [`references/multi-candidate-execution.md`](references/multi-candidate-execution.md) and [`references/multi-candidate-execution-strict.md`](references/multi-candidate-execution-strict.md): isolated distinct-candidate and repeated-run evidence contracts.
 - [`references/harness-quality-patterns.md`](references/harness-quality-patterns.md): entry-point coverage, determinism, isolation, observability, anti-patterns.
-- [`references/isolated-execution-contract.md`](references/isolated-execution-contract.md): candidate/evaluator visibility separation, isolated-run contract, trace evidence, leakage gates, control-arm rules, and optional self-hosted generation provenance.
-- [`references/workflow-execution-evidence.md`](references/workflow-execution-evidence.md): separate target-skill evidence from planner/accepted-plan/execution-trace evidence when a scenario uses adaptive orchestration.
+- [`references/isolated-execution-contract.md`](references/isolated-execution-contract.md): candidate/evaluator visibility, isolated-run contract, leakage gates, control arms, self-hosting provenance.
+- [`references/workflow-execution-evidence.md`](references/workflow-execution-evidence.md): orchestration plan/trace evidence separated from target-skill evidence.
 - [`references/report-contract.md`](references/report-contract.md): report shape and evidence labels.
-- [`references/cli-and-packaging-contract.md`](references/cli-and-packaging-contract.md): command contracts, profiles, exits, exclusions, packaging order.
-- [`assets/templates/harness-plan.md.template`](assets/templates/harness-plan.md.template), [`assets/templates/harness-report.md.template`](assets/templates/harness-report.md.template), [`assets/templates/scenario-suite.json.template`](assets/templates/scenario-suite.json.template), [`assets/templates/execution-evidence.json.template`](assets/templates/execution-evidence.json.template): copy/fill/render when useful.
-- [`assets/templates/workflow-execution-evidence.json.template`](assets/templates/workflow-execution-evidence.json.template): optional sidecar for orchestration-layer run identity and trace metadata.
+- [`references/cli-and-packaging-contract.md`](references/cli-and-packaging-contract.md): commands, profiles, exits, exclusions, packaging order.
+- [`assets/templates/harness-plan.md.template`](assets/templates/harness-plan.md.template), [`assets/templates/harness-report.md.template`](assets/templates/harness-report.md.template), [`assets/templates/scenario-suite.json.template`](assets/templates/scenario-suite.json.template), [`assets/templates/execution-evidence.json.template`](assets/templates/execution-evidence.json.template), [`assets/templates/workflow-execution-evidence.json.template`](assets/templates/workflow-execution-evidence.json.template): core planning/report/execution envelopes.
+- [`assets/templates/execution-environment.json.template`](assets/templates/execution-environment.json.template), [`assets/templates/stochastic-evaluation.json.template`](assets/templates/stochastic-evaluation.json.template), [`assets/templates/execution-lineage.json.template`](assets/templates/execution-lineage.json.template): reproducibility profiles validated against [`assets/schemas/execution-environment.schema.json`](assets/schemas/execution-environment.schema.json), [`assets/schemas/stochastic-evaluation.schema.json`](assets/schemas/stochastic-evaluation.schema.json), and [`assets/schemas/execution-lineage.schema.json`](assets/schemas/execution-lineage.schema.json).
+- [`assets/templates/grader-calibration.json.template`](assets/templates/grader-calibration.json.template), [`assets/templates/metamorphic-suite.json.template`](assets/templates/metamorphic-suite.json.template), [`assets/templates/evaluation-provenance.json.template`](assets/templates/evaluation-provenance.json.template), [`assets/templates/holdout-exposure.json.template`](assets/templates/holdout-exposure.json.template): evaluation sidecars with matching schemas under `assets/schemas/`.
+- [`assets/templates/multi-candidate-manifest.json.template`](assets/templates/multi-candidate-manifest.json.template), [`assets/templates/multi-candidate-manifest-strict.json.template`](assets/templates/multi-candidate-manifest-strict.json.template): multi-candidate envelopes.
 - [`scripts/skill_harness_snapshot.py`](scripts/skill_harness_snapshot.py): immutable baseline snapshot and identity verification.
-- [`scripts/skill_harness_inventory.py`](scripts/skill_harness_inventory.py), [`scripts/skill_harness_audit.py`](scripts/skill_harness_audit.py), [`scripts/skill_harness_portability.py`](scripts/skill_harness_portability.py), [`scripts/skill_harness_validate.py`](scripts/skill_harness_validate.py), [`scripts/skill_harness_package.py`](scripts/skill_harness_package.py): inventory, static audit, single-profile portability, validation, atomic packaging.
-- [`scripts/skill_harness_host_matrix.py`](scripts/skill_harness_host_matrix.py): dependency-free aggregate gate over the existing `portable`, `openai`, `claude`, `copilot`, and `cursor` portability profiles; it does not replace or weaken the underlying profile validator.
-- [`scripts/run_self_tests.py`](scripts/run_self_tests.py): dependency-free self-test runner for bundled zero-argument functions whose names start with `test_`; fail closed when no tests are discovered.
-- [`scripts/validate_execution_evidence.py`](scripts/validate_execution_evidence.py): validate identity-bound behavioral execution evidence, evaluator-visibility separation, trace references, and leakage status before measured claims.
-- `tests/test_snapshot.py`, `tests/test_portability_and_delivery.py`, `tests/test_portable_self_verification.py`: self-regressions for baseline identity, portability, portable self-test execution, host-matrix validation, output aliases, last-good preservation, canonical ZIP root, and receipt/package hash agreement; run when changing harness runtime or packaging.
-- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation, non-activation, ambiguous, edge, regression, and adversarial scenarios. Keep its target-owned schema independent from reviewer-specific scenario schemas.
+- [`scripts/skill_harness_inventory.py`](scripts/skill_harness_inventory.py), [`scripts/skill_harness_audit.py`](scripts/skill_harness_audit.py), [`scripts/skill_harness_portability.py`](scripts/skill_harness_portability.py), [`scripts/skill_harness_validate.py`](scripts/skill_harness_validate.py), [`scripts/skill_harness_package.py`](scripts/skill_harness_package.py): inventory, static audit, portability, validation, atomic packaging.
+- [`scripts/skill_harness_host_matrix.py`](scripts/skill_harness_host_matrix.py): aggregate gate over `portable`, `openai`, `codex`, `claude`, `copilot`, and `cursor` without forking core semantics.
+- [`scripts/assess_target_trust.py`](scripts/assess_target_trust.py): static trust preflight before target-owned executable code runs.
+- [`scripts/validate_execution_evidence.py`](scripts/validate_execution_evidence.py): identity-bound behavioral execution, evaluator visibility, trace, and leakage checks.
+- [`scripts/validate_reproducibility_profiles.py`](scripts/validate_reproducibility_profiles.py): environment, stochastic, and execution-lineage evidence validation.
+- [`scripts/validate_grader_calibration.py`](scripts/validate_grader_calibration.py), [`scripts/validate_metamorphic_suite.py`](scripts/validate_metamorphic_suite.py), [`scripts/validate_evaluation_provenance.py`](scripts/validate_evaluation_provenance.py), [`scripts/validate_holdout_exposure.py`](scripts/validate_holdout_exposure.py): deterministic evaluation sidecar validators.
+- [`scripts/run_self_tests.py`](scripts/run_self_tests.py): dependency-free self-test runner; fail closed when no tests are discovered.
+- `tests/test_snapshot.py`, `tests/test_portability_and_delivery.py`, `tests/test_portable_self_verification.py`, `tests/test_advanced_reproducibility.py`, `tests/test_integration_contracts.py`: core regressions; run after harness runtime/contracts change.
+- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation/boundary scenarios; never call them measured until executed.
 - [`examples/harness-hardening-cases.md`](examples/harness-hardening-cases.md): human-review activation and boundary examples.
 
-Templates are operational when copied, filled, rendered, validated, or declared in workflow. Keep this file as control plane; keep rubrics, host details, schemas, examples, and script contracts in references/examples.
+Templates become operational only when copied/filled/rendered/validated or explicitly declared in the workflow. Keep this file as control plane; keep schemas, rubrics, examples, and branch detail in references.
 
 ## Harness Map
 
-Define before editing: decision; object under test; portable core vs host adapters; runtime capabilities; writable/read-only/protected scope; dependencies; target entry points; scenario groups; input corpus/model; candidate-visible inputs; evaluator-only assets; source identities; optional self-hosting generation/controller/baseline/candidate identities; evidence sources; runner commands/adapters; execution isolation level; trace manifest; evaluators; optional control arm; metrics; hard gates; recovery policy; and evidence record for baseline, plan, changes, command outputs, final comparison, package path, hashes, risks, and rollback.
+Define before editing: decision; object under test; target source/trust class; portable core vs adapters; runtime/isolation capabilities; writable/read-only/protected scope; dependencies; target entry points; scenario groups and optional metamorphic relations; input corpus/model; candidate-visible inputs; evaluator-only assets; source/evaluator/environment identities; reference-solution/oracle status; grader calibration status; repeated-trial stop rule when stochastic reliability matters; optional self-hosting identities; runner commands/adapters; isolation level; trace/lineage evidence; evaluators; metrics; hard gates; holdout exposure policy; evaluation provenance; recovery policy; and evidence records for baseline, plan, changes, commands, final comparison, package, hashes, risks, and rollback.
 
-- `scripts/validate_multi_candidate_manifest.py`: validates multi-candidate isolation; contract v4 additionally freezes evaluation-policy identity, distinct candidate-byte identity, unique trace ids, and trace-manifest identity/hash for evolutionary-search comparability.
-- `scripts/validate_multi_candidate_manifest_strict.py`: validates the additive strict multi-candidate contract with candidate-byte identity separation, repeated-run support, and trace-manifest identity/hash requirements.
-- `contracts/integration-manifest.json`: declares the base v4 multi-candidate evidence surface plus the additive strict v2 repeated-run evidence surface for cross-skill impact analysis.
+- `scripts/validate_multi_candidate_manifest.py`: validates `skill-opt.harness-multi-candidate-evidence` v4 for distinct candidates with frozen evaluator/policy identities, candidate-byte uniqueness, trace identity, and trace-manifest provenance.
+- `scripts/validate_multi_candidate_manifest_strict.py`: validates additive `skill-opt.harness-multi-candidate-evidence-strict` v2 for repeated executions of the same identity-bound candidate.
+- `contracts/integration-manifest.json`: declares these public contracts plus the additive reproducibility/evaluation sidecar contracts. Preserve existing contract versions; incompatible changes require a new version.
 
-For evolutionary/search evidence, use `skill-opt.harness-multi-candidate-evidence` v4 for distinct candidates with candidate-byte uniqueness and trace-manifest provenance. Use `skill-opt.harness-multi-candidate-evidence-strict` v2 when repeated runs of the same candidate are required. Legacy v1/v2/v3 base envelopes remain readable outside the current evolutionary bridge but do not provide the v4 hash-shape guarantee.
-
-### Workflow-layer evidence
-
-When a scenario is executed through an adaptive multi-stage or multi-agent plan, keep target-skill evidence separate from orchestration evidence. Record planner identity, accepted plan identity, execution-trace identity, strategy/budgets, and verifier independence when those facts affect comparability or claims. Load `references/workflow-execution-evidence.md`. A changed workflow plan invalidates a same-plan execution comparison even when target skill bytes are unchanged.
+When a scenario uses adaptive multi-stage execution, keep target-skill evidence separate from orchestration evidence. A changed workflow-plan identity invalidates a same-plan execution comparison even when target skill bytes are unchanged; use `references/workflow-execution-evidence.md`, and use `references/execution-lineage.md` only when replay/invalidation depends on the dependency graph.
 
 ## Workflow
 
-1. **Inspect and snapshot** target `SKILL.md`, confirm exactly one target root, inventory support directories, and capture an immutable before-state before mutation.
+1. **Inspect, trust-classify, and snapshot.** Read target `SKILL.md`, confirm one root, inventory support directories, run static trust preflight, and capture an immutable before-state before mutation. For external/unknown targets with executable content, do not run target-owned code until the required isolation boundary exists.
 
    ```text
+   <PYTHON> <skill-root>/scripts/assess_target_trust.py --target <TARGET_SKILL_PATH> --source-class <SOURCE_CLASS> --json <report-dir>/target-trust.json
    <PYTHON> <skill-root>/scripts/skill_harness_snapshot.py capture --target <TARGET_SKILL_PATH> --snapshot-dir <work-dir>/baseline-snapshot --manifest <work-dir>/baseline-manifest.json
    <PYTHON> <skill-root>/scripts/skill_harness_inventory.py --target <TARGET_SKILL_PATH> --output <report-dir>/inventory.json
    ```
 
-   If snapshotting is blocked by sensitive-looking files, escaping symlinks, or ambiguous roots, stop mutation and report the blocker.
+2. **Baseline and portability.** Run static audit plus the selected profile. Treat static scores as structural evidence, not behavioral proof. For multi-platform delivery, validate the full supported host matrix.
 
-2. **Baseline and portability** with static audit plus the selected host-neutral/profile check. Treat scores as structural evidence, not behavior proof. If a metric is saturated, add auxiliary metrics before claiming improvement.
+3. **Plan before mutation.** Freeze evidence policy, source/evaluator identities, hypotheses, target entry points, scenarios, metrics, gates, validation, packaging, recovery, and risk. Add reference solutions/oracle probes for hard behavioral gates when feasible. Add metamorphic relations for semantic invariants when they improve coverage without inventing golden answers. Predeclare repeated-trial stop rules/budgets for strong stochastic claims.
 
-   ```text
-   <PYTHON> <skill-root>/scripts/skill_harness_audit.py --target <TARGET_SKILL_PATH> --output <report-dir>/harness-audit.md --json-output <report-dir>/harness-audit.json
-   <PYTHON> <skill-root>/scripts/skill_harness_portability.py --target <TARGET_SKILL_PATH> --profile <PROFILE> --output <report-dir>/portability.json
-   ```
+4. **Establish execution validity for behavioral evidence.** Separate candidate-visible, runner-only, evaluator-only, and post-run-only inputs. Use fresh mutable state per arm/trial. Record environment identity when runtime/provider/tool/resource state can affect comparison. Calibrate LLM graders before they alone control a strong promotion claim. Track holdout exposure by lineage. Use multi-candidate contracts only when several candidates/repeated runs actually exist.
 
-3. **Plan** evidence policy, hypotheses, portable-core/adapter changes, target entry points, input corpus/model, scenarios, metrics, evaluators, hard gates, validation, packaging, recovery, and risk. When staged evaluation is requested, partition scenarios into `L2-focused`, `L3-harness`, and optional `L5-holdout` using `references/evaluation-tiers-and-holdout.md`. Prefer `assets/templates/harness-plan.md.template` for durable plans. For high-risk or saturated-score targets, add auxiliary coverage/integrity metrics before claiming improvement.
+5. **Freeze evidence and apply bounded edits.** Protect baseline snapshots, evaluator fixtures, expected outputs, scoring thresholds, source identities, and holdouts. If an evaluator changes after results are visible, invalidate/re-baseline the comparison. Preserve target semantics; isolate host extensions; add deterministic mechanics only where they reduce real variance.
 
-4. **Establish execution visibility when behavioral evidence is requested.** Separate candidate-visible inputs from evaluator-only rubrics, expected outcomes, hidden graders, and holdouts. For multi-candidate/search runs, follow `references/multi-candidate-execution.md`: give each candidate an isolated work area, identical frozen scenario/evaluator identities, and a distinct trace identity; do not reuse mutable state between candidates. When a caller requires repeated runs of the same candidate, use the additive strict contract in `references/multi-candidate-execution-strict.md`; base v4 is intentionally one row per distinct candidate. Do not reinterpret legacy v1/v2/v3 evidence as satisfying v4 or strict-v2 guarantees. For self-hosted runs, also bind execution to `generation_id`, immutable controller identity, baseline identity, and candidate identity; Harness verifies isolation/provenance but does not own promotion or specialist routing. Use capability-based isolation: a dedicated work directory is the minimum; process/container isolation is stronger when the host supports it. Do not require Docker as portable core semantics. Capture a run/trace manifest and validate it before treating outcomes as measured. Read `references/isolated-execution-contract.md`.
-
-5. **Freeze evidence and apply** bounded edits only inside allowed scope. Protect baseline snapshots, evaluator fixtures, expected outputs, scoring thresholds, and source identities. If an evaluator must change, invalidate that comparison and restart from a new frozen baseline. Preserve target behavior; isolate host extensions; move long branches to references; add scripts only for deterministic work; never invent benchmark, validation, install, or package evidence.
-
-6. **Validate and compare** by rerunning inventory/audit, portability, validator, modified-script checks/tests, target tests when present, and baseline/final comparison. Run `scripts/run_self_tests.py` after changing harness runtime/tests so self-regression does not depend on pytest being installed. For multi-platform delivery, run `scripts/skill_harness_host_matrix.py --profiles all --strict` so every supported host profile is checked against the same portable-core validator. For behavioral results, validate execution evidence and reject measured claims when evaluator leakage, missing trace identity, or mutable-state contamination is detected. Verify the frozen baseline snapshot itself has not changed.
+6. **Validate and compare.** Rerun inventory/audit, portability, package validator, self-tests, target tests, and affected sidecar validators. Use outcome/end-state correctness before trajectory conformance unless the path itself is a safety/authority requirement. Reject measured claims on evaluator leakage, material environment drift, missing required trace/lineage evidence, invalid holdout blindness, or uncalibrated strong LLM-grader gates.
 
    ```text
    <PYTHON> <skill-root>/scripts/skill_harness_validate.py --target <TARGET_SKILL_PATH> --profile <PROFILE> --output <report-dir>/validation.json
+   <PYTHON> <skill-root>/scripts/skill_harness_host_matrix.py --target <TARGET_SKILL_PATH> --profiles all --strict --output <report-dir>/host-matrix.json
+   <PYTHON> <skill-root>/scripts/run_self_tests.py --output <report-dir>/self-tests.json
    <PYTHON> <skill-root>/scripts/skill_harness_snapshot.py verify --manifest <work-dir>/baseline-manifest.json --snapshot-only --output <report-dir>/baseline-verification.json
    ```
 
-7. **Freeze final candidate** after all applicable gates pass. Use explicit **freeze after pass** semantics: once frozen, do not edit the candidate without reopening the affected gates. Do not perform unvalidated cleanup after this point. Any later edit reopens affected gates.
+   When applicable, validate sidecars with `scripts/validate_reproducibility_profiles.py --kind environment|stochastic|lineage`, `scripts/validate_grader_calibration.py`, `scripts/validate_metamorphic_suite.py`, `scripts/validate_holdout_exposure.py`, and `scripts/validate_evaluation_provenance.py`.
 
-8. **Package atomically** only when gates pass. Validate authored and resolved output paths, reject aliases, preserve last-good package/report on failure, and use recovery-aware commit semantics.
+7. **Review suite health.** For long-lived or repeatedly optimized suites, check saturation, chronic 0%/100% scenarios, failure clustering, evaluator drift, and representative transcripts/traces. Do not interpret repeated zero as model weakness until task/oracle validity is checked.
+
+8. **Freeze final candidate.** After all applicable gates pass, make the candidate immutable for delivery. Any later edit reopens affected gates.
+
+9. **Package atomically.** Preflight authored/resolved output aliases; validate/stage ZIP and receipt; preserve last-good artifacts; commit atomically; package only the exact frozen candidate.
 
    ```text
    <PYTHON> <skill-root>/scripts/skill_harness_package.py --target <TARGET_SKILL_PATH> --output <artifact-dir>/skill.zip --report <report-dir>/package-validation.json --profile <PROFILE> --strict
    ```
 
-   The archive root must match `SKILL.md:name`, independent of the temporary staging directory.
+10. **Verify provenance and delivery identity.** Compare final target tree hash with package receipt; verify package SHA-256/ZIP integrity; bind material evaluation identities in an evaluation-provenance receipt when comparison provenance matters; report recovery paths if rollback was incomplete.
 
-9. **Verify delivery identity**: compare the final target tree hash with the package receipt's `source_tree_sha256`; verify package SHA-256/ZIP integrity; report recovery paths if rollback was incomplete.
-
-10. **Report** with `assets/templates/harness-report.md.template` when durable output helps. Return a package path only when the file exists, package receipt says `status: pass`, and final candidate identity still matches the receipt.
+11. **Report.** Use `assets/templates/harness-report.md.template` when durable output helps. Return a package path only when the file exists, package receipt says `status: pass`, and final candidate identity still matches the receipt.
 
 ## Output Contract
 
-Final response/report includes mode and target; portability profile/capabilities; self-hosting generation/controller/baseline/candidate provenance when applicable; decision; evidence policy/source identities; baseline snapshot identity; baseline inventory/audit/portability gates; harness map/plan; hypotheses; scenario status; candidate-visible vs evaluator-only boundary; isolation level; multi-candidate contract id/version used when applicable; trace/execution-evidence identity and leakage status when behavioral execution exists; strict trace-manifest provenance status when claimed; metrics/evaluators and freeze status; optional no-skill/control-arm status when relevant; changes; validation commands/outcomes; before/after comparison; auxiliary metrics for saturated scores; final candidate/package hashes; recovery status; residual risks/assumptions; recommendation; and package artifact path only when valid.
+Final response/report includes mode/target; portability profile and capabilities; target trust/execution policy; evidence/source identities; baseline identity; baseline audit/portability; scenarios and oracle status; candidate-visible/evaluator-only boundary; isolation/environment identity; grader calibration when applicable; repeated-trial metrics/uncertainty for stochastic claims; trace/lineage identity; holdout exposure/blindness state; evaluation-provenance identity when material; changes; validation outcomes; before/after comparison; auxiliary metrics for saturated scores; final candidate/package hashes; recovery status; residual risks/assumptions; recommendation; and package path only when valid.
 
-Evidence labels: `measured` for executed commands/tests/validators/package/scenario results; `derived` for file/context inspection; `researched` for cited current research; `proposed` for planned checks; `unknown` for unavailable facts. Scenario pass rates, activation precision/recall, and behavioral conformance are measured only after prompts execute and evaluator decisions are captured.
+Evidence labels: `measured` for executed commands/tests/validators/package/scenario results; `derived` for deterministic inspection/calculation; `researched` for cited current research; `proposed` for planned checks; `unknown` for unavailable facts. Scenario pass rates, activation precision/recall, stochastic reliability, and behavioral conformance are measured only after executions and evaluator decisions are captured.
 
-Keep evidence identities separate: live source, immutable baseline snapshot, evaluator set, final candidate tree, delivered package, and persisted receipt.
+Keep identities separate: live source/research snapshot, baseline snapshot, evaluator, environment, workflow plan/lineage, candidate, delivered package, and persisted receipts.
 
 ## Stop Conditions
 
-Stop before editing when the target lacks exactly one `SKILL.md`; is not an Agent Skills-compatible package; mutation lacks a safe immutable baseline; required source truth is unavailable; sensitive-looking files or escaping symlinks block safe snapshotting; requested changes touch protected evidence; an evaluator would need to be weakened to pass; portability requires a host-only dependency that would break the requested portable core; required capabilities are unavailable for a claimed gate; evaluator-only assets or hidden expected outcomes are exposed to the evaluated candidate in a way that invalidates the comparison; execution trace/identity evidence required for a measured claim is missing; repeated-run strict multi-candidate evidence is required but the caller accepts only the base distinct-candidate contract; output/package/report paths alias protected/input/sibling targets; validation fails after structural changes and cannot be fixed within scope; or rollback cannot restore/preserve recoverable evidence.
+Stop before editing/execution when the target lacks exactly one `SKILL.md`; mutation lacks a safe baseline; source truth is unavailable; sensitive-looking files or unsafe symlinks block safe intake; an external/unknown executable target requires isolation that is unavailable; requested changes touch protected evidence; an evaluator would need to be weakened; portability requires a host-private core dependency; required capabilities are unavailable; evaluator-only assets leaked to the candidate; strong LLM-grader promotion depends on unknown calibration; material paired environment drift is unresolved; holdout feedback informed mutation while a blind claim is still asserted; required execution trace/lineage/provenance is missing; output paths alias protected/input/sibling targets; validation fails and cannot be safely repaired; or rollback cannot preserve recoverable evidence.
 
 ## Finalization Checklist
 
-Before success claims, verify: baseline snapshot/inventory/audit ran; portability profile and capabilities were recorded; multi-platform claims used the supported-host matrix or equivalent per-profile evidence; bundled self-tests executed at least one test after runtime/test changes; evidence policy was followed; harness map existed before edits; evaluator/source evidence stayed frozen or the experiment was explicitly restarted; evaluator-only assets stayed outside candidate-visible inputs for hidden-grader/holdout claims; execution evidence passed leakage/identity validation when behavioral results are called measured; every added resource is integrated; scaffold markers/generated noise are absent; modified scripts/tests ran or blockers are reported; portable core remains valid when host adapters are ignored; output aliases were rejected; last-good delivery is preserved on failure; receipts are complete and correspond to committed bytes; protected paths stayed unchanged; final target identity matches package receipt; and any returned `skill.zip` exists with passing package validation.
+Before success claims, verify: baseline snapshot/inventory/audit ran; target trust policy was respected; portability capabilities were recorded; multi-platform claims used all six supported profiles or an explicitly narrowed matrix; self-tests executed after runtime/test changes; evidence policy was followed; harness map existed before edits; evaluator/source evidence stayed frozen or comparison was re-baselined; reference solutions/oracle probes were used for hard behavioral gates when appropriate; hidden evaluator/holdout assets stayed outside candidate visibility; material environment identity was comparable; stochastic claims used the declared trial evidence; LLM graders met the declared calibration strength; execution evidence passed leakage/identity validation; holdout exposure state matches blind-claim language; lineage/provenance is valid when claimed; every added resource is integrated; modified scripts/tests ran or blockers are reported; portable core remains valid without adapters; output aliases were rejected; last-good delivery is preserved on failure; receipts correspond to committed bytes; protected paths stayed unchanged; final target identity matches package receipt; and any returned `skill.zip` exists with passing package validation.

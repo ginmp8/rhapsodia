@@ -1,0 +1,45 @@
+{
+  "plan_version": 1,
+  "claim": "behavioral-improvement",
+  "arms": {
+    "no_skill": {"enabled": true, "purpose": "measure marginal skill value"},
+    "parent": {"enabled": true, "purpose": "preserve direct before/after attribution"},
+    "candidate": {"enabled": true, "purpose": "candidate under evaluation"}
+  },
+  "partitions": {
+    "diagnostic": {"visibility": "mutator-visible"},
+    "regression": {"visibility": "read-only"},
+    "promotion_holdout": {"visibility": "controller-only"}
+  },
+  "dimensions": [
+    {"id": "utility", "kind": "optimize", "direction": "higher-is-better"},
+    {"id": "activation", "kind": "hard-gate"},
+    {"id": "safety", "kind": "hard-gate"},
+    {"id": "compatibility", "kind": "hard-gate"},
+    {"id": "context_cost", "kind": "optimize", "direction": "lower-is-better"}
+  ],
+  "stochastic": {
+    "strong_claim": true,
+    "trials_per_case": 3,
+    "binary_reliability_metrics": ["pass@k", "pass^k"]
+  },
+  "runtime_identity": {
+    "required_when_material": true,
+    "fields": ["model", "reasoning_profile", "host_or_harness", "toolset", "environment"]
+  },
+  "capability_delta": {
+    "required": true,
+    "surfaces": ["network", "filesystem_write", "secrets", "external_tools"],
+    "new_authority_requires_explicit_authorization": true
+  },
+  "contamination": {
+    "status": "unassessed",
+    "holdout_access_evidence_required_for_promotion": true
+  },
+  "acceptance": {
+    "require_all_hard_gates": true,
+    "require_no_new_capability_without_authorization": true,
+    "require_promotion_holdout_for_behavioral_promotion": true,
+    "scalar_score_is_not_sufficient": true
+  }
+}

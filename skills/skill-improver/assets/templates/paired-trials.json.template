@@ -1,0 +1,23 @@
+{
+  "evidence_version": 1,
+  "metric": {
+    "name": "task_success",
+    "direction": "higher-is-better",
+    "binary": true
+  },
+  "runtime_identity": {
+    "no_skill": "same-environment-digest",
+    "parent": "same-environment-digest",
+    "candidate": "same-environment-digest"
+  },
+  "cases": [
+    {
+      "case_id": "example-case",
+      "trials": [
+        {"trial_id": "t1", "no_skill": 0, "parent": 0, "candidate": 1},
+        {"trial_id": "t2", "no_skill": 0, "parent": 1, "candidate": 1},
+        {"trial_id": "t3", "no_skill": 1, "parent": 1, "candidate": 1}
+      ]
+    }
+  ]
+}

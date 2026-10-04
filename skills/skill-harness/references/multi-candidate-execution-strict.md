@@ -39,3 +39,7 @@ Do not embed secrets or evaluator-only payloads in this envelope. Use identifier
 ```
 
 A failing validator blocks use of the envelope as strict multi-candidate evidence. Strict v1 remains legacy-readable with its original unprefixed 64-hex representation; do not silently reinterpret it as v2.
+
+## Statistical interpretation
+
+Strict v2 preserves repeated-run identity and trace provenance; it does not itself choose survivors or define statistical acceptance. When reliability under repeated stochastic execution is part of the claim, normalize the relevant run outcomes into the separate `skill-opt.harness-stochastic-evaluation` v1 profile. Keep survivor selection/promotion with the caller/search controller.

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-skills.local/skill-harness/evaluation-provenance.schema.json",
+  "title": "Evaluation Provenance Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["provenance_version", "invocation_id", "harness_identity", "process_identity", "external_parameters", "resolved_dependencies", "identities", "subjects"],
+  "properties": {
+    "provenance_version": {"const": 1},
+    "invocation_id": {"type": "string", "minLength": 1},
+    "harness_identity": {"type": "string", "minLength": 1},
+    "process_identity": {"type": "string", "minLength": 1},
+    "external_parameters": {"type": "object"},
+    "resolved_dependencies": {"type": "array"},
+    "identities": {"type": "object"},
+    "subjects": {"type": "array", "minItems": 1}
+  }
+}

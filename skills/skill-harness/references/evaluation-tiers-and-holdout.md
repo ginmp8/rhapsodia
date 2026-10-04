@@ -30,3 +30,7 @@ Record stable ids/hashes for the focused, harness, and holdout partitions. Basel
 Visible/focused suites can reject a bad candidate and support bounded conformance claims. When a candidate has been repeatedly optimized against the visible suite and the promotion claim is vulnerable to overfitting, require a frozen independent holdout or independent review before strong promotion claims.
 
 Do not use holdout feedback to mutate the same candidate and still call that holdout unseen. Once revealed for repair, it becomes development evidence and a fresh holdout is needed for a blind final claim.
+
+## Exposure ledger
+
+When the same holdout may be used across candidate lineages, record `assets/templates/holdout-exposure.json.template` and validate it with `scripts/validate_holdout_exposure.py`. Execution alone does not invalidate a holdout for the already-frozen candidate. Revealing holdout-specific feedback to the mutator or using that feedback for further mutation invalidates a blind/unseen claim for that lineage. A later blind claim requires a fresh independent holdout identity.

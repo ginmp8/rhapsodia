@@ -71,3 +71,7 @@ Write file receipts atomically and flush stdout before exit. Do not emit `status
 ## Final identity check
 
 After the final pass and before delivery, verify the target was not edited after packaging by comparing its current tree hash with the `source_tree_sha256` in the package receipt. Any post-pass edit requires rerunning affected gates and packaging again.
+
+## Evaluation provenance identity
+
+When the conclusion depends on several frozen inputs, use `references/evaluation-provenance.md` to bind harness/process identity, external parameters, resolved dependencies, evaluator/environment/baseline/candidate identities, and produced report subjects. This is provenance-lite evidence, not a SLSA compliance claim or security attestation. Keep the provenance identity separate from source-tree, trace, candidate, package, and delivery-receipt identities.

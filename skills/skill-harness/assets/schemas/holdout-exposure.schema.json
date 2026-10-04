@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-skills.local/skill-harness/holdout-exposure.schema.json",
+  "title": "Holdout Exposure Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ledger_version", "holdout_identity", "lineages"],
+  "properties": {
+    "ledger_version": {"const": 1},
+    "holdout_identity": {"type": "string", "minLength": 1},
+    "lineages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["lineage_id", "candidate_identity", "holdout_executed", "feedback_revealed_to_mutator", "used_for_mutation", "blind_claim_eligible"],
+        "properties": {
+          "lineage_id": {"type": "string", "minLength": 1},
+          "candidate_identity": {"type": "string", "minLength": 1},
+          "holdout_executed": {"type": "boolean"},
+          "feedback_revealed_to_mutator": {"type": "boolean"},
+          "used_for_mutation": {"type": "boolean"},
+          "blind_claim_eligible": {"type": "boolean"},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}

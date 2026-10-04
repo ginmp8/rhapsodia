@@ -160,3 +160,17 @@ When changing persistent schemas, output contracts, CLI flags, or host adapters:
 - add explicit migration/version identity for incompatible changes;
 - keep deprecated aliases long enough to avoid silent breakage;
 - reject unsupported old forms explicitly rather than silently reinterpreting them.
+
+## Promotion holdout isolation and contamination
+
+For promotion-sensitive behavioral claims, distinguish frozen evaluator integrity from **promotion holdout** secrecy. Keep concrete holdout cases controller-owned and outside the mutator's readable working set when the runtime permits. Record whether file/tool access evidence exists and classify contamination as `clear`, `suspected`, `confirmed`, or `unassessed`. A frozen grader with a leaked holdout is not trustworthy promotion evidence.
+
+## Stochastic evaluation and runtime identity
+
+When repeated model/agent behavior is part of the claim, capture trial count and the material **runtime identity** for each arm. Identity may include model/provider family, reasoning profile, host/harness, tool set, environment/dependency digest, cache/concurrency settings, locale/timezone, and budget when material. Compare capabilities rather than requiring vendor-private fields. If material runtime identity drifts across parent/candidate/no-skill arms, mark the comparison non-equivalent or re-baseline it.
+
+Use the lowest reliable evidence layer: repeated-trial data should be machine-readable, and derived summaries should be reproducible from the captured trials. Do not infer `pass@k` or `pass^k` from one observed run.
+
+## Capability delta
+
+Treat authority change as an independent gate. Record a **capability delta** for network, filesystem write scope, secret/credential access, external tools/subprocesses, and durable state. An evaluator gain cannot silently authorize a broader capability surface; explicit authorization is required before promotion.

@@ -25,10 +25,11 @@ HOST_PATH_MARKERS = (
     '~/.claude/skills/',
     '~/.agents/skills/',
 )
-PROFILES = ('portable', 'openai', 'claude', 'copilot', 'cursor')
+PROFILES = ('portable', 'openai', 'codex', 'claude', 'copilot', 'cursor')
 PROFILE_DISCOVERY = {
     'portable': 'Install the skill directory in any host location that implements the Agent Skills standard.',
     'openai': 'Use the host-managed ChatGPT skill installation/upload surface; OpenAI metadata under agents/ is an optional adapter, not core semantics.',
+    'codex': 'Use an Agent Skills-compatible Codex installation/discovery surface; Codex-specific discovery is a host concern and does not change portable semantics.',
     'claude': 'Use a Claude Agent Skills-compatible installation surface such as Claude Code/project skill discovery.',
     'copilot': 'Project discovery supports .github/skills, .claude/skills, or .agents/skills; personal discovery supports ~/.copilot/skills or ~/.agents/skills.',
     'cursor': 'Project discovery supports .agents/skills or .cursor/skills; Cursor also reads compatible Claude/Codex skill directories.',

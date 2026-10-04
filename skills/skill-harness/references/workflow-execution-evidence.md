@@ -58,3 +58,7 @@ Hold objective, material inputs, authority, evaluator, and host capability profi
 Hold the accepted plan stable; rerun workers. This measures execution variance rather than planning variance.
 
 Do not mix both changes and attribute the result to only one layer.
+
+## Lineage escalation
+
+Use this lightweight workflow envelope for plan/trace comparability. Escalate to `references/execution-lineage.md` only when replay, dependency invalidation, canonical-output reuse, or per-node execution identity materially affects the claim. A trace shows what happened; lineage additionally declares which upstream identities each reusable result depends on.

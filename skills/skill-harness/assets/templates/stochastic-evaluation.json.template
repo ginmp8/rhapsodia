@@ -1,0 +1,14 @@
+{
+  "profile_version": 1,
+  "scenario_id": "scenario-id",
+  "evaluator_identity": "evaluator-identity",
+  "reliability_k": [1, 3],
+  "stop_rule": {"type": "fixed-trials", "max_trials": 3},
+  "claim": {"level": "standard", "independent_replication": false},
+  "evaluator": {"kind": "deterministic"},
+  "trials": [
+    {"id": "trial-1", "outcome": "unknown"},
+    {"id": "trial-2", "outcome": "unknown"},
+    {"id": "trial-3", "outcome": "unknown"}
+  ]
+}

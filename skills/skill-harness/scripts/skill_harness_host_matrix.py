@@ -65,7 +65,7 @@ def validate_matrix(target: Path, profiles: list[str], *, strict: bool) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the existing portability validator across a host profile matrix.")
     parser.add_argument("--target", required=True)
-    parser.add_argument("--profiles", default="all", help="all or comma-separated portable,openai,claude,copilot,cursor")
+    parser.add_argument("--profiles", default="all", help="all or comma-separated portable,openai,codex,claude,copilot,cursor")
     parser.add_argument("--strict", action="store_true", help="Treat profile warnings as a failing matrix gate.")
     parser.add_argument("--output")
     args = parser.parse_args()

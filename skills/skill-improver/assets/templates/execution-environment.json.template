@@ -1,0 +1,20 @@
+{
+  "profile_version": 1,
+  "host_or_harness": "portable-host-profile",
+  "model": "declared-model-or-engine",
+  "reasoning_profile": "declared-or-not-exposed",
+  "toolset": ["filesystem", "command-execution"],
+  "environment": {
+    "platform": "declared-platform",
+    "python": "3.10+",
+    "locale": "declared-or-not-material",
+    "timezone": "declared-or-not-material"
+  },
+  "budget": {
+    "attempts": 1,
+    "tokens": "declared-or-not-exposed",
+    "wall_time": "declared-or-not-material"
+  },
+  "identity_digest": "compute-from-canonical-profile-when-used",
+  "notes": "Record only material fields the host can actually expose; never invent vendor-private identifiers."
+}

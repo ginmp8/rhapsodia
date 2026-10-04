@@ -59,3 +59,27 @@ Never claim behavioral improvement from a new static metric alone.
 ## Claim rule
 
 Use `measured` only for executed evidence. Use `derived` for inspected structure, `researched` for current sourced facts, `proposed` for planned checks, and `unknown` when evidence is unavailable. Do not convert missing execution capabilities into pass results.
+
+## Outcome-first grading
+
+Prefer the least path-sensitive evaluator that can falsify the requirement:
+
+1. deterministic end-state or artifact correctness;
+2. deterministic contract/safety invariants;
+3. task-specific semantic rubric;
+4. trajectory/trace quality;
+5. exact step/tool sequence only when the path itself is required.
+
+Do not fail a correct outcome merely because a different valid trajectory was used. Path constraints remain hard gates when they encode authorization, evaluator isolation, protected-path safety, network restrictions, approvals, or another explicit process requirement.
+
+## Repeated stochastic evidence
+
+One successful agent/model run can expose a failure but usually cannot establish reliability. When a claim depends on stochastic behavior, predeclare a stop rule and trial budget, keep scenario/evaluator/environment identities fixed, isolate mutable trial state, and validate `references/stochastic-evaluation.md`. Report raw outcomes, Wilson uncertainty, and reliability-under-repetition instead of an average alone. Strong claims require independent replication.
+
+## Grader calibration
+
+A frozen LLM grader is stable evidence identity, not proof of evaluator validity. For material LLM-as-judge gates, use `references/grader-calibration.md`: compare against an accepted human/expert reference set, allow abstention/unknown, and probe order/position and verbosity sensitivity. An uncalibrated LLM grader may provide auxiliary evidence but must not be the only basis for a strong promotion claim.
+
+## Task and oracle validity
+
+For hard behavioral gates, prefer a known-good reference solution/run or expert-validated oracle that can pass the same evaluator without candidate-forbidden access. Persistent zero-success scenarios require task/oracle review before interpreting them as candidate incapability. Keep reference solutions evaluator-only when revealing them would contaminate the candidate.

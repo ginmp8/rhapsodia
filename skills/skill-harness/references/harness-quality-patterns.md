@@ -62,3 +62,13 @@ Avoid these harness failures:
 | Host adapter as core semantics | Skill works only where a vendor extension is understood | keep Agent Skills semantics in SKILL.md/references/scripts; isolate adapters |
 | Output aliases input/report | Delivery can overwrite evidence or itself | canonicalize targets and reject aliases before writing |
 | Destructive failed packaging | Last-good artifact/report is lost | stage, validate, commit atomically, restore/preserve recovery |
+
+## Reference solutions and metamorphic relations
+
+For hard behavioral gates, maintain a known-good solution/run or expert oracle when feasible so the harness can distinguish a broken task/evaluator from candidate failure. Do not expose hidden reference answers to the candidate.
+
+Use `references/metamorphic-evaluation.md` when semantic-preserving input transformations can test invariants more robustly than many independent golden outputs. Useful relations include equivalent routing under paraphrase, unchanged protected-scope decisions under irrelevant context, portable-core invariance across host wording, and canonical-path equivalence. Metamorphic relations are claims and need explicit evaluator identities; they do not substitute for task-specific correctness checks.
+
+## Evaluation-suite health
+
+For long-lived suites, periodically apply `references/evaluation-suite-health.md`: identify saturated tests, chronic zero-success tasks, clustered failures, unstable graders, stale source/version assumptions, and representative trace/transcript samples. Add or retire scenarios by an explicit versioned evaluator change; never silently change a frozen evaluator in the middle of a comparison.

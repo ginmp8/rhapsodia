@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 
+
 DEFAULT_SKILL_BENCHMARK_SCRIPT = Path("skill-benchmark/scripts/generate_benchmark_report.js")
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = SKILL_ROOT / "assets" / "templates"
@@ -128,6 +129,17 @@ HYPOTHESES = [
         "constraints": [
             "Do not remove important instructions.",
             "Ensure SKILL.md links to moved references.",
+        ],
+    },
+    {
+        "id": "H042",
+        "name": "Simplify without capability loss",
+        "goal": "Reduce context cost or obsolete scaffolding while preserving activation, semantics, safety, compatibility, and validation gates.",
+        "change_intent": "simplification",
+        "constraints": [
+            "Remove or shorten only evidence-backed redundancy or stale guidance.",
+            "Prefer progressive disclosure over deleting needed branch knowledge.",
+            "Require no regression in hard gates before accepting context-efficiency gains.",
         ],
     },
     {
@@ -379,6 +391,9 @@ def hash_evaluator_state(args: argparse.Namespace, git_root: Path) -> str:
     hasher.update(f"require_status_pass={args.require_status_pass}\n".encode())
 
     paths: list[Path] = []
+    if getattr(args, "evaluation_plan", None):
+        paths.append(args.evaluation_plan)
+        hasher.update(f"evaluation_plan={args.evaluation_plan}\n".encode())
     if args.evaluator == "command":
         hasher.update(f"eval_command={args.eval_command}\n".encode())
     else:
@@ -760,6 +775,7 @@ def normalize_hypothesis(raw: dict[str, Any], index: int) -> dict[str, Any]:
         "statement": statement,
         "evidence_signal": evidence_signal,
         "validation": validation,
+        "change_intent": str(raw.get("change_intent") or raw.get("intent") or "optimization"),
     }
 
 
@@ -827,6 +843,8 @@ def build_patch_prompt(args: argparse.Namespace, target: Path, baseline: EvalRes
         Source: {hypothesis.get('source', 'built-in-catalog')}
         Evidence signal: {hypothesis.get('evidence_signal', 'not specified')}
         Validation: {hypothesis.get('validation', 'frozen evaluator')}
+        Change intent: {hypothesis.get('change_intent', 'optimization')}
+        Evaluation plan: {getattr(args, 'evaluation_plan', None) or 'not configured'}
 
         Hypothesis constraints:
         {constraints}
@@ -1103,6 +1121,12 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
     frozen_candidate_identity = hash_tree_identity(args.target)
     source_manifest = str(getattr(args, "source_manifest", None) or "not configured")
     source_verification = "pass" if getattr(args, "source_manifest", None) else "not-required"
+    best_data = best.data if isinstance(best.data, dict) else {}
+    def evidence_value(key: str, default: str = "not captured") -> str:
+        value = best_data.get(key, default)
+        if isinstance(value, (dict, list)):
+            return json.dumps(value, sort_keys=True)
+        return str(value)
     rendered = render_template(
         RUN_REPORT_TEMPLATE,
         {
@@ -1113,6 +1137,8 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "baseline_verdict": baseline.data.get("verdict", baseline.status) if isinstance(baseline.data, dict) else baseline.status,
             "baseline_blockers": inline_list([name for name, value in baseline.gates.items() if not gate_passes(value)]),
             "runtime_context": f"agent_adapter={args.agent_adapter}; python={sys.version.split()[0]}; git_root={git_root}",
+            "runtime_identity": evidence_value("runtime_identity", getattr(args, "runtime_identity_summary", "not captured")),
+            "evaluation_plan": f"{getattr(args, 'evaluation_plan', None) or 'not configured'}; hash={getattr(args, 'evaluation_plan_hash', 'not configured')}",
             "source_manifest": source_manifest,
             "supplied_context_summary": f"Evaluator `{args.evaluator}` with frozen benchmark set to `{args.freeze_benchmark}`; change gate policy `{args.change_gate_policy}`; agent adapter `{args.agent_adapter}`; source manifest `{getattr(args, 'source_manifest', None) or 'not configured'}`; stop file `{getattr(args, 'stop_file', 'not configured')}`.",
             "target_package_summary": f"Target was evaluated from `{args.target}`; report path `{best.report_path or 'not captured'}`.",
@@ -1139,6 +1165,10 @@ def write_report(args: argparse.Namespace, git_root: Path, baseline: EvalResult,
             "packaging_changes": "package step is external to this run report unless invoked separately",
             "commands_executed": f"Evaluator mode `{args.evaluator}`; patch records: {inline_list(patch_records)}",
             "before_after_comparison": f"baseline {baseline.score}; final {best.score}; delta {best.score - baseline.score}",
+            "tri_arm_evidence": evidence_value("tri_arm_evidence"),
+            "stochastic_evidence": evidence_value("stochastic_evidence"),
+            "holdout_contamination": evidence_value("contamination", "unassessed unless separately evaluated"),
+            "capability_delta": evidence_value("capability_delta", "not captured by scalar evaluator"),
             "source_verification": source_verification,
             "frozen_candidate_identity": frozen_candidate_identity,
             "evidence_layers": "structural evaluator evidence measured; behavioral/runtime/perceptual evidence only measured when separately executed or supplied",
@@ -1187,6 +1217,7 @@ def main() -> int:
     parser.add_argument("--freeze-benchmark", action="store_true", default=True, help="Hash evaluator inputs and reject if they change during the run. Enabled by default.")
     parser.add_argument("--no-freeze-benchmark", dest="freeze_benchmark", action="store_false")
     parser.add_argument("--benchmark-lock-path", action="append", type=Path, default=[], help="Additional evaluator fixture path to hash/freeze. Can be repeated.")
+    parser.add_argument("--evaluation-plan", type=Path, help="Optional frozen evaluation-plan JSON. Strong behavioral/reliability claims should use a validated plan with tri-arm/holdout/stochastic/runtime-identity controls when applicable.")
     parser.add_argument("--blocked-path", action="append", type=Path, default=[], help="Path the patching agent must not modify, even if inside allowed scope. Can be repeated.")
     parser.add_argument("--source-root", type=Path, help="Root used for material source snapshots. Defaults to the git root.")
     parser.add_argument("--source-lock-path", action="append", type=Path, default=[], help="Material source path to capture before analysis and verify before acceptance. Can be repeated.")
@@ -1245,6 +1276,31 @@ def main() -> int:
 
     git_root = find_git_root(target)
     require_clean_git(git_root)
+    args.evaluation_plan_hash = "not configured"
+    args.runtime_identity_summary = "not captured"
+    if args.evaluation_plan:
+        args.evaluation_plan = args.evaluation_plan.resolve()
+        if not args.evaluation_plan.is_file():
+            raise SystemExit(f"evaluation plan does not exist: {args.evaluation_plan}")
+        try:
+            plan_data = json.loads(args.evaluation_plan.read_text(encoding="utf-8"))
+        except Exception as exc:
+            raise SystemExit(f"evaluation plan is not valid JSON: {exc}")
+        plan_validator = SKILL_ROOT / "scripts" / "validate_evaluation_plan.py"
+        completed = subprocess.run(
+            [sys.executable, str(plan_validator), "--input", str(args.evaluation_plan)],
+            cwd=SKILL_ROOT,
+            text=True,
+            capture_output=True,
+        )
+        try:
+            plan_result = json.loads(completed.stdout)
+        except Exception:
+            plan_result = {"status": "fail", "errors": [completed.stdout.strip(), completed.stderr.strip()]}
+        if completed.returncode != 0 or plan_result.get("status") != "pass":
+            raise SystemExit("evaluation plan failed validation: " + json.dumps(plan_result, sort_keys=True))
+        args.evaluation_plan_hash = hashlib.sha256(args.evaluation_plan.read_bytes()).hexdigest()
+        args.runtime_identity_summary = ",".join(plan_data.get("runtime_identity", {}).get("fields", [])) or "not captured"
     state_dir = (git_root / args.state_dir).resolve() if not args.state_dir.is_absolute() else args.state_dir
     log_path = state_dir / "runs.jsonl"
     stop_file = resolve_stop_file(args.stop_file, state_dir, git_root)

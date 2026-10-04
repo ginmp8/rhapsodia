@@ -24,12 +24,16 @@ Out of scope unless requested: modifying locked fixtures/expected outputs during
 
 ## Scenario suite
 
+Separate **natural activation** from **forced activation**. Natural activation measures whether the host/router discovers the skill from its description; forced activation measures execution quality after selection. Add a **no-skill** control when measuring marginal skill value. Do not infer routing precision/recall from forced execution.
+
 Use `evals/activation-scenarios.json` as the frozen planned suite. A measured suite may derive from it, but measured results must be locked before candidate edits. Required categories: `should_activate`, `should_not_activate`, `ambiguous`, `edge_case`, `regression`.
 
 ## Evaluators
 
 - Structural: inventory and audit package structure, references, placeholders, scenarios, validation, maintainability, source-integrity controls, freeze-after-pass, and delivery/receipt integrity.
-- Activation: review planned/measured scenarios; calculate precision/recall only when actual activation decisions are captured.
+- Activation: evaluate natural activation separately from forced activation; calculate precision/recall only when actual routing decisions are captured, including negative, ambiguous, and sibling-collision cases.
+- Marginal value: compare no-skill, parent, and candidate arms when the claim is that the skill adds value, not merely that one version beats another.
+- Stochastic reliability: use repeated paired trials for strong reliability claims and report the chosen `pass@k`/`pass^k` semantics when binary success applies.
 - Output conformance: final report includes baseline, final score, evaluator hash, accepted/rejected hypotheses, files changed, gates, package result, risks.
 - Safety/scope: blocked paths unchanged, mutation scope respected, sandbox stated, no unsupported persistence claims.
 - Packaging: run `scripts/validate_skill_improver_package.py`; verify archive excludes evidence, caches, secrets, transient state; use `scripts/evidence_snapshot.py hash-tree` to identify the frozen candidate; exercise `scripts/package_skill.py` path preflight/receipt support; verify `assets/templates/improvement-run-report.md.template` and `assets/templates/patch-decision-record.md.template` are consumed by `scripts/skill_improver_loop.py`. For other skills, templates must be script-consumed, workflow-filled/copied, explicitly referenced, or validator-gated before counting as integrated.
@@ -41,6 +45,7 @@ Use `evals/activation-scenarios.json` as the frozen planned suite. A measured su
 - Output conformance: required report sections satisfied / required sections.
 - Criteria coverage: required harness criteria satisfied / required criteria.
 - Robustness: passed edge+regression scenarios / executed edge+regression scenarios.
+- Skill Lift: candidate minus no-skill on the declared metric when a no-skill arm ran; keep candidate-vs-parent delta separate.
 - Rework risk: low/medium/high from failed gates, unmeasured behavior, and manual-review burden.
 
 ## Gates

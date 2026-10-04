@@ -44,6 +44,6 @@ def test_host_matrix_validates_all_supported_profiles() -> None:
     assert proc.returncode == 0, proc.stderr or proc.stdout
     report = json.loads(proc.stdout)
     assert report["status"] == "pass"
-    assert report["requested_profiles"] == ["portable", "openai", "claude", "copilot", "cursor"]
-    assert report["summary"]["pass_count"] == 5
+    assert report["requested_profiles"] == ["portable", "openai", "codex", "claude", "copilot", "cursor"]
+    assert report["summary"]["pass_count"] == 6
     assert report["summary"]["fail_count"] == 0
