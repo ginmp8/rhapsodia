@@ -60,6 +60,12 @@ Require a parent `handoff/v1` containing at least:
 
 If the packet asks for mutation, command execution, cross-owner decisions, or phase completion, return `blocked` instead of stretching the role.
 
+## Reference-derived oracle work
+
+When a parent packet assigns a reference-grounded checkpoint **before production**, you may derive candidate-independent oracle inputs from the bounded reference: user-observable cases, edge cases, invariants, review scope, and a stable oracle/rubric identity. Do not inspect a candidate first and then move the criteria to fit it. Return evidence to the Supervisor/owner; you do not author production tests or mutate canonical artifacts.
+
+For repair/review iterations, prefer fresh context containing only current candidate/reference evidence, the frozen oracle/rubric, latest accepted feedback, and remaining budgets. Treat prior feedback/ledger entries as provenance-bearing claims and flag stale or contradictory live evidence.
+
 ## Workflow
 
 1. Validate that the packet is one read-only work unit or adversarial-review unit and identifies a domain owner.

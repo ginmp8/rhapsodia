@@ -302,3 +302,11 @@ The portable design/build contract is `docs/agents/contracts/rhapsodia-agent-sys
 The repository stores source profiles in `agents/*.agent.md`. For VS Code/Copilot use, copy those profiles into the target repository's `.github/agents/` discovery directory. The JSON contract is the portable semantic core. Future/adapted host profiles for OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, Cursor, Visual Studio, or other hosts must translate capabilities and discovery conventions without changing ownership, authority, termination, producer/verifier separation, gate-promotion, single-writer, or evidence semantics. Structural portability is not a claim of runtime parity.
 
 No MCP server, LangGraph, CrewAI, AutoGen, Orca, or provider SDK is required by the core design.
+
+## Reference-grounded convergence
+
+For high-risk work with a strong existing reference, the Supervisor may compile the current lifecycle phase into small ordered checkpoints. Each checkpoint can bind a narrow reference scope and a candidate-independent oracle identity before Magia produces code. Required gates execute in declared order; repair returns to Magia; affected proof is rerun; dependent checkpoints wait for promotion.
+
+The system intentionally does not implement hidden long-term agent memory. Cross-checkpoint learning is explicit evidence: accepted feedback with provenance, current candidate/reference identities, and checkpoint status. Mutable source state is revalidated when the plan declares it. This prevents stale ledgers or long transcripts from silently becoming operational truth.
+
+Autonomous mode is a policy choice, not a lower quality tier. It may reduce human approval frequency only when explicitly accepted; required proof/review/freshness gates remain invariant.
