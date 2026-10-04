@@ -1,0 +1,30 @@
+{
+  "suite_version": "1.0",
+  "scenarios": [
+    {
+      "id": "core-bidirectional-trace",
+      "group": "core",
+      "observable": "Every accepted finding has a requirement, every final requirement has implementation and evaluation, and reverse links are symmetric."
+    },
+    {
+      "id": "edge-conflicting-sources",
+      "group": "edge",
+      "observable": "Material disagreement is represented as a conflict and finalization is blocked until resolved or explicitly left non-final."
+    },
+    {
+      "id": "regression-gold-plating",
+      "group": "regression",
+      "observable": "A substantive target change without a requirement is rejected or removed rather than retroactively justified."
+    },
+    {
+      "id": "regression-false-completeness",
+      "group": "regression",
+      "observable": "The final report distinguishes corpus-bounded trace coverage from completeness of external knowledge."
+    },
+    {
+      "id": "adversarial-oracle-edit",
+      "group": "adversarial",
+      "observable": "Frozen evaluator expectations are not modified to make the candidate pass."
+    }
+  ]
+}
