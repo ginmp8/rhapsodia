@@ -1,87 +1,57 @@
-# Migration Conflict Report Contract v2
+# Report Contract v3
 
-## Machine-readable report
+The canonical result is JSON conforming to `schemas/analysis-report.schema.json`. Markdown is a human rendering of the same evidence.
 
-JSON is the canonical report for reproducible comparison. The semantic schema is documented in `../schemas/analysis-report.schema.json`.
+## Required identity
 
-Required identity fields:
+A report binds:
 
-- `schema_version`;
-- `analysis_version`;
-- stable `analysis_id`;
-- `heuristic_set.name/version/sha256`;
-- `input_identity.digest` plus file/support/runtime/generated-SQL identities;
-- `git_identity` when Git mode is used;
-- provider/DbContext/deployment context when supplied.
+- analyzer version `3.0.0`;
+- heuristic-set name/version/hash;
+- provider-profile version/hash and selected profile;
+- migration/support file identities;
+- generated/reviewed/deployment/rollback SQL identities;
+- runtime-code and semantic-evidence identities;
+- Git base/head/merge-base/history identities when applicable;
+- normalized context: EF Core version, provider, DbContext, migrations assembly, deployment instances/method.
 
-Required evidence fields:
+`analysis_id` is deterministic over the analysis contract, input digest, context, semantic evidence, heuristics, and provider profiles.
 
-- canonical migration metadata;
-- deterministic operation records with stable operation IDs;
-- findings with stable finding/rule IDs, severity, confidence, evidence status, gate, hazard type, remediation, validation, and uncertainty;
-- expand/contract pattern signals when detected;
-- gate list;
-- summary;
-- explicit limitations;
-- inline `analysis_receipt`.
+## Findings
 
-## Decision vocabulary
+Every finding must include:
 
-- `block`
-- `changes-required`
-- `review-required`
-- `no-static-blocker`
+- stable `id` and `rule_id`;
+- `severity`, `confidence`, `evidence_status`, `gate`, `hazard_type`;
+- exact files/operation IDs;
+- evidence summary;
+- why it matters;
+- smallest safe recommendation;
+- validation step;
+- explicit uncertainty.
 
-The decision is a deterministic projection of the frozen heuristic set over supplied evidence. It must not be described as a guarantee of runtime migration safety.
+Severity/gate are contract data from `heuristic-set.json`; prose cannot override them.
 
-## Finding contract
+## Decisions
 
-Every finding must preserve:
+- any `block` gate -> `block`;
+- otherwise any high finding -> `changes-required`;
+- otherwise any medium finding -> `review-required`;
+- otherwise -> `no-static-blocker`.
 
-```json
-{
-  "id": "mca:<rule-id>:<stable-hash>",
-  "rule_id": "...",
-  "severity": "critical|high|medium|low|info",
-  "confidence": "high|medium|low",
-  "evidence_status": "observed|derived|inferred|supplied|blocked",
-  "gate": "block|review-required|manual-review|none",
-  "hazard_type": "...",
-  "files": [],
-  "operation_ids": [],
-  "evidence": "...",
-  "why": "...",
-  "recommendation": "...",
-  "validation": "...",
-  "uncertainty": "..."
-}
-```
+`no-static-blocker` means no critical/high/medium finding from the supplied static/optional evidence. It is not production-safety proof.
 
-Do not omit uncertainty from heuristic findings.
+## Receipts
 
-## Analysis receipt
+`analysis_receipt` version 2 binds the report core to input, heuristic, provider-profile, and finding identities. File delivery receipts additionally bind the exact emitted artifact bytes and preserve recovery evidence if atomic replacement fails.
 
-The inline receipt binds:
+## Evidence-layer claims
 
-- analysis ID;
-- canonical analysis-core hash;
-- input digest;
-- heuristic-set hash;
-- emitted finding IDs;
-- severity counts.
+Keep these distinct:
 
-When `--receipt` is requested, a standalone delivery receipt additionally records the exact serialized report artifact SHA-256 and destination.
+- static/structural evidence — source operations, hashes, Git relationships;
+- semantic evidence — supplied output of EF-aware tooling;
+- generated-SQL evidence — exact provider SQL bytes, not execution;
+- runtime/database evidence — actual provider/database/deployment execution, which this analyzer does not perform.
 
-## Markdown report
-
-Markdown is a presentation of the same analysis contract. It must show identity, summary, finding IDs/rules, confidence/evidence, uncertainty, and limitations. JSON remains preferred for regression comparison.
-
-## Claims and limits
-
-State exactly what was executed. Never imply:
-
-- generated SQL was executed when it was only hashed/read;
-- production data was inspected when it was not;
-- provider-specific runtime behavior is proven from static C# parsing;
-- a runtime failure is guaranteed from a heuristic signal;
-- a lack of findings proves migration safety.
+Do not promote one evidence layer into another.

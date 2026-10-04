@@ -1,103 +1,99 @@
-# EF Core Migration Conflict Heuristics v2
+# EF Core Migration Conflict Heuristics v3
 
-The machine authority for rule IDs, severity, confidence defaults, gates, and hazard types is `heuristic-set.json` version `2.0.0`. This document explains intent and limits; it must not override the JSON contract.
+Machine authority for rule IDs, severity, confidence defaults, gates, and hazard types is `heuristic-set.json` version `3.0.0`. This file explains interpretation only; it never overrides the JSON contract.
 
 ## Evidence classes
 
-- **Observed**: operation/text/flag exists in analyzed bytes.
-- **Derived**: deterministic relation between observed identities or ordered operations.
-- **Inferred**: intent/impact is a bounded heuristic.
-- **Supplied**: deployment/provider context was explicitly supplied.
-- **Blocked**: the analyzer cannot determine semantics.
+- **observed** — present directly in analyzed bytes/options.
+- **derived** — deterministic relation between observed identities/operations.
+- **inferred** — bounded intent/impact interpretation.
+- **supplied** — explicit semantic/deployment context supplied to the analyzer.
+- **blocked** — semantics cannot be established safely.
 
-A heuristic finding is not runtime proof. Keep the finding's confidence and uncertainty text in final reporting.
+## Identity, lineage, and scope
 
-## Deterministic identity/schema conflicts
+Use the full migration ID (`yyyyMMddHHmmss_Name`) as migration identity. A shared 14-digit timestamp is only a low-confidence parallel-authoring signal; it is not a deterministic conflict by itself.
 
-Critical/blocking rules include duplicate column/table/object creation and collisions between changed migration identity and the resolved Git base history.
+Scope migration identity by the best available migration-set evidence: DbContext and migrations assembly when supplied/derived, otherwise directory scope. In Git mode compare changed migration identity and bytes with the resolved base history.
 
-Typical remediation:
+When a ModelSnapshot actually exposes `LastMigrationId`, compare it with the latest observed migration in the same set and use `history.diverged-lineage` for deterministic mismatch. Do not infer EF11 snapshot capabilities from a version string when the identity is absent.
 
-- rebase on current migration history;
-- regenerate the newer migration from the reconciled model/snapshot;
-- keep one creation operation;
-- avoid rewriting migrations already applied in shared environments.
+## Destructive changes and rollback
 
-## Destructive operations
+`DropColumn` and `DropTable` remain high review gates because the operation is objectively destructive. The analyzer does not infer that important rows/consumers exist.
 
-`DropColumn` and `DropTable` trigger high destructive-review findings because the source operation is objectively destructive. The analyzer does **not** infer that required data exists or that consumers still use the object.
+If `Down` merely recreates a dropped column/table, `rollback.data-not-restorable` records that structural inversion does not reconstruct original data. External backups/custom SQL can change recoverability and remain outside static proof.
 
-Validate:
+A `Down` that explicitly throws `NotSupportedException` is reported as an informational structural observation rather than being treated as safer or worse than a fabricated inverse.
 
-- consumer compatibility;
-- data retention/backups;
-- generated SQL;
-- representative upgrade path;
-- staged expand/contract when old/new application versions can coexist.
+## Structured data operations
 
-## Rename vs drop/add
+`InsertData`, `UpdateData`, and `DeleteData` are first-class data mutations. Review key targeting, rerun behavior, provider-generated SQL, and rollback strategy. Do not restrict data-migration analysis to raw SQL.
 
-Drop plus add on one table can represent:
+## Column and constraint compatibility
 
-- an unsafe scaffolded rename;
-- an intentional replacement;
-- two unrelated schema changes.
+Flag these as data-compatibility review surfaces:
 
-Therefore `rename.drop-add` is intentionally an inferred, medium-confidence interpretation even though its stable severity is high. Prefer `RenameColumn` when identity is preserved; otherwise make copy/backfill/drop sequencing explicit.
+- required `AddColumn` without default/backfill evidence;
+- nullable -> non-nullable `AlterColumn`;
+- reduced maximum length;
+- reduced precision/scale;
+- provider store-type change;
+- new unique/check/primary-key constraints or unique indexes over existing data.
 
-## Ordering hazards
+No static rule claims existing rows violate the new contract; validate actual data separately.
 
-The analyzer derives operation order from migration timestamp/file ordering and source invocation order within `Up()`.
+## Raw SQL and transaction boundaries
 
-Flag when:
+Raw SQL classification stays intentionally narrow: mutation vocabulary, rerun-sensitive insert/self-update patterns, and `suppressTransaction: true`. Absence of a match never proves safety.
 
-- a later structured operation references a column/table already dropped;
-- a later operation still references the old name after `RenameColumn`.
+Optional semantic evidence may report provider-generated transaction-suppressed commands. Keep this separate from static source flags and bind the semantic-evidence file hash.
 
-Generated SQL remains the final provider-specific ordering evidence.
+## Runtime migration classification
 
-## Conflicting indexes and FKs
+`Database.Migrate`/`MigrateAsync` is a runtime-deployment review signal.
 
-Index conflict compares the same table/column set with different index identity/uniqueness definitions. Multiple indexes over the same columns can be intentional, so the finding requests review rather than asserting invalidity.
+For explicit multiple-instance evidence:
 
-Foreign-key conflict compares the same local table/column set with different principal targets. Transitional relationships can be intentional; business intent is not inferred.
+- EF major unknown -> `runtime.concurrent-startup-version-unknown`;
+- EF < 9 -> `runtime.concurrent-startup-unprotected`;
+- EF >= 9 -> `runtime.concurrent-startup-lock-aware`.
 
-## Required columns and unique indexes
+The EF9+ rule deliberately stays a review finding: migration locks coordinate migration executors but do not prove old/new application compatibility, provider-specific failure behavior, or safe DDL overlap.
 
-A required `AddColumn(nullable: false)` without default/computed/backfill evidence is a high upgrade risk on an existing table, but the analyzer does not know existing row count or prior operational backfills.
+For EF9+ runtime source that also contains an explicit transaction pattern around migration execution, emit `runtime.explicit-migrate-transaction` as an inferred review hazard and require exact runtime-path validation.
 
-Unique index creation is a medium data-compatibility signal because existing duplicates are unknown until data is inspected.
+## Provider profiles
 
-## ModelSnapshot divergence
+Provider facts are versioned in `provider-profiles.json`.
 
-Snapshot signals include:
+- **SQL Server**: EF9+ migration locking is provider-backed; generated index SQL without observed `ONLINE = ON` is an operational-locking signal, not an outage prediction.
+- **PostgreSQL/Npgsql**: provider migration locking is explicit; generated `CREATE INDEX` without `CONCURRENTLY` is an operational-locking signal.
+- **SQLite**: selected operations use table rebuild semantics; EF idempotent migration script generation is unsupported; EF9+ locking uses the provider lock mechanism and can require abandoned-lock recovery.
 
-- changed snapshot without changed migration;
-- in Git mode, changed migration without changed snapshot.
+Unknown providers receive only generic rules. Never copy a known provider's behavior to an unknown provider.
 
-These are review signals. They do not by themselves prove migration failure or future snapshot corruption.
+## Provider branching and nondeterminism
 
-## Raw SQL
+Provider-specific migration code using `ActiveProvider` is valid, but incomplete branching is a review hazard when the analyzed migration contains provider-sensitive code with no explicit unsupported-provider path.
 
-Raw SQL rules intentionally use a narrow vocabulary:
+Runtime-dependent values/calls (`DateTime.Now/UtcNow`, `Guid.NewGuid`, environment, filesystem, network) are determinism review signals. They do not automatically prove nondeterministic SQL, but historical migration behavior should not silently vary with execution environment.
 
-- schema/data mutation keywords -> opaque-mutation review;
-- self-increment/self-decrement and unguarded insert patterns -> rerun-sensitive/non-idempotent signal;
-- `suppressTransaction: true` -> transaction hazard;
-- otherwise -> manual review.
+## SQL artifact integrity
 
-No regex result substitutes for executing the exact provider-specific SQL.
+Hash generated, reviewed, deployment, and rollback SQL separately.
 
-## Runtime migration hazards
+- reviewed != deployment bytes -> `artifact.review-execution-drift` (`critical/block`);
+- generated != reviewed bytes -> review-required drift signal.
 
-A startup migration finding requires explicit code evidence such as `Database.Migrate()`/`MigrateAsync()` from files supplied via `--runtime-code`.
+These are identity findings, not semantic comparisons. Different bytes can be better or worse; the analyzer only proves the claimed review/execution identity is broken.
 
-The stronger concurrent-startup rule additionally requires `--deployment-instances multiple`. Even then, report a **hazard**, not a guaranteed failure; provider locking, EF behavior, orchestration, and timing remain external evidence.
+## Optional semantic evidence
 
-## Expand/contract detection
+`schemas/semantic-evidence.schema.json` allows host-neutral evidence such as EF version/provider/context, pending-model-changes state, migration-lock status, and transaction-suppressed command count.
 
-The analyzer may emit a low-confidence pattern when it observes an add -> raw SQL/backfill -> drop sequence on one table. This only says the sequence resembles expand/backfill/contract. It does not prove semantic column mapping, consumer compatibility, or safe rolling deployment.
+The Python core never requires .NET. A host that can build/run EF tooling may produce the semantic-evidence JSON separately; a host without that capability still runs the full portable static core.
 
-## Unknown operations
+## Unknown/custom operations
 
-Unknown/custom `migrationBuilder` operations are coverage gaps. The correct behavior is `manual-review` with blocked semantics, not invented behavior. If the operation recurs, add a versioned parser rule and regression scenario before relying on automated classification.
+Unknown `migrationBuilder` operations remain `manual-review` coverage gaps. Do not guess semantics. Repeated custom/provider operations should gain a versioned parser rule and frozen regression before automated classification is trusted.

@@ -1,12 +1,7 @@
 interface:
   display_name: Migration Conflict Analyzer
-  short_description: Review EF Core migrations for PR and deployment conflicts.
+  short_description: Review EF Core migration lineage, provider, rollback, SQL artifact, and deployment risks.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
-  products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
   allow_implicit_invocation: true

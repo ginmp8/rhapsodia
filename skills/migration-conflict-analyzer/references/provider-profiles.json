@@ -1,0 +1,33 @@
+{
+  "profile_version": "1.0.0",
+  "providers": {
+    "sqlserver": {
+      "display_name": "Microsoft SQL Server",
+      "aliases": ["sqlserver", "Microsoft.EntityFrameworkCore.SqlServer"],
+      "migration_lock": {"ef_core_major_min": 9, "mechanism": "sp_getapplock", "scope": "session"},
+      "idempotent_scripts": true,
+      "online_index_option": true,
+      "rebuild_operations": []
+    },
+    "postgresql": {
+      "display_name": "PostgreSQL via Npgsql",
+      "aliases": ["postgresql", "postgres", "npgsql", "Npgsql.EntityFrameworkCore.PostgreSQL"],
+      "migration_lock": {"ef_core_major_min": 9, "mechanism": "ACCESS EXCLUSIVE lock on migrations history table", "scope": "transaction/provider implementation"},
+      "idempotent_scripts": true,
+      "concurrent_index_option": true,
+      "rebuild_operations": []
+    },
+    "sqlite": {
+      "display_name": "SQLite",
+      "aliases": ["sqlite", "Microsoft.EntityFrameworkCore.Sqlite"],
+      "migration_lock": {"ef_core_major_min": 9, "mechanism": "__EFMigrationsLock table", "scope": "database"},
+      "abandoned_lock_risk": true,
+      "idempotent_scripts": false,
+      "rebuild_operations": [
+        "AddCheckConstraint", "AddForeignKey", "AddPrimaryKey", "AddUniqueConstraint",
+        "AlterColumn", "AlterTable", "DropCheckConstraint", "DropColumn", "DropForeignKey",
+        "DropPrimaryKey", "DropUniqueConstraint", "RenameColumn", "RenameIndex"
+      ]
+    }
+  }
+}
