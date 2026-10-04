@@ -1,4 +1,4 @@
-# Test and Validation Plan
+# Test and validation plan
 
 ## Objective
 
@@ -13,7 +13,29 @@
 ## Environment/capabilities
 
 - Runtime/tool fingerprint:
+- Optional advanced-test capabilities:
 - Known blockers:
+
+## Test intent and oracle source
+
+- Test intent: regression-characterization | bug-finding | contract | property | security | compatibility
+- Oracle source:
+- Could the SUT already be faulty?:
+- Behavioral requirements/contracts/invariants/failure classes covered:
+- Unmapped behaviors:
+
+## Reliability decision
+
+- Reliability/stability assessment required?:
+- Rationale:
+- Attempt budget when required:
+- Material nondeterminism controls (time/locale/randomness/order/concurrency/cache/network/etc.):
+
+## Proxy metrics
+
+- Proxy metric(s), if any:
+- Why useful:
+- What the metric does **not** prove:
 
 ## Required gates
 
@@ -36,6 +58,7 @@
 
 ### Baseline evidence
 
+- Material target identity:
 - Exact command:
 - Working directory:
 - State / exit code:
@@ -47,7 +70,7 @@
 
 ### Cases
 
-| Case | Expected behavior | Evidence source |
+| Case | Expected behavior | Oracle/evidence source |
 |---|---|---|
 
 ### Repair and rerun
@@ -61,8 +84,11 @@
 ## Final validation
 
 - [ ] Protected paths unchanged or explicitly authorized.
-- [ ] Required gates have receipts.
+- [ ] Required gates have receipts bound to material target identity.
 - [ ] Exact exit codes recorded.
+- [ ] Test intent and oracle source recorded where semantic tests changed.
+- [ ] Required reliability assessed without retry-to-green.
+- [ ] Proxy metrics are not used as correctness proof.
 - [ ] Read-only validators repeat consistently where required.
-- [ ] Overall state computed by fixed precedence.
+- [ ] Overall gate state and acceptance overlays computed separately.
 - [ ] Final candidate frozen after last pass.

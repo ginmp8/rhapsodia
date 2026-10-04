@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from classify_failure import classify  # noqa: E402
 from discover_commands import GATES, discover  # noqa: E402
 from environment_fingerprint import fingerprint  # noqa: E402
+from evidence_identity import tree_identity  # noqa: E402
 
 
 def sha256_text(text: str) -> str:
@@ -79,9 +80,13 @@ def make_receipt(
     executable_name = Path(argv[0]).name if argv else ""
     relevant_tools = [executable_name] if executable_name in {"node", "npm", "dotnet", "go", "cargo", "java", "mvn", "gradle", "make", "bash"} else []
     env = fingerprint(root, relevant_tools)
+    target_identity = tree_identity(root)
     base: dict[str, Any] = {
         "receipt_version": 1,
         "target": str(root),
+        "target_identity": target_identity,
+        "target_identity_after": target_identity,
+        "target_mutated": False,
         "gate": gate,
         "working_directory": str(root),
         "environment": env,
@@ -92,12 +97,19 @@ def make_receipt(
         "exit_code": None,
         "result": {"stdout_excerpt": "", "stderr_excerpt": "", "stdout_sha256": sha256_text(""), "stderr_sha256": sha256_text("")},
     }
+    def finalize_identity() -> None:
+        after = tree_identity(root)
+        base["target_identity_after"] = after
+        base["target_mutated"] = after != target_identity
+
     if not argv:
         base["result"]["diagnostic"] = {"code": "command/not-selected", "subject": gate, "evidence": {"discovery": discovered}}
+        finalize_identity()
         return base, 0
     if not execute:
         base["classification"] = gate
         base["result"]["diagnostic"] = {"code": "execution/not-requested", "subject": gate, "evidence": {"command": command_info}}
+        finalize_identity()
         return base, 0
     try:
         proc = subprocess.run(argv, cwd=root, text=True, capture_output=True, timeout=timeout)
@@ -118,6 +130,7 @@ def make_receipt(
                 },
             }
         )
+        finalize_identity()
         return base, 0 if status == "pass" else (2 if status == "blocked" else 1)
     except FileNotFoundError as exc:
         text = str(exc)
@@ -137,6 +150,7 @@ def make_receipt(
                 },
             }
         )
+        finalize_identity()
         return base, 2
     except PermissionError as exc:
         text = str(exc)
@@ -156,6 +170,7 @@ def make_receipt(
                 },
             }
         )
+        finalize_identity()
         return base, 2
     except subprocess.TimeoutExpired as exc:
         stdout = exc.stdout if isinstance(exc.stdout, str) else ""
@@ -176,6 +191,7 @@ def make_receipt(
                 },
             }
         )
+        finalize_identity()
         return base, 2
 
 
@@ -193,9 +209,14 @@ def main() -> int:
         argv = load_argv(args.argv_json) if args.argv_json else None
         receipt, process_code = make_receipt(Path(args.target), args.gate, argv, args.execute, args.timeout)
     except (ValueError, json.JSONDecodeError) as exc:
+        invalid_target = Path(args.target).resolve()
+        invalid_identity = tree_identity(invalid_target) if invalid_target.exists() else None
         receipt = {
             "receipt_version": 1,
-            "target": str(Path(args.target).resolve()),
+            "target": str(invalid_target),
+            "target_identity": invalid_identity,
+            "target_identity_after": invalid_identity,
+            "target_mutated": False,
             "gate": args.gate,
             "working_directory": str(Path(args.target).resolve()),
             "environment": fingerprint(Path(args.target), []),

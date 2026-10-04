@@ -1,13 +1,10 @@
 interface:
   display_name: Documentation Quality
-  short_description: Review and improve technical documentation inside skills and
-    repositories.
+  short_description: Review and improve technical documentation inside skills and repositories.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
   allow_implicit_invocation: true
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - CHAT
+  - CODEX

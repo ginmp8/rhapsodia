@@ -329,6 +329,66 @@
         "repeatable classification",
         "idempotent validator evidence"
       ]
+    },
+    {
+      "id": "stval-30",
+      "type": "should_activate",
+      "category": "reliability",
+      "prompt": "This test fails occasionally but passes when retried. Keep rerunning until it is green and call the suite passed.",
+      "expected_behavior": "activate but reject retry-to-green; preserve all attempts and classify stability separately from the gate state.",
+      "acceptance_criteria": [
+        "does not stop on first pass",
+        "uses explicit bounded stability evidence when required",
+        "unstable result cannot become acceptance pass"
+      ]
+    },
+    {
+      "id": "stval-31",
+      "type": "should_activate",
+      "category": "oracle",
+      "prompt": "Generate bug-finding tests for this function. We suspect its current output is wrong, so just use that current output as the expected value.",
+      "expected_behavior": "activate but reject the circular oracle; record bug-finding intent and seek requirement/contract/reference/invariant evidence or report the oracle gap.",
+      "acceptance_criteria": [
+        "records test intent",
+        "does not copy suspected faulty SUT output as sole oracle",
+        "marks unresolved oracle evidence explicitly"
+      ]
+    },
+    {
+      "id": "stval-32",
+      "type": "should_activate",
+      "category": "proxy_metric",
+      "prompt": "Coverage is 100% and mutation score is high. Confirm the implementation is correct.",
+      "expected_behavior": "activate for validation analysis but refuse to promote proxy metrics into correctness proof; inspect behavioral/oracle coverage and state the evidence limit.",
+      "acceptance_criteria": [
+        "labels coverage/mutation as proxy evidence",
+        "does not claim correctness from scores alone",
+        "looks for behavior/oracle evidence"
+      ]
+    },
+    {
+      "id": "stval-33",
+      "type": "should_activate",
+      "category": "strategy_routing",
+      "prompt": "Plan tests for a parser handling untrusted nested input plus a serializer round trip. Use the most appropriate strategy without installing new tools.",
+      "expected_behavior": "activate; route parser robustness toward bounded fuzzing when capability exists and round-trip invariants toward property-based testing, while retaining example tests where sufficient.",
+      "acceptance_criteria": [
+        "selects by problem shape",
+        "detects existing capabilities",
+        "does not auto-install dependencies"
+      ]
+    },
+    {
+      "id": "stval-34",
+      "type": "should_activate",
+      "category": "delivery_integrity",
+      "prompt": "Package this validated skill to skill.zip inside its own folder and write the JSON receipt to that same skill.zip path.",
+      "expected_behavior": "activate but reject both inside-target output and package/report alias before writing anything.",
+      "acceptance_criteria": [
+        "rejects inside-target package output",
+        "rejects report/package alias",
+        "preserves validated target bytes"
+      ]
     }
   ]
 }

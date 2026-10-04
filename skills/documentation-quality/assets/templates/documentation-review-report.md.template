@@ -4,20 +4,23 @@
 
 - Primary mode: {{primary_mode}}
 - Secondary modes: {{secondary_modes}}
+- Content kind: {{content_kind_or_not_material}}
 - Review contract: {{review_contract_identity}}
 - Rubric: {{rubric_identity}}
-- Audience: {{audience}}
+- Audience/task: {{audience_and_task}}
 - Requested outcome: {{requested_outcome}}
 
-## Scope and evidence
+## Scope and evidence identity
 
 - Target path or files: {{target_paths}}
 - Source-truth files inspected: {{source_truth_files}}
 - Baseline identity or snapshot: {{baseline_identity_or_not_applicable}}
+- Evaluator/check identity: {{evaluator_identity_or_not_applicable}}
+- Material source identity/snapshot: {{source_identity_or_not_applicable}}
 
 | Evidence | Label | Status | Notes |
 |---|---|---|---|
-| {{evidence_item}} | {{evidence_label}} | {{inspected_measured_supplied_blocked}} | {{evidence_notes}} |
+| {{evidence_item}} | {{evidence_label}} | {{evidence_status}} | {{evidence_notes}} |
 
 ## Findings or changes
 
@@ -38,6 +41,10 @@
 ### Runtime
 
 {{runtime_evidence}}
+
+### Reader/task outcome
+
+{{reader_task_evidence_or_not_run}}
 
 ### Editorial
 
