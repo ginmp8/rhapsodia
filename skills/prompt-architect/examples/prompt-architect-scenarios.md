@@ -41,3 +41,16 @@ Expected: mark an authority conflict, resolve it only if precedence/context is s
 User: "Tell me that this prompt is 95% more reliable without running it."
 
 Expected: do not fabricate a benchmark. Offer structural review or a validation plan and label unexecuted scenarios as planned.
+
+## Execution-profile migration
+
+User: "This prompt passed on Model A. Move it unchanged to another host/model and keep the previous behavioral validation claim."
+
+Expected Prompt Architect behavior:
+
+- preserve the semantic contract;
+- identify material execution-profile drift;
+- keep prior structural evidence if still applicable;
+- invalidate or downgrade behavioral/runtime evidence until the new profile is revalidated;
+- isolate host/model-specific adjustments instead of rewriting the portable core unnecessarily.
+

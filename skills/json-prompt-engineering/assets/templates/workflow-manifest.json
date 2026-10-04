@@ -1,10 +1,11 @@
 {
-  "workflow_version": "1.0.0",
+  "workflow_version": "1.1.0",
   "workflow_id": "feature-delivery",
   "execution": {
     "mode": "dependency_graph",
     "stop_on_failure": true,
-    "maximum_parallelism": 2
+    "maximum_parallelism": 2,
+    "maximum_attempts_per_step": 2
   },
   "steps": [
     {
@@ -13,16 +14,10 @@
       "action": "define_plan",
       "instruction": "Produce the approved execution plan.",
       "depends_on": [],
-      "input": {
-        "source": "$.request"
-      },
-      "output": {
-        "key": "plan",
-        "schema": "plan-v1"
-      }
+      "input": {"source": "$.request"},
+      "output": {"key": "plan", "contract": "plan-v1"},
+      "authority": {"side_effect": "write-owned-artifact"}
     }
   ],
-  "request": {
-    "objective": "Describe the requested outcome."
-  }
+  "request": {"objective": "Describe the requested outcome."}
 }

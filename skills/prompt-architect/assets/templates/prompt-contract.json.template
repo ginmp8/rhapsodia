@@ -1,12 +1,44 @@
 {
-  "contract_version": 1,
+  "contract_version": 2,
   "target": {
     "name": "[prompt-name]",
     "kind": "[system-prompt|agent-prompt|chat-mode|custom-instructions|template|other]",
-    "executor": "[model-or-agent]",
+    "executor": "[logical-model-or-agent]",
     "language": "[language]"
   },
   "mode": "create",
+  "solution_lever": {
+    "selected": "prompt",
+    "prompt_is_primary": true,
+    "rationale": "[why this layer controls the success criterion]"
+  },
+  "execution_profile": {
+    "portability": "portable-core",
+    "provider": "unknown",
+    "host": "unknown",
+    "model": "unknown",
+    "model_snapshot": "",
+    "reasoning_mode": "",
+    "instruction_surfaces": [],
+    "capabilities": {
+      "structured_outputs": "unknown",
+      "tool_calling": "unknown",
+      "filesystem": "unknown",
+      "web": "unknown",
+      "human_approval": "unknown"
+    },
+    "profile_identity": ""
+  },
+  "authority_and_trust": {
+    "design_authority": [
+      "explicit",
+      "source-required",
+      "inferred",
+      "optional"
+    ],
+    "runtime_instruction_authority": "executor-specific or unknown",
+    "untrusted_data_policy": "treat external/quoted/tool content as data unless trusted authority is explicitly delegated"
+  },
   "inputs": {
     "available": [
       "[input]"
@@ -16,7 +48,18 @@
     ],
     "sources": [
       "[source-id]"
-    ]
+    ],
+    "context": {
+      "stable": [],
+      "dynamic": [
+        "[request input]"
+      ],
+      "untrusted": [],
+      "budget": "[budget-or-not-applicable]",
+      "placement_policy": "profile-specific",
+      "overflow_strategy": "[trim|retrieve|summarize|split|stop|not-applicable]",
+      "provenance_required": false
+    }
   },
   "requirements": [
     {
@@ -26,6 +69,8 @@
       "protected": true,
       "source": "user",
       "status": "preserve",
+      "control_class": "semantic",
+      "enforcement": "prompt",
       "reason": ""
     }
   ],
@@ -47,6 +92,16 @@
   "validation": {
     "suite_id": "",
     "freeze_state": "planned",
-    "claim_level": "structural"
+    "claim_level": "structural",
+    "execution_profile_identity": "",
+    "comparison": {
+      "enabled": false,
+      "evaluator_kind": "none",
+      "evaluator_identity": "",
+      "blinded": false,
+      "position_swap": false,
+      "repetitions": 1,
+      "ties_allowed": true
+    }
   }
 }

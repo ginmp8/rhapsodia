@@ -1,90 +1,77 @@
 # JSON Prompt Design
 
-## Architecture Decision
+## Architecture decision
 
-Use the smallest structure that makes the interface clearer.
+Use the smallest structure that improves the interface.
 
-| Situation | Preferred format |
+| Situation | Preferred form |
 |---|---|
-| Human writes and maintains long instructions | Markdown |
+| Human maintains long behavioral rules | Markdown |
 | Application supplies typed variable data | JSON |
 | Human rules plus structured runtime data | Hybrid |
-| Application parses the response | Native Structured Output or tool schema |
-| Multiple skills exchange state | Versioned workflow manifest |
+| Application parses model output | Native Structured Output or tool schema |
+| Same domain contract targets several providers | Canonical schema + provider projections |
+| Multiple skills/tools exchange state | Versioned workflow manifest |
 
-## Hybrid Default
+## Hybrid default
 
-Separate three concerns:
+Separate stable instructions, runtime data, and output enforcement. Do not duplicate the same rule in all layers.
 
-1. stable instructions in Markdown;
-2. variable input as serialized JSON;
-3. output contract through the provider's native schema facility.
+```text
+Markdown behavior
++ JSON runtime input
++ canonical output/tool contract
++ provider projection only when needed
+```
 
-Do not duplicate the same rule in all three layers.
+## Field design
 
-## Field Design
-
-Use names that communicate domain meaning:
+Prefer domain names over generic containers such as `data`, `value`, or `config`.
 
 ```json
 {
+  "prompt_version": "2.0.0",
   "task": "review_code",
-  "context": {
-    "language": "C#",
-    "framework": ".NET 10"
-  },
-  "input": {
-    "source_code": "..."
-  },
-  "constraints": {
-    "maximum_findings": 20
-  }
+  "context": {"language": "C#", "framework": ".NET 10"},
+  "input": {"source_code": "..."},
+  "constraints": {"maximum_findings": 20}
 }
 ```
 
-Prefer arrays for ordered values and repeatable items. Do not depend on object property order.
+Use native JSON types. Keep identifiers as strings when cross-runtime integer precision is uncertain. Use arrays for ordered/repeated values; never rely on object-property order.
 
-Use native JSON types:
+## Version identities
 
-- boolean for flags;
-- number for quantities;
-- string for identifiers that may exceed interoperable integer ranges;
-- array for ordered or repeated values;
-- `null` only when the contract defines its meaning.
+Separate versions when they can evolve independently:
 
-## Recommended Top-Level Fields
+- prompt/instruction version;
+- input schema version;
+- canonical output/tool schema version;
+- provider projection/profile version;
+- workflow manifest version.
 
-Use only the fields that add value:
+A prompt version bump must not masquerade as a schema version bump, and a provider projection refresh must not silently change the canonical domain contract.
 
-- `prompt_version`;
-- `task` or `objective`;
-- `context`;
-- `input`;
-- `instructions`;
-- `constraints`;
-- `missing_information_behavior`;
-- `output_requirements`.
-
-Do not place API sampling parameters in the prompt merely because they are representable as JSON.
-
-## Conversion Rules
+## Conversion rules
 
 When converting a traditional prompt:
 
-1. preserve the original objective and prohibitions;
-2. keep long behavioral rules as Markdown unless programmatic generation requires JSON;
+1. preserve objective, prohibitions, and failure behavior;
+2. keep long human-maintained instructions in Markdown unless machine generation requires JSON;
 3. move runtime values into typed fields;
-4. move response structure into native schema configuration when available;
-5. remove repeated statements and decorative nesting;
-6. preserve examples only when they disambiguate behavior.
+4. move machine-consumed response structure into native schema/tool configuration when available;
+5. create a canonical schema before any provider-specific projection when portability matters;
+6. remove decorative nesting and duplicated rules;
+7. preserve examples only when they disambiguate behavior.
 
-## Anti-Patterns
+## Anti-patterns
 
-- one field per sentence with no machine use;
-- deeply nested configuration objects;
+- one JSON field per prose sentence without machine use;
 - full natural-language policies escaped inside one JSON string;
-- copied permanent instructions from referenced skills;
+- deeply nested wrappers with no semantic boundary;
+- copied permanent instructions from referenced skills/tools;
 - output examples presented as if they were formal schemas;
-- properties named `data`, `value`, or `config` when a domain name is available;
-- string values such as `"true"`, `"10"`, or comma-separated lists where native types are appropriate;
-- assuming that a JSON-shaped prompt forces a JSON-shaped response.
+- provider-specific restrictions embedded into the canonical schema without a domain reason;
+- silently deleting unsupported constraints to make a provider accept a schema;
+- putting model/runtime controls into prompt data and assuming they configure the API;
+- assuming JSON shape forces JSON output or improves reasoning.
