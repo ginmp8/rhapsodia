@@ -30,11 +30,13 @@ If source material refers to `MANIFESTO.yaml` or `DOCS_ROOT`, reinterpret those 
 
 ## Refinement rules
 - preserve done history
-- update future todo work precisely instead of rewriting the whole plan
+- update future planned work precisely instead of rewriting the whole plan
 - re-evaluate reasoning only where ambiguity, scope, or evidence changed
 - do not mark tasks done without matching evidence
 - if blocker state changes materially, update `notes.md` in the same pass
 - require concrete validation and coverage expectations when changed business logic is relevant
+- preserve existing `reqNNN`/`valNNN` identities; when a requirement is newly added or materially changed, update `Satisfies`/`Covers` links in the same pass
+- do not invent trace IDs for ambiguous legacy prose merely to raise readiness
 - if remaining work is still too broad, add a bounded future refinement or decomposition task only when justified
 
 ## Final review
@@ -44,6 +46,7 @@ Review in this order:
 3. `validation.md`
 4. `notes.md`
 5. architecture impact when relevant
+6. traceability/readiness when requirements or validations changed
 
 After review:
 - keep all planning docs internally consistent

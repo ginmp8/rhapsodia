@@ -5,7 +5,7 @@ description: Create, refine, decompose, audit, order, or normalize canonical seq
 
 # Sequential Work Packaging
 
-Create and maintain planning-first work packages under one canonical convention. Preserve `cycle_version` as the macro container, `spec_id` as the stable execution identity, `feature_key` as the stable functional identity, and `feature_version` as semantic technical evolution.
+Create and maintain planning-first work packages under one canonical convention. Preserve `cycle_version` as the fixed-width planning-cycle identity, `spec_id` as the stable execution identity, `feature_key` as the stable functional identity, and `feature_version` as the schema-v1 SWP feature-evolution token.
 
 ## Authority boundary
 
@@ -53,7 +53,7 @@ Fail closed and stop mutation on ambiguous mode, unresolved identity/version cla
 
 ## Evidence and freeze discipline
 
-Snapshot exact source bytes or equivalent hashes before comparison when source state materially determines the change. The packaged regression scenarios and acceptance contract are a frozen evaluator set; verify `evals/frozen-manifest.json` before final acceptance. Freeze after pass: once the candidate passes final validation, do not edit it afterward without restarting the affected validation gates.
+Snapshot exact source bytes or equivalent hashes before comparison when source state materially determines the change. Frozen evaluator manifests are versioned evidence layers; verify every frozen evaluator manifest under `evals/` with `scripts/verify_evals.py` before final acceptance. Never rewrite an older frozen evaluator set to make a candidate pass. Freeze after pass: once the candidate passes final validation, do not edit it afterward without restarting the affected validation gates.
 
 ## Run protocol
 
@@ -70,13 +70,13 @@ Snapshot exact source bytes or equivalent hashes before comparison when source s
 
 ## Identity and creation/update rules
 
-- `cycle_version` must be a quoted semantic container string such as `"01.00.00"`; it is not an execution id.
+- `cycle_version` must be a quoted fixed-width planning-cycle string such as `"01.00.00"`; it is not SemVer and is not an execution id.
 - `spec_id` is stable once created. New ids use `specNNN`. If the caller does not provide one, derive the next id only from the locked catalog as `max(existing numeric id)+1`; never fill a gap implicitly and never derive it from `feature_key`.
 - `order` is sortable state, not identity. Preserve existing order. Appending defaults to `max(order)+10`. An insertion may use an unused integer between explicit anchors. If no free integer exists, block with `ORDER_REBALANCE_REQUIRED`; do not silently renumber.
 - `feature_key` is lowercase kebab-case and may recur across specs as the same capability evolves.
 - `(feature_key, feature_version)` is a unique functional release identity inside one cycle. Duplicate ownership blocks.
 - Repeated `feature_key` entries must increase `feature_version`, execute later, and depend on the immediately preceding spec for that feature.
-- Version classification remains semantic judgment; once classified, mapping is deterministic: new capability `v0.1.0`, compatible improvement minor, correction patch, breaking change major. If evidence cannot distinguish the class, block with `FEATURE_VERSION_UNRESOLVED` rather than guessing.
+- `feature_version` in schema version 1 is the SWP token `vMAJOR.MINOR.PATCH`. Its numeric triple follows the SemVer-derived bump policy only after semantic classification: new capability `v0.1.0`, compatible improvement minor, correction patch, breaking change major. The serialized token is not strict SemVer text because it includes `v`. If evidence cannot distinguish the class, block with `FEATURE_VERSION_UNRESOLVED` rather than guessing. See `references/schema-evolution.md`.
 - New actionable tasks must carry an explicit stable `Task ID: taskNNN`. Existing explicit task ids never change. Legacy `Task N` labels may remain for compatibility, but refinement must not renumber them merely to modernize formatting.
 
 ## Create versus update
@@ -112,7 +112,7 @@ Never mutate `.git`, secrets, `.env`, private keys, evaluator/baseline evidence,
 
 ## Idempotency and recovery
 
-A repeated run with equivalent normalized input must preserve the same identities, ordering decisions, material structure, and semantic transaction identity. Absolute staging-source paths are not part of transaction identity; target paths, preconditions, candidate hashes, mode, and authorization are. If candidate bytes already equal target bytes, return `no_change` and do not rewrite them.
+A repeated run with equivalent normalized input must preserve the same identities, ordering decisions, material structure, and semantic transaction identity. Absolute workspace and staging-source paths are not part of semantic transaction identity; use logical cycle identity, target-relative paths, preconditions, candidate hashes, mode, and authorization. Runtime paths may appear in receipts as observation only. If candidate bytes already equal target bytes, return `no_change` and do not rewrite them.
 
 Only one compliant mutation transaction may operate on a cycle at a time. An active lock or preserved recovery workspace blocks a new mutation until the prior state is resolved. Transaction workspaces must live outside the canonical cycle tree so validation hashes describe only canonical/unknown cycle evidence, not temporary backup files.
 
@@ -120,7 +120,7 @@ For multi-file updates use:
 
 `lock -> preflight -> exact before snapshot -> stage -> candidate validate -> transition validate -> precommit recheck -> preserve last-good -> commit -> post-validate -> exact candidate/committed hash check -> receipt`
 
-On failure after any commit, restore all prior target bytes and verify the restoration. If rollback is incomplete, keep recovery material and report exact recovery paths. Do not emit success before committed bytes and postconditions are verified.
+On failure after any commit, restore all prior target bytes and verify the restoration. If rollback is incomplete, keep recovery material and report exact recovery paths. This is a recovery-aware replace-and-verify protocol; do not claim universal power-loss/crash durability for filesystems or hosts whose durability semantics were not established. Do not emit success before committed bytes and postconditions are verified.
 
 ## Machine-readable validation
 
@@ -144,6 +144,7 @@ Before handoff:
 - catalog and manifest identities agree;
 - dependencies are acyclic and ordered;
 - stable task ids are unique and dependency-safe;
+- derived readiness is reported separately from lifecycle status; an `execution_ready` package has complete requirement -> task and requirement -> validation coverage;
 - unknown files were preserved unless explicitly authorized;
 - changed targets match candidate hashes;
 - the committed tree hash equals the exact prevalidated candidate tree hash;
@@ -159,6 +160,8 @@ Read only what the active mode needs:
 
 - `references/convention.md` — full canonical convention and ownership precedence;
 - `references/reproducibility-contract.md` — normalization, deterministic identity/order, protected paths, transaction, recovery, receipts, legacy and partial-update rules;
+- `references/schema-evolution.md` — schema/version compatibility and migration rules;
+- `references/traceability-contract.md` — stable requirement/validation IDs and derived readiness;
 - `references/templates.md` — canonical templates;
 - `references/order-mode.md`;
 - `references/define-mode.md`;

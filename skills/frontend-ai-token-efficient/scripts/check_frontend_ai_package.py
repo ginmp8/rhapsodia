@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 SCHEMA_VERSION = "2.0"
-SCANNER_VERSION = "2.1.0"
+SCANNER_VERSION = "2.2.0"
 
 SKIP_DIRS = {
     ".git",
@@ -153,41 +153,35 @@ def scan(root: Path, *, exclude_paths: Iterable[Path] = ()) -> dict[str, Any]:
     scan_files = [path for path in iter_files(root) if path.resolve(strict=False) not in excluded]
     identity_hasher = hashlib.sha256()
 
-    if has_path(root, "src"):
-        for required in ["src/features", "src/shared"]:
-            if not has_path(root, required):
-                add(
-                    findings,
-                    root=root,
-                    severity="medium",
-                    code="missing_structure",
-                    path=None,
-                    message=f"recommended directory missing: {required}",
-                    supported_fixes=("confirm the project uses another explicit ownership structure before creating directories",),
-                )
-    else:
+    if not has_path(root, "src") and not has_path(root, "app"):
         add(
             findings,
             root=root,
             severity="low",
-            code="missing_src",
+            code="source_root_unclear",
             path=None,
-            message="src directory not found; scanner may not match this project layout",
-            supported_fixes=("confirm the actual source root and treat this finding as layout-specific",),
+            message="neither src nor app source root was found; scanner ownership heuristics may be incomplete",
+            supported_fixes=("confirm the actual source root before making architecture claims",),
         )
 
-    for doc in ["AI_CONTEXT.md", "ARCHITECTURE.md", "CONVENTIONS.md", "DEPENDENCY_RULES.md", "SECURITY_FRONTEND.md"]:
-        if not has_path(root, doc):
-            add(
-                findings,
-                root=root,
-                severity="low",
-                code="missing_ai_doc",
-                path=None,
-                message=f"recommended ai guidance document missing: {doc}",
-                evidence=doc,
-                supported_fixes=("create only if it will encode real repository decisions and constraints",),
-            )
+    guidance_candidates = [
+        "AGENTS.md",
+        "AI_CONTEXT.md",
+        "ARCHITECTURE.md",
+        ".github/copilot-instructions.md",
+        "CLAUDE.md",
+    ]
+    if not any(has_path(root, doc) for doc in guidance_candidates):
+        add(
+            findings,
+            root=root,
+            severity="low",
+            code="missing_ai_guidance",
+            path=None,
+            message="no concise repository guidance surface was detected",
+            evidence=", ".join(guidance_candidates),
+            supported_fixes=("create one canonical guidance surface only when it can encode stable project decisions",),
+        )
 
     for path in scan_files:
         data = read_bytes(path)

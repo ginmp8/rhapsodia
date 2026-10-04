@@ -1,0 +1,50 @@
+{
+  "receipt_version": 2,
+  "target": {"kind": "pull-request", "identity": "repo@example#abc123", "revision": "abc123", "environment": null},
+  "mode": "pr-risk-review",
+  "scope": {"reviewed": ["src/auth.py"], "assumptions": [], "uninspected": []},
+  "findings": [
+    {
+      "finding_id": "BSH-001",
+      "category": "authorization",
+      "subject": "src/auth.py:42",
+      "severity": "MINOR",
+      "confidence": "confirmed",
+      "evidence_status": "observed",
+      "evidence": [{"status": "observed", "subject": "src/auth.py:42", "detail": "Authorization decision is local and directly visible.", "sensitive": false, "redacted": false}],
+      "trigger_or_condition": "A request reaches the changed authorization branch.",
+      "problem": "The example fixture demonstrates optional taxonomy fields.",
+      "impact": "Bounded authorization review concern for fixture validation.",
+      "severity_rationale": "Fixture-only bounded issue.",
+      "smallest_fix": "Validate resource ownership before the state change.",
+      "validation": "Add an integration case for cross-resource access.",
+      "blocks_merge": false,
+      "expected_treatment": "Future issue opened for follow-up",
+      "fingerprint": "authorization|src/auth.py|ownership-check",
+      "taxonomy": {
+        "cwe": [{"id": "CWE-862", "mapping_level": "Base", "mapping_confidence": "confirmed"}],
+        "asvs": ["v5.0.0-1.2.5"]
+      }
+    }
+  ],
+  "validation_gaps": [],
+  "validation": [{"name": "focused integration test", "status": "planned", "evidence": "Test is specified but not executed in this fixture."}],
+  "coverage": {"status": "complete-for-scope", "notes": ["All canonical verification techniques were dispositioned for this fixture."]},
+  "verification_coverage": [
+    {"technique": "threat-modeling", "applicable": true, "status": "observed", "evidence": "Trust boundary and authorization path inspected.", "rationale": "Authorization-sensitive change."},
+    {"technique": "automated-testing", "applicable": true, "status": "supplied", "evidence": "Existing tests supplied with the PR.", "rationale": "Regression signal exists."},
+    {"technique": "static-analysis", "applicable": true, "status": "supplied", "evidence": "External SARIF result supplied.", "rationale": "Source change is statically analyzable."},
+    {"technique": "hardcoded-secret-detection", "applicable": true, "status": "observed", "evidence": "Changed files inspected for secret-like values.", "rationale": "PR review includes source and config."},
+    {"technique": "built-in-protections", "applicable": true, "status": "observed", "evidence": "Framework authorization middleware usage inspected.", "rationale": "Relevant built-in control exists."},
+    {"technique": "black-box-testing", "applicable": false, "status": "out-of-scope", "evidence": "No runnable service in fixture.", "rationale": "Fixture is static-only."},
+    {"technique": "structural-testing", "applicable": true, "status": "observed", "evidence": "Changed branches and callers inspected.", "rationale": "Control-flow review is applicable."},
+    {"technique": "historical-regression", "applicable": true, "status": "supplied", "evidence": "Relevant regression cases supplied.", "rationale": "Authorization behavior has regression history."},
+    {"technique": "fuzzing", "applicable": false, "status": "out-of-scope", "evidence": "No parser or high-dimensional input surface in fixture.", "rationale": "Not material for this bounded review."},
+    {"technique": "web-scanning", "applicable": false, "status": "out-of-scope", "evidence": "No running web target in fixture.", "rationale": "Static PR review only."},
+    {"technique": "included-code-review", "applicable": true, "status": "observed", "evidence": "No changed third-party dependency surface.", "rationale": "Dependency changes were checked and absent."}
+  ],
+  "external_evidence": [
+    {"evidence_id": "EXT-001", "tool": "ExampleSAST", "tool_version": "1.0", "format": "SARIF-2.1.0", "rule_id": "AUTH001", "fingerprint": "sarif:example:auth001:src/auth.py:42", "reported_severity": "high", "status": "supplied", "independently_verified": true, "subject": "src/auth.py:42", "detail": "The external result was correlated to the inspected authorization branch."}
+  ],
+  "verdict": "APPROVED_WITH_COMMENTS"
+}

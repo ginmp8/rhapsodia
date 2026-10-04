@@ -161,6 +161,12 @@ Keep these distinct:
 
 Never state that a test, scan, exploit, replay, or benchmark passed unless it actually ran or the result is clearly attributed as supplied.
 
+## 8A. Verification and external-evidence normalization
+
+For substantive reviews, treat verification coverage as a first-class reproducibility surface. Use `verification-coverage.md` to record the canonical technique disposition rather than inferring completeness from a clean finding list. Preserve applicability rationale so two reviewers can distinguish a justified `out-of-scope` technique from an omitted check.
+
+When external analyzers contribute evidence, use `external-tool-evidence.md`. Preserve tool/result identity and treat unreproduced output as `supplied`; deduplicate by the target root-cause fingerprint rather than tool count. Scanner-reported severity never overrides this skill's severity floors/tie-breakers.
+
 ## 9. Closure and coverage
 
 A substantive review closes only when:
@@ -170,6 +176,7 @@ A substantive review closes only when:
 - findings are deduplicated and sorted deterministically;
 - required verdict fields are internally consistent;
 - uninspected surfaces and blocked evidence are explicit;
+- verification coverage is explicitly dispositioned for substantive reviews and unresolved material applicable techniques are not hidden by a clean finding list;
 - the next action is concrete;
 - no absolute "bug-free" or "secure" guarantee is made.
 

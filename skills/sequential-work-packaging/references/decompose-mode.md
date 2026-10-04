@@ -17,7 +17,7 @@ Use decompose mode when one existing spec package has broad remaining work that 
 - finish with the mandatory final review
 
 ## Decomposition rules
-Split remaining todo work when a task is:
+Split remaining planned work when a task is:
 - too large for one bounded execution pass
 - vague about the concrete change required
 - mixing concerns that should be reviewed separately
@@ -29,6 +29,8 @@ When splitting:
 - preserve original intent
 - split by outcome, decision, artifact, boundary, or validation responsibility
 - make dependencies explicit
+- preserve or assign stable `taskNNN` identities
+- preserve each task's `Satisfies` relation to the requirement(s) it implements; do not lose requirement coverage while splitting
 - keep each resulting task independently reviewable
 
 Do not over-fragment into administrative noise.
@@ -50,6 +52,7 @@ Review in this order:
 3. `validation.md`
 4. `notes.md`
 5. architecture impact when relevant
+6. requirement coverage/readiness after decomposition
 
 After review:
 - keep the initiative boundary stable

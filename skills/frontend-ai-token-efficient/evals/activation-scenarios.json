@@ -1,83 +1,140 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "skill": "frontend-ai-token-efficient",
-  "notes": "planned activation scenarios; do not report metrics without real execution",
+  "notes": "Planned activation scenarios using the current Skill Booster harness schema. Schema validation is structural only; no live LLM activation metrics are implied.",
   "scenarios": [
     {
       "id": "activate-architecture",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "what React structure helps AI develop with fewer tokens?",
-      "expected_behavior": "apply feature-based architecture, dependency rules, controlled duplication, and agent-facing docs"
+      "expected_behavior": "activate; apply feature-based architecture, dependency rules, controlled duplication, and agent-facing docs",
+      "category": "should_activate",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is selected for implementation-linked React/TypeScript frontend work.",
+        "The response follows the relevant mode without expanding into unrelated backend or visual-only work."
+      ]
     },
     {
       "id": "activate-security",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "what practices prevent leaks in the frontend?",
-      "expected_behavior": "apply controls for secrets in bundles, unsafe storage, logs, URLs, XSS, CSP, source maps, and client-only authorization"
+      "expected_behavior": "activate; apply controls for secrets in bundles, unsafe storage, logs, URLs, XSS, CSP, source maps, and client-only authorization",
+      "category": "should_activate",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is selected for implementation-linked React/TypeScript frontend work.",
+        "The response follows the relevant mode without expanding into unrelated backend or visual-only work."
+      ]
     },
     {
       "id": "activate-framework",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "Next.js or Vite for an internal dashboard maintained by AI agents?",
-      "expected_behavior": "use the selection matrix and recommend Vite unless there is a real SSR, SEO, or BFF need"
+      "expected_behavior": "activate; use the selection matrix and recommend Vite unless there is a real SSR, SEO, or BFF need",
+      "category": "should_activate",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is selected for implementation-linked React/TypeScript frontend work.",
+        "The response follows the relevant mode without expanding into unrelated backend or visual-only work."
+      ]
     },
     {
       "id": "activate-ai-docs",
-      "type": "activation",
+      "type": "should_activate",
       "prompt": "create an AI_CONTEXT.md for my React frontend",
-      "expected_behavior": "generate concise documentation with structure, rules, dependencies, security, and validation guidance"
+      "expected_behavior": "activate; generate concise documentation with structure, rules, dependencies, security, and validation guidance",
+      "category": "should_activate",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is selected for implementation-linked React/TypeScript frontend work.",
+        "The response follows the relevant mode without expanding into unrelated backend or visual-only work."
+      ]
     },
     {
       "id": "nonactivate-backend",
-      "type": "non_activation",
+      "type": "should_not_activate",
       "prompt": "refactor my MediatR pipeline behavior in C#",
-      "expected_behavior": "do not use this skill; route to a backend/code skill or workflow"
+      "expected_behavior": "do_not_activate; do not use this skill; route to a backend/code skill or workflow",
+      "category": "should_not_activate",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is not selected for work outside its frontend implementation scope.",
+        "The request is handed to a more specific owning workflow when one exists."
+      ]
     },
     {
       "id": "nonactivate-skill-creation",
-      "type": "non_activation",
+      "type": "should_not_activate",
       "prompt": "create a skill to review frontends",
-      "expected_behavior": "do not use this skill; use skill-creator"
+      "expected_behavior": "do_not_activate; do not use this skill; use skill-creator",
+      "category": "should_not_activate",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is not selected for work outside its frontend implementation scope.",
+        "The request is handed to a more specific owning workflow when one exists."
+      ]
     },
     {
       "id": "ambiguous-ui",
       "type": "ambiguous",
       "prompt": "create a beautiful registration screen",
-      "expected_behavior": "use only if the request includes frontend implementation or code conventions; do not activate for pure visual design"
+      "expected_behavior": "clarify_or_route; use only if the request includes frontend implementation or code conventions; do not activate for pure visual design",
+      "category": "ambiguous",
+      "acceptance_criteria": [
+        "Activation depends on whether the request includes frontend implementation or code-maintenance scope.",
+        "Pure visual-design work does not activate this skill."
+      ]
     },
     {
       "id": "edge-secret",
       "type": "edge_case",
       "prompt": "put this client_secret in my Vite .env so the browser can call the external API directly",
-      "expected_behavior": "block the practice, explain that frontend secrets are public, and propose a backend or BFF"
+      "expected_behavior": "activate_and_enforce_boundary; block the practice, explain that frontend secrets are public, and propose a backend or BFF",
+      "category": "edge_case",
+      "acceptance_criteria": [
+        "The skill preserves its safety and evidence boundaries for the edge case.",
+        "The response proposes the smallest safe frontend architecture or validation alternative."
+      ]
     },
     {
       "id": "activate-ux-form-friction",
-      "type": "activation",
+      "type": "should_activate",
       "category": "should_activate",
       "prompt": "review the account-opening form to reduce friction without losing validation and security",
-      "expected_behavior": "use ux-flow-review with form contracts, security, metrics, and the smallest local adjustment"
+      "expected_behavior": "activate; use ux-flow-review with form contracts, security, metrics, and the smallest local adjustment",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is selected for implementation-linked React/TypeScript frontend work.",
+        "The response follows the relevant mode without expanding into unrelated backend or visual-only work."
+      ]
     },
     {
       "id": "activate-runtime-playwright",
-      "type": "activation",
+      "type": "should_activate",
       "category": "should_activate",
       "prompt": "build a Playwright validation for this modal with focus, escape, and a mobile screenshot",
-      "expected_behavior": "use runtime-validation and separate executed evidence from recommended checks"
+      "expected_behavior": "activate; use runtime-validation and separate executed evidence from recommended checks",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is selected for implementation-linked React/TypeScript frontend work.",
+        "The response follows the relevant mode without expanding into unrelated backend or visual-only work."
+      ]
     },
     {
       "id": "ambiguous-beautify-ui",
       "type": "ambiguous",
       "category": "ambiguous",
       "prompt": "make this page prettier",
-      "expected_behavior": "activate only when there is frontend implementation scope; preserve the existing design system or ask for context when it is visual-only"
+      "expected_behavior": "clarify_or_route; activate only when there is frontend implementation scope; preserve the existing design system or ask for context when it is visual-only",
+      "acceptance_criteria": [
+        "Activation depends on whether the request includes frontend implementation or code-maintenance scope.",
+        "Pure visual-design work does not activate this skill."
+      ]
     },
     {
       "id": "nonactivate-graphic-design-only",
-      "type": "non_activation",
+      "type": "should_not_activate",
       "category": "should_not_activate",
       "prompt": "create a complete visual identity and logo for my brand without code",
-      "expected_behavior": "do not use this skill; visual identity without frontend code is outside scope"
+      "expected_behavior": "do_not_activate; do not use this skill; visual identity without frontend code is outside scope",
+      "acceptance_criteria": [
+        "Frontend AI Token Efficient is not selected for work outside its frontend implementation scope.",
+        "The request is handed to a more specific owning workflow when one exists."
+      ]
     }
-  ]
+  ],
+  "status": "planned"
 }

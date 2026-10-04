@@ -1,16 +1,27 @@
 # Package Architecture Review: {{target_name}}
 
-## Identity
+## Identity and scope
 
-- schema: `1.0.0`
-- rubric: `2.0.0`
+- schema: `2.0.0`
+- rubric: `3.0.0`
 - target package SHA-256: `{{package_identity_sha256}}`
 - evidence snapshot: `{{evidence_snapshot_identity}}`
 - mode: `{{mode}}`
+- architecture scope: `{{single_skill | skill_family | plugin_package}}`
 
-## Evidence inspected
+## Evidence inspected and gaps
 
 {{files_commands_reports_and_missing_evidence}}
+
+## Context topology
+
+{{skill_md_lines_direct_resources_reference_depth_nested_edges_reachability}}
+
+## Activation architecture
+
+- status: `{{distinct | overlap | partial | unknown}}`
+- catalog scope: {{catalog_scope}}
+- signals: {{activation_signals}}
 
 ## Observations
 
@@ -19,6 +30,33 @@ Use stable IDs (`obs-001`, ...). Keep facts separate from interpretation.
 | ID | Kind | Observation | Evidence |
 |---|---|---|---|
 | {{obs-id}} | mechanical / declared-contract / behavioral / supplied / derived | {{claim}} | {{evidence}} |
+
+## Quality/change scenarios
+
+| ID | Stimulus/change | Affected surfaces | Evidence IDs |
+|---|---|---|---|
+| {{scenario-id}} | {{stimulus}} | {{surfaces}} | {{evidence_ids}} |
+
+## Sensitivity and tradeoff points
+
+{{sensitivity_points}}
+
+{{tradeoff_points}}
+
+## Evolution evidence
+
+- history status: `{{observed | partial | not-inspected | unknown}}`
+- change-coupling evidence: {{change_coupling}}
+- change-radius notes: {{change_radius_notes}}
+
+## Trust boundary map
+
+- status: `{{observed | partial | unknown}}`
+- executable resources: {{executables}}
+- network requirements: {{network}}
+- filesystem-write requirements: {{filesystem_writes}}
+- external tool requirements: {{external_tools}}
+- security handoff required: {{true_or_false}}
 
 ## Architectural judgments
 

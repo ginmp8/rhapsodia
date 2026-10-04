@@ -2,7 +2,7 @@
 
 Use this rubric to evaluate Streamlit apps before sharing them with a wider audience. It is intentionally practical: score only what can be inspected from code, configuration, command output, screenshots, logs, tests, or user-provided evidence. Do not claim production readiness when startup, secrets, critical user flows, or deployment assumptions were not checked.
 
-Label material evidence using `measured`, `observed`, `supplied`, `derived`, `inferred`, `planned`, or `blocked` from `reproducible-workflow.md`. A score must not imply that an unexecuted check passed.
+Label material evidence using `measured`, `observed`, `supplied`, `derived`, `inferred`, `planned`, or `blocked` from `references/reproducible-workflow.md`. A score must not imply that an unexecuted check passed.
 
 ## Scoring model
 

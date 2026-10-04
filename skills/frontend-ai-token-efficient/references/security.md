@@ -49,6 +49,18 @@ Avoid:
 - storing raw identity documents, financial data, or sensitive onboarding payloads client-side;
 - persisting drafts with sensitive fields without product/security approval.
 
+## Browser OAuth architecture (RFC 10017)
+
+For OAuth-based browser applications, choose an architecture from the threat model rather than applying one storage rule universally:
+
+1. **Backend for Frontend (BFF)** — strongest default for sensitive/business applications when feasible: OAuth tokens stay in the backend and the browser holds only the application session. Protect session cookies with appropriate `HttpOnly`, `Secure`, `SameSite`, CSRF, origin, and session controls.
+2. **Token-mediating backend** — the backend protects long-lived/refresh credentials while the browser may receive access tokens. Treat those browser-visible tokens as exfiltration targets and keep scope/lifetime minimal.
+3. **Browser-only OAuth client** — highest browser exposure. Use only when architecture and threat model justify it; do not put a client secret in the browser and apply current OAuth browser-app mitigations.
+
+RFC 10017 is the current IETF Best Current Practice for browser-based OAuth applications. This does not move authorization into the frontend: protected APIs and sensitive operations still enforce authorization server-side.
+
+Do not mechanically rewrite an established authentication architecture during an unrelated frontend change. Record the current model, threat assumptions, token exposure, and required backend/security dependencies first.
+
 ## Logs, analytics, and error tracking
 
 Use allowlists, not blocklists, for analytics payloads.

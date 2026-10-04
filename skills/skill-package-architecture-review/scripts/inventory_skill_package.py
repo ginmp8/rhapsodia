@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = "2.0.0"
+SCHEMA_VERSION = "2.1.0"
 TOP_LEVEL_AREAS = ["agents", "references", "scripts", "assets", "examples", "evals"]
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 EXCLUDED_PARTS = {".git", "__pycache__"}
@@ -193,6 +193,55 @@ def _package_identity(files: list[dict[str, Any]]) -> str:
     return h.hexdigest()
 
 
+def _context_topology(
+    files: list[dict[str, Any]],
+    links: list[dict[str, str]],
+    skill_text: str,
+    declared_resources: list[dict[str, str]],
+) -> dict[str, int]:
+    reference_paths = {item["path"] for item in files if item["taxonomy"] == "reference"}
+    adjacency: dict[str, set[str]] = {}
+    nested_edges = 0
+    for link in links:
+        if link.get("kind") != "local":
+            continue
+        source = link.get("source", "")
+        target = link.get("normalized_target", "")
+        if target not in reference_paths:
+            continue
+        if source == "SKILL.md" or source in reference_paths:
+            adjacency.setdefault(source, set()).add(target)
+        if source in reference_paths:
+            nested_edges += 1
+
+    depths: dict[str, int] = {}
+    queue: list[tuple[str, int]] = [("SKILL.md", 0)]
+    while queue:
+        source, depth = queue.pop(0)
+        for target in sorted(adjacency.get(source, set())):
+            next_depth = depth + 1
+            previous = depths.get(target)
+            if previous is not None and previous <= next_depth:
+                continue
+            depths[target] = next_depth
+            queue.append((target, next_depth))
+
+    skill_item = next((item for item in files if item["path"] == "SKILL.md"), None)
+    line_count = skill_item.get("line_count") if isinstance(skill_item, dict) else 0
+    if not isinstance(line_count, int):
+        line_count = 0
+
+    return {
+        "skill_md_line_count": line_count,
+        "skill_md_word_count": len(re.findall(r"\S+", skill_text)),
+        "direct_declared_resource_count": len(declared_resources),
+        "reference_chain_max_depth": max(depths.values(), default=0),
+        "nested_reference_edge_count": nested_edges,
+        "reachable_reference_count": len(depths),
+        "unreachable_reference_count": len(reference_paths - set(depths)),
+    }
+
+
 def inventory(root: Path) -> dict[str, Any]:
     root = root.resolve()
     paths = _included_files(root)
@@ -283,6 +332,7 @@ def inventory(root: Path) -> dict[str, Any]:
         "ownership_map": sorted(ownership_map, key=lambda x: x["path"]),
         "dependency_map": {"edges": dependency_edges},
         "progressive_loading_map": {"skill_md_declared_resources": sorted(declared_resources, key=lambda x: x["target"])},
+        "context_topology": _context_topology(files, links, skill_text, declared_resources),
         "markdown_links": sorted(links, key=lambda x: (x["source"], x["target"], x["kind"])),
         "broken_local_links": broken_local_links,
         "notes": [
@@ -309,6 +359,8 @@ def render_markdown(data: dict[str, Any]) -> str:
         f"- file count: {data['file_count']}",
         f"- total size bytes: {data['total_size_bytes']}",
         f"- broken local markdown links: {len(data['broken_local_links'])}",
+        f"- reference chain max depth: {data['context_topology']['reference_chain_max_depth']}",
+        f"- nested reference edges: {data['context_topology']['nested_reference_edge_count']}",
         "",
         "## Resource map",
         "",

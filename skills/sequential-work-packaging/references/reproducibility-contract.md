@@ -10,7 +10,7 @@ Record these identities separately:
 - functional release identity: `(feature_key, feature_version)`;
 - task identity: explicit `taskNNN` when present;
 - filesystem identity: canonical relative path plus SHA-256 of the exact bytes;
-- change identity: transaction id derived from the normalized semantic operation plan and candidate hashes; absolute staging-source paths are excluded from identity.
+- change identity: transaction identity contract v2 derived from the normalized semantic operation plan, logical `cycle_version`, target-relative paths, and candidate hashes; absolute workspace and staging-source paths are excluded from identity.
 
 Do not substitute one identity for another.
 
@@ -22,7 +22,7 @@ Normalize before making decisions:
 - `cycle_version`: string matching `NN.NN.NN`;
 - `spec_id`: lowercase `spec` plus at least three digits;
 - `feature_key`: lowercase kebab-case;
-- `feature_version`: `vMAJOR.MINOR.PATCH` without omitted components;
+- `feature_version`: schema-v1 SWP token `vMAJOR.MINOR.PATCH` without omitted components; this serialized token is SemVer-derived but is not strict SemVer text;
 - status/type/classification/phase: canonical lowercase enums from `convention.md`;
 - paths: relative to the declared cycle root, resolved before mutation;
 - dependencies: lists with duplicates removed only when duplicate entries are semantically identical; preserve original identity order when it is already valid.
@@ -127,7 +127,7 @@ Use one logical transaction for all files changed by one planning action.
 13. roll back all committed targets on failure and verify restoration;
 14. emit one durable receipt for the final state and remove transient transaction state only after success is durable.
 
-The transaction id is stable for the same semantic operation and candidate bytes even when temporary source filenames/directories differ. It may include the canonical cycle identity/path, mode, authorization, target-relative paths, expected-before hashes, and candidate hashes; it must not depend on incidental staging locations.
+The transaction id is stable for the same semantic operation and candidate bytes even when the workspace or temporary source directory moves. Transaction identity contract v2 includes logical `cycle_version`, mode, authorization, target-relative paths, expected-before hashes, and candidate hashes. It excludes absolute `cycle_root` and staging locations. The receipt may still record the resolved `cycle_root` as runtime observation; that path is not semantic identity.
 
 If current target bytes already equal candidate bytes, mark the target `noop`. If every target is `noop`, validate the current postcondition, return `no_change`, and do not rewrite canonical bytes.
 
@@ -145,8 +145,9 @@ A change receipt must identify:
 
 - `receipt_version`;
 - final `status` and `stage`;
-- transaction id;
-- canonical cycle root;
+- transaction id and `transaction_identity_version`;
+- logical `cycle_version`;
+- canonical cycle root as runtime observation;
 - every target path;
 - expected-before hash;
 - observed before hash;
@@ -157,7 +158,7 @@ A change receipt must identify:
 - committed structural validation and committed transition-validation results;
 - failure and recovery path when applicable.
 
-Success refers only to the exact committed bytes. Do not emit success before post-validation and exact candidate/committed identity checks.
+Success refers only to the exact committed bytes. The transaction protocol provides process-level recovery through guarded replace, verification, and rollback; it must not be described as universally crash-durable unless the active filesystem/host durability semantics are independently established. Do not emit success before post-validation and exact candidate/committed identity checks.
 
 ## Validation precedence
 

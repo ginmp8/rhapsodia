@@ -41,7 +41,7 @@ class ScannerTests(unittest.TestCase):
             self.make_repo(root)
             report = MODULE.scan(root)
             self.assertEqual("2.0", report["schema_version"])
-            self.assertEqual("2.1.0", report["scanner_version"])
+            self.assertEqual("2.2.0", report["scanner_version"])
             self.assertEqual("review_required", report["status"])
             self.assertEqual(len(report["findings"]), report["finding_count"])
             codes = {item["code"] for item in report["findings"]}
@@ -59,6 +59,19 @@ class ScannerTests(unittest.TestCase):
             self.assertEqual("fail", report["status"])
             self.assertEqual("target_missing", report["findings"][0]["code"])
 
+
+
+    def test_framework_native_layout_is_not_forced_into_feature_shared_taxonomy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "app").mkdir()
+            (root / "app/page.tsx").write_text("export default function Page() { return <main>Hello</main>; }\n", encoding="utf-8")
+            (root / "package.json").write_text('{"dependencies":{"next":"16.0.0","react":"19.0.0"}}\n', encoding="utf-8")
+            (root / "AGENTS.md").write_text("Use the App Router and keep client boundaries narrow.\n", encoding="utf-8")
+            report = MODULE.scan(root)
+            codes = {item["code"] for item in report["findings"]}
+            self.assertNotIn("missing_structure", codes)
+            self.assertNotIn("missing_ai_guidance", codes)
 
     def test_input_identity_changes_with_scanned_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

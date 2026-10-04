@@ -2,67 +2,85 @@
 
 ## Purpose
 
-`scripts/scan_secrets.py` is a deterministic supporting detector. It increases coverage for text-like files; it does not prove credential validity or replace semantic review.
+The bundled scanners are deterministic supporting detectors. They increase coverage but do not prove credential validity and do not establish final review severity without semantic context.
 
-## Input rules
+## Working-tree scanner
 
-- Accept exactly one existing file or directory target.
-- Resolve the target root once.
-- Do not follow symbolic-link files during directory traversal.
-- Traverse directory names and file names in canonical lexical order.
-- Scan supported text-like file names/extensions only.
-- Skip files larger than the configured maximum and report them.
-- Read UTF-8 with replacement/ignore behavior only as a best-effort text scan; unsupported/binary surfaces remain outside proof of completeness.
+`scripts/scan_secrets.py` accepts exactly one existing file or directory.
 
-## JSON contract v1
+### Input and traversal
 
-Top-level fields:
+- resolve the target root once;
+- do not follow symbolic-link files/directories outside the scan root;
+- traverse directory/file names in canonical lexical order;
+- scan supported text-like files, including supported text files under common `build`, `dist`, `bin`, `obj`, and `target` output directories;
+- continue to ignore dependency/VCS/runtime caches such as `.git`, `node_modules`, and virtual environments;
+- skip over-size/read-error candidates and report them;
+- unsupported/binary formats remain outside proof of completeness.
+
+### Detection invariants
+
+- scan all non-overlapping relevant matches, including multiple matches from the same rule on one line;
+- stable finding IDs include source location plus match occurrence so same-line matches do not collide;
+- provider/pattern matches may carry stronger detector confidence, but generic entropy does not raise final severity;
+- generic assignments remain provisional candidates and require semantic review;
+- scanner output always redacts matched credential material.
+
+### JSON contract v1
+
+Top level:
 
 - `schema_version`: `1`
 - `status`: `complete | partial`
-- `target`: resolved invocation target
-- `summary`: severity counts
+- `target`
+- `summary`: detector severity-hint counts
 - `scan_stats`: considered/scanned/skipped/finding counts
-- `skipped`: canonical list of skipped files with stable reason codes
-- `findings`: canonical list of findings
+- `skipped`: path + stable reason
+- `findings`: stable redacted candidates
 
-Finding fields:
+Finding fields remain:
 
-- `id`: stable hash derived from relative path, line, and rule
-- `path`: path relative to the scan root; never an arbitrary temporary absolute path
-- `line`: 1-based line number
-- `severity`: `critical | high | medium | low`
-- `confidence`: `confirmed | likely | possible`
-- `rule`: stable detector rule ID
-- `evidence`: redacted minimum evidence
+`id, path, line, severity, confidence, rule, evidence`
 
-## Stable skip reasons
+The scanner `severity` field is a **provisional detector hint**, not final review severity. The semantic reviewer must recalculate final severity using `security-policy.md`.
 
-- `symlink`
-- `unsupported-type`
-- `too-large`
-- `read-error`
+Stable skip reasons:
 
-The default scanner may omit unsupported-type entries for files that were never candidates by extension; material unsupported files should be called out manually when known.
+`symlink | unsupported-type | too-large | read-error`
+
+`complete` means no supported working-tree text candidate was skipped after discovery. It does not include Git history, remote logs, container images, unsupported binaries, or external systems.
+
+## Git history scanner
+
+`scripts/scan_git_history.py` requires a readable Git repository and Git CLI. It scans added patch lines reachable from the requested revision set (default `--all`) and reuses the redacted detector rules.
+
+History JSON fields:
+
+- `schema_version`: `1`
+- `status`: `complete`
+- `scope`: `git-history`
+- `target`
+- `revision`: requested revision expression
+- `summary`
+- `scan_stats`: commits/files/added-lines/findings
+- `findings`: `id, commit, path, line, severity, confidence, rule, evidence`
+
+A history scan covers Git patch text reachable from the requested refs. It does not prove absence from unavailable objects, deleted remote refs, external forks/clones, Git LFS object stores, binary blobs, or hosting-platform collaboration surfaces.
 
 ## Redaction invariant
 
-Scanner output must not reproduce the full matched credential material. Provider tokens, bearer values, passwords in URIs, and secret assignments are masked before output. Private-key **markers** may be shown, but private-key payload material must not be copied.
+No scanner or validator output may reproduce full provider tokens, bearer values, password-bearing URIs, assignment values, or private-key payloads. Private-key markers may be reported; payload material must not be copied.
 
 ## Ordering
 
-Findings are sorted by:
+Working-tree findings:
 
-`severity desc -> path -> line -> rule -> id`
+`severity hint desc -> path -> line -> rule -> id`
 
-Skipped entries are sorted by path then reason. Summary keys use severity order.
+History findings:
 
-## Coverage
-
-`complete` means no candidate text file was skipped after discovery. `partial` means one or more candidate files were skipped for symlink, size, or read-error reasons.
-
-A `complete` scanner result is still only complete for the scanner's supported filesystem/text scope. It does not include unavailable Git history, remote CI logs, screenshots, external secret stores, or unsupported binary content.
+`severity hint desc -> commit -> path -> line -> rule -> id`
 
 ## Durable output
 
-When `--output` is used, write a temporary sibling file and atomically replace the destination only after JSON serialization succeeds. Reject a symbolic-link output path and an output that aliases the single-file input.
+When `--output` is used, write a temporary sibling and atomically replace only after serialization succeeds. Reject symbolic-link outputs and aliases with the single-file input. Failure must not overwrite an existing good output.

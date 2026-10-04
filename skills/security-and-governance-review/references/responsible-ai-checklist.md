@@ -2,6 +2,8 @@
 
 Use this checklist for `responsible-ai-review`. Keep the review domain-specific and evidence-based.
 
+For consequential systems, also load `ai-impact-assessment.md` and produce a lifecycle impact record with reassessment triggers. The checklist is discovery support; it is not itself an impact assessment or compliance proof.
+
 ## Domain framing
 
 Before listing risks, identify:
@@ -48,6 +50,7 @@ Inspect for:
 - Confidence thresholds and abstention behavior.
 - Fail-safe behavior when model output is uncertain, incomplete, or inconsistent.
 - Monitoring for drift, abuse, and disparate impact.
+- Explicit reassessment triggers when model, purpose, affected population, authority, data, incident state, or applicable policy materially changes.
 - Clear escalation when legal, ethical, or domain tradeoffs are unresolved.
 
 ## Reporting rule

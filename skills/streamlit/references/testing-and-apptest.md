@@ -1,68 +1,38 @@
 # Testing and AppTest
 
-## Testing strategy
+## Evidence ladder
 
-Split tests into three layers:
+Use the cheapest layer that can falsify the behavior:
 
-1. Pure Python unit tests for data transformations, validation, and business rules.
-2. Streamlit AppTest tests for UI structure and interactions.
-3. Deployment smoke tests for environment, secrets, and connectivity.
+1. **pytest/unit tests** for pure Python logic, validation, parsing, calculations, and data transforms.
+2. **`st.testing.v1.AppTest`** for Streamlit script behavior: widget interactions, rendered elements, session state, multipage behavior, and exception-free reruns.
+3. **browser/E2E** for rendered DOM/CSS, responsive layout, scroll/focus behavior, custom-component JavaScript, and browser-only selection/event behavior.
+4. **deployment smoke/integration** for process startup, secrets, identity-provider redirects, external connectivity, proxies, health checks, and platform/runtime configuration.
+
+A pass at one layer does not imply the next layer passed.
 
 ## Design for testability
 
-Move business logic into pure functions. Keep Streamlit rendering thin. Inject model/API/database functions so tests can use fakes.
+Move business/data logic into pure functions and keep rendering thin. Inject database/API/model boundaries so unit and AppTest tests can use fakes. Use stable widget keys so tests do not depend on incidental element order.
 
 ## AppTest basics
 
-Use `streamlit.testing.v1.AppTest` to run app files and inspect rendered elements. Keep tests small and focused on visible behavior.
+Use the app entrypoint for multipage apps, run once so navigation registers, then switch pages when needed. After every interaction/rerun, check `at.exception` before asserting downstream state.
 
-Example pattern:
+AppTest is preferred over starting a server/browser for ordinary Streamlit behavior because it is in-process and deterministic. Do not use it as proof of CSS, JavaScript, custom-component runtime, or actual identity-provider redirect behavior.
 
-```python
-from streamlit.testing.v1 import AppTest
+## Regression expectations
 
+For a bug fix, encode the original triggering interaction and expected visible/state result in the narrowest suitable test. Do not weaken an existing assertion merely to make a candidate pass; if the evaluator is wrong, invalidate and repair it separately.
 
-def test_initial_page_loads():
-    at = AppTest.from_file("app.py").run()
-    assert not at.exception
-    assert at.title[0].value == "Dashboard"
+## Smoke checks
+
+Prefer repository-owned commands. Typical checks include:
+
+```text
+<PYTHON> -m pytest
+<PYTHON> -m compileall .
+streamlit run <entrypoint>
 ```
 
-## Interaction tests
-
-Test widget interactions by setting values, clicking buttons, and rerunning. Use stable widget positions or keys where supported. Avoid brittle tests that depend on every markdown element's exact position.
-
-## What to test
-
-- Initial page loads without exception.
-- Important controls exist.
-- Empty data state renders.
-- Invalid input shows a helpful error.
-- Submit button changes expected state.
-- Data editor diff logic works in pure tests.
-- Chat app appends user and assistant messages with a fake model.
-- Auth-gated pages do not show private content when logged out.
-
-## What not to test with AppTest alone
-
-- Real browser CSS layout.
-- Real identity provider redirects.
-- Paid model APIs.
-- Production database writes.
-- Full performance under concurrent load.
-
-## Smoke commands
-
-Use:
-
-```bash
-streamlit run app.py
-python -m pytest
-python -m compileall .
-```
-
-In CI, prefer pytest for pure and AppTest tests. Use a short manual smoke test for deployed settings and secrets.
-
-## Regression checklist
-
-When fixing a Streamlit bug, add a test or at least a documented manual check for the original symptom. Include the triggering widget interaction and expected visible result.
+Use runtime/browser checks only when the claim actually depends on them. Never report an unexecuted check as passing.

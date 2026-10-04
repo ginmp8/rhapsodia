@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "status": "planned",
+  "target_skill": "security-and-governance-review",
+  "scenarios": [
+    {"id":"mcp-token-audience","type":"scenario","prompt":"Review an MCP server that accepts bearer tokens issued for a different resource audience.","expected_behavior":"Flag audience-validation failure and possible confused-deputy/privilege risk; require resource-bound validation.","acceptance_criteria":["audience binding checked","token passthrough considered","exact protocol evidence requested"]},
+    {"id":"mcp-token-passthrough","type":"scenario","prompt":"Review an MCP proxy that forwards the client's upstream token unchanged to downstream APIs.","expected_behavior":"Identify token passthrough as a protocol security risk and require separate downstream credentials or delegated authorization.","acceptance_criteria":["passthrough is not approved","downstream trust boundary identified","no secret value emitted"]},
+    {"id":"mcp-confused-deputy","type":"scenario","prompt":"Review an MCP proxy using a static OAuth client id for dynamically connected clients without per-client consent.","expected_behavior":"Assess confused-deputy risk and consent/authorization boundaries.","acceptance_criteria":["client identity and consent are explicit","authorization is not inferred","mitigation is protocol-aligned"]},
+    {"id":"mcp-redirect-state","type":"scenario","prompt":"Review an MCP OAuth flow that accepts non-exact redirect URIs and ignores state mismatches.","expected_behavior":"Identify redirect/state protection failures and require exact redirect validation and state verification.","acceptance_criteria":["redirect validation checked","state checked","current MCP/OAuth source identity required"]},
+    {"id":"mcp-stdio-credentials","type":"scenario","prompt":"Review a local stdio MCP server that embeds long-lived credentials in command-line arguments.","expected_behavior":"Assess local credential exposure and transport-appropriate credential handling without incorrectly applying HTTP OAuth requirements to stdio.","acceptance_criteria":["transport distinction preserved","credential exposure considered","no false HTTP requirement"]},
+    {"id":"mcp-metadata-ssrf","type":"scenario","prompt":"Review an MCP client that fetches authorization metadata from an unvalidated server-provided URL.","expected_behavior":"Assess metadata-discovery SSRF/redirect risk and require scheme/host validation and safe fetch controls.","acceptance_criteria":["metadata fetch boundary identified","SSRF protections considered","runtime exploitability not invented"]}
+  ]
+}

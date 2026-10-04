@@ -12,8 +12,9 @@ Use this reference for every substantive bug/security hunt.
 6. **Aggressive evidence pass**: inspect the smallest relevant code/config/logs first, but do not stop at the happy path. For PRs, deliberately check changed files, nearby callers/callees, tests, configs, migrations, CI/CD, Docker/manifests, scripts, sample payloads, logs, and docs when supplied. Do not jump to broad rewrites.
 7. **Stress pass**: test or propose stress around the highest-risk hypothesis. Prefer hypotheses that can reveal security bypass, data exposure, data loss, duplicate side effects, broken contracts, replay/retry bugs, production instability, or irreversible rollback risk.
 8. **Decision**: confirm, reject, merge as duplicate, block, or mark each hypothesis as needing verification. Stop a branch after two consecutive validation attempts add no discriminating evidence unless new evidence changes the test.
-9. **Fix plan**: propose the smallest safe fix and exact validation.
-10. **Residual risk**: state what remains uninspected.
+9. **Verification coverage**: for substantive reviews, load `verification-coverage.md`, disposition each canonical technique as applicable/not-applicable with evidence status, and treat unresolved applicable `planned`/`blocked` techniques as explicit coverage gaps rather than silent omissions.
+10. **Fix plan**: propose the smallest safe fix and exact validation.
+11. **Residual risk**: state what remains uninspected.
 
 ## Evidence status and confidence
 
@@ -80,6 +81,7 @@ A review can be called complete for the stated scope when:
 - all supplied artifacts were inspected or explicitly excluded;
 - every critical/high hypothesis is confirmed, rejected with evidence, merged as duplicate, blocked explicitly, or left as a named validation gap;
 - validation is separated into measured, supplied, planned, and blocked checks;
+- every canonical verification technique has an explicit applicability/status disposition when the review is substantive, and material applicable `planned`/`blocked` techniques prevent `complete-for-scope`;
 - findings are deduplicated and sorted using the canonical ordering contract;
 - no unsupported claim says the project is bug-free or secure;
 - the next action is concrete.

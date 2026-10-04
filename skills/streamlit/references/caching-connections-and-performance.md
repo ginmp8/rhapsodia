@@ -2,59 +2,51 @@
 
 ## Cache selection
 
-Use `st.cache_data` for data values: query results, parsed files, transformed dataframes, serialized API responses, inference outputs that are safe to share across users. Cached data should be treated as immutable from the caller's perspective.
+Use `st.cache_data` for reusable serialized values: query results, parsed files, transformed dataframes, API payloads, and safe inference outputs. Use `st.cache_resource` for shared clients, engines, models, and expensive singleton resources. Do not wrap `st.connection()` in another resource cache; it already owns its connection lifecycle/cache semantics.
 
-Use `st.cache_resource` for shared resources: database engines, API clients, model objects, vector-store clients, and expensive singleton setup. Resource objects can be mutable and shared, so they must be concurrency-safe or carefully used.
+Treat cached data as immutable from the caller's perspective. Shared cached resources may be used concurrently by multiple sessions and must be thread-safe or deliberately serialized.
 
-## Cache key design
+## Cache key and isolation
 
-Cache keys are derived from function code and hashable arguments. Exclude unhashable or non-key arguments by prefixing parameter names with `_`. Use explicit parameters for tenant, environment, user-safe scope, filters, and freshness boundaries.
+Cache keys derive from function code and arguments. Make tenant/user/environment/freshness scope explicit when it changes the returned data. Do not put private user or tenant data into a globally shared cache entry whose key omits the isolation dimension.
 
-## TTL and invalidation
+## Bound cache growth
 
-Use TTL when data changes outside the app. Use manual clear functions for administrative refresh. Avoid infinite caching for operational data unless the data is truly static.
+Operational or parameterized caches should normally have a freshness or size policy (`ttl`, `max_entries`, or an equivalent project constraint). Unbounded changing caches can become a memory leak.
 
-## Database patterns
+## Foreground vs background refresh
 
-```python
-@st.cache_resource
-def get_engine():
-    return create_engine(st.secrets["database"]["url"])
+When the installed Streamlit version supports it, use background refresh only when serving a bounded stale value is acceptable. `refresh_mode="background"` trades freshness for latency and requires a TTL. Do not use it for data where stale reads violate correctness. Record the version dependency before introducing it.
 
-@st.cache_data(ttl=300)
-def load_orders(status: str):
-    engine = get_engine()
-    return pd.read_sql("select * from orders where status = %(status)s", engine, params={"status": status})
-```
+## Async caching
 
-Prefer parameterized queries. Do not concatenate user input into SQL. Keep write operations out of cached functions.
+When supported by the installed version, cached `async def` functions cache awaited results. Do not cache live async clients/connections tied to an event loop that may be closed on a later rerun. Cache loop-independent results or use a resource with a lifecycle compatible with the runtime.
 
-## API client patterns
+## Database/API/model patterns
 
-Cache the client as a resource. Cache idempotent API responses as data with TTL. Handle rate limits and show useful retry messages without leaking tokens or raw headers.
+- Parameterize queries; never concatenate user input into SQL.
+- Keep writes and other side effects out of cached functions.
+- Cache idempotent API responses only when freshness and privacy allow it.
+- Cache expensive model objects as resources only if their concurrency behavior is safe.
 
-## Model and ML patterns
+## Rerun reduction
 
-Load models with `st.cache_resource`. Cache preprocessing dictionaries or metadata separately. Avoid storing user-specific private data in shared resources.
+Use the lowest-complexity control that fits the interaction:
 
-## Performance diagnosis
+1. ordinary rerun when work is cheap;
+2. `st.form` to batch related inputs;
+3. supported `on_change="ignore"`/equivalent no-rerun behavior for a control that should commit later;
+4. `st.fragment` for an independently rerunning section;
+5. parallel fragments only for independent slow work with thread-safe/shared-state discipline.
 
-1. Identify which interaction feels slow.
-2. Add timing around data load, transformation, chart rendering, and model calls.
-3. Cache the largest deterministic cost first.
-4. Move controls into forms when changes trigger too many reloads.
-5. Reduce dataframe/chart size before rendering.
-6. Use fragments for independently refreshing areas.
+Cache expensive source data before cheap interactive filters instead of creating a cache entry for every UI combination. Render stable UI before slow work when possible.
 
-## Concurrency and shared state
+## Performance evidence
 
-Multiple users can share cached resources. Avoid mutable global state unless it is protected and intentionally shared. For per-user state, use session state.
+1. Identify the slow interaction.
+2. Measure load, transform, render, and external-call time separately.
+3. Change one causal bottleneck or rerun boundary.
+4. Re-measure with the same method and representative inputs.
+5. Report trade-offs: freshness, memory, concurrency, or complexity.
 
-## Cache safety checklist
-
-- Is the cached value safe to share across users?
-- Does the cache key include tenant/user scope when needed?
-- Is TTL aligned with data freshness expectations?
-- Are secrets excluded from cache output and logs?
-- Are writes excluded from cached functions?
-- Is the resource thread-safe or used conservatively?
+Do not claim faster/cheaper without comparable evidence.

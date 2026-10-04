@@ -1,18 +1,7 @@
 interface:
   display_name: Secure Code Review
-  short_description: >-
-    review code, configuration, infrastructure-as-code, ci/cd, logs, examples,
-    and technical documentation specifically for hardcoded secrets, credential
-    exposure, sensitive logging, unsafe secret loading, and remediation. use for
-    focused secret/credential review of pasted code, files, repositories, yaml,
-    json, env examples, docker files, or deployment manifests. do not use as the
-    primary reviewer for unrelated application-security flaws.
+  short_description: Review secret and credential exposure across code, history, artifacts, CI/IaC, logs, and agent skills with explicit coverage and redacted evidence.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
-  products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
   allow_implicit_invocation: true

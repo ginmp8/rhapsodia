@@ -1,0 +1,27 @@
+{
+  "receipt_version": 2,
+  "target": {
+    "kind": "<kind>",
+    "identity": "<immutable-or-supplied-identity>",
+    "revision": null,
+    "environment": null
+  },
+  "mode": "security-threat-review",
+  "scope": {
+    "reviewed": [],
+    "assumptions": [],
+    "uninspected": []
+  },
+  "findings": [],
+  "validation_gaps": [],
+  "validation": [],
+  "coverage": {
+    "status": "partial",
+    "notes": [
+      "Populate all canonical verification techniques before claiming complete-for-scope."
+    ]
+  },
+  "verification_coverage": [],
+  "external_evidence": [],
+  "verdict": "NOT_APPLICABLE"
+}

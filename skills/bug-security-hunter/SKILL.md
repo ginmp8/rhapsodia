@@ -25,6 +25,9 @@ Find correctness bugs, negative side effects, regressions, reliability hazards, 
 - Stop or switch to a safe plan for destructive execution, production access, exploitation outside authorized systems, credentials, or sensitive data handling beyond the supplied scope.
 - For substantive reviews, follow `references/reproducible-review-contract.md`: establish target identity, deduplicate findings by root-cause fingerprint, apply stable severity floors/tie-breakers, sort deterministically, and derive PR verdicts from the final finding/gap set.
 - Do not turn bug hunting into random search: keep a bounded hypothesis set, validate the highest-value branch first, and stop a branch after repeated attempts add no discriminating evidence.
+- Treat external analyzer output as evidence, not authority: normalize tool identity/result metadata, start externally produced results as `supplied` unless actually executed in the captured review environment, and derive finding severity from target evidence rather than scanner labels.
+- Use CWE/ASVS/CAPEC and CVE-prioritization data only as optional, version-aware metadata or hypothesis support after target evidence is established; taxonomy never substitutes for a demonstrated failure/abuse path.
+- Keep the semantic core portable across hosts: branch on capabilities such as filesystem, command execution, repository access, and structured analyzer evidence rather than vendor-private APIs or fixed install paths; host adapters remain optional.
 
 ## Modes
 
@@ -64,15 +67,23 @@ Load only references needed for the selected mode:
 - `references/security-threat-model.md`: authorization, tenant isolation, data exposure, secrets, broker permissions, abuse cases.
 - `references/csharp-dotnet-hotspots.md`: C#/.NET correctness, async, EF Core, ASP.NET Core, DI, logging, messaging.
 - `references/stress-harness.md`: stress, fuzz, property, mutation, replay, crash-point, chain-stabilization design.
+- `references/verification-coverage.md`: canonical verification-technique applicability/status accounting and substantive-review closure.
+- `references/security-taxonomy.md`: evidence-bounded CWE/ASVS/CAPEC mapping plus contextual CVSS/EPSS/KEV use.
+- `references/supply-chain-and-ci.md`: source/build trust, CI/CD privilege, dependency identity, provenance, and artifact-integrity review.
+- `references/external-tool-evidence.md`: SARIF/SAST/SCA/secret-scanner normalization, deduplication, and evidence-status discipline.
+- `references/api-and-business-abuse.md`: object/property/function authorization, sensitive business-flow abuse, resource exhaustion, SSRF, and upstream API trust.
 - `references/output-contracts.md`: response formats for PR, flow, project audit, threat review, and harness design.
 - `examples/review-scenarios.md`: calibration examples.
 - `evals/activation-scenarios.json`: planned activation/non-activation/ambiguous/edge coverage; not measured unless executed.
 - `evals/behavioral-scenarios.json`: concrete cross-language behavioral scenarios for manual or harness-driven evaluation; not measured unless executed.
 - `evals/reproducibility-scenarios.json`: planned evidence/severity/dedup/verdict stability scenarios; not measured unless executed by an external harness.
+- `evals/research-backed-scenarios.json`: frozen research-backed scenarios for verification coverage, taxonomy, supply chain, analyzer evidence, fuzz/concurrency, exceptional conditions, API abuse, and CVE prioritization; planned until executed by a compatible behavioral harness.
 - `assets/templates/bug-hunt-report.md.template`: formal report skeleton.
 - `assets/templates/hypothesis-record.md.template`: iterative hypothesis/test record.
-- `assets/templates/review-receipt.json.template`: machine-readable audit receipt scaffold.
-- `schemas/review-receipt.schema.json`: receipt contract for durable/automated review evidence.
+- `assets/templates/review-receipt.json.template`: version 1 machine-readable audit receipt scaffold.
+- `assets/templates/review-receipt-v2.json.template`: version 2 scaffold with verification coverage, external evidence, and optional taxonomy.
+- `schemas/review-receipt.schema.json`: backward-compatible version 1 receipt contract.
+- `schemas/review-receipt-v2.schema.json`: version 2 receipt contract for coverage/tool-evidence/taxonomy extensions.
 - `scripts/validate_review_receipt.py`: deterministic receipt, ordering, dedup, redaction, and verdict consistency checks.
 - `scripts/freeze_evaluators.py`: hash-based freeze/verify helper for evaluation assets.
 - `scripts/self_test_reproducibility.py`: deterministic smoke tests for the receipt validator.
@@ -84,13 +95,15 @@ Load only references needed for the selected mode:
 1. Classify target and mode: PR, flow, repo/process, incident symptom, or audit.
 2. Establish review identity: source/revision or supplied artifact identity, inspected paths/ranges, environment/version when material, assumptions, sensitive-data limits, and uninspected surfaces.
 3. Map the causal surface: changed entry points, dependencies, state, side effects, tests, ops paths, producers/brokers/consumers/storage/external calls, retries, DLQs, reprocessing, final states, actors, trust boundaries, assets, and permissions.
-4. Define correctness, security, reliability, and observability invariants.
-5. Generate a bounded set of falsifiable bug/security hypotheses; deduplicate by root-cause fingerprint and order by severity-floor potential, changed-path relevance, evidence availability, and falsifiability.
-6. Select one high-value hypothesis for stress validation when the goal includes proof, replay, load, fuzzing, or regression prevention; freeze the relevant baseline inputs and define the invariant, injected fault, evidence source, pass/fail gate, and rollback/safety boundary before running it.
-7. Inspect code/config/logs/traces first. Label source inspection `observed`; label executed checks `measured`; user-provided results `supplied`; unexecuted checks `planned`; inaccessible checks `blocked`.
-8. Stress weak points: duplication, concurrency, out-of-order delivery, replay, stale events, crash points, dependency failures, malicious payloads, tenant crossing, schema abuse, DLQ/redrive, and loops. Confirm, reject, merge, or defer each hypothesis from evidence; stop non-improving branches instead of random-searching.
-9. Convert only evidenced hypotheses into findings. Deduplicate, apply severity floors/tie-breakers, sort canonically, then assign stable review-local finding IDs.
-10. Derive PR verdict from the final findings and essential gaps. Close with coverage, uninspected surfaces, blocked evidence, next checks, and merge/release verdict when requested.
+4. Load only the targeted lenses the mapped surface needs: supply-chain/CI for build/dependency/provenance paths, external-tool evidence for analyzer results, API/business-abuse for exposed or service-to-service APIs, and stack-specific hotspots only when evidenced.
+5. Define correctness, security, reliability, and observability invariants.
+6. Generate a bounded set of falsifiable bug/security hypotheses; use CAPEC or similar catalogs only as hypothesis inputs, deduplicate by root-cause fingerprint, and order by severity-floor potential, changed-path relevance, evidence availability, and falsifiability.
+7. Select one high-value hypothesis for stress validation when the goal includes proof, replay, load, fuzzing, or regression prevention; freeze the relevant baseline inputs and define the invariant, injected fault, evidence source, pass/fail gate, and rollback/safety boundary before running it.
+8. Inspect code/config/logs/traces first. Label source inspection `observed`; label executed checks `measured`; user-provided or externally generated results not reproduced by this review `supplied`; unexecuted checks `planned`; inaccessible checks `blocked`.
+9. Stress weak points: duplication, concurrency, out-of-order delivery, replay, stale events, crash points, dependency failures, exceptional/fail-open behavior, malicious payloads, tenant crossing, schema/API abuse, DLQ/redrive, and loops. Confirm, reject, merge, or defer each hypothesis from evidence; stop non-improving branches instead of random-searching.
+10. Convert only evidenced hypotheses into findings. Deduplicate, apply severity floors/tie-breakers, optionally add evidence-supported taxonomy metadata, sort canonically, then assign stable review-local finding IDs.
+11. For substantive reviews, apply `references/verification-coverage.md`: disposition every canonical verification technique and keep material applicable `planned`/`blocked` techniques as explicit coverage gaps.
+12. Derive PR verdict from the final findings and essential gaps. Close with verification coverage, uninspected surfaces, blocked evidence, next checks, and merge/release verdict when requested.
 
 ## Severity model
 
@@ -111,11 +124,13 @@ For reviews, use `references/output-contracts.md`. For short review, quick check
 1. scope reviewed and assumptions;
 2. findings ordered canonically, each with finding ID, evidence status, confidence, impact, severity rationale, smallest fix, validation, and merge effect when applicable;
 3. validation gaps and uninspected surfaces;
-4. recommended next step or merge/release verdict when requested.
+4. verification coverage for substantive reviews, with applicable/not-applicable status and evidence provenance;
+5. normalized external analyzer evidence when such evidence influenced the review;
+6. recommended next step or merge/release verdict when requested.
 
 For PR reviews, also include an executive summary, security summary, merge verdict using ✅ `APPROVED`, 🟡 `APPROVED_WITH_COMMENTS`, 🔴 `CHANGES_REQUESTED`, or 🟣 `NEEDS_MORE_CONTEXT`, merge-blocking status per material finding, expected treatment, questions that affect approval, and concise comments to post when useful. Use the severity emoji in every finding and suggested PR comment.
 
-For flow or harness work, also include causal map, invariants, stress matrix, and closure criteria. For durable audits, automation, or comparisons, emit a receipt conforming to `schemas/review-receipt.schema.json` and validate it with `scripts/validate_review_receipt.py`.
+For flow or harness work, also include causal map, invariants, stress matrix, and closure criteria. For durable audits, automation, or comparisons, keep version 1 receipts supported through `schemas/review-receipt.schema.json`; use version 2 via `schemas/review-receipt-v2.schema.json` when verification coverage, external tool evidence, or taxonomy is emitted. Validate both with `scripts/validate_review_receipt.py`.
 
 ## Stop conditions
 
@@ -128,9 +143,10 @@ When editing this skill package:
 1. mutate only files under `bug-security-hunter`;
 2. keep `SKILL.md` compact and move branch detail into `references/`;
 3. run `scripts/self_test_reproducibility.py` with Python;
-4. validate the valid receipt fixture with `python scripts/validate_review_receipt.py <receipt>` using `evals/fixtures/review-receipt-valid.json`;
-5. run `python scripts/validate_skill_package.py <skill-folder>`;
-6. package with `python scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
-7. ensure the archive has one top-level `bug-security-hunter/` folder and no caches, generated reports, old zips, secrets, or symlinks;
-8. freeze evaluator assets before comparative behavioral claims and do not edit frozen evaluator files to make a candidate pass;
-9. do not claim behavioral improvement unless the same scenarios/rubric were actually executed for baseline and candidate; otherwise claim structural hardening only.
+4. validate the version 1 fixture `evals/fixtures/review-receipt-valid.json` with `scripts/validate_review_receipt.py`;
+5. validate the version 2 valid fixture and confirm the version 2 invalid fixture is rejected; keep frozen evaluator assets unchanged after comparative evidence is recorded;
+6. run `python scripts/validate_skill_package.py <skill-folder>`;
+7. package with `python scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
+8. ensure the archive has one top-level `bug-security-hunter/` folder and no caches, generated reports, old zips, secrets, or symlinks;
+9. freeze evaluator assets before comparative behavioral claims and do not edit frozen evaluator files to make a candidate pass;
+10. do not claim behavioral improvement unless the same scenarios/rubric were actually executed for baseline and candidate; otherwise claim structural hardening only.

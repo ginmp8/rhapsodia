@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:security-and-governance-review:authority-boundary:1",
+  "title":"Authority boundary records",
+  "type":"object",
+  "required":["authority_version","records"],
+  "properties":{
+    "authority_version":{"const":"authority-boundary-1"},
+    "records":{"type":"array","items":{"type":"object","required":["actor","action","resource_scope","authorization_source","approval","audit_receipt","failure_behavior","rollback_containment"],"properties":{
+      "actor":{"type":"string","minLength":1},
+      "action":{"enum":["read","write","execute","delete","send","publish","schedule","deploy","approve","delegate"]},
+      "resource_scope":{"type":"string","minLength":1},
+      "authorization_source":{"type":"string","minLength":1},
+      "approval":{"type":"string","minLength":1},
+      "audit_receipt":{"type":"string","minLength":1},
+      "failure_behavior":{"enum":["fail-closed","fail-open","degrade","retry","unknown"]},
+      "rollback_containment":{"type":"string","minLength":1},
+      "enforcement_point":{"type":"string"},
+      "control_effectiveness":{"enum":["declared","statically-present","behaviorally-demonstrated","runtime-observed","unknown"]}
+    }}}
+  }
+}

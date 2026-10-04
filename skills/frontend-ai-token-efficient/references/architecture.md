@@ -4,13 +4,14 @@ Use this reference when planning or reviewing frontend structure, dependencies, 
 
 ## Decision principles
 
-1. **Locality first**: changing a feature should require reading that feature plus a small set of shared contracts.
-2. **Domain ownership**: business flows live in `features/`; reusable domain concepts live in `entities/`; generic utilities live in `shared/`.
-3. **Explicit boundaries**: imports, API access, schema ownership, and mappers must make ownership visible.
-4. **Stable reuse only**: promote code to shared layers only after repeated, stable, domain-neutral use.
-5. **Validation as part of architecture**: structure should make typecheck, tests, and runtime validation easy to run locally.
+1. **Framework-native locality first**: prefer the framework's own strongest ownership boundary when it keeps behavior and contracts together.
+2. **Locality first**: changing behavior should require reading the owning unit plus a small set of explicit contracts.
+3. **Domain ownership**: when a project uses feature/domain layers, business flows belong to their domain owner and generic layers stay domain-neutral.
+4. **Explicit boundaries**: imports, API access, schema ownership, and mappers must make ownership visible.
+5. **Stable reuse only**: promote code to shared layers only after repeated, stable, domain-neutral use.
+6. **Validation as part of architecture**: structure should make typecheck, tests, and runtime validation easy to run locally.
 
-## Recommended shape
+## Generic feature/domain shape (optional)
 
 ```txt
 src/
@@ -40,7 +41,18 @@ src/
     testing/
 ```
 
-Use this as a starting point, not a rigid framework. Existing project conventions win unless they create high coupling, unsafe data flow, or excessive context requirements.
+Use this only when it matches the project's real architecture. Do not create `features/`, `entities/`, or `shared/` merely to satisfy this skill or the scanner. Existing/framework-native conventions win unless they create high coupling, unsafe data flow, or excessive context requirements.
+
+## Framework-native locality adapters
+
+Prefer these locality primitives before introducing a generic taxonomy:
+
+- **Next.js App Router**: keep server-only work on the server and place `'use client'` as low as practical in the tree because it defines the client module boundary. Treat a client boundary expansion as a bundle, security, and context-cost decision.
+- **React Router Framework Mode**: route modules can intentionally colocate route component, loader/action, revalidation, and error-boundary behavior. Do not split them into distant layers unless a stable cross-route contract justifies it.
+- **TanStack Query**: colocate query keys/functions/options through the project's established query-option factory pattern when it keeps cache identity and transport behavior discoverable together.
+- **Vite/client SPA or other stacks**: use the project's existing route/domain/module boundary when it gives one obvious owner and a small validation surface.
+
+Judge locality by the files required to understand and safely change one behavior, not by whether a canonical folder name exists.
 
 ## Dependency rules
 
@@ -53,6 +65,8 @@ Use this as a starting point, not a rigid framework. Existing project convention
 | `shared` | shared only | features, entities with business semantics |
 
 Prefer explicit imports from stable entrypoints. Avoid broad `export *` barrels that hide dependencies or encourage cross-feature coupling.
+
+The table below applies only when the project actually uses this layered feature/domain shape. For framework-native route/module architectures, derive equivalent dependency rules from the framework boundary instead of forcing these folder names.
 
 ## Feature folders
 

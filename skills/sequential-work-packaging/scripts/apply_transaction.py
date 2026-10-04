@@ -31,9 +31,10 @@ def _transaction_identity(
     prepared: list[dict[str, Any]],
 ) -> str:
     stable = {
+        "transaction_identity_version": 2,
         "plan_version": 1,
         "mode": mode,
-        "cycle_root": str(cycle_root),
+        "cycle_version": cycle_root.name,
         "allow_order_change": allow_order_change,
         "protected_paths": sorted(set(protected_paths)),
         "post_validate": {
@@ -567,6 +568,8 @@ def _receipt(
         "status": status,
         "stage": stage,
         "transaction_id": txid,
+        "transaction_identity_version": 2,
+        "cycle_version": root.name,
         "cycle_root": str(root),
         "before_tree_sha256": before_tree_sha256,
         "candidate_tree_sha256": candidate_tree_sha256,

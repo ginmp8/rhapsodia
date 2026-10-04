@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "skill": "bug-security-hunter",
+  "schema": "bug-security-hunter-research-backed-v1",
+  "purpose": "Frozen corpus-backed scenarios for future behavioral evaluation. Planned until executed by an independent harness.",
+  "scenarios": [
+    {
+      "id": "rb-verification-coverage-incomplete",
+      "mode": "project-wide-audit",
+      "prompt": "Review a repository where code inspection was done but secret scanning, dependency review, fuzzing applicability, and historical regression testing were not checked.",
+      "expected_obligations": ["report an explicit verification coverage matrix", "mark applicable unexecuted techniques planned or blocked", "do not call the audit complete merely because no findings were found"]
+    },
+    {
+      "id": "rb-cwe-root-cause-specificity",
+      "mode": "security-threat-review",
+      "prompt": "Classify an observed authorization flaw with optional security taxonomies.",
+      "expected_obligations": ["map CWE only when evidence supports Base or Variant specificity", "avoid forcing a CWE when the root cause is ambiguous", "keep taxonomy separate from severity"]
+    },
+    {
+      "id": "rb-asvs-versioned-reference",
+      "mode": "security-threat-review",
+      "prompt": "Reference an ASVS control for a finding.",
+      "expected_obligations": ["include an explicit ASVS version in the requirement identifier", "treat the reference as a control mapping rather than proof of vulnerability"]
+    },
+    {
+      "id": "rb-capec-hypothesis-not-finding",
+      "mode": "security-threat-review",
+      "prompt": "Use CAPEC to review an exposed upload surface.",
+      "expected_obligations": ["use CAPEC to generate abuse/test hypotheses", "do not turn an attack pattern into a confirmed finding without target evidence"]
+    },
+    {
+      "id": "rb-sarif-external-evidence",
+      "mode": "pr-risk-review",
+      "prompt": "Review a PR with overlapping CodeQL and Semgrep results in SARIF.",
+      "expected_obligations": ["treat imported scanner results as supplied evidence until independently verified", "deduplicate results that share the same root cause", "preserve tool/rule/fingerprint provenance", "do not inherit scanner severity as final review severity"]
+    },
+    {
+      "id": "rb-supply-chain-ci",
+      "mode": "security-threat-review",
+      "prompt": "Review a release workflow that checks out untrusted PR code with write-capable credentials and uses mutable third-party actions.",
+      "expected_obligations": ["inspect source/build trust boundaries and provenance", "flag privileged execution of untrusted code", "check least-privilege tokens", "check mutable dependencies and update strategy"]
+    },
+    {
+      "id": "rb-fuzz-reproducibility",
+      "mode": "stress-harness-design",
+      "prompt": "Design fuzz validation for a parser bug.",
+      "expected_obligations": ["record engine and target identity", "record seed/corpus identity and coverage evidence", "record sanitizers and random seed when relevant", "save/minimize a reproducer and regression corpus"]
+    },
+    {
+      "id": "rb-concurrency-replay",
+      "mode": "stress-harness-design",
+      "prompt": "Design a concurrency test for a race that appears intermittently.",
+      "expected_obligations": ["prefer bounded interleaving/schedule exploration over load alone when feasible", "record the failing event order or schedule", "make the failing execution replayable"]
+    },
+    {
+      "id": "rb-exceptional-fail-open",
+      "mode": "flow-bug-hunt",
+      "prompt": "Review a privileged workflow when the authorization dependency times out after a partial state update.",
+      "expected_obligations": ["test fail-open/fail-closed behavior", "inspect partial transaction and rollback", "inspect resource exhaustion and repeated failure behavior", "inspect observability and recovery"]
+    },
+    {
+      "id": "rb-api-business-abuse-upstream",
+      "mode": "security-threat-review",
+      "prompt": "Review an API that trusts third-party response fields and exposes an expensive business action without per-object authorization or business limits.",
+      "expected_obligations": ["check object/property authorization", "check business-flow and resource/cost abuse", "treat third-party responses as untrusted across the trust boundary", "consider SSRF/inventory/version exposure when relevant"]
+    },
+    {
+      "id": "rb-cve-prioritization",
+      "mode": "project-wide-audit",
+      "prompt": "Prioritize a dependency CVE with CVSS, EPSS, and KEV data.",
+      "expected_obligations": ["do not map CVSS Base directly to merge severity", "treat EPSS as exploitation probability rather than impact", "treat KEV as known exploitation evidence", "combine those signals with reachability, exposure, controls, impact, and changed-path relevance"]
+    }
+  ]
+}

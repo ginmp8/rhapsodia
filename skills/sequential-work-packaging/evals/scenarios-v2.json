@@ -1,0 +1,12 @@
+{
+  "scenario_version": 2,
+  "extends": "scenarios.json",
+  "scenarios": [
+    {"id":"transaction-id-relocated-root","group":"regression","observable":"equivalent semantic operation on byte-equivalent cycles has the same transaction_id across different absolute parent paths"},
+    {"id":"manifest-schema-unsupported","group":"edge","observable":"unsupported manifest schema version fails closed even when the catalog remains schema v1"},
+    {"id":"legacy-package-readiness","group":"compatibility","observable":"an existing structurally valid package without trace IDs still validates but is classified defined rather than execution_ready"},
+    {"id":"traceability-complete-readiness","group":"core","observable":"a package whose declared requirements are covered by tasks and validation evidence is execution_ready"},
+    {"id":"traceability-unknown-requirement","group":"adversarial","observable":"task or validation references to unknown requirement ids block"},
+    {"id":"traceability-missing-proof","group":"edge","observable":"a declared requirement without validation coverage keeps the package below execution_ready without rewriting lifecycle status"}
+  ]
+}

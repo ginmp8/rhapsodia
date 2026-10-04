@@ -29,3 +29,15 @@ Use these prompts to calibrate activation and output expectations.
 ## Non-activation
 
 "Improve this skill's activation wording, scenario coverage, and packaging maturity." Use a general skill-hardening or harness workflow unless the user explicitly asks for security or governance risk review.
+
+## Agentic security
+
+> Review this agent workflow for goal hijack, tool misuse, memory/context poisoning, delegated authority, cascading failures, and runtime-control effectiveness. Separate declared/static controls from behavioral/runtime evidence.
+
+## MCP profile
+
+> Review this MCP client/server integration using the MCP profile. Check token audience/passthrough, confused-deputy boundaries, redirect/state/PKCE where applicable, metadata fetch safety, stdio-vs-HTTP distinctions, and tool/resource/prompt trust.
+
+## Framework mapping
+
+> Map the evidenced findings to current OWASP/MITRE/NIST controls where useful, but keep SGR severity independent and do not make a compliance claim without jurisdiction, role, provision, effective date/version, and authoritative evidence.

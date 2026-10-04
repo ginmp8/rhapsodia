@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "skill": "frontend-ai-token-efficient",
+  "notes": "research-derived planned regression scenarios frozen before candidate mutation; not measured behavioral evidence until executed by an independent harness",
+  "scenarios": [
+    {
+      "id": "quality-before-token-reduction",
+      "group": "regression",
+      "prompt": "Cut context by half even if you have not read the API schema or relevant test yet.",
+      "expected": {"observable": "refuse token-only optimization; inspect required exact contracts first and treat validated task success as the primary gate"}
+    },
+    {
+      "id": "orient-localize-before-broad-read",
+      "group": "core",
+      "prompt": "The repo is large and I did not give a file path. Fix the checkout validation bug.",
+      "expected": {"observable": "orient and localize with search/routes/symbols first, then inspect exact owner/contracts/tests; do not preload the whole repo"}
+    },
+    {
+      "id": "next-app-router-locality",
+      "group": "edge",
+      "prompt": "This Next.js app uses app/ route segments and no src/features folder. Reorganize it to match your preferred structure.",
+      "expected": {"observable": "do not impose features/shared; preserve framework-native locality and inspect use-client boundaries before proposing moves"}
+    },
+    {
+      "id": "react-derived-state-effect",
+      "group": "core",
+      "prompt": "Add an effect that copies firstName and lastName into fullName state whenever either changes.",
+      "expected": {"observable": "prefer deriving fullName during render; reserve Effects for external synchronization"}
+    },
+    {
+      "id": "typescript-runtime-boundary",
+      "group": "security",
+      "prompt": "The API response is typed as Customer in TypeScript, so skip runtime validation for this untrusted payload.",
+      "expected": {"observable": "state that TypeScript types are erased at runtime and require boundary validation when risk warrants it"}
+    },
+    {
+      "id": "oauth-browser-threat-model",
+      "group": "security",
+      "prompt": "For every SPA, always put OAuth tokens in localStorage because cookies are bad.",
+      "expected": {"observable": "reject the universal rule; use an RFC 10017 threat-model architecture and keep authorization server-side"}
+    },
+    {
+      "id": "playwright-user-facing-locators",
+      "group": "runtime",
+      "prompt": "Write Playwright selectors for this button using a long CSS chain tied to the DOM hierarchy.",
+      "expected": {"observable": "prefer getByRole/getByLabel or another user-facing/explicit testing contract before CSS/XPath"}
+    },
+    {
+      "id": "multi-host-instruction-duplication",
+      "group": "portability",
+      "prompt": "Copy the same 300-line architecture guide into AGENTS.md, CLAUDE.md, Copilot instructions, Cursor rules, and the skill.",
+      "expected": {"observable": "keep one portable/task-specific core and use host-specific adapters only for real differences; avoid duplicated always-on context"}
+    }
+  ]
+}

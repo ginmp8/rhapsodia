@@ -22,7 +22,7 @@ Use this compact contract when the user asks for a short review, quick check, fi
 - ...
 ```
 
-Rules: list at most three top findings unless a severe secret, authz, data-loss, contract, or production-failure risk needs expansion. Do not omit evidence labels. Do not approve when essential context is missing.
+Rules: list at most three top findings unless a severe secret, authz, data-loss, contract, or production-failure risk needs expansion. Do not omit evidence labels. Do not approve when essential context is missing. Quick triage may report verification coverage as intentionally partial instead of enumerating the full matrix when the user explicitly requested a bounded first pass.
 
 ## PR risk review
 
@@ -108,6 +108,9 @@ Explain the concrete functional, technical, operational, data, contract, or secu
 **Severity rationale:**
 State the hard floor or risk reasoning used; if a material confirmation point is missing, use `QUESTION` or a validation gap instead of inflating severity.
 
+**Taxonomy (optional):**
+Add evidence-supported CWE and version-qualified ASVS metadata only when useful. CAPEC may explain the hypothesis/abuse path but is not proof of vulnerability. Never derive severity from taxonomy alone.
+
 **Suggestion:**
 State the smallest sufficient fix or mitigation.
 
@@ -129,6 +132,12 @@ State the test, check, scan, replay, migration validation, or manual evidence ne
 Briefly explain why the item must be resolved now, may be deferred, or was accepted as risk.
 
 ---
+
+## Verification coverage
+For substantive reviews, summarize the canonical techniques from `verification-coverage.md`, including applicability, evidence status, and rationale. A material applicable `planned` or `blocked` technique remains an explicit gap and prevents a `complete-for-scope` claim.
+
+## External evidence
+When analyzer/scanner output influenced the review, identify tool/version/format/rule/fingerprint, preserve its reported severity separately, state evidence status, and say whether the underlying behavior was independently verified. Scanner severity does not become review severity automatically.
 
 ## Test and validation gaps
 List missing or unevidenced unit, integration, contract, authorization, invalid-input, regression, migration, performance, secret scanning, dependency scanning, SAST, or sensitive-log validations. Mark each as `planned`, `blocked`, `out-of-scope`, or `needs-verification`.
@@ -203,6 +212,9 @@ Never use ✅ `APPROVED` when there is a 🔴 `BLOCKER`, probable or confirmed r
 | Scenario | Hypothesis | Expected proof | Status |
 |---|---|---|---|
 
+## Verification coverage
+- ...
+
 ## Coverage gaps
 - ...
 
@@ -223,6 +235,12 @@ Never use ✅ `APPROVED` when there is a 🔴 `BLOCKER`, probable or confirmed r
 ## Findings
 ...
 
+## Verification coverage
+...
+
+## External evidence
+...
+
 ## Recommended audit sequence
 1. ...
 ```
@@ -238,6 +256,9 @@ Never use ✅ `APPROVED` when there is a 🔴 `BLOCKER`, probable or confirmed r
 |---|---|---|---|
 
 ## Security findings
+...
+
+## Verification coverage
 ...
 
 ## Remediation checklist
@@ -263,13 +284,24 @@ Never use ✅ `APPROVED` when there is a 🔴 `BLOCKER`, probable or confirmed r
 ## Execution safety
 ...
 
+## Verification coverage
+...
+
 ## Pass/fail gates
 ...
 ```
 
 ## Machine-readable receipt
 
-For durable audits, automation, or comparison, mirror the review into `schemas/review-receipt.schema.json` and validate with `scripts/validate_review_receipt.py`. Do not claim the receipt proves the correctness of the judgment; it proves contract consistency and evidence bookkeeping.
+Version 1 (`schemas/review-receipt.schema.json`) remains supported for existing consumers. Prefer version 2 (`schemas/review-receipt-v2.schema.json`) for new durable audits that need the full verification coverage matrix, normalized external evidence, or optional finding taxonomy. Validate either version with `scripts/validate_review_receipt.py`. Do not claim the receipt proves the correctness of the judgment; it proves contract consistency and evidence bookkeeping.
+
+Version 2 adds:
+
+- `verification_coverage`: exactly one disposition for each canonical verification technique;
+- `external_evidence`: normalized tool/version/format/rule/fingerprint evidence records;
+- `findings[].taxonomy`: optional evidence-supported CWE and version-qualified ASVS metadata.
+
+Keep CAPEC as hypothesis/abuse-case context rather than a machine assertion that a vulnerability exists.
 
 ## Finding line format
 

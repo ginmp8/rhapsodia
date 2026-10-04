@@ -4,10 +4,11 @@ Use these checklists for frontend architecture, PR, security, UX, runtime valida
 
 ## Architecture checklist
 
-- [ ] The feature owner is clear.
-- [ ] The change can be understood by reading a small, local file set.
-- [ ] Business rules are not placed in `shared`.
-- [ ] `shared` does not import features.
+- [ ] The behavior owner is clear.
+- [ ] The framework's native locality primitive was considered before imposing a generic folder taxonomy.
+- [ ] The change can be understood by reading a small, local exact-source set.
+- [ ] When `shared` exists, business rules are not placed there.
+- [ ] When `shared` exists, it does not import feature/domain owners.
 - [ ] Feature-to-feature imports are avoided or explicitly justified.
 - [ ] API transport, mappers, schemas, and UI rendering are separated.
 - [ ] Global state is justified by stable cross-cutting use.
@@ -22,6 +23,8 @@ Use these checklists for frontend architecture, PR, security, UX, runtime valida
 - [ ] Loading, empty, error, disabled, success, and permission states are handled when relevant.
 - [ ] Forms preserve input on error and focus the first invalid field.
 - [ ] API contracts are confirmed or assumptions are explicit.
+- [ ] Untrusted runtime data is validated when the risk requires it; TypeScript types are not treated as runtime validation.
+- [ ] Redundant derived state and Effects without an external synchronization target were challenged.
 - [ ] Sensitive data is not logged, stored, exposed in URLs, or sent to analytics.
 - [ ] Tests match the risk level.
 - [ ] Runtime/browser validation is included for interactive behavior.
@@ -60,6 +63,7 @@ Use these checklists for frontend architecture, PR, security, UX, runtime valida
 - [ ] Keyboard-only navigation is checked.
 - [ ] Console errors are reviewed.
 - [ ] Network failures or API error states are simulated when relevant.
+- [ ] Playwright locators prefer role/label/user-facing or explicit test contracts over DOM-structure CSS/XPath selectors.
 - [ ] Screenshots, traces, or videos are captured when useful.
 - [ ] Known gaps are documented.
 
@@ -67,7 +71,8 @@ Use these checklists for frontend architecture, PR, security, UX, runtime valida
 
 - [ ] No secrets or secret-like names in public environment variables.
 - [ ] No service token, client secret, private key, or password in frontend code.
-- [ ] Sensitive auth/session tokens are not stored in localStorage or sessionStorage.
+- [ ] Sensitive auth/session tokens are not stored in localStorage or sessionStorage by default.
+- [ ] OAuth browser architecture and token exposure follow a documented threat model; RFC 10017 patterns are considered when applicable.
 - [ ] Logs and analytics avoid payloads, raw personal data, financial data, and tokens.
 - [ ] Sensitive data is not exposed in URL paths or query strings.
 - [ ] `dangerouslySetInnerHTML` or HTML injection has sanitizer and explicit approval.
@@ -88,7 +93,9 @@ Use these checklists for frontend architecture, PR, security, UX, runtime valida
 
 - [ ] One primary mode owns the response contract.
 - [ ] Inspected files and material uninspected dependencies are distinguishable.
-- [ ] Repository scope expanded only for a concrete dependency, contract, security, config, or failing-validation trigger.
+- [ ] Orientation/localization is separated from exact-source inspection before edits or exact contract claims.
+- [ ] Repository scope expanded only for a concrete dependency, contract, security, config, design-system, or failing-validation trigger, and material expansion reasons are recorded.
+- [ ] Any context/token efficiency claim keeps the quality gate first and reports cost metrics only afterward.
 - [ ] Findings use stable severity/category/location/evidence/impact/fix/validation semantics.
 - [ ] Duplicate symptoms with one root cause are consolidated.
 - [ ] Measured, observed, supplied, inferred, assumed, planned, and blocked evidence are not conflated.

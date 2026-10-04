@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/secure-code-review/history-scan-result.schema.json",
+  "title": "Secure Code Review Git history scan result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","status","scope","target","revision","summary","scan_stats","findings"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "status": {"const": "complete"},
+    "scope": {"const": "git-history"},
+    "target": {"type":"string","minLength":1},
+    "revision": {"type":"string","minLength":1},
+    "summary": {"type":"object","additionalProperties":false,"required":["critical","high","medium","low"],"properties":{"critical":{"type":"integer","minimum":0},"high":{"type":"integer","minimum":0},"medium":{"type":"integer","minimum":0},"low":{"type":"integer","minimum":0}}},
+    "scan_stats": {"type":"object","additionalProperties":false,"required":["commits_scanned","files_with_added_lines","added_lines_scanned","findings"],"properties":{"commits_scanned":{"type":"integer","minimum":0},"files_with_added_lines":{"type":"integer","minimum":0},"added_lines_scanned":{"type":"integer","minimum":0},"findings":{"type":"integer","minimum":0}}},
+    "findings": {"type":"array","items":{"type":"object","additionalProperties":false,"required":["id","commit","path","line","severity","confidence","rule","evidence"],"properties":{"id":{"type":"string","pattern":"^scrh-[0-9a-f]{16}$"},"commit":{"type":"string","pattern":"^[0-9a-f]{40,64}$"},"path":{"type":"string","minLength":1},"line":{"type":"integer","minimum":1},"severity":{"enum":["critical","high","medium","low"]},"confidence":{"enum":["confirmed","likely","possible"]},"rule":{"type":"string","minLength":1},"evidence":{"type":"string","minLength":1}}}}
+  }
+}

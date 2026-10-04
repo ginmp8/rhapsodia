@@ -2,7 +2,7 @@
 
 ## Operating principle
 
-Keep technical assistance small, explicit, and verifiable. Token savings must come from fewer irrelevant branches, not from skipping inspection or validation.
+Keep technical assistance small, explicit, and verifiable. Token savings must come from fewer irrelevant branches and less recomputation, not from skipping inspection, evidence, or validation.
 
 ## Context selection
 
@@ -14,6 +14,12 @@ Load context in this order:
 4. official docs or current sources when version-specific behavior matters.
 
 Avoid broad directory sweeps, unrelated modules, generated files, large logs, and lockfiles unless they prove a named hypothesis.
+
+## Information-gain gate
+
+Before another tool call, file read, branch, subagent, retry, or alternative implementation, identify the unmet obligation or decision it could change. Continue only when the expected information gain is material enough to justify the work.
+
+A resolved branch stays closed unless new evidence, a failed acceptance check, or a changed constraint reopens it. Parallel work can reduce latency while increasing total compute; use it only for genuinely independent work whose results are all needed or whose isolation materially improves correctness.
 
 ## Smallest sufficient change
 
@@ -38,3 +44,5 @@ Use precise evidence labels in final answers when relevant:
 ## Failure handling
 
 If a command, search, file read, or validator fails, preserve the failure as evidence. Do not replace it with a weaker passing check without stating what the weaker check proves and does not prove.
+
+A failure, contradiction, or changed dependency may justify higher reasoning effort. Do not compensate by merely expanding prose or repeatedly retrying the same unsupported approach.

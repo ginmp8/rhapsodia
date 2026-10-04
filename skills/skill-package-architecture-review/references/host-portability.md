@@ -1,6 +1,6 @@
 # Host Portability Contract
 
-**Contract version:** 1.0.0
+**Contract version:** 1.1.0
 
 The semantic core of this skill is host-neutral Agent Skills content. Host metadata is optional and must not be required to understand or execute the review workflow.
 
@@ -25,9 +25,11 @@ Before running helpers, detect capabilities rather than branching on host name:
 2. file write access for requested durable reports;
 3. Python 3.10+ execution;
 4. subprocess execution only when a reviewed package requires it;
-5. artifact delivery only when requested.
+5. artifact delivery only when requested;
+6. catalog/adjacent-skill visibility only when activation architecture requires it;
+7. repository-history access only when change-coupling evidence is intentionally requested.
 
-When a capability is unavailable, degrade explicitly. For example, if Python cannot run, build the evidence classes manually and mark package identity `not-measured`; do not fabricate executed evidence.
+When a capability is unavailable, degrade explicitly. For example, if Python cannot run, build the evidence classes manually and mark package identity `not-measured`; do not fabricate executed evidence. Missing catalog visibility makes activation evidence `unknown`/`partial`; missing VCS history makes change-coupling evidence `not-inspected`, not a package defect.
 
 ## Python launcher policy
 
@@ -58,3 +60,15 @@ Run:
 ```
 
 The validator checks only mechanically defensible properties: root structure, Python syntax/stdlib usage, sandbox-specific absolute paths, shell-coupled subprocess patterns, path-independent package identity, and optional-adapter isolation. A pass does not prove that a specific host supports every capability; it proves the package does not contain the checked portability blockers.
+
+## Source verification pointers
+
+Host discovery paths and optional metadata change faster than the portable Agent Skills core. When a conclusion depends on current host behavior, re-verify the relevant official documentation instead of treating this file as frozen product truth. Sources checked for this contract on 2026-10-04:
+
+- Agent Skills specification: `https://agentskills.io/specification`
+- OpenAI skill/plugin documentation: `https://developers.openai.com/plugins/build/skills`
+- Claude Agent Skills: `https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview`
+- GitHub Copilot Agent Skills: `https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills`
+- Cursor Agent Skills: `https://cursor.com/docs/skills`
+
+These URLs are source pointers, not semantic runtime dependencies. The package remains usable when no network access exists; freshness-sensitive host claims should then be marked not-verified.

@@ -60,3 +60,27 @@ For every issue include:
 - impact;
 - smallest fix/control;
 - validation or detection.
+
+## Exceptional-condition lens
+
+For privileged, stateful, transactional, or externally dependent paths, explicitly test or reason about abnormal conditions rather than only expected errors:
+
+- authorization/authentication/risk dependency timeout or unavailable response;
+- insufficient privilege or missing/extra parameter;
+- partial transaction, partial side effect, cleanup failure, or rollback failure;
+- resource exhaustion, quota exhaustion, memory/disk/connection pressure, retry exhaustion;
+- repeated identical failures or attacker-induced error amplification;
+- stale/contradictory state after an exception;
+- fallback that weakens authorization, validation, durability, or confidentiality;
+- fail-open versus fail-closed behavior;
+- recovery, monitoring, alerting, and operator visibility.
+
+A security-sensitive fallback must not silently convert uncertainty into authorization. For multi-step side effects, inspect whether every relevant state change can be rolled back or made safe through idempotent forward recovery.
+
+## Upstream trust and API abuse
+
+Treat service-to-external-API and partner-to-service responses as trust boundaries in both directions. Validate upstream data before it influences authorization, persistence, rendering, paths/commands, redirects/URLs, downstream requests, or expensive actions. Load `api-and-business-abuse.md` for API-specific authorization, resource/cost, business-flow, SSRF, inventory, and unsafe-consumption hypotheses.
+
+## CAPEC as hypothesis input
+
+CAPEC or another attack-pattern catalog may be used to generate abuse hypotheses and test cases after assets/trust boundaries are mapped. An attack pattern is not evidence that the target has the weakness; confirm or reject the hypothesis from target-specific evidence before creating a finding.

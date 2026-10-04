@@ -10,6 +10,8 @@ from typing import Any
 
 SPEC_RE = re.compile(r"^spec(?P<n>[0-9]{3,})$")
 TASK_RE = re.compile(r"^task(?P<n>[0-9]{3,})$")
+REQUIREMENT_RE = re.compile(r"^req(?P<n>[0-9]{3,})$")
+VALIDATION_RE = re.compile(r"^val(?P<n>[0-9]{3,})$")
 FEATURE_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 CYCLE_RE = re.compile(r"^[0-9]{2}\.[0-9]{2}\.[0-9]{2}$")
 VERSION_RE = re.compile(r"^v(?P<major>0|[1-9][0-9]*)\.(?P<minor>0|[1-9][0-9]*)\.(?P<patch>0|[1-9][0-9]*)$")
@@ -198,7 +200,56 @@ def parse_tasks(path: Path) -> list[dict[str, Any]]:
         else:
             dep_text = deps.strip("[]")
             task["dependencies"] = [x.strip() for x in dep_text.split(",") if x.strip()]
+        satisfies = task["fields"].get("satisfies", "none")
+        if satisfies.lower() in {"", "none", "[]"}:
+            task["satisfies"] = []
+        else:
+            req_text = satisfies.strip("[]")
+            task["satisfies"] = [x.strip() for x in req_text.split(",") if x.strip()]
     return tasks
+
+
+def parse_requirements(path: Path) -> list[dict[str, Any]]:
+    header = re.compile(r"^- Requirement ID: (?P<id>req[0-9]{3,})\s*$")
+    statement = re.compile(r"^\s{2,}- Statement:\s*(?P<value>.*)$")
+    requirements: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for lineno, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        m = header.match(raw)
+        if m:
+            current = {"requirement_id": m.group("id"), "line": lineno, "statement": ""}
+            requirements.append(current)
+            continue
+        if current:
+            sm = statement.match(raw)
+            if sm:
+                current["statement"] = sm.group("value").strip()
+    return requirements
+
+
+def parse_validations(path: Path) -> list[dict[str, Any]]:
+    header = re.compile(r"^- Validation ID: (?P<id>val[0-9]{3,})\s*$")
+    field = re.compile(r"^\s{2,}- (?P<key>[A-Za-z][A-Za-z ]+):\s*(?P<value>.*)$")
+    validations: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for lineno, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        m = header.match(raw)
+        if m:
+            current = {"validation_id": m.group("id"), "line": lineno, "fields": {}}
+            validations.append(current)
+            continue
+        if current:
+            fm = field.match(raw)
+            if fm:
+                current["fields"][fm.group("key").strip().lower()] = fm.group("value").strip()
+    for item in validations:
+        covers = item["fields"].get("covers", "none")
+        if covers.lower() in {"", "none", "[]"}:
+            item["covers"] = []
+        else:
+            req_text = covers.strip("[]")
+            item["covers"] = [x.strip() for x in req_text.split(",") if x.strip()]
+    return validations
 
 
 def resolve_inside(root: Path, rel: str) -> Path:
