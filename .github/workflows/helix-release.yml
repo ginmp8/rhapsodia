@@ -1,0 +1,51 @@
+name: Validate Helix-informed RhapsodIA package
+on:
+  push:
+    branches: [improve/helix-convergence-0.3.0]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Regenerate deterministic manifests
+        run: |
+          python scripts/generate_marketplace_manifests.py
+          python scripts/generate_agent_manifest.py --package-version 3.1.0
+      - name: Validate agent layer
+        run: |
+          python scripts/validate_agents.py
+          python -m unittest discover -s tests -p 'test_*.py'
+      - name: Validate adaptive workflow skill
+        run: |
+          python -m unittest discover -s skills/adaptive-workflow-orchestration/tests -p 'test_*.py'
+          python skills/adaptive-workflow-orchestration/scripts/validate_workflow_plan.py skills/adaptive-workflow-orchestration/assets/templates/workflow-plan-v2.json.template
+          python scripts/generate_marketplace_manifests.py --check
+          python scripts/generate_agent_manifest.py --check --package-version 3.1.0
+      - name: Persist generated manifests
+        run: |
+          if git diff --quiet; then
+            echo "generated manifests already synchronized"
+          else
+            git config user.name "rhapsodia-ci"
+            git config user.email "rhapsodia-ci@users.noreply.github.com"
+            git add MANIFEST.json .github/plugin .cursor-plugin .claude-plugin .codex-plugin .agents/plugins
+            git commit -m "chore: sync generated manifests"
+            git push
+          fi
+      - name: Build deterministic full-project archive
+        run: python scripts/build_release_archive.py --version 0.3.0 --output dist/rhapsodia-0.3.0-helix.zip
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rhapsodia-0.3.0-helix
+          path: dist/rhapsodia-0.3.0-helix.zip
+          if-no-files-found: error
+          retention-days: 30
