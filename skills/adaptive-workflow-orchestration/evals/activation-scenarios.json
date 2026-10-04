@@ -229,6 +229,35 @@
         "REP-001",
         "BND-001"
       ]
+    },
+    {
+      "id": "awo-dynamic-compile-runtime",
+      "group": "activation",
+      "prompt": "Discover the work units at runtime, compile a bounded fan-out/pipeline, keep intermediate results outside the planner context, and cap total agents.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "awo-convergence-route-out",
+      "group": "boundary",
+      "prompt": "Rebuild this feature checkpoint by checkpoint from a reference; freeze oracle before coding and promote only after ordered gates pass.",
+      "expected_route": "route-checkpoint-convergence",
+      "contract_ids": [
+        "BND-001"
+      ]
+    },
+    {
+      "id": "awo-no-false-durable",
+      "group": "adversarial",
+      "prompt": "Treat session resume/cache as durable workflow execution even without an external state engine.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "REP-001",
+        "STOP-001"
+      ]
     }
   ]
 }

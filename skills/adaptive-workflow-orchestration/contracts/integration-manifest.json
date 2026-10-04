@@ -16,6 +16,18 @@
         "scripts/validate_workflow_plan.py",
         "references/reference-grounded-convergence.md"
       ]
+    },
+    {
+      "contract_id": "workflow-orchestration.dynamic-workflow-plan",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/dynamic-workflow-runtime.md",
+        "references/dynamic-workflow-plan-contract.md",
+        "schemas/dynamic-workflow-plan.schema.json",
+        "assets/templates/dynamic-workflow-plan.json.template",
+        "scripts/validate_dynamic_workflow.py"
+      ]
     }
   ],
   "imports": []

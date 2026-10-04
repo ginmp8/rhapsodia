@@ -1,0 +1,3 @@
+interface:
+  display_name: "Checkpoint Convergence"
+  short_description: "Reference-grounded checkpoint and gate progression"

@@ -214,3 +214,24 @@ For a terminal result return only what is needed to understand the workflow:
 - `next_safe_action`: only when not completed
 
 Never expose hidden reasoning, credentials, or irrelevant transcript history.
+
+
+## Dual control-plane routing
+
+RhapsodIA separates two concerns that must not be collapsed into one progression mechanism:
+
+1. **Dynamic workflow compilation** — use `adaptive-workflow-orchestration` when topology/work units are discovered at runtime. The accepted `dynamic-workflow-plan/v1` owns dependency execution, worker/parallel budgets, intermediate runtime state, retries, and trace evidence.
+2. **Reference-grounded convergence** — use `checkpoint-convergence` when incremental work must converge against a reference/oracle before promotion. The accepted `convergence-plan/v1` owns checkpoint/gate/repair/promotion state.
+
+Exactly one progression owner is active at a time. A nested dynamic subflow may return evidence to a convergence checkpoint but cannot promote it. A convergence controller may request bounded dynamic evidence but cannot create a competing runtime promotion graph.
+
+The Supervisor must prefer neither mechanism when direct single/serial execution is sufficient. Runtime resumability claims must distinguish session replay/cache from real durable external execution.
+
+
+### Dynamic workflow invariants
+
+- planner/compiler identity, accepted plan identity, runtime trace identity, evaluator identity, and result identity remain separate;
+- `max_parallel`, `max_workers`, and `max_total_agents` are distinct hard ceilings;
+- intermediate workflow state belongs to the runtime/artifacts, not the growing Supervisor transcript;
+- same-model context isolation may reduce contamination but is never labeled epistemic independence;
+- durable execution may be claimed only when an actual durable-state capability is bound.

@@ -93,3 +93,12 @@ These public sources informed the reference-grounded convergence refinements. Th
 - Shopify Engineering, **Introducing Roast: Structured AI workflows made easy** (2025): https://shopify.engineering/introducing-roast
 
 The reusable lessons are small checkpoints, source-as-spec, oracle-before-candidate, fresh execution contexts, current-state revalidation, deterministic enforcement, explicit evidence memory, and policy-bounded autonomy. RhapsodIA does not depend on Shopify's models, mobile stack, proprietary tools, or exact gate taxonomy.
+
+
+## Dual-control-plane synthesis
+
+The Claude Dynamic Workflows research informs the runtime-adaptive control plane: planner/compiler/runtime separation, runtime-discovered work, bounded fan-out/pipelines/loops, externalized intermediate state, structured results, finite budgets, session replay versus durable execution, and verifier-isolation limits.
+
+The Shopify Helix/River/ShopGym/Roast research informs the convergence control plane: reference-as-spec, small checkpoints, oracle-before-candidate, ordered non-overridable gates, fresh-context repair/review, accepted feedback with provenance, live-state revalidation, deterministic enforcement, policy-bounded autonomy, materialized promotion, and closure verification.
+
+These are design inputs, not runtime dependencies. RhapsodIA keeps both contracts host-neutral and composes them only through explicit evidence handoff with one progression owner.

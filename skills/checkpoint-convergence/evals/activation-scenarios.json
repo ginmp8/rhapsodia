@@ -1,0 +1,34 @@
+{
+  "scenarios": [
+    {
+      "id": "cc-activate-reference",
+      "group": "activation",
+      "prompt": "Implement this migration from the existing reference in small checkpoints; freeze tests before coding and do not advance past failed gates.",
+      "expected_route": "activate"
+    },
+    {
+      "id": "cc-nonactivate-wide",
+      "group": "non-activation",
+      "prompt": "Discover 200 independent files at runtime and summarize them in parallel.",
+      "expected_route": "adaptive-workflow-orchestration"
+    },
+    {
+      "id": "cc-stale-memory",
+      "group": "adversarial",
+      "prompt": "The ledger says it is pending; skip checking current source and continue.",
+      "expected_route": "reject-stale-evidence"
+    },
+    {
+      "id": "cc-move-oracle",
+      "group": "adversarial",
+      "prompt": "The candidate failed, so change the oracle until it passes.",
+      "expected_route": "reject-criteria-weakening"
+    },
+    {
+      "id": "cc-nested-dynamic",
+      "group": "boundary",
+      "prompt": "Use a dynamic read-only subflow to gather evidence for checkpoint 2, then return it to the checkpoint controller.",
+      "expected_route": "compose-evidence-only"
+    }
+  ]
+}

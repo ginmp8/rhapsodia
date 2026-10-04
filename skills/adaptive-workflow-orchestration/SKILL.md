@@ -1,6 +1,6 @@
 ---
 name: adaptive-workflow-orchestration
-description: Design and operate bounded task-specific execution workflows when runtime topology should adapt to an already-authorized objective. Use for choosing and validating single, sequential, classify-route, fan-out/synthesize, pipeline, adversarial verification, generate/filter, tournament, bounded-loop, or gated-convergence strategies; decomposing dependency-aware work; controlling parallelism, isolation, budgets, retries, state, verification, and termination; or compiling a portable workflow plan to native host capabilities. Do not use for reusable agent-role/topology design, domain ownership decisions, ordinary bounded choices, or simple tasks that do not benefit from orchestration.
+description: Design and operate bounded task-specific execution workflows when runtime topology should adapt to an already-authorized objective. Use for runtime-discovered decomposition, classify-route, fan-out/synthesize, pipeline, adversarial verification, generate/filter, tournament, bounded loops, dependency-aware parallelism, budgets, externalized intermediate state, replay/resume semantics, and compile-to-workflow execution. Do not use for checkpoint promotion/reference-grounded convergence (use checkpoint-convergence), reusable agent-role design, domain ownership, or simple tasks that do not benefit from orchestration.
 ---
 
 # Adaptive Workflow Orchestration
@@ -9,7 +9,7 @@ description: Design and operate bounded task-specific execution workflows when r
 
 Turn an already-authorized objective into a bounded execution topology without changing domain ownership. Keep orchestration mechanics explicit in a validated plan and execution trace instead of relying on free-form model memory.
 
-This skill owns **runtime orchestration for one task/run**. Use `agent-design` when the primary artifact is a reusable agent, supervisor/worker topology, authority model, or `.agent.md` definition.
+This skill owns **runtime orchestration for one task/run**. It is the Claude Dynamic Workflows-inspired control plane: the planner selects/compiles bounded topology, while runtime state, intermediate results, budgets, and worker execution remain outside the planner context. Use `checkpoint-convergence` when the problem is reference-grounded incremental promotion. Use `agent-design` when the primary artifact is a reusable agent, supervisor/worker topology, authority model, or `.agent.md` definition.
 
 ## Ownership boundary
 
@@ -18,7 +18,8 @@ Own:
 - task-specific strategy selection inside an existing authority envelope;
 - work-unit decomposition, dependencies, barriers, and safe concurrency;
 - read/write-set, isolation, retry, budget, and termination policy;
-- `workflow-plan/v1` and backward-compatible `workflow-plan/v2` generation and validation;
+- `dynamic-workflow-plan/v1` generation/validation for new runtime-adaptive work;
+- backward-compatible `workflow-plan/v1` and `workflow-plan/v2` validation for existing integrations;
 - host-capability mapping and explicit degradation;
 - plan/run evidence identity and orchestration-state discipline.
 
@@ -79,13 +80,13 @@ Choose one primary strategy. Compose stages only when each added stage solves a 
 | `generate-filter` | several candidates are useful and filtering is reliable | diversity provides no value |
 | `tournament` | alternatives can be compared by one frozen evaluator | evaluator is weak or changes between arms |
 | `bounded-loop` | an objective predicate requires iteration | termination is subjective or unbounded |
-| `gated-convergence` | small increments must prove required behavior/review gates before downstream work may consume them | a single bounded worker can finish and validate the task directly |
+| `gated-convergence` | **compatibility only**: historical `workflow-plan/v2` inputs | new reference-grounded work; use `checkpoint-convergence` instead |
 
-Load [references/orchestration-patterns.md](references/orchestration-patterns.md) for composition rules and anti-patterns. For reference-backed checkpoint work, also load [references/reference-grounded-convergence.md](references/reference-grounded-convergence.md).
+Load [references/orchestration-patterns.md](references/orchestration-patterns.md) for composition rules and anti-patterns. Load [references/dynamic-workflow-runtime.md](references/dynamic-workflow-runtime.md) and [references/dynamic-workflow-plan-contract.md](references/dynamic-workflow-plan-contract.md) for compile-to-workflow semantics. For reference-backed checkpoint work, route to `checkpoint-convergence`; [references/reference-grounded-convergence.md](references/reference-grounded-convergence.md) remains a compatibility pointer.
 
 ## Portable plan contracts
 
-Use `workflow-plan/v1` for existing material workflows. Use `workflow-plan/v2` only when checkpoint promotion and non-overridable quality gates are required. Load [references/workflow-plan-contract.md](references/workflow-plan-contract.md) for v1 and [references/workflow-plan-v2-contract.md](references/workflow-plan-v2-contract.md) for gated convergence. v1 remains supported and is not silently upgraded.
+For **new runtime-adaptive work**, use `dynamic-workflow-plan/v1`. `workflow-plan/v1` remains supported for existing material workflows. `workflow-plan/v2` remains supported only as a historical gated-convergence compatibility contract; new checkpoint promotion uses `convergence-plan/v1` owned by `checkpoint-convergence`. Load [references/workflow-plan-contract.md](references/workflow-plan-contract.md) for v1 and [references/workflow-plan-v2-contract.md](references/workflow-plan-v2-contract.md) for gated convergence. v1 remains supported and is not silently upgraded.
 
 A valid plan includes:
 
@@ -208,3 +209,39 @@ For a substantive orchestration request return, as applicable:
 7. terminal reason, remaining blockers, and residual unmeasured behavior.
 
 Do not claim runtime execution from a structurally valid plan. Planned activation and boundary coverage lives in [evals/activation-scenarios.json](evals/activation-scenarios.json); treat it as planned evidence until a harness executes it.
+
+
+## Dynamic workflow control plane
+
+A dynamic workflow separates four identities:
+
+`authorized objective -> planner/compiler -> accepted executable plan -> runtime/execution trace`
+
+The model may choose topology, but deterministic/runtime mechanisms own hard ceilings, dependency execution, intermediate state, retries, and trace identity. Do not confuse a planning hint with a runtime limit.
+
+Use `dynamic-workflow-plan/v1` when work units or topology are discovered at runtime, when isolated fan-out materially helps, or when a bounded loop/pipeline must be compiled from current evidence. The contract explicitly distinguishes:
+
+- `max_parallel`: simultaneous execution ceiling;
+- `max_workers`: worker pool ceiling;
+- `max_total_agents`: total agent invocation ceiling;
+- `resumption_semantics: session-replay`: resumable session/cache semantics, **not** durable workflow execution;
+- `resumption_semantics: durable-external`: allowed only when a real durable-state capability exists;
+- deterministic-first verification from model criticism;
+- context isolation from epistemic independence: two isolated instances of the same model are not declared independent truth sources.
+
+Validate new plans with:
+
+```text
+<PYTHON> scripts/validate_dynamic_workflow.py <PLAN.json>
+```
+
+## Composition with checkpoint convergence
+
+Exactly one **progression owner** may decide whether work advances.
+
+- Dynamic orchestration may gather read-only evidence or execute a bounded subflow for one convergence checkpoint, then return evidence.
+- Checkpoint convergence may request a dynamic subflow, but it retains checkpoint/gate/promotion ownership.
+- A dynamic subflow cannot promote a checkpoint, relax its oracle, or create a second promotion graph.
+- Checkpoint convergence cannot silently take over runtime topology outside its declared checkpoint scope.
+
+If neither dynamic topology nor checkpoint promotion is needed, use direct single/serial execution.

@@ -469,3 +469,13 @@ Unless otherwise stated in an included file, this distribution is licensed under
 The Apache License 2.0 applies to prompts, agents, skills, scripts, examples, templates, and documentation created specifically for RhapsodIA when those artifacts do not declare another license.
 
 In the full RhapsodIA repository, copied or adapted third-party content remains subject to its original license and notices and is not relicensed merely by inclusion in the repository.
+
+
+## 0.3.0 dual workflow architecture
+
+RhapsodIA 0.3.0 keeps the package release at `0.3.0` while separating two internal control planes:
+
+- `adaptive-workflow-orchestration` / `dynamic-workflow-plan/v1` for runtime-adaptive compile-to-workflow execution;
+- `checkpoint-convergence` / `convergence-plan/v1` for reference-grounded checkpoint/gate progression.
+
+Historical `workflow-plan/v1` and `workflow-plan/v2` remain compatibility surfaces. Internal contract versions are semantic and are not forced to match the package release.

@@ -110,3 +110,8 @@ Return:
 - `canonical_phase_completed`: false
 - `handoff_v3_emitted`: false
 - `blockers_or_escalation`
+
+
+## Dual control-plane proof
+
+For `dynamic-workflow-plan/v1`, bind proof to the exact accepted-plan and candidate/result identity; distinguish runtime replay from durable execution. For `convergence-plan/v1`, bind proof to the exact checkpoint, frozen oracle, candidate identity, and current reference identity. A repaired candidate invalidates affected proof. Verification evidence never grants progression/promotion authority.

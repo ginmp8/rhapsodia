@@ -1,53 +1,48 @@
-name: Validate Helix-informed RhapsodIA package
+name: Validate RhapsodIA 0.3.0 dual workflow package
 on:
   push:
-    branches: [improve/helix-convergence-0.3.0]
+    branches: [build/dual-workflow-0.3.0]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   validate-and-package:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
-      - name: Regenerate deterministic manifests
+      - name: Generate manifests
         run: |
           python scripts/generate_marketplace_manifests.py
-          python scripts/generate_agent_manifest.py --package-version 3.1.0
-      - name: Validate agent layer
+          python scripts/generate_agent_manifest.py --package-version 0.3.0
+      - name: Validate workflow control planes
+        run: |
+          python -m unittest discover -s skills/adaptive-workflow-orchestration/tests -p 'test_*.py' -v
+          python skills/adaptive-workflow-orchestration/scripts/validate_dynamic_workflow.py skills/adaptive-workflow-orchestration/assets/templates/dynamic-workflow-plan.json.template
+          python -m unittest discover -s skills/checkpoint-convergence/tests -p 'test_*.py' -v
+          python skills/checkpoint-convergence/scripts/validate_convergence_plan.py skills/checkpoint-convergence/assets/templates/convergence-plan.json.template
+      - name: Validate agents and release metadata
         run: |
           python scripts/validate_agents.py --target .
-          python -m unittest discover -s tests -p 'test_*.py'
-      - name: Validate adaptive workflow skill
-        run: |
-          python -m unittest discover -s skills/adaptive-workflow-orchestration/tests -p 'test_*.py'
-          python skills/adaptive-workflow-orchestration/scripts/validate_workflow_plan.py skills/adaptive-workflow-orchestration/assets/templates/workflow-plan-v2.json.template
+          python -m unittest tests.test_validate_agents tests.test_install_agents tests.test_marketplace_manifests tests.test_workspace_agent_contract tests.test_release_versions -v
           python scripts/generate_marketplace_manifests.py --check
-          python scripts/generate_agent_manifest.py --check --package-version 3.1.0
-      - name: Persist generated manifests
+          python scripts/generate_agent_manifest.py --check --package-version 0.3.0
+          python scripts/validate_release_versions.py
+          python scripts/prepare_release.py --check
+      - name: Build deterministic archives twice
         run: |
-          if git diff --quiet; then
-            echo "generated manifests already synchronized"
-          else
-            git config user.name "rhapsodia-ci"
-            git config user.email "rhapsodia-ci@users.noreply.github.com"
-            git add MANIFEST.json .github/plugin .cursor-plugin .claude-plugin .codex-plugin .agents/plugins
-            git commit -m "chore: sync generated manifests"
-            git push
-          fi
-      - name: Build deterministic full-project archive
-        run: python scripts/build_release_archive.py --version 0.3.0 --output dist/rhapsodia-0.3.0-helix.zip
-      - name: Publish archive on the branch
-        run: |
-          git fetch origin "$GITHUB_REF_NAME"
-          git reset --hard "origin/$GITHUB_REF_NAME"
-          python scripts/build_release_archive.py --version 0.3.0 --output rhapsodia-0.3.0-helix.zip
-          git add -f rhapsodia-0.3.0-helix.zip
-          git commit -m "build: publish rhapsodia 0.3.0 helix archive"
-          git push
+          mkdir -p dist/a dist/b
+          python scripts/build_release_archive.py --version 0.3.0 --output dist/a/rhapsodia-0.3.0-dual-workflow.zip
+          python scripts/build_release_archive.py --version 0.3.0 --output dist/b/rhapsodia-0.3.0-dual-workflow.zip
+          cmp dist/a/rhapsodia-0.3.0-dual-workflow.zip dist/b/rhapsodia-0.3.0-dual-workflow.zip
+          unzip -t dist/a/rhapsodia-0.3.0-dual-workflow.zip
+          sha256sum dist/a/rhapsodia-0.3.0-dual-workflow.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rhapsodia-0.3.0-dual-workflow
+          path: dist/a/rhapsodia-0.3.0-dual-workflow.zip
+          if-no-files-found: error
+          retention-days: 30

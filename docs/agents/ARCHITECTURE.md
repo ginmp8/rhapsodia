@@ -310,3 +310,19 @@ For high-risk work with a strong existing reference, the Supervisor may compile 
 The system intentionally does not implement hidden long-term agent memory. Cross-checkpoint learning is explicit evidence: accepted feedback with provenance, current candidate/reference identities, and checkpoint status. Mutable source state is revalidated when the plan declares it. This prevents stale ledgers or long transcripts from silently becoming operational truth.
 
 Autonomous mode is a policy choice, not a lower quality tier. It may reduce human approval frequency only when explicitly accepted; required proof/review/freshness gates remain invariant.
+
+
+## Dual control planes: topology vs. convergence
+
+RhapsodIA intentionally separates **dynamic execution topology** from **checkpoint progression**.
+
+```text
+authorized objective
+  -> Supervisor
+     -> adaptive-workflow-orchestration -> dynamic-workflow-plan/v1 -> runtime/workers -> evidence
+     -> checkpoint-convergence          -> convergence-plan/v1      -> producer/gates -> promoted checkpoint
+```
+
+The first control plane is compile-to-workflow: an LLM/planner may synthesize topology, while a bounded runtime owns execution state and hard limits. The second is reference-grounded convergence: a frozen oracle and ordered gates decide whether an increment may advance.
+
+Composition has one invariant: **one progression owner at a time**. Nested subflows return evidence; they do not acquire the caller's promotion authority. This prevents two controllers from independently deciding that the same work may advance.
