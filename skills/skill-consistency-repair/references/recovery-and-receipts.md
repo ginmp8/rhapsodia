@@ -17,20 +17,27 @@ Rollback or restore from last-known-good when a repair introduces a blocker/high
 
 If rollback is incomplete, preserve both recovery backup and failed candidate paths. Do not erase evidence to make the workspace look clean.
 
-## Receipt minimum
+## Consistency receipt v2
 
-A durable consistency receipt should contain:
+A durable receipt for consistency repair binds the verification statement to the exact candidate plus the verifier/policy assets used to reach it. It contains at least:
 
-- receipt version;
-- target/mode/status;
-- baseline inventory identity;
-- final candidate inventory identity;
-- added/removed/changed file list;
+- receipt version, target/mode/status;
+- baseline identity;
+- `subject` with the final deterministic candidate digest;
+- changed/added/removed file list;
 - final report hash/path;
 - evaluator manifest hash plus verification result;
+- verifier file hashes and a canonical verifier identity;
+- policy/control-plane file hashes and a canonical policy identity;
 - last-known-good identity/path when available;
 - explicit claim boundary.
 
-A package-delivery receipt additionally records `receipt_version`, committed `stage`, candidate/tree identity, archive SHA-256, normalized ZIP format version, validation status, final archive path, atomic-replace state, last-known-good preservation state, and recovery paths. Package receipt outputs stay outside the frozen target.
+The default verifier set is the inventory, audit, report-validator, and receipt scripts. The default policy set is `SKILL.md`, consistency taxonomy, authority/conflict rules, and report contract. Callers may add explicit package-relative verifier/policy paths.
 
-Receipt outputs must live outside the frozen target package. `scripts/create_consistency_receipt.py` rejects candidate/report identity drift.
+A receipt is an attestation-like local evidence record, not a cryptographic signature, trusted provenance authority, or behavioral/semantic proof by itself.
+
+## Package delivery receipt
+
+A package-delivery receipt records committed stage, candidate/tree identity, archive SHA-256, normalized ZIP format version, validation status, final archive path, atomic-replace state, last-known-good preservation state, recovery paths, and the candidate subject digest.
+
+Package receipt outputs stay outside the frozen target. `scripts/create_consistency_receipt.py` rejects candidate/report identity drift.

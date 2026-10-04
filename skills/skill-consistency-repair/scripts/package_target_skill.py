@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 from consistency_audit import audit
-from inventory_skill import scan_target
+from inventory_skill import portable_path_collisions, scan_target
 
 EXCLUDED_DIRS = {
     '.git', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache',
@@ -133,6 +133,10 @@ def validate_archive(zip_path: Path, skill_name: str | None = None, *, require_n
             secretish = [name for name in names if is_sensitive_name(PurePosixPath(name).name.lower())]
             if secretish:
                 errors.append(f'archive includes secret-like paths: {secretish[:10]}')
+            relative_names = [name.split('/', 1)[1] for name in names if '/' in name]
+            collisions = portable_path_collisions(relative_names)
+            if collisions:
+                errors.append(f'archive includes portable path collisions: {collisions[:10]}')
             if require_normalized:
                 non_normalized: list[str] = []
                 for info in infos:
@@ -235,6 +239,10 @@ def main() -> int:
             return 2
 
         inventory = scan_target(target)
+        collisions = portable_path_collisions([item['path'] for item in inventory.get('files', [])])
+        if collisions:
+            print(json.dumps({'status': 'fail', 'stage': 'portable-path-preflight', 'reason': 'casefold/Unicode-normalization path collision', 'collisions': collisions}, indent=2, ensure_ascii=False))
+            return 2
         skill_name = inventory.get('frontmatter', {}).get('fields', {}).get('name') or target.name
         output.parent.mkdir(parents=True, exist_ok=True)
         fd, temp_name = tempfile.mkstemp(prefix=f'.{output.name}.', suffix='.tmp', dir=output.parent)
@@ -265,6 +273,7 @@ def main() -> int:
             'stage': 'committed',
             'candidate_identity': inventory.get('inventory_fingerprint'),
             'candidate_sha256': inventory.get('inventory_fingerprint'),
+            'subject': {'name': skill_name, 'digest': {'sha256': inventory.get('inventory_fingerprint')}, 'digest_semantics': 'deterministic inventory fingerprint'},
             'package_sha256': package_sha,
             'archive_sha256': package_sha,
             'package_bytes': staged_package.stat().st_size,

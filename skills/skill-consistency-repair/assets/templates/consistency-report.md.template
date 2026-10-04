@@ -13,9 +13,15 @@
 
 {{decision}}
 
-## Inventory and Trace Summary
+## Inventory, Relations, and Trace Coverage
 
 {{inventory_summary}}
+
+{{relation_summary}}
+
+## Conformance
+
+{{conformance}}
 
 ## Resource Classification
 
@@ -25,13 +31,21 @@
 
 {{authority_findings}}
 
-## Repairs
+## Managed Inconsistencies
+
+{{managed_inconsistencies}}
+
+## Repairs and Impact
 
 {{repairs}}
 
-## Validation Gates
+{{impact_analysis}}
+
+## Validation Gates and Evidence Classes
 
 {{validation_gates}}
+
+{{evidence_classes}}
 
 ## Recovery / Last-Known-Good
 
