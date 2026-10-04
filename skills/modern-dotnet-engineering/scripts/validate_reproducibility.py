@@ -24,12 +24,38 @@ REQUIRED_MODES = {
     "implementation-plan",
     "production-gate",
 }
+
+REQUIRED_RESEARCH_SCENARIOS = {
+    "regression-lifecycle-servicing",
+    "regression-minimal-api-validation-multiassembly",
+    "regression-openapi31-contract",
+    "regression-resource-authorization",
+    "regression-ef-query-filter-authorization",
+    "regression-startup-migrations",
+    "regression-concurrency-retry-idempotency",
+    "regression-http-retry-post",
+    "regression-bounded-channel-backpressure",
+    "regression-observability-cardinality",
+    "regression-nuget-transitive-audit",
+    "regression-central-transitive-pinning",
+    "regression-mtp-zero-tests",
+    "regression-timeprovider-testing",
+    "regression-native-aot-mvc",
+    "regression-aspire-servicedefaults",
+    "activation-dotnet-ai-mcp",
+    "regression-ai-agent-reproducibility",
+    "nonactivation-generic-mcp",
+    "core-modular-monolith-first",
+    "regression-resource-consumption-limits",
+}
+
 REQUIRED_SKILL_MARKERS = [
     "## Activation contract",
     "## Mode router",
     "## Evidence vocabulary",
     "## Stop conditions",
     "references/36-review-evidence-and-reproducibility.md",
+    "references/37-dotnet-ai-agents-mcp.md",
     "evals/scenarios.json",
 ]
 
@@ -139,27 +165,29 @@ def main() -> int:
                     if not isinstance(gates, list) or not gates:
                         errors.append(f"{sid or index}: expected.hard_gates must be non-empty")
             missing_groups = sorted(REQUIRED_GROUPS - groups)
+            missing_research_scenarios = sorted(REQUIRED_RESEARCH_SCENARIOS - ids)
             add(
                 "scenarios/contract",
-                "pass" if not errors and not invalid_modes and not missing_groups else "fail",
+                "pass" if not errors and not invalid_modes and not missing_groups and not missing_research_scenarios else "fail",
                 "evals/scenarios.json",
                 {
                     "count": len(scenarios),
                     "groups": sorted(groups),
                     "missing_groups": missing_groups,
                     "invalid_modes": invalid_modes,
+                    "missing_research_scenarios": missing_research_scenarios,
                     "errors": errors,
                 },
-                ["repair scenario ids/groups/expected contract"] if errors or invalid_modes or missing_groups else [],
+                ["repair scenario ids/groups/expected contract"] if errors or invalid_modes or missing_groups or missing_research_scenarios else [],
             )
 
     baseline_validator = root / "scripts" / "validate_skill_content.py"
     add(
-        "validator/legacy-present",
+        "validator/content-present",
         "pass" if baseline_validator.exists() else "fail",
         "scripts/validate_skill_content.py",
         {"sha256": sha256(baseline_validator)} if baseline_validator.exists() else {},
-        ["restore the legacy validator"] if not baseline_validator.exists() else [],
+        ["restore the content validator"] if not baseline_validator.exists() else [],
     )
 
     failures = [c for c in checks if c["status"] == "fail"]

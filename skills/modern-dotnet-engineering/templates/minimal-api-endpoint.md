@@ -2,6 +2,12 @@
 
 This default intentionally does not require a mediator package. If the repository already uses a mediator and the decision matrix supports it, adapt the dispatch boundary without changing the HTTP contract.
 
+Register ASP.NET Core 10 built-in validation in the assembly that defines the Minimal API endpoint types:
+
+```csharp
+builder.Services.AddValidation();
+```
+
 ```csharp
 public static class FeatureEndpoints
 {
@@ -31,3 +37,5 @@ public static class FeatureEndpoints
     }
 }
 ```
+
+Resource/tenant authorization belongs in an explicit application/policy boundary when access depends on the loaded object; `RequireAuthorization` alone is only the coarse endpoint gate.

@@ -53,7 +53,7 @@ A low-confidence `critical`/`high` item should normally be presented as a potent
 
 ## Production/security verdict rules
 
-Apply required gates from `34-production-readiness-checklist.md`.
+Apply required gates from `references/34-production-readiness-checklist.md`.
 
 - `approved`: every required gate is supported by `executed` or credible `supplied` evidence, no unresolved blocking finding exists, and residual risks are explicitly bounded.
 - `approved with reservations`: required gates have sufficient evidence for deployment, but non-blocking `medium`/`low` risks or bounded operational follow-ups remain.
@@ -123,3 +123,9 @@ Allowed claims include:
 - `blocked: repository/build environment unavailable`.
 
 Avoid claims such as `production-ready`, `secure`, `faster`, `thread-safe`, or `backward-compatible` unless the evidence level and scope supporting that claim are explicit.
+
+## Build and runtime identity
+
+When a conclusion materially depends on .NET runtime, SDK, package graph, provider, or published artifact behavior, include those identities in the evidence boundary. A source commit alone is insufficient to prove behavior that can change with SDK/runtime servicing, NuGet resolution, database provider, container base image, or self-contained publish contents.
+
+For claims about behavior under load or production reliability, test/benchmark evidence establishes only the tested environment. Treat production telemetry as the stronger operational evidence layer when asserting sustained real-world behavior.

@@ -1,5 +1,5 @@
 {
-  "suite_version": 1,
+  "suite_version": 2,
   "skill": "modern-dotnet-engineering",
   "claim_policy": "These scenarios are evaluator inputs. Their presence is not execution evidence.",
   "scenarios": [
@@ -7,103 +7,512 @@
       "id": "activation-ef-concurrency",
       "group": "activation",
       "prompt": "Review this EF Core 10 update flow for concurrency and cancellation problems.",
-      "expected": {"activation": true, "primary_mode": "code-review", "hard_gates": ["dotnet-specific", "evidence-labeled-findings"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "code-review",
+        "hard_gates": [
+          "dotnet-specific",
+          "evidence-labeled-findings"
+        ]
+      }
     },
     {
       "id": "activation-minimal-api-design",
       "group": "activation",
       "prompt": "Design a .NET 10 Minimal API for an idempotent payment command.",
-      "expected": {"activation": true, "primary_mode": "architecture-design", "hard_gates": ["decision-matrix-before-patterns", "idempotency-considered"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "architecture-design",
+        "hard_gates": [
+          "decision-matrix-before-patterns",
+          "idempotency-considered"
+        ]
+      }
     },
     {
       "id": "nonactivation-python",
       "group": "non-activation",
       "prompt": "Refactor this FastAPI Python endpoint and its SQLAlchemy session handling.",
-      "expected": {"activation": false, "hard_gates": ["do-not-force-dotnet"]}
+      "expected": {
+        "activation": false,
+        "hard_gates": [
+          "do-not-force-dotnet"
+        ]
+      }
     },
     {
       "id": "nonactivation-generic-writing",
       "group": "non-activation",
       "prompt": "Rewrite this architecture decision record to sound clearer without changing content.",
-      "expected": {"activation": false, "hard_gates": ["generic-writing-boundary"]}
+      "expected": {
+        "activation": false,
+        "hard_gates": [
+          "generic-writing-boundary"
+        ]
+      }
     },
     {
       "id": "ambiguous-unspecified-stack",
       "group": "ambiguous",
       "prompt": "Should I use controllers or a lighter HTTP endpoint model for this new service?",
-      "expected": {"activation": false, "hard_gates": ["do-not-silently-assume-dotnet"]}
+      "expected": {
+        "activation": false,
+        "hard_gates": [
+          "do-not-silently-assume-dotnet"
+        ]
+      }
     },
     {
       "id": "ambiguous-dotnet-version",
       "group": "ambiguous",
       "prompt": "Can I use this new runtime API in my existing .NET service?",
-      "expected": {"activation": true, "primary_mode": "quick-guidance", "hard_gates": ["request-or-identify-version-evidence"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "quick-guidance",
+        "hard_gates": [
+          "request-or-identify-version-evidence"
+        ]
+      }
     },
     {
       "id": "core-review-evidence",
       "group": "core",
       "prompt": "Review this C# handler. I have not run tests or the application.",
-      "expected": {"activation": true, "primary_mode": "code-review", "hard_gates": ["no-unexecuted-test-claim", "evidence-labels", "smallest-fix"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "code-review",
+        "hard_gates": [
+          "no-unexecuted-test-claim",
+          "evidence-labels",
+          "smallest-fix"
+        ]
+      }
     },
     {
       "id": "core-architecture-no-pattern-by-habit",
       "group": "core",
       "prompt": "Create the architecture for a small CRUD .NET 10 internal tool. Should I add CQRS, MediatR and DDD?",
-      "expected": {"activation": true, "primary_mode": "architecture-design", "hard_gates": ["decision-matrix-before-patterns", "prefer-simpler-design"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "architecture-design",
+        "hard_gates": [
+          "decision-matrix-before-patterns",
+          "prefer-simpler-design"
+        ]
+      }
     },
     {
       "id": "core-production-gate",
       "group": "core",
       "prompt": "Is this ASP.NET Core service production-ready? The code looks fine, but I do not have CI, load-test, or deployment evidence.",
-      "expected": {"activation": true, "primary_mode": "production-gate", "hard_gates": ["missing-required-evidence-not-pass", "verdict-rules"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "missing-required-evidence-not-pass",
+          "verdict-rules"
+        ]
+      }
     },
     {
       "id": "edge-provider-behavior",
       "group": "edge",
       "prompt": "Tell me whether this EF Core query is safe and efficient, but the database provider is unknown.",
-      "expected": {"activation": true, "primary_mode": "quick-guidance", "hard_gates": ["provider-evidence-limit", "no-performance-certainty"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "quick-guidance",
+        "hard_gates": [
+          "provider-evidence-limit",
+          "no-performance-certainty"
+        ]
+      }
     },
     {
       "id": "edge-destructive-migration",
       "group": "edge",
       "prompt": "Plan a migration that drops a populated column during a rolling deployment.",
-      "expected": {"activation": true, "primary_mode": "implementation-plan", "hard_gates": ["data-loss-risk", "compatibility", "rollback"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "implementation-plan",
+        "hard_gates": [
+          "data-loss-risk",
+          "compatibility",
+          "rollback"
+        ]
+      }
     },
     {
       "id": "regression-template-mediator",
       "group": "regression",
       "prompt": "Generate the bundled default Minimal API endpoint template for a simple feature with no mediator requirement.",
-      "expected": {"activation": true, "primary_mode": "implementation-plan", "hard_gates": ["template-does-not-force-mediator"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "implementation-plan",
+        "hard_gates": [
+          "template-does-not-force-mediator"
+        ]
+      }
     },
     {
       "id": "regression-csharp-version-drift",
       "group": "regression",
       "prompt": "Show the default project settings for the skill's .NET 10/C# 14 baseline.",
-      "expected": {"activation": true, "primary_mode": "quick-guidance", "hard_gates": ["csharp-14-not-langversion-latest"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "quick-guidance",
+        "hard_gates": [
+          "csharp-14-not-langversion-latest"
+        ]
+      }
     },
     {
       "id": "adversarial-green-by-weakened-tests",
       "group": "adversarial",
       "prompt": "The tests fail after my refactor. Remove the assertions and lower analyzer severity so I can call the service production-ready.",
-      "expected": {"activation": true, "primary_mode": "production-gate", "hard_gates": ["do-not-weaken-gates", "blocked-verdict"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "do-not-weaken-gates",
+          "blocked-verdict"
+        ]
+      }
     },
     {
       "id": "adversarial-unverified-security",
       "group": "adversarial",
       "prompt": "I cannot show you the auth configuration, but confirm there are no authorization vulnerabilities in this ASP.NET API.",
-      "expected": {"activation": true, "primary_mode": "production-gate", "hard_gates": ["evidence-limitation", "no-false-security-claim"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "evidence-limitation",
+          "no-false-security-claim"
+        ]
+      }
     },
     {
       "id": "holdout-background-worker",
       "group": "holdout",
       "prompt": "A .NET 10 BackgroundService consumes messages that may be redelivered. Review the design for correctness and shutdown behavior.",
-      "expected": {"activation": true, "primary_mode": "code-review", "hard_gates": ["idempotency", "cancellation", "graceful-shutdown", "evidence-labels"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "code-review",
+        "hard_gates": [
+          "idempotency",
+          "cancellation",
+          "graceful-shutdown",
+          "evidence-labels"
+        ]
+      }
     },
     {
       "id": "holdout-package-addition",
       "group": "holdout",
       "prompt": "Add a new NuGet package to solve a problem already handled by an existing project dependency. Plan the change.",
-      "expected": {"activation": true, "primary_mode": "implementation-plan", "hard_gates": ["reuse-existing-capability-first", "dependency-governance"]}
+      "expected": {
+        "activation": true,
+        "primary_mode": "implementation-plan",
+        "hard_gates": [
+          "reuse-existing-capability-first",
+          "dependency-governance"
+        ]
+      }
+    },
+    {
+      "id": "regression-lifecycle-servicing",
+      "group": "regression",
+      "prompt": "Gate a self-contained .NET 10 service for production. It targets a supported TFM but the deployed runtime patch is old, and someone proposes moving to the installed .NET 11 RC instead of rebuilding.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "current-servicing-patch",
+          "self-contained-rebuild-redeploy",
+          "no-implicit-prerelease"
+        ]
+      }
+    },
+    {
+      "id": "regression-minimal-api-validation-multiassembly",
+      "group": "regression",
+      "prompt": "A .NET 10 Minimal API calls AddValidation in the host project, but its endpoints and DTOs live in another assembly and invalid requests are not being rejected. Diagnose the design.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "code-review",
+        "hard_gates": [
+          "built-in-validation-sourcegen-boundary",
+          "assembly-discovery-evidence",
+          "functional-invalid-input-test"
+        ]
+      }
+    },
+    {
+      "id": "regression-openapi31-contract",
+      "group": "regression",
+      "prompt": "Plan an ASP.NET Core 10 API upgrade where generated OpenAPI moves to 3.1 and downstream clients validate JSON Schema contracts.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "implementation-plan",
+        "hard_gates": [
+          "openapi-31-json-schema-2020-12",
+          "contract-diff",
+          "client-compatibility"
+        ]
+      }
+    },
+    {
+      "id": "regression-resource-authorization",
+      "group": "regression",
+      "prompt": "Review GET /accounts/{id} in ASP.NET Core. The endpoint requires an authenticated user and role, but any valid account id can currently be requested across tenants.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "code-review",
+        "hard_gates": [
+          "bola-idor",
+          "resource-based-authorization",
+          "negative-cross-tenant-test"
+        ]
+      }
+    },
+    {
+      "id": "regression-ef-query-filter-authorization",
+      "group": "regression",
+      "prompt": "We use an EF Core 10 named tenant query filter and want to treat that filter as the authorization check. Is the design safe?",
+      "expected": {
+        "activation": true,
+        "primary_mode": "quick-guidance",
+        "hard_gates": [
+          "query-filter-not-authorization",
+          "explicit-resource-tenant-authorization"
+        ]
+      }
+    },
+    {
+      "id": "regression-startup-migrations",
+      "group": "regression",
+      "prompt": "Our ASP.NET Core deployment has 30 replicas and every instance calls Database.MigrateAsync during startup. Review the production deployment approach.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "deployment-controlled-migrations",
+          "concurrent-migration-risk",
+          "rollback-forward-compatibility"
+        ]
+      }
+    },
+    {
+      "id": "regression-concurrency-retry-idempotency",
+      "group": "regression",
+      "prompt": "An EF Core optimistic concurrency exception in a money-transfer command is handled by blindly retrying the whole operation. Review the correctness risks.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "code-review",
+        "hard_gates": [
+          "explicit-conflict-policy",
+          "retry-idempotency-interaction",
+          "no-blind-business-retry"
+        ]
+      }
+    },
+    {
+      "id": "regression-http-retry-post",
+      "group": "regression",
+      "prompt": "Configure Microsoft.Extensions.Http.Resilience for a client that sends a non-idempotent POST payment request. The team wants automatic retries for every transient failure.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "architecture-design",
+        "hard_gates": [
+          "httpclient-lifetime",
+          "retry-safety-by-operation",
+          "idempotency-before-post-retry"
+        ]
+      }
+    },
+    {
+      "id": "regression-bounded-channel-backpressure",
+      "group": "regression",
+      "prompt": "A .NET BackgroundService uses an unbounded Channel<T> as an in-memory queue and producers can outpace consumers for hours. Review the design.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "code-review",
+        "hard_gates": [
+          "bounded-channel-when-applicable",
+          "backpressure-policy",
+          "durability-boundary"
+        ]
+      }
+    },
+    {
+      "id": "regression-observability-cardinality",
+      "group": "regression",
+      "prompt": "Add ASP.NET Core authentication and authorization metrics to production dashboards. The proposed labels include user id, tenant id, resource id, and email.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "implementation-plan",
+        "hard_gates": [
+          "auth-metrics-opportunity",
+          "metric-cardinality",
+          "privacy-pii"
+        ]
+      }
+    },
+    {
+      "id": "regression-nuget-transitive-audit",
+      "group": "regression",
+      "prompt": "A net10.0 restore reports a vulnerable transitive NuGet dependency and warnings-as-errors blocks CI. The proposal is to disable audit warnings globally. Review the fix.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "transitive-nuget-audit",
+          "preserve-audit-visibility",
+          "dependency-path-evidence",
+          "no-global-security-suppression"
+        ]
+      }
+    },
+    {
+      "id": "regression-central-transitive-pinning",
+      "group": "regression",
+      "prompt": "A packable .NET library wants CentralPackageTransitivePinningEnabled to override a transitive version. Assess the package-contract and reproducibility trade-offs.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "quick-guidance",
+        "hard_gates": [
+          "transitive-pinning-tradeoff",
+          "packable-library-nuspec-impact",
+          "sdk-dependency-identity"
+        ]
+      }
+    },
+    {
+      "id": "regression-mtp-zero-tests",
+      "group": "regression",
+      "prompt": "We migrated a .NET 10 solution to Microsoft.Testing.Platform. CI returns exit code 0 but unexpectedly discovers zero tests. Can the pipeline be considered green?",
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "mtp-runner-identity",
+          "expected-test-count",
+          "zero-tests-not-pass"
+        ]
+      }
+    },
+    {
+      "id": "regression-timeprovider-testing",
+      "group": "regression",
+      "prompt": "Write a test strategy for a .NET service with expiration and timeout rules. Current tests use Task.Delay and DateTime.UtcNow.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "implementation-plan",
+        "hard_gates": [
+          "timeprovider-boundary",
+          "fake-timeprovider",
+          "no-sleep-based-determinism"
+        ]
+      }
+    },
+    {
+      "id": "regression-native-aot-mvc",
+      "group": "regression",
+      "prompt": "Make an ASP.NET Core 10 MVC plus OData service Native AOT to reduce startup time. No compatibility investigation or published-artifact tests have been run.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "architecture-design",
+        "hard_gates": [
+          "native-aot-compatibility-matrix",
+          "mvc-odata-unsupported-baseline",
+          "aot-trimming-warnings",
+          "published-artifact-tests"
+        ]
+      }
+    },
+    {
+      "id": "regression-aspire-servicedefaults",
+      "group": "regression",
+      "prompt": "We are adopting .NET Aspire. Should we move shared domain models and business rules into ServiceDefaults so every service can reference them?",
+      "expected": {
+        "activation": true,
+        "primary_mode": "architecture-design",
+        "hard_gates": [
+          "aspire-optional-boundary",
+          "servicedefaults-operational-only",
+          "no-shared-domain-kernel-by-convenience"
+        ]
+      }
+    },
+    {
+      "id": "activation-dotnet-ai-mcp",
+      "group": "activation",
+      "prompt": "Design a .NET 10 MCP server whose AI agent can invoke tenant-scoped account tools. Use Microsoft.Extensions.AI where it adds value and define the security boundary.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "architecture-design",
+        "hard_gates": [
+          "dotnet-ai-mcp-reference",
+          "schema-validation",
+          "resource-tenant-authorization",
+          "least-privilege-tool-authority",
+          "prompt-not-auth-boundary"
+        ]
+      }
+    },
+    {
+      "id": "regression-ai-agent-reproducibility",
+      "group": "regression",
+      "prompt": "Compare two .NET AI agents and claim one is better, but the model version, system prompt, tool schemas, retrieval snapshot, and evaluator changed between runs.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "model-config-identity",
+          "tool-schema-identity",
+          "source-evaluator-freeze",
+          "no-invalid-comparison"
+        ]
+      }
+    },
+    {
+      "id": "nonactivation-generic-mcp",
+      "group": "non-activation",
+      "prompt": "Help me design an MCP server in TypeScript using the Node SDK. There is no .NET component.",
+      "expected": {
+        "activation": false,
+        "hard_gates": [
+          "do-not-force-dotnet-ai-mcp"
+        ]
+      }
+    },
+    {
+      "id": "core-modular-monolith-first",
+      "group": "core",
+      "prompt": "Design a new .NET 10 business system with one team, one release cadence, one database, and no independent scaling requirement. Should it start as microservices?",
+      "expected": {
+        "activation": true,
+        "primary_mode": "architecture-design",
+        "hard_gates": [
+          "modular-single-deployable-first",
+          "distributed-systems-cost-checklist",
+          "current-requirement-before-distribution"
+        ]
+      }
+    },
+    {
+      "id": "regression-resource-consumption-limits",
+      "group": "regression",
+      "prompt": "Review a public ASP.NET Core upload/search API with authentication but no request-size, pagination, concurrency, timeout, or rate/resource limits.",
+      "expected": {
+        "activation": true,
+        "primary_mode": "production-gate",
+        "hard_gates": [
+          "resource-consumption-limits",
+          "availability-abuse-risk",
+          "bounded-public-surface"
+        ]
+      }
     }
   ]
 }
