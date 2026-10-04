@@ -6,13 +6,15 @@
 
 ## Identity and Scope
 
+- Source class: {{source_class}}
 - Baseline tree SHA-256: {{baseline_tree_sha256}}
 - Candidate tree SHA-256: {{candidate_tree_sha256}}
+- Requested host profiles: {{host_profiles}}
 - Reproducibility ceiling: {{reproducibility_ceiling}}
 - Remaining nondeterminism: {{remaining_nondeterminism}}
 - Frozen evaluator verification: {{frozen_evaluator_verification}}
 
-## Scorecard
+## Structural Scorecard
 
 | Layer | Score | Evidence |
 |---|---:|---|
@@ -21,26 +23,31 @@
 | resource_integration | {{resource_integration_score}} | {{resource_integration_evidence}} |
 | validation_behavior | {{validation_behavior_score}} | {{validation_behavior_evidence}} |
 
+Static scores are structural evidence only.
+
 ## Gates
 
 | Gate | Status | Evidence |
 |---|---|---|
 | valid_skill_md | {{gate_valid_skill_md}} | {{gate_valid_skill_md_evidence}} |
-| specific_description | {{gate_specific_description}} | {{gate_specific_description_evidence}} |
+| portable_frontmatter | {{gate_portable_frontmatter}} | {{gate_portable_frontmatter_evidence}} |
+| activation_description | {{gate_activation_description}} | {{gate_activation_description_evidence}} |
 | output_contract | {{gate_output_contract}} | {{gate_output_contract_evidence}} |
 | validation_rules | {{gate_validation_rules}} | {{gate_validation_rules_evidence}} |
 | references_resolve | {{gate_references_resolve}} | {{gate_references_resolve_evidence}} |
 | no_placeholders | {{gate_no_placeholders}} | {{gate_no_placeholders_evidence}} |
+| portability_profiles | {{gate_portability_profiles}} | {{gate_portability_profiles_evidence}} |
 
-## Resource Inventory
+## Research Traceability
 
-{{resource_inventory}}
+- Corpus identity: {{research_corpus_identity}}
+- Findings/dispositions: {{finding_disposition_summary}}
+- Requirement/change/evaluation coverage: {{trace_coverage}}
+- Semantic trace review: {{semantic_trace_review}}
 
-## Prioritized Improvements
+## Changes
 
-1. {{improvement_1}}
-2. {{improvement_2}}
-3. {{improvement_3}}
+{{change_ledger}}
 
 ## Commands Executed
 
@@ -51,17 +58,23 @@
 ## Evidence Layers
 
 - Structural: {{structural_evidence}}
+- Semantic review: {{semantic_review_evidence}}
 - Behavioral: {{behavioral_evidence}}
 - Runtime: {{runtime_evidence}}
 - Perceptual: {{perceptual_evidence}}
+- Portability: {{portability_evidence}}
 
 ## Package Receipt
 
+- Baseline SHA-256: {{receipt_baseline_sha256}}
+- Builder SHA-256: {{builder_sha256}}
+- Validation profile: {{validation_profile}}
+- Candidate SHA-256: {{receipt_candidate_sha256}}
 - Archive SHA-256: {{archive_sha256}}
 - File count: {{archive_file_count}}
 - Atomic replacement: {{atomic_replacement}}
 - Archive validation: {{archive_validation}}
 
-## Verdict
+## Verdict and Residual Risk
 
 {{verdict}}

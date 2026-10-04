@@ -26,8 +26,8 @@ The same core is intended for:
 - Cursor Agent Skills;
 - other Agent Skills-compatible hosts.
 
-`agents/openai.yaml` is an optional OpenAI UI adapter. Other hosts may ignore it safely.
+`agents/openai.yaml` is an optional OpenAI UI adapter. Other hosts may ignore it safely. No v2 decision semantics live exclusively in that adapter.
 
-A host without command execution can still apply the semantic contract but cannot claim the Python validator ran. A host without web/connectors can still decide from supplied evidence, but must use `blocked` or `undetermined` when missing current evidence is material.
+A host without command execution can still apply the semantic contract but cannot claim the Python validator ran. A host without web/connectors can still decide from supplied evidence, but must use `blocked`, `undetermined`, or `escalate` when missing current evidence is material.
 
-Structural portability does not prove identical behavioral routing across different models. Report runtime/model behavior separately when actually measured.
+Structural portability does not prove identical behavioral routing across different models. Strong cross-host reliability claims require executed comparable trials with the same frozen scenario/evaluator intent and enough environment identity to interpret differences.

@@ -109,8 +109,9 @@ def validate_contract(data: Any) -> list[dict[str, str]]:
     for key in required:
         if key not in data:
             findings.append(diagnostic("HC002", key, "required key is missing"))
-    if data.get("schema_version") != 1:
-        findings.append(diagnostic("HC003", "schema_version", "must equal 1"))
+    schema_version = data.get("schema_version")
+    if schema_version not in {1, 2}:
+        findings.append(diagnostic("HC003", "schema_version", "must equal 1 or 2"))
     target = data.get("target")
     if not isinstance(target, dict) or not all(target.get(key) for key in ("name", "path", "baseline_tree_sha256")):
         findings.append(diagnostic("HC004", "target", "name, path, and baseline_tree_sha256 are required"))
@@ -151,6 +152,21 @@ def validate_contract(data: Any) -> list[dict[str, str]]:
         limit = acceptance.get("stagnation_limit")
         if not isinstance(limit, int) or limit < 1:
             findings.append(diagnostic("HC016", "acceptance.stagnation_limit", "must be an integer >= 1"))
+    if schema_version == 2:
+        supported_hosts = {"portable-core", "openai", "codex", "claude", "copilot", "cursor"}
+        host_profiles = data.get("host_profiles")
+        if not isinstance(host_profiles, list) or not host_profiles or "portable-core" not in host_profiles:
+            findings.append(diagnostic("HC017", "host_profiles", "schema v2 requires a non-empty host profile list containing portable-core"))
+        elif len(host_profiles) != len(set(host_profiles)) or any(item not in supported_hosts for item in host_profiles):
+            findings.append(diagnostic("HC018", "host_profiles", "contains duplicate or unsupported profiles"))
+        evidence_profiles = data.get("evidence_profiles")
+        expected_profiles = {"environment_provenance", "stochastic_evaluation", "execution_lineage"}
+        if not isinstance(evidence_profiles, dict) or set(evidence_profiles) != expected_profiles:
+            findings.append(diagnostic("HC019", "evidence_profiles", f"schema v2 requires exactly {sorted(expected_profiles)}"))
+        else:
+            for name, item in evidence_profiles.items():
+                if not isinstance(item, dict) or not isinstance(item.get("applicable"), bool) or not isinstance(item.get("reason"), str) or not item.get("reason", "").strip():
+                    findings.append(diagnostic("HC020", f"evidence_profiles.{name}", "applicable boolean and non-empty reason are required"))
     return findings
 
 

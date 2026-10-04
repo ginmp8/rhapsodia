@@ -1,43 +1,21 @@
 {
-  "target_skill": "{{target_skill}}",
+  "target_skill": "{{target_skill_name}}",
   "status": "planned",
-  "schema_version": "2.0",
+  "schema_version": "3.0",
+  "claim": "{{structural|activation|output-quality|coexistence|regression|reliability}}",
+  "coverage_contract": {
+    "required_types": ["should_activate", "should_not_activate", "ambiguous", "edge_case"],
+    "min_per_required_type": 1,
+    "requires_coexistence": false,
+    "requires_semantic_collision": false
+  },
   "scenarios": [
     {
-      "id": "A001",
-      "type": "should_activate",
-      "prompt": "{{should_activate_prompt}}",
-      "expected_behavior": "{{should_activate_expected_behavior}}",
-      "acceptance_criteria": [
-        "{{should_activate_acceptance_criterion}}"
-      ]
-    },
-    {
-      "id": "N001",
-      "type": "should_not_activate",
-      "prompt": "{{should_not_activate_prompt}}",
-      "expected_behavior": "{{should_not_activate_expected_behavior}}",
-      "acceptance_criteria": [
-        "{{should_not_activate_acceptance_criterion}}"
-      ]
-    },
-    {
-      "id": "M001",
-      "type": "ambiguous",
-      "prompt": "{{ambiguous_prompt}}",
-      "expected_behavior": "{{ambiguous_expected_behavior}}",
-      "acceptance_criteria": [
-        "{{ambiguous_acceptance_criterion}}"
-      ]
-    },
-    {
-      "id": "E001",
-      "type": "edge_case",
-      "prompt": "{{edge_case_prompt}}",
-      "expected_behavior": "{{edge_case_expected_behavior}}",
-      "acceptance_criteria": [
-        "{{edge_case_acceptance_criterion}}"
-      ]
+      "id": "{{scenario_id}}",
+      "type": "{{should_activate|should_not_activate|ambiguous|edge_case|coexistence|semantic_collision|regression|adversarial}}",
+      "prompt": "{{prompt}}",
+      "expected_behavior": "{{observable_expected_behavior}}",
+      "acceptance_criteria": ["{{criterion}}"]
     }
   ]
 }

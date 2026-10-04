@@ -1,6 +1,6 @@
 interface:
   display_name: Decision Engine
-  short_description: Typed evidence-aware Noul, Choice, and Score decisions
+  short_description: Typed evidence-aware Binary, Choice, and Score decisions
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

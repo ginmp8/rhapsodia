@@ -26,22 +26,10 @@ MARKER_PATTERNS = [
     re.compile("this is a " + "placeholder", re.IGNORECASE),
 ]
 EXCLUDED_DIR_NAMES = {
-    ".git",
-    "__pycache__",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".ruff_cache",
-    "tmp",
-    ".tmp",
-    "reports",
-    "test-results",
-    "benchmark-reports",
+    ".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
+    "tmp", ".tmp", "reports", "test-results", "benchmark-reports",
 }
-EXCLUDED_FILE_NAMES = {
-    ".DS_Store",
-    "test-results.json",
-    "hardening-audit.json",
-}
+EXCLUDED_FILE_NAMES = {".DS_Store", "test-results.json", "hardening-audit.json"}
 SENSITIVE_NAME_PATTERNS = [
     re.compile(r"(^|[-_.])secret(s)?($|[-_.])", re.IGNORECASE),
     re.compile(r"(^|[-_.])credential(s)?($|[-_.])", re.IGNORECASE),
@@ -49,7 +37,11 @@ SENSITIVE_NAME_PATTERNS = [
     re.compile(r"private[-_.]?key", re.IGNORECASE),
     re.compile(r"^\.env($|\.)", re.IGNORECASE),
 ]
-ZIP_FORMAT_VERSION = 1
+PORTABLE_FRONTMATTER_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
+SUPPORTED_PROFILES = {"portable", "openai", "codex", "claude", "copilot", "cursor"}
+NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
+ZIP_FORMAT_VERSION = 2
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 
 
@@ -60,45 +52,119 @@ def read_text(path: Path) -> str:
         return path.read_text(encoding="latin-1")
 
 
-def parse_frontmatter(text: str) -> tuple[dict[str, str], list[str]]:
+def _unquote(value: str) -> str:
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        return value[1:-1]
+    return value
+
+
+def parse_frontmatter(text: str) -> tuple[dict[str, Any], list[str]]:
+    """Parse the portable frontmatter subset without requiring third-party YAML."""
     errors: list[str] = []
-    if not text.startswith("---\n"):
+    normalized = text.replace("\r\n", "\n")
+    if not normalized.startswith("---\n"):
         return {}, ["SKILL.md missing opening frontmatter fence"]
-    end = text.find("\n---", 4)
+    end = normalized.find("\n---", 4)
     if end == -1:
         return {}, ["SKILL.md missing closing frontmatter fence"]
-    raw_lines = text[4:end].strip().splitlines()
-    data: dict[str, str] = {}
-    current_key: str | None = None
-    for line in raw_lines:
+    lines = normalized[4:end].splitlines()
+    data: dict[str, Any] = {}
+    index = 0
+    while index < len(lines):
+        line = lines[index]
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
+            index += 1
             continue
-        if re.match(r"^[A-Za-z_][A-Za-z0-9_-]*:\s*", line):
-            key, value = line.split(":", 1)
-            current_key = key.strip()
-            data[current_key] = value.strip().strip('"').strip("'")
-        elif current_key:
-            data[current_key] += " " + stripped.strip('"').strip("'")
-        else:
+        if line[:1].isspace() or ":" not in line:
             errors.append(f"unparseable frontmatter line: {stripped}")
+            index += 1
+            continue
+        key, raw = line.split(":", 1)
+        key = key.strip()
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_-]*", key):
+            errors.append(f"invalid frontmatter key: {key!r}")
+            index += 1
+            continue
+        if key in data:
+            errors.append(f"duplicate frontmatter key: {key}")
+        raw = raw.strip()
+        if raw in {">", "|"}:
+            block: list[str] = []
+            index += 1
+            while index < len(lines) and (not lines[index].strip() or lines[index][:1].isspace()):
+                block.append(lines[index].strip())
+                index += 1
+            data[key] = "\n".join(block) if raw == "|" else " ".join(x for x in block if x)
+            continue
+        if raw == "":
+            nested: dict[str, str] = {}
+            index += 1
+            while index < len(lines):
+                child = lines[index]
+                if not child.strip() or child.lstrip().startswith("#"):
+                    index += 1
+                    continue
+                if not child[:1].isspace():
+                    break
+                child_text = child.strip()
+                if ":" not in child_text:
+                    errors.append(f"unparseable nested frontmatter line under {key}: {child_text}")
+                    index += 1
+                    continue
+                child_key, child_value = child_text.split(":", 1)
+                child_key = child_key.strip()
+                if not child_key or child_key in nested:
+                    errors.append(f"invalid or duplicate nested key under {key}: {child_key!r}")
+                nested[child_key] = _unquote(child_value)
+                index += 1
+            data[key] = nested
+            continue
+        data[key] = _unquote(raw)
+        index += 1
     return data, errors
 
 
-def validate_frontmatter(text: str) -> list[str]:
+def validate_frontmatter(text: str, root_name: str | None = None, profile: str = "portable") -> list[str]:
     data, errors = parse_frontmatter(text)
-    keys = set(data)
-    expected = {"name", "description"}
-    if keys != expected:
-        errors.append(f"frontmatter keys must be exactly {sorted(expected)}, found {sorted(keys)}")
-    for key in expected:
-        value = data.get(key, "")
-        if not value:
-            errors.append(f"frontmatter {key} is empty")
-        elif value != value.lower():
-            errors.append(f"frontmatter {key} must be lowercase")
-    if data.get("description") and len(data["description"].split()) < 25:
-        errors.append("frontmatter description is too short for reliable activation")
+    if profile not in SUPPORTED_PROFILES:
+        errors.append(f"unsupported validation profile: {profile}")
+        return errors
+    name = data.get("name")
+    description = data.get("description")
+    if not isinstance(name, str) or not name:
+        errors.append("frontmatter name is required and must be a string")
+    else:
+        if len(name) > 64 or not NAME_RE.fullmatch(name):
+            errors.append("frontmatter name must be lowercase hyphen-case, 1-64 characters")
+        if root_name is not None and name != root_name:
+            errors.append(f"frontmatter name {name!r} does not match package root {root_name!r}")
+    if not isinstance(description, str) or not description.strip():
+        errors.append("frontmatter description is required and must be a non-empty string")
+    elif len(description) > 1024:
+        errors.append("frontmatter description must be at most 1024 characters")
+    license_value = data.get("license")
+    if license_value is not None and (not isinstance(license_value, str) or not license_value.strip()):
+        errors.append("frontmatter license must be a non-empty string when present")
+    compatibility = data.get("compatibility")
+    if compatibility is not None:
+        if not isinstance(compatibility, str) or not compatibility.strip():
+            errors.append("frontmatter compatibility must be a non-empty string when present")
+        elif len(compatibility) > 500:
+            errors.append("frontmatter compatibility must be at most 500 characters")
+    metadata = data.get("metadata")
+    if metadata is not None:
+        if not isinstance(metadata, dict):
+            errors.append("frontmatter metadata must be a mapping when present")
+        elif not all(isinstance(k, str) and k and isinstance(v, str) for k, v in metadata.items()):
+            errors.append("frontmatter metadata keys and values must be strings")
+    allowed_tools = data.get("allowed-tools")
+    if allowed_tools is not None and (not isinstance(allowed_tools, str) or not allowed_tools.strip()):
+        errors.append("frontmatter allowed-tools must be a non-empty string when present")
+    unknown = sorted(set(data) - PORTABLE_FRONTMATTER_KEYS)
+    if unknown and profile == "portable":
+        errors.append(f"portable profile has unsupported frontmatter keys: {unknown}")
     return errors
 
 
@@ -142,8 +208,6 @@ def should_exclude(rel_path: str) -> tuple[bool, str | None]:
     return False, None
 
 
-
-
 def _is_within(path: Path, parent: Path) -> bool:
     try:
         path.relative_to(parent)
@@ -153,7 +217,6 @@ def _is_within(path: Path, parent: Path) -> bool:
 
 
 def validate_output_paths(target: Path, output: Path, json_output: Path | None = None) -> list[str]:
-    """Reject delivery paths that can mutate or contaminate the frozen target tree."""
     target = target.resolve()
     output = output.resolve()
     errors: list[str] = []
@@ -167,8 +230,8 @@ def validate_output_paths(target: Path, output: Path, json_output: Path | None =
             errors.append("package output and JSON output must be different paths")
     return errors
 
+
 def find_symlinks(target: Path) -> list[str]:
-    """Return symlink paths because packages must not read outside target scope."""
     links: list[str] = []
     for path in sorted(target.rglob("*")):
         if path.is_symlink():
@@ -217,7 +280,6 @@ def tree_sha256(target: Path, files: list[Path]) -> str:
 
 
 def ecosystem_tree_sha256(target: Path) -> str:
-    """Return the current cross-skill tree identity used by integration gates."""
     noise_dirs = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
     rows: list[dict[str, object]] = []
     for path in sorted(target.rglob("*")):
@@ -237,9 +299,7 @@ def scan_folder_markers(target: Path, files: list[Path]) -> list[dict[str, Any]]
     hits: list[dict[str, Any]] = []
     for path in files:
         rel = path.relative_to(target).as_posix()
-        if path.suffix.lower() not in TEXT_SUFFIXES:
-            continue
-        if rel.startswith("assets/templates/"):
+        if path.suffix.lower() not in TEXT_SUFFIXES or rel.startswith("assets/templates/"):
             continue
         text = read_text(path)
         for line_no, line in enumerate(text.splitlines(), start=1):
@@ -250,7 +310,8 @@ def scan_folder_markers(target: Path, files: list[Path]) -> list[dict[str, Any]]
     return hits
 
 
-def validate_folder(target: Path) -> list[str]:
+def validate_folder(target: Path, profile: str = "portable") -> list[str]:
+    target = Path(target).resolve()
     errors: list[str] = []
     if not target.exists() or not target.is_dir():
         return [f"target is not a directory: {target}"]
@@ -260,9 +321,8 @@ def validate_folder(target: Path) -> list[str]:
     skill_md = target / "SKILL.md"
     if skill_md.exists():
         skill_text = read_text(skill_md)
-        errors.extend(validate_frontmatter(skill_text))
-        refs = extract_refs(skill_text)
-        for ref in sorted(refs):
+        errors.extend(validate_frontmatter(skill_text, root_name=target.name, profile=profile))
+        for ref in sorted(extract_refs(skill_text)):
             candidate = target / ref
             if not candidate.exists():
                 errors.append(f"referenced path missing: {ref}")
@@ -276,12 +336,34 @@ def validate_folder(target: Path) -> list[str]:
     return errors
 
 
-def build_package(target: Path, output: Path, validate: bool) -> dict[str, Any]:
+def _skill_package_name(target: Path) -> str:
+    data, errors = parse_frontmatter(read_text(target / "SKILL.md"))
+    if errors or not isinstance(data.get("name"), str) or not data["name"]:
+        raise ValueError("cannot determine package root from valid SKILL.md name")
+    return data["name"]
+
+
+def build_package(
+    target: Path,
+    output: Path,
+    validate: bool,
+    profile: str = "portable",
+    baseline_tree_sha256: str | None = None,
+) -> dict[str, Any]:
+    target = target.resolve()
+    output = output.resolve()
+    if baseline_tree_sha256 is not None and not HEX64_RE.fullmatch(baseline_tree_sha256):
+        raise ValueError("baseline_tree_sha256 must be a lowercase SHA-256 hex digest")
+    if validate:
+        folder_errors = validate_folder(target, profile=profile)
+        if folder_errors:
+            raise ValueError("target folder validation failed: " + "; ".join(folder_errors[:5]))
     files, excluded = iter_package_files(target)
     output.parent.mkdir(parents=True, exist_ok=True)
-    root_name = target.name
+    root_name = _skill_package_name(target)
     candidate_tree_sha256 = tree_sha256(target, files)
     target_tree_sha256 = ecosystem_tree_sha256(target)
+    builder_sha256 = sha256_file(Path(__file__).resolve())
     fd, temp_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".tmp", dir=output.parent)
     os.close(fd)
     temp_path = Path(temp_name)
@@ -297,7 +379,7 @@ def build_package(target: Path, output: Path, validate: bool) -> dict[str, Any]:
                 info.external_attr = 0o100644 << 16
                 info.flag_bits |= 0x800
                 zf.writestr(info, file_path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
-        pre_replace_validation = validate_archive(temp_path) if validate else {"status": "not_run"}
+        pre_replace_validation = validate_archive(temp_path, profile=profile) if validate else {"status": "not_run"}
         if pre_replace_validation.get("status") not in {"pass", "not_run"}:
             raise ValueError("temporary archive validation failed: " + "; ".join(pre_replace_validation.get("errors", [])[:5]))
         package_sha256 = sha256_file(temp_path)
@@ -309,7 +391,7 @@ def build_package(target: Path, output: Path, validate: bool) -> dict[str, Any]:
             shutil.copyfile(output, backup_path)
         os.replace(temp_path, output)
         committed = True
-        commit_validation = validate_archive(output) if validate else {"status": "not_run"}
+        commit_validation = validate_archive(output, profile=profile) if validate else {"status": "not_run"}
         if commit_validation.get("status") not in {"pass", "not_run"}:
             if backup_path is not None and backup_path.exists():
                 os.replace(backup_path, output)
@@ -328,6 +410,9 @@ def build_package(target: Path, output: Path, validate: bool) -> dict[str, Any]:
             "size_bytes": size_bytes,
             "candidate_tree_sha256": candidate_tree_sha256,
             "target_tree_sha256": target_tree_sha256,
+            "baseline_tree_sha256": baseline_tree_sha256,
+            "builder_sha256": builder_sha256,
+            "validation_profile": profile,
             "package_sha256": package_sha256,
             "zip_format_version": ZIP_FORMAT_VERSION,
             "zip_timestamp": "1980-01-01T00:00:00",
@@ -352,7 +437,7 @@ def read_archive_text(zf: zipfile.ZipFile, name: str) -> str:
         return data.decode("latin-1")
 
 
-def validate_archive(zip_path: Path) -> dict[str, Any]:
+def validate_archive(zip_path: Path, profile: str = "portable") -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     entries: list[str] = []
@@ -383,7 +468,7 @@ def validate_archive(zip_path: Path) -> dict[str, Any]:
                     errors.append(f"blocked path included: {entry} ({reason})")
             if skill_name in entries:
                 skill_text = read_archive_text(zf, skill_name)
-                errors.extend(validate_frontmatter(skill_text))
+                errors.extend(validate_frontmatter(skill_text, root_name=root, profile=profile))
                 entry_set = set(entries)
                 for ref in sorted(extract_refs(skill_text)):
                     archived_ref = f"{root}/{ref}"
@@ -406,6 +491,7 @@ def validate_archive(zip_path: Path) -> dict[str, Any]:
         "status": "pass" if not errors else "fail",
         "errors": errors,
         "warnings": warnings,
+        "profile": profile,
         "file_count": len(entries),
         "size_bytes": zip_path.stat().st_size if zip_path.exists() else 0,
     }
@@ -417,13 +503,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", help="Path to write skill.zip.")
     parser.add_argument("--validate", action="store_true", help="Validate the folder before packaging and the zip after packaging.")
     parser.add_argument("--validate-only", help="Validate an existing package zip without creating a new one.")
+    parser.add_argument("--profile", choices=sorted(SUPPORTED_PROFILES), default="portable", help="Validation profile. Default: portable.")
+    parser.add_argument("--baseline-tree-sha256", help="Optional immutable baseline SHA-256 to bind into the receipt.")
     parser.add_argument("--json-output", help="Optional JSON evidence output path.")
     args = parser.parse_args(argv)
 
     result: dict[str, Any]
     if args.validate_only:
         zip_path = Path(args.validate_only).resolve()
-        archive_result = validate_archive(zip_path)
+        archive_result = validate_archive(zip_path, profile=args.profile)
         result = {"mode": "validate-only", "archive": archive_result, "zip_path": str(zip_path)}
         status = archive_result["status"]
     else:
@@ -434,51 +522,50 @@ def main(argv: list[str] | None = None) -> int:
         output = Path(args.output).resolve()
         json_output_path = Path(args.json_output).resolve() if args.json_output else None
         output_errors = validate_output_paths(target, output, json_output_path)
-        folder_errors = validate_folder(target) if args.validate else []
+        folder_errors = validate_folder(target, profile=args.profile) if args.validate else []
         if output_errors or folder_errors:
             result = {"mode": "package", "status": "fail", "output_errors": output_errors, "folder_errors": folder_errors, "target": str(target), "output": str(output)}
             status = "fail"
         else:
             try:
-                package_info = build_package(target, output, args.validate)
+                package_info = build_package(
+                    target,
+                    output,
+                    args.validate,
+                    profile=args.profile,
+                    baseline_tree_sha256=args.baseline_tree_sha256,
+                )
             except (OSError, ValueError, zipfile.BadZipFile) as exc:
-                result = {
-                    "mode": "package",
-                    "status": "fail",
-                    "target": str(target),
-                    "output": str(output),
-                    "errors": [str(exc)],
-                    "atomic_replace": False,
-                }
+                result = {"mode": "package", "status": "fail", "target": str(target), "output": str(output), "errors": [str(exc)], "atomic_replace": False}
                 status = "fail"
                 package_info = None
             if package_info is None:
                 archive_result = {"status": "not_run"}
             else:
-                archive_result = validate_archive(output) if args.validate else {"status": "not_run"}
+                archive_result = validate_archive(output, profile=args.profile) if args.validate else {"status": "not_run"}
                 status = "pass" if archive_result.get("status") in {"pass", "not_run"} else "fail"
-                result = {
-                    "mode": "package",
-                    "status": status,
-                    "target": str(target),
-                    "package": package_info,
-                    "archive": archive_result,
+                receipt = {
+                    "schema_version": 1,
+                    "receipt_version": 3,
+                    "stage": "committed",
+                    "candidate_tree_sha256": package_info["candidate_tree_sha256"],
                     "target_tree_sha256": package_info["target_tree_sha256"],
-                    "receipt": {
-                        "schema_version": 1,
-                        "receipt_version": 2,
-                        "stage": "committed",
-                        "candidate_tree_sha256": package_info["candidate_tree_sha256"],
-                        "target_tree_sha256": package_info["target_tree_sha256"],
-                        "package_sha256": package_info["package_sha256"],
-                        "file_count": package_info["file_count"],
-                        "zip_format_version": package_info["zip_format_version"],
-                        "atomic_replace": package_info["atomic_replace"],
-                        "last_good_preserved_on_failure": package_info["last_good_preserved_on_failure"],
-                        "recovery": package_info["recovery"],
-                        "validation_status": archive_result.get("status"),
-                        "output": package_info["output"],
-                    },
+                    "baseline_tree_sha256": package_info["baseline_tree_sha256"],
+                    "builder_sha256": package_info["builder_sha256"],
+                    "validation_profile": package_info["validation_profile"],
+                    "package_sha256": package_info["package_sha256"],
+                    "file_count": package_info["file_count"],
+                    "zip_format_version": package_info["zip_format_version"],
+                    "atomic_replace": package_info["atomic_replace"],
+                    "last_good_preserved_on_failure": package_info["last_good_preserved_on_failure"],
+                    "recovery": package_info["recovery"],
+                    "validation_status": archive_result.get("status"),
+                    "output": package_info["output"],
+                }
+                result = {
+                    "mode": "package", "status": status, "target": str(target),
+                    "package": package_info, "archive": archive_result,
+                    "target_tree_sha256": package_info["target_tree_sha256"], "receipt": receipt,
                 }
     if args.json_output:
         out = Path(args.json_output)

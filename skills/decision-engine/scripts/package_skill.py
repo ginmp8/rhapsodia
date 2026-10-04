@@ -68,7 +68,7 @@ def main():
             bad=z.testzip()
             if bad: raise ValueError(f'archive CRC failed: {bad}')
         archive_hash=sha256_file(zip_tmp)
-        payload={"receipt_version":1,"status":"committed","stage":"validated-staged","target":"decision-engine","candidate_sha256":candidate_hash,"archive_sha256":archive_hash,"file_count":len(entries),"validation":"pass","archive_format":"zip-stored-normalized-v1","atomic_replace":True,"last_good_preserved_on_failure":True}
+        payload={"receipt_version":1,"status":"committed","stage":"committed","target":"decision-engine","candidate_sha256":candidate_hash,"archive_sha256":archive_hash,"file_count":len(entries),"validation":"pass","archive_format":"zip-stored-normalized-v1","atomic_replace":True,"last_good_preserved_on_failure":True}
         receipt_tmp.write_text(json.dumps(payload,indent=2,sort_keys=True)+"\n",encoding='utf-8')
         out_backup=tmpdir/'old.zip' if output.exists() else None; rec_backup=tmpdir/'old.receipt' if receipt.exists() else None
         if out_backup: os.replace(output,out_backup)

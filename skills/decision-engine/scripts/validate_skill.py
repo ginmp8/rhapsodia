@@ -36,7 +36,7 @@ REQUIRED={
  'VERSION','SKILL.md','agents/openai.yaml','schemas/decision-envelope.schema.json',
  'references/behavior-contract.md','references/control-placement.md','references/decision-contract.md',
  'references/evaluation-protocol.md','references/evidence-and-confidence.md','references/host-portability.md',
- 'references/maintenance-and-evidence.md','references/versioning-and-compatibility.md',
+ 'references/maintenance-and-evidence.md','references/versioning-and-compatibility.md','references/migration-v1-to-v2.md',
  'assets/templates/decision-envelope.json.template','examples/examples.md',
  'evals/activation-scenarios.json','evals/decision-scenarios.json',
  'scripts/validate_decision.py','scripts/validate_evals.py','scripts/validate_skill.py','scripts/package_skill.py',
@@ -105,7 +105,11 @@ def main():
 
     schema=parsed.get('schemas/decision-envelope.schema.json',{})
     if schema.get('$schema')!='https://json-schema.org/draft/2020-12/schema': add(errors,'SK042','decision schema must use JSON Schema 2020-12')
-    if schema.get('properties',{}).get('contract_version',{}).get('const')!='decision-engine/1': add(errors,'SK043','schema contract_version must be decision-engine/1')
+    if schema.get('properties',{}).get('contract_version',{}).get('const')!='decision-engine/2': add(errors,'SK043','schema contract_version must be decision-engine/2')
+    decision_schema=schema.get('properties',{}).get('decision',{})
+    branches=decision_schema.get('oneOf',[]) if isinstance(decision_schema,dict) else []
+    decision_types={b.get('properties',{}).get('type',{}).get('const') for b in branches if isinstance(b,dict)}
+    if decision_types != {'binary','choice','score'}: add(errors,'SK044',f'decision schema types must be binary, choice, score; got {sorted(x for x in decision_types if isinstance(x,str))}')
 
     eval_errors=[]
     act=parsed.get('evals/activation-scenarios.json',{})

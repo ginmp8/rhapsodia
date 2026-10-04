@@ -1,47 +1,27 @@
 # Mature Skill Patterns
 
-Use when translating mature workflow-skill patterns into a target skill without relying on an external named skill or prior implementation.
-
 ## Preserve
 
-### 1. Scope boundary
+1. **Scope/authority boundary:** owned artifact family, explicit non-goals, handoffs, protected evidence, and unknowns.
+2. **Mode before work:** select one primary mode from intent/inputs/outputs/closure; use a mode matrix only when multiple modes genuinely exist.
+3. **Portable core:** one host-neutral Agent Skills workflow; isolate host adapters and discovery/install concerns.
+4. **Progressive loading:** keep `SKILL.md` as control plane; move conditional detail/rubrics/schemas to references when they are actually needed.
+5. **Need-aware resources:** scripts/references/templates/examples/evals are optional. Add them only when they reduce variance, encode a stable artifact, or produce useful evidence; presence alone is not maturity.
+6. **Deterministic helpers:** use scripts for fragile/repeated mechanics, not as ornamental wrappers around clear instructions.
+7. **Template-backed artifacts:** keep reusable templates operationally connected to a fill/copy/writer/validator path when their structure matters.
+8. **Truthful closure:** exact commands, gate states, files changed, evidence layer, blockers, and residual risk before completion claims.
+9. **Stop/rollback:** explicit conditions preventing invented facts, unsafe writes, evaluator weakening, or invalid delivery.
+10. **Research traceability when applicable:** research-backed changes need evidence→finding→requirement→change→evaluation justification and semantic review.
 
-State owned artifact/task family, explicit non-goals, handoff points, and unknowns instead of inventing evidence.
+## Avoid
 
-### 2. Mode before work
-
-Select one primary mode from user intent, inputs, outputs, and final validators. Add a matrix when the target supports audit, generate, refine, validate, package, or execute. Include intent, mode, inputs, outputs, and closure check.
-
-### 3. Path and ownership rules
-
-For writing skills, define generated-artifact locations, read-only evidence, controlled records, and paths that must never be duplicated ad hoc.
-
-### 4. Progressive loading
-
-Keep `SKILL.md` as control plane. Move detailed mode rules, schemas, template rules, examples, and rubrics to `references/`. Keep fillable skeletons in `assets/templates/`. Link each reference from `SKILL.md` with a clear load condition.
-
-### 5. Template-backed artifacts
-
-Treat `assets/templates/` as operational skeletons. Keep reusable templates there; reference each from `SKILL.md`, a reference, or writer/validator script; state when the model may fill/copy directly versus use a script; add writer/updater/validator scripts when structure matters. Do not delete a useful template only because no script reads it; integrate first. Validate strict outputs.
-
-### 6. Deterministic helpers
-
-Use scripts for fragile or repetitive tasks: validator selection, template scaffolding, schema-safe updates, file syncing, cross-file consistency.
-
-### 7. Truthful closure
-
-Require exact commands, pass/fail outcomes, files changed, gaps, and validation evidence before completion claims.
-
-### 8. Stop conditions
-
-Name blockers that prevent invented facts, duplicate structures, unsafe writes, or invalid state.
-
-## Remove anti-patterns
-
-- Long `SKILL.md` carrying every rule/example.
-- Resources not referenced by workflow.
-- Scripts without CLI, deterministic output, or representative run.
-- Templates copied/filled without workflow reference, placeholder rules, validation expectation, or rationale.
-- Vague output formats instead of contracts.
-- Benchmark scores without frozen fixtures or execution evidence.
-- Activation guidance hidden only in the body instead of frontmatter.
+- long `SKILL.md` carrying every branch/example;
+- optional resources added only to improve a score;
+- resources with no use/loading/integration path;
+- target-owned package builder copied into every skill despite no target-specific need;
+- universal scenario-count requirements unrelated to a claim;
+- host-private dependencies in the semantic core;
+- structural scores presented as behavioral proof;
+- benchmark results without frozen evaluators/executed evidence;
+- post-pass cosmetic edits without revalidation;
+- research prose copied into the target without an operational requirement.
