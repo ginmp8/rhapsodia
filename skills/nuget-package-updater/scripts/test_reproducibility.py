@@ -79,7 +79,7 @@ def test_lock_pin_identity(tmp: Path) -> None:
     assert_true(identity1 == identity2 and records1 == records2, "lock identity must be stable")
 
 
-def test_multiple_feed_precedence(tmp: Path) -> None:
+def test_multiple_feed_ambiguity(tmp: Path) -> None:
     original_auto = nuget.fetch_autocomplete_versions
     original_reg = nuget.fetch_registration_metadata
     original_vuln = nuget.fetch_vulnerability_info_for_package
@@ -90,7 +90,10 @@ def test_multiple_feed_precedence(tmp: Path) -> None:
         }
         nuget.fetch_vulnerability_info_for_package = lambda package, source, timeout: []
         items, _ = nuget.fetch_candidates("Pkg", ["https://first.example/v3/index.json", "https://second.example/v3/index.json"], 1, None, False)
-        assert_true(items[0].source == "https://first.example/v3/index.json", "first configured feed must win exact-version tie")
+        assert_true(len(items) == 1 and len(items[0].source_candidates) == 2, "all eligible exact-version sources must be preserved")
+        args = args_for(tmp)
+        rejection = nuget.safety_rejection_reason(items[0], args)
+        assert_true(rejection is not None and rejection.code == "candidate-source-ambiguous", str(rejection))
     finally:
         nuget.fetch_autocomplete_versions = original_auto
         nuget.fetch_registration_metadata = original_reg
@@ -261,7 +264,7 @@ def main() -> int:
         for index, test in enumerate([
             test_candidate_safety,
             test_lock_pin_identity,
-            test_multiple_feed_precedence,
+            test_multiple_feed_ambiguity,
             test_metadata_snapshot_replay_and_miss,
             test_expected_receipt_detects_metadata_change,
             test_framework_restore_failure_is_stable,
