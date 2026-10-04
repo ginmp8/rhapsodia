@@ -16,6 +16,7 @@ When an upstream orchestrator delegates a bounded task, the caller remains the g
 | package architecture | `skill-package-architecture-review` | cohesion, modes/router/split, resource layout | package architecture decision |
 | activation | `skill-prompt-and-activation-review` | trigger, boundaries, stop conditions, output contract | activation/boundary quality |
 | reproducibility | `reproducibility-engineer` | material controllable variance exists | contracts, deterministic controls, validators, freeze/receipt mechanisms |
+| research traceability | `research-traceability` | external research materially determines skill requirements or changes | source -> finding -> requirement/change -> evaluation accounting |
 | documentation | `documentation-quality` | references, examples, usage docs need quality review | human-readable documentation |
 | testing | `skill-testing-and-validation` | scripts, validators, packagers, eval files need execution evidence | test/validator evidence and minimal repairs |
 | security | `security-and-governance-review` | scripts, tool authority, data, dependencies, or governance risk | security/governance findings |
@@ -38,10 +39,11 @@ For ordinary new skills:
 3. activation/boundary review;
 4. draft the package and define a small realistic evaluation set;
 5. reproducibility decision gate from `references/reproducibility-routing.md`;
-6. use `references/evaluation-and-generalization.md` to select `without-skill` baseline when meaningful, separate objective from subjective evaluation, and protect against eval-specific fixes;
-7. documentation, testing, security, consistency, cleanup, and token efficiency only as applicable;
-8. expand to held-out scenarios before strong behavioral or activation-improvement claims;
-9. advisory change gate only when useful for a net-new package.
+6. when external research materially drives requirements, use `research-traceability` before mutation/acceptance so source-backed findings are accounted for; otherwise keep lightweight provenance local;
+7. use `references/evaluation-and-generalization.md` to select `without-skill` baseline when meaningful, separate objective from subjective evaluation, and protect against eval-specific fixes;
+8. documentation, testing, security, consistency, cleanup, and token efficiency only as applicable;
+9. expand to held-out scenarios before strong behavioral or activation-improvement claims;
+10. advisory change gate only when useful for a net-new package.
 
 Do not run `reproducibility-engineer` automatically on every new skill.
 
@@ -53,12 +55,13 @@ Recommended order:
 2. architecture and activation review;
 3. reproducibility decision gate;
 4. `reproducibility-engineer` in the selected mode when applicable;
-5. code/documentation/testing/security/consistency/cleanup/token passes as needed;
-6. harness and benchmark when paired baseline/candidate execution, holdouts, or measurement are requested;
-7. use `references/evaluation-and-generalization.md` to reject eval-specific fixes and separate objective from subjective evidence;
-8. hypothesis discovery and measured improvement only when a real optimization loop is warranted;
-9. `skill-change-gate` before acceptance;
-10. hardening/final validation when requested or material.
+5. when a bounded research corpus materially determines proposed changes, run `research-traceability` before selecting or accepting research-backed mutations;
+6. code/documentation/testing/security/consistency/cleanup/token passes as needed;
+7. harness and benchmark when paired baseline/candidate execution, holdouts, or measurement are requested;
+8. use `references/evaluation-and-generalization.md` to reject eval-specific fixes and separate objective from subjective evidence;
+9. hypothesis discovery and measured improvement only when a real optimization loop is warranted;
+10. `skill-change-gate` before acceptance;
+11. hardening/final validation when requested or material.
 
 ## Reproducibility Handoff Rules
 

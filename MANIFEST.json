@@ -7,8 +7,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "1ce099dc8a17c1a5bffeed7332b32feee2c791649e84c0a90e63339f1dcb2681",
-      "size": 29122
+      "sha256": "6a22c53dc6394b83ae1c8017aa4d0013fb65eb618691edc38ec45027cf895514",
+      "size": 28639
     },
     {
       "path": "agents/magia.agent.md",
@@ -57,8 +57,8 @@
     },
     {
       "path": "docs/agents/SOURCES.md",
-      "sha256": "a8e8b53a4757bfa02c96c9363494197f030aa8590b219297d603f8b237384ac8",
-      "size": 8604
+      "sha256": "eb1840709b9674c53c5bf84fcc1e487ee25ad2d165f1229ba99c41bf87ae0267",
+      "size": 8498
     },
     {
       "path": "docs/agents/contracts/rhapsodia-agent-system.json",
