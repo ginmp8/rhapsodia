@@ -44,6 +44,8 @@ Do not own:
 10. Preserve planner, input, accepted-plan, execution-trace, and evaluator identities separately when material.
 11. Use native host capabilities when available; serial execution is the default safe degradation.
 12. Missing required capability, authority, or evidence causes `blocked`/`escalated`, never invented support.
+13. Persisted ledgers, summaries, and feedback are evidence claims, not operational truth; revalidate mutable live state when the plan requires it.
+14. Keep mechanically enforceable guarantees in deterministic validators/scripts where practical; prompts express judgment, not guarantees.
 
 ## Required inputs
 
@@ -79,7 +81,7 @@ Choose one primary strategy. Compose stages only when each added stage solves a 
 | `bounded-loop` | an objective predicate requires iteration | termination is subjective or unbounded |
 | `gated-convergence` | small increments must prove required behavior/review gates before downstream work may consume them | a single bounded worker can finish and validate the task directly |
 
-Load [references/orchestration-patterns.md](references/orchestration-patterns.md) for composition rules and anti-patterns.
+Load [references/orchestration-patterns.md](references/orchestration-patterns.md) for composition rules and anti-patterns. For reference-backed checkpoint work, also load [references/reference-grounded-convergence.md](references/reference-grounded-convergence.md).
 
 ## Portable plan contracts
 
@@ -124,14 +126,14 @@ A supporting skill never becomes the lifecycle owner and never grants authority.
 1. **Normalize the objective.** State the authorized owner, terminal outcome, and success criteria.
 2. **Resolve capabilities.** Record actual runtime primitives; do not infer support from another host.
 3. **Map work.** Identify units, work source, dependencies, shared reads, writes, barriers, and isolation needs. Consume an existing Context Architect parallelization map when available.
-4. **Select the least-complex strategy.** Use a bounded decision helper only when alternatives are explicit and genuinely tied; it does not own orchestration.
+4. **Select the least-complex strategy.** Use a bounded decision helper only when alternatives are explicit and genuinely tied; it does not own orchestration. When a high-fidelity reference exists, prefer bounded direct reference slices over a large synthesized mega-spec.
 5. **Build the smallest contract.** Use `workflow-plan/v1` unless the task needs checkpoint promotion; use `workflow-plan/v2` with `gated-convergence` only for that case. Keep the authority envelope unchanged.
 6. **Validate mechanically.** Reject invalid authority, conflicts, cycles, missing identities, or budget violations before dispatch.
 7. **Freeze the accepted plan.** Record the validator-provided plan hash before measured/repeatability runs.
 8. **Compile to native capabilities.** Use the strongest safe native host mechanism. Apply only declared degradation.
 9. **Execute centrally.** Keep orchestration state in the parent/controller; workers receive only bounded context and authority.
-10. **Verify independently when required.** Do not leak producer reasoning/history or evaluator-only answers into an independence claim. For gated convergence, bind every gate result to the current candidate identity.
-11. **Promote only proven checkpoints.** A failed, blocked, invalid, stale, or not-run required gate cannot be overridden. Repair within budget and rerun affected gates; downstream checkpoints wait for promoted dependencies. Carry forward only explicitly accepted feedback/evidence with source identity.
+10. **Verify independently when required.** Do not leak producer reasoning/history or evaluator-only answers into an independence claim. For gated convergence, bind every gate result to the current candidate identity. When reference-grounded, derive/freeze checkpoint oracle identity before production and prefer fresh-context repair/review iterations.
+11. **Promote only proven checkpoints.** A failed, blocked, invalid, stale, or not-run required gate cannot be overridden. When declared, treat `gate_ids` as binding execution order. Repair within budget and rerun affected gates; downstream checkpoints wait for promoted dependencies. Carry forward only explicitly accepted feedback/evidence with source identity. Revalidate mutable live state according to the accepted freshness policy.
 12. **Terminate by evidence.** Stop on success predicate, explicit blocker/escalation, or exhausted budget.
 13. **Report plan vs run.** Keep planned topology, actual trace, and final result identity separate.
 
