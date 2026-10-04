@@ -8,6 +8,8 @@
 - Baseline verdict: {{baseline_verdict}}
 - Baseline blockers: {{baseline_blockers}}
 - Agent/runtime context: {{runtime_context}}
+- Runtime identity / comparability: {{runtime_identity}}
+- Evaluation plan: {{evaluation_plan}}
 - Material source manifest: {{source_manifest}}
 
 ## 2. Research and context summary
@@ -76,6 +78,11 @@
 ## 9. Before and after comparison
 
 {{before_after_comparison}}
+
+- Tri-arm / Skill Lift evidence: {{tri_arm_evidence}}
+- Repeated trials / stochastic evidence: {{stochastic_evidence}}
+- Promotion holdout / contamination: {{holdout_contamination}}
+- Capability delta: {{capability_delta}}
 
 ## 10. Final freeze and evidence integrity
 

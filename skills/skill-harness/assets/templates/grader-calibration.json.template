@@ -1,0 +1,19 @@
+{
+  "profile_version": 1,
+  "grader_identity": "grader-config-or-hash",
+  "reference_set_identity": "human-reference-set-or-hash",
+  "sample": {"total": 20, "agreements": 18, "abstentions": 1},
+  "bias_probes": {
+    "order_swap_total": 10,
+    "order_swap_consistent": 9,
+    "verbosity_total": 10,
+    "verbosity_consistent": 9
+  },
+  "thresholds": {
+    "min_agreement": 0.8,
+    "min_coverage": 0.9,
+    "min_order_swap_consistency": 0.8,
+    "min_verbosity_consistency": 0.8
+  },
+  "notes": "Calibrate against expert or otherwise accepted reference labels before using the grader as a hard promotion gate."
+}

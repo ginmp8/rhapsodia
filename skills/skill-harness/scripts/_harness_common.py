@@ -61,6 +61,11 @@ def tree_hash(root: Path) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def canonical_json_sha256(value: object) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8')
+    return hashlib.sha256(payload).hexdigest()
+
+
 def parse_frontmatter_scalars(skill_md: Path) -> dict[str, str]:
     text = skill_md.read_text(encoding='utf-8', errors='replace')
     if not text.startswith('---\n'):

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-skills.local/skill-harness/grader-calibration.schema.json",
+  "title": "Grader Calibration Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_version", "grader_identity", "reference_set_identity", "sample", "bias_probes", "thresholds"],
+  "properties": {
+    "profile_version": {"const": 1},
+    "grader_identity": {"type": "string", "minLength": 1},
+    "reference_set_identity": {"type": "string", "minLength": 1},
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "agreements", "abstentions"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 1},
+        "agreements": {"type": "integer", "minimum": 0},
+        "abstentions": {"type": "integer", "minimum": 0}
+      }
+    },
+    "bias_probes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["order_swap_total", "order_swap_consistent", "verbosity_total", "verbosity_consistent"],
+      "properties": {
+        "order_swap_total": {"type": "integer", "minimum": 0},
+        "order_swap_consistent": {"type": "integer", "minimum": 0},
+        "verbosity_total": {"type": "integer", "minimum": 0},
+        "verbosity_consistent": {"type": "integer", "minimum": 0}
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_agreement", "min_coverage", "min_order_swap_consistency", "min_verbosity_consistency"],
+      "properties": {
+        "min_agreement": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_order_swap_consistency": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_verbosity_consistency": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "notes": {"type": "string"}
+  }
+}

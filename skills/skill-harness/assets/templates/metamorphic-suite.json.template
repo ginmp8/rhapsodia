@@ -1,0 +1,16 @@
+{
+  "suite_version": 1,
+  "target_skill": "skill-name",
+  "status": "planned",
+  "groups": [
+    {
+      "id": "mr-routing-001",
+      "base_case_id": "activate-001",
+      "relation": "same-routing",
+      "evaluator_identity": "evaluator-or-rule-identity",
+      "variants": [
+        {"id": "paraphrase-1", "transformation": "semantic-preserving paraphrase"}
+      ]
+    }
+  ]
+}

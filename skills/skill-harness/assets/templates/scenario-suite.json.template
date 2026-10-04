@@ -7,7 +7,9 @@
       "type": "should_activate",
       "prompt": "{{activation_prompt}}",
       "expected_behavior": "{{activation_expected_behavior}}",
-      "acceptance_criteria": ["{{activation_criterion}}"]
+      "acceptance_criteria": ["{{activation_criterion}}"],
+      "reference_solution": {"status": "available", "identity": "{{activation_reference_identity}}"},
+      "oracle_probe": {"status": "pass", "evidence_identity": "{{activation_oracle_evidence_identity}}"}
     },
     {
       "id": "nonactivate-001",

@@ -21,3 +21,7 @@ Record research questions, sources used, adopted claims, rejected/unused claims,
 ## Portability research
 
 When the user requests cross-host support, verify unstable installation/discovery facts against current primary documentation. Treat the Agent Skills specification as the semantic source of truth and product docs as adapters. Do not copy host-specific discovery paths into the portable core unless the target is intentionally host-specific. Record the verification date/source in durable reports when those facts materially affect delivery.
+
+## Research-backed mutation traceability
+
+When external research materially justifies target changes, preserve a bounded research artifact or equivalent stable source identities before mutation. Record which researched findings were adopted, already covered, rejected, uncertain, conflicting, or not applicable. Do not claim universal research completeness; claim only coverage of the frozen/recorded corpus. If a traceability workspace is used, keep it outside the target package so research evidence does not become runtime baggage.

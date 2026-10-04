@@ -1,6 +1,6 @@
 # Host Portability
 
-Use when the target skill must work across ChatGPT/OpenAI, Claude/Claude Code, GitHub Copilot, Cursor, or another Agent Skills-compatible host.
+Use when the target skill must work across ChatGPT/OpenAI, Codex, Claude/Claude Code, GitHub Copilot, Cursor, or another Agent Skills-compatible host.
 
 ## Canonical portable core
 
@@ -37,6 +37,7 @@ These are installation adapters, not semantic dependencies. Product-specific pat
 | Host | Current discovery/adapter guidance |
 |---|---|
 | ChatGPT / OpenAI | Use the product-managed skill upload/install surface. `agents/openai.yaml` may provide OpenAI UI/policy metadata; keep it optional to the portable core. |
+| Codex | Use an Agent Skills-compatible Codex skill directory/discovery surface. Keep discovery paths as host-installation concerns, not semantic requirements. |
 | Claude / Claude Code | Uses the Agent Skills format. Claude-specific frontmatter such as `allowed-tools` can be retained when intentional, but portable behavior must not require another host to understand it. |
 | GitHub Copilot | Project skills are discovered under `.github/skills`, `.claude/skills`, or `.agents/skills`; personal skills under `~/.copilot/skills` or `~/.agents/skills`. |
 | Cursor | Project skills are discovered under `.agents/skills` or `.cursor/skills`; user skills under `~/.agents/skills` or `~/.cursor/skills`. Cursor also discovers compatible Claude/Codex skill directories. Cursor-only `paths` is an extension, not a portable requirement. |
@@ -69,7 +70,7 @@ Bundled harness scripts should:
 
 `portable` is the default and validates only the host-neutral Agent Skills contract plus harness gates.
 
-`openai`, `claude`, `copilot`, and `cursor` run the same portable core and may add profile-specific adapter checks. A host profile must never weaken the portable core merely to pass.
+`openai`, `codex`, `claude`, `copilot`, and `cursor` run the same portable core and may add profile-specific adapter checks. A host profile must never weaken the portable core merely to pass.
 
 Use the single-profile commands when one delivery target is in scope:
 
@@ -94,6 +95,7 @@ The ZIP is a delivery wrapper, not the semantic standard. Preserve a single cano
 
 - Agent Skills specification: `https://agentskills.io/specification`
 - Anthropic Agent Skills: `https://github.com/anthropics/skills`
+- Codex Agent Skills: `https://developers.openai.com/codex/skills/`
 - GitHub Copilot Agent Skills: `https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills`
 - Cursor Agent Skills: `https://cursor.com/docs/skills`
 - OpenAI Skills overview: `https://openai.com/academy/skills/`

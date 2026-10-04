@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-skills.local/reproducibility-engineer/execution-lineage.schema.json",
+  "title": "Execution Lineage Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_version", "planner_identity", "workflow_plan_identity", "evaluator_identity", "nodes", "canonical_outputs"],
+  "properties": {
+    "profile_version": {"const": 1},
+    "source_identity": {"type": "string", "minLength": 1},
+    "planner_identity": {"type": "string", "minLength": 1},
+    "workflow_plan_identity": {"type": "string", "minLength": 1},
+    "evaluator_identity": {"type": "string", "minLength": 1},
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "upstream", "execution_identity", "input_digests", "output_digest", "replayable", "invalidation_key"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["tool", "model", "human", "transform", "aggregate", "other"]},
+          "upstream": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "execution_identity": {"type": "string", "minLength": 1},
+          "input_digests": {"type": "array", "items": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-fA-F]{64}$"}},
+          "output_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-fA-F]{64}$"},
+          "replayable": {"type": "boolean"},
+          "invalidation_key": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "canonical_outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "node_id", "sha256"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "node_id": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-fA-F]{64}$"}
+        }
+      }
+    }
+  }
+}

@@ -180,6 +180,63 @@ Do not:
 
 Keep holdout scenarios or independent review for claims vulnerable to benchmark overfitting.
 
+## Evaluation arms and marginal skill value
+
+Use the smallest comparison that can support the claim:
+
+- `parent -> candidate` is sufficient for a bounded repair/hardening claim when the question is only whether the candidate preserves or improves the parent.
+- `no-skill -> parent -> candidate` is required when claiming **marginal skill value** or Skill Lift. Keep task, scorer, material runtime identity, tool surface, and budget equivalent across paired arms.
+- A full-context/plugin arm is optional when surrounding skills or adapters can materially change routing or behavior.
+
+Report separately:
+
+- `parent_skill_lift = parent - no_skill`;
+- `candidate_skill_lift = candidate - no_skill`;
+- `candidate_vs_parent_delta = candidate - parent`.
+
+Reverse signs for lower-is-better metrics. A candidate can improve relative to its parent while the skill still has negative marginal value; do not hide that result.
+
+Use `assets/templates/paired-trials.json.template` with `scripts/summarize_paired_trials.py` when paired repeated evidence fits the task.
+
+## Evaluation partitions, promotion holdout, and contamination
+
+Partition evidence by visibility before candidate mutation:
+
+1. **diagnostic** — mutator-visible evidence used to understand failures;
+2. **regression** — read-only cases whose identity is frozen;
+3. **promotion holdout** — controller-only cases withheld from the mutator until the candidate is ready for promotion.
+
+The evaluation plan may expose holdout metadata, ids, budgets, and acceptance rules, but not the concrete prompts, expected outputs, hidden labels, or equivalent answer-bearing content. Record contamination as `unassessed`, `clear`, `suspected`, or `confirmed`; `suspected`/`confirmed` blocks an unconditional promotion claim until the experiment is restarted with clean evidence.
+
+Evaluator locking and holdout isolation solve different problems. Freezing a grader does not prove that the mutator never saw the holdout.
+
+## Stochastic evaluation profile
+
+A single run is insufficient for a strong reliability or stochastic-improvement claim. Predeclare the trial budget and use paired trials when possible. For binary success:
+
+- `pass@k` answers whether at least one of `k` attempts succeeds;
+- `pass^k` answers whether all `k` attempts succeed.
+
+Choose the metric from the product/skill reliability claim instead of selecting whichever statistic looks better afterward. Report trial counts, observed success rates, paired wins/losses/ties when available, and the assumptions behind any derived probability. `scripts/summarize_paired_trials.py` provides descriptive three-arm summaries and an exact paired sign-test diagnostic; it does not replace the declared hard gates or promotion holdout.
+
+## Multi-dimensional acceptance
+
+Separate **hard gates** from **optimization dimensions**. Recommended hard gates include activation, safety/authority, compatibility, evaluator integrity, required validation, and packaging. Optimization dimensions may include utility, robustness, context/token cost, latency, rework, or portability coverage.
+
+A candidate is promotable only when all required hard gates pass and the predeclared optimization rule is satisfied. A scalar score, weighted composite, or better mean cannot waive a hard-gate regression. Use a Pareto/non-regression interpretation when multiple optimization dimensions matter; population-level Pareto selection remains owned by an external search controller, not Skill Improver.
+
+## Runtime identity and comparability
+
+When runtime state can affect the result, record the material **runtime identity** for every paired arm: model/provider or equivalent engine identity, reasoning profile when relevant, host/harness, tool/capability surface, dependency/environment fingerprint, and material budget. Do not require vendor-private identifiers when the host cannot expose them; record the strongest comparable capability-based identity available.
+
+Material drift makes the pair non-comparable unless the evaluator contract explicitly tolerates it. Re-baseline rather than silently mixing results from different runtime identities.
+
+## Capability delta and authority floor
+
+Record a candidate **capability delta** for authority-bearing surfaces such as network access, filesystem writes, secrets/credentials, external tools, subprocesses, and durable state. New authority requires explicit authorization independent of evaluator score. Benchmark or utility gains never justify silently broadening permissions.
+
+Use `assets/templates/evaluation-plan.json.template` with `scripts/validate_evaluation_plan.py` before mutation when these advanced controls are material.
+
 ## Evidence vocabulary
 
 Use:

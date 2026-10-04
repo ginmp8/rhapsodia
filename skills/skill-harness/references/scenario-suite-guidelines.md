@@ -28,8 +28,13 @@ Suites live under `evals/`:
 }
 ```
 
-Required per scenario: stable unique `id`, supported `type`, `prompt`, `expected_behavior`, non-empty `acceptance_criteria`. Optional: `mode`, `mutation_mode`, `risk`, `notes`, `entry_point`, `input_shape`, `expected_artifacts`, `isolation_needs`, `evaluation_tier` (`L2-focused|L3-harness|L5-holdout`), and `visibility` (`candidate-visible|evaluator-only`). Read `references/evaluation-tiers-and-holdout.md` before claiming a hidden/holdout result.
+Required per scenario: stable unique `id`, supported `type`, `prompt`, `expected_behavior`, non-empty `acceptance_criteria`. Optional: `mode`, `mutation_mode`, `risk`, `notes`, `entry_point`, `input_shape`, `expected_artifacts`, `isolation_needs`, `evaluation_tier` (`L2-focused|L3-harness|L5-holdout`), `visibility` (`candidate-visible|evaluator-only`), `reference_solution`, and `oracle_probe`. For hard behavioral gates, prefer a known-good reference solution or expert-validated oracle probe that demonstrates the task/grader contract is solvable; if none exists, record the limitation. Read `references/evaluation-tiers-and-holdout.md` before claiming a hidden/holdout result.
 
 Use `status: planned` for expectation-only suites. Use `status: measured` only when every scenario has executed result, model output, evaluator decision, and timestamp/run ID. Planned suites can report only coverage and schema validity, not precision, recall, or pass rate.
 
 Prefer deterministic checks: schema validity, type coverage, unique IDs, required criteria, entry-point coverage, output-contract checks, blocked-path checks, unsupported-claim checks, package-exclusion checks, and run metadata presence for measured suites. Human/LLM judge only semantic quality and label it separately.
+
+
+## Reference-solution discipline
+
+A scenario with repeated 0% success can indicate a broken task or grader rather than an incapable candidate. For hard gates, use `reference_solution`/`oracle_probe` when practical. The oracle must pass the same graders without accessing candidate-forbidden evaluator assets. If a reference solution is unavailable for an open-ended task, state that explicitly instead of pretending solvability was proven.

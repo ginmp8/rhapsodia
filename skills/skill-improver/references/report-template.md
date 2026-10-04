@@ -10,6 +10,7 @@ Use for manual, automated, self-improvement, and package/install runs. Mark evid
 - Objective: `<...>`
 - Target/baseline identity: `<...>`
 - Runtime capabilities: `<filesystem-read/write, python, command execution, evaluator, artifact delivery>`
+- Runtime identity/comparability: `<model/provider profile, reasoning profile, host/harness, toolset, environment/budget; equivalent/drift/not-material>`
 - Allowed/protected paths: `<...>`
 - Self-improvement generation: `<not-applicable | generation_id>`
 - Controller / baseline / candidate identity: `<...>`
@@ -22,6 +23,9 @@ Use for manual, automated, self-improvement, and package/install runs. Mark evid
 - Source verification: `<pass/fail/not-run>`
 - Primary metric and direction: `<...>`
 - Auxiliary metric when saturated: `<...>`
+- Evaluation arms: `<parent/candidate | no-skill/parent/candidate | other declared arm>`
+- Partitions: `<diagnostic visibility; regression identity; promotion holdout controller-only>`
+- Contamination: `<unassessed | clear | suspected | confirmed + evidence>`
 
 ## 3. Baseline
 - Score/status/gates: `<...>`
@@ -44,7 +48,11 @@ Use for manual, automated, self-improvement, and package/install runs. Mark evid
 
 ## 6. Evaluation and structural change gate
 - Final score/status/gates: `<...>`
-- Delta: `<...>`
+- Parent delta: `<candidate - parent>`
+- Skill Lift: `<candidate - no-skill when measured>`
+- Repeated trials / reliability: `<trial count; pass@k/pass^k or declared alternative; uncertainty/paired diagnostic>`
+- Hard gates vs optimization dimensions: `<...>`
+- Capability delta: `<network/filesystem/secrets/tools/state; authorized changes only>`
 - Source/evaluator identities unchanged: `<pass/fail>`
 - Change gate: `<pass | pass-with-warnings | fail | not-run>`
 - Blocking regressions/material concerns: `<...>`

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/skill-improver/execution-environment.schema.json",
+  "title": "Skill Improver Execution Environment Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_version", "host_or_harness", "model", "reasoning_profile", "toolset", "environment", "budget"],
+  "properties": {
+    "profile_version": {"const": 1},
+    "host_or_harness": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "reasoning_profile": {"type": "string", "minLength": 1},
+    "toolset": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "environment": {"type": "object"},
+    "budget": {"type": "object"},
+    "identity_digest": {"type": "string"},
+    "notes": {"type": "string"}
+  }
+}

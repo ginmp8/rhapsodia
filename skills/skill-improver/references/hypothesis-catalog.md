@@ -43,6 +43,11 @@ Mechanism: candidate selection improves when hypotheses are derived from benchma
 Changes: load a supplied backlog or run/apply `skill-hypothesis-discovery`; select the highest-ranked bounded hypothesis with validation available; record deferred and rejected hypotheses.
 Evidence: every tested candidate has an evidence signal, expected effect, validation method, and rollback/change-gate rule; random or cosmetic candidates are not tested.
 
+### H015 - Trajectory-grounded diagnosis
+Mechanism: mutation quality improves when a concrete failure trajectory/diagnostic is attributed before editing.
+Changes: record observation -> diagnosis -> bounded hypothesis -> target surface -> expected counterfactual; preserve trace/evaluator references and rerun the same failing gate first.
+Evidence: tested changes cite the observed failure/trajectory and causal diagnosis; unsupported mutation-by-taste is rejected.
+
 ## Output
 
 ### H014 - Structural change gate
@@ -78,6 +83,11 @@ Evidence: evaluator confirms validation support.
 Mechanism: compact `SKILL.md` improves context efficiency without capability loss.
 Changes: move long rubrics/examples to `references/`; keep `SKILL.md` as control plane.
 Evidence: context-efficiency score improves.
+
+### H042 - Simplification without capability loss
+Mechanism: removing obsolete or redundant scaffolding can reduce context cost and cross-model brittleness while preserving behavior.
+Changes: delete or shorten only instructions/resources shown to be redundant; move branch detail behind progressive disclosure; prefer model-agnostic constraints over stale recipes.
+Evidence: activation/semantic/safety/compatibility gates remain non-regressed while context/token cost, loaded instructions, or maintenance surface decreases. Classify the change intent as `simplification`.
 
 ### H041 - Integrate or remove unused resources
 Mechanism: resources become trustworthy when connected to workflow; truly unused files are removed.

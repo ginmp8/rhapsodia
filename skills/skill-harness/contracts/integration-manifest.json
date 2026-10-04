@@ -21,6 +21,83 @@
         "assets/templates/multi-candidate-manifest-strict.json.template",
         "scripts/validate_multi_candidate_manifest_strict.py"
       ]
+    },
+    {
+      "contract_id": "skill-opt.harness-environment-provenance",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/environment-provenance.md",
+        "assets/schemas/execution-environment.schema.json",
+        "assets/templates/execution-environment.json.template",
+        "scripts/validate_reproducibility_profiles.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.harness-stochastic-evaluation",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/stochastic-evaluation.md",
+        "assets/schemas/stochastic-evaluation.schema.json",
+        "assets/templates/stochastic-evaluation.json.template",
+        "scripts/validate_reproducibility_profiles.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.harness-execution-lineage",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/execution-lineage.md",
+        "assets/schemas/execution-lineage.schema.json",
+        "assets/templates/execution-lineage.json.template",
+        "scripts/validate_reproducibility_profiles.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.harness-grader-calibration",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/grader-calibration.md",
+        "assets/schemas/grader-calibration.schema.json",
+        "assets/templates/grader-calibration.json.template",
+        "scripts/validate_grader_calibration.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.harness-metamorphic-suite",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/metamorphic-evaluation.md",
+        "assets/schemas/metamorphic-suite.schema.json",
+        "assets/templates/metamorphic-suite.json.template",
+        "scripts/validate_metamorphic_suite.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.harness-evaluation-provenance",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/evaluation-provenance.md",
+        "assets/schemas/evaluation-provenance.schema.json",
+        "assets/templates/evaluation-provenance.json.template",
+        "scripts/validate_evaluation_provenance.py"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.harness-holdout-exposure",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/holdout-exposure.md",
+        "assets/schemas/holdout-exposure.schema.json",
+        "assets/templates/holdout-exposure.json.template",
+        "scripts/validate_holdout_exposure.py"
+      ]
     }
   ],
   "imports": []

@@ -104,3 +104,11 @@ Do not call behavioral evidence measured when:
 - required result rows are incomplete;
 - the runner cannot distinguish executed evidence from planned/simulated results;
 - a trace is required by the declared acceptance contract but cannot be produced or identified.
+
+## Target-owned executable trust gate
+
+Before executing target-owned scripts, classify target provenance with `references/untrusted-target-execution.md` and `scripts/assess_target_trust.py`. External/unknown targets with executable content require a suitable isolation boundary, no ambient application/third-party credentials, restricted network unless explicitly required, and evaluator-only assets outside the candidate surface. Static inspection may continue when execution is blocked.
+
+## Environment comparability
+
+When runtime/provider/tool/resource identity can materially affect a paired comparison, bind the run to an `environment_identity` validated under `references/environment-provenance.md`. Matching scenario/evaluator hashes do not make two arms comparable when material execution environments differ. Resolve the drift by rerunning under an equivalent environment or explicitly re-baselining the comparison.

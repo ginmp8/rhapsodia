@@ -1,0 +1,15 @@
+{
+  "ledger_version": 1,
+  "holdout_identity": "holdout-partition-or-hash",
+  "lineages": [
+    {
+      "lineage_id": "candidate-lineage-1",
+      "candidate_identity": "candidate-tree-or-hash",
+      "holdout_executed": true,
+      "feedback_revealed_to_mutator": false,
+      "used_for_mutation": false,
+      "blind_claim_eligible": true,
+      "notes": "Execution alone does not invalidate the final candidate; using holdout feedback for later mutation does."
+    }
+  ]
+}

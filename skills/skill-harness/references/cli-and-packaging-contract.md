@@ -56,7 +56,7 @@ The main score is structural and can saturate. Use auxiliary portability/integri
 ```text
 <PYTHON> <skill-root>/scripts/skill_harness_portability.py \
   --target <TARGET_SKILL_PATH> \
-  --profile portable|openai|claude|copilot|cursor \
+  --profile portable|openai|codex|claude|copilot|cursor \
   --output <report-dir>/portability.json
 ```
 
@@ -72,7 +72,7 @@ Validates the open Agent Skills core, relative/resource safety, name/directory i
   --output <report-dir>/host-matrix.json
 ```
 
-Runs the existing portability validator for `portable`, `openai`, `claude`, `copilot`, and `cursor` without changing those profile semantics. `--profiles` may also be a comma-separated subset. Exit non-zero when any selected profile fails; with `--strict`, warnings also fail the matrix.
+Runs the existing portability validator for `portable`, `openai`, `codex`, `claude`, `copilot`, and `cursor` without changing those profile semantics. `--profiles` may also be a comma-separated subset. Exit non-zero when any selected profile fails; with `--strict`, warnings also fail the matrix.
 
 ### `scripts/run_self_tests.py`
 
@@ -88,11 +88,27 @@ Runs bundled zero-argument functions whose names start with `test_` using only t
 ```text
 <PYTHON> <skill-root>/scripts/skill_harness_validate.py \
   --target <TARGET_SKILL_PATH> \
-  --profile portable|openai|claude|copilot|cursor \
+  --profile portable|openai|codex|claude|copilot|cursor \
   --output <report-dir>/validation.json
 ```
 
 Exit `0` for `accept` or `accept with risks`; non-zero for `reject`. A publish/package gate may still require `accept` only.
+
+
+### Evaluation sidecar validators
+
+Use only the profiles relevant to the claim:
+
+```text
+<PYTHON> <skill-root>/scripts/assess_target_trust.py --target <TARGET_SKILL_PATH> --source-class <SOURCE_CLASS> --json <report-dir>/target-trust.json
+<PYTHON> <skill-root>/scripts/validate_reproducibility_profiles.py --kind environment|stochastic|lineage --input <evidence.json> --json <report-dir>/profile-validation.json
+<PYTHON> <skill-root>/scripts/validate_grader_calibration.py <calibration.json> --json <report-dir>/grader-calibration.json
+<PYTHON> <skill-root>/scripts/validate_metamorphic_suite.py <suite.json> --json <report-dir>/metamorphic-validation.json
+<PYTHON> <skill-root>/scripts/validate_holdout_exposure.py <ledger.json> --json <report-dir>/holdout-exposure.json
+<PYTHON> <skill-root>/scripts/validate_evaluation_provenance.py <provenance.json> --json <report-dir>/evaluation-provenance.json
+```
+
+These validators prove their respective evidence contract only. They do not turn planned scenarios into measured behavior.
 
 ### `scripts/skill_harness_package.py`
 
@@ -101,7 +117,7 @@ Exit `0` for `accept` or `accept with risks`; non-zero for `reject`. A publish/p
   --target <TARGET_SKILL_PATH> \
   --output <artifact-dir>/skill.zip \
   --report <report-dir>/package-validation.json \
-  --profile portable|openai|claude|copilot|cursor \
+  --profile portable|openai|codex|claude|copilot|cursor \
   --strict
 ```
 

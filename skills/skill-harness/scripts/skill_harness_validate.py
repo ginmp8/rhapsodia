@@ -222,7 +222,7 @@ def main():
     parser = argparse.ArgumentParser(description="Validate an Agent Skills-compatible package and optional host profile.")
     parser.add_argument("--target", required=True, help="Path to target skill folder")
     parser.add_argument("--output", help="Path to write JSON validation report")
-    parser.add_argument("--profile", choices=("portable", "openai", "claude", "copilot", "cursor"), default="portable")
+    parser.add_argument("--profile", choices=("portable", "openai", "codex", "claude", "copilot", "cursor"), default="portable")
     args = parser.parse_args()
     report = validate_package(args.target, profile=args.profile)
     payload = json.dumps(report, indent=2, sort_keys=True)

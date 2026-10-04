@@ -5,6 +5,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
+import sys
+import os
 from pathlib import Path
 
 TEXT_EXTS = {
@@ -29,6 +32,16 @@ REQUIRED_FILES = [
     'evals/activation-scenarios.json',
     'assets/templates/improvement-run-report.md.template',
     'assets/templates/patch-decision-record.md.template',
+    'assets/templates/evaluation-plan.json.template',
+    'assets/templates/paired-trials.json.template',
+    'scripts/validate_evaluation_plan.py',
+    'scripts/summarize_paired_trials.py',
+    'references/environment-provenance.md',
+    'references/stochastic-evaluation.md',
+    'assets/schemas/execution-environment.schema.json',
+    'assets/schemas/stochastic-evaluation.schema.json',
+    'assets/templates/execution-environment.json.template',
+    'scripts/validate_execution_evidence.py',
     'references/evolution-candidate-execution.md',
     'assets/templates/generation-receipt.json.template',
     'scripts/validate_candidate_request.py',
@@ -273,6 +286,26 @@ def validate_template_consumption(root: Path) -> list[str]:
 
 
 
+def validate_research_backed_evaluation_assets(root: Path) -> list[str]:
+    errors: list[str] = []
+    checks = [
+        (root / 'scripts' / 'validate_evaluation_plan.py', ['--input', str(root / 'assets' / 'templates' / 'evaluation-plan.json.template')]),
+        (root / 'scripts' / 'summarize_paired_trials.py', ['--input', str(root / 'assets' / 'templates' / 'paired-trials.json.template')]),
+        (root / 'scripts' / 'validate_execution_evidence.py', ['--kind', 'environment', '--input', str(root / 'assets' / 'templates' / 'execution-environment.json.template')]),
+        (root / 'scripts' / 'validate_execution_evidence.py', ['--kind', 'stochastic', '--input', str(root / 'assets' / 'templates' / 'paired-trials.json.template')]),
+    ]
+    for script, extra in checks:
+        if not script.is_file():
+            errors.append(f'missing evaluation helper: {script.relative_to(root)}')
+            continue
+        env = dict(os.environ)
+        env['PYTHONDONTWRITEBYTECODE'] = '1'
+        completed = subprocess.run([sys.executable, str(script), *extra], cwd=root, text=True, capture_output=True, env=env)
+        if completed.returncode != 0:
+            errors.append(f'evaluation helper failed: {script.relative_to(root)}: {completed.stdout.strip()} {completed.stderr.strip()}')
+    return errors
+
+
 def validate_integration_manifest(root: Path) -> list[str]:
     path = root / 'contracts' / 'integration-manifest.json'
     if not path.is_file():
@@ -378,6 +411,10 @@ def main() -> int:
     integration_errors = validate_integration_manifest(root)
     gates['integration_manifest'] = 'pass' if not integration_errors else 'fail'
     errors.extend(integration_errors)
+
+    evaluation_asset_errors = validate_research_backed_evaluation_assets(root)
+    gates['research_backed_evaluation_assets'] = 'pass' if not evaluation_asset_errors else 'fail'
+    errors.extend(evaluation_asset_errors)
 
     disallowed_names = {'.DS_Store', 'test-results.json', 'skill-benchmark.md'}
     disallowed_suffixes = {'.pyc', '.pyo', '.zip'}

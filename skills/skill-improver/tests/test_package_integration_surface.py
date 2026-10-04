@@ -43,3 +43,20 @@ def test_package_validator_requires_generation_receipt_v3_export(tmp_path):
     assert code != 0
     assert report['status']=='fail'
     assert any('candidate-generation-receipt:v3' in e for e in report['errors'])
+
+def test_package_validator_requires_evaluation_plan_template(tmp_path):
+    dst=copy_target(tmp_path)
+    (dst/'assets/templates/evaluation-plan.json.template').unlink()
+    code,report=run_validator(dst)
+    assert code != 0
+    assert report['status']=='fail'
+    assert any('evaluation-plan.json.template' in e for e in report['errors'])
+
+def test_package_validator_requires_paired_trial_summarizer(tmp_path):
+    dst=copy_target(tmp_path)
+    (dst/'scripts/summarize_paired_trials.py').unlink()
+    code,report=run_validator(dst)
+    assert code != 0
+    assert report['status']=='fail'
+    assert any('summarize_paired_trials.py' in e for e in report['errors'])
+

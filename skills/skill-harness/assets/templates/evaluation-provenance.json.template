@@ -1,0 +1,19 @@
+{
+  "provenance_version": 1,
+  "invocation_id": "eval-run-id",
+  "harness_identity": "skill-harness-version-or-tree-hash",
+  "process_identity": "evaluation-policy-or-plan-identity",
+  "external_parameters": {"profile": "portable"},
+  "resolved_dependencies": [
+    {"name": "scenario-set", "identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000"}
+  ],
+  "identities": {
+    "baseline": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "evaluator": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "environment": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "candidate": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "subjects": [
+    {"name": "evaluation-report", "sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000"}
+  ]
+}
