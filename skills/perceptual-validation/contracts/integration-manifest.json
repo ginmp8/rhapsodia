@@ -4,21 +4,23 @@
   "exports": [
     {
       "contract_id": "perceptual.review-request",
-      "version": 2,
+      "version": 3,
       "role": "owner-producer",
       "surface_paths": [
         "references/review-contract.md",
         "schemas/review-request.schema.json",
+        "schemas/review-request-v2.schema.json",
         "scripts/validate_perceptual_artifact.py"
       ]
     },
     {
       "contract_id": "perceptual.review-result",
-      "version": 2,
+      "version": 3,
       "role": "owner-producer",
       "surface_paths": [
         "references/review-contract.md",
         "schemas/review-result.schema.json",
+        "schemas/review-result-v2.schema.json",
         "scripts/validate_perceptual_artifact.py"
       ]
     }

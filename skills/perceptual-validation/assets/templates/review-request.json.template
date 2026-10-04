@@ -1,13 +1,104 @@
 {
-  "contract":"perceptual-review-request/v1",
-  "review_id":"visual-001",
-  "artifact_kind":"rendered-ui",
-  "reference_identity":"<reference hash/id>",
-  "candidate_identity":"<candidate hash/id>",
-  "reference_state":"loaded state for fixture X",
-  "candidate_state":"loaded state for fixture X",
-  "comparison_scope":["main content","header","primary actions"],
-  "rubric_categories":["content-presence","structure","alignment","spacing","typography","hierarchy"],
-  "evaluator_identity":"<rubric/reviewer identity>",
-  "required_capability":"image-capable-review"
+  "contract": "perceptual-review-request/v2",
+  "review_id": "visual-001",
+  "artifact_kind": "rendered-ui",
+  "artifact_profile": {
+    "name": "ui",
+    "version": "1"
+  },
+  "reference": {
+    "identity": "<reference hash/id>",
+    "identity_kind": "semantic",
+    "dimensions": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "candidate": {
+    "identity": "<candidate hash/id>",
+    "identity_kind": "semantic",
+    "dimensions": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "intended_state": {
+    "reference": "loaded fixture X",
+    "candidate": "loaded fixture X"
+  },
+  "capture_context": {
+    "reference_manifest_identity": "<capture-ref-id>",
+    "candidate_manifest_identity": "<capture-candidate-id>",
+    "normalization_policy_identity": "normalization/v1",
+    "comparison_keys": [
+      "viewport",
+      "theme",
+      "locale",
+      "fixture"
+    ],
+    "reference_facts": {
+      "viewport": "1280x720",
+      "theme": "light",
+      "locale": "en-US",
+      "fixture": "X"
+    },
+    "candidate_facts": {
+      "viewport": "1280x720",
+      "theme": "light",
+      "locale": "en-US",
+      "fixture": "X"
+    }
+  },
+  "comparison_scope": [
+    "main content",
+    "header",
+    "primary actions"
+  ],
+  "rubric": {
+    "identity": "rubric:ui:v1",
+    "version": "1",
+    "criteria": [
+      {
+        "id": "structure",
+        "category": "structure",
+        "required": true,
+        "description": "Structural composition and grouping are preserved.",
+        "evidence_types": [
+          "visual"
+        ]
+      },
+      {
+        "id": "spacing",
+        "category": "spacing",
+        "required": true,
+        "description": "Spacing preserves hierarchy without material collision or drift.",
+        "evidence_types": [
+          "visual",
+          "geometry"
+        ]
+      }
+    ]
+  },
+  "gate_policy": {
+    "identity": "gate:ui:v1",
+    "blocking_severities": [
+      "blocking",
+      "high"
+    ],
+    "max_medium_findings": 0,
+    "minimum_confidence": "medium",
+    "low_confidence_action": "inconclusive",
+    "require_finding_evidence": true,
+    "require_required_criterion_evidence": true,
+    "required_trials": 1,
+    "require_agreement": false,
+    "disagreement_action": "inconclusive"
+  },
+  "evaluator_protocol": {
+    "identity": "eval:pairwise:v1",
+    "kind": "model",
+    "mode": "pairwise-criteria",
+    "required_capability": "image-capable-review",
+    "order_swap_required": false
+  }
 }

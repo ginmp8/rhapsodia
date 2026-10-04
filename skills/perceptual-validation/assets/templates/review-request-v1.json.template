@@ -1,0 +1,13 @@
+{
+  "contract":"perceptual-review-request/v1",
+  "review_id":"visual-001",
+  "artifact_kind":"rendered-ui",
+  "reference_identity":"<reference hash/id>",
+  "candidate_identity":"<candidate hash/id>",
+  "reference_state":"loaded state for fixture X",
+  "candidate_state":"loaded state for fixture X",
+  "comparison_scope":["main content","header","primary actions"],
+  "rubric_categories":["content-presence","structure","alignment","spacing","typography","hierarchy"],
+  "evaluator_identity":"<rubric/reviewer identity>",
+  "required_capability":"image-capable-review"
+}
