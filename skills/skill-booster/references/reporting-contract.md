@@ -152,3 +152,35 @@ Use `measured` for executed commands/scenario results/validators/package checks,
 | skill-change-gate | pass | invoked-skill | gate report | no blocking regression before accepting candidate |
 | final skill-change-gate | pass | invoked-skill | final gate report | no blocking regression after hardening/compression |
 ```
+
+## Run-state and strategy decision
+- Run id/checkpoint:
+- Current/final phase:
+- Run-state validation:
+- Stale evidence invalidated:
+- Strategy decision identity/status:
+- Simpler strategy considered:
+- Budget consumed/limit:
+- Stop/escalation rationale:
+
+## Evaluation integrity
+- Evaluator sets and roles:
+- Transformer-visible evaluator ids:
+- Contamination status:
+- Promotion holdout required:
+- Blind holdout identity/status:
+- Highest uncontaminated evidence level:
+
+## Research traceability
+- Research corpus identity:
+- Finding accounting:
+- Requirement/change/evaluation coverage:
+- Semantic trace review:
+- Claim boundary: corpus-bounded | not-applicable
+
+## Promotion attestation
+- Attestation identity:
+- Candidate/package correspondence:
+- Validation status:
+- Target promotion:
+- Workflow-policy promotion:

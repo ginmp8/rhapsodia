@@ -32,6 +32,9 @@ EXPERIMENT_RESULTS = {"planned", "pass", "fail", "inconclusive", "rejected", "ac
 EXPERIMENT_DECISIONS = {"pending", "accept", "reject", "repair", "gather-evidence", "stop"}
 GATE_STATUS = {"planned", "pass", "pass-with-warnings", "fail", "blocked", "insufficient-evidence", "not-run"}
 FINALIST_HOLDOUT_POLICIES = {"not-required", "blind-pass-required"}
+EVALUATOR_ROLES = {"development", "regression", "promotion-holdout"}
+CONTAMINATION_STATES = {"clean", "contaminated", "unknown"}
+AUTHORITY_ROLES = {"provider", "transformer", "validator", "gate"}
 
 
 def load(path: Path) -> Any:
@@ -91,7 +94,8 @@ def validate_transformations(data: Any) -> tuple[list[str], dict[str, Any]]:
     require(isinstance(data, dict), errors, "ROOT", "transformation registry must be an object")
     if not isinstance(data, dict):
         return errors, {}
-    require(data.get("schema_version") == 1, errors, "SCHEMA", "transformation registry schema_version must be 1")
+    schema_version = data.get("schema_version")
+    require(schema_version in {1, 2}, errors, "SCHEMA", "transformation registry schema_version must be 1 or 2")
     target_identity = data.get("target_identity")
     require(nonempty_str(target_identity), errors, "TARGET_ID", "target_identity is required")
     items = data.get("transformations")
@@ -130,6 +134,21 @@ def validate_transformations(data: Any) -> tuple[list[str], dict[str, Any]]:
                     require(string_list(item.get(field)), errors, "TRANSFORM_EVOLUTION_FIELD", f"{subject}.{field} must be a list of non-empty strings when present")
             for field in ("operation_summary", "expected_effect"):
                 require(nonempty_str(item.get(field)), errors, "TRANSFORM_TEXT", f"{subject}.{field} is required")
+            authority = item.get("authority")
+            if schema_version == 2:
+                require(isinstance(authority, dict), errors, "AUTHORITY", f"{subject}.authority is required for schema_version 2")
+            if isinstance(authority, dict):
+                require(authority.get("control_owner") == "skill-booster", errors, "AUTHORITY_CONTROL", f"{subject}.authority.control_owner must be skill-booster")
+                require(nonempty_str(authority.get("transformation_owner")), errors, "AUTHORITY_OWNER", f"{subject}.authority.transformation_owner is required")
+                require(authority.get("role") in AUTHORITY_ROLES, errors, "AUTHORITY_ROLE", f"{subject}.authority.role is invalid")
+                for field in ("can_mutate_target", "can_reorchestrate", "can_promote"):
+                    require(isinstance(authority.get(field), bool), errors, "AUTHORITY_BOOL", f"{subject}.authority.{field} must be boolean")
+                require(authority.get("can_reorchestrate") is False, errors, "AUTHORITY_REORCHESTRATE", f"{subject} may not re-own global orchestration")
+                require(authority.get("can_promote") is False, errors, "AUTHORITY_PROMOTE", f"{subject} may not promote its own candidate")
+                if authority.get("role") == "transformer":
+                    require(authority.get("can_mutate_target") is True, errors, "AUTHORITY_MUTATE", f"{subject} transformer must be allowed to mutate target")
+                else:
+                    require(authority.get("can_mutate_target") is False, errors, "AUTHORITY_MUTATE", f"{subject} non-transformer must not mutate target")
             if string_list(item.get("capability_refs")):
                 cap_refs.update(item["capability_refs"])
     return errors, {"target_identity": target_identity, "transformation_ids": ids, "capability_refs": cap_refs}
@@ -185,9 +204,44 @@ def validate_evaluation_plan(data: Any) -> tuple[list[str], dict[str, Any]]:
     require(isinstance(data, dict), errors, "ROOT", "evaluation plan must be an object")
     if not isinstance(data, dict):
         return errors, {}
-    require(data.get("schema_version") == 2, errors, "SCHEMA", "evaluation plan schema_version must be 2")
+    schema_version = data.get("schema_version")
+    require(schema_version in {2, 3}, errors, "SCHEMA", "evaluation plan schema_version must be 2 or 3")
     target_identity = data.get("target_identity")
     require(nonempty_str(target_identity), errors, "TARGET_ID", "evaluation target_identity is required")
+    evaluator_sets = data.get("evaluator_sets")
+    evaluator_ids: set[str] = set()
+    evaluator_roles: dict[str, str] = {}
+    if schema_version == 3:
+        require(isinstance(evaluator_sets, list) and bool(evaluator_sets), errors, "EVALUATOR_SETS", "schema_version 3 requires non-empty evaluator_sets")
+    if isinstance(evaluator_sets, list):
+        for i, row in enumerate(evaluator_sets):
+            subject = f"evaluator_sets[{i}]"
+            require(isinstance(row, dict), errors, "EVALUATOR_SET", f"{subject} must be an object")
+            if not isinstance(row, dict):
+                continue
+            eid = row.get("id")
+            require(nonempty_str(eid), errors, "EVALUATOR_ID", f"{subject}.id is required")
+            if nonempty_str(eid):
+                require(eid not in evaluator_ids, errors, "EVALUATOR_DUP", f"duplicate evaluator id {eid}")
+                evaluator_ids.add(eid)
+                evaluator_roles[eid] = str(row.get("role"))
+            require(row.get("role") in EVALUATOR_ROLES, errors, "EVALUATOR_ROLE", f"{subject}.role is invalid")
+            require(nonempty_str(row.get("identity")), errors, "EVALUATOR_IDENTITY", f"{subject}.identity is required")
+            require(isinstance(row.get("visible_to_transformer"), bool), errors, "EVALUATOR_VISIBILITY", f"{subject}.visible_to_transformer must be boolean")
+            require(row.get("frozen") is True, errors, "EVALUATOR_FREEZE", f"{subject}.frozen must be true")
+    contamination = data.get("contamination")
+    if schema_version == 3:
+        require(isinstance(contamination, dict), errors, "CONTAMINATION", "schema_version 3 requires contamination policy")
+    if isinstance(contamination, dict):
+        cstatus = contamination.get("status")
+        require(cstatus in CONTAMINATION_STATES, errors, "CONTAMINATION_STATUS", "contamination.status is invalid")
+        exposed = contamination.get("exposed_evaluator_ids")
+        require(string_list(exposed), errors, "CONTAMINATION_EXPOSED", "contamination.exposed_evaluator_ids must be a list of non-empty strings")
+        if string_list(exposed):
+            unknown = sorted(set(exposed) - evaluator_ids)
+            require(not unknown, errors, "CONTAMINATION_EXPOSED", f"contamination references unknown evaluator ids: {unknown}")
+        require(isinstance(contamination.get("promotion_holdout_required"), bool), errors, "CONTAMINATION_HOLDOUT", "promotion_holdout_required must be boolean")
+        require(nonempty_str(contamination.get("reason")), errors, "CONTAMINATION_REASON", "contamination.reason is required")
     levels = data.get("levels")
     require(isinstance(levels, list), errors, "LEVELS", "levels must be a list")
     seen: list[str] = []
@@ -222,7 +276,15 @@ def validate_evaluation_plan(data: Any) -> tuple[list[str], dict[str, Any]]:
             require(minimum_level in seen, errors, "FINALIST_LEVEL", "finalist minimum evaluation level must exist in levels")
         if holdout_policy == "blind-pass-required":
             require(minimum_level == "L5-holdout", errors, "FINALIST_HOLDOUT", "blind-pass-required finalist policy requires L5-holdout")
-    return errors, {"target_identity": target_identity, "levels": seen, "finalist_policy": finalist_policy}
+    if isinstance(contamination, dict) and contamination.get("status") == "contaminated":
+        require(contamination.get("promotion_holdout_required") is True, errors, "CONTAMINATION_HOLDOUT", "contaminated evaluation requires promotion_holdout_required=true")
+        blind_holdouts = [row for row in evaluator_sets or [] if isinstance(row, dict) and row.get("role") == "promotion-holdout" and row.get("visible_to_transformer") is False]
+        require(bool(blind_holdouts), errors, "CONTAMINATION_HOLDOUT", "contaminated evaluation requires a blind promotion-holdout evaluator")
+        l5 = next((level for level in levels or [] if isinstance(level, dict) and level.get("id") == "L5-holdout"), None)
+        require(isinstance(l5, dict) and l5.get("required") is True, errors, "CONTAMINATION_L5", "contaminated evaluation requires L5-holdout.required=true")
+        if isinstance(finalist_policy, dict):
+            require(finalist_policy.get("holdout_policy") == "blind-pass-required", errors, "CONTAMINATION_FINALIST", "contaminated evaluation requires finalist holdout_policy=blind-pass-required")
+    return errors, {"target_identity": target_identity, "levels": seen, "finalist_policy": finalist_policy, "evaluator_ids": evaluator_ids, "contamination": contamination}
 
 
 def main() -> int:

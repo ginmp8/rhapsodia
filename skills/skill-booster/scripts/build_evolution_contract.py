@@ -22,7 +22,7 @@ def build(handoff:dict,base:Path)->dict:
  identities.extend([tr.get('target_identity'),ev.get('target_identity')])
  bad=[x for x in identities if x and x!=target]
  if bad:raise ValueError('artifact target identity mismatch')
- if ev.get('schema_version')!=2:raise ValueError('evaluation plan schema_version must be 2')
+ if ev.get('schema_version') not in {2,3}:raise ValueError('evaluation plan schema_version must be 2 or 3')
  finalist_policy=ev.get('finalist_policy')
  if not isinstance(finalist_policy,dict):raise ValueError('evaluation plan finalist policy missing')
  if handoff.get('finalist_policy')!=finalist_policy:raise ValueError('finalist policy mismatch between handoff and evaluation plan')

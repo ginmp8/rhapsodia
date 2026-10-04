@@ -85,3 +85,11 @@ A multi-platform claim requires:
 - Claude Agent Skills: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview
 - GitHub Copilot agent skills: https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills
 - Cursor Agent Skills: https://cursor.com/docs/skills
+
+## Progressive-disclosure validation
+
+The portable validator should warn when `SKILL.md` exceeds the Agent Skills recommendation of 500 lines or when a required Markdown reference is only reachable through a deeper reference chain. These are maintainability/context warnings, not automatic semantic failures. Keep host-adapter metadata outside the portable core.
+
+For the optional OpenAI adapter, current `policy.products` values are `CHAT` and/or `CODEX`. Adapter validation must not treat this supported field as legacy, and invalid adapter metadata must not become a portable-core dependency.
+
+When running bundled Python validators against the target itself, prevent bytecode/cache writes into the target (`-B`, `PYTHONDONTWRITEBYTECODE`, or script-local equivalent). Validation must not change the bytes it is validating.

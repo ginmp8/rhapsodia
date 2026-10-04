@@ -45,3 +45,9 @@ When optimizing a catalog skill-by-skill, preserve the latest validated manifest
 ## Self-optimization
 
 When Booster optimizes itself, run the active immutable Booster controller against the candidate Booster manifest and frozen peer manifests. Exclude catalog-discovered alternate target versions from peer-owner checks; compare them only as baselines. Explicit peers remain explicit. A candidate Booster must not waive its own integration failures.
+
+## Optional executable consumer-contract evidence
+
+Structural/version compatibility remains the portable minimum. When consumer/provider executable verification exists, policy requires it, or an ecosystem-safe claim depends on behavior not proven by surface hashes, validate a consumer-contract evidence catalog with `scripts/validate_consumer_contract_evidence.py`.
+
+Bind every verification to the same deployment-catalog fingerprint used by the integration-impact gate and record contract id, consumer/provider skill identities or versions, result, and evidence hash. Do not require this machinery for standalone skills with no peer-facing contract. A failed required consumer verification blocks ecosystem-safe promotion even when manifest versions are nominally compatible.

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "run_id": "run-001",
+  "mode": "apply-optimization",
+  "target": {
+    "name": "skill-booster",
+    "baseline_identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "current_candidate_identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "current_phase": "select",
+  "phase_status": {
+    "establish": "pass",
+    "diagnose": "pass",
+    "select": "active",
+    "transform": "not-started",
+    "evaluate": "not-started",
+    "prove": "not-started"
+  },
+  "evidence": {
+    "evaluator_set_identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "source_set_identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "candidate_bound": []
+  },
+  "invalidated_evidence_ids": [],
+  "active_transformation_id": null,
+  "material_findings": {
+    "open": ["F-001"],
+    "terminal": []
+  },
+  "budget": {
+    "max_transform_cycles": 3,
+    "used_transform_cycles": 0,
+    "max_expensive_evals": 2,
+    "used_expensive_evals": 0,
+    "max_candidates": 3,
+    "used_candidates": 0
+  },
+  "resume": {
+    "checkpoint_id": "cp-001",
+    "last_completed_action": "diagnose-complete",
+    "next_legal_actions": ["select-transformation"],
+    "blockers": []
+  }
+}

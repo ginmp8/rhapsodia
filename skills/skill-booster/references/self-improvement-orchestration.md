@@ -104,3 +104,9 @@ When two providers disagree outside their ownership, do not invent a tie-breaker
 ### Evolutionary self-improvement
 
 When the self-improving target uses evolutionary mode, keep three identities separate and immutable during a generation: active Booster/controller, Skill Evolution/search controller, and frozen evaluator set. Candidate Booster variants live outside both controllers. Skill Evolution may select/search among candidate Booster variants but cannot promote or replace the active Booster; an external/unchanged Booster proof path must verify the selected candidate before promotion.
+
+## Self-improvement resume and evaluator integrity
+
+For Booster self-improvement, keep active controller identity, candidate identity, run-state, evaluator visibility, and promotion authority separate. The active controller and promotion gate remain outside the candidate mutation surface.
+
+If the candidate was changed using feedback from a promotion evaluator, that evaluator is development evidence for the current generation. A promotion claim then requires a different frozen blind holdout or must be weakened. The candidate cannot mark its own evaluator clean, alter run history, or issue its own promotion attestation.

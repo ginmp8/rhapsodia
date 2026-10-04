@@ -10,6 +10,9 @@ import re
 import sys
 from pathlib import Path
 
+# Validation must not create bytecode inside the target being inspected.
+sys.dont_write_bytecode = True
+
 from validate_skill_booster import find_skill_roots, parse_frontmatter, read_text, validate as validate_structure
 
 KNOWN_HOSTS = {"portable-core", "openai", "codex", "claude", "copilot", "cursor"}
@@ -77,6 +80,28 @@ def scan_host_private_core(root: Path, skill_md: Path) -> list[dict]:
     return findings
 
 
+def _openai_policy_products(text: str) -> list[str] | None:
+    lines = text.splitlines()
+    for i, line in enumerate(lines):
+        if line.strip() != "products:":
+            continue
+        indent = len(line) - len(line.lstrip())
+        values: list[str] = []
+        for nxt in lines[i + 1:]:
+            if not nxt.strip():
+                continue
+            nxt_indent = len(nxt) - len(nxt.lstrip())
+            if nxt_indent <= indent and not nxt.lstrip().startswith("-"):
+                break
+            stripped = nxt.strip()
+            if stripped.startswith("-"):
+                values.append(stripped[1:].strip().strip("\"'"))
+            elif nxt_indent <= indent:
+                break
+        return values
+    return None
+
+
 def validate_openai_adapter(root: Path) -> tuple[str, list[dict]]:
     adapter = root / "agents" / "openai.yaml"
     if not adapter.exists():
@@ -86,9 +111,17 @@ def validate_openai_adapter(root: Path) -> tuple[str, list[dict]]:
     for required in ["interface:", "display_name:", "short_description:"]:
         if required not in text:
             findings.append({"code": "OPENAI_ADAPTER_FIELD", "severity": "error", "evidence": required, "reason": "OpenAI adapter is present but incomplete"})
-    for obsolete in ["products:", "  icon:", "  color:"]:
+    for obsolete in ["  icon:", "  color:"]:
         if obsolete in text:
             findings.append({"code": "OPENAI_ADAPTER_LEGACY_FIELD", "severity": "warning", "evidence": obsolete.strip(), "reason": "prefer current documented agents/openai.yaml fields"})
+    products = _openai_policy_products(text)
+    if products is not None:
+        allowed = {"CHAT", "CODEX"}
+        if not products:
+            findings.append({"code": "OPENAI_ADAPTER_PRODUCTS", "severity": "error", "evidence": "products", "reason": "policy.products must contain CHAT, CODEX, or both"})
+        for product in products:
+            if product not in allowed:
+                findings.append({"code": "OPENAI_ADAPTER_PRODUCTS", "severity": "error", "evidence": product, "reason": "current OpenAI skill policy.products accepts only CHAT and CODEX"})
     return ("pass" if not any(f["severity"] == "error" for f in findings) else "fail"), findings
 
 

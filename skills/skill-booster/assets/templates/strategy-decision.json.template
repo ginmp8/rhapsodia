@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "target_identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "change_id": "T001",
+  "change_intent": "optimization",
+  "selected_strategy": "single-candidate",
+  "simpler_strategy_considered": "direct-repair",
+  "escalation_reason": "The requested change is not a known deterministic defect and requires a bounded candidate comparison.",
+  "evaluator_identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "acceptance_rule": "All hard gates pass and the predeclared focused evaluation succeeds.",
+  "budget": {
+    "max_transform_cycles": 2,
+    "max_candidates": 1,
+    "max_expensive_evals": 1
+  },
+  "stop_conditions": [
+    "required lower-level gate fails",
+    "two repair rounds do not improve the same objective diagnostic set",
+    "budget is exhausted"
+  ],
+  "evolution_explicit_authorization": false
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "deployment_catalog_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "verifications": [
+    {
+      "contract_id": "skill-opt.example-contract",
+      "consumer_skill": "consumer-skill",
+      "provider_skill": "provider-skill",
+      "consumer_version": "sha256:consumer-version",
+      "provider_version": "sha256:provider-version",
+      "status": "pass",
+      "evidence_identity": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

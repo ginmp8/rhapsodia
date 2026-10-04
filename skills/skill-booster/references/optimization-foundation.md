@@ -139,3 +139,21 @@ The canonical optimizer must remain valid when no search controller is installed
 Evolutionary readiness is not a quality gate for canonical optimization. Search-specific state is created only after explicit entry into the evolutionary branch.
 
 Validate canonical machine-readable artifacts with `scripts/validate_optimization_state.py`. For ordinary canonical work, validate capability map, transformation registry, and evaluation plan when material; add an experiment registry only when one was actually produced.
+
+## 13. Resumable run-state and strategy evidence
+
+For long, interrupted, or complete optimization, keep an external canonical run-state bound to baseline, current candidate, evaluator set, source set, phase, material findings, finite budgets, and invalidated evidence. Validate it before resume; never silently refresh an identity after drift.
+
+Before each material transformation, persist a strategy decision. `direct-repair` needs a demonstrated defect; `single-candidate` must record why direct repair is insufficient; `evolutionary-search` must record why a single candidate is insufficient, a finite search budget, stop conditions, and explicit evolutionary authorization. Strategy complexity is evidence-driven, not a quality signal.
+
+## 14. Evaluation contamination and promotion holdout
+
+Track evaluator sets separately from evaluation levels. Record each evaluator identity, role, freeze state, and whether its feedback was visible to the transformer. If candidate generation or repair used feedback from an evaluator intended to support promotion, mark the run contaminated for that claim. A contaminated promotion requires a frozen `promotion-holdout` evaluator that remained hidden from transformation plus required `L5-holdout` evidence. Never reclassify an exposed development evaluator as a blind holdout.
+
+## 15. Promotion attestation
+
+After all final gates and freeze verification, bind the promoted target to one attestation containing controller, baseline, candidate, evaluator/source-set, run-state, validation, final change-gate, portability, traceability when applicable, integration, and package identities. Target promotion remains separate from workflow-policy promotion.
+
+## 16. Research-backed optimization
+
+When a bounded research corpus materially determines target changes, freeze or identify that corpus before deriving requirements. Account for every extracted finding, preserve reverse justification from every substantive change to a requirement/finding, define deciding evaluations before mutation when feasible, and report trace completeness as corpus-bounded rather than universal knowledge completeness.

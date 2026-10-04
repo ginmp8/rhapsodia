@@ -161,3 +161,20 @@ final_delivery:
 ```
 
 Do not claim final readiness when the target was edited after freeze, freeze verification failed, material source identity changed without explicit re-baselining, requested-host portability failed, package/report path preflight failed, packaging failed, last-known-good preservation failed, rollback recovery was discarded, or the package receipt does not match the delivered archive.
+
+## Evaluator visibility and contamination
+
+Freeze evaluator identities before candidate mutation and classify each evaluator set as `development`, `regression`, or `promotion-holdout`. Record whether its feedback is visible to the transformer.
+
+A promotion claim is contaminated when candidate generation, repair, selection, or prompt/instruction tuning used feedback from the evaluator that would otherwise be presented as independent promotion evidence. Contamination is not automatically a candidate failure; it changes the evidence requirement. For a contaminated claim:
+
+- set `promotion_holdout_required: true`;
+- require a frozen `promotion-holdout` evaluator with `visible_to_transformer: false`;
+- require `L5-holdout` and `finalist_policy.holdout_policy: blind-pass-required`;
+- do not expose holdout outcomes until transformation is closed for that candidate.
+
+If no independent holdout exists, limit the claim to the strongest uncontaminated evidence rather than inventing independence.
+
+## Resume evidence
+
+Candidate-bound validation or gate evidence is valid only for the candidate identity it evaluated. On resume, a different current candidate makes that evidence stale unless the record is explicitly historical or invalidated. Never silently rebind old evidence to new bytes.
