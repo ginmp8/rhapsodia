@@ -1,5 +1,13 @@
 # RhapsodIA
 
+## 0.3.0 — reference-grounded convergence
+
+This snapshot strengthens the adaptive agent layer around a **compile-to-workflow + checkpoint-and-gate** model. For risky multi-step work, RhapsodIA now prefers small reviewable checkpoints, reference-derived oracle identity, declared gate order, fresh-context verification, explicit evidence memory, live-state revalidation for mutable sources, and immutable checkpoint evidence before dependent work proceeds.
+
+The design generalizes lessons from Shopify Helix, Dispatch/River, ShopGym, and Roast without copying their product-specific assumptions: deterministic code owns invariants and packaging; agents own bounded judgment; memory is evidence rather than truth; autonomy may increase only inside a predeclared policy and never weakens required gates.
+
+The release also removes the obsolete ChatGPT private-upload helper and the redundant per-skill ZIP helper. Packaging is now handled by a deterministic full-project release builder and CI validation workflow.
+
 ## Artifact-native workspace (Mags 2.0.0)
 
 Mago, Magia and Nomia now operate on independent producer-owned artifacts by default. The supervisor routes the owner; that owner's skill decides which documents are necessary and returns live-validated `artifact_actions`. No Board, Workspace installation, external orchestrator, database or network service is required for domain work.
