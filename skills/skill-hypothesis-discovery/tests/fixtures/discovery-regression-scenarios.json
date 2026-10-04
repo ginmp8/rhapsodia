@@ -1,6 +1,6 @@
 {
   "skill": "skill-hypothesis-discovery",
-  "contract_version": "1.0",
+  "contract_version": "1.1",
   "status": "regression-contract",
   "scenarios": [
     {
@@ -51,6 +51,34 @@
       "prompt": "Two eligible hypotheses have the same priority score.",
       "expected_behavior": "apply deterministic tie-breakers: gate effect, testability, confidence, lower risk, lower cost, lexical id",
       "deterministic_test": "test_ranking_tie_uses_testability_before_confidence"
+    },
+    {
+      "id": "reg-research-validation-leakage",
+      "category": "research-evidence-role",
+      "prompt": "A benchmark result used to accept a candidate is also cited as the discovery evidence for that same research-backed hypothesis.",
+      "expected_behavior": "reject validation-role evidence as discovery support and require a new/re-baselined discovery snapshot",
+      "deterministic_test": "test_validation_evidence_cannot_support_discovery"
+    },
+    {
+      "id": "reg-research-falsification",
+      "category": "falsification",
+      "prompt": "External research supports a hypothesis, but no counterevidence or negative test was attempted.",
+      "expected_behavior": "block research-backed v2 handoff until falsification is attempted and criteria are declared",
+      "deterministic_test": "test_falsification_must_be_attempted_before_handoff"
+    },
+    {
+      "id": "reg-research-evaluator-independence",
+      "category": "holdout",
+      "prompt": "The same shared evaluator was exposed during discovery and will decide candidate acceptance.",
+      "expected_behavior": "block research-backed handoff until a held-out or independent deciding evaluator identity is available",
+      "deterministic_test": "test_shared_evaluator_cannot_decide_research_backed_handoff"
+    },
+    {
+      "id": "reg-research-gap-ranking",
+      "category": "evidence-gap-priority",
+      "prompt": "Several evidence gaps remain with different information value and collection cost.",
+      "expected_behavior": "rank open gaps deterministically by information_value - ceil(collection_cost/2) and documented tie-breaks",
+      "deterministic_test": "test_gap_ranking_uses_information_value_then_cost"
     }
   ]
 }

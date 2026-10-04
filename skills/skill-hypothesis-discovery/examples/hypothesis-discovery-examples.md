@@ -94,3 +94,31 @@ When activation/non-activation/edge/output scenarios are executed and passing, v
 recommendation: no-mutation-recommended
 reason: no evidence-backed, measurable, low-risk mutation is visible from the current snapshot.
 ```
+
+## 10. Bounded research closes a source-resolvable gap
+
+Evidence exists for a target failure, but the proposed mechanism depends on an external standard or research result that is not in the package. With `research_policy: if-needed`, run bounded research for that specific question, deliberately search for contradicting evidence, freeze the resulting corpus, validate the research-discovery artifact, then derive the v2 hypothesis. Do not make network access a permanent prerequisite.
+
+## 11. Validation leakage
+
+A candidate already won a benchmark. That winning result cannot be retroactively cited as the discovery evidence for why the same change should have been hypothesized. Classify it as `validation` evidence. To use the new observation for another hypothesis, explicitly re-baseline with a new discovery snapshot and new hypothesis identity.
+
+## 12. Falsification before research-backed handoff
+
+A literature-backed hypothesis has strong supporting findings. Before it can proceed to v2 handoff, record a bounded attempt to find counterevidence or a competing mechanism, at least one falsification criterion, and an independent/held-out deciding evaluator. `confirmation found` by itself is insufficient.
+
+## 13. Deep-discovery is not deep research
+
+`deep-discovery` may generate more internal candidates, critique them adversarially, search counterexamples, consolidate, and deterministically rank the final bounded set. It does not require web research or multiple agents. If the evidence is already sufficient, deep-discovery can remain fully local and serial.
+
+## 14. Evidence-gap priority
+
+For two open gaps:
+
+```text
+G001: information_value=5, collection_cost=2 -> priority 4
+G002: information_value=4, collection_cost=1 -> priority 3
+```
+
+Collect `G001` first. This is a bounded diagnostic heuristic, not a statistical posterior and not a mutation score.
+

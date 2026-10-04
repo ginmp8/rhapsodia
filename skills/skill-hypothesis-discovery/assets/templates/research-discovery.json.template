@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "target": {
+    "name": "<skill-name>",
+    "identity": "sha256:<target-baseline>"
+  },
+  "research_policy": "if-needed",
+  "research_status": "complete",
+  "evidence_sufficiency": "sufficient",
+  "recommendation": "proceed-to-v2-handoff",
+  "research_corpus": {
+    "corpus_id": "sha256:<canonical-sources-and-findings>",
+    "sources": [
+      {
+        "id": "S001",
+        "locator": "<stable URL, DOI, revision, or frozen artifact path>",
+        "identity": "<stable source identity>",
+        "authority": "primary",
+        "evidence_state": "pinned"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F001",
+        "statement": "<one atomic finding>",
+        "source_refs": ["S001"],
+        "stance": "supporting"
+      }
+    ]
+  },
+  "evidence_roles": [
+    {
+      "evidence_id": "E001",
+      "role": "discovery",
+      "finding_refs": ["F001"]
+    }
+  ],
+  "hypothesis_checks": [
+    {
+      "hypothesis_id": "H001",
+      "discovery_evidence_refs": ["E001"],
+      "supporting_finding_refs": ["F001"],
+      "counterevidence_finding_refs": [],
+      "alternative_explanations": ["<credible alternative mechanism or 'none found after bounded search'>"],
+      "falsification": {
+        "status": "attempted",
+        "criteria": ["<predeclared observation that would weaken or reject the mechanism>"],
+        "search_summary": "<what disconfirming/counterevidence was sought and what happened>"
+      },
+      "evaluator": {
+        "identity": "sha256:<frozen-evaluator-or-stable-id>",
+        "exposure": "held-out"
+      }
+    }
+  ],
+  "evidence_gaps": [
+    {
+      "id": "G001",
+      "question": "<remaining non-blocking evidence question>",
+      "status": "resolved",
+      "information_value": 4,
+      "collection_cost": 2
+    }
+  ],
+  "ranked_gap_ids": []
+}

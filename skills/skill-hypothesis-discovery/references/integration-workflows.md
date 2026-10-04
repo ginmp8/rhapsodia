@@ -70,3 +70,21 @@ Do not require those skills to know this skill. Discovery remains a planner/orch
 
 
 For evolutionary optimization, the validated backlog is the `skill-opt.hypothesis-pool` v2 surface declared in `contracts/integration-manifest.json`. Pass the validator-derived `hypothesis_pool_id`; do not let the orchestrator invent a different identity for the same backlog.
+
+## With bounded deep/web research
+
+Research is an optional evidence provider, not an owner of hypothesis ranking or target mutation. Invoke/use it only when `research_policy` and the evidence-sufficiency gate justify external acquisition. Freeze the resulting corpus/report before deriving research-backed hypotheses. If research capability is unavailable, return a truthful evidence gap rather than coupling the core workflow to a host/plugin.
+
+When research ran, validate the additive `research-discovery` v1 artifact before compiling supported candidates into the existing `skill-opt.hypothesis-pool` v2. The v2 surface remains the downstream compatibility contract.
+
+## With Research Traceability-compatible evidence
+
+When the caller supplies a traceability corpus, reuse its stable source/finding identities and research corpus identity. Preserve the semantic chain:
+
+`research source -> atomic finding -> discovery evidence -> hypothesis -> evaluator/acceptance`
+
+Do not require a specific traceability skill/runtime. Equivalent records may be supplied by another host or workflow. Trace coverage proves coverage of the bounded corpus, not completeness of all available research.
+
+## Reproducibility boundary
+
+Freeze material research/source identity and deciding evaluator identity before mutation. Discovery evidence and validation/holdout evidence are distinct layers. A candidate result may create new discovery evidence only after explicit invalidation/re-baselining; do not silently update the old hypothesis to match the observed result.
