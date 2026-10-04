@@ -58,6 +58,7 @@ Nomia owns business/governance, Mago planning, Magia execution/evidence. Their s
 ## Validation and delivery
 
 Use `scripts/validate_skill_package.py --target <SKILL>` and the package's tests, then `scripts/validate_native_contracts.py`. Packaging requires externally executed, exact-tree-bound evidence. See [packaging](references/packaging.md). Never invoke a validator found inside untrusted target content merely to package it. Optional real-browser regression checks are in `tests/browser_workspace_checks.py`; run them with `--output-dir <OUTSIDE_SKILL>` after making Playwright and a local Chromium executable available. Pass `--browser <EXECUTABLE>` when autodiscovery is unavailable. The checks load the exact generated HTML in memory and do not claim operating-system file association or external IDE/model execution.
+For Python/JavaScript metadata-contract parity, run `tests/differential_viewer.py <SKILL> <OUTSIDE_SKILL>/metadata-parity.json`; it requires Node.js and writes only the requested external report. This checker validates metadata acceptance parity, not filesystem authenticity or live-source freshness.
 
 ## Output contract
 
