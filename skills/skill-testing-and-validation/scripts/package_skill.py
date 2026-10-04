@@ -55,12 +55,41 @@ def validate_root(root: Path) -> list[str]:
     return errors
 
 
+def is_within(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def write_json_atomic(path: Path, data: dict[str, Any]) -> None:
+    resolved = path.resolve()
+    resolved.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{resolved.name}.", suffix=".tmp", dir=str(resolved.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(data, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_name, resolved)
+    except Exception:
+        try:
+            os.unlink(temp_name)
+        except OSError:
+            pass
+        raise
+
+
 def preflight(root: Path, output: Path, files: list[Path]) -> list[str]:
     errors: list[str] = []
     authored = output.absolute()
     resolved = output.resolve()
     if authored.suffix.lower() != ".zip" or resolved.suffix.lower() != ".zip":
         errors.append("output must remain a .zip after canonical path resolution")
+    if is_within(resolved, root):
+        errors.append("output must not be inside target tree; packaging output must remain external to validated source bytes")
     for source in files:
         try:
             if source.resolve() == resolved:
@@ -68,6 +97,19 @@ def preflight(root: Path, output: Path, files: list[Path]) -> list[str]:
                 break
         except OSError:
             continue
+    return errors
+
+
+def preflight_report(root: Path, output: Path, report: Path | None) -> list[str]:
+    if report is None:
+        return []
+    resolved_output = output.resolve()
+    resolved_report = report.resolve()
+    errors: list[str] = []
+    if resolved_report == resolved_output:
+        errors.append("report path aliases package output")
+    if is_within(resolved_report, root):
+        errors.append("report must remain outside target tree so delivery evidence cannot mutate validated source bytes")
     return errors
 
 
@@ -126,11 +168,28 @@ def main() -> int:
     parser.add_argument("output", nargs="?", default="skill.zip", help="Output zip path")
     parser.add_argument("--report", help="Optional JSON report path")
     args = parser.parse_args()
-    result = package(Path(args.target), Path(args.output))
-    if args.report:
-        report = Path(args.report)
-        report.parent.mkdir(parents=True, exist_ok=True)
-        report.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    target = Path(args.target).resolve()
+    output = Path(args.output).absolute()
+    report = Path(args.report).absolute() if args.report else None
+    delivery_errors = preflight_report(target, output, report)
+    if delivery_errors:
+        result = {
+            "receipt_version": 1,
+            "status": "fail",
+            "passed": False,
+            "errors": delivery_errors,
+            "target": str(target),
+            "output": str(output),
+            "output_resolved": str(output.resolve()),
+            "size_bytes": None,
+            "file_count": 0,
+            "sha256": None,
+            "archive_root": skill_name(target),
+        }
+    else:
+        result = package(target, output)
+        if report:
+            write_json_atomic(report, result)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["passed"] else 1
 

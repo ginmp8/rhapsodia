@@ -66,5 +66,16 @@ class MarkdownStructureTests(unittest.TestCase):
             self.assertEqual(1, receipt["warnings"])
 
 
+    def test_missing_image_alt_text_is_non_blocking_warning(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            doc = Path(tmp) / "README.md"
+            doc.write_text("# Title\n\n![](diagram.png)\n", encoding="utf-8")
+            receipt = MODULE.build_receipt([doc], MODULE.analyze_file(doc))
+            self.assertEqual("pass", receipt["status"])
+            self.assertEqual(0, receipt["errors"])
+            self.assertTrue(any(item["code"] == "docs/image/alt-missing" for item in receipt["checks"]))
+
+
+
 if __name__ == "__main__":
     unittest.main()

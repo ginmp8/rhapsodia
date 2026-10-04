@@ -1,62 +1,47 @@
-# Testability Research
+# Testability research
 
 ## Target and scope
 
-- Canonical target path:
-- Requested scope:
-- Writable paths:
+- Canonical target:
+- Requested goal:
+- In scope:
+- Out of scope:
 - Protected paths:
-- Mode:
 
-## Capability and environment fingerprint
+## Runtime and command inventory
 
-- Filesystem read/write:
-- Command execution:
-- Python/runtime availability:
-- Relevant tool versions/paths:
-- Blocked capabilities:
+| Gate | Candidate command | Source/rank | Runtime available | Notes |
+|---|---|---|---|---|
 
-## Project overview
+## Behavioral contract and oracle inventory
 
-- Package role:
-- Languages/runtimes:
-- Frameworks/tools:
-- Existing test/validator framework:
+- Known requirements/contracts/invariants:
+- Existing test intent(s):
+- Available oracle sources:
+- Suspected faulty behavior where SUT observation cannot be the sole oracle:
+- Behavioral gaps not mapped to tests:
 
-## Command discovery
+## Reliability risks
 
-| Gate | Selected command | Rank/source | Working directory | Runtime available | Required? |
-|---|---|---|---|---|---|
-| build |  |  |  |  |  |
-| test |  |  |  |  |  |
-| lint |  |  |  |  |  |
-| validator |  |  |  |  |  |
-| packaging |  |  |  |  |  |
+- Time/timezone/locale:
+- Randomness/hash seed:
+- Order/shared state:
+- Concurrency:
+- Cache/generated files:
+- Network/external services/files:
+- Other:
 
-### Alternate candidates / ambiguities
+## Strategy candidates
 
-| Gate | Candidate | Rank/source | Tie-break result |
+| Problem shape | Strategy | Existing capability/tool | Required? | Rationale |
+|---|---|---|---|---|
+
+## Proxy metrics
+
+- Existing/requested coverage or mutation metrics:
+- Interpretation limits:
+
+## Findings and priorities
+
+| Priority | Finding | Evidence | Recommended gate/phase |
 |---|---|---|---|
-
-## Existing tests and validators
-
-| Path | Purpose | Read/write behavior | Risks |
-|---|---|---|---|
-
-## Testability risks
-
-- Nondeterminism:
-- External services/network:
-- Credentials/configuration:
-- Protected fixtures/evidence:
-- Generated outputs:
-
-## Coverage gaps and priorities
-
-| Priority | Path/behavior | Gap | Proposed evidence |
-|---|---|---|---|
-
-## Baseline evidence
-
-| Gate | Command/static evidence | State | Exit code | Classification | Receipt/evidence |
-|---|---|---|---:|---|---|

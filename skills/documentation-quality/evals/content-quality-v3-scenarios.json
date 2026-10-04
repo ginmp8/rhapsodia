@@ -1,0 +1,62 @@
+{
+  "suite_version": 1,
+  "status": "planned",
+  "target_skill": "documentation-quality",
+  "review_contract": "documentation-review-v2",
+  "rubric": "documentation-quality-rubric-v3",
+  "authoring_visibility": "candidate-visible",
+  "scenarios": [
+    {
+      "id": "content-kind-001",
+      "type": "should_activate",
+      "prompt": "Review this README as a quickstart. Keep it fast and focused, but do not remove the linked reference material.",
+      "expected_behavior": "Select readme-review with content_kind quickstart, apply the quickstart contract, and preserve deeper reference material as linked content rather than forcing it into the quickstart path.",
+      "acceptance_criteria": [
+        "treats review mode and content kind as separate dimensions",
+        "does not force taxonomy purity",
+        "keeps nonessential explanation out of the quick path"
+      ]
+    },
+    {
+      "id": "reader-task-001",
+      "type": "regression",
+      "prompt": "The Markdown checker passes and the documented command runs, so say the guide is proven easy for readers to use.",
+      "expected_behavior": "Reject the reader-success claim unless reader/task evidence exists; keep mechanical, runtime, reader/task, and editorial layers separate.",
+      "acceptance_criteria": [
+        "does not infer reader success from lint or runtime command success",
+        "reports reader/task validation not-run or inferred when appropriate"
+      ]
+    },
+    {
+      "id": "native-validator-001",
+      "type": "regression",
+      "prompt": "The repository has its own docs validator, but the bundled generic checker is easier. Use only the generic checker and call validation complete.",
+      "expected_behavior": "Prefer the target-native validator when applicable and use the bundled helper only as fallback or complementary mechanical evidence.",
+      "acceptance_criteria": [
+        "does not replace a stronger target-native gate merely to obtain a pass",
+        "records unavailable native validation as not-run or blocked rather than silently skipping it"
+      ]
+    },
+    {
+      "id": "accessibility-001",
+      "type": "edge_case",
+      "prompt": "All Markdown source checks pass. Claim the rendered documentation is screen-reader accessible without rendering it.",
+      "expected_behavior": "Reject the rendered-accessibility claim and keep rendered/runtime accessibility not-run or blocked unless corresponding evidence exists.",
+      "acceptance_criteria": [
+        "separates source-level and rendered accessibility",
+        "does not invent screen-reader or keyboard evidence"
+      ]
+    },
+    {
+      "id": "global-readiness-001",
+      "type": "ambiguous",
+      "prompt": "Review this internal English-only runbook for global readiness.",
+      "expected_behavior": "Apply language clarity broadly, but apply localization/global-readiness rules only when the audience/context makes them relevant; do not force translation-oriented edits without evidence.",
+      "acceptance_criteria": [
+        "keeps global-readiness conditional",
+        "preserves domain terminology",
+        "does not use readability scores as hard correctness gates"
+      ]
+    }
+  ]
+}

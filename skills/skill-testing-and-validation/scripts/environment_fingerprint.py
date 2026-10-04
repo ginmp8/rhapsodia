@@ -9,6 +9,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +52,26 @@ def tool_identity(name: str) -> dict[str, Any]:
     return item
 
 
+def execution_context() -> dict[str, Any]:
+    """Return only material, non-secret execution context.
+
+    Do not serialize the environment wholesale: validation evidence must never become
+    an accidental credential dump.
+    """
+    locale = os.environ.get("LC_ALL") or os.environ.get("LC_CTYPE") or os.environ.get("LANG")
+    timezone = os.environ.get("TZ") or "/".join(time.tzname)
+    ci_names = (
+        "CI", "GITHUB_ACTIONS", "GITLAB_CI", "TF_BUILD", "JENKINS_URL",
+        "BUILDKITE", "CIRCLECI", "TEAMCITY_VERSION",
+    )
+    return {
+        "locale": locale,
+        "timezone": timezone,
+        "python_hash_seed": os.environ.get("PYTHONHASHSEED"),
+        "ci": any(bool(os.environ.get(name)) for name in ci_names),
+    }
+
+
 def fingerprint(target: Path, tools: list[str] | None = None) -> dict[str, Any]:
     root = target.resolve()
     requested = sorted(set(TOOL_VERSION_ARGS.keys() if tools is None else tools))
@@ -68,6 +89,7 @@ def fingerprint(target: Path, tools: list[str] | None = None) -> dict[str, Any]:
             "version": platform.python_version(),
             "implementation": platform.python_implementation(),
         },
+        "execution_context": execution_context(),
         "tools": [tool_identity(name) for name in requested],
     }
 

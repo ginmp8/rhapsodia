@@ -18,6 +18,7 @@ RECEIPT_VERSION = 1
 STAGE = "markdown-structure-check"
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 LINK_TEXT_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
 AMBIGUOUS_LINK_TEXT = {"here", "this", "click here", "read more"}
 FENCE_RE = re.compile(r"^\s*(```+|~~~+)(.*)$")
 
@@ -94,6 +95,21 @@ def analyze_file(path: Path) -> list[dict[str, object]]:
         if heading_match:
             level = len(heading_match.group(1))
             headings.append((line_no, level, heading_match.group(2).strip()))
+
+        for image_match in IMAGE_RE.finditer(line):
+            alt_text = image_match.group(1).strip()
+            if not alt_text:
+                findings.append(
+                    diagnostic(
+                        "docs/image/alt-missing",
+                        "warning",
+                        str(path),
+                        {"line": line_no, "target": image_match.group(2)},
+                        [
+                            "add concise alt text for an informative image, or verify decorative intent in the rendered format"
+                        ],
+                    )
+                )
 
         for link_match in LINK_TEXT_RE.finditer(line):
             label = " ".join(link_match.group(1).strip().lower().split())

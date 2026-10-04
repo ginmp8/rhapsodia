@@ -1,73 +1,54 @@
-# Validation Report
+# Validation report
 
-## Mode and target
+## Scope
 
 - Mode:
-- Canonical target path:
-- Scope:
-- Writable paths:
+- Target:
+- Material target identity:
 - Protected paths:
-- Baseline identity:
+- Required gates:
 
-## Environment fingerprint
+## Baseline
 
-- Platform:
-- Python/runtime:
-- Relevant tools/versions:
-- Capability blockers:
+- Evidence source:
+- Environment fingerprint:
+- Initial command/state/exit code/classification:
 
-## Command selection
+## Test intent and oracle evidence
 
-| Gate | Selected command | Source/rank | Working directory | Required? |
+- Test intent:
+- Oracle source:
+- Behavioral requirements/contracts/invariants covered:
+- Unmapped behavior / oracle limitations:
+
+## Reliability
+
+- Reliability required?:
+- Stability state/outcome:
+- Attempt count:
+- Material nondeterminism controls/limitations:
+
+## Gate receipts
+
+| Gate | Command | Working directory | Target identity | State | Exit code | Classification |
+|---|---|---|---|---|---|---|
+
+## Proxy metrics
+
+- Metric(s):
+- Result:
+- Interpretation boundary:
+
+## Changes and reruns
+
+| Change | Root cause | Files | Same-gate rerun | Result |
 |---|---|---|---|---|
 
-## Baseline before changes
+## Final conclusion
 
-| Gate | State | Classification/code | Exit code | Receipt/evidence |
-|---|---|---|---:|---|
-
-## Changes made
-
-| File | Change | Diagnostic/rationale |
-|---|---|---|
-
-## Protected evidence check
-
-- Status:
-- Receipt/evidence:
-
-## Same-gate rerun evidence
-
-| Gate | Exact command | Working directory | Exit code | State | Receipt/evidence |
-|---|---|---|---:|---|---|
-
-## Adjacent/final gates
-
-| Gate | Command | Exit code | State | Classification | Evidence type | Receipt |
-|---|---|---:|---|---|---|---|
-
-## Overall conclusion
-
-- Overall state (`pass|fail|blocked|not-run`):
-- Fixed-rule basis:
-
-## Not-run or blocked
-
-| Gate | State | Reason | Required capability/input |
-|---|---|---|---|
-
-## Evidence labels
-
-- Executed:
-- Supplied:
-- Static:
-- Planned:
-
-## Residual risks
-
-- 
-
-## Freeze
-
-- Candidate frozen after final pass:
-- Post-pass edits requiring revalidation:
+- Overall gate state:
+- Reliability/oracle acceptance overlays:
+- Evidence layers: executed / supplied / static / planned / blocked
+- Not-run/blocked items:
+- Residual risk:
+- Frozen candidate identity:
