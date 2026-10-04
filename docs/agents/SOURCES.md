@@ -97,8 +97,10 @@ The reusable lessons are small checkpoints, source-as-spec, oracle-before-candid
 
 ## Dual-control-plane synthesis
 
-The Claude Dynamic Workflows research informs the runtime-adaptive control plane: planner/compiler/runtime separation, runtime-discovered work, bounded fan-out/pipelines/loops, externalized intermediate state, structured results, finite budgets, session replay versus durable execution, and verifier-isolation limits.
+Public Anthropic documentation and engineering material concerning Claude Code Dynamic Workflows informed the runtime-adaptive control plane: planner/compiler/runtime separation, runtime-discovered work, bounded fan-out, pipelines and loops, externalized intermediate state, structured results, finite budgets, distinctions between session replay and durable execution, and the limits of verifier isolation.
 
-The Shopify Helix/River/ShopGym/Roast research informs the convergence control plane: reference-as-spec, small checkpoints, oracle-before-candidate, ordered non-overridable gates, fresh-context repair/review, accepted feedback with provenance, live-state revalidation, deterministic enforcement, policy-bounded autonomy, materialized promotion, and closure verification.
+Public Shopify engineering material concerning Helix, River, ShopGym, and Roast informed the convergence control plane: reference-as-spec, small checkpoints, oracle-before-candidate, ordered non-overridable gates, fresh-context repair and review, accepted feedback with provenance, live-state revalidation, deterministic enforcement, policy-bounded autonomy, materialized promotion, and closure verification.
 
-These are design inputs, not runtime dependencies. RhapsodIA keeps both contracts host-neutral and composes them only through explicit evidence handoff with one progression owner.
+These sources serve solely as research provenance and design inputs. The resulting control planes, contracts, terminology, and implementation are RhapsodIA-specific. RhapsodIA does not depend on Anthropic or Shopify runtimes, proprietary tooling, internal architectures, or vendor-specific workflow taxonomies.
+
+The two control planes remain host-neutral and compose only through explicit evidence handoff with a single progression owner.

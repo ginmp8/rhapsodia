@@ -453,14 +453,14 @@ The Agents in this archive are original RhapsodIA package content unless an incl
 
 ## Design inspirations for this update
 
-The following sources informed the architecture but create **no runtime coupling**:
+The following research-derived patterns informed this update while creating **no runtime coupling** to the referenced systems:
 
-- Dynamic Workflows in Claude Code: isolated contexts, pipeline/barrier semantics, adversarial verification, bounded loops, resumability, and the rule that simple work should remain simple.
-- Shopify Helix: small checkpoints, non-overridable gates, repair-before-progression, and accepted-feedback carry-forward.
-- Shopify's agentic test-oracle harness: executable proof, independent verification, deterministic critical mechanics, and model-independent harness design.
-- Anthropic agent workflow guidance and current agent-eval guidance from Anthropic/OpenAI: simple composable patterns, environment ground truth, evaluator separation, trace/eval evidence, and bounded approvals.
+- **Runtime-adaptive orchestration:** isolated execution contexts, pipeline and barrier semantics, adversarial verification, bounded loops, explicit resumability boundaries, and the principle that simple work should remain simple.
+- **Checkpoint convergence:** small reviewable checkpoints, non-overridable gates, repair-before-progression, and accepted-feedback carry-forward.
+- **Executable verification:** test oracles, independent verification, deterministic critical mechanics, and model-independent harness design.
+- **Agent and evaluation architecture:** simple composable patterns, environment ground truth, evaluator separation, trace and evaluation evidence, and bounded approvals.
 
-See [docs/agents/SOURCES.md](docs/agents/SOURCES.md) for source URLs and the exact design/evidence boundary.
+These patterns are adapted into RhapsodIA-specific, host-neutral contracts and execution semantics. Detailed source provenance, including the public Anthropic, OpenAI, and Shopify materials that informed the design, and the corresponding adaptation boundaries are documented in [docs/agents/SOURCES.md](docs/agents/SOURCES.md).
 
 ## License
 

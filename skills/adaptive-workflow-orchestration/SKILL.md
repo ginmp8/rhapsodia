@@ -9,7 +9,9 @@ description: Design and operate bounded task-specific execution workflows when r
 
 Turn an already-authorized objective into a bounded execution topology without changing domain ownership. Keep orchestration mechanics explicit in a validated plan and execution trace instead of relying on free-form model memory.
 
-This skill owns **runtime orchestration for one task/run**. It is the Claude Dynamic Workflows-inspired control plane: the planner selects/compiles bounded topology, while runtime state, intermediate results, budgets, and worker execution remain outside the planner context. Use `checkpoint-convergence` when the problem is reference-grounded incremental promotion. Use `agent-design` when the primary artifact is a reusable agent, supervisor/worker topology, authority model, or `.agent.md` definition.
+This skill owns **runtime orchestration for one task/run**. It is RhapsodIA's **runtime-adaptive control plane**: the planner selects or compiles a bounded topology, while runtime state, intermediate results, budgets, and worker execution remain outside the planner context.
+
+Use `checkpoint-convergence` when the problem is reference-grounded incremental promotion. Use `agent-design` when the primary artifact is a reusable agent, supervisor/worker topology, authority model, or `.agent.md` definition.
 
 ## Ownership boundary
 
