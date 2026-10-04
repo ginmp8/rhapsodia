@@ -35,3 +35,27 @@ Expected: `fail` under strict portable policy unless that dependency is moved to
 User: "Can I accept this change? It should be better."
 
 Expected: `insufficient-evidence`; request/inspect target and candidate evidence plus the validation/evaluator evidence required by the caller's policy.
+
+## Fail: evidence replayed from another candidate
+
+User: "The validator says pass, but its subject candidate hash is from the previous candidate."
+
+Expected: `fail` for the supplied evidence binding. A correct result for different bytes is not acceptance evidence for the current candidate.
+
+## Insufficient evidence: contaminated holdout
+
+User: "The holdout bytes never changed, but we used its scores to select candidates for many generations."
+
+Expected: do not treat that evaluator as fresh holdout evidence. If holdout is required for promotion, return `insufficient-evidence`/gather-evidence until a fresh independent holdout is supplied.
+
+## Stale promotion decision
+
+User: "The candidate passed against destination A, but the destination is now B."
+
+Expected: mark the previous decision stale when destination identity is material and require revalidation. Do not call staleness a candidate defect.
+
+## Local pass, ecosystem not proven
+
+User: "The local package is valid, but an exported contract changed and a known consumer has not been checked."
+
+Expected: local acceptance may pass if its own gates pass, but an `ecosystem-safe` claim is not proven until all known consumers are compatible.

@@ -15,6 +15,7 @@ import json
 import os
 import py_compile
 import re
+import subprocess
 import sys
 import tempfile
 from dataclasses import asdict, dataclass, field
@@ -245,7 +246,7 @@ def parse_frontmatter(text: str, findings: list[Finding]) -> dict[str, str]:
     elif len(description) > 1024:
         findings.append(Finding("blocking", "frontmatter", "frontmatter/description-too-long", "frontmatter description exceeds 1024 characters"))
     elif len(description.split()) < 20:
-        findings.append(Finding("material", "activation", "activation/description-short", "frontmatter description may be too short for reliable activation"))
+        findings.append(Finding("non-blocking", "activation", "activation/description-short", "frontmatter description is short; treat this as a signal and verify activation/non-activation evidence rather than inferring regression from length alone"))
     return data
 
 
@@ -454,8 +455,83 @@ def compare_frontmatter(before: Path, after: Path, findings: list[Finding]) -> N
         before_words = len(b_front["description"].split())
         after_words = len(a_front["description"].split())
         if after_words < max(15, int(before_words * 0.45)):
-            findings.append(Finding("material", "activation", "activation/description-sharply-shortened", "frontmatter description was sharply shortened; verify activation recall and boundaries"))
+            findings.append(Finding("non-blocking", "activation", "activation/description-sharply-shortened", "frontmatter description was sharply shortened; treat this as a signal and verify activation/non-activation evidence rather than inferring regression from length alone"))
 
+
+
+def _frontmatter_field_block(path: Path, key: str) -> str | None:
+    if not path.is_file():
+        return None
+    match = FRONTMATTER_RE.match(read_text(path))
+    if not match:
+        return None
+    lines = match.group(1).splitlines()
+    start = None
+    for i, line in enumerate(lines):
+        if line.startswith((" ", "\t")) or ":" not in line:
+            continue
+        name = line.split(":", 1)[0].strip()
+        if name == key:
+            start = i
+            break
+    if start is None:
+        return None
+    block = [lines[start].rstrip()]
+    for line in lines[start + 1 :]:
+        if line and not line.startswith((" ", "\t")) and ":" in line:
+            break
+        block.append(line.rstrip())
+    return "\n".join(block).strip()
+
+
+def check_authority_signals(before: Path | None, target: Path, changes: dict[str, list[str]], findings: list[Finding]) -> dict[str, object]:
+    signals: list[dict[str, object]] = []
+    if before is not None:
+        before_tools = _frontmatter_field_block(before / "SKILL.md", "allowed-tools")
+        after_tools = _frontmatter_field_block(target / "SKILL.md", "allowed-tools")
+        if before_tools != after_tools and (before_tools is not None or after_tools is not None):
+            evidence = {"before": before_tools, "after": after_tools}
+            findings.append(Finding("non-blocking", "authority", "authority/allowed-tools-changed", "host tool-permission surface changed; review explicit authorization and portable-core impact", evidence))
+            signals.append({"code": "authority/allowed-tools-changed", **evidence})
+    executable_suffixes = {".py", ".sh", ".ps1", ".js", ".mjs", ".cjs", ".ts"}
+    touched = sorted({rel for kind in ("added", "changed") for rel in changes.get(kind, []) if rel.startswith("scripts/") and Path(rel).suffix.lower() in executable_suffixes})
+    if touched:
+        findings.append(Finding("non-blocking", "authority", "authority/executable-surface-changed", "executable script surface changed; review whether authority or runtime dependencies expanded", {"paths": touched}))
+        signals.append({"code": "authority/executable-surface-changed", "paths": touched})
+    return {"signals": signals}
+
+
+def check_gate_context(context_path: Path | None, target: Path, before: Path | None, target_hash: str, policy: str, findings: list[Finding]) -> dict[str, object] | None:
+    if context_path is None:
+        return None
+    resolved = canonical(context_path)
+    if path_inside(target, resolved) or (before is not None and path_inside(before, resolved)):
+        findings.append(Finding("blocking", "evidence", "gate-context/inside-subject", "Gate Context must resolve outside baseline/candidate roots", {"path": str(resolved)}))
+        return {"path": str(resolved), "status": "invalid"}
+    validator = Path(__file__).with_name("validate_gate_context.py")
+    if not validator.is_file():
+        findings.append(Finding("blocking", "evidence", "gate-context/validator-missing", "Gate Context was supplied but its bundled validator is missing"))
+        return {"path": str(resolved), "status": "invalid"}
+    proc = subprocess.run(
+        [sys.executable, str(validator), str(resolved), "--policy", policy, "--expected-candidate-sha256", target_hash],
+        capture_output=True, text=True, check=False,
+    )
+    try:
+        report = json.loads(proc.stdout)
+    except Exception:
+        findings.append(Finding("blocking", "evidence", "gate-context/validator-output-invalid", "Gate Context validator did not emit parseable JSON", {"exit_code": proc.returncode, "stderr": proc.stderr[-2000:]}))
+        return {"path": str(resolved), "status": "invalid"}
+    for item in report.get("errors", []):
+        findings.append(Finding("blocking", "evidence", f"gate-context/{item.get('code', 'unknown')}", str(item.get("message", "Gate Context validation failed")), dict(item.get("evidence") or {})))
+    for item in report.get("warnings", []):
+        findings.append(Finding("material", "evidence", f"gate-context/{item.get('code', 'unknown')}", str(item.get("message", "Gate Context validation warning")), dict(item.get("evidence") or {})))
+    return {
+        "path": str(resolved),
+        "status": report.get("status"),
+        "error_count": report.get("error_count"),
+        "warning_count": report.get("warning_count"),
+        "validator_exit_code": proc.returncode,
+    }
 
 def check_expected_hash(actual: str | None, expected: str | None, label: str, findings: list[Finding]) -> None:
     if not expected:
@@ -522,6 +598,7 @@ def run(
     expected_target_sha256: str | None,
     protected_paths: list[str],
     artifact_receipt: Path | None,
+    gate_context: Path | None,
 ) -> dict[str, object]:
     findings: list[Finding] = []
     target = canonical(target)
@@ -557,10 +634,12 @@ def run(
         changes = change_set(before_manifest, target_manifest)
         compare_frontmatter(before, target, findings)
 
+    authority = check_authority_signals(before, target, changes, findings)
     check_expected_hash(before_hash, expected_before_sha256, "before", findings)
     check_expected_hash(target_hash, expected_target_sha256, "target", findings)
     protected_touched = check_protected_changes(changes, protected_paths, findings) if before is not None else []
     receipt_summary = check_artifact_receipt(artifact_receipt, target, target_hash, findings)
+    gate_context_summary = check_gate_context(gate_context, target, before, target_hash, policy, findings)
 
     return build_result(
         target,
@@ -575,6 +654,8 @@ def run(
         protected_touched=protected_touched,
         portability=portability,
         artifact_receipt=receipt_summary,
+        gate_context=gate_context_summary,
+        authority=authority,
         manifest_counts={"target": len(target_manifest), "before": len(before_manifest) if before is not None else None},
     )
 
@@ -593,6 +674,8 @@ def build_result(
     protected_touched: list[str] | None = None,
     portability: dict[str, object] | None = None,
     artifact_receipt: dict[str, object] | None = None,
+    gate_context: dict[str, object] | None = None,
+    authority: dict[str, object] | None = None,
     manifest_counts: dict[str, object] | None = None,
 ) -> dict[str, object]:
     changes = changes or {"added": [], "removed": [], "changed": []}
@@ -612,6 +695,8 @@ def build_result(
         "protected_paths": protected_paths or [],
         "protected_path_changes": protected_touched or [],
         "artifact_receipt": artifact_receipt,
+        "gate_context": gate_context,
+        "authority": authority or {"signals": []},
         "portability": portability or {"host_adapters": [], "private_core_hits": []},
         "findings": [asdict(f) for f in findings],
         "errors": sum(1 for f in findings if f.severity == "blocking"),
@@ -630,6 +715,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--expected-target-sha256", help="optional frozen SHA-256 for the candidate tree")
     parser.add_argument("--protected-path", action="append", default=[], help="relative path, directory, or glob that must not change between before and target; repeatable")
     parser.add_argument("--artifact-receipt", help="optional JSON receipt whose candidate tree identity must match the gated target")
+    parser.add_argument("--gate-context", help="optional Gate Context v1 JSON; must live outside baseline/candidate roots")
     parser.add_argument("--json", help="optional JSON report path; must resolve outside target/before roots")
     args = parser.parse_args(argv)
 
@@ -654,6 +740,7 @@ def main(argv: list[str]) -> int:
             expected_target_sha256=args.expected_target_sha256,
             protected_paths=args.protected_path,
             artifact_receipt=Path(args.artifact_receipt) if args.artifact_receipt else None,
+            gate_context=Path(args.gate_context) if args.gate_context else None,
         )
         emit(result, report_path)
         return 0 if result["status"] in {"pass", "pass-with-warnings"} else 1

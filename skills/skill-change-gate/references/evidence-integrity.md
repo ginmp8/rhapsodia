@@ -2,128 +2,88 @@
 
 ## Purpose
 
-Prevent a candidate from passing because the gate inspected different bytes, mutable evidence, unsafe outputs, or incomplete receipts. These checks complement semantic review; they do not replace it.
+Prevent acceptance because the gate inspected different bytes, stale/contaminated evidence, unsafe outputs, or incomplete receipts. These checks complement semantic review; they do not replace it.
 
-## Evidence identities
+## Keep evidence identities separate
 
-Keep these identities separate when they exist:
+Record separately when material:
 
-- before/baseline skill tree;
-- after/candidate skill tree;
-- frozen evaluator or protected evidence;
-- benchmark/scenario input set;
+- baseline and direct-parent tree;
+- candidate tree;
+- source snapshot;
+- evaluator/scenario set;
+- policy and verifier implementation;
+- destination/current state;
 - packaged/delivered artifact;
 - persisted receipt/report.
 
-A hash for one layer does not prove another layer is identical.
+One hash does not prove another layer is identical.
 
-## Before and candidate tree identity
+## Candidate and baseline identity
 
-For local folders, the static helper emits deterministic tree hashes and change sets. Capture the baseline hash before mutation when the workflow needs strict before/after identity.
+For local folders, `scripts/static_change_gate.py` emits deterministic tree hashes. Capture baseline identity before mutation and candidate identity before acceptance. Expected mismatch is blocking; never refresh the expectation after seeing the mismatch merely to pass.
 
-Example:
+## Decision evidence binding
 
-```text
-<PYTHON> scripts/static_change_gate.py --target <BEFORE> --profile portable > <WORK>/before.json
-```
+When evidence influences acceptance, prefer Gate Context v1 from `references/decision-evidence-contract.md`. Every deciding evidence record should identify the exact candidate it describes and its producer. Candidate-mismatched evidence is blocking even when the result itself says `pass`.
 
-Record `target_tree_sha256`. At acceptance time, provide the expected identities:
-
-```text
-<PYTHON> scripts/static_change_gate.py \
-  --target <AFTER> \
-  --before <BEFORE> \
-  --expected-before-sha256 <BASELINE_HASH> \
-  --expected-target-sha256 <FROZEN_CANDIDATE_HASH>
-```
-
-An expected hash mismatch is blocking. Do not silently recompute the expectation after seeing the mismatch.
+Under strict measured acceptance, preserve stable policy/verifier identities when those rules can change. A policy mode label alone is not exact decision provenance.
 
 ## Frozen evaluator and protected paths
 
-If benchmark/eval fixtures determine acceptance, freeze them before candidate mutation. They may live inside or outside the skill.
+Freeze evaluator/scenario/fixture inputs before candidate mutation when they decide acceptance. For in-package paths, pass protected patterns to the static helper. For external evaluators, inspect a freeze manifest or equivalent identity evidence.
 
-For paths inside the skill, pass each protected path/pattern to the static helper:
+Mutation of protected evaluator evidence invalidates the measured experiment unless explicitly restarted.
 
-```text
---protected-path evals/** \
---protected-path tests/golden/** \
---protected-path references/acceptance-policy.md
-```
+### Visibility is independent from bytes
 
-A protected path that is added, removed, or modified is blocking in a measured experiment unless the experiment is explicitly invalidated and restarted with a new baseline.
+A byte-identical evaluator can still cease to be a valid holdout when candidate construction or selection repeatedly observes its private content/results. Record evaluator role and exposure in Gate Context. If holdout evidence is required and contaminated, gather fresh independent evidence or narrow the claim.
 
-For evaluators outside the skill, inspect the caller's freeze manifest or equivalent evidence. If identity cannot be verified and acceptance depends on it, return `insufficient-evidence`.
+## Caller-declared stochastic evidence contract
+
+The gate does not choose trial counts or statistical thresholds. It verifies the supplied contract: required/completed trials, holdout requirement, and independent replication requirement. Missing required trials/replication means insufficient acceptance evidence.
+
+## Freshness and destination state
+
+When promotion depends on a parent/destination state, bind the decision to that state. If expected and observed destination identities differ before promotion, the prior decision is stale. Revalidate; do not reinterpret stale evidence as a current pass or a candidate defect.
 
 ## Artifact and receipt correspondence
 
-When packaging/delivery is part of acceptance, verify that the delivered artifact was built from the frozen candidate rather than merely trusting a successful package command.
-
-The static helper accepts a JSON artifact receipt with a successful status and one of these candidate identity fields:
-
-- `source_tree_sha256`;
-- `candidate_tree_sha256`;
-- `target_tree_sha256`.
-
-Example:
-
-```text
---artifact-receipt <WORK>/package-receipt.json
-```
-
-A receipt whose candidate identity differs from the current frozen candidate is blocking. A receipt without any candidate identity is material evidence weakness and fails under strict policy.
+When packaging/delivery is in scope, verify that the delivered artifact was built from the frozen candidate. `scripts/static_change_gate.py --artifact-receipt ...` accepts a successful receipt containing candidate/source/target tree identity. Candidate mismatch is blocking; missing identity is material evidence weakness and fails under strict policy.
 
 ## Output-path safety
 
-A gate must not mutate the package it is inspecting merely by writing its own report.
+Gate reports must not mutate the package they identify. Keep reports and run-specific Gate Context outside baseline/candidate roots. Resolve/canonicalize paths before writes and reject aliases with inputs, evaluators, protected files, or sibling receipts.
 
-The bundled helper therefore requires `--json` to resolve outside both before and target roots. Resolve symlinks before deciding whether a path is outside. Report writes are staged in the destination directory and atomically replaced to avoid partial JSON.
-
-For candidate skills that themselves produce files, review whether they:
-
-- canonicalize output paths before mutation;
-- reject aliases with inputs, evaluators, protected files, or sibling receipts;
-- re-check required output type after symlink resolution;
-- preserve previous valid outputs on validation/preflight failure.
-
-A candidate that can overwrite its own inputs/protected evidence through path aliasing introduces a blocking regression.
+For candidate skills that produce files, review canonicalization, symlink handling, last-good preservation, and alias rejection.
 
 ## Recovery behavior
 
-When a candidate performs multi-output or destructive delivery, acceptance should require a defined last-good strategy.
-
-Preferred sequence:
+For multi-output/destructive delivery prefer:
 
 `stage -> validate -> preserve previous targets -> commit all -> clean backups`
 
-If commit or rollback fails, recovery files and exact target mappings should remain available. Deleting recovery evidence merely to leave a clean directory is a regression when recovery is part of the workflow contract.
+If commit/rollback fails, preserve recovery files and exact target mappings. Do not delete recovery evidence merely to leave a clean directory.
 
 ## Durable receipts
 
-Treat receipts as evidence. They should be:
-
-- versioned when consumed by automation;
-- stage-aware (`preflight`, `validation`, `commit`, `rollback`, etc.);
-- complete and parseable;
-- written/flushed before process exit;
-- tied to the exact bytes they describe;
-- explicit about missing evidence and recovery paths.
-
-Do not accept `{"status":"pass"}` as sufficient proof of artifact correspondence when the caller depends on candidate identity, packaging identity, or frozen evaluator identity.
+Receipts should be versioned when automated consumers exist, stage-aware, parseable, complete, flushed before exit, and tied to the exact bytes they describe. A bare `{ "status": "pass" }` is insufficient when candidate or artifact correspondence matters.
 
 ## Gate implications
 
 Blocking by default:
 
-- expected before/candidate identity mismatch;
-- protected evaluator/fixture mutation in a frozen experiment;
-- artifact receipt points to different candidate bytes;
-- output can alias protected/input paths in a way that risks mutation;
-- failed delivery destroys the last-good artifact where preservation is part of the contract;
-- a failed rollback loses the remaining recovery evidence.
+- expected baseline/candidate identity mismatch;
+- candidate-mismatched deciding evidence;
+- protected evaluator mutation;
+- contaminated required holdout;
+- stale required destination identity for promotion;
+- artifact/promotion receipt points to different candidate bytes;
+- output can alias protected/input paths;
+- failed delivery destroys last-good state or recovery evidence.
 
 Material by default:
 
-- successful artifact receipt lacks candidate identity;
-- current host cannot mechanically verify an otherwise supplied identity but semantic evidence remains usable;
-- recovery or receipt details are underspecified without a demonstrated destructive failure mode.
+- successful receipt lacks candidate identity;
+- an otherwise supplied external identity cannot be mechanically verified;
+- recovery/receipt details are underspecified without a demonstrated destructive failure mode.

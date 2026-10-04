@@ -1,6 +1,6 @@
 ---
 name: skill-change-gate
-description: evaluate proposed changes to existing Agent Skills-compatible packages across ChatGPT/OpenAI, Claude, GitHub Copilot, Cursor, Codex, and similar hosts before acceptance. use when reviewing a diff, before/after skill folder, benchmark candidate, hardening patch, package update, or skill-improver hypothesis to detect blocking regressions in activation, scope, safety, portability, evidence identity, protected evaluators, validation, packaging, output-path safety, recovery, or receipt integrity. do not use for broad repair loops, benchmark scoring, new skill creation, or generic application-code review.
+description: evaluate proposed changes to existing Agent Skills-compatible packages across ChatGPT/OpenAI, Claude, GitHub Copilot, Cursor, Codex, and similar hosts before acceptance. use for diffs, before/after folders, benchmark or search candidates, hardening patches, and package updates when acceptance must detect regressions in activation, scope, authority, safety, portability, evidence identity, evaluator exposure, policy/verifier identity, freshness, validation, consumer compatibility, packaging, recovery, waivers, or receipt integrity. do not use for broad repair loops, benchmark scoring, new skill creation, or generic application-code review.
 ---
 
 # Skill Change Gate
@@ -51,6 +51,7 @@ Proceed with explicit assumptions when evidence is partial, but use `insufficien
 6. Frozen identities when available: stable baseline tree, optional direct parent tree, candidate tree, evaluator/scenario inputs, delivered artifact. For self-improvement, also accept generation/controller/last-known-good identity and promotion-receipt correspondence from the caller.
 7. Protected paths or blocked artifacts when known.
 8. Portability profile: default `portable`; use `openai` only when OpenAI adapter metadata is explicitly part of delivery acceptance.
+9. Decision context when material: exact policy/verifier identity, evaluator role/exposure, caller-declared trial/replication contract, destination freshness, authority authorization, waivers, and known-consumer evidence. Use Gate Context v1 for automated or strict measured gates.
 
 ## Modes
 
@@ -69,23 +70,28 @@ Load only what the active gate needs:
 
 - [`references/gate-rubric.md`](references/gate-rubric.md) for severity, gate areas, and decision rules.
 - [`references/evidence-integrity.md`](references/evidence-integrity.md) when before/candidate identities, frozen evaluators, package receipts, output aliases, recovery, or durable receipts matter.
+- [`references/decision-evidence-contract.md`](references/decision-evidence-contract.md) when evidence subject binding, policy/verifier identity, evaluator exposure, stochastic sufficiency, freshness, authority expansion, or ecosystem-safe claims matter.
+- [`references/waiver-policy.md`](references/waiver-policy.md) when a caller proposes a waiver or accepted risk.
 - [`references/host-portability.md`](references/host-portability.md) when cross-host compatibility or host-specific extensions matter.
 - [`references/integration-with-skill-improver.md`](references/integration-with-skill-improver.md) for experiment/self-improvement loops.
 - [`references/capability-preservation-and-parent-provenance.md`](references/capability-preservation-and-parent-provenance.md) when capability maps, transformation ids/change intent, or direct-parent attribution are supplied.
 - [`references/search-candidate-gate.md`](references/search-candidate-gate.md) when the candidate belongs to a multi-candidate/evolution search and lineage/search provenance is supplied.
 - `scripts/validate_search_candidate_context.py` validates the current v3 search candidate context before a search candidate is gated.
-- `contracts/integration-manifest.json` declares ownership of the search-candidate-context schema and change-gate result surface for ecosystem impact analysis.
+- `contracts/gate-context.schema.json` plus `scripts/validate_gate_context.py` define and validate Gate Context v1 without third-party dependencies.
+- `contracts/change-gate-result.schema.json` plus `scripts/validate_change_gate_result.py` define the stable machine-readable result core.
+- `contracts/integration-manifest.json` declares owned peer-facing contracts for ecosystem impact analysis.
 - `scripts/static_change_gate.py` when a compatible Python runtime and filesystem access are available.
 - [`examples/usage-examples.md`](examples/usage-examples.md) for compact outcome examples.
 - [`evals/activation-scenarios.json`](evals/activation-scenarios.json) for planned activation/non-activation coverage; never call it executed evidence until actually run.
 
 ## Workflow
 
-1. **Resolve target and runtime.** Identify one target skill, candidate evidence, caller context, policy, portability profile, available capabilities, and whether evidence is before/after, diff-only, or post-validation.
-2. **Establish evidence identity.** Record supplied baseline/candidate/evaluator identities before interpretation. In self-improvement, also record generation/controller provenance and verify that the gate runs outside the candidate mutation surface when that evidence is supplied. If acceptance depends on frozen evidence but identity cannot be established, use `insufficient-evidence`. Read `references/evidence-integrity.md` for strict experiments or delivery gates.
-3. **Check evidence sufficiency.** If no target content or candidate evidence exists, stop with `insufficient-evidence`. Partial evidence may support bounded findings, not unsupported acceptance.
-4. **Inventory touched surfaces.** Map changes to activation, `SKILL.md`, references, scripts, assets/templates, examples, evals/tests, validators, packaging, protected paths, host adapters, output contract, and delivery/recovery behavior. Malformed `SKILL.md` YAML frontmatter is a blocking structural regression under every policy; the static helper must reject invalid YAML syntax rather than treating line-split text as valid frontmatter. When a capability map is supplied, map each touched surface to affected capability ids and classify preservation/regression using `references/capability-preservation-and-parent-provenance.md`.
-5. **Run the static helper when available.** Resolve `<PYTHON>` from the host instead of assuming an executable name. Keep the JSON report outside both candidate and baseline roots.
+1. **Resolve target and runtime.** Identify one target skill, candidate evidence, caller context, policy, claim scope (`local-acceptance`, `promotion`, or `ecosystem-safe`), portability profile, available capabilities, and whether evidence is before/after, diff-only, or post-validation.
+2. **Establish evidence identity.** Record baseline, optional direct parent, candidate, evaluator/scenario, policy, verifier, destination, and delivered-artifact identities that actually matter to the claim. In self-improvement also record generation/controller/last-known-good provenance and keep the gate outside the candidate mutation surface.
+3. **Bind decision evidence when material.** For automated, strict measured, promotion, waiver, authority-expansion, or ecosystem-safe gates, use Gate Context v1 and validate it against the frozen candidate. Evidence for different candidate bytes is not reusable acceptance evidence. Treat holdout exposure, caller-declared trial/replication sufficiency, destination freshness, waiver validity, authority authorization, and consumer compatibility as independent checks.
+4. **Check evidence sufficiency.** If target/candidate evidence or a required deciding identity cannot be established, return `insufficient-evidence`. A stale decision is not a current pass; revalidate against the current state. Partial evidence may support bounded findings, not unsupported claims.
+5. **Inventory touched surfaces.** Map changes to activation, authority, `SKILL.md`, references, scripts, assets/templates, examples, evals/tests, validators, exported contracts/consumers, packaging, protected paths, host adapters, output contract, and delivery/recovery behavior. Malformed required frontmatter is blocking. Treat description-length changes and new executable surfaces as mechanical signals that trigger evidence review, not proof of regression by themselves.
+6. **Run mechanical gates when available.** Resolve `<PYTHON>` from the host and keep reports outside baseline/candidate roots.
 
 ```text
 <PYTHON> scripts/static_change_gate.py \
@@ -96,7 +102,7 @@ Load only what the active gate needs:
   --json <REPORT_OUTSIDE_TARGET>
 ```
 
-For frozen experiments, add applicable evidence controls:
+For frozen experiments add applicable identity/protection controls. When Gate Context is used, validate it separately or pass it to the static helper if the runtime supports the bundled integration.
 
 ```text
 --expected-before-sha256 <BASELINE_TREE_HASH>
@@ -104,26 +110,35 @@ For frozen experiments, add applicable evidence controls:
 --protected-path evals/**
 --protected-path <OTHER_PROTECTED_PATH>
 --artifact-receipt <PACKAGE_RECEIPT_JSON>
+--gate-context <GATE_CONTEXT_JSON>
 ```
 
-Treat helper output as mechanical evidence, not the full decision. 6. **Review semantically.** Use the rubric to inspect activation intent, authority, safety, evidence discipline, validation truthfulness, output semantics, compatibility, and whether removed/changed resources still have valid owners/consumers. 7. **Review portability.** Under `portable`, fail or warn when core semantics depend on one host's private runtime. Optional host adapters are acceptable when ignoring them leaves the core workflow intact. 8. **Classify findings.** Mark each as blocking regression, material concern, non-blocking trade-off, false positive, or follow-up hypothesis. For search candidates, gate each candidate independently using `references/search-candidate-gate.md`; do not choose survivors, rank peers, or waive a regression because another candidate is worse. State whether it is candidate-introduced, pre-existing, or unknown when material. 9. **Decide.** Blocking regressions fail. Under `strict`, unresolved material concerns also fail unless explicitly waived. `pass` requires sufficient applicable evidence, not merely a clean static report. 10. **Report for the caller.** State accept, reject, repair-before-accept, gather-evidence, or advisory-only. Keep measured improvement separate from quality acceptance.
+7. **Review semantically.** Use the rubric to inspect activation intent, authority, safety, evidence discipline, validation truthfulness, output semantics, portability, consumer compatibility, and whether removed/changed resources still have valid owners/consumers. Do not let static heuristics override stronger behavioral evidence.
+8. **Classify findings.** For every material finding record severity, `rule_origin`, and `regression_delta` (`introduced`, `worsened`, `preexisting-unchanged`, `improved`, `resolved`, or `unknown`). Keep pre-existing unchanged debt visible without falsely attributing it to the candidate. Search candidates are gated independently; novelty, ranking, and survivor selection remain external.
+9. **Decide.** Blocking regressions fail. Under `strict`, unresolved material concerns fail unless covered by a valid waiver; non-waivable classes remain failures. `pass` requires sufficient applicable evidence, not merely a clean static report. A local pass does not imply an ecosystem-safe pass.
+10. **Report for the caller.** State accept, reject, repair-before-accept, gather-evidence, or advisory-only. Keep measured improvement separate from quality acceptance, and keep stale/not-proven claim scopes explicit.
 
 ## Decision rules
 
 - A better benchmark score never overrides a blocking regression.
-- A clean static report does not prove semantic safety, runtime behavior, or behavioral improvement.
-- Missing evidence is not a pass.
-- Expected identity mismatch is blocking; do not silently refresh the expected hash after a mismatch.
-- Mutation of a frozen evaluator/protected path invalidates a measured experiment unless the experiment is explicitly restarted.
-- A successful artifact receipt that points to different candidate bytes is blocking.
-- In self-improvement, a promotion receipt that points to different bytes, a mutable controller/evaluator, or a gate executed inside the candidate mutation surface is blocking under `strict` policy.
+- A clean static report does not prove semantic safety, runtime behavior, behavioral improvement, holdout validity, or ecosystem compatibility.
+- Missing, stale, blocked, or candidate-mismatched required evidence is not a pass.
+- Expected identity mismatch is blocking; never refresh an expected hash after observing the mismatch merely to pass.
+- Mutation of frozen evaluator/protected evidence invalidates a measured experiment unless it is explicitly restarted.
+- Byte-identical evaluators may still be contaminated when candidate construction or selection had access to holdout content/results.
+- The gate verifies the caller's trial/replication contract; it does not invent benchmark thresholds or statistical budgets.
+- A successful artifact/promotion receipt that points to different candidate bytes is blocking.
+- A destination/parent state change can make a prior decision stale; revalidate instead of treating the old pass as current.
+- Under `strict`, material authority expansion requires explicit authorization evidence.
+- `ecosystem-safe` requires a complete known-consumer inventory and compatible evidence for every known consumer; local acceptance is a narrower claim.
+- Valid waivers are explicit and candidate/policy-bound. Identity drift, protected-evaluator mutation, receipt mismatch, unsafe path/secret exposure, fabricated evidence, contaminated holdout claims, and candidate self-authorization are non-waivable.
 - Host-specific adapters are acceptable; host-private core dependencies are portability concerns and fail under strict policy when unresolved.
 - In `advisory` policy, blocking regressions remain visible and still prevent an unconditional accept decision.
 - Do not convert gate findings into edits unless the user separately authorizes implementation.
 
 ## Output contract
 
-Return this structure for every substantive gate:
+Return the Markdown structure below for substantive human-facing gates. For machine consumers, emit an equivalent object conforming to `contracts/change-gate-result.schema.json`; validate it with `scripts/validate_change_gate_result.py` when the result is persisted or handed to automation.
 
 ```markdown
 ## Skill Change Gate Result
@@ -131,28 +146,34 @@ Return this structure for every substantive gate:
 - target:
 - mode:
 - policy:
+- claim scope: local-acceptance | promotion | ecosystem-safe
 - portability profile:
 - status: pass | pass-with-warnings | fail | insufficient-evidence
 - decision for caller: accept | reject | repair-before-accept | gather-evidence | advisory-only
+- freshness: fresh | stale | not-applicable | unknown
 
 ### Evidence identities
 
 - stable baseline tree:
 - direct parent tree: `<same-as-baseline | identity | not-supplied>`
 - candidate tree:
-- transformation ids / change intent: `<not-supplied | values>`
-- search id / candidate id / lineage ref: `<not-applicable | supplied values>`
-- evaluator/protected evidence:
+- policy identity:
+- verifier identity:
+- evaluator/scenario identity and role:
+- evaluator exposure / holdout status:
+- destination/current-state identity:
 - artifact/receipt correspondence:
-- self-improvement generation/controller/promotion receipt: `<not-applicable | supplied evidence>`
+- transformation/search/self-improvement provenance: `<not-applicable | supplied values>`
 
 ### Evidence inspected
 
-- target evidence:
-- candidate evidence:
+- target/candidate evidence:
 - commands/results:
+- required evidence binding/sufficiency:
+- waivers:
+- known-consumer evidence:
 - runtime capabilities:
-- missing evidence:
+- missing/stale evidence:
 
 ### Capability preservation
 
@@ -161,8 +182,8 @@ Return this structure for every substantive gate:
 
 ### Findings
 
-| severity | area | origin | finding | decision impact |
-| -------- | ---- | ------ | ------- | --------------- |
+| severity | area | origin | regression delta | rule origin | finding | decision impact |
+| -------- | ---- | ------ | ---------------- | ----------- | ------- | --------------- |
 
 ### Portability
 
@@ -170,11 +191,11 @@ Return this structure for every substantive gate:
 - optional host adapters:
 - host-specific dependencies:
 
-### Accepted trade-offs and false positives
+### Accepted trade-offs, valid waivers, and false positives
 
 -
 
-### Required fixes before accept
+### Required fixes or evidence before accept
 
 -
 
@@ -183,7 +204,7 @@ Return this structure for every substantive gate:
 -
 ```
 
-Use concise entries. Never invent command results, hashes, benchmark scores, or runtime support.
+Use concise entries. Never invent command results, hashes, benchmark scores, policy/verifier identities, consumer evidence, or runtime support.
 
 ## Stop conditions
 
@@ -195,6 +216,9 @@ Stop or return `insufficient-evidence` when:
 - required before/candidate/evaluator identity cannot be verified for a strict measured experiment;
 - a required validator/benchmark/runtime capability is unavailable and its absence prevents a trustworthy decision;
 - expected source/evaluator identity changed after freeze and the experiment has not been explicitly restarted;
+- a required holdout is contaminated by candidate/selection exposure and no fresh independent evidence exists;
+- required destination/current-state identity is stale or unavailable for a promotion claim;
+- an ecosystem-safe claim has an incomplete known-consumer inventory or unresolved consumer compatibility;
 - the candidate touches blocked secrets, credentials, evaluator fixtures, expected outputs, benchmark baselines, generated evidence, repository metadata, old archives, or unrelated paths;
 - archive inspection would require unsafe extraction or path traversal handling outside available tools;
 - the request requires editing files but the current task is gate-only.

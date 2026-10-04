@@ -9,7 +9,10 @@
       "surface_paths": [
         "SKILL.md",
         "references/gate-rubric.md",
-        "scripts/static_change_gate.py"
+        "scripts/static_change_gate.py",
+        "contracts/change-gate-result.schema.json",
+        "scripts/validate_change_gate_result.py",
+        "references/decision-evidence-contract.md"
       ]
     },
     {
@@ -20,6 +23,18 @@
         "assets/templates/search-candidate-context.json.template",
         "scripts/validate_search_candidate_context.py",
         "references/search-candidate-gate.md"
+      ]
+    },
+    {
+      "contract_id": "skill-opt.gate-context",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "contracts/gate-context.schema.json",
+        "assets/templates/gate-context.json.template",
+        "scripts/validate_gate_context.py",
+        "references/decision-evidence-contract.md",
+        "references/waiver-policy.md"
       ]
     }
   ],

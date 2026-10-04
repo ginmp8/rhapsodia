@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/skill-token-efficient/runtime-profile.schema.json",
+  "title": "Skill Token Efficient Runtime Economics Profile",
+  "type": "object",
+  "required": ["profile_version", "evidence_kind", "rate_profile_id", "usage"],
+  "properties": {
+    "profile_version": {"const": "1.0"},
+    "evidence_kind": {"enum": ["estimated", "observed"]},
+    "rate_profile_id": {"type": "string", "minLength": 1},
+    "environment_id": {"type": ["string", "null"]},
+    "usage": {
+      "type": "object",
+      "required": ["uncached_input_tokens", "cache_write_tokens", "cache_read_tokens", "output_tokens", "latency_ms"],
+      "additionalProperties": false,
+      "properties": {
+        "uncached_input_tokens": {"type": "integer", "minimum": 0},
+        "cache_write_tokens": {"type": "integer", "minimum": 0},
+        "cache_read_tokens": {"type": "integer", "minimum": 0},
+        "output_tokens": {"type": "integer", "minimum": 0},
+        "latency_ms": {"type": ["number", "null"], "minimum": 0}
+      }
+    },
+    "rates": {
+      "type": ["object", "null"],
+      "required": ["currency", "per_million"],
+      "additionalProperties": false,
+      "properties": {
+        "currency": {"type": "string", "minLength": 1},
+        "per_million": {
+          "type": "object",
+          "required": ["uncached_input", "cache_write", "cache_read", "output"],
+          "additionalProperties": false,
+          "properties": {
+            "uncached_input": {"type": "number", "minimum": 0},
+            "cache_write": {"type": "number", "minimum": 0},
+            "cache_read": {"type": "number", "minimum": 0},
+            "output": {"type": "number", "minimum": 0}
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
