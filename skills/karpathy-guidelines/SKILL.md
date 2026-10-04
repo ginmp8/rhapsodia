@@ -5,198 +5,135 @@ description: use when asked to write, review, refactor, debug, test, plan, or au
 
 # Karpathy Guidelines
 
-Keep software assistance small, explicit, and verifiable. This skill is a control plane for coding behavior, code review, debugging, refactoring, tests, configuration, CI/CD, infrastructure-as-code, and technical examples. It is not a framework manual and yields to stricter domain-specific skills.
+Keep software assistance small, explicit, and verifiable. This is a behavioral control plane for coding work, not a framework manual. Yield to stricter domain-specific skills for security, databases, migrations, deployment, testing, or other specialized surfaces while retaining this skill's scope and evidence discipline.
 
 ## Scope
 
 Use for:
 
-- writing, modifying, reviewing, refactoring, debugging, testing, or planning code;
-- reviewing diffs, pull requests, snippets, repository files, technical examples, configuration, CI/CD, infrastructure-as-code, or technical designs;
+- writing, modifying, reviewing, refactoring, debugging, testing, or planning code and technical artifacts;
 - converting vague coding requests into bounded, checkable work;
-- pushing back on speculative rewrites, abstractions, dependencies, broad configurability, broad cleanup, or unverifiable claims;
-- separating executed validation from suggested validation for correctness, security, performance, reliability, or operability.
+- pushing back on speculative rewrites, abstractions, dependencies, broad configurability, or unrelated cleanup;
+- separating inspected/executed evidence from assumptions, suggestions, and unverified claims.
 
-Do not use for:
-
-- non-code writing, formatting, translation, summarization, product strategy, or general advice;
-- broad architecture generation when the evidence supports only a local fix;
-- skill creation, skill hardening, document generation, spreadsheets, slides, or PDFs when a stricter artifact workflow applies;
-- repository execution under a stricter implementation skill, except as secondary discipline for scope and validation;
-- claims about repositories, files, commands, tests, vulnerabilities, benchmarks, or production behavior that were not inspected, executed, cited, or labeled as assumptions.
+Do not use for non-code writing, product strategy, artifact-generation workflows, or broad architecture generation when evidence supports only a local change. Do not claim repository, test, benchmark, security, performance, or production behavior that was not inspected, executed, sourced, or explicitly labeled.
 
 ## Core rule
 
-Prefer clarity, restraint, and verification over speed, cleverness, or speculative implementation.
+Prefer clarity, restraint, the smallest sufficient change, and verification over speed, cleverness, or speculative implementation.
 
 ## Decision control model
 
-Reduce unjustified variance without eliminating useful model judgment. Classify each material decision at the lowest reliable control layer:
+Classify each material decision at the lowest reliable control layer:
 
 | Decision class | Control | Rule |
 |---|---|---|
-| Mechanical | script/schema/type/validator | use objective checks when correctness is mechanically decidable |
-| Heuristic | defaults + ordered tie-breakers + explicit limits | prefer a stable default, but allow evidence-backed exceptions |
+| Mechanical | script/schema/type/validator | use objective checks when mechanically decidable |
+| Heuristic | defaults + ordered tie-breakers + limits | use stable defaults with evidence-backed exceptions |
 | Judgment | rubric + evidence + criteria | preserve contextual engineering judgment and visible uncertainty |
 | Subjective | independent evaluation | keep taste separate from correctness and hard gates |
 
-Do not turn a heuristic, judgment call, or style preference into a hard rule merely to make outputs look deterministic. Split mixed decisions and control each part separately. Objective evidence and explicit contracts govern their own axes; heuristics may be overridden by stronger evidence; subjective quality claims require independent evaluation when material and must not override correctness, safety, or executed validation.
-
-Load `references/decision-variance-model.md` when a task involves competing valid implementations, architecture trade-offs, severity calls, readability/style judgments, or pressure to make every decision deterministic.
+Do not manufacture determinism. Split mixed decisions; objective contracts govern their axes, heuristics remain overridable by evidence, and subjective preference cannot override correctness or safety. Load `references/decision-variance-model.md` when trade-offs, severity, readability, architecture choice, or reproducibility pressure is material.
 
 ## Expected inputs
 
 Use the strongest available inputs without blocking unnecessarily:
 
-- target artifact: path, snippet, diff, PR, config, test, stack trace, design, module, or repository area;
-- requested behavior or review goal;
-- constraints: language, framework, public API compatibility, blocked files, runtime, dependencies, style conventions, and validation commands;
-- failure evidence for bugs: error text, reproduction, failing test, redacted logs, or observed versus expected behavior;
-- acceptance checks: test, build, lint, type check, smoke test, benchmark, static reasoning criterion, or manual review condition.
+- target artifact or repository area;
+- requested behavior, observed failure, or review goal;
+- constraints such as public API compatibility, blocked files, runtime, dependencies, and local conventions;
+- existing validation commands, tests, logs, benchmarks, or acceptance criteria.
 
-Ask only when missing input blocks a safe answer. Otherwise proceed with explicit assumptions and keep the work bounded.
+Ask only when missing input blocks a safe answer. Otherwise proceed with explicit assumptions and bounded uncertainty.
 
 ## Mode-specific behavior
 
 Pick one primary mode:
 
-| Mode | Trigger | Required input | Output | Closure check |
-|---|---|---|---|---|
-| Implementation | add/change code | target language/artifact + behavior | minimal patch/code | build/test/lint/type/smoke/reasoning |
-| Bug fix | failing behavior | observed failure/reproduction | hypothesis + smallest fix | reproduce -> patch -> verify |
-| Code review | code/PR/diff/config/design | artifact + review goal | severity-ranked defect/risk findings; separate discretionary suggestions | gaps + one next step |
-| Refactor | simplify/restructure | behavior to preserve | smallest equivalent change | before/after check |
-| Planning | how to implement | goal + constraints | bounded steps/tradeoffs | verify each step |
-| Test design | tests/coverage | behavior + edge cases | minimal observable cases | explicit pass/fail expectations |
-| Risk audit | correctness/safety/perf/security/ops | artifact or design | risks by severity/evidence | label unverified claims |
+| Mode | Output | Closure focus |
+|---|---|---|
+| Implementation | minimal patch/code | requested semantic change + relevant validation |
+| Bug fix | hypothesis + smallest fix | reproduce -> patch -> verify failure model |
+| Code review | evidence-backed findings | defects/risks separate from preferences |
+| Refactor | smallest equivalent change | preserved behavior/invariants |
+| Planning | bounded steps/trade-offs | verification per material step |
+| Test design | minimal observable cases | explicit pass/fail expectations |
+| Risk audit | risks by severity/evidence | unverified claims remain labeled |
 
 ## Operating workflow
 
-1. Classify the request and name the target artifact when available: file, function, module, PR, stack trace, config, failing behavior, or design decision.
-2. Expose assumptions. Ask only when missing information blocks correctness; otherwise proceed and keep uncertainty visible.
-3. Define success before changing code: test, build, lint, type check, reproduction step, runtime behavior, review criterion, benchmark, or static reasoning.
-4. Inspect before broad edits. For non-trivial or multi-file work, locate relevant code, existing patterns, and validation commands first. For obvious tiny edits, avoid heavyweight planning.
-5. Make the smallest sufficient change. Touch only what maps to the request, match existing style, and avoid new abstractions, dependencies, broad rewrites, background jobs, or unrelated cleanup unless required.
-6. Validate and report honestly. Split executed checks from suggested checks and state what remains unverified.
+1. **Resolve the target and request.** Name the artifact, failing behavior, or decision being changed or reviewed.
+2. **Expose correctness-affecting assumptions.** Do not invent missing repository or runtime facts.
+3. **Bound the semantic change.** For non-trivial edits, state what behavior may change and which important invariants must remain unchanged.
+4. **Inspect before broad edits.** Load the smallest relevant callers/tests/config/patterns; use repository history only when an apparently redundant constraint still cannot be explained.
+5. **Escalate process only when justified.** Prefer a direct local change; add a plan, extra tests, independent review, or multi-step workflow only when size, risk, uncertainty, or explicit requirements require it.
+6. **Make the smallest sufficient change.** Match local style and avoid unrelated cleanup, speculative abstractions, new dependencies, or defensive configurability without evidence.
+7. **Validate the failure model.** Choose the oracle that can falsify the actual claim; a generic passing suite does not prove semantics it does not cover.
+8. **Check action risk.** Local reversible work may proceed normally; external/state-changing actions require target and authority checks; destructive, production, or irreversible actions require explicit authority and a recovery path.
+9. **Report evidence honestly.** Separate executed, inspected, static, not-executed, and unverified evidence. For security-sensitive surfaces, defer to the stricter security workflow rather than broadening this skill into a security framework.
 
 ## Evidence and context policy
 
-- Prefer repository files, supplied diffs, command output, tests, and official docs over memory or unstated assumptions.
-- Keep context small: load only files needed for the current hypothesis, summarize findings before continuing, and avoid dumping unrelated code.
-- Use fresh/independent review for non-trivial reviews when earlier implementation bias could hide defects.
-- Do not repeat secrets from code or logs. Flag exposure, describe risk, and recommend rotation or secret-store migration when plausible.
-- Label unsupported performance, security, reliability, or production claims as unverified until measured or sourced.
+Prefer user/repository evidence over memory. Keep context proportional to the active hypothesis and prefer repository-native commands over one-off mechanisms. Do not repeat secrets from code or logs. Label unsupported performance, security, reliability, or production claims as unverified until measured or sourced.
 
-For detailed rules, load `references/context-and-evidence-policy.md`.
+Load `references/context-and-evidence-policy.md` when repository context, tool selection, external documentation, history, citations, context budget, or sensitive output matters.
 
 ## Progressive loading
 
-Load only the support file needed by the branch:
+Load only the branch-specific resource needed:
 
-- `references/coding-discipline.md`: non-trivial coding tasks, broad refactors, vague requests, or overengineering risk.
-- `references/decision-variance-model.md`: classify decisions as mechanical, heuristic, judgment, or subjective; use when reproducibility could otherwise over-constrain engineering judgment.
-- `references/context-and-evidence-policy.md`: repo context, external docs, command output, citations, context budget, secrets, or unsupported claims.
-- `references/response-contracts.md`: implementation, refactor, review, plan, test-design, or risk-audit response shape.
-- `references/validation-and-stop-conditions.md`: incomplete verification, unsafe scope, missing inputs, broad changes, or unverifiable requests.
-- `references/activation-scenarios.md`: manual regression review of activation boundaries.
-- `evals/activation-boundary-scenarios.json`: canonical planned scenario suite for activation, ambiguous, edge, regression, adversarial, and non-activation coverage; metrics remain unmeasured until executed.
-- `evals/decision-variance-scenarios.json`: planned scenarios for mechanical gates, bounded heuristics, evidence-backed judgment, subjective separation, mixed decisions, and anti-overcontrol behavior.
-- `examples/hardening-scenarios.json`: legacy planned hardening scenario set for package-maintenance compatibility.
-- `assets/templates/implementation-response.md.template`: optional skeleton for implementation, bug fix, refactor, and test design.
-- `assets/templates/code-review-response.md.template`: optional skeleton for code review and risk audit.
-- `scripts/validate_contract.py`: run after editing this skill package.
-- `scripts/validate_decision_variance.py`: validate the four-layer decision-control contract and its planned scenario suite.
-- `scripts/package_skill.py`: run only when packaging this skill folder as `skill.zip`.
+- `references/coding-discipline.md`: semantic-change boundary, simplicity, archaeology, escalation, and surgical edits.
+- `references/decision-variance-model.md`: mechanical/heuristic/judgment/subjective control and anti-overcontrol rules.
+- `references/context-and-evidence-policy.md`: context selection, repository-native tooling, history, evidence labels, external sources, and secrets.
+- `references/response-contracts.md`: response shapes and severity rules.
+- `references/validation-and-stop-conditions.md`: failure-model validation, action risk, blockers, security escalation, and closure reporting.
+- `references/activation-scenarios.md`: human-readable activation boundary review.
+- `evals/activation-boundary-scenarios.json`: canonical planned activation/regression suite.
+- `evals/decision-variance-scenarios.json`: planned decision-control regression suite.
+- `evals/engineering-discipline-scenarios.json`: planned research-derived semantic-scope, validation, risk, tooling, and escalation suite.
+- `assets/templates/implementation-response.md.template` or `assets/templates/code-review-response.md.template`: optional response skeletons.
+- `scripts/validate_contract.py` and `scripts/validate_decision_variance.py`: deterministic package contract checks after edits.
 
 ## Output contracts
 
-For implementation, bug fix, refactor, and test design, return:
+Keep answers proportional. For implementation, bug fix, refactor, and test design, return correctness-affecting assumptions only when needed, the minimal change, validation evidence, and material residual risk. For review/risk audit, use severity only for evidence-backed defects or risks and keep recommendations/judgment/style separate. For non-trivial plans, give ordered steps with a verification criterion per material step.
 
-1. assumptions that affect correctness, if any;
-2. the minimal change, patch, code, or test set;
-3. validation evidence, split into executed checks and suggested checks;
-4. residual risks or follow-up only when material.
-
-For code review and risk audit, use severity only for evidence-backed defects or risks. Keep heuristic recommendations, judgment calls, and subjective suggestions separate when they matter. Use:
-
-```markdown
-## Findings
-
-1. [severity] issue - evidence - impact - smallest fix
-
-## Validation gaps
-
-- missing or unverified check
-
-## Suggested next step
-
-- one concrete action
-```
-
-For non-trivial plans, use:
-
-```markdown
-## Assumptions
-
-- ...
-
-## Plan
-
-1. step -> verify: check
-2. step -> verify: check
-3. step -> verify: check
-
-## Risks
-
-- ...
-```
-
-Omit empty sections for simple tasks and keep answers proportional.
+Detailed response shapes live in `references/response-contracts.md`; do not duplicate them here.
 
 ## Validation checklist
 
-Before finalizing a coding response, verify:
+Before finalizing coding work, verify:
 
-- every proposed change maps to the user's request;
-- each material decision uses the lowest reliable control layer: mechanical, heuristic, judgment, or subjective;
-- heuristics remain overridable by evidence, judgment cites criteria/evidence, and subjective preference is not reported as objective defect;
-- no speculative feature, abstraction, dependency, broad rewrite, or unrelated cleanup was added;
-- uncertainty is visible;
-- validation is concrete and labeled as executed, not executed, or static reasoning;
-- package-maintenance work records baseline evidence, before/after comparison, and an auxiliary metric when a static score is saturated;
-- simpler alternatives were considered when complexity increased;
-- claims about files, tests, commands, performance, security, or production behavior are supported by inspected evidence or clearly labeled;
-- credentials, tokens, private keys, and sensitive values are not introduced, repeated, or logged.
+- proposed changes map to the request and the semantic change boundary;
+- important preserved invariants were not silently changed;
+- validation matches the failure model and does not overclaim from a weaker oracle;
+- added process/complexity is justified by current evidence or risk;
+- decision controls remain at the lowest reliable layer;
+- unrelated cleanup, speculative abstractions, dependencies, or configurability were not added;
+- evidence is labeled truthfully and secrets are not introduced, repeated, or logged;
+- destructive/external actions have the required authority and recovery posture.
 
 ## Stop Conditions
 
-Stop, narrow the response, or report a blocker when:
+Stop, narrow, or report a blocker when:
 
-- the requested change cannot be verified with available context;
-- the user requests a broad rewrite but evidence supports only a localized defect;
-- code context is insufficient for a safe edit;
-- the request requires unrelated files, expected outputs, fixtures, secrets, credentials, or external resources outside allowed scope;
-- the user asks for performance, security, reliability, or production-readiness claims without measurements or inspectable evidence;
-- a domain-specific skill or tool instruction conflicts with these guidelines. Follow the stricter workflow and keep this skill as secondary discipline only.
+- available context cannot support a safe change;
+- a broad rewrite is requested but evidence supports only a localized slice;
+- verification requires unavailable credentials, systems, data, or tools and the missing evidence is material;
+- performance, security, reliability, or production-readiness conclusions are requested without the evidence needed to support them;
+- destructive, production, or irreversible action lacks explicit authority or a credible recovery path;
+- a stricter domain-specific workflow conflicts with these guidelines. Follow the stricter workflow and keep this skill secondary.
+
+## Supporting references
+
+The canonical support map is the `Progressive loading` section above; branch detail remains in package-local references rather than duplicated in the root.
 
 ## Package maintenance
 
 When editing this skill package:
 
-1. mutate only `karpathy-guidelines`; keep details in lazy-loaded resources;
-2. resolve `<PYTHON>` from host capabilities and keep the core vendor-neutral;
+1. mutate only `karpathy-guidelines`; keep branch detail in lazy-loaded resources;
+2. resolve `<PYTHON>` from host capabilities and keep the semantic core vendor-neutral;
 3. run `<PYTHON> -S scripts/validate_contract.py <skill-folder>`, `<PYTHON> -S scripts/validate_decision_variance.py <skill-folder>`, and after packager edits `<PYTHON> -S scripts/test_package_skill.py <skill-folder>`;
-4. package with `<PYTHON> -S scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
-5. stage deterministic output and preserve last-good on failure;
-6. report the artifact only after folder, packager, and archive gates pass.
-
-## Supporting references
-
-- `references/coding-discipline.md`: assumptions, simplicity, surgical edits, and verification.
-- `references/decision-variance-model.md`: control-layer selection, tie-breakers, judgment rubric, subjective review, and anti-overcontrol rules.
-- `references/context-and-evidence-policy.md`: context selection, evidence labels, command output, external docs, and secrets.
-- `references/response-contracts.md`: response shapes and severity rules by mode.
-- `references/validation-and-stop-conditions.md`: validation ladder, blockers, and honest closure rules.
-- `references/activation-scenarios.md`: activation, non-activation, ambiguous, and edge-case prompts for regression review.
-- `evals/activation-boundary-scenarios.json`: canonical planned scenario suite used by the package validator.
-- `evals/decision-variance-scenarios.json`: planned decision-control regression suite; do not treat it as measured until executed.
+4. package only a frozen passing candidate with `<PYTHON> -S scripts/package_skill.py --target <skill-folder> --output <output-dir>/skill.zip --validate`;
+5. preserve last-good output on failure and report only artifacts that actually passed their gates.

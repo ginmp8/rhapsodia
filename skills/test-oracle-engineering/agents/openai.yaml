@@ -1,3 +1,7 @@
 interface:
-  display_name: "Test Oracle Engineering"
-  short_description: "Design and prove bounded executable behavior oracles"
+  display_name: Test Oracle Engineering
+  short_description: Design and prove bounded executable behavior oracles
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  allow_implicit_invocation: true

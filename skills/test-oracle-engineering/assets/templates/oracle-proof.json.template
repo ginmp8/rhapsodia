@@ -1,0 +1,27 @@
+{
+  "contract": "test-oracle-proof/v2",
+  "oracle_id": "oracle-001",
+  "oracle_spec_identity": "sha256:<canonical-spec-sha256>",
+  "candidate_identity": "sha256:<candidate-sha256>",
+  "verifier_identity": "declared:<verifier>",
+  "environment_identity": "declared:<environment>",
+  "attempt": 1,
+  "execution_state": "pass",
+  "outcome_kind": "expected-observation",
+  "verdict": "proven",
+  "command_argv": ["<exact>", "<argv>"],
+  "exit_code": 0,
+  "observation": {
+    "expected_observed": true,
+    "failure_observed": false,
+    "summary": "<what was actually observed>",
+    "evidence_refs": ["<log-or-artifact-ref>"]
+  },
+  "attempts": [
+    {"attempt": 1, "execution_state": "pass", "outcome_kind": "expected-observation", "exit_code": 0}
+  ],
+  "evidence_refs": ["<log-or-artifact-ref>"],
+  "test_artifacts": ["<verification artifact>"],
+  "production_mutation_performed": false,
+  "criteria_changed": false
+}

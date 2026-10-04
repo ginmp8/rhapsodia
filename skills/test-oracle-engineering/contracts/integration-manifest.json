@@ -4,22 +4,35 @@
   "exports": [
     {
       "contract_id": "test-oracle.oracle-spec",
-      "version": 2,
+      "version": 3,
       "role": "owner-producer",
       "surface_paths": [
         "references/oracle-contract.md",
+        "references/oracle-strategies.md",
         "schemas/oracle-spec.schema.json",
+        "schemas/oracle-spec-v1.schema.json",
         "scripts/validate_oracle_artifact.py"
       ]
     },
     {
       "contract_id": "test-oracle.proof-receipt",
-      "version": 2,
+      "version": 3,
       "role": "owner-producer",
       "surface_paths": [
         "references/oracle-contract.md",
+        "references/proof-integrity.md",
         "schemas/proof-receipt.schema.json",
+        "schemas/proof-receipt-v1.schema.json",
         "scripts/validate_oracle_artifact.py"
+      ]
+    },
+    {
+      "contract_id": "test-oracle.proof-verification",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "references/proof-integrity.md",
+        "scripts/verify_oracle_proof.py"
       ]
     }
   ],
