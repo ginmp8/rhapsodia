@@ -11,13 +11,20 @@ from _common import dump_json, sha256_file
 DEFAULT_EVALUATOR_PATHS = [
     'references/benchmark-rubric.md',
     'references/test-scenarios.md',
+    'references/experimental-evidence.md',
+    'references/benchmark-health.md',
+    'references/skill-coverage.md',
     'references/report-template.md',
     'scripts/_common.py',
     'scripts/benchmark_identity.py',
     'scripts/generate_benchmark_report.py',
     'scripts/validate_benchmark_report.py',
     'scripts/validate_scenario_results.py',
+    'scripts/compare_benchmark_arms.py',
     'scripts/validate_portability.py',
+    'scripts/validate_agent_skills_spec.py',
+    'scripts/validate_benchmark_health.py',
+    'scripts/validate_skill_coverage.py',
 ]
 DEFAULT_SCENARIO_SUITE = 'evals/activation-scenarios.json'
 

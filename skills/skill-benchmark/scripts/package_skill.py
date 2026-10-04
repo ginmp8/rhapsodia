@@ -185,6 +185,7 @@ def package(target: Path, output: Path, receipt_path: Path | None, hosts: list[s
             'target': str(target),
             'skill_name': root_name,
             'candidate_sha256': candidate_hash_before,
+            'target_tree_sha256': candidate_hash_before,
             'archive_sha256': sha256_file(stage),
             'archive_bytes': stage.stat().st_size,
             'file_count': len(files),

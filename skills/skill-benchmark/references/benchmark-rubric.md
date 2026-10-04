@@ -105,3 +105,9 @@ Recommended mature targets when valid scenario evidence exists:
 - rework rate <= 10%.
 
 These are guidance, not measured facts until scenario evidence is executed/supplied and validated.
+
+## Normative conformance and behavioral-health gates
+
+The 0-100 rubric is a maturity score, not a substitute for specification conformance. For filesystem targets, run `scripts/validate_agent_skills_spec.py`; normative Agent Skills failures are blocker gates even when the weighted score is high.
+
+When a verdict relies on measured behavioral improvement, benchmark health is a separate hard evidence surface. A failing benchmark-health gate blocks the strong behavioral claim; `review` permits only bounded/diagnostic interpretation. Do not add health, efficiency, or runtime cost into the static 0-100 score merely because those signals are available.

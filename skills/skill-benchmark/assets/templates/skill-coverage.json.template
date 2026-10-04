@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "skill_identity_sha256": "<64-hex>",
+  "constraint_set_sha256": "<64-hex>",
+  "constraints": [
+    {"id": "C1", "source": "SKILL.md#Output contract", "condition": "substantive benchmark", "expected_behavior": "report evidence identities"}
+  ],
+  "results": [
+    {"constraint_id": "C1", "status": "covered_pass"}
+  ]
+}

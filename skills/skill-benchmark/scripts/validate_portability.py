@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from _common import dump_json, extract_local_refs, parse_frontmatter
+from validate_agent_skills_spec import validate as validate_agent_skills_spec
 
 KNOWN_HOSTS = {'portable-core', 'openai', 'codex', 'claude', 'copilot', 'cursor'}
 PRIVATE_TOKENS = {
@@ -149,7 +150,10 @@ def validate_openai_adapter(root: Path) -> tuple[str, list[dict]]:
 def validate(root: Path, hosts: list[str]) -> dict:
     root = root.resolve()
     structural, fm, keys = structural_validate(root)
+    spec = validate_agent_skills_spec(root)
     findings: list[dict] = []
+    findings.extend({'code': 'AGENT_SKILLS_SPEC', 'severity': 'error', 'evidence': error, 'reason': 'normative Agent Skills conformance failed'} for error in spec.get('errors', []))
+    findings.extend({'code': 'AGENT_SKILLS_SPEC_RECOMMENDATION', 'severity': 'warning', 'evidence': warning, 'reason': 'Agent Skills portability recommendation'} for warning in spec.get('warnings', []))
     findings.extend({'code': 'STRUCTURE', 'severity': 'error', 'evidence': error, 'reason': 'portable structure validation failed'} for error in structural['errors'])
     findings.extend(scan_private_tokens(root))
     findings.extend(scan_python_dependencies(root))
@@ -203,6 +207,7 @@ def validate(root: Path, hosts: list[str]) -> dict:
         'errors': errors,
         'warnings': warnings,
         'structural_validation': structural,
+        'agent_skills_spec': spec,
     }
 
 

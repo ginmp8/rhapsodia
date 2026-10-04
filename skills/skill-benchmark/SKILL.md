@@ -63,7 +63,10 @@ Load only branch-relevant resources:
 
 - [`references/benchmark-workflow.md`](references/benchmark-workflow.md): portable commands, evidence hierarchy, comparison, paths, final response.
 - [`references/benchmark-rubric.md`](references/benchmark-rubric.md): dimensions, weights, gates, verdict rules.
-- [`references/test-scenarios.md`](references/test-scenarios.md): versioned scenario evidence schema/formulas/statuses.
+- [`references/test-scenarios.md`](references/test-scenarios.md): v2 compatibility plus preferred v3 repeated-trial scenario evidence.
+- [`references/experimental-evidence.md`](references/experimental-evidence.md): uncertainty-aware comparisons, runtime identity, efficiency, grader calibration, and length-control semantics.
+- [`references/benchmark-health.md`](references/benchmark-health.md): benchmark task/grader/isolation/contamination/saturation health gate.
+- [`references/skill-coverage.md`](references/skill-coverage.md): optional constraint-level skill behavior coverage.
 - [`references/report-template.md`](references/report-template.md): required report sections/order.
 - [`references/host-portability.md`](references/host-portability.md): portable core, host profiles, capability rules.
 - [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md): source snapshots, evaluator identity, alias safety, recovery, receipts.
@@ -71,15 +74,21 @@ Load only branch-relevant resources:
 - [`references/evaluation-ladder-and-parent-comparison.md`](references/evaluation-ladder-and-parent-comparison.md): L0-L5 staged evaluation, direct-parent attribution, hard-gate-first comparison, and non-dominated multi-metric reporting.
 - [`references/multi-candidate-evaluation.md`](references/multi-candidate-evaluation.md): identity/comparability contract for evaluating several search candidates without taking ownership of survivor selection.
 - [`assets/templates/benchmark-report.md.template`](assets/templates/benchmark-report.md.template): manual report skeleton.
-- [`assets/templates/scenario-results.json.template`](assets/templates/scenario-results.json.template): identity-bound behavioral results skeleton.
+- [`assets/templates/scenario-results.json.template`](assets/templates/scenario-results.json.template): v2 compatibility results skeleton.
+- [`assets/templates/scenario-results-v3.json.template`](assets/templates/scenario-results-v3.json.template): preferred repeated-trial behavioral results skeleton.
+- [`assets/templates/benchmark-health.json.template`](assets/templates/benchmark-health.json.template): benchmark-health evidence skeleton.
+- [`assets/templates/skill-coverage.json.template`](assets/templates/skill-coverage.json.template): constraint-coverage evidence skeleton.
 - [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation/non-activation/ambiguous/edge/regression/adversarial coverage.
 - [`examples/activation-scenarios.json`](examples/activation-scenarios.json): compact activation calibration examples.
 - [`scripts/snapshot_target.py`](scripts/snapshot_target.py): capture/verify exact target bytes.
 - [`scripts/benchmark_identity.py`](scripts/benchmark_identity.py): compute frozen evaluator identity.
 - [`scripts/generate_benchmark_report.py`](scripts/generate_benchmark_report.py): portable deterministic report generator.
 - [`scripts/validate_benchmark_report.py`](scripts/validate_benchmark_report.py): report/evidence validator.
-- [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py): scenario evidence validator.
-- [`scripts/compare_benchmark_arms.py`](scripts/compare_benchmark_arms.py): compare candidate against immutable baseline and optional `without-skill` control using identity-bound behavioral evidence.
+- [`scripts/validate_scenario_results.py`](scripts/validate_scenario_results.py): v2/v3 scenario evidence validator.
+- [`scripts/validate_agent_skills_spec.py`](scripts/validate_agent_skills_spec.py): normative Agent Skills conformance gate.
+- [`scripts/validate_benchmark_health.py`](scripts/validate_benchmark_health.py): independent benchmark-health validator.
+- [`scripts/validate_skill_coverage.py`](scripts/validate_skill_coverage.py): constraint coverage/adherence validator.
+- [`scripts/compare_benchmark_arms.py`](scripts/compare_benchmark_arms.py): compare candidate against baseline/parent/without-skill/optional length-control with v3 uncertainty and separate efficiency deltas.
 - [`scripts/validate_portability.py`](scripts/validate_portability.py): structural portability validator.
 - [`scripts/package_skill.py`](scripts/package_skill.py): deterministic portable package builder with atomic receipt.
 
@@ -94,7 +103,8 @@ Load only branch-relevant resources:
 1. Resolve exactly one target root containing `SKILL.md` when filesystem content exists.
 2. Read target `SKILL.md` first; inventory relevant references/scripts/assets/examples/evals/adapters.
 3. Select mode, requested hosts, `<PYTHON>`, writable work dir, protected paths, and behavioral evidence policy.
-4. Keep benchmark outputs outside the target package.
+4. For filesystem targets, run the normative Agent Skills conformance gate before maturity scoring.
+5. Keep benchmark outputs outside the target package.
 
 ### 2. Freeze source and evaluator identity
 
@@ -121,13 +131,15 @@ Omit `--source-manifest` only when no frozen snapshot exists; the report must th
 
 ### 4. Add behavioral evidence only after validation
 
+For new stochastic/model-agent runs, prefer v3 repeated-trial evidence. Keep v2 readable for compatibility but do not use a one-observation v2 delta as a strong stochastic improvement claim. When a strong behavioral verdict depends on the suite, validate benchmark health first; a health `fail` blocks the claim and `review` limits it. Optional skill-coverage evidence can show which material constraints were actually exercised.
+
 Validate scenario evidence before metrics:
 
 ```text
 <PYTHON> scripts/validate_scenario_results.py --results <RESULTS_JSON> --json-output <WORK>/scenario-validation.json
 ```
 
-Require the v2 identity-bound envelope in [`references/test-scenarios.md`](references/test-scenarios.md). Record `arm_type`, trace identity when available, and evaluator visibility/leakage status when hidden graders or holdouts are used. Reject top-level arrays and any unversioned scenario-result shape.
+Accept the versioned v2/v3 envelopes in [`references/test-scenarios.md`](references/test-scenarios.md). Prefer v3 for repeated stochastic trials; record runtime identity, suite role/distribution, grader calibration when applicable, trace identity when available, and evaluator visibility/leakage status for hidden graders/holdouts. Reject top-level arrays and unversioned result shapes.
 
 Never invent activation precision/recall, robustness, output conformance, criteria coverage, quality scores, or rework rate.
 
@@ -144,9 +156,11 @@ For `comparison-benchmark`:
 3. require the same scenario suite/evidence contract for behavioral deltas;
 4. compare like-for-like dimensions/metrics only;
 5. optionally add a `without-skill` arm when the question is incremental skill value rather than only regression safety;
-6. keep the prior-version baseline as the primary regression baseline for existing-skill updates;
-7. reject blind/hidden-evaluator claims when candidate execution could read evaluator-only assets;
-8. if evaluator/scenario/host configuration identities differ materially, show standalone results and label delta `not comparable`.
+6. optionally add a `length-control` arm when context-length/distraction is a material confound; keep it diagnostic and separate;
+7. keep the prior-version baseline as the primary regression baseline for existing-skill updates;
+8. for v3, require the same runtime-profile identity and use uncertainty-aware `claim_classification`; keep efficiency deltas separate from capability;
+9. reject blind/hidden-evaluator claims when candidate execution could read evaluator-only assets;
+10. if evaluator/scenario/runtime/host configuration identities differ materially, show standalone results and label delta `not comparable`.
 
 When arm files are available, run:
 
@@ -194,7 +208,11 @@ A substantive benchmark must include:
 - gate statuses including unresolved qualitative review gates;
 - static inventory/resource integration;
 - behavioral metrics labeled `measured`, `supplied`, `planned`, `blocked`, or `not measured`;
-- scenario coverage across activation/non-activation/ambiguous/edge cases;
+- scenario coverage across activation/non-activation/ambiguous/edge cases plus suite role/distribution semantics;
+- benchmark-health status when behavioral promotion claims rely on the suite;
+- repeated-trial uncertainty/claim classification for v3 stochastic comparisons;
+- efficiency metrics separately from capability metrics when supplied;
+- skill behavior constraint coverage when supplied;
 - portability result when requested/claimed;
 - evidence-based findings, risks, prioritized improvements;
 - verdict (`approve`, `approve with reservations`, `reject`);
@@ -210,7 +228,8 @@ Stop before scoring/finalizing when:
 - multiple roots are ambiguous;
 - request requires target mutation under benchmark-only scope;
 - measured behavioral claims are requested without valid result evidence;
-- strict comparison lacks stable baseline/candidate/evaluator/scenario identity;
+- strict comparison lacks stable baseline/candidate/evaluator/scenario identity, or v3 runtime identity;
+- a strong behavioral claim relies on a benchmark-health `fail` state;
 - a hidden/blind evaluator claim is requested but evaluator-only assets were visible to the evaluated candidate or leakage status is unknown;
 - report would cite uninspected files;
 - output aliases target/protected evidence/receipt;
@@ -220,6 +239,6 @@ Stop before scoring/finalizing when:
 
 ## Validation and finalization
 
-Before completion confirm: stable target identity or explicit `live-unfrozen` limitation; evaluator identity for strict comparisons; required report sections; visible failed/review gates; metric-status distinctions; local references resolve; useful resources are not penalized merely for existing; requested-host portability is separated from runtime support; report validator passes when runnable; scenario validator passes before behavioral metrics are used; arm comparison validation passes before capability-delta claims; hidden-evaluator visibility/leakage evidence supports any blind-evaluation claim; accepted evidence is frozen after the final pass; atomic delivery/last-known-good recovery gates passed when files were written; no target/evaluator/report/scenario edit occurred after frozen evidence was accepted.
+Before completion confirm: Agent Skills conformance for filesystem targets; stable target identity or explicit `live-unfrozen` limitation; evaluator identity for strict comparisons; required report sections; visible failed/review gates; metric-status distinctions; local references resolve; useful resources are not penalized merely for existing; requested-host portability is separated from runtime support; report validator passes when runnable; scenario validator passes before behavioral metrics are used; arm comparison validation passes before capability-delta claims; hidden-evaluator visibility/leakage evidence supports any blind-evaluation claim; accepted evidence is frozen after the final pass; atomic delivery/last-known-good recovery gates passed when files were written; no target/evaluator/report/scenario edit occurred after frozen evidence was accepted.
 
 Report generated paths/content, commands, score, gate status, source/evaluator identities, behavioral evidence status, portability status, missing evidence, and residual risks. If an applicable hard gate did not run or failed, do not claim readiness/completion beyond the evidence actually established.
