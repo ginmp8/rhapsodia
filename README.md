@@ -4,7 +4,9 @@
 
 This snapshot strengthens the adaptive agent layer around a **compile-to-workflow + checkpoint-and-gate** model. For risky multi-step work, RhapsodIA now prefers small reviewable checkpoints, reference-derived oracle identity, declared gate order, fresh-context verification, explicit evidence memory, live-state revalidation for mutable sources, and immutable checkpoint evidence before dependent work proceeds.
 
-The design generalizes lessons from Shopify Helix, Dispatch/River, ShopGym, and Roast without copying their product-specific assumptions: deterministic code owns invariants and packaging; agents own bounded judgment; memory is evidence rather than truth; autonomy may increase only inside a predeclared policy and never weakens required gates.
+The design incorporates patterns derived from public engineering research into RhapsodIA-specific execution contracts: deterministic code owns invariants and packaging; agents own bounded judgment; memory is evidence rather than truth; and autonomy may increase only inside a predeclared policy and never weakens required gates.
+
+Research provenance and adaptation boundaries are documented in `skills/checkpoint-convergence/references/research-basis.md`.
 
 The release also removes the obsolete ChatGPT private-upload helper and the redundant per-skill ZIP helper. Packaging is now handled by a deterministic full-project release builder and CI validation workflow.
 
