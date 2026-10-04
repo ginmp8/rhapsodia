@@ -36,8 +36,13 @@ class PackageContractTests(unittest.TestCase):
         self.assertTrue(fixture.is_file())
         self.assertFalse((ROOT / "evals/discovery-regression-scenarios.json").exists())
         data = json.loads(fixture.read_text(encoding="utf-8"))
-        test_source = (ROOT / "tests/test_validate_hypothesis_backlog.py").read_text(encoding="utf-8")
-        declared = set(re.findall(r"^\s*def\s+(test_[A-Za-z0-9_]+)\s*\(", test_source, flags=re.MULTILINE))
+        test_sources = [
+            (ROOT / "tests/test_validate_hypothesis_backlog.py").read_text(encoding="utf-8"),
+            (ROOT / "tests/test_validate_research_discovery.py").read_text(encoding="utf-8"),
+        ]
+        declared = set()
+        for test_source in test_sources:
+            declared.update(re.findall(r"^\s*def\s+(test_[A-Za-z0-9_]+)\s*\(", test_source, flags=re.MULTILINE))
         for scenario in data["scenarios"]:
             self.assertIn(scenario["deterministic_test"], declared, scenario["id"])
 

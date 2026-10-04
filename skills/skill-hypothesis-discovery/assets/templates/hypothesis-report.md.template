@@ -8,6 +8,15 @@
 - evidence status: {{evidence_status}}
 - recommendation: {{recommendation}}
 
+
+### Research grounding
+- policy / status: {{research_policy_status}}
+- research corpus identity: {{research_corpus_id}}
+- traceability/source-finding identity: {{research_traceability_identity}}
+- falsification / counterevidence status: {{falsification_status}}
+- evaluator exposure: {{research_evaluator_exposure}}
+- ranked open evidence gaps: {{ranked_evidence_gaps}}
+
 ### Evidence inspected
 {{evidence_rows}}
 

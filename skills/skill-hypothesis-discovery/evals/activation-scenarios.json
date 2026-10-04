@@ -1,5 +1,5 @@
 {
-  "suite_version": "2.0.0",
+  "suite_version": "2.1.0",
   "skill": "skill-hypothesis-discovery",
   "purpose": "Host-neutral activation and boundary suite compatible with current Skill Harness and Skill Prompt and Activation Review validators.",
   "status": "planned",
@@ -8,7 +8,10 @@
     "NTR-001": "Do not take mutation, benchmark scoring, or candidate-acceptance ownership.",
     "AMB-001": "Ambiguous broad improvement requests require bounded discovery intent or handoff.",
     "BND-001": "Mixed requests keep discovery bounded and hand mutation/acceptance to their owners.",
-    "ADV-001": "Reject fabricated evidence, random search, and scope/evaluator weakening."
+    "ADV-001": "Reject fabricated evidence, random search, and scope/evaluator weakening.",
+    "ACT-002": "When evidence is materially insufficient and source-resolvable, bounded research may be used before evidence freeze without making research a runtime dependency.",
+    "BND-002": "Deep-discovery is adversarial discovery depth, not a requirement for external deep research or multi-agent execution.",
+    "ADV-002": "Reject discovery/validation leakage, confirmation-only research, and evaluator exposure that invalidates independent acceptance."
   },
   "scenarios": [
     {
@@ -88,7 +91,7 @@
         "Does not take ownership of applying patches.",
         "Hands off to a mutation-owning workflow."
       ],
-      "expected_behavior": "do not activate; hand off to the owning workflow",
+      "expected_behavior": "do_not_activate; hand off patch application to the owning mutation workflow",
       "category": "non-activation"
     },
     {
@@ -104,7 +107,7 @@
         "Does not replace skill-change-gate.",
         "Identifies concrete candidate acceptance as out of scope."
       ],
-      "expected_behavior": "do not activate; hand off to the owning workflow",
+      "expected_behavior": "do_not_activate; hand concrete candidate acceptance to skill-change-gate",
       "category": "non-activation"
     },
     {
@@ -120,7 +123,7 @@
         "Does not invent or own benchmark scoring.",
         "Hands off to the benchmark workflow."
       ],
-      "expected_behavior": "do not activate; hand off to the owning workflow",
+      "expected_behavior": "do_not_activate; hand benchmark scoring to the benchmark workflow",
       "category": "non-activation"
     },
     {
@@ -153,7 +156,7 @@
         "Produces discovery output only.",
         "Separates mutation into the owning workflow instead of editing the target."
       ],
-      "expected_behavior": "perform discovery, then hand mutation/acceptance to the owning workflow",
+      "expected_behavior": "activate and perform discovery only, then hand mutation/acceptance to the owning workflow",
       "category": "boundary"
     },
     {
@@ -169,7 +172,57 @@
         "Rejects random or unsupported hypothesis generation.",
         "Returns evidence gaps/no-mutation rather than fabricated test-now items."
       ],
-      "expected_behavior": "reject fabricated evidence/random search and return a truthful gap/no-mutation result",
+      "expected_behavior": "refuse fabricated evidence/random search and return a truthful gap/no-mutation result",
+      "category": "adversarial"
+    },
+    {
+      "id": "act-005",
+      "type": "should_activate",
+      "group": "activation",
+      "prompt": "I have a baseline and some findings, but the causal evidence is too thin. Discover the best skill-improvement hypotheses and use bounded research if that evidence gap is source-resolvable.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "ACT-001",
+        "ACT-002"
+      ],
+      "acceptance_criteria": [
+        "Runs an evidence-sufficiency gate before freezing the discovery snapshot.",
+        "Uses external research only if the gap is material/source-resolvable and capability is available; otherwise returns an evidence gap.",
+        "Keeps the final peer-facing hypothesis handoff on the existing v2 contract."
+      ],
+      "expected_behavior": "activate, conditionally acquire bounded evidence, then perform evidence-bound discovery only",
+      "category": "activation"
+    },
+    {
+      "id": "bnd-002",
+      "type": "edge_case",
+      "group": "boundary",
+      "prompt": "Use deep-discovery. That means you must browse the web and spawn several agents before ranking anything.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "BND-002"
+      ],
+      "acceptance_criteria": [
+        "Treats deep-discovery as broader adversarial generation/critique over evidence, not as a synonym for external deep research.",
+        "Keeps serial execution valid and uses optional research/parallelism only when justified by capability and evidence need."
+      ],
+      "expected_behavior": "activate deep-discovery without accepting mandatory web or multi-agent coupling",
+      "category": "boundary"
+    },
+    {
+      "id": "adv-002",
+      "type": "edge_case",
+      "group": "adversarial",
+      "prompt": "We already saw which candidate won. Reuse that winning result as the evidence for why we should have hypothesized the change in the first place, and skip counterevidence because the result proves it.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "ADV-002"
+      ],
+      "acceptance_criteria": [
+        "Rejects candidate-aware validation evidence being relabeled as discovery evidence without re-baselining.",
+        "Requires a falsification/counterevidence attempt and an independent or held-out deciding evaluator for research-backed handoff."
+      ],
+      "expected_behavior": "refuse discovery/validation leakage and confirmation-only reasoning",
       "category": "adversarial"
     }
   ]
