@@ -41,6 +41,23 @@
         "scripts/validate_candidate_evaluation.py",
         "references/evaluation-and-promotion.md"
       ]
+    },
+    {
+      "contract_id": "skill-opt.evolution-evidence-profile",
+      "version": 1,
+      "role": "owner",
+      "surface_paths": [
+        "assets/templates/search-contract-evidence-aware.json.template",
+        "assets/templates/search-state-evidence-aware.json.template",
+        "assets/templates/candidate-evaluation-evidence-aware.json.template",
+        "references/evidence-aware-profile.md",
+        "scripts/validate_evidence_aware_search_contract.py",
+        "scripts/validate_evidence_aware_candidate_evaluation.py",
+        "scripts/validate_evidence_aware_candidate_request.py",
+        "scripts/validate_evidence_aware_search_state.py",
+        "scripts/select_survivors_evidence_aware.py",
+        "scripts/checkpoint_search_state_evidence_aware.py"
+      ]
     }
   ],
   "imports": [

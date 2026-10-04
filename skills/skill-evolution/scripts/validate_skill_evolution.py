@@ -16,10 +16,14 @@ REQUIRED = [
     "references/evaluation-and-promotion.md",
     "references/state-integrity-and-resume.md",
     "references/host-portability.md",
+    "references/evidence-aware-profile.md",
     "assets/templates/search-contract.json.template",
     "assets/templates/search-state.json.template",
     "assets/templates/search-report.md.template",
     "assets/templates/candidate-evaluation.json.template",
+    "assets/templates/search-contract-evidence-aware.json.template",
+    "assets/templates/search-state-evidence-aware.json.template",
+    "assets/templates/candidate-evaluation-evidence-aware.json.template",
     "contracts/integration-manifest.json",
     "scripts/_common.py",
     "scripts/validate_search_contract.py",
@@ -29,6 +33,13 @@ REQUIRED = [
     "scripts/select_survivors.py",
     "scripts/plan_recombination.py",
     "scripts/checkpoint_search_state.py",
+    "scripts/_evidence_common.py",
+    "scripts/validate_evidence_aware_search_contract.py",
+    "scripts/validate_evidence_aware_search_state.py",
+    "scripts/validate_evidence_aware_candidate_request.py",
+    "scripts/validate_evidence_aware_candidate_evaluation.py",
+    "scripts/select_survivors_evidence_aware.py",
+    "scripts/checkpoint_search_state_evidence_aware.py",
     "evals/activation-scenarios.json",
 ]
 
@@ -59,6 +70,7 @@ def _validate_integration_manifest(root: Path, manifest: dict) -> list[str]:
         "skill-opt.candidate-request": 2,
         "skill-opt.search-state": 4,
         "skill-opt.candidate-evaluation": 2,
+        "skill-opt.evolution-evidence-profile": 1,
     }
     seen_exports: dict[str, int] = {}
     for i, item in enumerate(exports):
@@ -114,7 +126,7 @@ def main() -> int:
             if "://" not in path and not path.startswith("#") and not (root / path).exists():
                 errors.append(f"broken-link:{path}")
 
-    for rel in ("assets/templates/search-contract.json.template", "assets/templates/search-state.json.template", "assets/templates/candidate-evaluation.json.template", "contracts/integration-manifest.json", "evals/activation-scenarios.json"):
+    for rel in ("assets/templates/search-contract.json.template", "assets/templates/search-state.json.template", "assets/templates/candidate-evaluation.json.template", "assets/templates/search-contract-evidence-aware.json.template", "assets/templates/search-state-evidence-aware.json.template", "assets/templates/candidate-evaluation-evidence-aware.json.template", "contracts/integration-manifest.json", "evals/activation-scenarios.json"):
         path = root / rel
         if path.is_file():
             try:
@@ -127,16 +139,34 @@ def main() -> int:
             contract = json.loads((root / "assets/templates/search-contract.json.template").read_text(encoding="utf-8"))
             state = json.loads((root / "assets/templates/search-state.json.template").read_text(encoding="utf-8"))
             candidate_evaluation = json.loads((root / "assets/templates/candidate-evaluation.json.template").read_text(encoding="utf-8"))
+            evidence_contract = json.loads((root / "assets/templates/search-contract-evidence-aware.json.template").read_text(encoding="utf-8"))
+            evidence_state = json.loads((root / "assets/templates/search-state-evidence-aware.json.template").read_text(encoding="utf-8"))
+            evidence_evaluation = json.loads((root / "assets/templates/candidate-evaluation-evidence-aware.json.template").read_text(encoding="utf-8"))
             integration_manifest = json.loads((root / "contracts/integration-manifest.json").read_text(encoding="utf-8"))
             contract_mod = _load("skill_evolution_contract_validator", scripts / "validate_search_contract.py")
             state_mod = _load("skill_evolution_state_validator", scripts / "validate_search_state.py")
             evaluation_mod = _load("skill_evolution_candidate_evaluation_validator", scripts / "validate_candidate_evaluation.py")
+            evidence_contract_mod = _load("skill_evolution_evidence_contract_validator", scripts / "validate_evidence_aware_search_contract.py")
+            evidence_state_mod = _load("skill_evolution_evidence_state_validator", scripts / "validate_evidence_aware_search_state.py")
+            evidence_evaluation_mod = _load("skill_evolution_evidence_candidate_evaluation_validator", scripts / "validate_evidence_aware_candidate_evaluation.py")
             for error in contract_mod.validate(contract):
                 errors.append(f"contract-template:{error}")
             for error in state_mod.validate(contract, state):
                 errors.append(f"state-template:{error}")
             for error in evaluation_mod.validate(contract, candidate_evaluation):
                 errors.append(f"candidate-evaluation-template:{error}")
+            for error in contract_mod.validate(evidence_contract):
+                errors.append(f"evidence-aware-canonical-contract-template:{error}")
+            for error in state_mod.validate(evidence_contract, evidence_state):
+                errors.append(f"evidence-aware-canonical-state-template:{error}")
+            for error in evaluation_mod.validate(evidence_contract, evidence_evaluation):
+                errors.append(f"evidence-aware-canonical-evaluation-template:{error}")
+            for error in evidence_contract_mod.validate(evidence_contract):
+                errors.append(f"evidence-aware-contract-template:{error}")
+            for error in evidence_state_mod.validate(evidence_contract, evidence_state):
+                errors.append(f"evidence-aware-state-template:{error}")
+            for error in evidence_evaluation_mod.validate(evidence_contract, evidence_evaluation):
+                errors.append(f"evidence-aware-evaluation-template:{error}")
             errors.extend(_validate_integration_manifest(root, integration_manifest))
         except Exception as exc:  # structural validator must report, not crash
             errors.append(f"template-validation:{exc.__class__.__name__}:{exc}")
