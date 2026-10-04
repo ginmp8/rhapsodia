@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 STATE_VERSION = "llm-wiki-state/1"
-DEFAULT_SCHEMA_VERSION = "llm-wiki/2"
+DEFAULT_SCHEMA_VERSION = "llm-wiki/3"
 FRONTMATTER_ORDER = [
     "wiki_schema_version",
     "page_id",
@@ -20,17 +20,40 @@ FRONTMATTER_ORDER = [
     "source_ids",
     "source_paths",
     "reviewed_source_ids",
+    "derived_from_source_ids",
+    "revision_of_source_ids",
+    "quoted_from_source_ids",
+    "primary_source_ids",
+    "alternate_source_ids",
+    "subject_page_ids",
+    "depends_on_claim_ids",
+    "supersedes_claim_ids",
+    "alias_page_ids",
+    "possible_same_entity_page_ids",
+    "merged_into_page_ids",
+    "split_from_page_ids",
     "conflict_ids",
     "status",
     "supersedes_page_ids",
+    "value_state",
+    "valid_from",
+    "valid_to",
+    "point_in_time",
+    "recorded_at",
     "source_date",
     "ingest_date",
     "created_date",
     "last_material_update",
     "updated_date",
 ]
-LIST_FIELDS = {"source_ids", "source_paths", "reviewed_source_ids", "conflict_ids", "supersedes_page_ids"}
-PAGE_TYPES = {"source", "entity", "concept", "synthesis"}
+LIST_FIELDS = {
+    "source_ids", "source_paths", "reviewed_source_ids", "conflict_ids", "supersedes_page_ids",
+    "derived_from_source_ids", "revision_of_source_ids", "quoted_from_source_ids",
+    "primary_source_ids", "alternate_source_ids", "subject_page_ids",
+    "depends_on_claim_ids", "supersedes_claim_ids",
+    "alias_page_ids", "possible_same_entity_page_ids", "merged_into_page_ids", "split_from_page_ids",
+}
+PAGE_TYPES = {"source", "entity", "concept", "synthesis", "claim"}
 
 
 def canonical_json_bytes(value: Any) -> bytes:

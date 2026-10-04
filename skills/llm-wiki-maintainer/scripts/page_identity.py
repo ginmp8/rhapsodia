@@ -15,7 +15,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Canonical page identity and deterministic frontmatter renderer for the default wiki schema.")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("id")
-    p.add_argument("--type", required=True, choices=["source", "entity", "concept", "synthesis"])
+    p.add_argument("--type", required=True, choices=["source", "entity", "concept", "synthesis", "claim"])
     p.add_argument("--key", required=True)
     p.add_argument("--json")
     p = sub.add_parser("render-frontmatter")
