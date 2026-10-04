@@ -8,11 +8,12 @@ import hashlib
 import json
 import os
 import re
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-INVENTORY_VERSION = 2
+INVENTORY_VERSION = 3
 TEXT_SUFFIXES = {'.md', '.txt', '.json', '.yaml', '.yml', '.py', '.sh', '.js', '.ts', '.toml', '.ini', '.cfg'}
 BLOCKED_PARTS = {'.git', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache'}
 NOISE_SUFFIXES = {'.pyc', '.pyo'}
@@ -207,6 +208,137 @@ def build_reference_graph(target: Path, files: list[dict[str, Any]], texts: dict
     return sorted_edges, trace
 
 
+TRACE_DIMENSIONS = ['imports', 'links', 'references', 'consumers', 'tests', 'validators', 'examples', 'packaging', 'migration_paths', 'handoffs']
+RELATION_NAMES = {
+    'python_import': 'IMPORTS',
+    'markdown_link': 'REFERENCES',
+    'text_reference': 'MENTIONS',
+}
+TRACE_STATES = {'found', 'inspected-none', 'not-inspected', 'unsupported', 'blocked'}
+
+
+def typed_relations(edges: list[dict[str, str]]) -> list[dict[str, str]]:
+    relations: list[dict[str, str]] = []
+    for edge in edges:
+        relation = RELATION_NAMES.get(edge.get('type', ''), 'REFERENCES')
+        relations.append({
+            'source': edge['source'],
+            'target': edge['target'],
+            'relation': relation,
+            'detector': edge.get('type', 'unknown'),
+            'evidence_class': 'mechanically-proven',
+        })
+    return sorted(relations, key=lambda row: (row['source'], row['target'], row['relation'], row['detector']))
+
+
+def build_trace_coverage(files: list[dict[str, Any]], trace: dict[str, dict[str, list[str]]]) -> dict[str, dict[str, dict[str, Any]]]:
+    coverage: dict[str, dict[str, dict[str, Any]]] = {}
+    for item in files:
+        rel = item['path']
+        coverage[rel] = {}
+        for dimension in TRACE_DIMENSIONS:
+            evidence = sorted(set(trace.get(rel, {}).get(dimension, [])))
+            coverage[rel][dimension] = {
+                'state': 'found' if evidence else 'inspected-none',
+                'evidence': evidence,
+            }
+        coverage[rel]['external_runtime'] = {
+            'state': 'not-inspected',
+            'evidence': [],
+            'note': 'Static package inventory cannot prove consumers outside the supplied target root.',
+        }
+        if not item.get('is_text'):
+            coverage[rel]['embedded_metadata'] = {
+                'state': 'unsupported',
+                'evidence': [],
+                'note': 'Opaque/binary metadata consumers require a domain-specific inspector.',
+            }
+    return coverage
+
+
+def portable_path_collisions(paths: list[str]) -> list[dict[str, Any]]:
+    groups: dict[tuple[str, str], list[str]] = {}
+    for rel in sorted(set(paths)):
+        normalized_forms = {
+            'nfc-casefold': unicodedata.normalize('NFC', rel).casefold(),
+            'nfd-casefold': unicodedata.normalize('NFD', rel).casefold(),
+        }
+        for kind, key in normalized_forms.items():
+            groups.setdefault((kind, key), []).append(rel)
+    collisions: list[dict[str, Any]] = []
+    seen: set[tuple[str, ...]] = set()
+    for (kind, key), members in sorted(groups.items()):
+        unique = sorted(set(members))
+        if len(unique) < 2:
+            continue
+        identity = tuple(unique)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        collisions.append({'kind': kind, 'normalized_key': key, 'paths': unique})
+    return collisions
+
+
+def progressive_disclosure(edges: list[dict[str, str]]) -> dict[str, Any]:
+    adjacency: dict[str, list[str]] = {}
+    for edge in edges:
+        if edge.get('type') not in {'markdown_link', 'text_reference'}:
+            continue
+        adjacency.setdefault(edge['source'], []).append(edge['target'])
+    adjacency = {key: sorted(set(values)) for key, values in sorted(adjacency.items())}
+
+    depths: dict[str, int] = {'SKILL.md': 0}
+    queue: list[str] = ['SKILL.md']
+    while queue:
+        source = queue.pop(0)
+        depth = depths[source]
+        for target in adjacency.get(source, []):
+            next_depth = depth + 1
+            if target not in depths or next_depth < depths[target]:
+                depths[target] = next_depth
+                queue.append(target)
+
+    cycles: set[tuple[str, ...]] = set()
+    visiting: list[str] = []
+    active: set[str] = set()
+    complete: set[str] = set()
+
+    def visit(node: str) -> None:
+        if node in complete:
+            return
+        if node in active:
+            if node in visiting:
+                idx = visiting.index(node)
+                cycle = visiting[idx:] + [node]
+                core = cycle[:-1]
+                if core:
+                    rotations = [tuple(core[i:] + core[:i]) for i in range(len(core))]
+                    canonical = min(rotations)
+                    cycles.add(canonical + (canonical[0],))
+            return
+        active.add(node)
+        visiting.append(node)
+        for target in adjacency.get(node, []):
+            visit(target)
+        visiting.pop()
+        active.remove(node)
+        complete.add(node)
+
+    for node in sorted(adjacency):
+        visit(node)
+
+    reachable_depths = {path: depth for path, depth in sorted(depths.items()) if path != 'SKILL.md'}
+    deep = sorted(path for path, depth in reachable_depths.items() if depth > 1)
+    return {
+        'root': 'SKILL.md',
+        'max_depth': max(depths.values()) if depths else 0,
+        'depths': reachable_depths,
+        'deep_references': deep,
+        'cycles': [list(cycle) for cycle in sorted(cycles)],
+        'guidance': 'Prefer direct SKILL.md -> reference loading for critical branch knowledge; depth > 1 is advisory unless the package contract makes it blocking.',
+    }
+
+
 def scan_target(target: Path) -> dict[str, Any]:
     target = target.resolve()
     if not target.is_dir():
@@ -260,6 +392,10 @@ def scan_target(target: Path) -> dict[str, Any]:
         frontmatter = {'present': False, 'fields': {}, 'extensions': [], 'errors': ['root SKILL.md not found']}
 
     edges, trace = build_reference_graph(target, files, texts, links)
+    relations = typed_relations(edges)
+    coverage = build_trace_coverage(files, trace)
+    collisions = portable_path_collisions([item['path'] for item in files])
+    disclosure = progressive_disclosure(edges)
     stable_core = {
         'inventory_version': INVENTORY_VERSION,
         'frontmatter': {
@@ -269,6 +405,10 @@ def scan_target(target: Path) -> dict[str, Any]:
         },
         'files': [{k: item[k] for k in ('path', 'role', 'size_bytes', 'sha256', 'suffix', 'is_text') if k in item} for item in files],
         'reference_graph': edges,
+        'relation_graph': relations,
+        'trace_coverage': coverage,
+        'portable_path_collisions': collisions,
+        'progressive_disclosure': disclosure,
         'scaffold_hits': sorted(scaffold_hits, key=lambda x: (x['path'], x['term'])),
     }
     dirs_present = {p.name for p in target.iterdir() if p.is_dir()}
@@ -284,7 +424,11 @@ def scan_target(target: Path) -> dict[str, Any]:
         'files': files,
         'links': sorted(links, key=lambda x: (x['source'], x['target'])),
         'reference_graph': edges,
+        'relation_graph': relations,
         'resource_trace': trace,
+        'trace_coverage': coverage,
+        'portable_path_collisions': collisions,
+        'progressive_disclosure': disclosure,
         'scaffold_hits': sorted(scaffold_hits, key=lambda x: (x['path'], x['term'])),
         'counts': {
             'files': len(files),

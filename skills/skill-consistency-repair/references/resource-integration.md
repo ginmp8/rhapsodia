@@ -17,7 +17,7 @@ Before calling a resource unused or removable, inspect all applicable evidence d
 9. migration, legacy, compatibility, rollback, and conversion paths;
 10. handoffs to adjacent roles/skills.
 
-`scripts/inventory_skill.py` emits these dimensions in `resource_trace`. Absence of a detected edge is evidence of graph orphaning only; it is not proof of obsolescence.
+`scripts/inventory_skill.py` emits these dimensions in `resource_trace` and the inspection state in `trace_coverage`. Interpret `found`, `inspected-none`, `not-inspected`, `unsupported`, and `blocked` distinctly. Absence of a detected edge is evidence of graph orphaning only; it is not proof of obsolescence, especially when a relevant dimension is not inspected or unsupported.
 
 ## Integration evidence
 

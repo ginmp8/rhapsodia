@@ -14,10 +14,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 from inventory_skill import read_text, scan_target  # noqa: E402
 
-REPORT_VERSION = 2
+REPORT_VERSION = 3
 CATEGORIES = {
     'package_structure', 'activation_scope', 'ownership_role', 'resource_integration',
     'workflow_modes', 'validation_packaging', 'evidence_contract', 'authority_conflict',
+    'portability_conformance', 'relation_topology',
 }
 RESOURCE_STATUSES = {
     'current', 'duplicate', 'obsolete', 'migration-only', 'contradictory',
@@ -31,7 +32,7 @@ STOP_WORDS = {
 
 def finding(fid: str, severity: str, category: str, title: str, evidence: str, problem: str, repair: str,
             gate: str, confidence: str = 'medium', subjects: list[str] | None = None,
-            evidence_label: str = 'inspected') -> dict[str, Any]:
+            evidence_label: str = 'inspected', evidence_class: str = 'mechanically-proven') -> dict[str, Any]:
     return {
         'id': fid,
         'severity': severity,
@@ -40,6 +41,7 @@ def finding(fid: str, severity: str, category: str, title: str, evidence: str, p
         'subjects': subjects or [],
         'evidence': evidence,
         'evidence_label': evidence_label,
+        'evidence_class': evidence_class,
         'problem': problem,
         'repair': repair,
         'gate': gate,
@@ -236,6 +238,7 @@ def classify_resources(inv: dict[str, Any]) -> list[dict[str, Any]]:
             'confidence': confidence,
             'evidence': evidence,
             'trace': trace,
+            'trace_coverage': inv.get('trace_coverage', {}).get(path, {}),
             'semantic_review_required': semantic_review,
             'deletion_allowed': False,
             'allowed_statuses': sorted(RESOURCE_STATUSES),
@@ -348,6 +351,46 @@ def check_scenarios(target: Path, inv: dict[str, Any], findings: list[dict[str, 
                 break
 
 
+def check_portable_paths(inv: dict[str, Any], findings: list[dict[str, Any]]) -> None:
+    for idx, collision in enumerate(inv.get('portable_path_collisions', []), start=1):
+        findings.append(finding(
+            f'P{idx:03}', 'blocker', 'portability_conformance', 'portable path identity collision',
+            json.dumps(collision, sort_keys=True, ensure_ascii=False),
+            'Two or more package paths collapse to the same casefold/Unicode-normalized identity on common filesystems.',
+            'Rename the colliding resources and update all consumers before packaging.',
+            'Inventory and package preflight report zero portable path collisions.',
+            'high', list(collision.get('paths', [])),
+        ))
+
+
+def check_disclosure_topology(inv: dict[str, Any], findings: list[dict[str, Any]]) -> None:
+    topology = inv.get('progressive_disclosure', {})
+    for idx, cycle in enumerate(topology.get('cycles', []), start=1):
+        findings.append(finding(
+            f'T{idx:03}', 'medium', 'relation_topology', 'progressive-disclosure reference cycle',
+            ' -> '.join(cycle),
+            'The detected reference topology contains a cycle. This may make conditional loading less predictable even when every file exists.',
+            'Break the cycle when the dependency is accidental; otherwise document why the cycle is intentional and keep direct critical references discoverable from SKILL.md.',
+            'Inventory topology contains no unintended cycle and semantic review accepts any retained cycle.',
+            'medium', cycle, evidence_class='mechanically-proven',
+        ))
+    deep = topology.get('deep_references', [])
+    if deep:
+        findings.append(finding(
+            'T900', 'low', 'relation_topology', 'progressive-disclosure depth exceeds one level',
+            f"max_depth={topology.get('max_depth')}; deep_references={deep}",
+            'Some resources are reachable from SKILL.md only through another detected resource reference. Agent Skills guidance prefers shallow references for reliable progressive disclosure.',
+            'Keep critical branch knowledge directly referenced from SKILL.md; retain deeper links only when they are intentionally secondary.',
+            'Semantic review confirms critical operational knowledge remains directly discoverable.',
+            'medium', deep, evidence_class='mechanically-proven',
+        ))
+
+
+def evidence_class_summary(findings: list[dict[str, Any]]) -> dict[str, int]:
+    allowed = ('mechanically-proven', 'behaviorally-proven', 'semantically-supported', 'planned', 'blocked')
+    return {name: sum(1 for item in findings if item.get('evidence_class') == name) for name in allowed}
+
+
 def score(findings: list[dict[str, Any]]) -> dict[str, Any]:
     weights = {'blocker': 30, 'high': 12, 'medium': 5, 'low': 1}
     penalty = sum(weights.get(f['severity'], 1) for f in findings)
@@ -382,6 +425,7 @@ def render_markdown(result: dict[str, Any]) -> str:
             f"- Subjects: {', '.join(f['subjects']) if f['subjects'] else '-'}",
             f"- Evidence: {f['evidence']}",
             f"- Evidence label: `{f['evidence_label']}`",
+            f"- Evidence class: `{f['evidence_class']}`",
             f"- Problem: {f['problem']}",
             f"- Repair: {f['repair']}",
             f"- Gate: {f['gate']}",
@@ -400,6 +444,8 @@ def audit(target: Path) -> dict[str, Any]:
     check_description(skill_text, inv, findings)
     check_required_sections(skill_text, findings)
     check_role_contradictions(skill_text, findings)
+    check_portable_paths(inv, findings)
+    check_disclosure_topology(inv, findings)
     classifications = classify_resources(inv)
     check_resource_integration(classifications, inv, findings)
     check_scripts(target, inv, findings)
@@ -411,6 +457,9 @@ def audit(target: Path) -> dict[str, Any]:
         'skill_files': inv.get('skill_files', []),
         'frontmatter_errors': inv.get('frontmatter', {}).get('errors', []),
         'reference_edge_count': len(inv.get('reference_graph', [])),
+        'relation_edge_count': len(inv.get('relation_graph', [])),
+        'portable_path_collision_count': len(inv.get('portable_path_collisions', [])),
+        'progressive_disclosure': inv.get('progressive_disclosure', {}),
     }
     unresolved = [row['path'] for row in classifications if row['provisional_status'] in {'orphaned', 'unknown'}]
     return {
@@ -429,7 +478,29 @@ def audit(target: Path) -> dict[str, Any]:
             'static_classifier_is_provisional': True,
             'absence_of_reference_never_authorizes_deletion': True,
             'required_deletion_trace_dimensions': ['imports', 'links', 'references', 'consumers', 'tests', 'validators', 'examples', 'packaging', 'migration_paths', 'handoffs'],
+            'trace_coverage_states': ['found', 'inspected-none', 'not-inspected', 'unsupported', 'blocked'],
         },
+        'relation_contract': {
+            'reference': 'references/consistency-relations.md',
+            'relations_are_typed': True,
+            'relations': inv.get('relation_graph', []),
+            'progressive_disclosure': inv.get('progressive_disclosure', {}),
+        },
+        'conformance': {
+            'portable_core_spec': {
+                'status': 'internal-static-fail' if inv.get('frontmatter', {}).get('errors') or inv.get('portable_path_collisions') else 'internal-static-pass',
+                'scope': 'internal package/frontmatter/path checks only; external reference validators are supplemental',
+            },
+            'host_compatibility': {
+                'status': 'not-run',
+                'scope': 'host-specific discovery/runtime behavior requires a separate host-profile validation',
+            },
+            'reference_validator': {
+                'status': 'supplemental-not-run',
+                'rule': 'A reference validator pass cannot by itself establish package-wide consistency.',
+            },
+        },
+        'evidence_classes': evidence_class_summary(findings),
         'resource_classification': classifications,
         'findings': findings,
         'score': score_data,
