@@ -1,14 +1,14 @@
 # RhapsodIA
 
-## 0.3.0 — reference-grounded convergence
+## 0.4.0 — artifact-native workflows and convergent execution
 
-This snapshot strengthens the adaptive agent layer around a **compile-to-workflow + checkpoint-and-gate** model. For risky multi-step work, RhapsodIA now prefers small reviewable checkpoints, reference-derived oracle identity, declared gate order, fresh-context verification, explicit evidence memory, live-state revalidation for mutable sources, and immutable checkpoint evidence before dependent work proceeds.
+This release brings together artifact-native governance, planning, and execution workflows with a **compile-to-workflow + checkpoint-and-gate** model. For risky multi-step work, RhapsodIA prefers small reviewable checkpoints, reference-derived oracle identity, declared gate order, fresh-context verification, explicit evidence memory, live-state revalidation for mutable sources, and immutable checkpoint evidence before dependent work proceeds.
 
 The design incorporates patterns derived from public engineering research into RhapsodIA-specific execution contracts: deterministic code owns invariants and packaging; agents own bounded judgment; memory is evidence rather than truth; and autonomy may increase only inside a predeclared policy and never weakens required gates.
 
 Research provenance and adaptation boundaries are documented in `skills/checkpoint-convergence/references/research-basis.md`.
 
-The release also removes the obsolete ChatGPT private-upload helper and the redundant per-skill ZIP helper. Packaging is now handled by a deterministic full-project release builder and CI validation workflow.
+Packaging is handled by a deterministic full-project release builder and CI validation workflow.
 
 ## Artifact-native workspace (Mags 2.0.0)
 
@@ -473,7 +473,7 @@ The Apache License 2.0 applies to prompts, agents, skills, scripts, examples, te
 In the full RhapsodIA repository, copied or adapted third-party content remains subject to its original license and notices and is not relicensed merely by inclusion in the repository.
 
 
-## 0.3.0 dual workflow architecture
+## 0.3.0 (historical) — dual workflow architecture
 
 RhapsodIA 0.3.0 keeps the package release at `0.3.0` while separating two internal control planes:
 
