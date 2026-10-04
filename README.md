@@ -42,9 +42,9 @@ The design goal is not to create one universal agent. It is to preserve clear ow
 
 ## Distribution scope
 
-This archive is a **complete RhapsodIA project snapshot** for the supplied feature branch. It contains the full Skill catalog present in the baseline plus the complete Agent layer, documentation, validators, tests, and manifests. Files that were not changed by this work are intentionally retained in the final archive.
+The repository contains the complete RhapsodIA distribution: the canonical Skill catalog, Agent layer, documentation, validators, tests, and marketplace manifests. Release archives are built from this source tree; generated validation evidence is intentionally kept outside the versioned source.
 
-The root `MANIFEST.json` remains the deterministic manifest for the **Agent-layer distribution surface** (README, agent profiles, agent docs, installer/validator, and agent tests). Individual Skills own their own package/integration validation contracts. The full-project ZIP is therefore broader than the root Agent manifest by design.
+The root `MANIFEST.json` remains the deterministic manifest for the **Agent-layer distribution surface** (README, agent profiles, agent docs, installer/validator, and agent tests). Individual Skills own their own package/integration validation contracts. A full-project ZIP is therefore broader than the root Agent manifest by design.
 
 Previously integrated capabilities retained by this release include:
 
@@ -54,7 +54,7 @@ Previously integrated capabilities retained by this release include:
 
 The retained baseline also evolves `adaptive-workflow-orchestration` with backward-compatible `workflow-plan/v2` gated convergence while preserving `workflow-plan/v1`, and adds checkpoint-candidate semantics to the Magia execution surface.
 
-See the [artifact-native delivery report](docs/workspace/DELIVERY-REPORT.md) for implemented scope, validation evidence and exact usage. The [offline demo](docs/workspace/demo.html) uses synthetic records only.
+See the [Rhapsodia Workspace documentation](docs/workspace/README.md) for ownership, commands, validation, migration boundaries, and offline-view behavior. The [offline demo](docs/workspace/demo.html) uses synthetic records only.
 
 ## Marketplace distribution
 
