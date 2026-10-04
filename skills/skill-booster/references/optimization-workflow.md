@@ -122,3 +122,15 @@ Persist current-run transformation history. Persist experiment history only for 
 Canonical optimization must work without Skill Evolution, search-state artifacts, lineage metadata, or search-specific fields in downstream specialist contracts. Evolutionary readiness is not a completion criterion for canonical optimization.
 
 Population search is never entered implicitly. When `evolutionary-optimization` is explicitly selected, branch to `references/evolutionary-search-routing.md` after Establish/Diagnose/Select. Keep the canonical strategy/result as comparator. Search-controller-specific state stays at that boundary; target transformation, evaluation, final freeze, promotion, and packaging remain owned by the existing Booster workflow. After finalists return, rejoin Evaluate/Prove and run independent final gates.
+
+## Run-state, contamination, and promotion closure
+
+For long/resumable runs, checkpoint external run state after each phase barrier and before/after every accepted transformation. On resume, verify stored baseline/current-candidate/evaluator/source identities and invalidate stale candidate-bound evidence before continuing.
+
+Before Transform, validate a strategy-decision artifact containing the selected strategy, simpler alternative considered, escalation reason when applicable, frozen evaluator, finite budget, stop rules, and explicit evolutionary authorization when relevant.
+
+During Evaluate, maintain evaluator visibility. If the transformer has seen feedback from an evaluator intended for promotion, mark the relevant evidence contaminated and require a blind frozen promotion holdout at L5 before a promotion claim.
+
+During Prove, validate optional executable consumer-contract evidence when ecosystem policy or available peer contracts require it. After the exact candidate and package are frozen, emit and validate a promotion attestation binding all evidence identities used by the promotion decision.
+
+For research-backed work, the trace matrix is external evidence. A material research finding may not disappear between Diagnose and Prove; it must end with an explicit disposition and accepted findings must trace through requirement, implementation, and evaluation.

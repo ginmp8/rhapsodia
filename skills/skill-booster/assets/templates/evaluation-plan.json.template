@@ -1,6 +1,30 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "target_identity": "sha256:replace-with-real-identity",
+  "evaluator_sets": [
+    {
+      "id": "development-evals-v1",
+      "role": "development",
+      "identity": "sha256:replace-with-frozen-evaluator-hash",
+      "visible_to_transformer": true,
+      "frozen": true
+    },
+    {
+      "id": "promotion-holdout-v1",
+      "role": "promotion-holdout",
+      "identity": "sha256:replace-with-frozen-holdout-hash",
+      "visible_to_transformer": false,
+      "frozen": true
+    }
+  ],
+  "contamination": {
+    "status": "clean",
+    "exposed_evaluator_ids": [
+      "development-evals-v1"
+    ],
+    "promotion_holdout_required": false,
+    "reason": "No candidate was iteratively optimized against promotion-holdout feedback."
+  },
   "levels": [
     {
       "id": "L0-structural",
@@ -58,7 +82,8 @@
   "promotion": {
     "target_promotion_requires": [
       "all required levels pass",
-      "final change gate pass"
+      "final change gate pass",
+      "contamination policy satisfied"
     ],
     "workflow_policy_promotion": "separate cross-target decision"
   },

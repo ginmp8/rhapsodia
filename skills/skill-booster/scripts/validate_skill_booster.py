@@ -144,6 +144,41 @@ def check_links(root: Path) -> list[str]:
     return errors
 
 
+def check_progressive_disclosure(root: Path, skill_md: Path) -> list[str]:
+    warnings: list[str] = []
+    skill_text = read_text(skill_md)
+    line_count = len(skill_text.splitlines())
+    if line_count > 500:
+        warnings.append(f"SKILL.md exceeds the recommended 500-line control-plane limit: {line_count} lines")
+
+    direct_targets: set[Path] = set()
+    for target in LINK_RE.findall(skill_text):
+        if "://" in target or target.startswith("#") or target.startswith("mailto:"):
+            continue
+        link_path = target.split("#", 1)[0]
+        if not link_path:
+            continue
+        resolved = (skill_md.parent / link_path).resolve()
+        if resolved.is_file():
+            direct_targets.add(resolved)
+
+    for ref in sorted(direct_targets):
+        if ref.suffix.lower() != ".md":
+            continue
+        for target in LINK_RE.findall(read_text(ref)):
+            if "://" in target or target.startswith("#") or target.startswith("mailto:"):
+                continue
+            link_path = target.split("#", 1)[0]
+            if not link_path:
+                continue
+            nested = (ref.parent / link_path).resolve()
+            if nested.is_file() and nested.suffix.lower() == ".md" and nested not in direct_targets and nested != skill_md.resolve():
+                warnings.append(
+                    f"reference chain is deeper than one level from SKILL.md: {ref.relative_to(root)} -> {nested.relative_to(root)}"
+                )
+    return warnings
+
+
 def diagnostic_from_message(message: str, severity: str) -> dict:
     lower = message.lower()
     code = "VALIDATION_WARNING" if severity == "warning" else "VALIDATION_ERROR"
@@ -156,6 +191,8 @@ def diagnostic_from_message(message: str, severity: str) -> dict:
         ("frontmatter.name must match", "SKILL_NAME_DIRECTORY_MISMATCH", "frontmatter.name", "make SKILL.md name match its parent skill directory"),
         ("frontmatter", "FRONTMATTER_INVALID", "SKILL.md frontmatter", "repair Agent Skills-compatible YAML frontmatter"),
         ("description may be too short", "ACTIVATION_DESCRIPTION_SHORT", "frontmatter.description", "add specific activation and non-activation context"),
+        ("500-line control-plane limit", "PROGRESSIVE_DISCLOSURE_SIZE", "SKILL.md", "move detailed branch logic into focused references"),
+        ("reference chain is deeper than one level", "PROGRESSIVE_DISCLOSURE_DEPTH", "markdown references", "link needed reference files directly from SKILL.md"),
         ("should visibly include", "CONTROL_PLANE_SECTION_MISSING", "SKILL.md", "add the missing control-plane section"),
         ("forbidden generated or control path", "FORBIDDEN_PATH", "package tree", "remove generated/control artifacts from the target package"),
         ("bytecode must not be packaged", "BYTECODE_PRESENT", "package tree", "remove bytecode/cache artifacts"),
@@ -271,6 +308,7 @@ def validate(root: Path) -> dict:
         for term in ["workflow", "output contract", "stop condition"]:
             if term not in body:
                 warnings.append(f"SKILL.md should visibly include {term}")
+        warnings.extend(check_progressive_disclosure(root, skill_md))
 
     for path in root.rglob("*"):
         rel = path.relative_to(root)

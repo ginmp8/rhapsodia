@@ -44,9 +44,9 @@ def write_inputs(tmp_path, evaluation_plan):
     return handoff
 
 
-def test_evaluation_plan_v2_declares_finalist_policy():
+def test_evaluation_plan_v3_declares_finalist_policy():
     plan = evaluation_plan_template()
-    assert plan["schema_version"] == 2
+    assert plan["schema_version"] == 3
     assert plan["finalist_policy"] == {
         "minimum_evaluation_level": "L4-benchmark",
         "holdout_policy": "not-required",

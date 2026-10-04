@@ -69,3 +69,18 @@ Do not claim final readiness when:
 - a failed attempt destroyed last-known-good bytes;
 - rollback failed and recovery locations were discarded;
 - the receipt does not correspond to the committed archive.
+
+## Promotion attestation
+
+Treat final promotion as a provenance decision in addition to package delivery. After the final candidate freeze and package commit, produce one machine-readable attestation that binds:
+
+- controller/run identity;
+- baseline and exact promoted candidate identities;
+- frozen evaluator/source-set identities;
+- final run-state/checkpoint;
+- validation receipt and final change-gate evidence;
+- portability and research-traceability status when applicable;
+- integration/peer-catalog evidence when applicable;
+- exact archive SHA-256 when packaging is required.
+
+Validate the attestation against the candidate manifest and archive bytes. A mismatch is blocking and must not be repaired by overwriting the expected hash.

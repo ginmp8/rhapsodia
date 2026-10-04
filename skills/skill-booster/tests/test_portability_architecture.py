@@ -64,3 +64,44 @@ if __name__ == "__main__":
     test_all_profiles_include_codex()
     test_complete_optimization_contract_requires_default_multi_host_gate()
     print("ok")
+
+
+def test_portability_validator_does_not_create_bytecode() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = make_skill(Path(td))
+        env = os.environ.copy()
+        env.pop("PYTHONDONTWRITEBYTECODE", None)
+        result = subprocess.run(
+            [sys.executable, str(VALIDATOR), "--target", str(skill), "--hosts", "portable-core"],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        assert result.returncode == 0, result.stderr or result.stdout
+        assert not list(skill.rglob("__pycache__"))
+        assert not list(skill.rglob("*.pyc"))
+
+
+def test_openai_policy_products_use_current_values() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = make_skill(Path(td))
+        agents = skill / "agents"
+        agents.mkdir()
+        (agents / "openai.yaml").write_text(
+            "interface:\n  display_name: Demo\n  short_description: Demo skill\n"
+            "policy:\n  allow_implicit_invocation: true\n  products:\n  - CHAT\n  - CODEX\n",
+            encoding="utf-8",
+        )
+        result = run_validator(skill, "openai")
+        assert result.returncode == 0, result.stderr or result.stdout
+        report = json.loads(result.stdout)
+        assert not any(item.get("code") == "OPENAI_ADAPTER_PRODUCTS" for item in report["errors"])
+
+        (agents / "openai.yaml").write_text(
+            "interface:\n  display_name: Demo\n  short_description: Demo skill\n"
+            "policy:\n  products:\n  - chatgpt\n",
+            encoding="utf-8",
+        )
+        bad = run_validator(skill, "openai")
+        assert bad.returncode != 0
+        assert "OPENAI_ADAPTER_PRODUCTS" in bad.stdout
