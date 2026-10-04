@@ -9,13 +9,17 @@ Label validation evidence accurately:
 - `planned`: scenario or validator exists but was not executed;
 - `blocked`: required evidence could not be obtained.
 
-A manual "literal simulation" is `observed` or `planned`, not `measured runtime behavior`. Keep **structural evidence**, **behavioral evidence**, and **runtime evidence** separate; perceptual/editorial evidence is a fourth layer when subjective review is material.
+A manual "literal simulation" is `observed` or `planned`, not `measured runtime behavior`. Keep **structural evidence**, **behavioral evidence**, **runtime evidence**, and **perceptual/editorial evidence** separate.
+
+Bind behavioral/runtime evidence to the material execution profile used to produce it. Provider/model/host/tool-schema/instruction-surface drift can invalidate the claim even when prompt bytes are unchanged.
 
 Use these claim boundaries:
 
 - **structurally hardened**: contracts/rules/checks improved and applicable deterministic gates pass;
 - **validation-ready**: evaluation assets exist but were not executed;
-- **behaviorally improved**: baseline and candidate were actually compared with a frozen evaluator and predeclared acceptance rule;
-- **runtime validated**: the intended executor/tools actually ran successfully.
+- **behaviorally improved**: baseline and candidate were actually compared with a frozen evaluator, comparable execution profile, and predeclared acceptance rule;
+- **runtime validated**: the intended executor/tools actually ran successfully under the reported profile.
+
+When an LLM judge materially decides a comparative claim, report its identity and any applied bias controls such as blinding, order swap, repetitions, ties, and calibration. Lack of those controls is a limitation, not something to hide.
 
 Do not upgrade one evidence layer into another.

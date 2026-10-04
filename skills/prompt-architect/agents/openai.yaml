@@ -1,13 +1,7 @@
 interface:
   display_name: Prompt Architect
-  short_description: Create, improve, and validate prompts with source-grounded quality
-    checks.
+  short_description: Create, improve, and validate prompts with source-grounded quality checks.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
   allow_implicit_invocation: true
-  products:
-  - chatgpt
-  - codex
-  - api
-  - atlas

@@ -1,66 +1,74 @@
-# Prompt Contract
+# Prompt Contract v2
 
-Use a prompt contract when the target is complex, governed, reused, or compared across revisions. The contract is a semantic ledger; it is not the final prompt.
+Use the machine-readable prompt contract for reusable, complex, or comparison-sensitive work. It separates semantic requirements from executor/runtime assumptions so the same behavior can be rendered for multiple hosts without pretending the text is universal.
 
-## Contract goals
+Canonical scaffold: [`../assets/templates/prompt-contract.json.template`](../assets/templates/prompt-contract.json.template).
 
-The contract should make these stable before wording is optimized:
+## Core sections
 
-- target identity;
-- intended executor;
-- mode;
-- available inputs/tools;
-- protected requirements;
-- output contract;
-- success criteria;
-- assumptions/conflicts;
-- validation identity and claim level.
+### `target`
 
-Use [`assets/templates/prompt-contract.json.template`](../assets/templates/prompt-contract.json.template) as the canonical scaffold and validate it with [`../scripts/validate_prompt_contract.py`](../scripts/validate_prompt_contract.py).
+Logical artifact identity: name, kind, executor, and language.
 
-## Requirement authority
+### `solution_lever`
 
-Allowed authority values:
+Records the selected control lever and whether prompt engineering is primary. Allowed values:
 
-- `explicit`: directly required by the user/current task;
-- `source-required`: required by an authoritative source or compatibility contract;
-- `inferred`: derived from context but not explicitly stated;
-- `optional`: design preference or nonessential enhancement.
+`prompt`, `model`, `context`, `tool-schema`, `application-control`, `fine-tuning`, `architecture`, `mixed`, `undetermined`.
 
-Protected requirements may not be removed or semantically weakened without higher authority. If a protected requirement conflicts with another protected requirement at the same authority level, record the conflict rather than guessing.
+A non-prompt lever may still include a prompt artifact, but the contract must not claim prompt text controls behavior owned elsewhere.
 
-## Requirement states
+### `execution_profile`
 
-- `preserve`: semantic behavior must stay;
-- `clarify`: semantics stay, wording/placement may change;
-- `change`: behavior intentionally changes with reason/evidence;
-- `remove`: intentionally removed with authority/reason;
-- `blocked`: unresolved conflict or missing authority.
+Captures provider/host/model/snapshot/configuration, active instruction surfaces, capability states, and a profile identity when material. Structural work may use explicit `unknown` values. Behavioral/runtime claims require a stable non-empty `profile_identity`.
 
-## Output contract fields
+### `authority_and_trust`
 
-Capture only fields material to correctness:
+Keep separate:
 
-- `format`;
-- `sections` or schema identity;
-- `language`;
-- `length` when bounded;
-- `citations`;
-- `ordering`;
-- `unknown_or_error_behavior`.
+- design-authority precedence;
+- runtime instruction authority description;
+- untrusted-data policy.
 
-## Validation block
+### `inputs.context`
 
-`validation.freeze_state` values:
+Captures stable/dynamic/untrusted context plus budget, placement, overflow, and provenance behavior.
 
-- `frozen`: evaluator/scenarios were fixed before candidate mutation;
-- `planned`: assets exist but are not executed/frozen evidence;
-- `not-applicable`: no behavioral comparison is being claimed.
+### `requirements`
 
-`validation.claim_level` values:
+Each requirement includes:
 
-- `structural`;
-- `behavioral`;
-- `runtime`.
+- stable id/text;
+- authority;
+- protected flag;
+- source/status/reason;
+- `control_class`;
+- `enforcement`.
 
-A `behavioral` claim requires a frozen baseline-vs-candidate evaluator. A `runtime` claim requires actual execution by the intended executor/tool environment.
+Authorization, security, and side-effect controls cannot claim `prompt` as their sole enforcement layer.
+
+### `validation`
+
+Records suite/freeze/claim level, execution-profile identity, and optional comparison controls.
+
+Behavioral/runtime claims require:
+
+- `freeze_state=frozen`;
+- non-empty `suite_id`;
+- non-empty `execution_profile_identity` matching the execution profile.
+
+For material pairwise `llm-judge` comparison, v2 requires blinding, position swap, at least two repetitions, and ties allowed. Use another evaluator kind when those controls do not apply.
+
+## Version policy
+
+Version 2 is the current contract. Do not silently coerce obsolete v1 contracts; migrate them explicitly so missing execution/enforcement semantics remain visible.
+
+## Validation
+
+Run:
+
+```text
+<PYTHON> scripts/validate_prompt_contract.py <CONTRACT_JSON>
+```
+
+A pass proves contract shape and declared invariants only. It does not prove that the prompt behaves correctly on a model/runtime.

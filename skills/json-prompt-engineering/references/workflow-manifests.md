@@ -1,86 +1,59 @@
-# Workflow Manifests for Skills and Plugins
+# Workflow Manifests for Skills and Tools
 
 ## Purpose
 
-A workflow manifest describes requested orchestration. It does not activate or execute skills by itself. An executor must resolve each skill, enforce authority, validate inputs and outputs, and manage state.
+A workflow manifest declares requested orchestration. It does not activate, authorize, or execute capabilities by itself. An executor must resolve identifiers, enforce authority, validate inputs/outputs, manage state, and persist evidence.
 
-## Recommended Step Contract
+## Step contract
 
 ```json
 {
   "id": "planning",
-  "skill": "mago",
+  "capability": "mago",
   "action": "define_spec",
   "instruction": "Produce the technical planning package.",
   "depends_on": ["governance"],
-  "input": {
-    "source": "$.results.intake"
-  },
+  "input": {"source": "$.results.intake"},
   "output": {
     "key": "spec",
-    "schema": "mago-spec-v2"
-  }
+    "contract": "mago-spec-v2"
+  },
+  "authority": {"side_effect": "write-owned-artifact"}
 }
 ```
 
-Responsibilities:
+`skill` may be used instead of `capability` when the executor specifically resolves Agent Skills. Do not copy a permanent skill/tool prompt into `instruction`.
 
-- `id`: unique workflow-local identifier;
-- `skill`: registered skill identifier;
-- `action`: supported mode or operation;
-- `instruction`: request specific to this execution;
-- `depends_on`: explicit dependencies;
-- `input`: data references or literal values;
-- `output`: result key and contract identifier.
+## Required mechanics
 
-Do not copy the full permanent skill prompt into `instruction`. The skill package remains the source of truth.
+Validate deterministically where possible:
 
-## Execution Modes
+- known workflow/schema versions;
+- unique step IDs;
+- dependencies exist and are acyclic;
+- declared capability/action is resolvable and allowlisted;
+- handoff contract identities are compatible;
+- output keys do not collide unexpectedly;
+- retry, timeout, parallelism, and recursion are bounded;
+- authority/side-effect requirements are permitted;
+- model-generated state cannot silently expand execution authority.
 
-- `sequential`: list order is execution order;
-- `dependency_graph`: execute when dependencies are satisfied;
-- `parallel`: use only for independent steps and bounded concurrency.
+## Execution modes
 
-## Required Validation
+- `sequential`: declared array order is execution order.
+- `dependency_graph`: a step is eligible only after all dependencies complete successfully according to policy.
+- `parallel`: only for independent steps with explicit bounded concurrency.
 
-- workflow and schema versions are known;
-- step IDs are unique;
-- every dependency exists;
-- dependency graph has no cycle;
-- skill and action are allowlisted;
-- handoff schemas are compatible;
-- privilege requests are permitted;
-- failure and retry policies are bounded;
-- output keys do not collide unexpectedly.
+Never rely on JSON object-property order for execution.
 
 ## Ownership
 
-When multiple skills govern different artifacts, declare ownership and reject cross-owner writes unless explicitly authorized.
+Keep artifact ownership explicit and reject cross-owner writes unless the governing policy authorizes them. Ownership declarations describe allowed mutation surfaces; they do not grant user authorization by themselves.
 
-```json
-{
-  "ownership": {
-    "nomia": ["status", "roadmap", "release_notes"],
-    "mago": ["technical_design", "tasks", "validation_plan"],
-    "magia": ["implementation", "tests", "execution_evidence"]
-  },
-  "conflict_policy": {
-    "cross_ownership_write": "reject",
-    "unknown_owner": "stop"
-  }
-}
-```
+## Handoff contracts
 
-## State and Evidence
+A handoff should name its contract/version rather than embed an unversioned example. Validate producer and consumer expectations separately. When the handoff crosses provider/tool surfaces, keep the canonical contract distinct from any provider projection.
 
-Persist concise machine-readable state, but retain human-readable evidence for review.
+## State and evidence
 
-```json
-{
-  "workflow_id": "feature-delivery-014",
-  "status": "validation",
-  "completed_steps": ["governance", "planning", "implementation"],
-  "pending_steps": ["validation"],
-  "blockers": []
-}
-```
+Persist concise machine-readable state and enough human-readable evidence to review failures. Distinguish requested state, model-proposed state, validated state, and committed execution state.

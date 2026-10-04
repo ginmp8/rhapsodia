@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Provider Capability Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_version", "id", "provider", "api_surface", "verified_at", "sources", "unsupported_keywords", "requirements"],
+  "properties": {
+    "profile_version": {"const": 1},
+    "id": {"type": "string", "minLength": 1},
+    "provider": {"type": "string", "minLength": 1},
+    "api_surface": {"type": "string", "minLength": 1},
+    "model_scope": {"type": "string"},
+    "verified_at": {"type": "string", "format": "date"},
+    "sources": {"type": "array", "minItems": 1, "items": {"type": "string", "format": "uri"}},
+    "json_schema_dialect": {"type": "string"},
+    "unsupported_keywords": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "root_type": {"type": ["string", "null"]},
+        "require_additional_properties_false": {"type": "boolean"},
+        "require_all_properties_required": {"type": "boolean"}
+      }
+    },
+    "limits": {"type": "object"},
+    "incompatible_features": {"type": "array", "items": {"type": "string"}},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}

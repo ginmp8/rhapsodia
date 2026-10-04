@@ -1,0 +1,33 @@
+{
+  "profile_version": 1,
+  "run_id": "run-example-001",
+  "host": "portable-host",
+  "runtime": {
+    "python": "3.10+",
+    "os": "recorded-at-run-time"
+  },
+  "model": {
+    "provider": "not-applicable",
+    "name": "not-applicable",
+    "configuration_identity": "not-applicable"
+  },
+  "tools": [],
+  "dependencies": [],
+  "locale": "C.UTF-8",
+  "timezone": "UTC",
+  "cache_policy": "recorded",
+  "concurrency_policy": "single-run",
+  "hermeticity": "recorded",
+  "inputs": [
+    {
+      "subject": "prompt-or-contract",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "outputs": [
+    {
+      "subject": "result",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

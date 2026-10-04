@@ -7,7 +7,7 @@ from pathlib import Path
 REQUIRED={
  "SKILL.md","assets/templates/prompt-contract.json.template","assets/templates/scenario-suite.json.template",
  "evals/activation-scenarios.json","scripts/prompt_lint.py","scripts/validate_prompt_contract.py",
- "scripts/validate_scenario_suite.py","scripts/package_skill.py"
+ "scripts/validate_scenario_suite.py","scripts/validate_execution_environment.py","scripts/package_skill.py"
 }
 LINK=re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
@@ -50,7 +50,7 @@ def validate(root:Path)->dict:
                 text_surfaces.append(candidate.read_text(encoding='utf-8',errors='ignore'))
     if 'Prompt Tester' in ''.join(text_surfaces):
         errors.append('host/tool-specific Prompt Tester dependency remains')
-    for rel in ['scripts/prompt_lint.py','scripts/validate_prompt_contract.py','scripts/validate_scenario_suite.py','scripts/package_skill.py','scripts/validate_skill.py']:
+    for rel in ['scripts/prompt_lint.py','scripts/validate_prompt_contract.py','scripts/validate_scenario_suite.py','scripts/validate_execution_environment.py','scripts/package_skill.py','scripts/validate_skill.py']:
         script=root/rel
         if script.is_file():
             try:
@@ -61,7 +61,8 @@ def validate(root:Path)->dict:
                 errors.append(f"python syntax failed: {rel}: {exc}")
     for rel,arg in [
       ('scripts/validate_prompt_contract.py','assets/templates/prompt-contract.json.template'),
-      ('scripts/validate_scenario_suite.py','evals/activation-scenarios.json')]:
+      ('scripts/validate_scenario_suite.py','evals/activation-scenarios.json'),
+      ('scripts/validate_execution_environment.py','assets/templates/execution-environment.json.template')]:
         if (root/rel).is_file() and (root/arg).is_file():
             rc,out=run([sys.executable,str(root/rel),str(root/arg)])
             checks.append({'check':f'{rel}:{arg}','passed':rc==0,'detail':out})

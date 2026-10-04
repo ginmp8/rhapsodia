@@ -1,29 +1,32 @@
 # Review Rubric
 
-Score each category from 0 to 2.
+Score each category from 0 to 2. The score is a static design aid, not measured reliability.
 
 | Category | 0 | 1 | 2 |
 |---|---|---|---|
 | Objective | missing | partly clear | explicit and testable |
-| Layer choice | confused | workable | transport, prompt, schema, and tool layers separated |
+| Layer/authority separation | confused | workable | transport, instructions, data, canonical schema, projection, tool/runtime authority separated |
 | Field design | ambiguous | mostly clear | typed, descriptive, minimal |
-| Output contract | absent | illustrative | enforceable and provider-aware |
-| Failure behavior | absent | partial | explicit missing, invalid, refusal, and truncation behavior |
-| Security | unsafe | warnings only | trust, validation, authority, and secrets handled |
-| Maintainability | duplicated | moderate | versioned, single source of truth, low redundancy |
-| Validation | none | planned | representative checks executed |
+| Canonical contract | absent/informal | partial | dialect/version and semantics explicit |
+| Provider portability | assumed | provider mentioned | current capability evidence plus loss/application-validation accounting |
+| Failure behavior | absent | partial | refusal, incomplete, schema failure, tool/runtime failure distinguished |
+| Security/authority | unsafe | warnings only | provenance, validation, authorization, scope, and side effects handled |
+| Maintainability | duplicated | moderate | versioned single sources of truth with low redundancy |
+| Validation evidence | none | planned | executed mechanics separated from semantic/runtime not-run checks |
 
 ## Verdict
 
-- `approve`: no high-severity defects and total score at least 14;
-- `approve_with_reservations`: no critical defect and total score 9 to 13;
-- `reject`: critical defect, unsafe authority design, or total score below 9.
+- `approve`: no critical/high defect and at least 16/18.
+- `approve_with_reservations`: no critical defect and at least 11/18.
+- `reject`: any critical defect, unsafe authority design, or score below 11.
 
 ## Severity
 
-- `critical`: credentials exposed, unauthorized operation possible, or destructive execution directly controlled by unvalidated model output;
-- `high`: output contract cannot be consumed reliably, workflow can invoke unknown privileged operations, or core instructions conflict;
-- `medium`: ambiguous fields, incomplete failure behavior, provider mismatch, or avoidable duplication;
-- `low`: naming, minor nesting, documentation, or token-efficiency issue without material behavior impact.
+- `critical`: exposed credential, unauthorized/destructive operation enabled, or model-generated data directly controls privileged execution without independent authorization.
+- `high`: contract cannot be consumed reliably, provider projection silently drops required semantics, schema/tool layers are materially confused, or failure states make unsafe success interpretation possible.
+- `medium`: ambiguous fields, stale/unverified provider capability, incomplete failure handling, weak portability accounting, or avoidable duplication.
+- `low`: naming, documentation, minor nesting, or token-efficiency issue without material behavior impact.
 
-Do not present a score as measured reliability. It is a static design review score.
+## Evidence rule
+
+A clean lint result does not prove JSON Schema conformance, semantic correctness, provider runtime support, security, or behavioral quality. Report those axes independently.
