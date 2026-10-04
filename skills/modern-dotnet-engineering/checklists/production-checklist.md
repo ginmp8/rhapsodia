@@ -1,9 +1,21 @@
 # Production Checklist
 
-- [ ] Build and tests pass.
-- [ ] Config validates on startup.
-- [ ] Secrets come from approved secret sources.
-- [ ] Health checks and graceful shutdown are defined.
-- [ ] External dependencies have timeouts and retry limits.
-- [ ] Observability covers logs, metrics, traces, and business events.
-- [ ] Runbook and rollback are documented for critical systems.
+- [ ] .NET/SDK/runtime support status and servicing level are acceptable for the deployment.
+- [ ] SDK selection and package restore graph are reproducible enough for release policy.
+- [ ] NuGet audit/dependency vulnerability outcomes are known and transitive findings are investigated or risk-owned.
+- [ ] Build/analyzers pass under the intended SDK.
+- [ ] Unit/integration/functional tests required by the change pass.
+- [ ] Critical CI suites verify discovered/expected test count to prevent false-green zero-test runs.
+- [ ] Config validates on startup and secrets come from approved sources.
+- [ ] Authentication plus operation/resource authorization are covered by negative tests where sensitive.
+- [ ] Public APIs have bounded resource consumption and explicit timeout/rate/admission behavior.
+- [ ] External dependencies have timeout/retry limits; state-changing retries are idempotent/protected.
+- [ ] Database migrations/concurrency/rollback-forward recovery are controlled.
+- [ ] Observability covers logs, metrics, traces, business signals, and cardinality/privacy risks.
+- [ ] Performance/reliability claims under load have executed or credible supplied telemetry evidence.
+- [ ] Health checks and graceful shutdown match HTTP/worker/dependency behavior.
+- [ ] Self-contained/container artifacts own rebuild/redeploy for runtime/base-image servicing.
+- [ ] Native AOT/trimming, when used, has reviewed warnings plus published-artifact tests.
+- [ ] Aspire, when used, solves a concrete orchestration/observability need and ServiceDefaults contains only operational cross-cutting setup.
+- [ ] AI/agent/MCP actions, when used, have schema validation, least privilege, authorization, destructive-action controls, and model/config evaluation identity.
+- [ ] Runbook and rollback/forward recovery are documented for critical systems.

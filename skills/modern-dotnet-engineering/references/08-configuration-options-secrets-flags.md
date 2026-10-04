@@ -4,10 +4,10 @@
 
 - Bind settings to typed options classes.
 - Validate options at startup when missing config would break runtime behavior.
-- Do not commit real secrets in `appsettings.json`, examples, tests, Docker, CI, or docs.
+- Do not commit real secrets in appsettings.json, examples, tests, Docker, CI, or docs.
 - Prefer managed identity/workload identity over static credentials.
 - Prefer managed secret stores over raw environment variables for production secrets.
-- Keep `.env.example` placeholder-only.
+- Keep `.env.example` synthetic-example-only; never place real credentials in it.
 - Treat feature flags as operational controls with owners and cleanup dates.
 
 ## Options pattern

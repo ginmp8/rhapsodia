@@ -1,15 +1,9 @@
 interface:
   display_name: Modern .NET Engineering
-  short_description: C#/.NET 10 architecture, code quality, security, performance,
-    and production engineering guidance.
-  icon: code
-  color: '#512BD4'
+  short_description: C#/.NET 10 architecture, APIs, EF Core, security, reliability, testing,
+    Native AOT, Aspire, AI/MCP, and production engineering guidance.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
+  brand_color: '#512BD4'
 policy:
-  products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
   allow_implicit_invocation: true
