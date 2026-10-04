@@ -1,71 +1,34 @@
 # Resource Hardening Playbook
 
-Use when deciding which support files a target skill needs.
+## Principle: necessity before presence
+
+Optional resource directories are not maturity points. Add a resource only when evidence shows it reduces variance, removes duplication, creates useful validation, or makes a recurring artifact safer to produce. A correct `SKILL.md`-only package can be better than a larger package with ornamental machinery.
 
 ## Resource choices
 
-- `references/`: long, conditional, domain, or mode-specific rules. Do not add for obvious/generic rules or always-needed control-plane text.
-- `scripts/`: deterministic checks or transformations needing repeatability, parsing, schemas, filesystem checks, or generated output. Do not add for pure judgment or missing context.
-- `assets/templates/`: reusable output skeletons that the agent or scripts fill/copy. Do not add for free-form or explanatory guidance.
-- `evals/`, `examples/`, `references/scenario-suite.md`: behavioral validation for activation, output conformance, robustness. Do not add for static-only structural passes.
-- `agents/openai.yaml`: optional OpenAI host adapter/UI metadata. It must not be required by the portable semantic core; skip it when OpenAI-specific metadata is unnecessary.
+- `references/`: long, conditional, domain, mode-specific, or rubric content that would otherwise overload the control plane.
+- `scripts/`: deterministic mechanics/checks that are repetitive or fragile. Do not add a script when instructions plus available tools already perform the task reliably.
+- `assets/templates/`: reusable stable artifact skeletons that are actually copied/filled/validated.
+- `evals/` and `examples/`: scenario/calibration assets when behavioral coverage is needed. Definitions are not measured evidence until executed.
+- `agents/openai.yaml`: optional OpenAI adapter/UI metadata; never a portable-core correctness requirement.
 
-## Hardening map shape
+## Hardening map
 
-```yaml
-control_plane:
-  hypothesis: "why SKILL.md needs to change"
-  files: ["SKILL.md"]
-  validation: "frontmatter and workflow review"
-references:
-  hypothesis: "what detailed rules should move out of SKILL.md"
-  files: []
-  validation: "all referenced files exist and are conditionally loaded"
-scripts:
-  hypothesis: "what repetitive or fragile work should be deterministic"
-  files: []
-  validation: "script ran successfully on representative input"
-templates_assets:
-  hypothesis: "what outputs need reusable structure"
-  files: []
-  validation: "template is referenced, copied/filled or script-consumed, and script-validated when strict"
-scenarios:
-  hypothesis: "which behavior needs measured evidence"
-  files: []
-  validation: "scenario suite is concrete and frozen before measurement"
-packaging:
-  hypothesis: "what makes the skill uploadable and maintainable"
-  files: ["agents/openai.yaml"]
-  validation: "package validator passes"
-```
+For each proposed resource record: evidence/hypothesis, requirement, file, expected effect, validation gate, integration/loading condition, rollback, and accept/reject decision. A resource without reverse justification is probable gold plating.
 
-## Script quality
+## Existing-resource quality
 
-Added scripts need CLI help, deterministic inputs/outputs, nonzero failure exit, no hidden network dependency unless owned, readable errors, representative test evidence, and no secrets in args/logs/fixtures/reports.
+Present resources must still be sound:
 
-## Reference quality
+- scripts: deterministic inputs/outputs where objective, nonzero failure exit, readable diagnostics, no hidden network dependency unless declared, representative execution evidence, no secrets in args/logs/fixtures;
+- references: narrow purpose, explicit loading condition, minimal duplication, no knowledge-dump drift;
+- templates: stable artifact, workflow-fillable placeholders, usage rule, validation when strict;
+- scenarios: concrete acceptance criteria and frozen execution evidence for measured claims.
 
-Each reference needs a narrow purpose, `SKILL.md` loading condition, little duplication, concrete schemas/examples/criteria/branch rules, and no knowledge-dump drift.
+## Asset triage
 
-## Asset triage before deletion
-
-Classify first: operational template; script input/output; explanatory reference; example; unused scaffold. Prefer integration before deletion. For useful assets, add workflow references, usage conditions, placeholder rules, writer/validator coverage, or finalization checks. Remove or migrate only explanatory references, examples, or unused scaffolds with evidence.
-
-## Template quality
-
-A template should represent a stable artifact, use workflow-fillable placeholders, be referenced by workflow/reference/script, be consumed by tooling or explicit agent fill/copy step, avoid dynamic facts as defaults, have writer/validator coverage when strict, and remain under `assets/templates/` when reusable even if manually filled.
+Classify before deletion: operational template, script input/output, explanatory reference, example/calibration, host adapter/visual asset, unused scaffold. Integrate useful resources first; remove only duplicated/obsolete/scaffold material with evidence.
 
 ## Common improvements
 
-1. Split long `SKILL.md` into router plus references.
-2. Add mode matrix.
-3. Add deterministic inventory/validator script.
-4. Add report/artifact templates.
-5. Add activation/output scenario suites.
-6. Remove placeholder scaffold.
-7. Add stop and rollback rules.
-8. Add packaging validation and size checks.
-
-## Examples
-
-Use `examples/` for concrete reusable scenario/artifact samples that calibrate activation, negative boundaries, output conformance, edge cases, or finalization. Reference examples from `SKILL.md` or a relevant reference. They are not measured evidence unless executed and recorded. Remove generic scaffolds, duplicate templates, or completed outputs no workflow uses.
+Prefer, only when justified: compact control plane + progressive references; explicit mode/output/stop contracts; deterministic validator for fragile mechanics; claim-sensitive scenarios; trust intake for untrusted packages; portable host profiles; freeze/rollback/package receipts. Do not manufacture these layers simply to increase a score.

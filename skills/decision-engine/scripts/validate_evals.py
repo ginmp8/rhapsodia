@@ -1,28 +1,36 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import argparse, json, re
+from collections import defaultdict
 from pathlib import Path
 
 CONTRACT_ID=re.compile(r'^[A-Z]{2,5}-\d{3}$')
 ACT_GROUPS={'activation','non-activation','ambiguous','boundary','adversarial','holdout'}
 ACT_ROUTES={'activate','do-not-activate','conditional','activate-constrained','split-handoff','reject-scope-weakening','reject-fabricated-evidence','reject-ownership-expansion'}
 ACT_TYPES={'should_activate','should_not_activate','ambiguous','edge_case','regression','adversarial'}
-DEC_TYPES={'noul','choice','score'}
+DEC_TYPES={'binary','choice','score'}
 DEC_STATUS={'decided','undetermined','blocked','escalate'}
-DEC_GROUPS={'core','uncertainty','policy','capability','invalid-contract','calibration','adversarial','portability','evidence-claims','holdout-visible'}
+DEC_GROUPS={'core','uncertainty','policy','capability','invalid-contract','calibration','adversarial','portability','evidence-claims','holdout-visible','metamorphic'}
+
 
 def add(errors, code, subject, detail=''):
     errors.append({'code':code,'subject':subject,'detail':detail})
+
 
 def load(path, errors, code):
     try: return json.loads(path.read_text(encoding='utf-8'))
     except Exception as exc: add(errors, code, str(path), str(exc)); return {}
 
+
+def nonempty(value):
+    return isinstance(value,str) and bool(value.strip()) and value == value.strip()
+
+
 def validate_activation(data, errors):
     if data.get('language') != 'en': add(errors,'EV000','activation','language must be en')
     if not isinstance(data.get('suite_version'),str) or not data['suite_version'].strip(): add(errors,'EV001','activation','suite_version')
     if data.get('status') not in {'planned','measured'}: add(errors,'EV002','activation','status')
-    scenarios=data.get('scenarios');
+    scenarios=data.get('scenarios')
     if not isinstance(scenarios,list) or not scenarios: add(errors,'EV003','activation','scenarios'); return
     ids=set(); groups=set()
     for i,row in enumerate(scenarios):
@@ -42,13 +50,14 @@ def validate_activation(data, errors):
     missing=ACT_GROUPS-groups
     if missing: add(errors,'EV014','activation',f'missing groups: {sorted(missing)}')
 
+
 def validate_decisions(data, errors):
     if data.get('language') != 'en': add(errors,'EV100','decision','language must be en')
     if not isinstance(data.get('suite_version'),str) or not data['suite_version'].strip(): add(errors,'EV101','decision','suite_version')
     if data.get('status') not in {'planned','measured'}: add(errors,'EV102','decision','status')
     scenarios=data.get('scenarios')
     if not isinstance(scenarios,list) or not scenarios: add(errors,'EV103','decision','scenarios'); return
-    ids=set(); types=set(); statuses=set(); groups=set()
+    ids=set(); types=set(); statuses=set(); groups=set(); metamorphic=defaultdict(list)
     for i,row in enumerate(scenarios):
         sid=row.get('id') if isinstance(row,dict) else f'index:{i}'
         if not isinstance(row,dict): add(errors,'EV104',sid,'object required'); continue
@@ -63,10 +72,32 @@ def validate_decisions(data, errors):
         if not isinstance(row.get('focus'),str) or not row['focus'].strip(): add(errors,'EV110',sid,'focus')
         refs=row.get('contract_ids')
         if not isinstance(refs,list) or not refs or any(not isinstance(x,str) or not CONTRACT_ID.fullmatch(x) for x in refs): add(errors,'EV111',sid,'contract_ids')
+        if group == 'metamorphic':
+            pair_id=row.get('pair_id'); options=row.get('options'); expected=row.get('expected_selected')
+            if dtype != 'choice': add(errors,'EV115',sid,'metamorphic group currently requires choice')
+            if not nonempty(pair_id): add(errors,'EV116',sid,'pair_id')
+            if not isinstance(options,list) or len(options)<2 or any(not nonempty(x) for x in options) or len(set(options)) != len(options):
+                add(errors,'EV117',sid,'options')
+            elif expected not in options:
+                add(errors,'EV118',sid,'expected_selected must be one option')
+            if nonempty(pair_id): metamorphic[pair_id].append(row)
     if types != DEC_TYPES: add(errors,'EV112','decision',f'type coverage: {sorted(types)}')
     if not DEC_STATUS.issubset(statuses): add(errors,'EV113','decision',f'status coverage missing: {sorted(DEC_STATUS-statuses)}')
-    for required in {'adversarial','calibration','portability','evidence-claims','holdout-visible'}:
+    for required in {'adversarial','calibration','portability','evidence-claims','holdout-visible','metamorphic'}:
         if required not in groups: add(errors,'EV114','decision',f'missing group: {required}')
+    if not metamorphic:
+        add(errors,'EV119','decision','at least one metamorphic pair is required')
+    for pair_id, rows in sorted(metamorphic.items()):
+        if len(rows) != 2:
+            add(errors,'EV119',pair_id,'metamorphic pair must contain exactly two rows')
+            continue
+        left,right=rows
+        a,b=left.get('options'),right.get('options')
+        if not isinstance(a,list) or not isinstance(b,list):
+            continue
+        if set(a) != set(b) or a == b or left.get('expected_selected') != right.get('expected_selected'):
+            add(errors,'EV119',pair_id,'pair must preserve option set and expected selection while changing order')
+
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('target',type=Path); ap.add_argument('--json-output',type=Path); a=ap.parse_args()

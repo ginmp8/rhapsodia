@@ -1,12 +1,12 @@
 {
-  "suite_version": "2.0",
-  "suite_id": "decision-engine-behavior-v2",
+  "suite_version": "3.0",
+  "suite_id": "decision-engine-behavior-v3",
   "status": "planned",
   "evidence_level": "planned-not-executed",
   "scenarios": [
     {
       "id": "D-N-01",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "core",
       "materiality": "low",
       "expected_status": "decided",
@@ -18,7 +18,7 @@
     },
     {
       "id": "D-N-02",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "uncertainty",
       "materiality": "medium",
       "expected_status": "undetermined",
@@ -30,7 +30,7 @@
     },
     {
       "id": "D-N-03",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "uncertainty",
       "materiality": "high",
       "expected_status": "escalate",
@@ -42,7 +42,7 @@
     },
     {
       "id": "D-N-04",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "policy",
       "materiality": "high",
       "expected_status": "blocked",
@@ -146,7 +146,7 @@
     },
     {
       "id": "D-CAL-01",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "calibration",
       "materiality": "medium",
       "expected_status": "decided",
@@ -214,7 +214,7 @@
     },
     {
       "id": "D-ADV-04",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "adversarial",
       "materiality": "medium",
       "expected_status": "decided",
@@ -249,7 +249,7 @@
     },
     {
       "id": "D-ADV-07",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "adversarial",
       "materiality": "high",
       "expected_status": "undetermined",
@@ -296,7 +296,7 @@
     },
     {
       "id": "D-CLAIM-01",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "evidence-claims",
       "materiality": "low",
       "expected_status": "undetermined",
@@ -331,7 +331,7 @@
     },
     {
       "id": "D-HLD-02",
-      "decision_type": "noul",
+      "decision_type": "binary",
       "group": "holdout-visible",
       "materiality": "high",
       "expected_status": "escalate",
@@ -352,6 +352,42 @@
         "BND-001",
         "OUT-001"
       ]
+    },
+    {
+      "id": "D-META-C-01A",
+      "decision_type": "choice",
+      "group": "metamorphic",
+      "materiality": "low",
+      "expected_status": "decided",
+      "focus": "same evidence and criteria with option order A; selection must be invariant to position",
+      "contract_ids": [
+        "BND-001",
+        "INV-001"
+      ],
+      "pair_id": "M-CHOICE-ORDER-01",
+      "options": [
+        "answer",
+        "search"
+      ],
+      "expected_selected": "search"
+    },
+    {
+      "id": "D-META-C-01B",
+      "decision_type": "choice",
+      "group": "metamorphic",
+      "materiality": "low",
+      "expected_status": "decided",
+      "focus": "same evidence and criteria with option order B; selection must be invariant to position",
+      "contract_ids": [
+        "BND-001",
+        "INV-001"
+      ],
+      "pair_id": "M-CHOICE-ORDER-01",
+      "options": [
+        "search",
+        "answer"
+      ],
+      "expected_selected": "search"
     }
   ],
   "language": "en"

@@ -3,67 +3,43 @@
 ## Target
 
 - Target path: {{target_skill_path}}
+- Source class: {{source_class}}
 - Baseline tree SHA-256: {{baseline_tree_sha256}}
-- Baseline audit: {{baseline_audit_path}}
-- Mutation mode: {{mode}}
-- Allowed scope: {{allowed_scope}}
-- Blocked paths: {{blocked_paths}}
+- Requested host profiles: {{host_profiles}}
 - Reproducibility ceiling: {{reproducibility_ceiling}}
+- Allowed scope: {{allowed_scope}}
+- Protected paths: {{blocked_paths}}
 - Frozen evaluator manifest: {{evaluator_manifest_path}}
 
-## Executive Summary
+## Trust and Evidence Intake
 
-{{summary}}
+- Static trust intake: {{trust_intake_status}}
+- Research corpus identity: {{research_corpus_identity}}
+- Research traceability required: {{research_traceability_required}}
 
-## Hardening Map
+## Variability and Evidence Profiles
 
-### variability
-
-| ID | Surface | Class | Evidence | Control | Validation |
-|---|---|---|---|---|---|
-| V1 | {{variance_surface}} | {{variance_class}} | {{variance_evidence}} | {{variance_control}} | {{variance_validation}} |
-
-### control_plane
-
-- Hypothesis: {{control_plane_hypothesis}}
-- Files: {{control_plane_files}}
-- Validation: {{control_plane_validation}}
-
-### references
-
-- Hypothesis: {{references_hypothesis}}
-- Files: {{references_files}}
-- Validation: {{references_validation}}
-
-### scripts
-
-- Hypothesis: {{scripts_hypothesis}}
-- Files: {{scripts_files}}
-- Validation: {{scripts_validation}}
-
-### templates_assets
-
-- Hypothesis: {{templates_assets_hypothesis}}
-- Files: {{templates_assets_files}}
-- Validation: {{templates_assets_validation}}
-
-### scenarios
-
-- Hypothesis: {{scenarios_hypothesis}}
-- Files: {{scenarios_files}}
-- Validation: {{scenarios_validation}}
-
-### packaging
-
-- Hypothesis: {{packaging_hypothesis}}
-- Files: {{packaging_files}}
-- Validation: {{packaging_validation}}
-
-## Change Batches
-
-| Batch | Hypothesis | Files | Expected improvement | Gate |
+| Surface | Class | Evidence | Control | Validation |
 |---|---|---|---|---|
-| H001 | {{batch_1_hypothesis}} | {{batch_1_files}} | {{batch_1_expected_improvement}} | {{batch_1_gate}} |
+| {{variance_surface}} | {{variance_class}} | {{variance_evidence}} | {{variance_control}} | {{variance_validation}} |
+
+- Environment/provenance profile: {{environment_provenance_applicability}}
+- Stochastic-evaluation profile: {{stochastic_evaluation_applicability}}
+- Execution-lineage profile: {{execution_lineage_applicability}}
+
+## Research Traceability
+
+| Finding | Disposition | Requirement | Change | Evaluation |
+|---|---|---|---|---|
+| {{finding_id}} | {{finding_disposition}} | {{requirement_id}} | {{change_id}} | {{evaluation_id}} |
+
+## Bounded Change Map
+
+| Batch | Evidence/Hypothesis | Files | Expected effect | Acceptance gate | Rollback |
+|---|---|---|---|---|---|
+| {{batch_id}} | {{batch_hypothesis}} | {{batch_files}} | {{batch_expected_effect}} | {{batch_gate}} | {{batch_rollback}} |
+
+Optional resources are added only when the corresponding evidence/requirement justifies them.
 
 ## Validation Plan
 
@@ -75,12 +51,10 @@
 
 - Hard gates: {{hard_gates}}
 - Evaluator verification: {{evaluator_verification}}
+- Portability closure: {{portability_closure}}
+- Traceability closure: {{traceability_closure}}
 - Stagnation limit: {{stagnation_limit}}
 - Freeze-after-pass rule: {{freeze_after_pass_rule}}
-
-## Rollback Plan
-
-{{rollback_plan}}
 
 ## Residual Risks
 

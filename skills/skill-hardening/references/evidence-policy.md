@@ -1,38 +1,35 @@
 # Evidence Policy
 
-Use when a run includes research, measured validation, benchmark evidence, or readiness claims.
-
 ## Evidence order
 
-1. Target package files and current filesystem.
-2. User constraints, failed prompts, prior outputs, benchmark reports.
-3. Target-domain repository truth or official docs when the skill depends on an external tool/platform.
-4. Current public skill-format guidance for structure, activation, progressive loading, packaging, or validation gaps.
-5. Model judgment only for prioritization, never sole proof that a gate passed.
+1. Exact target package/current filesystem.
+2. User constraints, failed prompts, prior outputs, benchmark/harness evidence.
+3. Repository/domain truth or official docs for external tools/formats.
+4. Current primary specification/vendor docs for skill format, security, portability, packaging, or runtime behavior.
+5. Independent research/production evidence for trade-offs and emerging risks.
+6. Model judgment only for bounded prioritization/semantic interpretation, never sole proof of an objective gate.
 
-## Research
+## Research-backed mutation
 
-Research only concrete inspection gaps: trigger ambiguity, missing output contracts, weak progressive loading, thin scenario coverage, unclear packaging expectations. Do not add generic excerpts or background summaries.
+Research only concrete gaps. When research materially changes a skill, preserve a bounded corpus/result and trace material evidence through:
 
-When external research is used: record sources in the final report; prefer official docs/primary repos; reconcile conflicts against purpose and user constraints; avoid undated time-sensitive facts unless essential.
+`source -> atomic finding -> disposition -> requirement -> change -> evaluation`
 
-## Measured vs proposed
+Account for every material finding as `implement`, `already-covered`, `rejected`, `not-applicable`, `uncertain`, or `conflict`. Require reverse justification for each substantive change. Mechanically complete links do not prove semantic truth; independently review whether the source supports the finding, the finding supports the requirement, the change satisfies it, and the evaluation can falsify it.
 
-A result is measured only if executed in this run or supplied as execution evidence. Scenario suites, benchmark plans, evaluator rubrics, and gates stay proposed until prompts/tests run and decisions are recorded.
+Claim only corpus-bounded completeness (for example, “100% of recorded findings were dispositioned”), never universal research completeness unless an external research method separately proves it.
 
-Never claim scenario precision/recall/robustness/pass rate from a planned suite; package readiness before folder/archive validators pass; script correctness before a representative run or syntax check; benchmark improvement when baseline is saturated unless an auxiliary metric improved.
+## Claim vocabulary
 
-## Claim layers and labels
+- `measured`: executed in this run or supplied as exact execution evidence;
+- `observed`: direct inspection;
+- `derived`: deterministic calculation from evidence;
+- `supplied`: user-provided result not independently rerun;
+- `planned`: defined but unexecuted;
+- `blocked`: required evidence unavailable.
 
-Keep four evidence layers separate:
+Scenario definitions, structural scores, and plausible reasoning do not become measured behavioral evidence.
 
-- structural evidence: package shape, references, schemas, hashes, and static gates;
-- behavioral evidence: executed scenarios and evaluator decisions;
-- runtime evidence: actual application, browser, tool, or integration behavior;
-- perceptual evidence: independent human or image-capable review.
+## Freshness and identity
 
-Label material claims as `measured`, `observed`, `derived`, `supplied`, `planned`, or `blocked`. Do not upgrade a weaker label because the result is plausible. A static maturity score is structural evidence, not proof of behavioral improvement.
-
-## Evidence record
-
-For applied hardening or package delivery, report immutable baseline identity, candidate identity, evaluator identity/verification, baseline inventory/audit, hardening map with hypotheses/gates, changed files, commands with pass/fail/not-run outcomes, final validator/package results, residual risks, and unmeasured behavior.
+Snapshot exact mutable local/repository evidence when it materially determines a decision. For live web evidence, preserve the research artifact plus URL/date/version metadata. If material source identity changes, continue against the frozen evidence or explicitly re-baseline; never mix revisions silently.

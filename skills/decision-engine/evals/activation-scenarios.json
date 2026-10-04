@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "suite_version": "2.0",
-  "suite_id": "decision-engine-activation-v2",
+  "suite_version": "3.0",
+  "suite_id": "decision-engine-activation-v3",
   "target_skill": "decision-engine",
   "target_identity": "decision-engine",
   "status": "planned",
@@ -53,9 +53,9 @@
         "UNC-001",
         "OUT-001"
       ],
-      "expected_behavior": "Use a Noul decision and preserve uncertainty/escalation when evidence does not support a binary result.",
+      "expected_behavior": "Use a Binary decision and preserve uncertainty/escalation when evidence does not support a binary result.",
       "acceptance_criteria": [
-        "uses noul",
+        "uses binary",
         "does not force true or false when evidence is insufficient",
         "confidence remains qualitative by default"
       ],
@@ -137,7 +137,7 @@
       ],
       "expected_behavior": "Answer as an ordinary factual explanation rather than forcing a typed decision.",
       "acceptance_criteria": [
-        "does not convert explanation into Noul Choice or Score",
+        "does not convert explanation into Binary Choice or Score",
         "does not add decision schema unnecessarily"
       ],
       "evaluation_tier": "L2-focused",
@@ -191,7 +191,7 @@
       ],
       "expected_behavior": "Route to implementation/code behavior, not structured decision output.",
       "acceptance_criteria": [
-        "does not emit Noul Choice or Score as the primary result",
+        "does not emit Binary Choice or Score as the primary result",
         "does not hijack code implementation"
       ],
       "evaluation_tier": "L2-focused",
@@ -246,7 +246,7 @@
         "AMB-001",
         "NTR-001"
       ],
-      "expected_behavior": "Treat this as ambiguous evaluation rather than forcing a binary Noul without criteria.",
+      "expected_behavior": "Treat this as ambiguous evaluation rather than forcing a binary Binary without criteria.",
       "acceptance_criteria": [
         "does not silently define good",
         "asks for/uses existing criteria when essential",

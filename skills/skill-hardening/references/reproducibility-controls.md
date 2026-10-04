@@ -1,53 +1,33 @@
 # Reproducibility Controls
 
-Use for applied hardening, behavioral improvement claims, or package delivery. These controls govern the hardening run; they do not replace target-owned validators.
+## Definition and ceiling
 
-## Ceiling
+Reproducibility means the same inputs and supported environment repeatedly satisfy the same semantic contract, quality gates, and delivery guarantees. It does not promise identical natural-language bytes when judgment/stochasticity is irreducible.
 
-Classify the target before promising repeatability:
+Classify the target as `objective-artifact`, `tool-action`, `research-analytic`, or `constrained-subjective` and state remaining nondeterminism.
 
-- `objective-artifact`: mechanics and outputs are mostly machine-checkable.
-- `tool-action`: preconditions, bounded actions, postconditions, idempotency, and receipts are checkable; external outcomes can vary.
-- `research-analytic`: evidence and report conformance are checkable; conclusions retain bounded judgment.
-- `constrained-subjective`: process and hard gates are checkable; quality still needs independent editorial or perceptual review.
+## Baseline and identities
 
-Record remaining nondeterminism. Do not translate legitimate judgment into arbitrary code merely to raise structural maturity.
-
-## Baseline and candidate identity
-
-Before material edits:
-
-1. preserve an immutable copy, clean commit, or equivalent before-state;
-2. inventory the target and record a deterministic tree hash;
-3. run target-owned mandatory validators and tests;
-4. keep generated evidence outside the target package.
+Before material edits preserve an immutable before-state, inventory the target, compute a deterministic tree identity, and record target-owned mandatory validators/tests. Keep generated evidence outside the target.
 
 ```text
-<PYTHON> scripts/reproducibility_controls.py tree-hash --target <TARGET> --json-output <REPORT_DIR>/identity-before.json
+<PYTHON> scripts/reproducibility_controls.py tree-hash --target <TARGET> --json-output <WORK>/identity-before.json
 ```
 
-Recompute the identity after validation. A hash proves byte identity of included files, not behavioral quality.
+Keep source/research identity, baseline identity, evaluator identity, candidate identity, package identity, and receipt identity separate.
 
-## Hardening contract
+## Hardening contract v2
 
-Copy and fill `assets/templates/hardening-contract.json.template` before material mutation when the run changes behavior, validators, scenarios, or packaging. Validate it:
+Use `assets/templates/hardening-contract.json.template` for new runs. Schema v2 adds:
+
+- explicit `host_profiles`, always including `portable-core`;
+- conditional `evidence_profiles` for `environment_provenance`, `stochastic_evaluation`, and `execution_lineage`, each with an applicability decision and reason.
+
+Schema v1 remains readable for existing evidence. Do not force advanced profiles on static work merely for completeness.
 
 ```text
-<PYTHON> scripts/reproducibility_controls.py validate-contract --contract <REPORT_DIR>/hardening-contract.json --json-output <REPORT_DIR>/contract-validation.json
+<PYTHON> scripts/reproducibility_controls.py validate-contract --contract <WORK>/hardening-contract.json --json-output <WORK>/contract-validation.json
 ```
-
-The contract records target/baseline identity, ceiling, protected paths, variability controls, evaluators, hard gates, acceptance rules, and delivery requirements. Every change must trace to an observed variance, supported hypothesis, or required gate.
-
-## Frozen evaluator
-
-Freeze only assets that will decide candidate acceptance: prompts, fixtures, expected outputs, grader rules, thresholds, and independent validator files. Do not freeze candidate generators or implementation files that the plan must change.
-
-```text
-<PYTHON> scripts/reproducibility_controls.py freeze --root <TARGET> --path evals --path tests/fixtures --output <REPORT_DIR>/evaluator-manifest.json
-<PYTHON> scripts/reproducibility_controls.py verify --root <TARGET> --manifest <REPORT_DIR>/evaluator-manifest.json --json-output <REPORT_DIR>/evaluator-verification.json
-```
-
-If a frozen evaluator is wrong, invalidate the comparison. Repair and refreeze it as a separate baseline step; never edit it after seeing candidate results and continue the same experiment.
 
 ## Variability map
 
@@ -55,35 +35,33 @@ Map material variance across:
 
 `activation -> input normalization -> mode/router -> reference loading -> decisions -> generation -> validation -> repair -> delivery -> packaging`
 
-Classify each item:
+Classify controls as `mechanical`, `schema-type`, `constrained-heuristic`, `model-judgment`, or `external-nondeterminism`. Prefer the lowest reliable layer:
 
-- `mechanical`: script, parser, deterministic transform, or runtime control;
-- `schema-type`: schema, enum, or typed intermediate representation;
-- `constrained-heuristic`: defaults, ordering, tie-breakers, budgets, and stop rules;
-- `model-judgment`: evidence requirements, rubric, bounded freedom, and independent review;
-- `external-nondeterminism`: pinned source/version where possible plus environment/time/source identity.
+`runtime/script > schema/type > validator/gate > reference/rubric > free-form instruction`.
 
-Prefer the lowest reliable control layer: runtime/script, then schema/type, validator/gate, reference/rubric, and finally free-form instructions.
+Do not encode genuine semantic judgment as fake deterministic code.
 
-## Comparison and repair
+## Frozen evaluator
 
-- Use identical prompts, files, thresholds, and evaluator versions for baseline and candidate.
-- Keep holdout scenarios outside authoring feedback when a strong improvement claim matters.
-- One hard failure can reject a candidate; one successful stochastic run rarely proves reliability.
-- Repair from a diagnostic code or concrete gate failure. Apply the smallest supported change and rerun the same gate.
-- Stop a branch after two consecutive non-improving repairs unless new evidence changes the hypothesis.
+Freeze only assets that decide acceptance: scenarios/prompts, fixtures, expected outputs, grader rules, thresholds, and independent validators. Keep implementation/generators outside the frozen set.
 
-## Evidence and claims
+```text
+<PYTHON> scripts/reproducibility_controls.py freeze --root <TARGET> --path evals --output <WORK>/evaluator-manifest.json
+<PYTHON> scripts/reproducibility_controls.py verify --root <TARGET> --manifest <WORK>/evaluator-manifest.json --json-output <WORK>/evaluator-verification.json
+```
 
-Keep evidence layers separate:
+If the evaluator is wrong, invalidate/refreeze/restart; never edit it after seeing candidate results and continue the same comparison.
 
-- structural: package shape, links, schemas, hashes, static gates;
-- behavioral: executed scenarios and evaluator decisions;
-- runtime: actual application, browser, tool, or integration behavior;
-- perceptual: independent human or image-capable review.
+## Conditional advanced profiles
 
-Use `measured`, `observed`, `derived`, `supplied`, `planned`, or `blocked`. Planned suites and static maturity never prove behavioral improvement.
+- **Environment/provenance:** require when model/provider/tools/dependencies/cache/locale/time/concurrency can materially change a comparison.
+- **Stochastic evaluation:** require repeated trials only for strong reliability/improvement claims about stochastic behavior.
+- **Execution lineage:** require when multi-stage dependency/replay/invalidation identity is material.
 
-## Freeze after pass
+Ordinary static/package repairs should mark these non-applicable with reasons rather than accumulating machinery.
 
-After all acceptance gates pass, record the candidate identity and treat it as frozen. Any subsequent edit invalidates affected validation and requires rerunning it. Package only that frozen candidate. The package receipt must retain candidate tree SHA-256, archive SHA-256, archive file count, and validation result, and should also bind the committed stage, receipt version, last-good preservation, and recovery state to the delivered bytes. Package/receipt outputs must resolve outside the frozen target and must not alias each other.
+## Repair and freeze
+
+Use identical deciding inputs for baseline/candidate comparisons. Fix the narrowest diagnosed failure and rerun that gate first. Stop a branch after two non-improving rounds unless new evidence changes the hypothesis. Never weaken a hard gate/frozen evaluator to pass.
+
+After all applicable gates pass, freeze the candidate. Any later edit invalidates affected evidence. Package only that frozen candidate and bind package/receipt identities to the committed bytes.

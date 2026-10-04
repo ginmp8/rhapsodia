@@ -1,20 +1,25 @@
 {
-  "contract_version": "decision-engine/1",
+  "contract_version": "decision-engine/2",
   "decision_id": null,
   "materiality": "low",
   "decision": {
     "type": "choice",
-    "question": "<bounded question>",
+    "question": "Which action should run?",
     "status": "decided",
-    "options": ["<option-a>", "<option-b>"],
-    "selected": "<option-a>"
+    "options": ["answer", "search"],
+    "options_exhaustive": true,
+    "option_criteria": {
+      "answer": "Existing evidence is sufficient.",
+      "search": "Current external evidence is required."
+    },
+    "selected": "search"
   },
   "confidence": {
     "level": "high",
-    "basis": "<concise evidence-facing basis>"
+    "basis": "direct evidence and criteria converge"
   },
-  "evidence_refs": [],
-  "rationale": "<concise rationale>",
+  "evidence_refs": ["E1"],
+  "rationale": "Current information is required and the retrieval capability is available.",
   "calibration": {"kind": "none"},
   "next_action": null
 }

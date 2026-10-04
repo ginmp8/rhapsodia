@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "target": {
     "name": "{{target_skill_name}}",
     "path": "{{target_skill_path}}",
@@ -7,6 +7,21 @@
   },
   "ceiling": "{{objective-artifact|tool-action|research-analytic|constrained-subjective}}",
   "protected_paths": ["{{path}}"],
+  "host_profiles": ["portable-core", "{{openai|codex|claude|copilot|cursor}}"],
+  "evidence_profiles": {
+    "environment_provenance": {
+      "applicable": false,
+      "reason": "{{why runtime identity can or cannot materially change this comparison}}"
+    },
+    "stochastic_evaluation": {
+      "applicable": false,
+      "reason": "{{why repeated stochastic trials are or are not required}}"
+    },
+    "execution_lineage": {
+      "applicable": false,
+      "reason": "{{why multi-stage replay/invalidation lineage is or is not required}}"
+    }
+  },
   "variability": [
     {
       "id": "V1",
