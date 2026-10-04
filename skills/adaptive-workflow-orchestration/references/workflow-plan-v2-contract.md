@@ -62,3 +62,19 @@ A changed evaluator identity invalidates same-evaluator comparison claims and sh
 - Existing `workflow-plan/v1` artifacts remain valid and continue to use `schemas/workflow-plan.schema.json`.
 - New gated-convergence plans use `workflow-plan/v2` and `schemas/workflow-plan-v2.schema.json`.
 - `scripts/validate_workflow_plan.py` auto-detects v1 versus v2 and preserves v1 behavior.
+
+## Reference-grounded convergence additions
+
+The following fields are additive and optional for backward compatibility:
+
+- `evidence.freshness_policy`: `frozen-input`, `revalidate-before-mutation`, or `revalidate-before-promotion`.
+- checkpoint `reference_scope`: non-empty reference identifiers/paths for the checkpoint.
+- checkpoint `oracle_identity`: frozen acceptance/test/rubric identity derived before production.
+- checkpoint `context_mode`: `fresh-context` or `reuse-current`.
+- `promotion.gate_order_is_binding`: when present it must be `true`; the checkpoint `gate_ids` array becomes binding execution order.
+- `promotion.materialize_promoted_checkpoint`: when `true`, runtime evidence must record an immutable promoted candidate/checkpoint identity before dependent work starts.
+- `promotion.autonomy_policy`: `human-required`, `human-default`, or `policy-autonomous`.
+
+When any checkpoint declares `reference_scope` or `oracle_identity`, every checkpoint must declare both and `evidence.reference_identity` must be present. `human-required` requires a required `human-approval` gate on every checkpoint. A live revalidation freshness policy requires `reference_identity`.
+
+These fields do not authorize broader writes, new tools, or a different lifecycle owner.

@@ -53,3 +53,17 @@ When a hard blocker, exhausted budget, revoked authority, or invalidated source 
 3. preserve completed evidence with its original identity;
 4. mark uncertain side effects explicitly;
 5. reconcile before any retry/resume.
+
+## Fresh-context convergence
+
+Long-horizon repair loops should prefer fresh contexts that reload:
+
+- current candidate/source state;
+- the bounded reference slice;
+- frozen oracle/rubric identity;
+- latest accepted feedback;
+- remaining budgets and stop conditions.
+
+Do not use a growing transcript as the primary state store. Source artifacts and evidence records are authoritative.
+
+Independent checkpoints may converge in parallel only when their write sets and authoritative state are isolated. Shared canonical writers remain serialized.

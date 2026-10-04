@@ -56,3 +56,7 @@ Do not use gated convergence for routine one-shot work. It is justified when the
 - allowing workers to update global orchestration state directly;
 - using generated arbitrary code as the only representation of authority or workflow policy;
 - installing an external orchestrator solely to reproduce a native host capability.
+
+## Reference-grounded gated convergence
+
+When a strong reference exists, prefer a sequence of reviewable checkpoints over one large generated change. Derive checkpoint oracle identity before production, execute declared gates in order, repair only through the canonical producer, rerun invalidated gates, and materialize promoted evidence before dependent work. Revalidate mutable live state when declared; accepted feedback may inform later checkpoints but never overrides the reference or required proof.
