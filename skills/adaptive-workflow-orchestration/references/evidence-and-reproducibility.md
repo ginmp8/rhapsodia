@@ -39,3 +39,17 @@ Record whether the verifier had:
 ## Evidence labels
 
 Use `measured`, `observed`, `supplied`, `inferred`, `planned`, and `blocked` consistently. A valid plan is structural evidence, not runtime evidence.
+
+## Live state, memory, and closure
+
+For mutable targets, distinguish three identities:
+
+1. **reference identity** — what the plan/oracle was derived from;
+2. **candidate identity** — the exact state a gate evaluated;
+3. **authoritative live identity** — the state that must still be true before mutation or closure.
+
+Persisted ledgers and feedback are claims with provenance, not operational truth. Reconcile them against live state according to the declared freshness policy. A candidate change invalidates affected gate evidence. A live-state change may invalidate the premise itself.
+
+Durable workflow memory must be explicit evidence: accepted/proven feedback, source/checkpoint identity, and the decision it affected. Never persist inferred preferences as if the user accepted them.
+
+Where possible, encode mechanically enforceable guarantees in validators/scripts: identities, budgets, gate ordering, current-head checks, deduplication, packaging, and accounting.
