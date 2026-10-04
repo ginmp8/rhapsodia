@@ -1,0 +1,106 @@
+{
+  "state_version": 4,
+  "search_id": "search-001",
+  "round": 0,
+  "stagnant_rounds": 0,
+  "status": "active",
+  "candidates": [
+    {
+      "candidate_id": "C_CANONICAL",
+      "role": "canonical",
+      "status": "active",
+      "candidate_identity": "candidate-sha256-or-immutable-ref",
+      "parent_ids": [
+        "BASELINE"
+      ],
+      "base_parent_id": "BASELINE",
+      "donor_parent_ids": [],
+      "operator": "bounded-mutation",
+      "transformation_ids": [
+        "T001"
+      ],
+      "expected_capability_effects": [
+        "canonical-baseline"
+      ],
+      "generation_receipt": {
+        "receipt_identity": "generation-receipt-sha256-or-ref",
+        "candidate_identity": "candidate-sha256-or-immutable-ref",
+        "base_parent_id": "BASELINE",
+        "donor_parent_ids": [],
+        "operator": "bounded-mutation",
+        "transformation_ids": [
+          "T001"
+        ]
+      },
+      "evaluation": {
+        "evaluation_ref": "sha256-or-immutable-ref",
+        "identity": {
+          "evaluator_id": "frozen-evaluator-id",
+          "scenario_set_id": "frozen-scenario-id",
+          "policy_id": "frozen-evaluation-policy-id"
+        },
+        "level": "L4-benchmark",
+        "evidence_type": "supplied",
+        "hard_gates": {
+          "activation": "pass",
+          "semantics": "pass",
+          "safety": "pass",
+          "evaluator_integrity": "pass",
+          "validation": "pass"
+        },
+        "metrics": {
+          "quality": {
+            "value": 0.91,
+            "uncertainty": 0.02
+          },
+          "token_cost": {
+            "value": 1000,
+            "uncertainty": 0
+          }
+        },
+        "deficits": [],
+        "holdout_status": "not-used",
+        "statistics": {
+          "case_count": 40,
+          "trial_count": 3,
+          "uncertainty_kind": "bootstrap-ci-half-width",
+          "confidence_level": 0.95,
+          "paired_evaluation_group_id": "paired-batch-001",
+          "scenario_results_ref": "scenario-results-sha256-or-ref"
+        },
+        "slices": {
+          "activation-regression": "pass",
+          "boundary-regression": "pass",
+          "portability-regression": "pass"
+        },
+        "stability": {
+          "method_id": "bootstrap-stability-v1",
+          "win_rate": 0.72,
+          "resamples": 500
+        },
+        "scenario_scores": {
+          "activation": 0.95,
+          "boundary": 0.93,
+          "portability": 0.92
+        },
+        "behavior_descriptor": {
+          "descriptor_id": "skill-behavior-v1",
+          "labels": [
+            "activation-stable",
+            "boundary-safe",
+            "portable-core"
+          ]
+        }
+      },
+      "hypothesis_ids": [
+        "H-CANONICAL"
+      ],
+      "deficit_ids": []
+    }
+  ],
+  "pareto_archive": [
+    "C_CANONICAL"
+  ],
+  "finalists": [],
+  "termination_reason": null
+}

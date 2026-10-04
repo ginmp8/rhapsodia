@@ -12,18 +12,33 @@
 - capability/hypothesis/transformation identities:
 - evaluator/scenario/policy identities:
 - mutation/evaluation interface identities:
+- evidence-aware profile/policies:
 
 ## Initial strategies
 
-## Candidate lineage and generation receipts
+## Candidate lineage, provenance, and generation receipts
+- hypothesis/deficit provenance:
 
 ## Evaluation compatibility
+- evaluation level/evidence type:
+- statistics/uncertainty semantics:
+- required slices:
+- stability evidence:
 
-## Hard-gate eliminations
+## Eligibility eliminations
+- incompatible/ineligible evidence:
+- blind holdout:
+- hard gates:
+- required slices:
+- stability:
+- complexity:
 
-## Pareto archive and uncertainty treatment
+## Pareto archive and scenario specialists
+- aggregate Pareto:
+- scenario elites:
 
 ## Derived novelty and diversity decisions
+- novelty policy/descriptor identity:
 
 ## Recombination decisions
 - accepted requests:
@@ -33,6 +48,9 @@
 - latest state hash:
 - latest receipt hash:
 - previous receipt hash:
+- stagnation policy:
+- behavior signatures:
+- deficit coverage:
 - stagnation counter:
 
 ## Finalists

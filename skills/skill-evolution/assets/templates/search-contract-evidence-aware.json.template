@@ -1,0 +1,165 @@
+{
+  "contract_version": 4,
+  "search_id": "search-001",
+  "target_identity": "sha256-or-immutable-ref",
+  "target_class": "orchestration-meta",
+  "baseline_candidate_id": "BASELINE",
+  "canonical_candidate_id": "C_CANONICAL",
+  "input_identities": {
+    "capability_map_id": "capability-map-sha256-or-ref",
+    "hypothesis_pool_id": "hypothesis-pool-sha256-or-ref",
+    "transformation_registry_id": "transformation-registry-sha256-or-ref",
+    "evaluation_plan_id": "evaluation-plan-sha256-or-ref"
+  },
+  "interfaces": {
+    "mutation_interface_id": "caller-mutation-interface-v1",
+    "evaluation_interface_id": "caller-evaluation-interface-v1"
+  },
+  "budget": {
+    "initial_variants": 4,
+    "max_active_candidates": 4,
+    "max_total_candidates": 20,
+    "finalists": 2,
+    "stagnant_rounds": 3,
+    "max_recombination_proposals_per_round": 3
+  },
+  "hard_gates": [
+    "activation",
+    "semantics",
+    "safety",
+    "evaluator_integrity",
+    "validation"
+  ],
+  "objectives": [
+    {
+      "name": "quality",
+      "direction": "maximize",
+      "min_delta": 0.02
+    },
+    {
+      "name": "token_cost",
+      "direction": "minimize",
+      "min_delta": 25
+    }
+  ],
+  "evaluation_identity": {
+    "evaluator_id": "frozen-evaluator-id",
+    "scenario_set_id": "frozen-scenario-id",
+    "policy_id": "frozen-evaluation-policy-id"
+  },
+  "allowed_evaluation_levels": [
+    "L0-structural",
+    "L1-deterministic",
+    "L2-focused",
+    "L3-harness",
+    "L4-benchmark",
+    "L5-holdout"
+  ],
+  "allowed_operators": [
+    "transformation-merge",
+    "backcross",
+    "repair-crossover",
+    "bounded-mutation"
+  ],
+  "preserve_roles": [
+    "canonical"
+  ],
+  "selection_policy": {
+    "id": "pareto-then-novelty-v3",
+    "eligible_evidence_types": [
+      "measured",
+      "supplied"
+    ],
+    "comparison_level_policy": "same-level",
+    "holdout_failure_policy": "eliminate-blind-fail",
+    "novelty_policy": {
+      "id": "transformation-jaccard-v1",
+      "source": "derived"
+    },
+    "uncertainty_policy": "margin-plus-min-delta-v1"
+  },
+  "capability_invariants": [
+    "activation-contract",
+    "authority-boundary",
+    "evaluator-integrity"
+  ],
+  "transformation_registry": [
+    {
+      "id": "T001",
+      "status": "validated",
+      "depends_on": [],
+      "conflicts_with": [],
+      "capability_effects": [
+        "canonical-baseline"
+      ],
+      "violates_invariants": [],
+      "addresses": []
+    },
+    {
+      "id": "T002",
+      "status": "accepted",
+      "depends_on": [],
+      "conflicts_with": [],
+      "capability_effects": [
+        "activation"
+      ],
+      "violates_invariants": [],
+      "addresses": [
+        "activation-ambiguity"
+      ]
+    },
+    {
+      "id": "T003",
+      "status": "accepted",
+      "depends_on": [],
+      "conflicts_with": [],
+      "capability_effects": [
+        "lineage-integrity"
+      ],
+      "violates_invariants": [],
+      "addresses": [
+        "lineage-gap"
+      ]
+    }
+  ],
+  "finalist_policy": {
+    "minimum_evaluation_level": "L4-benchmark",
+    "holdout_policy": "not-required"
+  },
+  "evidence_aware": {
+    "profile_version": 1,
+    "uncertainty_metadata_required": true,
+    "required_evaluation_slices": [
+      "activation-regression",
+      "boundary-regression",
+      "portability-regression"
+    ],
+    "stability_policy": {
+      "id": "minimum-win-rate-v1",
+      "method_id": "bootstrap-stability-v1",
+      "minimum_win_rate": 0.6,
+      "minimum_resamples": 200
+    },
+    "frontier_policy": {
+      "id": "aggregate-plus-scenario-elites-v1",
+      "scenario_direction": "maximize",
+      "scenario_min_delta": 0.01
+    },
+    "novelty_policy": {
+      "id": "behavior-label-jaccard-v1",
+      "source": "derived",
+      "descriptor_id": "skill-behavior-v1"
+    },
+    "complexity_policy": {
+      "id": "metric-upper-bounds-v1",
+      "limits": {
+        "token_cost": 1800
+      }
+    },
+    "stagnation_policy": {
+      "id": "pareto-plus-semantic-signatures-v1",
+      "include_behavior_descriptors": true,
+      "include_deficit_coverage": true
+    }
+  }
+}
