@@ -1,8 +1,20 @@
 {
-  "contract_version": "1.0",
+  "contract_version": "2.0",
   "tokenization": {
     "method": "estimator-v1",
-    "scope": "instructions"
+    "scope": "instructions",
+    "comparison_methods": [],
+    "surfaces": [
+      "catalog",
+      "entrypoint",
+      "activated",
+      "instructions",
+      "all-text"
+    ]
+  },
+  "claim_evidence": {
+    "behavioral_claims_require": "executed-scenario",
+    "runtime_claims_require": "executed-runtime"
   },
   "semantic_invariants": [
     {
@@ -10,63 +22,111 @@
       "category": "activation",
       "statement": "Replace with the target's required activation/non-activation invariant.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md frontmatter"]
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md frontmatter"
+      ]
     },
     {
       "id": "scope-boundary",
       "category": "scope",
-      "statement": "Replace with the target's scope/authority invariant.",
+      "statement": "Replace with the target's scope/mutation-rights invariant.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md"]
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "authority-boundary",
+      "category": "authority",
+      "statement": "Replace with modality, negation, precedence, exception, guard and trust-boundary invariants that must survive compression.",
+      "verification": "manual",
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "workflow-boundary",
+      "category": "workflow",
+      "statement": "Replace with required workflow/order and tool/filesystem/environment protocol.",
+      "verification": "manual",
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
     },
     {
       "id": "safety-boundary",
       "category": "safety",
       "statement": "Replace with the target's safety invariant.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md"]
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
     },
     {
       "id": "validation-boundary",
       "category": "validation",
       "statement": "Replace with the target's validation invariant.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md"]
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
     },
     {
       "id": "evidence-boundary",
       "category": "evidence",
       "statement": "Replace with the target's evidence/citation invariant.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md"]
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
     },
     {
       "id": "compatibility-boundary",
       "category": "compatibility",
       "statement": "Replace with compatibility/version commitments that must survive compression.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md"]
+      "placement": "either",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
     },
     {
       "id": "output-contract",
       "category": "output_contract",
       "statement": "Replace with the target's required output contract.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md"]
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
     },
     {
       "id": "readability-floor",
       "category": "readability",
       "statement": "Candidate remains directly executable without reconstructing omitted critical rules.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md"]
+      "placement": "either",
+      "evidence_refs": [
+        "SKILL.md"
+      ]
     },
     {
       "id": "progressive-loading",
       "category": "progressive_loading",
-      "statement": "Required branch detail remains reachable from SKILL.md only when needed.",
+      "statement": "Required branch detail remains reachable and is loaded under an explicit operational condition before it is needed.",
       "verification": "manual",
-      "evidence_refs": ["SKILL.md", "references/"]
+      "placement": "entrypoint",
+      "evidence_refs": [
+        "SKILL.md",
+        "references/"
+      ]
     }
   ],
   "protected": {

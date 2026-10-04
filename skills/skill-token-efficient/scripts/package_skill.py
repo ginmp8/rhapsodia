@@ -16,11 +16,13 @@ def files(root: Path):
             if p.suffix.lower() not in BLOCKED_SUFFIXES and not p.is_symlink(): yield p
 
 def tree_hash(root: Path) -> str:
-    h=hashlib.sha256()
+    """Canonical manifest hash shared with reproducibility/change-gate tooling."""
+    rows=[]
     for p in files(root):
-        rel=p.relative_to(root).as_posix().encode(); data=p.read_bytes()
-        h.update(len(rel).to_bytes(4,"big")); h.update(rel); h.update(len(data).to_bytes(8,"big")); h.update(hashlib.sha256(data).digest())
-    return h.hexdigest()
+        data=p.read_bytes()
+        rows.append({"path":p.relative_to(root).as_posix(),"type":"file","size":len(data),"sha256":hashlib.sha256(data).hexdigest()})
+    payload=json.dumps(rows,sort_keys=True,separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 def sha256(path: Path) -> str:
     h=hashlib.sha256()

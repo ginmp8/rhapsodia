@@ -1,0 +1,46 @@
+{
+  "context_version": 1,
+  "claim_scope": "local-acceptance",
+  "candidate_tree_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "baseline_tree_sha256": null,
+  "policy": {
+    "policy_id": "skill-change-gate.normal",
+    "policy_version": "1",
+    "policy_digest": null
+  },
+  "verifier": {
+    "verifier_id": "skill-change-gate",
+    "version": "1",
+    "implementation_digest": null
+  },
+  "evaluator": {
+    "evaluator_id": "not-applicable",
+    "scenario_set_id": "not-applicable",
+    "evaluator_digest": null,
+    "role": "development",
+    "candidate_had_access": false,
+    "selection_informed_by_results": false,
+    "exposure_generation_count": 0
+  },
+  "evaluation_contract": {
+    "holdout_required": false,
+    "required_trials": 0,
+    "completed_trials": 0,
+    "independent_replication_required": false,
+    "independent_replication_completed": false
+  },
+  "destination": {
+    "required": false,
+    "expected_identity": null,
+    "observed_identity": null
+  },
+  "authority": {
+    "expanded": false,
+    "authorized": false,
+    "added_surfaces": []
+  },
+  "evidence": [],
+  "waivers": [],
+  "consumer_inventory_complete": false,
+  "known_consumers": []
+}

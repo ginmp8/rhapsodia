@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/skill-change-gate/change-gate-result.schema.json",
+  "title": "Skill Change Gate Result v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["result_version", "subject", "gate", "status", "decision_for_caller", "evidence", "findings", "portability"],
+  "properties": {
+    "result_version": {"const": 1},
+    "subject": {
+      "type": "object",
+      "required": ["candidate_tree_sha256"],
+      "properties": {
+        "candidate_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "baseline_tree_sha256": {"type": ["string", "null"]},
+        "direct_parent_identity": {"type": ["string", "null"]},
+        "destination_identity": {"type": ["string", "null"]}
+      }
+    },
+    "gate": {
+      "type": "object",
+      "required": ["mode", "policy", "portability_profile", "policy_identity", "verifier_identity"],
+      "properties": {
+        "mode": {"enum": ["candidate-gate", "preflight-gate", "post-validation-gate", "advisory-review"]},
+        "policy": {"enum": ["strict", "normal", "advisory"]},
+        "portability_profile": {"type": "string", "minLength": 1},
+        "policy_identity": {"type": ["string", "null"]},
+        "verifier_identity": {"type": ["string", "null"]}
+      }
+    },
+    "status": {"enum": ["pass", "pass-with-warnings", "fail", "insufficient-evidence"]},
+    "decision_for_caller": {"enum": ["accept", "reject", "repair-before-accept", "gather-evidence", "advisory-only"]},
+    "claim_scope": {"enum": ["local-acceptance", "promotion", "ecosystem-safe"]},
+    "freshness": {"enum": ["fresh", "stale", "not-applicable", "unknown"]},
+    "evidence": {"type": "array"},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "area", "origin", "regression_delta", "rule_origin", "finding", "decision_impact"],
+        "properties": {
+          "severity": {"type": "string"},
+          "area": {"type": "string"},
+          "origin": {"type": "string"},
+          "regression_delta": {"enum": ["introduced", "worsened", "preexisting-unchanged", "improved", "resolved", "unknown"]},
+          "rule_origin": {"type": "string"},
+          "finding": {"type": "string"},
+          "decision_impact": {"type": "string"}
+        }
+      }
+    },
+    "waivers": {"type": "array"},
+    "portability": {"type": "object"}
+  }
+}

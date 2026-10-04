@@ -7,27 +7,50 @@
 - Candidate identity:
 - Level:
 
-## Token Evidence
-- Method / kind / implementation:
+## Token / Context Evidence
+- Primary tokenizer method / kind / implementation:
+- Comparison tokenizer identities:
+- Selected scope:
+- Surface counts (`catalog`, `entrypoint`, `activated`, `instructions`, `all-text`):
 - Before / after / delta / reduction:
 - Per-file deltas:
 - Per-section deltas:
 - Local token regressions:
+- Overall improvement from token count alone: not established
 
-## Semantic Preservation
-- Contract identity:
+## Runtime Economics (optional)
+- Evidence kind (`estimated|observed|not-run`):
+- Rate profile / currency:
+- Environment identity:
+- Uncached input / cache write / cache read / output tokens:
+- Total tokens:
+- Cost components / total:
+- Latency:
+- Comparability status:
+- Overall improvement from calculator alone: not decided
+
+## Preservation Evidence
+- Contract version / identity:
 - Mechanical invariant status:
-- Manual/scenario evidence:
-- Activation/scope/output regressions:
+- Authority/workflow review:
+- Placement/load-condition status:
 - Protected surfaces by category:
 - Progressive-loading/local-reference status:
 - Readability review:
+
+## Evidence Layers
+- Structural:
+- Semantic review:
+- Behavioral scenarios:
+- Runtime:
+- Claims intentionally not made:
 
 ## Validation
 - Commands/status:
 - Target-owned tests/validators:
 - Evaluator freeze status:
 - Package validation:
+- Portability profiles:
 
 ## Delivery
 - Frozen candidate SHA-256:
@@ -38,4 +61,5 @@
 ## Accepted / Rejected Changes
 - Accepted:
 - Rejected:
+- Accepted trade-offs:
 - Residual risks / irreducible judgment:

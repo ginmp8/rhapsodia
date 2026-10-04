@@ -111,6 +111,17 @@ def markdown_sections(text: str) -> dict[str, str]:
         sections.setdefault(current, []).append(line)
     return {k:"".join(v) for k,v in sections.items() if "".join(v).strip()}
 
+def split_frontmatter(text: str) -> tuple[str, str]:
+    """Return (catalog metadata, activated body) for a Markdown entrypoint."""
+    lines = text.splitlines(keepends=True)
+    if not lines or lines[0].strip() != "---":
+        return "", text
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return "".join(lines[: i + 1]), "".join(lines[i + 1 :])
+    return "", text
+
+
 def local_refs_in_text(text: str) -> list[str]:
     refs = []
     for target in LINK_RE.findall(text): refs.append(target.split("#", 1)[0].strip())
@@ -199,6 +210,8 @@ def audit(target: str|Path, tok: Tokenizer) -> dict[str, Any]:
     graph = reference_graph(root)
     if graph["unresolved"]: warnings.append(f"unresolved local references: {len(graph['unresolved'])}")
     by_path = {item["path"]: item for item in stats}
+    entrypoint_text = read_text(root / "SKILL.md") if (root / "SKILL.md").exists() else ""
+    catalog_text, activated_text = split_frontmatter(entrypoint_text)
     entrypoint_count = by_path.get("SKILL.md", {}).get("token_count", 0)
     instruction_paths = {"SKILL.md"}
     for rp in graph["reachable"]:
@@ -207,7 +220,9 @@ def audit(target: str|Path, tok: Tokenizer) -> dict[str, Any]:
                 instruction_paths.add(rp)
     instruction_count = sum(by_path[p]["token_count"] for p in instruction_paths if p in by_path)
     token_scopes = {
+        "catalog": tok.count(catalog_text),
         "entrypoint": entrypoint_count,
+        "activated": tok.count(activated_text),
         "instructions": instruction_count,
         "all-text": totals["token_count"],
         "instruction_paths": sorted(p for p in instruction_paths if p in by_path),
@@ -295,7 +310,7 @@ def compare(before_target: str|Path, after_target: str|Path, tok: Tokenizer, con
     preservation=preservation_check(contract,Path(after_target).resolve())
     return {
         "tokenization":{**tok.info(), "scope": token_scope},
-        "comparison":{"token_scope":token_scope,"before_token_count":bt,"after_token_count":at,"before_estimated_tokens":bt,"after_estimated_tokens":at,"token_delta":at-bt,"reduction_pct":round(((bt-at)/bt*100) if bt else 0,2),"token_reduced":at<bt,"improved":at<bt},
+        "comparison":{"token_scope":token_scope,"before_token_count":bt,"after_token_count":at,"before_estimated_tokens":bt,"after_estimated_tokens":at,"token_delta":at-bt,"reduction_pct":round(((bt-at)/bt*100) if bt else 0,2),"token_reduced":at<bt,"improved":at<bt,"improved_field_semantics":"deprecated alias for token_reduced; not an overall-improvement claim","overall_improvement_status":"not-established-by-token-count"},
         "local_token_comparison":{"common_files_checked":len(set(before)&set(after)),"increased_files":len(increased_files),"increased_sections":len(increased_sections),"file_token_deltas":file_deltas,"section_token_deltas":section_deltas,"local_regressions":{"files":increased_files,"sections":increased_sections}},
         "protected_region_comparison":{"common_files_checked":len(set(before)&set(after)),"files_missing_after":sorted(set(before)-set(after)),"files_added_after":sorted(set(after)-set(before)),"files_with_protected_diffs":len(protected_diffs),"diffs":protected_diffs[:40]},
         "traceability_comparison":{"before_terms":before_a["totals"]["traceability_terms"],"after_terms":after_a["totals"]["traceability_terms"],"term_delta":after_a["totals"]["traceability_terms"]-before_a["totals"]["traceability_terms"],"losses":trace_diff(before,after)},
@@ -304,9 +319,48 @@ def compare(before_target: str|Path, after_target: str|Path, tok: Tokenizer, con
         "targets":[before_a,after_a]
     }
 
+def _surface_counts(audit_report: dict[str, Any]) -> dict[str, int]:
+    scopes = audit_report["token_scopes"]
+    return {k: scopes[k] for k in ("catalog", "entrypoint", "activated", "instructions", "all-text")}
+
+
+def tokenizer_matrix_target(target: str | Path, methods: list[str], token_scope: str) -> list[dict[str, Any]]:
+    rows = []
+    for method in methods:
+        tok = Tokenizer(method)
+        ar = audit(target, tok)
+        rows.append({
+            "tokenization": {**tok.info(), "scope": token_scope},
+            "selected_scope_count": ar["token_scopes"][token_scope],
+            "surface_counts": _surface_counts(ar),
+        })
+    return rows
+
+
+def tokenizer_matrix_compare(before: str | Path, after: str | Path, methods: list[str], token_scope: str) -> list[dict[str, Any]]:
+    rows = []
+    for method in methods:
+        tok = Tokenizer(method)
+        b, a = audit(before, tok), audit(after, tok)
+        bt, at = b["token_scopes"][token_scope], a["token_scopes"][token_scope]
+        rows.append({
+            "tokenization": {**tok.info(), "scope": token_scope},
+            "before_token_count": bt,
+            "after_token_count": at,
+            "token_delta": at - bt,
+            "reduction_pct": round(((bt - at) / bt * 100) if bt else 0, 2),
+            "token_reduced": at < bt,
+            "before_surface_counts": _surface_counts(b),
+            "after_surface_counts": _surface_counts(a),
+        })
+    return rows
+
+
 def to_markdown(report: dict[str,Any]) -> str:
     lines=["# Token Refactor Audit",""]
     lines += ["## Tokenization",f"- Method: {report.get('tokenization',{}).get('method','n/a')}",f"- Kind: {report.get('tokenization',{}).get('kind','n/a')}",f"- Implementation: {report.get('tokenization',{}).get('implementation','n/a')}",f"- Scope: {report.get('tokenization',{}).get('scope','n/a')}",""]
+    if report.get("tokenizer_matrix"):
+        lines += ["## Tokenizer Matrix", f"- Independent tokenizer measurements: {len(report['tokenizer_matrix'])}", "- Counts/deltas from different tokenizer identities are never combined.", ""]
     c=report.get("comparison")
     if c: lines += ["## Token Delta",f"- Before: {c['before_token_count']}",f"- After: {c['after_token_count']}",f"- Delta: {c['token_delta']}",f"- Reduction: {c['reduction_pct']}%",f"- Token reduced: {c['token_reduced']}",""]
     p=report.get("preservation")
@@ -319,15 +373,24 @@ def to_markdown(report: dict[str,Any]) -> str:
 
 def main() -> int:
     ap=argparse.ArgumentParser(description="Audit or compare token-efficient skill packages with preservation gates.")
-    ap.add_argument("--target"); ap.add_argument("--before"); ap.add_argument("--after"); ap.add_argument("--contract"); ap.add_argument("--tokenizer",default="estimator-v1"); ap.add_argument("--token-scope",choices=["entrypoint","instructions","all-text"],default="instructions"); ap.add_argument("--output"); ap.add_argument("--markdown"); ap.add_argument("--fail-on-regression",action="store_true"); ap.add_argument("--fail-on-preservation-loss",action="store_true"); ap.add_argument("--require-token-reduction",action="store_true")
+    ap.add_argument("--target"); ap.add_argument("--before"); ap.add_argument("--after"); ap.add_argument("--contract"); ap.add_argument("--tokenizer",default="estimator-v1"); ap.add_argument("--compare-tokenizer",action="append",default=[],help="Additional tokenizer identity to measure independently; repeatable."); ap.add_argument("--token-scope",choices=["catalog","entrypoint","activated","instructions","all-text"],default="instructions"); ap.add_argument("--output"); ap.add_argument("--markdown"); ap.add_argument("--fail-on-regression",action="store_true"); ap.add_argument("--fail-on-preservation-loss",action="store_true"); ap.add_argument("--require-token-reduction",action="store_true")
     args=ap.parse_args()
     if args.target and (args.before or args.after): ap.error("use --target or --before/--after, not both")
     if not args.target and not (args.before and args.after): ap.error("provide --target or both --before and --after")
-    try: tok=Tokenizer(args.tokenizer)
-    except ValueError as exc: print(json.dumps({"status":"fail","stage":"tokenizer","error":str(exc)},indent=2),file=sys.stderr); return 2
+    methods = list(dict.fromkeys([args.tokenizer, *args.compare_tokenizer]))
+    try:
+        tokenizers = [Tokenizer(method) for method in methods]
+        tok = tokenizers[0]
+    except ValueError as exc:
+        print(json.dumps({"status":"fail","stage":"tokenizer","error":str(exc)},indent=2),file=sys.stderr); return 2
     try: contract=load_contract(args.contract)
     except Exception as exc: print(json.dumps({"status":"fail","stage":"contract","error":str(exc)},indent=2),file=sys.stderr); return 2
-    report={"tokenization":{**tok.info(), "scope": args.token_scope},"targets":[audit(args.target,tok)]} if args.target else compare(args.before,args.after,tok,contract,args.token_scope)
+    if args.target:
+        report={"tokenization":{**tok.info(), "scope": args.token_scope},"targets":[audit(args.target,tok)]}
+        report["tokenizer_matrix"] = tokenizer_matrix_target(args.target, methods, args.token_scope)
+    else:
+        report=compare(args.before,args.after,tok,contract,args.token_scope)
+        report["tokenizer_matrix"] = tokenizer_matrix_compare(args.before,args.after,methods,args.token_scope)
     payload=json.dumps(report,ensure_ascii=False,indent=2)
     if args.output: Path(args.output).parent.mkdir(parents=True,exist_ok=True); Path(args.output).write_text(payload+"\n",encoding="utf-8")
     else: print(payload)

@@ -1,16 +1,26 @@
 # Gate Rubric
 
-Use this rubric to judge a candidate skill change. Separate mechanical evidence, behavioral evidence, runtime evidence, and reviewer judgment.
+Use this rubric to judge one candidate skill change. Separate structural, behavioral, runtime, delivery, and reviewer evidence. Review the candidate change, not the entire package as a redesign exercise.
 
 ## Severity model
 
 | Severity | Meaning | Default decision |
 |---|---|---|
-| `blocking regression` | Candidate breaks loading, safety, core activation, evidence identity, protected artifacts, validation truthfulness, packaging/delivery integrity, portable core behavior, or required output contract. | fail |
-| `material concern` | Candidate may reduce quality, maintainability, activation precision, evidence value, portability, recoverability, or context efficiency without a proven hard break. | warning; fail under strict policy unless waived |
-| `non-blocking trade-off` | Candidate changes style, compression, examples, optional host adapters, or optional detail with acceptable rationale. | pass with record |
-| `false positive` | Suspected issue is disproven by inspected evidence. | pass with rationale |
+| `blocking regression` | Candidate or deciding evidence violates a hard invariant: loading, safety, core activation, protected evidence, evidence identity, validation truthfulness, delivery integrity, required compatibility, or portable-core correctness. | fail |
+| `material concern` | Candidate may reduce quality, activation precision, maintainability, portability, recoverability, evidence value, or compatibility without a proven hard break. | warning; fail under strict unless validly waived |
+| `non-blocking signal` | Mechanical change worth semantic/evaluator review but not proof of regression by itself. | no automatic failure |
+| `non-blocking trade-off` | Intentional bounded change with sufficient rationale/evidence. | pass with record |
+| `false positive` | Suspected issue disproven by inspected evidence. | pass with rationale |
 | `follow-up hypothesis` | Possible improvement outside the current candidate. | no decision impact |
+
+## Finding metadata
+
+For every material finding record:
+
+- `rule_origin`: for example `agent-skills-spec`, `portable-package-policy`, `security-policy`, `experiment-policy`, `delivery-integrity-policy`, or another explicit local source;
+- `regression_delta`: `introduced`, `worsened`, `preexisting-unchanged`, `improved`, `resolved`, or `unknown`.
+
+Do not attribute pre-existing unchanged debt to the candidate. Do not label an internal packaging convention as an Agent Skills specification requirement unless the specification establishes it.
 
 ## Gate areas
 
@@ -18,186 +28,178 @@ Use this rubric to judge a candidate skill change. Separate mechanical evidence,
 
 Blocking examples:
 
-- missing root `SKILL.md`;
-- invalid required frontmatter;
-- package directory name does not match `SKILL.md:name` under the portable profile;
+- missing root `SKILL.md` or malformed required frontmatter;
+- required portable name/identity contract is broken;
 - unsafe archive/path layout or symlink escape;
-- included secrets, credentials, repository metadata, dependency/vendor trees, or nested archives that violate the package contract.
+- secrets, credentials, repository metadata, dependency/vendor trees, or nested archives violate the selected package/security policy.
 
-Material examples:
-
-- weak hygiene that does not block loading;
-- support directories included without clear consumers;
-- optional host metadata is present but stale or unvalidated for that host.
+Material examples include weak hygiene, unreachable support resources, or stale optional host metadata.
 
 ### 1A. Capability preservation and parent drift
 
 Blocking examples:
 
-- a required baseline capability is `regressed` or `removed-breaking` without explicit authorization;
-- the candidate is evaluated against a different direct parent/baseline identity than the transformation record claims under strict policy;
-- a required affected capability is `unproven` and acceptance depends on it.
+- required capability is `regressed` or `removed-breaking` without authorization;
+- direct-parent/baseline identity contradicts the transformation record under strict policy;
+- a required affected capability remains `unproven` when acceptance depends on it.
 
-Material examples:
-
-- capability ownership moved but consumer/validator evidence is incomplete;
-- candidate adds a capability with no independent validation yet.
-
-Do not infer capability loss from file deletion alone; trace semantic ownership/consumers/validators when a capability map is supplied.
+Do not infer semantic capability loss from file deletion alone. Trace owner, consumers, validators, and replacement behavior when a capability map is supplied.
 
 ### 2. Activation and routing
 
 Blocking examples:
 
-- description no longer names the real trigger or target artifact;
-- candidate broadens activation into unrelated work;
-- non-activation boundaries that prevent harmful false positives are removed;
-- adjacent skill handoffs become contradictory.
+- description/routing no longer represents the real trigger or artifact;
+- activation broadens into unrelated work;
+- a material non-activation boundary is removed;
+- adjacent handoffs become contradictory.
 
-Material examples:
-
-- fewer examples for ambiguous prompts;
-- activation wording becomes less concrete but remains usable.
+Text length, example count, or wording compression are only signals. When the activation surface changed materially, prefer executed or supplied activation/non-activation/ambiguous-routing evidence over length heuristics.
 
 ### 3. Scope, authority, and protected paths
 
 Blocking examples:
 
-- candidate expands mutation authority beyond the target skill;
-- blocked paths become editable without explicit authorization;
-- frozen evaluator fixtures, expected outputs, benchmark baselines, or generated evidence can be changed during a measured candidate;
-- supplied protected paths differ between before and after without explicit experiment restart.
+- mutation authority expands beyond target scope;
+- blocked paths become writable without authorization;
+- frozen evaluator fixtures, expected outputs, benchmark baselines, or generated evidence can be altered during a measured candidate;
+- protected path sets drift without explicit experiment restart;
+- under strict policy, a material authority expansion (tool permission, executable action, network/filesystem mutation, secret access, or runtime dependency) lacks explicit authorization evidence.
 
-Material examples:
-
-- allowed mutation scope becomes less visible;
-- ownership/handoff rules become harder to follow.
+New/changed scripts or host permission metadata are mechanical authority signals, not automatic proof of unsafe behavior.
 
 ### 4. Resource routing and local references
 
 Blocking examples:
 
-- referenced files are removed/renamed without updating consumers;
-- important scripts/templates/references lose declared consumers;
+- referenced resources are removed/renamed without valid consumers being updated;
 - required branch-specific guidance becomes unreachable;
 - a local reference escapes the skill package.
 
-Material examples:
-
-- useful resources remain but their loading condition is vague;
-- package grows without a clear routing benefit.
+Material examples include package growth with no routing benefit or resources whose consumers are unclear.
 
 ### 5. Safety, security, and governance
 
 Blocking examples:
 
-- unsafe shell execution, broad deletion, untrusted archive extraction, or path traversal is introduced;
-- skill can expose or overwrite secrets/protected evidence;
-- sensitive logging or credential handling becomes unsafe;
-- no-fabrication or evidence boundaries are weakened.
+- unsafe shell execution, broad deletion, path traversal, or untrusted extraction is introduced;
+- secrets/protected evidence can be exposed or overwritten;
+- credential/sensitive logging handling becomes unsafe;
+- no-fabrication/evidence boundaries are weakened.
 
-Material examples:
-
-- failure handling becomes less explicit;
-- risk notes remain valid but move to a less visible location.
-
-### 6. Evidence identity and experiment integrity
+### 6. Evidence subject, policy, and experiment integrity
 
 Blocking examples:
 
-- expected before/candidate tree identity does not match inspected bytes;
-- evaluator/scenario inputs drift after freeze;
+- expected baseline/candidate identity differs from inspected bytes;
+- deciding evidence identifies candidate bytes different from the gated candidate;
 - candidate is accepted against a different baseline than the one measured;
-- a package receipt identifies candidate bytes different from the frozen candidate;
-- a failing/missing evidence source is silently replaced with a fresh one after seeing the result.
+- frozen evaluator/scenario inputs drift;
+- required evidence is failed, blocked, not-run, or silently replaced after results are known;
+- strict measured acceptance cannot identify the deciding policy/verifier when exact identity is material;
+- artifact/promotion receipt identifies different candidate bytes.
 
-Material examples:
+Use `references/decision-evidence-contract.md` and `references/evidence-integrity.md`.
 
-- candidate identity is available but external evaluator identity cannot be mechanically verified;
-- artifact receipt reports success but omits candidate/source identity.
+### 6A. Evaluator exposure and stochastic sufficiency
 
-Use `references/evidence-integrity.md` when these checks apply.
+Blocking examples:
+
+- an evaluator declared as holdout was exposed to candidate construction or selection;
+- the caller declared holdout evidence required but none is supplied;
+- completed trials are below the caller-declared required trial count;
+- independent replication was declared required but not completed.
+
+The gate verifies the caller's evaluation contract; it does not invent universal trial counts, score thresholds, or significance rules.
+
+### 6B. Freshness and TOCTOU
+
+Blocking for a current promotion claim:
+
+- expected destination/parent state differs from the observed state and the decision has not been revalidated;
+- required destination/current-state evidence is missing.
+
+Treat this as stale evidence, not proof that the candidate itself is bad.
 
 ### 7. Validation, benchmark, and claim discipline
 
 Blocking examples:
 
-- candidate claims validation/readiness/improvement without executed or supplied evidence;
-- validator or threshold is weakened to make the candidate pass;
-- failed gates are hidden or reframed as success;
-- static checks are presented as proof of behavioral/runtime/perceptual quality.
-
-Material examples:
-
-- validation commands remain but expected outcomes are less explicit;
-- planned scenarios are not clearly separated from executed results.
+- readiness/improvement claims lack executed or supplied evidence appropriate to the claim;
+- validator, threshold, fixture, or scoring contract is weakened to obtain a pass;
+- failed gates are hidden/reframed as success;
+- static evidence is presented as behavioral/runtime/perceptual proof.
 
 ### 8. Delivery, output-path safety, recovery, and receipts
 
 Blocking examples:
 
-- output path can alias an input, protected file, evaluator, or sibling receipt and mutate it;
-- validation/preflight failure can overwrite the last-good artifact where preservation is part of the contract;
-- multi-output commit can leave a mixed old/new state without rollback/recovery semantics;
-- failed rollback destroys the remaining recovery evidence;
-- success receipt is emitted before or for bytes different from the committed artifact.
+- output aliases an input, protected file, evaluator, or sibling receipt;
+- failure can overwrite last-good output when preservation is part of the contract;
+- multi-output commit can leave mixed state without recovery semantics;
+- rollback destroys remaining recovery evidence;
+- success receipt precedes commit or refers to different bytes.
 
-Material examples:
-
-- receipt schema is not versioned even though automation consumes it;
-- recovery locations are underspecified but no destructive failure mode is demonstrated;
-- durable flush/atomic-write behavior is unclear for large machine-readable receipts.
+Machine-readable receipts consumed by automation should be versioned and candidate-bound.
 
 ### 9. Host portability and compatibility
 
-Blocking examples under a cross-host/portable requirement:
+Blocking under a portable/cross-host requirement:
 
-- semantic core requires one host's private tool identifier, URI, absolute sandbox path, or proprietary invocation mechanism;
-- correctness depends on a host-only metadata file/frontmatter extension that other compatible hosts may ignore;
-- scripts require an undeclared runtime/dependency unavailable across the declared support envelope and no safe fallback exists;
-- target removes intentional compatibility behavior without migration evidence.
+- semantic core requires one host's private tool identifier, URI, absolute sandbox path, or proprietary invocation;
+- correctness depends on a host-only adapter/metadata field other hosts may ignore;
+- scripts require undeclared unavailable runtimes/dependencies without fallback;
+- intentional compatibility behavior is removed without migration evidence.
 
-Material examples:
+Optional adapters are acceptable when ignoring them leaves the portable semantic core intact.
 
-- host adapter is correct but not clearly separated from the portable core;
-- installation/discovery guidance is stale or host-specific without affecting package semantics;
-- optional host extension narrows behavior only on that host and the trade-off is intentional.
+### 9A. Consumer compatibility and ecosystem claims
 
-Product names in descriptive text are not portability defects by themselves.
+Local candidate acceptance and ecosystem compatibility are separate claims.
+
+An `ecosystem-safe` claim is blocking when:
+
+- the known-consumer inventory is incomplete;
+- a known consumer is incompatible;
+- a known consumer remains unverified for a changed public contract.
+
+A local candidate may still be locally acceptable when the broader ecosystem claim is `not-proven`; do not silently widen the claim.
 
 ### 10. Output contract and reporting
 
 Blocking examples:
 
-- required final sections disappear when callers depend on them;
-- pass/fail becomes ambiguous;
-- required evidence identity, citation, file path, line range, command result, or missing-evidence duties are deleted where relevant.
+- status/decision becomes ambiguous;
+- required evidence identities, missing-evidence duties, or claim scope disappear;
+- automation-facing result changes incompatibly without contract/version handling.
 
-Material examples:
+For machine consumption use `contracts/change-gate-result.schema.json`.
 
-- report becomes materially harder to consume;
-- optional examples no longer match the preferred format.
+### 11. Waivers
 
-### 11. Context efficiency and maintainability
+A valid waiver is explicit, authorized, candidate-bound, policy-bound, scoped to named findings, and preserved in the audit trail. Read `references/waiver-policy.md`.
 
-Usually material/non-blocking unless required control-plane behavior becomes hidden. Prefer progressive references over bloating `SKILL.md`. Do not block merely because a different decomposition would be aesthetically cleaner.
+Non-waivable classes remain failures: identity drift, protected evaluator mutation, receipt/candidate mismatch, unsafe path/secret exposure, fabricated required evidence, contaminated holdout claims, and candidate self-authorization.
+
+### 12. Context efficiency and maintainability
+
+Usually material/non-blocking unless required control-plane behavior becomes hidden. Prefer progressive references over bloating `SKILL.md`. Do not fail merely because a different decomposition is aesthetically cleaner.
 
 ## Decision matrix
 
 | Findings | Normal policy | Strict policy | Advisory policy |
 |---|---|---|---|
 | any blocking regression | fail | fail | fail visible |
-| material concerns only | pass-with-warnings | fail unless waived | pass-with-warnings |
-| non-blocking trade-offs only | pass | pass | pass |
-| insufficient target/candidate evidence | insufficient-evidence | insufficient-evidence | advisory-only with limits |
+| material concerns only | pass-with-warnings | fail unless valid waiver | pass-with-warnings |
+| non-blocking signals/trade-offs only | pass | pass | pass |
+| insufficient/stale required evidence | insufficient-evidence | insufficient-evidence | advisory-only with limits |
 | no findings and sufficient evidence | pass | pass | pass |
 
 ## Review discipline
 
-- Review the change, not the entire skill as a redesign exercise.
-- Penalize candidate-introduced regressions more strongly than pre-existing issues.
-- Do not require unrelated cleanup to pass the gate.
+- Penalize `introduced`/`worsened` findings more strongly than `preexisting-unchanged` debt.
+- Record resolved/improved baseline findings positively without turning them into an unrelated improvement score.
 - Keep benchmark improvement and quality acceptance separate.
-- Keep host adapter quality and portable-core quality separate.
-- Keep source identity, evaluator identity, candidate identity, and artifact identity separate.
-- State when a finding is pre-existing, candidate-introduced, or unknown.
+- Keep host-adapter quality and portable-core quality separate.
+- Keep source, evaluator, policy/verifier, candidate, destination, artifact, and receipt identities separate.
+- Keep local acceptance and ecosystem-safe claims separate.

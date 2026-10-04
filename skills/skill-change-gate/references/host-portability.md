@@ -84,3 +84,9 @@ Use `--profile openai` only when the delivery target specifically requires OpenA
 - Claude Agent Skills: `https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview`
 
 Treat these as source pointers, not frozen installation truth.
+
+## Portable decision-evidence contracts
+
+`Gate Context v1` and `Skill Change Gate Result v1` are JSON/Markdown contracts, not host adapters. Their validators use only the Python standard library and relative package paths. A host that cannot execute Python may review the same semantics manually, but script validation is `not-run` and strict automated acceptance should not claim the mechanical gate passed.
+
+Do not embed host-private tool names, internal URIs, or installation paths into these contracts. Host-specific evidence may appear as opaque ids/metadata while the portable core reasons only about identity, capability, state, and correspondence.
