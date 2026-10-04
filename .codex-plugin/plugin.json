@@ -1,6 +1,6 @@
 {
   "name": "rhapsodia",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Portable RhapsodIA Agent Skills and host-specific adapters for software engineering, governance, planning, validation, and agent-system workflows.",
   "author": {
     "name": "ginmp8",
