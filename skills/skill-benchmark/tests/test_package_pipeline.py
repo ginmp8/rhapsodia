@@ -34,6 +34,7 @@ def test_deterministic_package_and_receipt() -> None:
         assert sha(a) == sha(b)
         receipt = json.loads(ra.read_text(encoding='utf-8'))
         assert receipt['archive_sha256'] == sha(a)
+        assert receipt['target_tree_sha256'] == receipt['candidate_sha256']
         assert receipt['portability']['status'] == 'pass'
 
 

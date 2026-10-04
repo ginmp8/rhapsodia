@@ -11,6 +11,9 @@ from _common import dump_json, extract_local_refs, path_is_inside, paths_alias, 
 from benchmark_identity import DEFAULT_EVALUATOR_PATHS, identity as evaluator_identity
 from validate_portability import validate as validate_portability, normalize_hosts
 from validate_scenario_results import load_json, validate_payload
+from validate_agent_skills_spec import validate as validate_agent_skills_spec
+from validate_benchmark_health import validate as validate_benchmark_health
+from validate_skill_coverage import validate as validate_skill_coverage
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 
@@ -170,7 +173,7 @@ def metric_pct(num: int, den: int) -> str:
     return 'not measured' if den == 0 else f'{100.0 * num / den:.1f}%'
 
 
-def behavioral_metrics(validation: dict | None) -> tuple[list[tuple[str, str, str, str]], list[dict]]:
+def behavioral_metrics(validation: dict | None, coverage: dict | None = None) -> tuple[list[tuple[str, str, str, str]], list[dict]]:
     if not validation or validation.get('status') != 'pass':
         rows = [('Activation precision', 'not measured', 'planned', 'No valid executed/supplied scenario results'), ('Activation recall', 'not measured', 'planned', 'No valid executed/supplied scenario results'), ('Output conformance', 'not measured', 'planned', 'No valid executed/supplied scenario results'), ('Criteria coverage', 'not measured', 'planned', 'No criteria-level evidence supplied'), ('Robustness', 'not measured', 'planned', 'No edge-case execution evidence'), ('Rework rate', 'not measured', 'planned', 'No valid rework evidence')]
         return rows, []
@@ -189,11 +192,31 @@ def behavioral_metrics(validation: dict | None) -> tuple[list[tuple[str, str, st
         ('Activation precision', metric_pct(len(true_positive), len(actual_yes)), status, notes),
         ('Activation recall', metric_pct(len(true_positive), len(expected_yes)), status, notes),
         ('Output conformance', metric_pct(len(conforming), len(complete)), status, notes),
-        ('Criteria coverage', 'not measured', 'planned', 'No criteria-level result field in portable schema'),
+        ('Criteria coverage', f"{100.0 * coverage['metrics']['coverage']:.1f}%" if coverage and coverage.get('metrics', {}).get('coverage') is not None else 'not measured', 'measured' if coverage and coverage.get('status') == 'pass' else 'planned', 'Constraint-level Skill Coverage evidence' if coverage and coverage.get('status') == 'pass' else 'No valid constraint-level coverage evidence'),
         ('Robustness', metric_pct(len(robust_edges), len(edges)), status, notes),
         ('Rework rate', metric_pct(len(rework), len(complete)), status, notes),
     ]
     return metrics, scenarios
+
+
+
+def efficiency_metrics(validation: dict | None) -> list[tuple[str, str, str]]:
+    if not validation or validation.get('status') != 'pass':
+        return [(name, 'not measured', 'No valid trial efficiency evidence') for name in ('Input tokens', 'Output tokens', 'Total tokens', 'Latency ms', 'Tool calls', 'Cost USD')]
+    rows = validation.get('rows', [])
+    fields = [('Input tokens','input_tokens'),('Output tokens','output_tokens'),('Latency ms','latency_ms'),('Tool calls','tool_calls'),('Cost USD','cost_usd')]
+    values = {}
+    for label, field in fields:
+        nums = [float(r[field]) for r in rows if isinstance(r, dict) and isinstance(r.get(field), (int,float)) and not isinstance(r.get(field), bool)]
+        values[field] = (sum(nums)/len(nums)) if nums else None
+    total = values.get('input_tokens') + values.get('output_tokens') if values.get('input_tokens') is not None and values.get('output_tokens') is not None else None
+    output=[]
+    for label, field in fields[:2]:
+        value=values[field]; output.append((label, f'{value:.2f}' if value is not None else 'not measured', 'Mean across supplied trial rows; separate from capability'))
+    output.append(('Total tokens', f'{total:.2f}' if total is not None else 'not measured', 'Input + output token means; separate from capability'))
+    for label, field in fields[2:]:
+        value=values[field]; output.append((label, f'{value:.4f}' if value is not None else 'not measured', 'Mean across supplied trial rows; separate from capability'))
+    return output
 
 
 def planned_scenarios() -> list[dict]:
@@ -205,7 +228,7 @@ def planned_scenarios() -> list[dict]:
         return []
 
 
-def make_report(target: Path, report_path: Path, results_path: Path | None, source_manifest: Path | None, hosts: list[str]) -> tuple[str, dict]:
+def make_report(target: Path, report_path: Path, results_path: Path | None, source_manifest: Path | None, hosts: list[str], health_path: Path | None = None, coverage_path: Path | None = None) -> tuple[str, dict]:
     skill_md = target / 'SKILL.md'
     if not skill_md.is_file():
         raise ValueError('target lacks root SKILL.md')
@@ -215,7 +238,9 @@ def make_report(target: Path, report_path: Path, results_path: Path | None, sour
         raise ValueError('invalid SKILL.md frontmatter: ' + '; '.join(fm_errors or ['name/description missing']))
 
     portability = validate_portability(target, hosts)
+    spec_validation = validate_agent_skills_spec(target)
     scores, gates, inventory = static_score(target, skill_text, fm, portability)
+    gates.insert(0, {'gate': 'Agent Skills specification conformance', 'status': 'pass' if spec_validation.get('status') != 'fail' else 'fail', 'evidence': 'scripts/validate_agent_skills_spec.py', 'blocker': True})
     total = sum(scores.values())
     blocker_fail = any(g['status'] == 'fail' and g['blocker'] for g in gates)
     review_pending = any(g['status'] == 'review' for g in gates)
@@ -241,6 +266,22 @@ def make_report(target: Path, report_path: Path, results_path: Path | None, sour
         source_status = 'frozen-snapshot'
 
     evaluator = evaluator_identity(SKILL_ROOT, DEFAULT_EVALUATOR_PATHS)
+    health_validation = None
+    if health_path:
+        health_data = json.loads(health_path.read_text(encoding='utf-8'))
+        health_validation = validate_benchmark_health(health_data)
+        if health_validation.get('status') == 'fail':
+            raise ValueError('benchmark health evidence validation failed: ' + '; '.join(health_validation.get('errors', [])))
+        if health_data.get('scenario_suite_sha256') != evaluator.get('scenario_suite_sha256'):
+            raise ValueError('benchmark health scenario_suite_sha256 does not match current scenario suite')
+    coverage_validation = None
+    if coverage_path:
+        coverage_data = json.loads(coverage_path.read_text(encoding='utf-8'))
+        coverage_validation = validate_skill_coverage(coverage_data)
+        if coverage_validation.get('status') == 'fail':
+            raise ValueError('skill coverage evidence validation failed: ' + '; '.join(coverage_validation.get('errors', [])))
+        if coverage_data.get('skill_identity_sha256') != target_hash:
+            raise ValueError('skill coverage skill_identity_sha256 does not match benchmark target')
     results_validation = None
     if results_path:
         results_validation = validate_payload(load_json(results_path))
@@ -254,7 +295,8 @@ def make_report(target: Path, report_path: Path, results_path: Path | None, sour
         if meta.get('scenario_suite_sha256') and meta.get('scenario_suite_sha256') != evaluator.get('scenario_suite_sha256'):
             raise ValueError('scenario results scenario_suite_sha256 does not match current scenario suite')
 
-    metrics, supplied_scenarios = behavioral_metrics(results_validation)
+    metrics, supplied_scenarios = behavioral_metrics(results_validation, coverage_validation)
+    efficiency = efficiency_metrics(results_validation)
     scenario_source = supplied_scenarios or planned_scenarios()
     by_category = {category: [row for row in scenario_source if row.get('category') == category] for category in ('should_activate', 'should_not_activate', 'ambiguous', 'edge_case')}
 
@@ -272,6 +314,11 @@ def make_report(target: Path, report_path: Path, results_path: Path | None, sour
     ]
     score_table = '\n'.join(f'| {name} | {weight} | {score} | {evidence} | {improvement} |' for name, weight, score, evidence, improvement in score_rows)
     metric_table = '\n'.join(f'| {name} | {value} | {status} | {notes} |' for name, value, status, notes in metrics)
+    efficiency_table = '\n'.join(f'| {name} | {value} | {notes} |' for name, value, notes in efficiency)
+    health_gate = health_validation.get('gate') if health_validation else 'not measured'
+    health_eligible = health_validation.get('strong_claim_eligible') if health_validation else False
+    coverage_metric = coverage_validation.get('metrics', {}).get('coverage') if coverage_validation else None
+    adherence_metric = coverage_validation.get('metrics', {}).get('covered_adherence') if coverage_validation else None
 
     def scenario_table(category: str, decision: str) -> str:
         rows = by_category.get(category, [])[:10]
@@ -346,39 +393,58 @@ Static scoring is evidence-backed but does not prove runtime behavior. Behaviora
 - OpenAI adapter: `{'present (optional)' if inventory['openai_adapter'] else 'absent'}`
 - Portable core: `{portability.get('portable_core')}`
 
-## 5. Behavioral metrics
+## 5. Benchmark health
+
+- Health gate: `{health_gate}`
+- Strong behavioral claim eligible: `{health_eligible}`
+- Evidence status: `{'validated' if health_validation else 'not measured'}`
+
+## 6. Behavioral metrics
 
 | Metric | Result | Status | Notes |
 |---|---:|---|---|
 {metric_table}
 
-## 6. Scenario suite
+## 7. Efficiency metrics
 
-### 6.1 Should activate
+| Metric | Result | Notes |
+|---|---:|---|
+{efficiency_table}
+
+No implicit composite score combines capability and efficiency.
+
+## 8. Skill behavior coverage
+
+- Constraint coverage: `{f'{100.0 * coverage_metric:.1f}%' if coverage_metric is not None else 'not measured'}`
+- Covered adherence: `{f'{100.0 * adherence_metric:.1f}%' if adherence_metric is not None else 'not measured'}`
+
+## 9. Scenario suite
+
+### 9.1 Should activate
 
 | ID | Prompt | Expected result | Status |
 |---|---|---|---|
 {scenario_table('should_activate', 'activate')}
 
-### 6.2 Should not activate
+### 9.2 Should not activate
 
 | ID | Prompt | Expected result | Status |
 |---|---|---|---|
 {scenario_table('should_not_activate', 'nonactivate')}
 
-### 6.3 Ambiguous prompts
+### 9.3 Ambiguous prompts
 
 | ID | Prompt | Expected decision rule | Status |
 |---|---|---|---|
 {scenario_table('ambiguous', 'clarify')}
 
-### 6.4 Edge cases
+### 9.4 Edge cases
 
 | ID | Prompt | Expected behavior | Status |
 |---|---|---|---|
 {scenario_table('edge_case', 'safe-fail')}
 
-## 7. Evidence-based findings
+## 10. Evidence-based findings
 
 ### Strengths
 
@@ -396,7 +462,7 @@ Static scoring is evidence-backed but does not prove runtime behavior. Behaviora
 
 {chr(10).join(f'{i+1}. {item}' for i, item in enumerate(missing_evidence))}
 
-## 8. Top prioritized improvements
+## 11. Top prioritized improvements
 
 | Priority | Improvement | Impact | Effort | Owner action |
 |---:|---|---|---|---|
@@ -406,7 +472,7 @@ Static scoring is evidence-backed but does not prove runtime behavior. Behaviora
 | 4 | Tighten activation description where trigger score is weak | medium | low | Add concrete trigger/exclusion language |
 | 5 | Preserve portable core and isolate host adapters | medium | low | Keep host-only metadata optional |
 
-## 9. Risks if used as-is
+## 12. Risks if used as-is
 
 | Risk | Severity | Why it matters | Mitigation |
 |---|---|---|---|
@@ -415,7 +481,7 @@ Static scoring is evidence-backed but does not prove runtime behavior. Behaviora
 | Mutable-source drift | high | Live files can change after inspection | Benchmark an immutable snapshot |
 | Host-specific coupling | medium | A skill may work on one host but fail elsewhere | Validate portable core and requested host profiles |
 
-## 10. Suggested improved description
+## 13. Suggested improved description
 
 ```yaml
 description: {fm['description']}
@@ -423,7 +489,7 @@ description: {fm['description']}
 
 Retain the current description when it already states task, trigger contexts, artifacts, and exclusions; otherwise refine it without adding host-private invocation syntax.
 
-## 11. Suggested ideal file structure
+## 14. Suggested ideal file structure
 
 ```text
 {fm['name']}/
@@ -436,13 +502,13 @@ Retain the current description when it already states task, trigger contexts, ar
     openai.yaml         # optional OpenAI adapter; not required by portable core
 ```
 
-## 12. Verdict
+## 15. Verdict
 
 `{verdict}`
 
 Minimum next action: resolve blocker gates and missing evidence before making stronger readiness claims.
 
-## 13. Benchmark metadata
+## 16. Benchmark metadata
 
 - Benchmark method: `{'static + behavioral evidence' if results_validation else 'static'}`
 - Evidence sources: `{source_path}`
@@ -451,6 +517,11 @@ Minimum next action: resolve blocker gates and missing evidence before making st
 - Evaluator SHA-256: `{evaluator['evaluator_sha256']}`
 - Scenario suite SHA-256: `{evaluator.get('scenario_suite_sha256') or 'not-available'}`
 - Scenario provenance: `{results_validation.get('provenance_status') if results_validation else 'planned-only'}`
+- Runtime profile SHA-256: `{results_validation.get('metadata', {}).get('runtime_profile_sha256') if results_validation else 'not-available'}`
+- Suite role: `{results_validation.get('metadata', {}).get('suite_role') if results_validation else 'planned-only'}`
+- Distribution profile: `{results_validation.get('metadata', {}).get('distribution_profile') if results_validation else 'planned-only'}`
+- Benchmark health: `{health_gate}`
+- Skill coverage evidence: `{'validated' if coverage_validation else 'not measured'}`
 - Requested host profiles: `{', '.join(hosts)}`
 - Portable-core validation: `{portability.get('status')}`
 - Generated by: `skill-benchmark`
@@ -467,6 +538,9 @@ Minimum next action: resolve blocker gates and missing evidence before making st
         'evaluator_identity_sha256': evaluator['evaluator_sha256'],
         'scenario_suite_sha256': evaluator.get('scenario_suite_sha256'),
         'scenario_provenance': results_validation.get('provenance_status') if results_validation else 'planned-only',
+        'runtime_profile_sha256': results_validation.get('metadata', {}).get('runtime_profile_sha256') if results_validation else None,
+        'benchmark_health_gate': health_gate,
+        'skill_coverage_status': coverage_validation.get('status') if coverage_validation else 'not-measured',
         'score': total,
         'verdict': verdict,
         'portable_core': portability.get('portable_core'),
@@ -482,6 +556,8 @@ def main() -> int:
     parser.add_argument('--out', help='Output directory or explicit .md report path. Defaults outside the target.')
     parser.add_argument('--results', help='Optional validated scenario results JSON.')
     parser.add_argument('--source-manifest', help='Optional snapshot manifest from snapshot_target.py.')
+    parser.add_argument('--health', help='Optional benchmark-health JSON evidence.')
+    parser.add_argument('--coverage', help='Optional constraint-level skill coverage JSON evidence.')
     parser.add_argument('--hosts', default='portable-core', help='portable-core,openai,codex,claude,copilot,cursor,all')
     parser.add_argument('--json-output', help='Optional success receipt JSON path; defaults beside report.')
     args = parser.parse_args()
@@ -507,7 +583,7 @@ def main() -> int:
             raise ValueError('output must not alias scenario results input')
 
         hosts = normalize_hosts(args.hosts)
-        report, receipt = make_report(target, report_path, Path(args.results).resolve(strict=True) if args.results else None, Path(args.source_manifest).resolve(strict=True) if args.source_manifest else None, hosts)
+        report, receipt = make_report(target, report_path, Path(args.results).resolve(strict=True) if args.results else None, Path(args.source_manifest).resolve(strict=True) if args.source_manifest else None, hosts, Path(args.health).resolve(strict=True) if args.health else None, Path(args.coverage).resolve(strict=True) if args.coverage else None)
         report_bytes = report.encode('utf-8')
         receipt['report_sha256'] = __import__('hashlib').sha256(report_bytes).hexdigest()
         report_stage = stage_bytes(report_path, report_bytes)

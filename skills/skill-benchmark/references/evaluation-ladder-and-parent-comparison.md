@@ -32,3 +32,9 @@ Never choose a candidate because a composite score compensates for a blocking re
 ## Historical results
 
 Prior benchmark results may be consumed as provenance-bound evidence. Do not merge metrics from different evaluator/scenario identities into a synthetic delta. Do not convert one target's winning strategy into global benchmark policy.
+
+## Benchmark-quality gates within the ladder
+
+At `L0-structural`, run normative Agent Skills conformance when filesystem content exists. Before a strong `L4-benchmark`/`L5-holdout` behavioral claim, validate benchmark health: reference/oracle behavior where applicable, grader correctness/calibration, isolation, gaming resistance, contamination risk, saturation, and task ambiguity/flakiness. A health `review` state limits the claim; a health `fail` blocks it.
+
+A suite may move from `capability` to `regression` as failures are solved. Do not rewrite historical regression expectations in place. New or refreshed suites receive new identities so earlier evidence remains interpretable.

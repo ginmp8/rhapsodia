@@ -77,3 +77,7 @@ A multi-platform claim requires:
 - Cursor skills: `https://cursor.com/docs/skills`
 
 Re-check these sources when a future request depends on current host-specific behavior.
+
+## Structural versus behavioral portability
+
+Structural validation across OpenAI/Codex, Claude, GitHub Copilot, and Cursor establishes package-format/core portability only. A behavioral result is conditioned on the tested runtime profile (model/provider/harness/tools and other material settings). Do not extrapolate one runtime's capability delta to another host/model without comparable executed evidence. Record `runtime_profile_sha256` for strict v3 behavioral comparisons.

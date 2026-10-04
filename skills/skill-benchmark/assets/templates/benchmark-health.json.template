@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "scenario_suite_sha256": "<64-hex>",
+  "suite_role": "capability",
+  "distribution_profile": "diagnostic-balanced",
+  "isolation_status": "pass",
+  "gaming_resistance": "pass",
+  "contamination_risk": "low",
+  "saturation_state": "active",
+  "grader": {"type": "deterministic", "correctness_status": "pass"},
+  "tasks": [
+    {"id": "A1", "reference_solution_status": "pass", "grader_status": "pass", "ambiguity_status": "pass", "flakiness_rate": 0.0}
+  ]
+}

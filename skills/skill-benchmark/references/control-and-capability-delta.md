@@ -95,3 +95,13 @@ Do not collapse capability delta into one composite score unless a frozen rubric
 - Baseline vs without-skill can show whether the prior skill already added value.
 - A static score delta is not a behavioral capability delta.
 - Planned scenarios, unpinned evidence, changed evaluators, or leaked hidden graders do not support strict capability-delta claims.
+
+## Length-matched context control
+
+An optional `length-control` arm uses irrelevant context/skill content of materially comparable size to the candidate. It estimates context-length/distraction effects and is diagnostic only. It never replaces `baseline`, `parent`, or `without-skill` because those answer different causal questions.
+
+## Uncertainty-aware strong claims
+
+For v3 stochastic evidence, use repeated paired trials and the comparator's uncertainty output. Keep the legacy directional `classification` for compatibility, but base strong improvement/regression language on `claim_classification`. `inconclusive` is a valid and preferred outcome when the interval crosses the practical-effect threshold. Do not equate statistical separation with practical importance.
+
+Efficiency deltas are reported separately from capability deltas. Do not compensate a capability regression with lower token/cost usage through an undeclared composite score.
