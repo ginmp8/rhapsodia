@@ -1,58 +1,73 @@
-# Prompt and Activation Review Report
+# Prompt and Activation Review
 
-## Target and Mode
+## Mode and Target
 
-- Primary mode: {{mode}}
+- Mode: {{mode}}
 - Target surface: {{target_surface}}
-- Activation contract: {{activation_contract_version}}
-- Baseline identity: {{baseline_identity_or_na}}
-- Candidate identity: {{candidate_identity_or_na}}
-
-## Summary Verdict
-
-{{pass_needs_changes_or_blocking}}
+- Scope: {{scope}}
+- Verdict: {{pass_needs_changes_or_blocking}}
 
 ## Findings
 
-| id | defect code | severity | evidence/location | contract clause | issue | proposed change | scenario ids | validation status | claim level |
+| id | defect code | severity | location/evidence | contract | issue | proposed change | scenarios | invocation modes | validation |
 |---|---|---|---|---|---|---|---|---|---|
-| {{id}} | {{defect_code}} | {{severity}} | {{evidence}} | {{contract_clause}} | {{issue}} | {{proposed_change}} | {{scenario_ids}} | {{validation_status}} | {{claim_level}} |
+{{findings_rows}}
 
 ## Recommended Rewrite
 
-```text
-{{rewritten_text}}
-```
+{{affected_text_only_or_none}}
 
-## Scenario Evidence
+## Scenario Coverage
 
-- Suite identity: {{suite_sha256_or_not_frozen}}
-- Evaluator identity: {{evaluator_sha256_or_not_frozen}}
-- Execution kind: {{static_contract_static_adjudication_host_routing_or_runtime}}
+| id | group | invocation | negative kind / neighbor | expected route | dimensions | evidence state |
+|---|---|---|---|---|---|---|
+{{scenario_rows}}
 
-| id | group | expected route | observed route | evidence status | result |
-|---|---|---|---|---|---|
-| {{id}} | {{group}} | {{expected_route}} | {{observed_route_or_not_run}} | {{planned_supplied_executed_or_blocked}} | {{pass_fail_or_not_run}} |
+## Evidence Identities
 
-## Regressions
+- Baseline: {{baseline_identity_or_not_applicable}}
+- Candidate: {{candidate_identity_or_not_applicable}}
+- Suite SHA-256: {{suite_sha256_or_not_applicable}}
+- Evaluator SHA-256: {{evaluator_sha256_or_not_applicable}}
+- Routing fingerprint SHA-256: {{routing_fingerprint_or_not_applicable}}
+- Catalog SHA-256 / size: {{catalog_identity_or_not_applicable}}
+- Trial policy: {{trial_policy_or_not_applicable}}
+- Evaluator visibility: {{visibility_or_not_applicable}}
+- Executed at / freshness: {{execution_time_and_comparability}}
+
+## Validation State
+
+- Static contract: {{status}}
+- Static adjudication: {{status}}
+- Host routing: {{status}}
+- Runtime: {{status}}
+
+## Behavioral Metrics
+
+Report only when the evidence protocol permits them.
+
+- Automatic activation precision: {{value_or_not_claimable}}
+- Automatic activation recall: {{value_or_not_claimable}}
+- Explicit route accuracy: {{value_or_not_claimable}}
+- Abstention accuracy: {{value_or_not_claimable}}
+- Near-miss false activation rate: {{value_or_not_claimable}}
+- Overall expected-route accuracy: {{value_or_not_claimable}}
+- Repeated-trial status: {{measured_repeated_single_run_or_not_claimable}}
+
+## Routing Regressions
 
 {{confirmed_regressions_or_not_measured}}
-
-## Claims
-
-- Activation precision: {{measured_value_or_not_claimable}}
-- Activation recall: {{measured_value_or_not_claimable}}
-- Behavioral improvement: {{measured_supported_or_not_claimable}}
-- Regression reduction: {{measured_supported_or_not_claimable}}
 
 ## Gates
 
 | gate | status | evidence |
 |---|---|---|
-| evaluator unchanged | {{status}} | {{evidence}} |
-| same cases baseline/candidate | {{status}} | {{evidence}} |
-| package/validator checks | {{status}} | {{evidence}} |
-| no blocking scope/evidence regression | {{status}} | {{evidence}} |
+| suite/evaluator unchanged | {{status}} | {{evidence}} |
+| routing fingerprint comparable | {{status}} | {{evidence}} |
+| same cases and trial policy | {{status}} | {{evidence}} |
+| evaluator visibility/leakage | {{status}} | {{evidence}} |
+| target validators/tests | {{status}} | {{evidence}} |
+| no blocking scope/evidence/gaming regression | {{status}} | {{evidence}} |
 
 ## Residual Risks and Limitations
 

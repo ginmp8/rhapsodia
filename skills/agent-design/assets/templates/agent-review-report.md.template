@@ -1,7 +1,7 @@
 # Agent Review Report: {{agent_name}}
 
-- rubric: `agent-design-rubric/v2`
-- contract: `agent-design-contract/v1`
+- rubric: `agent-design-rubric/v3`
+- contract: `agent-design-contract/v2`
 - operating surface: {{platform}}
 - reviewed artifact/path: {{agent_path}}
 - evidence status: {{evidence_status}}
@@ -10,7 +10,7 @@
 
 {{approve_approve_with_changes_reject_or_blocked}}
 
-Verdict must follow critical-gate rules; aggregate score is advisory only.
+Verdict follows critical-gate rules; aggregate score is advisory only.
 
 ## Scope Reviewed
 
@@ -23,11 +23,24 @@ Verdict must follow critical-gate rules; aggregate score is advisory only.
 | Gate | 0-3 / N/A | Evidence label | Evidence | Required action |
 |---|---:|---|---|---|
 | mission/ownership | {{mission_gate}} | {{mission_evidence_label}} | {{mission_evidence}} | {{mission_action}} |
-| authority | {{authority_gate}} | {{authority_evidence_label}} | {{authority_evidence}} | {{authority_action}} |
+| effective authority | {{authority_gate}} | {{authority_evidence_label}} | {{authority_evidence}} | {{authority_action}} |
 | tool least authority | {{tool_gate}} | {{tool_evidence_label}} | {{tool_evidence}} | {{tool_action}} |
+| context trust/authority | {{context_gate}} | {{context_evidence_label}} | {{context_evidence}} | {{context_action}} |
+| control-flow ownership | {{control_flow_gate}} | {{control_flow_evidence_label}} | {{control_flow_evidence}} | {{control_flow_action}} |
+| multi-agent admission/concurrency | {{multi_agent_gate}} | {{multi_agent_evidence_label}} | {{multi_agent_evidence}} | {{multi_agent_action}} |
 | stop/escalation | {{stop_gate}} | {{stop_evidence_label}} | {{stop_evidence}} | {{stop_action}} |
-| state/termination | {{state_gate}} | {{state_evidence_label}} | {{state_evidence}} | {{state_action}} |
+| state/interruption/termination | {{state_gate}} | {{state_evidence_label}} | {{state_evidence}} | {{state_action}} |
+| containment/downstream auth | {{containment_gate}} | {{containment_evidence_label}} | {{containment_evidence}} | {{containment_action}} |
 | evidence truthfulness | {{evidence_gate}} | {{evidence_evidence_label}} | {{evidence_evidence}} | {{evidence_action}} |
+
+## Effective Authority Assessment
+
+- declared authority: {{declared_authority}}
+- exposed capabilities: {{exposed_capabilities}}
+- downstream permissions: {{downstream_permissions}}
+- approval scope: {{approval_scope}}
+- effective authority: {{effective_authority}}
+- delegation amplification risk: {{delegation_risk}}
 
 ## Findings
 
@@ -45,19 +58,30 @@ Verdict must follow critical-gate rules; aggregate score is advisory only.
 | inputs/context | {{score_inputs}} | {{score_inputs_rationale}} |
 | outputs | {{score_outputs}} | {{score_outputs_rationale}} |
 | authority | {{score_authority}} | {{score_authority_rationale}} |
-| tools | {{score_tools}} | {{score_tools_rationale}} |
-| handoffs | {{score_handoffs}} | {{score_handoffs_rationale}} |
-| state/termination | {{score_state}} | {{score_state_rationale}} |
+| tools/capabilities | {{score_tools}} | {{score_tools_rationale}} |
+| control flow | {{score_handoffs}} | {{score_handoffs_rationale}} |
+| state/concurrency | {{score_state}} | {{score_state_rationale}} |
 | validation/evidence | {{score_validation}} | {{score_validation_rationale}} |
 
 Do not compare aggregate totals across reviews with materially different `N/A` dimensions.
 
-## Routing and Handoff Assessment
+## Routing, Context, and State Assessment
 
 - ownership/routing decision: {{routing_decision}}
-- `handoff/v1` completeness: {{handoff_assessment}}
+- `handoff/v2` kind/completeness: {{handoff_assessment}}
+- context trust/freshness: {{context_assessment}}
+- interruption/resume safety: {{resume_assessment}}
 - cycle/re-entry safety: {{cycle_assessment}}
+- concurrency/integration safety: {{concurrency_assessment}}
 - fallback/escalation: {{fallback_assessment}}
+
+## Governance and Containment
+
+- blast radius: {{blast_radius}}
+- containment boundary: {{containment_boundary}}
+- downstream authorization: {{downstream_authorization}}
+- approval granularity: {{approval_granularity}}
+- rollback/compensation: {{rollback_compensation}}
 
 ## Required Changes
 
@@ -67,9 +91,12 @@ Do not compare aggregate totals across reviews with materially different `N/A` d
 
 ## Validation Plan
 
-| Scenario | Group | Expected behavior | Acceptance criteria | Evidence status |
-|---|---|---|---|---|
-| {{scenario_name}} | {{scenario_group}} | {{expected_behavior}} | {{acceptance_criteria}} | {{scenario_evidence_status}} |
+- evaluation contract: `agent-eval-contract/v2`
+- frozen evaluator identity: {{evaluator_identity}}
+
+| Scenario | Group | Outcome | Trace invariants | Trials | Evidence status |
+|---|---|---|---|---:|---|
+| {{scenario_name}} | {{scenario_group}} | {{expected_behavior}} | {{trace_invariants}} | {{trial_count}} | {{scenario_evidence_status}} |
 
 ## Residual Risks
 

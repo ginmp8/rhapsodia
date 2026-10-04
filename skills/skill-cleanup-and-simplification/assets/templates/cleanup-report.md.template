@@ -12,10 +12,18 @@
 
 {{summary}}
 
+## Reachability and evidence coverage
+
+- Roots evaluated: {{roots_evaluated}}
+- Declared roots: {{declared_roots}}
+- Reference-edge kinds: {{reference_edge_kinds}}
+- Root/consumer gaps: {{root_consumer_gaps}}
+- Weak generated-name signals retained for review: {{weak_generated_signals}}
+
 ## Applied or attempted changes
 
-| Path | Action result | State | Evidence | Rollback/recovery |
-|---|---|---|---|---|
+| Checkpoint | Path | Action result | State | Evidence | Rollback/recovery |
+|---|---|---|---|---|---|
 {{changed_rows}}
 
 ## Retained, blocked, or unknown
@@ -30,12 +38,23 @@
 - Apply receipt: {{apply_receipt}}
 - Transaction status: {{transaction_status}}
 - Last-known-good: {{last_known_good}}
+- Checkpoint results: {{checkpoint_results}}
 
-## Validation
+## Validation evidence
 
-| Command | Status | Evidence path or output | Notes |
-|---|---|---|---|
+| Evidence layer | Command / evaluator | Status | Evidence path or output | Notes |
+|---|---|---|---|---|
 {{validation_rows}}
+
+Keep structural, behavioral/scenario, runtime, and reviewer-judgment evidence separate. A pass in one layer does not imply another.
+
+## Activation and context-efficiency checks
+
+- Activation regression: {{activation_regression}}
+- `SKILL.md` lines: {{skill_md_lines}}
+- Estimated `SKILL.md` tokens: {{skill_md_estimated_tokens}}
+- Maximum reference depth: {{max_reference_depth}}
+- Context warnings: {{context_warnings}}
 
 ## Risks and limitations
 

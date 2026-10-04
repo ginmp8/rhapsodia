@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""Validate the reproducibility-critical structure of the agent-design skill package."""
+"""Validate reproducibility-critical structure of the Agent Design skill package."""
 from __future__ import annotations
 
 import argparse
 import ast
 import json
 import os
-import re
-import sys
 import tempfile
 from pathlib import Path
 from typing import Any
 
-RECEIPT_VERSION = 1
+RECEIPT_VERSION = 2
 REQUIRED_FILES = [
     "SKILL.md",
     "references/agent-contracts.md",
@@ -20,6 +18,8 @@ REQUIRED_FILES = [
     "references/agent-governance-patterns.md",
     "references/agent-validation-scenarios.md",
     "references/routing-and-handoff-patterns.md",
+    "references/context-state-and-concurrency.md",
+    "references/host-adapters.md",
     "assets/templates/agent-spec.md.template",
     "assets/templates/agent-review-report.md.template",
     "evals/agent-design-scenarios.json",
@@ -28,6 +28,15 @@ REQUIRED_FILES = [
 ]
 REQUIRED_GROUPS = {"activation", "non-activation", "ambiguous", "core", "edge", "regression", "adversarial", "holdout"}
 EVIDENCE_STATUSES = {"planned", "executed", "supplied"}
+REQUIRED_SCENARIOS = {
+    "regression-readonly-omitted-tools",
+    "adversarial-delegation-authority-amplification",
+    "regression-handoff-control-semantics",
+    "edge-context-isolation-loss",
+    "edge-resume-auth-scope",
+    "regression-parallel-writer-collision",
+    "core-multi-agent-admission",
+}
 
 
 def add(checks: list[dict[str, Any]], code: str, ok: bool, subject: str, evidence: dict[str, Any] | None = None) -> None:
@@ -61,13 +70,17 @@ def validate_scenarios(root: Path, checks: list[dict[str, Any]]) -> None:
     except Exception as exc:
         add(checks, "evals/json-parse", False, str(path), {"error": str(exc)})
         return
+
+    add(checks, "evals/version", data.get("suite_version") == 2 and data.get("evaluator_contract") == "agent-eval-contract/v2", "scenario suite")
     scenarios = data.get("scenarios", [])
     ids = [str(item.get("id", "")) for item in scenarios if isinstance(item, dict)]
     groups = {str(item.get("group", "")) for item in scenarios if isinstance(item, dict)}
     add(checks, "evals/unique-ids", len(ids) == len(set(ids)) and all(ids), "scenario ids", {"count": len(ids)})
     missing_groups = sorted(REQUIRED_GROUPS - groups)
     add(checks, "evals/group-coverage", not missing_groups, "scenario groups", {"missing": missing_groups, "present": sorted(groups)})
-    bad_status = [item.get("id") for item in scenarios if item.get("evidence_status") not in EVIDENCE_STATUSES]
+    missing_required = sorted(REQUIRED_SCENARIOS - set(ids))
+    add(checks, "evals/v2-regressions", not missing_required, "required v2 scenarios", {"missing": missing_required})
+    bad_status = [item.get("id") for item in scenarios if isinstance(item, dict) and item.get("evidence_status") not in EVIDENCE_STATUSES]
     add(checks, "evals/evidence-status", not bad_status, "scenario evidence", {"invalid": bad_status})
     malformed = []
     for item in scenarios:
@@ -103,28 +116,43 @@ def main() -> int:
         skill = read(root, "SKILL.md")
         contracts = read(root, "references/agent-contracts.md")
         rubric = read(root, "references/agent-design-rubric.md")
+        governance = read(root, "references/agent-governance-patterns.md")
         validation = read(root, "references/agent-validation-scenarios.md")
         routing = read(root, "references/routing-and-handoff-patterns.md")
+        context_state = read(root, "references/context-state-and-concurrency.md")
+        hosts = read(root, "references/host-adapters.md")
         spec_template = read(root, "assets/templates/agent-spec.md.template")
         review_template = read(root, "assets/templates/agent-review-report.md.template")
+        openai = read(root, "agents/openai.yaml") if (root / "agents/openai.yaml").is_file() else ""
 
         required_skill_markers = [
             "## Activation Contract",
-            "## Decision Rules",
-            "## Multi-Agent State and Termination",
+            "## Multi-Agent Admission Gate",
+            "## Effective Authority",
             "## Reproducibility and Evidence",
             "## Final Validation and Freeze",
+            "agent-design-contract/v2",
+            "agent-design-rubric/v3",
+            "agent-eval-contract/v2",
             "scripts/validate_agent_artifact.py",
         ]
         missing_markers = [marker for marker in required_skill_markers if marker not in skill]
-        add(checks, "skill/reproducibility-controls", not missing_markers, "SKILL.md", {"missing": missing_markers})
-        add(checks, "contracts/version", "agent-design-contract/v1" in contracts and "handoff/v1" in contracts, "agent-contracts.md")
-        add(checks, "rubric/version", "agent-design-rubric/v2" in rubric, "agent-design-rubric.md")
-        add(checks, "rubric/critical-gates", "## Critical Gates" in rubric and "## Severity Taxonomy" in rubric, "agent-design-rubric.md")
-        add(checks, "validation/evidence-separation", all(term in validation for term in ["planned", "executed", "supplied", "measured", "holdout"]), "agent-validation-scenarios.md")
-        add(checks, "routing/deterministic-order", "## Routing Decision Order" in routing and "## Cycle and Re-entry Safety" in routing, "routing-and-handoff-patterns.md")
-        add(checks, "template/spec-contract", "agent-design-contract/v1" in spec_template and "## 10. State and Termination" in spec_template, "agent-spec.md.template")
-        add(checks, "template/review-gates", "agent-design-rubric/v2" in review_template and "## Critical Gates" in review_template, "agent-review-report.md.template")
+        add(checks, "skill/v2-controls", not missing_markers, "SKILL.md", {"missing": missing_markers})
+        add(checks, "contracts/version", "agent-design-contract/v2" in contracts and "handoff/v2" in contracts, "agent-contracts.md")
+        add(checks, "contracts/effective-authority", all(term in contracts.lower() for term in ["exposed capabilities", "downstream authority", "approval scope", "effective authority"]), "agent-contracts.md")
+        add(checks, "contracts/context-state", "## 4. Context Contract" in contracts and "interrupted" in contracts and "resume" in contracts, "agent-contracts.md")
+        add(checks, "rubric/version", "agent-design-rubric/v3" in rubric, "agent-design-rubric.md")
+        add(checks, "rubric/critical-gates", "Effective authority" in rubric and "Multi-agent admission/concurrency" in rubric and "Containment/downstream auth" in rubric, "agent-design-rubric.md")
+        add(checks, "governance/containment", all(term in governance.lower() for term in ["blast radius", "complete mediation", "downstream authorization", "containment"]), "agent-governance-patterns.md")
+        add(checks, "validation/eval-v2", all(term in validation for term in ["agent-eval-contract/v2", "trial", "outcome", "trace", "holdout"]), "agent-validation-scenarios.md")
+        add(checks, "routing/control-flow", "## Control-Flow Kinds" in routing and all(term in routing for term in ["delegate-return", "transfer-control", "suggested-transition", "parallel-child"]), "routing-and-handoff-patterns.md")
+        add(checks, "routing/concurrency", "## Concurrency Safety" in routing, "routing-and-handoff-patterns.md")
+        add(checks, "context/reference", all(marker in context_state for marker in ["## Context Contract", "## Resume Contract", "## Concurrent Mutation Contract"]), "context-state-and-concurrency.md")
+        host_names = ["OpenAI", "Codex", "Claude", "Copilot", "VS Code", "Visual Studio", "Cursor"]
+        add(checks, "hosts/adapter-matrix", all(name in hosts for name in host_names), "host-adapters.md", {"required": host_names})
+        add(checks, "template/spec-contract", "agent-design-contract/v2" in spec_template and "## 7. Effective Authority" in spec_template and "agent-eval-contract/v2" in spec_template, "agent-spec.md.template")
+        add(checks, "template/review-gates", "agent-design-rubric/v3" in review_template and "effective authority" in review_template.lower() and "containment/downstream auth" in review_template.lower(), "agent-review-report.md.template")
+        add(checks, "openai/no-legacy-products", "products:" not in openai, "agents/openai.yaml")
         validate_scenarios(root, checks)
         validate_python(root, "scripts/validate_agent_artifact.py", checks)
         validate_python(root, "scripts/validate_agent_design_package.py", checks)
@@ -138,7 +166,7 @@ def main() -> int:
         "checks": checks,
         "errors": errors,
         "warnings": 0,
-        "limitations": ["This validator proves package invariants, not LLM behavioral quality."],
+        "limitations": ["This validator proves package/contract invariants, not LLM behavioral quality or host runtime permission enforcement."],
     }
     if args.json_path:
         atomic_json(Path(args.json_path), payload)

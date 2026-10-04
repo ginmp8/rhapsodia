@@ -1,6 +1,6 @@
 # Report Contract
 
-Match the user's language unless explicitly requested otherwise. Keep evidence labels and legacy classifications consistent.
+Match the user's language unless explicitly requested otherwise. Keep evidence labels and legacy classifications consistent. The canonical English section names below are used by the bundled structural validator; when producing a localized report that must pass that validator, retain these section headings and localize their contents.
 
 ## Full review
 
@@ -11,9 +11,12 @@ Match the user's language unless explicitly requested otherwise. Keep evidence l
 - Target:
 - Mode: `full-review` | `legacy-audit`
 - Review type: static judgment | executed validation | mixed
+- Review profile: portable-core | named specification + portable-core | named host profile(s)
 - Verdict: ✅ `READY` | 🟡 `READY_WITH_COMMENTS` | 🔴 `REWORK_REQUIRED` | 🟣 `NEEDS_MORE_CONTEXT`
 - Weighted score: n/100
-- Score basis:
+- Score basis: static reviewer indicator | mixed evidence; never universal readiness
+- Evidence coverage: structural/package=...; semantic=...; behavioral=...; runtime=...; host-semantic=...
+- Confidence: high | medium | low — reason
 - Finding counts:
 - Legacy classification counts:
 - Correction input status: ready | ready with questions | blocked
@@ -24,6 +27,35 @@ Match the user's language unless explicitly requested otherwise. Keep evidence l
 ### Assumptions
 ### Commands executed
 | Command/check | Status | Evidence |
+
+## Review Profile
+- Review layers: normative conformance | package integrity | operational quality
+- Spec baseline: locator + version/revision/retrieval identity | not-applicable | blocked
+- Host profiles: portable | openai | codex | claude | copilot | cursor | other
+- Host-semantic evidence/freshness:
+- Model-judge calibration: not-used | uncalibrated | calibrated-against-reference | human-confirmed
+- Behavioral trial policy: not-required | single-run-observation | repeated-trials | blocked
+
+## Evidence Coverage and Confidence
+| Layer | Status: complete/partial/not-run/blocked | Strongest evidence | Claim ceiling |
+|---|---|---|---|
+| Structural/package | | | |
+| Semantic | | | |
+| Behavioral | | | |
+| Runtime | | | |
+| Host-semantic | | | |
+
+- Confidence: high | medium | low
+- Confidence reason:
+
+## Review Evidence Manifest
+- Manifest status: measured | observed | not-run | blocked
+- Manifest artifact/identity:
+- Target identity:
+- Reviewer identity:
+- Evaluator/scenario identity:
+- Source/spec identity:
+- Identity limitations:
 
 ## Reconstructed Skill Contract
 - Role and owner:
@@ -71,6 +103,8 @@ For `legacy-audit`, include all four matrices even when empty. For ordinary `ful
 | ID | Dimension | Weight | Raw 0-5 | Weighted | Evidence | Main deduction |
 |---|---|---:|---:|---:|---|---|
 
+The weighted score is an internal static quality indicator. It does not override gate failures, evidence coverage, confidence, or claim ceilings.
+
 ### Gate Overrides
 - ...
 
@@ -93,21 +127,25 @@ Use `references/correction-input-contract.md` and place the complete copy-paste-
 
 ## Final Verdict
 - Verdict:
+- Applies to review profile:
 - Why:
+- Evidence ceiling:
 - Remaining uncertainty:
 - Next review gate:
 ```
 
 ## Quick triage
 
-Limit to the five highest-value findings.
+Limit to the five highest-value findings. Keep claim ceilings explicit even when the compact mode omits the full evidence manifest.
 
 ```markdown
 ## Quick Triage
 - Target:
-- Scope:
+- Scope/review profile:
 - Verdict:
 - Review type:
+- Evidence ceiling:
+- Confidence:
 - Legacy/compatibility signal status:
 
 ## Top Findings
@@ -128,6 +166,11 @@ Limit to the five highest-value findings.
 ## Executive Summary
 - Baseline:
 - Candidate:
+- Baseline identity:
+- Candidate identity:
+- Evaluator/scenario identity:
+- Review profile:
+- Evidence coverage/confidence:
 - Verdict: accept | accept with comments | reject | needs more context
 - Net quality effect:
 
@@ -137,7 +180,7 @@ Limit to the five highest-value findings.
 ## Capability Delta
 | Capability | Baseline evidence | Candidate evidence | Classification | Behavioral proof | Impact |
 
-Use classifications from `references/capability-delta-review.md`. A static capability delta must be labeled static/observed and must not be presented as measured behavioral improvement.
+Use classifications from `references/capability-delta-review.md`. A static capability delta must be labeled static/observed and must not be presented as measured behavioral improvement. Changed evaluator/scenario/spec/host identity is a comparability gap unless explicitly re-baselined.
 
 ## Introduced Regressions
 ## Resolved Defects
@@ -146,12 +189,12 @@ Use classifications from `references/capability-delta-review.md`. A static capab
 ## Ownership and Runtime-Coupling Effects
 ## Uncertain Differences
 ## Score Delta
-State whether the delta is static judgment or measured evidence.
+State whether the delta is static judgment or measured evidence and keep score change separate from evidence-strength change.
 ## Acceptance Decision
 ## Correction Input
 ```
 
-Do not infer improvement from fewer files, fewer tokens, deleted legacy content, or more tests alone. Connect the change to preserved current behavior, explicit rejection, migration isolation, ownership, and validation.
+Do not infer improvement from fewer files, fewer tokens, deleted legacy content, more tests, or a higher static score alone. Connect the change to preserved current behavior, explicit rejection, migration isolation, ownership, validation, and frozen identities.
 
 ## Report validation
 
@@ -161,6 +204,8 @@ Do not infer improvement from fewer files, fewer tokens, deleted legacy content,
 ## Report Under Review
 ## Verdict
 ## Missing Required Sections
+## Review Profile and Evidence-Coverage Defects
+## Provenance / Identity Defects
 ## Unsupported Claims
 ## Finding Quality Failures
 ## Score/Verdict Inconsistencies
@@ -171,10 +216,10 @@ Do not infer improvement from fewer files, fewer tokens, deleted legacy content,
 
 ## Evidence language
 
-- `measured`: executed scenario, validator, syntax check, package check, or supplied result.
+- `measured`: executed scenario, validator, syntax check, package check, or supplied result whose identity/status is sufficient for the claim.
 - `observed`: direct file or report inspection.
 - `inferred`: conclusion supported by observed evidence.
 - `planned`: not executed.
-- `blocked`: unavailable because of scope, access, missing owner, consumer, version, or migration evidence.
+- `blocked`: unavailable because of scope, access, missing owner, consumer, version, migration, specification, host, or evaluator evidence.
 
-Do not use `measured` for a checklist score. Do not state that the skill is bug-free, optimal, production-ready, legacy-free, or fully validated unless the declared gates were executed and support that exact claim.
+Do not use `measured` for a checklist score, uncalibrated holistic judge score, or static scenario inventory. Do not state that the skill is bug-free, optimal, production-ready, legacy-free, fully portable, behaviorally reliable, or fully validated unless the declared profile and evidence layers support that exact claim.

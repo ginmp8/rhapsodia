@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "status": "frozen",
+  "purpose": "deterministic synthetic regression fixtures for context-selection metrics; not measured LLM/agent behavior",
+  "cases": [
+    {
+      "id": "positive-precise",
+      "available_paths": ["src/order.cs", "src/order_handler.cs", "tests/order_tests.cs", "src/unrelated.cs"],
+      "expected_relevant": ["src/order.cs", "src/order_handler.cs", "tests/order_tests.cs"],
+      "selected": [
+        {"path": "src/order.cs", "cost": 220},
+        {"path": "src/order_handler.cs", "cost": 300},
+        {"path": "tests/order_tests.cs", "cost": 180}
+      ],
+      "budget": 900,
+      "abstain": false,
+      "gates": {"min_precision": 1.0, "min_recall": 1.0, "min_f1": 1.0, "min_budgeted_yield": 1.0, "max_unsupported_rate": 0.0, "require_budget_compliant": true}
+    },
+    {
+      "id": "positive-bounded-noise",
+      "available_paths": ["src/api.cs", "src/service.cs", "src/wiring.cs", "tests/service_tests.cs", "docs/readme.md"],
+      "expected_relevant": ["src/api.cs", "src/service.cs", "src/wiring.cs", "tests/service_tests.cs"],
+      "selected": [
+        {"path": "src/api.cs", "cost": 250},
+        {"path": "src/service.cs", "cost": 300},
+        {"path": "src/wiring.cs", "cost": 200},
+        {"path": "docs/readme.md", "cost": 100}
+      ],
+      "budget": 900,
+      "abstain": false,
+      "gates": {"min_precision": 0.75, "min_recall": 0.75, "min_f1": 0.75, "min_budgeted_yield": 0.75, "max_unsupported_rate": 0.0, "require_budget_compliant": true}
+    },
+    {
+      "id": "no-gold-abstain",
+      "available_paths": ["src/a.cs", "src/b.cs"],
+      "expected_relevant": [],
+      "selected": [],
+      "budget": 500,
+      "abstain": true,
+      "gates": {"require_no_gold_correct": true, "max_unsupported_rate": 0.0, "require_budget_compliant": true}
+    }
+  ]
+}

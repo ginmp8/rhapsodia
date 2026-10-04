@@ -176,11 +176,15 @@ def package(root: Path, output: Path, receipt: Path | None) -> tuple[Path, dict[
         payload = {
             "receipt_version": 1,
             "status": "pass",
+            "receipt_stage": "committed",
             "artifact": output.name,
             "artifact_sha256": package_hash,
             "candidate_tree_sha256": tree_hash,
             "file_count": len(files),
             "deterministic_zip_metadata": True,
+            "atomic_replace": True,
+            "last_good_preserved_on_failure": True,
+            "recovery": [],
         }
 
         package_backup: Path | None = None

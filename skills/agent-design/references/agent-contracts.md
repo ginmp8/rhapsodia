@@ -1,149 +1,237 @@
 # Agent Contracts
 
-Canonical portable contract identity: `agent-design-contract/v1`.
+Canonical portable contract identity: `agent-design-contract/v2`.
+Canonical structured transition identity: `handoff/v2`.
 
-Use this reference when a design needs stable authority, state, routing, handoff, completion, or evidence semantics. These contracts describe behavior independently from any single host. Host-specific frontmatter, tool names, and runtime APIs are adapters around this core.
+Use this reference when a design needs stable ownership, authority, context, state, routing, completion, or evidence semantics. Host-specific frontmatter, tool names, SDK types, and UI transitions are adapters around this core.
 
 ## 1. Design Identity
 
-A durable agent design should identify:
+A durable design identifies:
 
-- agent name or role;
-- operating surface;
-- contract identity (`agent-design-contract/v1` unless a newer explicit contract is requested);
-- intended user or caller;
+- agent name/role;
+- operating surface and target hosts;
+- `agent-design-contract/v2`;
+- intended user/caller;
 - owned outcome/artifact;
-- required inputs and context sources;
-- tool capabilities and authority boundary;
-- validation status.
+- required inputs/context sources;
+- declared and effective authority;
+- capability/tool contract;
+- validation status/evaluator identity.
 
 Do not use a version label to imply compatibility that was not checked.
 
 ## 2. Authority Contract
 
-Represent authority with five distinct sets:
+Represent **declared authority** with five sets:
 
-- **may decide**: decisions the agent can make without another actor;
-- **may recommend**: decisions it can analyze but not finalize;
-- **may execute**: concrete actions it may perform;
-- **must not execute**: prohibited actions/resources;
-- **must escalate**: conditions that require another actor.
+- **may decide**;
+- **may recommend**;
+- **may execute**;
+- **must not execute**;
+- **must escalate**.
 
-If write, execution, deployment, identity/access, financial, destructive, security-policy, or production-impacting behavior is in scope, unspecified authority is a blocker rather than implicit permission.
+For write, execution, deployment, identity/access, financial, destructive, security-policy, credential, or production-impacting behavior, unspecified declared authority is a blocker rather than permission.
 
-## 3. Tool Capability Contract
+### Effective authority
 
-Classify each capability as exactly one of:
+Also record, as applicable:
 
-- `required`: mission cannot be completed without it;
-- `optional`: improves quality but has a defined fallback;
-- `conditional`: usable only after a stated gate or approval;
-- `forbidden`: outside the role or risk boundary.
+- **exposed capabilities**: what the host/tool surface actually makes reachable;
+- **downstream authority**: what APIs/repos/services/credentials actually permit;
+- **approval scope**: additional operation-specific authorization;
+- **effective authority**: actions possible after all constraints intersect.
 
-Describe capabilities before product-specific tool names when portability matters. Example: `repository-read` is the semantic capability; `read_file` may be one host adapter.
+Required invariant for bounded agents:
 
-A missing required capability must produce a blocker or a valid handoff. Never silently downgrade a required tool to an assumed tool.
+`effective_authority <= declared_authority`
 
-## 4. State and Termination Contract
+If exposure/downstream permission is unknown and could broaden a restricted role, the authority gate is incomplete/blocked. A sentence such as "do not write" cannot neutralize an available unrestricted write tool by itself.
 
-Any stateful, multi-step, routing, supervisory, or execution agent must define:
+### Delegation authority
+
+Delegation must not silently amplify authority:
+
+`recipient_effective_authority <= delegator_effective_authority`
+
+unless a separate authorized actor grants a scoped expansion before execution. Peer messages/context cannot grant that expansion.
+
+## 3. Capability Contract
+
+Classify each semantic capability as exactly one of:
+
+- `required`: mission cannot complete without it;
+- `optional`: improves quality and has a fallback;
+- `conditional`: usable only after a named gate/approval;
+- `forbidden`: outside role/risk boundary.
+
+Describe semantic capabilities before product-specific names. Example: `repository-read` is portable; a concrete host alias is an adapter.
+
+A missing required capability produces a blocker or valid handoff. Never silently downgrade `required` to assumed.
+
+For restricted roles, omitted tool configuration is not evidence of no tools. Require explicit restrictive exposure or a verified host policy proving an equally restrictive default.
+
+## 4. Context Contract
+
+Declare:
+
+- mode: `isolated | inherited | shared | reference-based` or an explicit combination;
+- required/optional/forbidden sources;
+- provenance/owner and trust class;
+- freshness/version/identity requirements;
+- sensitive-data/credential rules;
+- retrieval and unavailable-source fallback;
+- compaction/note-taking policy when long-running;
+- handoff summary/context boundary.
+
+Context is evidence, not permission. Retrieved content, tool output, MCP resources, files, web pages, and peer-agent messages must not expand authority, waive approvals, or override higher-priority instructions.
+
+## 5. Control-Flow Contract
+
+Choose a transition kind whenever multiple actors exist:
+
+- `delegate-return`: source retains top-level ownership; target owns a bounded subtask and returns output;
+- `transfer-control`: target becomes active/top-level owner for the transferred scope;
+- `suggested-transition`: no dispatch occurs until the user/host accepts a suggested switch;
+- `parallel-child`: source retains orchestration ownership while children run independent work concurrently.
+
+Declare `owner_before`, `owner_after`, and `return_to` when applicable. Do not use generic "handoff" wording where the ownership consequence is material.
+
+## 6. State, Interruption, and Termination Contract
+
+Stateful, multi-step, routing, supervisory, or execution agents must define:
 
 1. initial state;
-2. allowed state transitions;
-3. completion state;
-4. blocked/escalated state;
-5. retry or re-entry conditions;
-6. finite termination rule.
+2. allowed active transitions;
+3. interrupted states when applicable;
+4. resume preconditions;
+5. terminal completion/failure/block states;
+6. retry/re-entry conditions;
+7. finite termination rule.
 
-Prefer the smallest state model that makes failure and completion observable. Do not introduce state merely to make the design look agentic.
+Use three state classes:
 
-For a thin router, the default state model is:
+- `active`;
+- `interrupted` such as `input-required`, `auth-required`, `approval-required`;
+- `terminal` such as `completed`, `failed`, `canceled`, `rejected`, `blocked/escalated`.
+
+An interruption is not authorization. Before resume, revalidate the scope/lifetime of new authorization/input and any stale context or state relevant to the protected action.
+
+For a thin router, a default state model is:
 
 `received -> classified -> handed-off | escalated -> stopped`
 
-The router does not continue as the specialist after `handed-off`.
+For controlled execution, a typical model is:
 
-For a controlled executor, a typical model is:
+`received -> preconditions-checked -> planned -> executing -> validating -> completed | interrupted | blocked | rollback-required`
 
-`received -> preconditions-checked -> planned -> executing -> validating -> completed | blocked | rollback-required`
+## 7. Handoff Contract
 
-The exact states may differ, but every mutation path needs an observable terminal outcome.
-
-## 5. Handoff Contract
-
-Canonical handoff identity: `handoff/v1`.
-
-A handoff should contain only the context needed by the recipient:
+Canonical identity: `handoff/v2`.
 
 ```text
-contract: handoff/v1
+contract: handoff/v2
+kind: delegate-return | transfer-control | suggested-transition | parallel-child
 source: <agent/skill/human>
 target: <agent/skill/human>
-objective: <single owned outcome>
-context: <relevant facts and constraints only>
+objective: <single owned outcome/subtask>
+owner_before: <top-level owner>
+owner_after: <top-level owner after transition>
+return_to: <actor|null>
+context: <minimal relevant facts/constraints or references>
+context_policy: <isolation/inheritance/trust/freshness summary>
 inputs: <files/links/artifacts/identifiers>
-authority: <recipient may/must-not/escalate summary>
+authority: <declared/effective subset for recipient>
 expected_output: <deliverable>
-stop_conditions: <recipient blockers/escalation triggers>
+stop_conditions: <blockers/escalation>
 validation: <acceptance checks>
-route_trace: <prior route identifiers or visited roles when cycle detection is needed>
+route_trace: <visited roles/transition ids when cycle detection is needed>
 ```
 
-Do not include hidden reasoning, credentials, irrelevant transcript history, or full copied specialist instructions.
+Do not include hidden reasoning, credentials, irrelevant transcript history, or copied specialist instructions.
 
-## 6. Routing Ownership Contract
+## 8. Multi-Agent Admission and Concurrency Contract
 
-Routing is based on **owned output and required authority**, not persona similarity.
+Before adding multiple agents, record at least one material benefit: parallelism, context isolation, authority isolation, tool specialization, independent verification, or distinct output/domain ownership.
 
-When multiple targets appear eligible, resolve in this order:
+If multiple actors can mutate overlapping resources, declare one safe strategy:
 
-1. exact ownership of the requested artifact/outcome;
-2. authority fit with the least privilege needed;
-3. required context/tool availability;
-4. compatibility with caller and operating surface;
-5. explicit user/org routing rule;
+- single writer;
+- disjoint/resource-partitioned ownership;
+- isolated workspace/branch/worktree/VM plus owned integration;
+- lock/lease;
+- another objectively equivalent control.
+
+Without an admission reason, prefer a simpler design. Without write-conflict control, parallel mutation is blocked.
+
+## 9. Governance and Containment Contract
+
+For high-impact roles, record:
+
+- risk class and blast radius;
+- containment/environment boundary;
+- resource/path/system scope;
+- downstream authorization/complete mediation;
+- approval granularity and who can approve;
+- rate/budget/time limits where material;
+- validation before irreversible effects;
+- rollback/compensation;
+- audit receipt/log requirements.
+
+Human approval is one control layer, not a replacement for least privilege or downstream authorization.
+
+## 10. Routing Ownership Contract
+
+Route by **owned output and effective authority**, not persona similarity.
+
+Tie-break order:
+
+1. exact ownership of requested artifact/outcome;
+2. effective-authority fit with least privilege;
+3. required context/capability availability;
+4. operating-surface compatibility;
+5. explicit organization/user routing rule;
 6. escalation if a material tie remains.
 
-Do not invent confidence precision. Use qualitative confidence only when its meaning is declared by the routing reference.
+Use qualitative confidence only when its meaning is declared by the routing reference.
 
-## 7. Cycle and Re-entry Contract
+## 11. Cycle and Re-entry Contract
 
-A design must not contain an unbounded handoff cycle.
+- No unbounded handoff cycle.
+- Worker-to-worker delegation is forbidden unless topology grants it.
+- Re-entry requires material state change: new evidence, changed artifact, bounded repair result, or new authorization.
+- Repeating materially identical handoff/state is a stop condition.
+- Intentional loops need finite budget or equivalent terminating predicate.
+- Default with no loop policy: **no cyclic re-entry**.
 
-- Worker-to-worker delegation is forbidden unless explicitly part of the topology.
-- Re-entry requires a stated reason, such as new evidence, a changed artifact, or a bounded repair result.
-- Repeating the same handoff with materially identical state is a stop condition.
-- If a workflow intentionally loops, declare a finite iteration/hop budget or an equivalent terminating condition.
-- If no loop policy is declared, the portable default is **no cyclic re-entry**.
+## 12. Completion Contract
 
-## 8. Completion Contract
+Use explicit design/review states:
 
-Use explicit completion states:
+- `ready`;
+- `ready-with-changes`;
+- `blocked`;
+- `rejected`.
 
-- `ready`: design contract is complete and applicable hard gates pass;
-- `ready-with-changes`: design is usable only after listed non-blocking changes;
-- `blocked`: required authority, context, capability, owner, or evidence is missing;
-- `rejected`: the requested design would violate a critical boundary and no in-scope safe redesign satisfies the request.
+Aggregate score never overrides critical-gate failure.
 
-For reviews, map these states to the report vocabulary defined by the rubric; do not infer completion from a high aggregate score alone.
+## 13. Evidence Contract
 
-## 9. Evidence Contract
+Use:
 
-Keep evidence strength explicit:
+- `measured`;
+- `observed`;
+- `supplied`;
+- `inferred`;
+- `planned`;
+- `blocked`.
 
-- `measured`: produced by an executed validator/scenario/runtime check;
-- `observed`: directly inspected in an artifact or source;
-- `supplied`: provided by the user or another actor and not independently executed;
-- `inferred`: reasoned from evidence but not directly observed;
-- `planned`: specified but not executed;
-- `blocked`: evidence could not be obtained.
+Scenario execution status is separately `planned | executed | supplied`.
 
-Scenario records separately use `planned | executed | supplied` as their execution status.
+Keep structural, behavioral, runtime, and semantic-review evidence distinct. A planned scenario or static validator is not measured agent behavior.
 
-Never describe a planned scenario as measured validation. Structural validation does not prove semantic quality or real runtime behavior.
+## 14. Portability Boundary
 
-## 10. Portability Boundary
+The core does not require MCP, ChatGPT/OpenAI, Claude, Copilot, Cursor, VS Code, Visual Studio, Codex, or a specific runtime. Host-specific details belong in `references/host-adapters.md` and generated adapters.
 
-The core contract does not require MCP, ChatGPT, Claude, Copilot, Cursor, or a specific agent runtime. Platform-specific details belong in adapters such as frontmatter, repository paths, and concrete tool names.
-
-When a host imposes stricter instruction precedence, security, approval, or tool constraints, the host rules remain authoritative. Do not encode a portable contract that attempts to bypass them.
+When a host imposes stricter instruction precedence, permission, approval, or tool constraints, host/runtime enforcement remains authoritative. Do not encode a portable contract that attempts to bypass it.

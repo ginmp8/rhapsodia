@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Deterministic structural validator for agent-design output artifacts.
+"""Deterministic structural validator for Agent Design output artifacts.
 
-This validator checks contract shape and objective invariants only. It does not
-claim that an agent prompt is semantically correct, safe, or high quality.
+Checks contract shape and objective structural invariants only. It does not prove
+semantic safety, host runtime permissions, or behavioral quality.
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-RECEIPT_VERSION = 1
+RECEIPT_VERSION = 2
 AGENT_REQUIRED_HEADINGS = {
     "role",
     "responsibilities",
@@ -31,10 +31,14 @@ SPEC_REQUIRED_HEADINGS = {
     "inputs and context",
     "outputs",
     "authority boundary",
+    "effective authority",
     "tool contract",
+    "context contract",
     "workflow",
-    "handoffs",
-    "state and termination",
+    "control flow and handoffs",
+    "state, interruption, and termination",
+    "multi-agent admission and concurrency",
+    "governance and containment",
     "stop conditions",
     "validation scenarios",
     "risks and trade-offs",
@@ -157,40 +161,65 @@ def validate_agent_md(text: str, profile: str, allow_write_tools: bool, checks: 
     missing = sorted(AGENT_REQUIRED_HEADINGS - found)
     add_check(checks, "contract/required-headings", not missing, "agent-md", {"missing": missing})
 
+    tools_declared = "tools" in fm
     tools = tool_names(fm)
-    if profile in READ_ONLY_PROFILES and not allow_write_tools:
-        write_tools = sorted(tool for tool in tools if is_write_tool(tool))
+    if profile in READ_ONLY_PROFILES:
         add_check(
             checks,
-            "tools/least-authority-profile",
-            not write_tools,
+            "tools/explicit-restricted-exposure",
+            tools_declared,
             profile,
-            {"write_capable_tools": write_tools, "tools": tools},
+            {
+                "tools_declared": tools_declared,
+                "reason": "portable read-only validation cannot infer restrictive exposure from omitted tool configuration",
+            },
         )
+        wildcard_tools = sorted(tool for tool in tools if tool.strip() == "*" or tool.endswith("/*"))
+        add_check(
+            checks,
+            "tools/no-broad-wildcard",
+            not wildcard_tools,
+            profile,
+            {"wildcard_tools": wildcard_tools},
+        )
+        if not allow_write_tools:
+            write_tools = sorted(tool for tool in tools if is_write_tool(tool))
+            add_check(
+                checks,
+                "tools/least-authority-profile",
+                not write_tools,
+                profile,
+                {"write_capable_tools": write_tools, "tools": tools},
+            )
+
     if profile == "router":
-        has_handoff = bool(re.search(r"\bhandoff\b|\broute\b|\bdispatch\b", text, re.IGNORECASE))
-        add_check(checks, "router/handoff-contract", has_handoff, "router")
+        has_route = bool(re.search(r"\bhandoff\b|\broute\b|\bdispatch\b", text, re.IGNORECASE))
+        add_check(checks, "router/handoff-contract", has_route, "router")
 
 
 def validate_spec(text: str, checks: list[dict[str, Any]]) -> None:
     found = headings(text)
     missing = sorted(SPEC_REQUIRED_HEADINGS - found)
     add_check(checks, "contract/required-headings", not missing, "agent-spec", {"missing": missing})
-    add_check(
-        checks,
-        "contract/identity",
-        "agent-design-contract/v1" in text,
-        "agent-design-contract/v1",
-    )
+    add_check(checks, "contract/identity", "agent-design-contract/v2" in text, "agent-design-contract/v2")
+    add_check(checks, "contract/handoff", "handoff/v2" in text, "handoff/v2")
+    add_check(checks, "validation/eval-contract", "agent-eval-contract/v2" in text, "agent-eval-contract/v2")
+
     authority_terms = ["may decide", "may recommend", "may execute", "must not execute", "must escalate"]
     missing_authority = [term for term in authority_terms if term not in text.lower()]
-    add_check(
-        checks,
-        "authority/complete-shape",
-        not missing_authority,
-        "authority boundary",
-        {"missing": missing_authority},
-    )
+    add_check(checks, "authority/complete-declared-shape", not missing_authority, "authority boundary", {"missing": missing_authority})
+
+    effective_terms = ["declared authority", "exposed capabilities", "downstream authority", "approval scope", "effective authority"]
+    missing_effective = [term for term in effective_terms if term not in text.lower()]
+    add_check(checks, "authority/effective-shape", not missing_effective, "effective authority", {"missing": missing_effective})
+
+    context_terms = ["context mode", "provenance", "trust", "freshness", "authority invariant"]
+    missing_context = [term for term in context_terms if term not in text.lower()]
+    add_check(checks, "context/contract-shape", not missing_context, "context contract", {"missing": missing_context})
+
+    state_terms = ["interrupted", "resume preconditions", "terminal"]
+    missing_state = [term for term in state_terms if term not in text.lower()]
+    add_check(checks, "state/interruption-resume", not missing_state, "state contract", {"missing": missing_state})
 
 
 def main() -> int:
@@ -238,7 +267,7 @@ def main() -> int:
         "warnings": 0,
         "metrics": {"check_count": len(checks)},
         "limitations": [
-            "Structural validation does not prove semantic quality, safety, or runtime behavior."
+            "Structural validation does not prove semantic quality, effective host permissions, safety, or runtime behavior."
         ],
     }
     if args.json_path:

@@ -12,6 +12,9 @@ from pathlib import Path
 REQUIRED_HEADINGS = [
     "Executive Summary",
     "Scope and Evidence",
+    "Review Profile",
+    "Evidence Coverage and Confidence",
+    "Review Evidence Manifest",
     "Reconstructed Skill Contract",
     "Canonical Source Map",
     "Behavioral Invariants",
@@ -52,6 +55,30 @@ LEGACY_AUDIT_MATRIX_HEADINGS = [
     "Ownership Matrix",
     "Compatibility Matrix",
     "Runtime Coupling Matrix",
+]
+
+
+PROFILE_REQUIRED_FIELDS = [
+    "Review layers",
+    "Spec baseline",
+    "Host profiles",
+    "Model-judge calibration",
+    "Behavioral trial policy",
+]
+EVIDENCE_COVERAGE_REQUIRED = [
+    "Structural/package",
+    "Semantic",
+    "Behavioral",
+    "Runtime",
+    "Host-semantic",
+    "Confidence",
+]
+MANIFEST_REQUIRED_FIELDS = [
+    "Manifest status",
+    "Target identity",
+    "Reviewer identity",
+    "Evaluator/scenario identity",
+    "Source/spec identity",
 ]
 
 
@@ -148,6 +175,21 @@ def validate(text: str) -> dict[str, object]:
             if classification and classification.group(1).lower() not in allowed:
                 errors.append(f"{finding_id} has invalid legacy classification: {classification.group(1)}")
 
+    profile = section_between(text, "Review Profile", "Evidence Coverage and Confidence")
+    for field in PROFILE_REQUIRED_FIELDS:
+        if not re.search(rf"(?:^|\n)\s*[-|]?\s*{re.escape(field)}(?:\s*[:|])", profile, re.IGNORECASE):
+            errors.append(f"Review Profile is missing field: {field}")
+
+    coverage = section_between(text, "Evidence Coverage and Confidence", "Review Evidence Manifest")
+    for field in EVIDENCE_COVERAGE_REQUIRED:
+        if field.lower() not in coverage.lower():
+            errors.append(f"Evidence Coverage and Confidence is missing: {field}")
+
+    manifest = section_between(text, "Review Evidence Manifest", "Reconstructed Skill Contract")
+    for field in MANIFEST_REQUIRED_FIELDS:
+        if not re.search(rf"(?:^|\n)\s*-\s*{re.escape(field)}\s*:", manifest, re.IGNORECASE):
+            errors.append(f"Review Evidence Manifest is missing field: {field}")
+
     legacy_mode = bool(re.search(r"Mode:\s*`?legacy-audit`?", text, re.IGNORECASE))
     if legacy_mode:
         for heading in LEGACY_AUDIT_MATRIX_HEADINGS:
@@ -162,7 +204,7 @@ def validate(text: str) -> dict[str, object]:
         if "```" not in correction:
             warnings.append("Correction Input is not fenced as a copy-paste-ready block.")
 
-    if re.search(r"\b(100% activation|bug[- ]free|fully validated|production[- ]ready|free of legacy|no legacy exists)\b", text, re.IGNORECASE):
+    if re.search(r"\b(100% activation|bug[- ]free|fully validated|production[- ]ready|fully portable|behaviorally reliable|free of legacy|no legacy exists)\b", text, re.IGNORECASE):
         warnings.append("Report contains a strong readiness or quality claim; verify that executed evidence supports it.")
 
     verdict_match = re.search(r"Verdict:\s*(.+)", text, re.IGNORECASE)

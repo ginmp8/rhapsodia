@@ -1,14 +1,20 @@
 {
-  "suite_version": 1,
+  "suite_version": 2,
   "scenarios": [
     {"id":"indirect-reference","group":"regression","observable":"transitive reference graph classifies indirectly referenced resource as used"},
     {"id":"partial-duplicate","group":"regression","observable":"similar-but-not-identical resources are not auto-classified duplicate"},
     {"id":"legitimate-scaffold","group":"regression","observable":"referenced template/scaffold with an unresolved fill marker stays used"},
-    {"id":"generated-artifact","group":"core","observable":"generated residue is classified generated and dry-run is non-mutating"},
+    {"id":"generated-artifact","group":"core","observable":"strong generated/cache evidence is classified generated and dry-run is non-mutating"},
+    {"id":"weak-generated-namespace","group":"adversarial","observable":"dist/build-like namespace alone never authorizes generated classification; corroborated explicit evidence can authorize a dry-run"},
+    {"id":"declared-root","group":"core","observable":"caller-declared roots participate in reachability and are recorded in the root registry"},
+    {"id":"typed-edges","group":"contract","observable":"reference evidence records typed edges such as markdown-link"},
+    {"id":"markdown-image","group":"regression","observable":"Markdown image targets are treated as used resources"},
     {"id":"protected-evidence","group":"adversarial","observable":"protected evidence cannot be deleted even when plan claims removable status"},
+    {"id":"eval-protected","group":"adversarial","observable":"eval resources are protected by default even when unreferenced"},
     {"id":"symlink","group":"edge","observable":"symlink and canonical-path alias risks fail closed"},
-    {"id":"rerun","group":"regression","observable":"reapplying the same cleanup plan is idempotent"},
-    {"id":"cleanup-failure-rollback","group":"edge","observable":"post-cleanup validation failure restores last-known-good bytes"},
+    {"id":"rerun","group":"regression","observable":"reapplying the same cleanup plan is idempotent and records checkpoint evidence"},
+    {"id":"cleanup-failure-rollback","group":"edge","observable":"structural post-cleanup validation failure restores last-known-good bytes"},
+    {"id":"external-validation-rollback","group":"edge","observable":"an explicitly approved non-shell post-validation command failure rolls back the full transaction"},
     {"id":"noncanonical-path","group":"adversarial","observable":"noncanonical relative deletion path is rejected before mutation"},
     {"id":"status-vocabulary","group":"contract","observable":"inventory emits only the canonical seven resource states"}
   ]

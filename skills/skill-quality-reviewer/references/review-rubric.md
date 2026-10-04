@@ -33,6 +33,22 @@ Weighted points = `(raw score / 5) * weight`. Round only the final total to one 
 
 Total weight: 100.
 
+## Cross-cutting evidence profile
+
+Apply `references/evidence-and-calibration.md` across the existing dimensions without changing the 100-point weights.
+
+Record separately from the score:
+
+- review profile: normative conformance, package integrity, operational quality;
+- specification baseline when a conformance claim is made;
+- requested host profiles and host-semantic verification status;
+- evidence coverage for structural/package, semantic, behavioral, runtime, and host-semantic layers;
+- model-judge calibration status when decision-critical;
+- confidence (`high`, `medium`, `low`) with an evidence-backed reason;
+- review-evidence manifest status/identity when exact provenance matters.
+
+The weighted score remains a static reviewer indicator. Do not convert evidence coverage, trial count, host count, or calibration status into extra score points. Use them as claim ceilings and gates.
+
 ## Cross-cutting capability-delta review
 
 When baseline and candidate evidence are both available, apply `references/capability-delta-review.md` across the existing dimensions without changing the 100-point weights. Capability delta is not a twelfth score dimension. It is evidence used to explain preservation, regressions, authorized removals, and genuine additions.
@@ -108,7 +124,13 @@ Do not award or deduct points solely because the candidate has more/fewer files,
 - a finding states impact without a plausible failure path;
 - a keyword match is presented as a confirmed legacy defect without tracing consumers;
 - no-match search output is presented as proof that no historical coupling exists;
-- a textual gate is treated as proof of structural or behavioral compatibility.
+- a textual gate is treated as proof of structural or behavioral compatibility;
+- a normative compliance claim names no specification baseline;
+- one successful stochastic trial is presented as reliability, accuracy, or robustness;
+- an uncalibrated holistic model judgment is presented as measured evidence;
+- a weighted score is presented as a universal readiness/compliance grade;
+- a multi-platform claim extrapolates host semantics from another host or from portable-core structure alone;
+- target, evaluator, or source evidence is reused after identity changes without revalidation.
 
 ### Architecture defects
 
@@ -128,6 +150,7 @@ Do not award or deduct points solely because the candidate has more/fewer files,
 - producer and consumer are not exercised together when compatibility is claimed;
 - tests accept unknown or legacy fields outside migration mode;
 - expected outputs or hashes are regenerated automatically to make a change pass;
+- a decision-critical validator is assumed to protect an invariant despite evidence that a bounded negative/challenge case still passes;
 - mixed-version combinations are not explicitly accepted or rejected;
 - migration tests omit negative isolation, failure atomicity, or loss reporting.
 
@@ -176,6 +199,11 @@ Apply after scoring:
 - Implicit legacy acceptance on the normal path, silent state or field translation, or unauthorized cross-owner writes => at most `REWORK_REQUIRED` when confirmed.
 - Broken package validation required by the target's own contract => `REWORK_REQUIRED`.
 - Missing behavioral execution => prohibit measured activation, robustness, compatibility, migration-isolation, or benchmark claims, but do not automatically fail a static review.
+- A strong stochastic reliability/activation claim without repeated comparable trials => claim is `not-proven`; do not report measured reliability.
+- A normative conformance claim without an identified specification baseline => conformance is `not-proven`; continue package/operational review only if that remains useful.
+- A multi-platform semantic/runtime/behavioral claim without per-host evidence => that portability layer is `not-proven`; portable-core readiness may still be judged separately.
+- Decision-critical uncalibrated model-judge evidence cannot by itself justify a `measured` claim.
+- `READY` is always bounded to the declared review profile, evidence coverage, and confidence; it is never a universal production-readiness claim.
 - A score of 85 or higher supports `READY` only when no gate blocks it.
 - A score of 70-84.9 supports at most `READY_WITH_COMMENTS`.
 - A score below 70 supports `REWORK_REQUIRED`, unless missing context makes `NEEDS_MORE_CONTEXT` more accurate.
@@ -188,3 +216,5 @@ Apply after scoring:
 - Do not require scripts, assets, examples, evals, or vendor adapters when they add no operational value; assess whether the absence weakens the declared capability or an explicitly requested host profile.
 - Treat deterministic preflight output and legacy-signal searches as evidence leads, not automatic scores.
 - Do not reward deletion, lower token count, or fewer files unless current behavior, authority, and validation are preserved.
+- Treat the 85/70 thresholds as this reviewer's internal policy, not as universal software-quality or standards-compliance grades.
+- Do not raise confidence merely because the weighted score is high; confidence follows evidence quality, coverage, identity, and unresolved gaps.

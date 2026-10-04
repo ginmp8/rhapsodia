@@ -4,9 +4,12 @@
 - Target: {{TARGET}}
 - Mode: {{MODE}}
 - Review type: {{REVIEW_TYPE}}
+- Review profile: {{REVIEW_PROFILE}}
 - Verdict: {{VERDICT}}
 - Weighted score: {{SCORE}}/100
 - Score basis: {{SCORE_BASIS}}
+- Evidence coverage: {{EVIDENCE_COVERAGE}}
+- Confidence: {{CONFIDENCE}}
 - Finding counts: {{FINDING_COUNTS}}
 - Legacy classification counts: {{LEGACY_CLASSIFICATION_COUNTS}}
 - Correction input status: {{CORRECTION_STATUS}}
@@ -26,6 +29,35 @@
 | Command/check | Status | Evidence |
 |---|---|---|
 {{COMMAND_ROWS}}
+
+## Review Profile
+- Review layers: {{REVIEW_LAYERS}}
+- Spec baseline: {{SPEC_BASELINE}}
+- Host profiles: {{HOST_PROFILES}}
+- Host-semantic evidence/freshness: {{HOST_SEMANTIC_EVIDENCE}}
+- Model-judge calibration: {{JUDGE_CALIBRATION}}
+- Behavioral trial policy: {{TRIAL_POLICY}}
+
+## Evidence Coverage and Confidence
+| Layer | Status | Strongest evidence | Claim ceiling |
+|---|---|---|---|
+| Structural/package | {{STRUCTURAL_STATUS}} | {{STRUCTURAL_EVIDENCE}} | {{STRUCTURAL_CEILING}} |
+| Semantic | {{SEMANTIC_STATUS}} | {{SEMANTIC_EVIDENCE}} | {{SEMANTIC_CEILING}} |
+| Behavioral | {{BEHAVIORAL_STATUS}} | {{BEHAVIORAL_EVIDENCE}} | {{BEHAVIORAL_CEILING}} |
+| Runtime | {{RUNTIME_STATUS}} | {{RUNTIME_EVIDENCE}} | {{RUNTIME_CEILING}} |
+| Host-semantic | {{HOST_STATUS}} | {{HOST_EVIDENCE}} | {{HOST_CEILING}} |
+
+- Confidence: {{CONFIDENCE}}
+- Confidence reason: {{CONFIDENCE_REASON}}
+
+## Review Evidence Manifest
+- Manifest status: {{MANIFEST_STATUS}}
+- Manifest artifact/identity: {{MANIFEST_IDENTITY}}
+- Target identity: {{TARGET_IDENTITY}}
+- Reviewer identity: {{REVIEWER_IDENTITY}}
+- Evaluator/scenario identity: {{EVALUATOR_IDENTITY}}
+- Source/spec identity: {{SOURCE_SPEC_IDENTITY}}
+- Identity limitations: {{IDENTITY_LIMITATIONS}}
 
 ## Reconstructed Skill Contract
 - Role and owner: {{ROLE_OWNER}}
@@ -109,6 +141,8 @@
 
 ## Final Verdict
 - Verdict: {{VERDICT}}
+- Applies to review profile: {{REVIEW_PROFILE}}
 - Why: {{VERDICT_REASON}}
+- Evidence ceiling: {{EVIDENCE_CEILING}}
 - Remaining uncertainty: {{REMAINING_UNCERTAINTY}}
 - Next review gate: {{NEXT_GATE}}
