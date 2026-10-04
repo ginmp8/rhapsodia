@@ -387,6 +387,39 @@ class WorkflowPlanV2ValidatorTests(unittest.TestCase):
 
 
 
+    def test_reference_grounded_profile_requires_complete_checkpoint_metadata(self):
+        plan = valid_v2_plan()
+        plan["evidence"]["reference_identity"] = "ref:v1"
+        plan["checkpoints"][0]["reference_scope"] = ["src/ref/a"]
+        plan["checkpoints"][0]["oracle_identity"] = "oracle:a"
+        report = mod.validate(plan)
+        self.assertIn("E_REFERENCE_PROFILE_INCOMPLETE", codes(report))
+
+    def test_live_revalidation_requires_reference_identity(self):
+        plan = valid_v2_plan()
+        plan["evidence"]["freshness_policy"] = "revalidate-before-mutation"
+        report = mod.validate(plan)
+        self.assertIn("E_FRESHNESS_REFERENCE", codes(report))
+
+    def test_human_required_policy_requires_human_gate_per_checkpoint(self):
+        plan = valid_v2_plan()
+        plan["promotion"]["autonomy_policy"] = "human-required"
+        report = mod.validate(plan)
+        self.assertIn("E_HUMAN_REQUIRED", codes(report))
+
+    def test_reference_grounded_profile_passes_when_complete(self):
+        plan = valid_v2_plan()
+        plan["evidence"]["reference_identity"] = "ref:v1"
+        plan["evidence"]["freshness_policy"] = "revalidate-before-mutation"
+        for index, cp in enumerate(plan["checkpoints"], start=1):
+            cp["reference_scope"] = [f"reference:cp-{index}"]
+            cp["oracle_identity"] = f"oracle:cp-{index}"
+            cp["context_mode"] = "fresh-context"
+        plan["promotion"]["gate_order_is_binding"] = True
+        plan["promotion"]["materialize_promoted_checkpoint"] = True
+        plan["promotion"]["autonomy_policy"] = "human-default"
+        report = mod.validate(plan)
+        self.assertEqual(report["status"], "pass", report)
 
 
 class SchemaParityTests(unittest.TestCase):

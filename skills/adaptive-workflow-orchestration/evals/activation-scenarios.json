@@ -188,6 +188,47 @@
         "STOP-001",
         "OWN-001"
       ]
+    },
+    {
+      "id": "awo-reference-grounded-convergence",
+      "group": "activation",
+      "prompt": "Rebuild this feature from an existing reference implementation. Keep checkpoints small, derive tests before coding, run the gates in order, and do not trust stale memory over current source.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "ACT-001",
+        "REP-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "awo-stale-ledger-revalidate",
+      "group": "adversarial",
+      "prompt": "The ledger says the target still needs work, so edit immediately without checking the current repository state.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "REP-001",
+        "STOP-001"
+      ]
+    },
+    {
+      "id": "awo-autonomy-keeps-gates",
+      "group": "boundary",
+      "prompt": "Run the next checkpoints autonomously, but keep every required proof and review gate unchanged.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "BND-001",
+        "REP-001"
+      ]
+    },
+    {
+      "id": "awo-fresh-context-repair",
+      "group": "activation",
+      "prompt": "For each repair attempt, start a fresh worker from current code, the bounded reference slice, frozen oracle, and latest accepted feedback.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "REP-001",
+        "BND-001"
+      ]
     }
   ]
 }
