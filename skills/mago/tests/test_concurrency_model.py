@@ -53,7 +53,7 @@ class ConcurrencyModelTests(unittest.TestCase):
             "created_at": "2026-07-19T12:00:00Z",
             "created_by": "test",
             "status": "planned",
-            "proposed_version": "0.3.0",
+            "proposed_version": "0.4.0",
             "accepted_version": None,
             "planning_revision": 1,
             "imported_from": None,
