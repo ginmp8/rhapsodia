@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -157,9 +158,19 @@ links:
 """
 
 
+def render_native(work_item_id: str, profile: str = "standard", lifecycle: str = "intake", governance_status: str = "intake") -> str:
+    """Scaffold governance independently; a Mago spec identity is not invented."""
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", work_item_id):
+        raise ValueError("native work_item_id must be a stable feature key")
+    text = render(None, None, profile, lifecycle, governance_status)
+    return text.replace("schema_version: 2\n", "schema_version: 2\nstorage_profile: artifact-native\nwork_item_id: " + work_item_id + "\n", 1)
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Write a canonical nomia ops.yaml scaffold with safe defaults.")
     parser.add_argument("path", help="Destination path for ops.yaml.")
+    parser.add_argument("--repo-root", type=Path, help="Repository root for an owner-contained native write.")
+    parser.add_argument("--work-item", help="Stable work item; selects native governance without a spec ID.")
     parser.add_argument("--spec-id", help="Externally supplied spec id in spec-YYYY-MM-DD-feature-key format. Omit for off-repository drafts.")
     parser.add_argument("--spec-id-provenance", help="Evidence reference for the externally supplied spec id. Required with --spec-id.")
     parser.add_argument("--profile", choices=sorted(PROFILE_VALUES - {"unknown"}), help="Governance profile. Defaults to standard for repository records.")
@@ -178,12 +189,31 @@ def main(argv: list[str]) -> int:
         return 1
 
     destination = Path(args.path).resolve()
+    if args.work_item:
+        if args.repo_root is None or args.spec_id or args.spec_id_provenance:
+            print("ERROR: native writes require --repo-root and must not invent a spec ID")
+            return 1
+        from artifact_protocol import confined
+        from native_artifacts import resolve_owned_root
+        try:
+            repo = args.repo_root.resolve(strict=True)
+            raw = Path(args.path)
+            relative = raw.relative_to(repo).as_posix() if raw.is_absolute() else raw.as_posix()
+            destination = confined(repo, relative)
+            owned = resolve_owned_root(repo) / args.work_item
+            if destination.parent != owned or destination.name != "ops.yaml":
+                raise ValueError("native ops must be under the producer's work-item root")
+            rendered = render_native(args.work_item, args.profile or "standard", args.lifecycle or "intake", args.governance_status or "intake")
+        except (ValueError, OSError) as exc:
+            print(f"ERROR: {exc}")
+            return 1
+    else:
+        rendered = render(args.spec_id, args.spec_id_provenance, args.profile, args.lifecycle, args.governance_status)
     if destination.exists() and not args.force:
         print(f"ERROR: destination already exists: {destination}")
         print("Use --force to overwrite.")
         return 1
 
-    rendered = render(args.spec_id, args.spec_id_provenance, args.profile, args.lifecycle, args.governance_status)
     if args.dry_run:
         print(rendered, end="")
         return 0

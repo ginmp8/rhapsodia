@@ -1,0 +1,27 @@
+{
+  "actions_schema": "references/artifact-actions.schema.json",
+  "contract_id": "rhapsodia-artifact-native-v1",
+  "cross_owner_writes": false,
+  "default_profile": "artifact-native",
+  "envelope_schema": "references/artifact-envelope.schema.json",
+  "execution_state": "Magia-owned records only; no governance closure inferred",
+  "handoff": "nomia-mago-magia-handoff-v3 remains authoritative for domain transfers",
+  "legacy_activation": "explicit selection only",
+  "legacy_profile": "legacy-board",
+  "migration": "owner-side copy with source preservation and hash-bound recovery",
+  "packaging": "external executed evidence; packager never executes target code",
+  "producer_roots": {
+    "magia": "docs/implementation",
+    "mago": "docs/specs",
+    "nomia": "docs/product"
+  },
+  "schema_version": "1.0.0",
+  "sidecar_suffix": ".artifact.json",
+  "source_authority": "producer skill",
+  "spec_identity": "Mago-owned semantic spec_id; not a shared storage path",
+  "workspace_required": false,
+  "workspace_writes": [
+    ".rhapsodia/catalog",
+    ".rhapsodia/views"
+  ]
+}

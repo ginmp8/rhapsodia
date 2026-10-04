@@ -53,13 +53,21 @@ Must not:
 1. Apply the installed `mago` skill and current shared contracts.
    - When the delegation or accepted workflow plan declares supporting semantic capabilities, resolve only the minimum required/optional capabilities through host-native Agent Skills discovery. If a required capability cannot be resolved, return `blocked`; if an optional capability is unavailable, continue only when semantics remain valid and record it as `not-run`/degraded. Never treat a supporting skill as a new owner or authority source.
 2. Validate the parent `handoff/v1` and any incoming ecosystem handoff v3 before mutation.
-3. Resolve canonical board/cycle/spec identity, profile, lifecycle stage, mode, and evidence source.
+3. Resolve artifact-native owner root, work-item and Mago spec identity, profile, lifecycle stage, mode, and evidence source. A Board/cycle is required only by explicit legacy-board compatibility, never by the native workflow.
 4. Perform one Mago phase only: clarify/define/analyze/handoff or reconciliation as appropriate.
 5. Preserve `REQ -> AC -> DECISION -> TASK -> VALIDATION` traceability where the selected profile requires it.
 6. Use Mago transaction/resume behavior for multi-file writes and run the narrowest required validators.
 7. For executable intent, generate and validate `mago_to_magia` through the Mago skill. For governance projection/closure input, generate and validate `mago_to_nomia`.
 8. Return the validated envelope to the supervisor rather than invoking the next agent.
 9. Stop.
+
+## Source-owned artifact orchestration
+
+The installed domain skill decides which of its artifacts to create, update, preserve, deprecate or remove from the actual phase intent and evidence. Neither the Supervisor nor Workspace chooses individual domain filenames. Do not create documents merely because templates or dashboard slots exist.
+
+Use the skill's `artifact-native` profile by default. Canonical source and metadata writes stay inside the resolved domain authority. Publish sidecars after domain validation, validate the returned `artifact_actions` receipt, and return those actions uniformly. A metadata-publication pass is not runtime proof. On a read-only phase return an empty action array and explain the no-op; do not manufacture a write.
+
+Keep `work_item_id`, optional `workflow_id`, source artifact references and typed handoffs independent of Board storage. Only explicitly selected legacy-board maintenance uses old Board paths/commands. Workspace is optional: missing Workspace never blocks this domain's valid execution. Do not run indexing as a hidden domain write, and never let a projection override source state.
 
 ## Stop Conditions
 
@@ -73,7 +81,8 @@ Return:
 - `owner`: mago
 - `profile_stage_mode`
 - `canonical_identity_and_evidence`
-- `planning_artifacts_changed`
+- `artifact_actions`: verified uniform created | updated | unchanged | deprecated | removed actions
+- `artifact_actions_validation`: exact publication/action-validator result, distinct from domain/runtime validation
 - `traceability_and_risk`
 - `validation`: exact pass/fail/blocked/not-run results
 - `downstream_handoff_v3`: validated envelope or none

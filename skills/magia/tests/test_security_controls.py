@@ -180,7 +180,17 @@ def test_packager_succeeds_after_tests_create_cache_artifacts(tmp_path: Path):
     (cache / "test.pyc").write_bytes(b"python\x00bytecode")
     output = tmp_path / "skill.zip"
 
-    assert packager.main(["--target", str(target), "--output", str(output), "--validate"]) == 0
+    assert packager.main(["--target", str(target), "--output", str(output), "--validate"]) != 0
+    assert not output.exists()
+    # Synthetic receipt validates the packaging contract only, not a release claim.
+    import json
+    from package_evidence import tree_digest
+    evidence = tmp_path / "synthetic-evidence.json"
+    evidence.write_text(json.dumps({"schema_version":"1.0.0", "evidence_kind":"executed",
+        "target_tree_sha256":tree_digest(target), "runner_sha256":"0"*64,
+        "gates":[{"name":name,"status":"pass","returncode":0,"command":["synthetic-unit-fixture"],"output_sha256":"0"*64}
+                 for name in ("structure","tests","contracts")]}))
+    assert packager.main(["--target", str(target), "--output", str(output), "--validate", "--validation-evidence", str(evidence)]) == 0
     with zipfile.ZipFile(output) as archive:
         names = archive.namelist()
     assert not any("__pycache__" in name for name in names)

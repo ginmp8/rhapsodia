@@ -1,5 +1,8 @@
 # Delivery Artifacts
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 nomia delivery artifacts communicate human delivery governance, not Mago execution-handoff plans or Magia execution records.
 
 Placement: spec-scoped `ops.yaml`, `status.md`, `stakeholder-brief.md`, `replanning.md` live under `BOARD_ROOT/specs/<spec_id>/`. Board-scoped `portfolio.yaml` and `portfolio.md` live directly under `BOARD_ROOT`.

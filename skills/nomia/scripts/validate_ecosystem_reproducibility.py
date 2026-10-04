@@ -42,6 +42,9 @@ def run() -> dict[str,Any]:
         results.append({'id':sid,'status':'pass' if ok else 'fail','evidence':evidence})
         if not ok: errors.append(sid)
     version=(ROOT/'VERSION').read_text().strip(); comp=load('references/ecosystem-compatibility.json'); repro=load('references/ecosystem-reproducibility-contract.json'); own=load('references/ecosystem-ownership-contract.json'); suite=load('evals/ecosystem-cross-skill-scenarios.json')
+    for key, frozen in repro.get('frozen_evaluators', {}).items():
+        data = load(frozen['path'])
+        check('frozen_' + key, hashlib.sha256((ROOT/frozen['path']).read_bytes()).hexdigest() == frozen.get('sha256') and data.get('ecosystem_release') == frozen.get('ecosystem_release'), {'path':frozen['path']})
     ids={x.get('id') for x in suite.get('scenarios',[])}
     check('suite_identity',suite.get('frozen') is True and ids==EXPECTED,{'count':len(ids),'missing':sorted(EXPECTED-ids),'extra':sorted(ids-EXPECTED)})
     check('release_identity',comp.get('ecosystem_release')==version==repro.get('ecosystem_release') and set(comp.get('packages',{}).values())=={version},{'version':version,'compat':comp.get('ecosystem_release')})

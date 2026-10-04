@@ -1,5 +1,8 @@
 # Requirements and Traceability Contract
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this contract for `standard` and `governed` planning and whenever behavior, compatibility, security, migration, or acceptance must be audited. `quick` may use the same syntax with fewer records, but it must still link every changed requirement to at least one task and validation.
 
 ## Normative requirement convention

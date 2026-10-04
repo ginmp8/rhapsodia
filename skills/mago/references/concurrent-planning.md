@@ -1,5 +1,8 @@
 # Concurrent Planning Model
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 ## Design Goal
 
 Allow unrelated developers or agents to create planning work in parallel without coordinating a sequence number or editing a shared catalog. Preserve real semantic conflicts instead of hiding them.

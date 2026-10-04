@@ -1,5 +1,16 @@
 # Rhapsodia Agent Architecture
 
+## Artifact-native default (agent-system-contract/v3)
+
+Domain agents decide which files their own skill needs. The Supervisor selects the current owner, not filenames. All three workers return uniform `artifact_actions` and a separate action-validation result. Their canonical roots are independently owned (`docs/product`, `docs/specs`, `docs/implementation`, or explicit non-overlapping alternatives). Board/cycle/registry setup is not a native requirement.
+
+`Rhapsodia Workspace` is a seventh, derived-only profile. Invoke it only for an explicit catalog/UI request after canonical writers stop. It can index, validate, project and render under `.rhapsodia`, but cannot create source sidecars, write domain files, advance lifecycle, mint planning identity or emit ecosystem v3 handoffs. Its absence does not prevent a domain phase from running. Requested UI output must still complete before claiming the user's whole request is complete.
+
+The original Nomia/Mago/Magia ownership and typed v3 handoff directions remain intact. Read-only Analyst fan-out and independent Verifier checkpoints are unchanged. Workspace counts toward the same 24-hop budget and has at most one retry after a source change. No framework, external orchestration service, watcher or Board runtime is introduced.
+
+See [artifact orchestration](ARTIFACT-ORCHESTRATION.md) for data contracts, migration, validation and operation. Existing Board examples elsewhere are explicit legacy compatibility, not default storage prerequisites.
+
+
 ## Purpose
 
 This package adds a portable semantic agent layer with a validated VS Code adapter around the Nomia, Mago, Magia, and test-oracle-engineering Agent Skills. It preserves one centralized orchestration owner and one canonical production writer per lifecycle phase while allowing bounded isolated analysis, adversarial review, and executable verification when they materially reduce false confidence.

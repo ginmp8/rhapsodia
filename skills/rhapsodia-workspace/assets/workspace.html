@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'">
+<title>Rhapsodia Workspace</title>
+<style>
+:root{color-scheme:light dark;--paper:#f5f6f8;--surface:#fff;--ink:#182331;--secondary:#566372;--rule:#dce2e8;--focus:#175fa7;--selected:#e9f1fb;--governance:#946726;--planning:#426aa2;--execution:#38715e;--warning:#976400}
+@media(prefers-color-scheme:dark){:root{--paper:#14191f;--surface:#1b222b;--ink:#e2e8ef;--secondary:#a7b2bf;--rule:#343e4a;--focus:#8abaee;--selected:#23374f;--governance:#d8b47b;--planning:#95b9e5;--execution:#8cc5ac;--warning:#e2bb73}}
+:root[data-theme="light"]{color-scheme:light;--paper:#f5f6f8;--surface:#fff;--ink:#182331;--secondary:#566372;--rule:#dce2e8;--focus:#175fa7;--selected:#e9f1fb;--governance:#946726;--planning:#426aa2;--execution:#38715e;--warning:#976400}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#14191f;--surface:#1b222b;--ink:#e2e8ef;--secondary:#a7b2bf;--rule:#343e4a;--focus:#8abaee;--selected:#23374f;--governance:#d8b47b;--planning:#95b9e5;--execution:#8cc5ac;--warning:#e2bb73}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button,input,select{color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;min-height:44px}button{padding:8px 14px;cursor:pointer}button:hover{border-color:var(--secondary)}:focus-visible{outline:3px solid var(--focus);outline-offset:3px}input,select{padding:9px 12px;min-width:0;width:100%}h1,h2,h3,p{margin:0}h1{font-size:30px;letter-spacing:-1px;line-height:1.2;font-weight:650}h2{font-size:21px;letter-spacing:-.4px}h3{font-size:16px}code{font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.layout{max-width:1500px;margin:auto;padding:32px 40px 56px}.top{display:flex;justify-content:space-between;align-items:center;gap:24px}.eyebrow{color:var(--secondary);font-size:11px;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:7px}.subtle{color:var(--secondary)}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.top-actions label{display:flex;align-items:center;min-height:44px;padding:8px 14px;border:1px solid var(--rule);background:var(--surface);border-radius:6px;cursor:pointer}.file-input{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.file-input:focus-visible+label{outline:3px solid var(--focus);outline-offset:3px}.principle{margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:12px;color:var(--secondary)}.principle b{color:var(--ink);font-weight:600}.summary{display:flex;gap:42px;flex-wrap:wrap;padding:25px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin:22px 0}.metric strong{display:block;font-size:31px;letter-spacing:-1px;line-height:1.2;font-variant-numeric:tabular-nums}.metric span{font-size:12px;color:var(--secondary)}.source-stat{margin-left:auto;max-width:320px;min-width:0;align-self:center}.source-stat code{font-size:11px;color:var(--secondary)}.controls{display:grid;grid-template-columns:minmax(200px,1fr) 180px 180px;gap:14px;margin-bottom:20px}.control label{font-size:12px;color:var(--secondary);display:block;margin-bottom:5px}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 24px}.tabs button{border-color:transparent;background:transparent}.tabs button[aria-pressed="true"]{background:var(--selected);color:var(--focus);border-color:var(--rule);font-weight:600}.body{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}.main,.details{min-width:0}.details{border-left:1px solid var(--rule);padding-left:24px}.details h2{font-size:18px;margin:8px 0 16px}.details dl{margin:0}.details dt{font-size:11px;color:var(--secondary);text-transform:uppercase;letter-spacing:1px;margin:15px 0 4px}.details dd{margin:0;overflow-wrap:anywhere}.details .pill{display:inline-block}.details button{margin:4px 5px 4px 0;font-size:12px;word-break:break-word;text-align:left}.heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:13px}.heading span{font-size:12px;color:var(--secondary)}.work-item{border:1px solid var(--rule);border-radius:8px;background:var(--surface);margin-bottom:15px;overflow:hidden}.item-heading{padding:14px 18px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;gap:10px}.item-heading code{color:var(--secondary)}.lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.lane{padding:14px;min-width:0;border-right:1px solid var(--rule)}.lane:last-child{border:0}.lane-title{text-transform:uppercase;font-size:10px;letter-spacing:1.4px;color:var(--secondary);margin:0 0 10px;display:flex;align-items:center;gap:7px}.owner-dot{height:7px;width:7px;display:inline-block;border-radius:50%;background:var(--planning);flex:none}.owner-nomia{background:var(--governance)}.owner-magia{background:var(--execution)}.artifact{width:100%;display:block;border:1px solid transparent;padding:10px;text-align:left;margin-bottom:4px;background:transparent;min-width:0}.artifact.selected{border-color:var(--focus);background:var(--selected)}.artifact-title{font-size:13px;font-weight:600;display:block;overflow-wrap:anywhere}.artifact-type{font-size:11px;color:var(--secondary);display:block;margin-top:3px}.pill{font-size:10px;color:var(--secondary);border:1px solid var(--rule);border-radius:20px;padding:2px 7px;white-space:normal;margin-top:7px;display:inline-block}.empty{color:var(--secondary);font-size:12px;padding:12px 0}.empty-state{padding:35px 0;max-width:530px}.empty-state h3{font-size:20px;margin-bottom:8px}.empty-state p{color:var(--secondary);margin-bottom:14px}.timeline-row{display:grid;grid-template-columns:155px minmax(0,1fr);gap:18px;padding:12px 0;border-bottom:1px solid var(--rule)}.timeline-date{font-size:12px;color:var(--secondary);padding-top:11px}.relations-row{display:grid;grid-template-columns:minmax(0,1fr) 105px minmax(0,1fr);align-items:center;gap:10px;border-bottom:1px solid var(--rule);padding:10px 0}.relations-row .relation-label{font-size:11px;color:var(--secondary);text-align:center;overflow-wrap:anywhere}.producer-row{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:18px;margin:0 0 14px}.producer-row p{margin:4px 0 12px;color:var(--secondary);font-size:12px}.message{padding:12px 16px;border:1px solid var(--rule);border-left:3px solid var(--warning);border-radius:4px;margin-bottom:20px;font-size:13px;white-space:pre-wrap}.message[hidden]{display:none}.footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--rule);font-size:11px;color:var(--secondary);display:flex;gap:20px;flex-wrap:wrap}.count{font-variant-numeric:tabular-nums}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:1100px){.layout{padding:25px}.body{grid-template-columns:minmax(0,1fr) 270px;gap:20px}.lanes{grid-template-columns:1fr}.lane{border-right:0;border-bottom:1px solid var(--rule)}.lane:last-child{border-bottom:0}.controls{grid-template-columns:minmax(180px,1fr) 140px 140px}}
+@media(max-width:720px){.layout{padding:20px 16px}.top{display:block}.top-actions{margin-top:18px}.body{grid-template-columns:1fr}.details{border-left:0;border-top:1px solid var(--rule);padding:22px 0 0}.controls{grid-template-columns:1fr 1fr}.control:first-child{grid-column:1/-1}.summary{gap:25px}.source-stat{margin-left:0;flex-basis:100%;max-width:none}.timeline-row{grid-template-columns:1fr;gap:0}.relations-row{grid-template-columns:1fr;gap:0}.relations-row .relation-label{text-align:left;padding-left:10px}.item-heading{flex-wrap:wrap}.tabs{gap:2px}.tabs button{padding:8px 11px}}
+</style>
+</head>
+<body>
+<main class="layout" id="workspace">
+<header class="top"><div><p class="eyebrow">Rhapsodia / artifact workspace</p><h1>One view. Independent owners.</h1><p class="subtle" style="margin-top:8px">Planning, governance and execution, connected by evidence.</p></div><div class="top-actions"><input class="file-input" id="load-file" type="file" accept="application/json,.json"><label for="load-file">Open catalog</label><button id="export" type="button">Export snapshot</button><button id="theme" type="button" aria-pressed="false">Dark theme</button></div></header>
+<div class="principle"><b>Read-only projection</b><span>Sources remain with their producers.</span><span>No server. No background access. No status write-back.</span></div>
+<section class="summary" aria-label="Catalog summary"><div class="metric"><strong id="items-count">0</strong><span>Work items</span></div><div class="metric"><strong id="artifact-count">0</strong><span>Active artifacts</span></div><div class="metric"><strong id="producer-count">0</strong><span>Independent producers</span></div><div class="source-stat"><p class="eyebrow">Source fingerprint</p><code id="fingerprint">Loading embedded snapshot</code></div></section>
+<div id="message" class="message" role="status" hidden></div>
+<div class="controls"><div class="control"><label for="search">Find artifacts, IDs or source paths</label><input id="search" type="search" placeholder="Search this snapshot" autocomplete="off"></div><div class="control"><label for="producer">Producer</label><select id="producer"><option value="">All producers</option></select></div><div class="control"><label for="lifecycle">Lifecycle</label><select id="lifecycle"><option value="active">Active + deprecated</option><option value="all">All artifacts</option><option value="removed">Removed only</option></select></div></div>
+<nav class="tabs" aria-label="Workspace views"><button type="button" data-view="portfolio" aria-pressed="true">Portfolio</button><button type="button" data-view="timeline" aria-pressed="false">Update timeline</button><button type="button" data-view="relations" aria-pressed="false">Relations</button><button type="button" data-view="skills" aria-pressed="false">By skill</button></nav>
+<div class="body"><section class="main" aria-labelledby="view-title"><div class="heading"><h2 id="view-title">Work items</h2><span id="results-count" aria-live="polite"></span></div><div id="content"></div></section><aside class="details" aria-label="Artifact details" id="details"><p class="eyebrow">Source record</p><h2>Select an artifact</h2><p class="subtle">Inspect its owner, exact status, source hash and declared relationships. This view does not infer completion.</p></aside></div>
+<footer class="footer"><span id="snapshot-note">Embedded, validated snapshot. Reindex to reflect source changes.</span><span>Update timeline shows file metadata, not a reconstructed execution history.</span></footer>
+</main>
+<script type="application/json" id="workspace-data">__CATALOG_JSON__</script>
+<script type="application/json" id="workspace-envelope-schema">__ENVELOPE_SCHEMA_JSON__</script>
+<script>
+(function(){
+'use strict';
+const root=document.getElementById('workspace');
+const find=id=>root.querySelector('#'+id);
+const state={catalog:null,view:'portfolio',selected:null};
+const el=(tag,text,cls)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=String(text);if(cls)node.className=cls;return node;};
+const ownerLabels=new Map([['nomia','Nomia / governance'],['mago','Mago / planning'],['magia','Magia / execution']]);
+const labelOwner=p=>ownerLabels.get(p)||p;
+// The renderer embeds the same envelope schema used by the Python validator.
+const envelopeSchema=JSON.parse(document.getElementById('workspace-envelope-schema').textContent);
+function invalid(message){throw new Error(message+' Existing snapshot was preserved.');}
+function strictJson(text){
+ const value=JSON.parse(text);let index=0;
+ const whitespace=()=>{while(/\s/.test(text[index]||'')&&index<text.length)index++;};
+ function string(){const start=index++;while(index<text.length){if(text[index]==='\\'){index+=2;continue;}if(text[index++]==='"')break;}return JSON.parse(text.slice(start,index));}
+ function walk(depth){
+  if(depth>100)invalid('Catalog nesting exceeds the viewer limit.');whitespace();
+  if(text[index]==='{'){index++;whitespace();const keys=new Set();if(text[index]==='}'){index++;return;}while(index<text.length){whitespace();const key=string();if(keys.has(key))invalid('Duplicate JSON object key.');keys.add(key);whitespace();index++;walk(depth+1);whitespace();if(text[index++]==='}')break;}}
+  else if(text[index]==='['){index++;whitespace();if(text[index]===']'){index++;return;}while(index<text.length){walk(depth+1);whitespace();if(text[index++]===']')break;}}
+  else if(text[index]==='"')string();else{while(index<text.length&&!/[\s,}\]]/.test(text[index]))index++;}
+ }
+ walk(0);return value;
+}
+function schemaMatches(value,schema){
+ if(schema.anyOf&&!schema.anyOf.some(option=>schemaMatches(value,option)))return false;
+ if('const' in schema&&value!==schema.const)return false;
+ if(schema.enum&&!schema.enum.includes(value))return false;
+ const object=value!==null&&typeof value==='object'&&!Array.isArray(value);
+ if(schema.type&&({object:!object,array:!Array.isArray(value),string:typeof value!=='string',boolean:typeof value!=='boolean',null:value!==null,integer:!Number.isInteger(value)})[schema.type])return false;
+ if(object&&schema.properties){
+  if((schema.required||[]).some(key=>!Object.hasOwn(value,key)))return false;
+  if(schema.additionalProperties===false&&Object.keys(value).some(key=>!Object.hasOwn(schema.properties,key)))return false;
+  if(Object.entries(value).some(([key,item])=>schema.properties[key]&&!schemaMatches(item,schema.properties[key])))return false;
+ }
+ if(Array.isArray(value)){
+  if(value.length<(schema.minItems||0)||value.length>(schema.maxItems??Infinity))return false;
+  if(schema.items&&value.some(item=>!schemaMatches(item,schema.items)))return false;
+  if(schema.uniqueItems&&new Set(value.map(item=>JSON.stringify(item,Object.keys(item||{}).sort()))).size!==value.length)return false;
+ }
+ if(typeof value==='string'){
+  if([...value].length<(schema.minLength||0)||[...value].length>(schema.maxLength??Infinity)||(schema.pattern&&!new RegExp(schema.pattern).test(value)))return false;
+  if(schema.format==='date-time'&&!validTime(value))return false;
+ }
+ return true;
+}
+function validTime(value){const date=new Date(value);return value.slice(0,4)!=='0000'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)&&Number.isFinite(date.getTime())&&date.toISOString()===value.replace('Z','.000Z');}
+function relativePath(value){
+ if(typeof value!=='string'||!value||value.length>1100||/[\\:*?"<>|\x00-\x1f]/.test(value))return false;
+ const parts=value.split('/');const forbidden=new Set(['.git','.hg','.svn','node_modules','__pycache__','.venv','venv']);
+ return !parts.some(part=>!part||part==='.'||part==='..'||/[ .]$/.test(part)||forbidden.has(part.toLowerCase())||part.toLowerCase().startsWith('.env')||/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/i.test(part))&&!/\.(pem|key|p12|pfx|crt|kdbx)$/i.test(value);
+}
+function exactKeys(value,keys){return value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length===keys.length&&keys.every(key=>Object.hasOwn(value,key));}
+function validateCatalog(value){
+ const fields=['schema_version','kind','authority','source_roots','destination','source_fingerprint','latest_source_update','entries','diagnostics'];
+ if(!exactKeys(value,fields)||value.schema_version!=='1.0.0'||value.kind!=='derived-artifact-catalog'||value.authority!=='non-authoritative'||!Array.isArray(value.entries)||value.entries.length>10000||!Array.isArray(value.diagnostics)||!Array.isArray(value.source_roots)||!value.source_roots.length||value.source_roots.some(path=>!relativePath(path)||path.startsWith('.'))||new Set(value.source_roots).size!==value.source_roots.length||!['local','internal','public'].includes(value.destination)||!/^[a-f0-9]{64}$/.test(value.source_fingerprint||''))invalid('Unsupported catalog contract.');
+ const ids=new Set();const edges=new Map();let latest=null;
+ for(const entry of value.entries){
+  if(!exactKeys(entry,['record','manifest_path','manifest_sha256'])||!relativePath(entry.manifest_path)||!/^[a-f0-9]{64}$/.test(entry.manifest_sha256||''))invalid('Invalid manifest metadata.');
+  const r=entry.record;
+  if(!schemaMatches(r,envelopeSchema)||ids.has(r.artifact_id)||!r.artifact_id.startsWith(r.producer+':')||!relativePath(r.source.path)||r.source.path.startsWith('.rhapsodia/')||entry.manifest_path!==r.source.path+'.artifact.json'||r.created_at>r.updated_at||r.relations.some(edge=>edge.target===r.artifact_id))invalid('Invalid artifact record.');
+  const privacy=r.privacy;
+  if(!privacy.allowed_destinations.includes(value.destination)||(privacy.allowed_destinations.includes('public')&&(privacy.classification!=='public'||!privacy.external_share_allowed))||(privacy.classification!=='public'&&privacy.external_share_allowed))invalid('Privacy or destination policy rejected the catalog.');
+  if(/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})\b|\bBearer\s+[A-Za-z0-9._~+/-]{20,}/i.test(JSON.stringify(r)))invalid('Secret-like metadata is not permitted.');
+  ids.add(r.artifact_id);if(latest===null||r.updated_at>latest)latest=r.updated_at;
+  if(r.lifecycle!=='removed')edges.set(r.artifact_id,r.relations.filter(edge=>edge.type==='depends_on').map(edge=>edge.target));
+ }
+ if(latest!==value.latest_source_update)invalid('Catalog update metadata is inconsistent.');
+ const incoming=new Map([...edges.keys()].map(key=>[key,0]));
+ for(const targets of edges.values())for(const target of targets)if(incoming.has(target))incoming.set(target,incoming.get(target)+1);
+ const queue=[...incoming.keys()].filter(key=>incoming.get(key)===0);let visited=0;
+ while(queue.length){const key=queue.pop();visited++;for(const target of edges.get(key))if(incoming.has(target)){incoming.set(target,incoming.get(target)-1);if(incoming.get(target)===0)queue.push(target);}}
+ if(visited!==edges.size)invalid('Dependency cycle rejected.');
+ const diagnostics=[];
+ for(const {record:r} of value.entries)if(r.lifecycle!=='removed')for(const relation of r.relations)if(!edges.has(relation.target))diagnostics.push({severity:'warning',code:'UNRESOLVED_RELATION',artifact_id:r.artifact_id,target:relation.target});
+ const normalize=list=>list.map(item=>JSON.stringify([item.severity,item.code,item.artifact_id,item.target])).sort();
+ if(value.diagnostics.some(item=>!exactKeys(item,['severity','code','artifact_id','target']))||JSON.stringify(normalize(value.diagnostics))!==JSON.stringify(normalize(diagnostics)))invalid('Catalog relationship diagnostics are inconsistent.');
+ return value;
+}
+function setCatalog(value,imported){
+ validateCatalog(value);state.catalog=value;state.selected=null;
+ const previous=find('producer').value;find('producer').replaceChildren(new Option('All producers',''));
+ [...new Set(value.entries.map(e=>e.record.producer))].sort().forEach(p=>find('producer').add(new Option(p,p)));
+ find('producer').value=previous;find('fingerprint').textContent=value.source_fingerprint;
+ find('snapshot-note').textContent=imported?'Imported snapshot: source files cannot be verified by this offline viewer. Revalidate with the Workspace CLI.':'Embedded, validated snapshot. Reindex to reflect source changes.';
+ find('message').hidden=!value.diagnostics.length;find('message').textContent=value.diagnostics.length+' unresolved relationship(s). Partial discovery is visible; it is not proof of readiness.';
+ render();
+}
+function records(){const q=find('search').value.toLocaleLowerCase();const p=find('producer').value;const life=find('lifecycle').value;return state.catalog.entries.map(e=>e.record).filter(r=>(!p||r.producer===p)&&(life==='all'||(life==='removed'?r.lifecycle==='removed':r.lifecycle!=='removed'))&&(!q||[r.title,r.artifact_id,r.artifact_type,r.work_item_id,r.source.path,r.state.value].some(v=>v.toLocaleLowerCase().includes(q))));}
+function artifactButton(r){const b=el('button',undefined,'artifact'+(state.selected===r.artifact_id?' selected':''));b.type='button';b.setAttribute('aria-pressed',String(state.selected===r.artifact_id));b.append(el('span',r.title,'artifact-title'),el('span',r.artifact_type,'artifact-type'),el('span',r.state.dimension+' / '+r.state.value+(r.lifecycle!=='active'?' / '+r.lifecycle:''),'pill'));b.addEventListener('click',()=>{state.selected=r.artifact_id;render();});return b;}
+function renderPortfolio(rows,container){const groups=new Map();rows.forEach(r=>{if(!groups.has(r.work_item_id))groups.set(r.work_item_id,[]);groups.get(r.work_item_id).push(r);});for(const [id,items] of [...groups].sort((a,b)=>a[0].localeCompare(b[0]))){const item=el('article',undefined,'work-item');const heading=el('div',undefined,'item-heading');heading.append(el('h3',id),el('code',items.length+' artifact'+(items.length===1?'':'s')));item.append(heading);const lanes=el('div',undefined,'lanes');const owners=[...new Set(['nomia','mago','magia',...items.map(r=>r.producer)])];for(const owner of owners){const lane=el('section',undefined,'lane');const title=el('h3',undefined,'lane-title');title.append(el('span','', 'owner-dot owner-'+(owner==='nomia'?'nomia':owner==='magia'?'magia':'mago')),document.createTextNode(labelOwner(owner)));lane.append(title);const own=items.filter(r=>r.producer===owner);if(own.length)own.forEach(r=>lane.append(artifactButton(r)));else lane.append(el('p','No published artifact','empty'));lanes.append(lane);}item.append(lanes);container.append(item);}}
+function renderTimeline(rows,container){for(const r of [...rows].sort((a,b)=>b.updated_at.localeCompare(a.updated_at)||a.artifact_id.localeCompare(b.artifact_id))){const row=el('div',undefined,'timeline-row');row.append(el('time',r.updated_at.replace('T',' ').replace('Z',' UTC'),'timeline-date'),artifactButton(r));container.append(row);}}
+function renderRelations(rows,container){let count=0;const all=new Map(state.catalog.entries.map(e=>[e.record.artifact_id,e.record]));for(const r of rows){for(const edge of r.relations){count++;const row=el('div',undefined,'relations-row');const target=all.get(edge.target);row.append(artifactButton(r),el('div',edge.type.replaceAll('_',' ')+' \u2192','relation-label'),target?artifactButton(target):el('code','Unresolved: '+edge.target));container.append(row);}}if(!count)container.append(el('p','No declared relationships in this selection.','empty'));}
+function renderSkills(rows,container){const producers=[...new Set(rows.map(r=>r.producer))].sort();for(const p of producers){const items=rows.filter(r=>r.producer===p);const section=el('section',undefined,'producer-row');section.append(el('h3',labelOwner(p)),el('p',items.length+' artifacts. States belong to this producer, not the catalog.'));items.forEach(r=>section.append(artifactButton(r)));container.append(section);}}
+function renderDetails(){const target=find('details');target.replaceChildren(el('p','Source record','eyebrow'));const entry=state.catalog.entries.find(e=>e.record.artifact_id===state.selected);if(!entry){target.append(el('h2','Select an artifact'),el('p','Inspect its owner, exact status, source hash and declared relationships. This view does not infer completion.','subtle'));return;}const r=entry.record;target.append(el('h2',r.title));const dl=el('dl');const pairs=[['Owner',r.producer],['Artifact ID',r.artifact_id],['Work item',r.work_item_id],['State',r.state.dimension+' / '+r.state.value],['Lifecycle',r.lifecycle],['Source path',r.source.path],['Source SHA-256',r.source.sha256],['Manifest SHA-256',entry.manifest_sha256],['Created',r.created_at],['Updated',r.updated_at],['Privacy',r.privacy.classification],['Provenance',r.provenance.kind||'unknown']];pairs.forEach(([key,value])=>{dl.append(el('dt',key));const dd=el('dd');dd.append(el(key.includes('SHA')||key.includes('path')||key.includes('ID')?'code':'span',value));dl.append(dd);});target.append(dl);if(r.relations.length){target.append(el('h3','Declared relations'));for(const edge of r.relations){const b=el('button',edge.type+' \u2192 '+edge.target);b.type='button';const found=state.catalog.entries.some(e=>e.record.artifact_id===edge.target);b.disabled=!found;b.addEventListener('click',()=>{state.selected=edge.target;render();});target.append(b);}}}
+function render(){const all=state.catalog.entries.map(e=>e.record).filter(r=>r.lifecycle!=='removed');find('items-count').textContent=new Set(all.map(r=>r.work_item_id)).size;find('artifact-count').textContent=all.length;find('producer-count').textContent=new Set(all.map(r=>r.producer)).size;const rows=records();find('results-count').textContent=rows.length+' shown';find('view-title').textContent={portfolio:'Work items',timeline:'Artifact updates',relations:'Declared relationships',skills:'Producer inventory'}[state.view];root.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===state.view)));const content=find('content');content.replaceChildren();if(!rows.length){const empty=el('div',undefined,'empty-state');empty.append(el('h3',state.catalog.entries.length?'No matching artifacts':'No artifacts published yet'),el('p',state.catalog.entries.length?'Change the search or filters to inspect another part of this snapshot.':'Publish source-owned .artifact.json records, then run the Workspace index and render commands. No Board is required.'));content.append(empty);}else({portfolio:renderPortfolio,timeline:renderTimeline,relations:renderRelations,skills:renderSkills}[state.view])(rows,content);renderDetails();}
+const theme=find('theme');
+let darkTheme=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
+function setTheme(){document.documentElement.dataset.theme=darkTheme?'dark':'light';theme.textContent=darkTheme?'Light theme':'Dark theme';theme.setAttribute('aria-pressed',String(darkTheme));}
+theme.addEventListener('click',()=>{darkTheme=!darkTheme;setTheme();});setTheme();
+root.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;render();}));['search','producer','lifecycle'].forEach(id=>find(id).addEventListener(id==='search'?'input':'change',render));
+find('load-file').addEventListener('change',async function(){const file=this.files&&this.files[0];if(!file)return;try{if(file.size>16*1024*1024)throw new Error('Catalog exceeds the 16 MB viewer limit.');const value=strictJson(await file.text());setCatalog(value,true);}catch(error){find('message').hidden=false;find('message').textContent=error instanceof SyntaxError?'Invalid JSON. Existing snapshot was preserved.':error.message;}finally{this.value='';}});
+find('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state.catalog,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rhapsodia-catalog.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+try{setCatalog(strictJson(document.getElementById('workspace-data').textContent),false);}catch(error){find('message').hidden=false;find('message').textContent='Embedded catalog is invalid. Open a valid generated catalog to continue.';}
+})();
+</script>
+</body>
+</html>

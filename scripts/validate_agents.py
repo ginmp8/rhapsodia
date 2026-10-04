@@ -11,7 +11,7 @@ EXPECTED = {
         "name": "Rhapsodia Supervisor",
         "tools": {"read", "search", "agent"},
         "user_invocable": True,
-        "agents": ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia"],
+        "agents": ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia", "Rhapsodia Workspace"],
         "profile": "supervisor",
     },
     "rhapsodia-analyst.agent.md": {
@@ -47,6 +47,10 @@ EXPECTED = {
         "user_invocable": False,
         "profile": "worker",
         "skill": "magia",
+    },
+    "rhapsodia-workspace.agent.md": {
+        "name": "Rhapsodia Workspace", "tools": {"read", "search", "edit", "execute"},
+        "user_invocable": False, "profile": "workspace", "skill": "rhapsodia-workspace",
     },
 }
 
@@ -196,6 +200,15 @@ def validate_agent_file(path, spec, findings):
         if "invoke another custom agent directly" not in body:
             add(findings, "WORKER_RECURSION_BOUNDARY", path, "worker must explicitly prohibit direct custom-agent invocation")
 
+    if spec["profile"] == "workspace":
+        for marker in ("canonical_mutation_performed`: false", "domain_state_changed`: false", "derived outputs only", "emit ecosystem handoff v3"):
+            if marker not in body:
+                add(findings, "WORKSPACE_BOUNDARY", path, f"missing derived-only boundary: {marker}")
+    if spec["profile"] == "worker":
+        for marker in ("artifact_actions", "artifact-native", "Workspace is optional"):
+            if marker not in body:
+                add(findings, "ARTIFACT_OWNERSHIP", path, f"missing native artifact orchestration contract: {marker}")
+
     if len(body) > 30000:
         add(findings, "PROMPT_LENGTH", path, "agent body exceeds the documented 30,000 character prompt limit")
 
@@ -206,8 +219,8 @@ def validate_contract(path, findings):
     except Exception as exc:
         add(findings, "CONTRACT_JSON", path, f"invalid JSON: {exc}")
         return
-    if doc.get("contract") != "agent-system-contract/v2":
-        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v2")
+    if doc.get("contract") != "agent-system-contract/v3":
+        add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v3")
     if doc.get("system", {}).get("autonomy") != "policy-bounded-autonomous":
         add(findings, "AUTONOMY", path, "system autonomy must remain policy-bounded-autonomous")
     routing = doc.get("routing", {})
@@ -282,10 +295,45 @@ def validate_contract(path, findings):
     for key, value in expected_gated.items():
         if gated.get(key) != value:
             add(findings, "GATED_CONVERGENCE", path, f"routing.adaptive_execution.gated_convergence.{key} must be {value!r}")
+    artifacts = doc.get("artifact_orchestration", {})
+    expected_artifacts = {"default_storage_profile": "artifact-native", "selection_owner": "domain-skill", "source_of_truth": "producer-owned-artifacts", "workspace_required_for_domain_execution": False, "projection_writeback": False, "domain_state_inference": False}
+    for key, expected in expected_artifacts.items():
+        if artifacts.get(key) != expected:
+            add(findings, "ARTIFACT_ORCHESTRATION", path, f"artifact_orchestration.{key} must be {expected!r}")
+    derived = routing.get("derived_workspace", {})
+    if derived.get("canonical_write") is not False or derived.get("trigger") != "explicit-visualization-request" or derived.get("max_refresh_attempts") != 2 or derived.get("concurrent_with_canonical_writer") is not False:
+        add(findings, "WORKSPACE_ROUTING", path, "workspace must be optional, derived-only, serial and bounded")
     ids = [a.get("id") for a in doc.get("agents", [])]
-    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia"]:
+    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia", "rhapsodia-workspace"]:
         add(findings, "AGENT_CONTRACT_SET", path, "contract agent ids/order do not match the package")
     capability_ids = {c.get("id") for c in doc.get("capabilities", []) if isinstance(c, dict)}
+    capabilities = doc.get("capabilities", [])
+    if len(capability_ids) != len(capabilities):
+        add(findings, "CAPABILITY_CONTRACT", path, "capability IDs must be unique")
+    for capability in capabilities:
+        if not isinstance(capability, dict):
+            add(findings, "CAPABILITY_CONTRACT", path, "each capability must be an object")
+            continue
+        valid = (isinstance(capability.get("id"), str)
+                 and type(capability.get("required")) is bool
+                 and capability.get("effect") in {"read-only", "local-write", "external-write"}
+                 and isinstance(capability.get("scope"), list) and capability["scope"]
+                 and all(isinstance(item, str) and item.strip() for item in capability["scope"])
+                 and capability.get("approval") in {"none", "policy", "human"}
+                 and capability.get("idempotency") in {"not-applicable", "required", "reconcile-before-retry"})
+        if not valid:
+            add(findings, "CAPABILITY_CONTRACT", path, "capability authority fields must be complete and typed")
+    for agent in doc.get("agents", []):
+        if isinstance(agent, dict) and any(cap not in capability_ids for cap in agent.get("capabilities", [])):
+            add(findings, "CAPABILITY_CONTRACT", path, "agent references an undeclared capability")
+    derived_cap = next((cap for cap in capabilities if isinstance(cap, dict) and cap.get("id") == "derived-output-write"), {})
+    if (derived_cap.get("required") is not False or derived_cap.get("effect") != "local-write"
+            or derived_cap.get("scope") != [".rhapsodia/catalog", ".rhapsodia/views"]
+            or derived_cap.get("approval") != "policy" or derived_cap.get("idempotency") != "required"):
+        add(findings, "WORKSPACE_CAPABILITY", path, "Workspace writes must be optional, policy-bounded and derived-only")
+    delegation = next((cap for cap in capabilities if isinstance(cap, dict) and cap.get("id") == "specialist-delegation"), {})
+    if "Rhapsodia Workspace" not in delegation.get("scope", []):
+        add(findings, "WORKSPACE_CAPABILITY", path, "Workspace must be included in declared delegation scope")
     if "supporting-capability-resolution" not in capability_ids:
         add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, "supporting-capability-resolution capability must be declared")
     for agent in doc.get("agents", []):
@@ -305,6 +353,9 @@ def validate_contract(path, findings):
     verifier_mapping = mappings.get("executable-verification", "")
     if "Rhapsodia Verifier" not in verifier_mapping or "verification-only" not in verifier_mapping:
         add(findings, "VSCODE_VERIFIER_SCOPE", path, "VS Code executable verification must map to the bounded Rhapsodia Verifier profile")
+    workspace_mapping = mappings.get("derived-output-write", "")
+    if not all(text in workspace_mapping for text in ("Rhapsodia Workspace", "derived-only", ".rhapsodia/catalog", ".rhapsodia/views")):
+        add(findings, "WORKSPACE_CAPABILITY", path, "VS Code must map the bounded Workspace write capability")
     support_mapping = mappings.get("supporting-capability-resolution", "")
     if "host-native" not in support_mapping.lower() or "no fixed catalog" not in support_mapping.lower():
         add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, "VS Code supporting capability resolution must use host-native Agent Skills with no fixed catalog")

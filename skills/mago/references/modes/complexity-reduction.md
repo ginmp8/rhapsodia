@@ -1,5 +1,8 @@
 # Complexity Reduction Mode
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this mode when MAGO must plan simplification, de-abstraction, refactoring strategy, or reduction of accidental complexity for one selected spec package.
 
 ## Required Inputs

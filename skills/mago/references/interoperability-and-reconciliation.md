@@ -1,5 +1,8 @@
 # SDD Interoperability and Planning Reconciliation
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this reference for Spec Kit, Kiro, or OpenSpec import/export and for read-only comparison of Mago intent with Magia execution evidence. All adapters and reconciliation outputs are generated, non-authoritative reports.
 
 ## Canonical authority

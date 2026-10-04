@@ -52,12 +52,20 @@ Must not:
 1. Apply the installed `nomia` skill and its current contracts.
    - When the delegation or accepted workflow plan declares supporting semantic capabilities, resolve only the minimum required/optional capabilities through host-native Agent Skills discovery. If a required capability cannot be resolved, return `blocked`; if an optional capability is unavailable, continue only when semantics remain valid and record it as `not-run`/degraded. Never treat a supporting skill as a new owner or authority source.
 2. Validate the parent `handoff/v1` delegation and any supplied ecosystem handoff v3.
-3. Resolve current profile, stage, mode, canonical identities, provenance, and required evidence before mutation.
+3. Resolve current profile, stage, mode, artifact-native owner root, work-item identity, provenance and required evidence before mutation. Nomia may begin governance without a Mago spec; it never mints a planning ID.
 4. Perform only the current Nomia phase. Preserve unknowns and conflicts.
 5. Run the narrowest required Nomia validators and report exact outcomes.
 6. If the next owner is Mago, generate and validate `nomia_to_mago` through the Nomia skill. Do not send directly to Mago; return the validated envelope to the supervisor.
 7. If closure is requested, require the Nomia skill's governance closure rules and external release evidence. Technical completion alone is insufficient.
 8. Return and stop.
+
+## Source-owned artifact orchestration
+
+The installed domain skill decides which of its artifacts to create, update, preserve, deprecate or remove from the actual phase intent and evidence. Neither the Supervisor nor Workspace chooses individual domain filenames. Do not create documents merely because templates or dashboard slots exist.
+
+Use the skill's `artifact-native` profile by default. Canonical source and metadata writes stay inside the resolved domain authority. Publish sidecars after domain validation, validate the returned `artifact_actions` receipt, and return those actions uniformly. A metadata-publication pass is not runtime proof. On a read-only phase return an empty action array and explain the no-op; do not manufacture a write.
+
+Keep `work_item_id`, optional `workflow_id`, source artifact references and typed handoffs independent of Board storage. Only explicitly selected legacy-board maintenance uses old Board paths/commands. Workspace is optional: missing Workspace never blocks this domain's valid execution. Do not run indexing as a hidden domain write, and never let a projection override source state.
 
 ## Stop Conditions
 
@@ -71,7 +79,8 @@ Return:
 - `owner`: nomia
 - `profile_stage_mode`
 - `canonical_identity_and_provenance`
-- `artifacts_changed`
+- `artifact_actions`: verified uniform created | updated | unchanged | deprecated | removed actions
+- `artifact_actions_validation`: exact publication/action-validator result, distinct from domain/runtime validation
 - `evidence_and_unknowns`
 - `validation`: exact pass/fail/blocked/not-run results
 - `downstream_handoff_v3`: validated envelope or none

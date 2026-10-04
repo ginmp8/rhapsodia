@@ -1,11 +1,16 @@
 ---
 name: mago
-description: use when asked to plan, normalize, audit, define, or refine tech-lead owned canonical repository planning artifacts, including in-scope requests whose board/spec inputs must be resolved before writes; covers prd refinement from governance intake or repository evidence, technical design, complexity-reduction strategy, refactoring plans, architecture decisions, planned-decision records, execution handoff plans, tasks, validation plans, contract specs, migrations, observability, operations, security/risk notes, discovery, ordering, and define/refine workflows. do not use for execution work, delivery governance/status reporting, stakeholder communication, runtime testing, deployments, commits, pull requests, or magia execution records.
+description: use when asked to plan, normalize, audit, define, or refine tech-lead owned canonical repository planning artifacts, including artifact-native planning whose owner root and work-item inputs must be resolved before writes; covers prd refinement from governance intake or repository evidence, technical design, complexity-reduction strategy, refactoring plans, architecture decisions, planned-decision records, execution handoff plans, tasks, validation plans, contract specs, migrations, observability, operations, security/risk notes, discovery, ordering, and define/refine workflows. do not use for execution work, delivery governance/status reporting, stakeholder communication, runtime testing, deployments, commits, pull requests, or magia execution records.
 ---
 
 # MAGO
 
 Mago owns intended technical planning from Nomia intake and repository evidence. It never changes product code, runs tests/deployments, owns delivery governance, accepts business risk, or fabricates runtime proof.
+
+
+## Default storage and artifact orchestration
+
+Use [artifact-native operation](references/artifact-native.md) before all storage-specific guidance. Each domain decides its own files, writes only its own sources, validates content, publishes sidecars and returns uniform `artifact_actions`. No Workspace, Board, cycle or shared registry is required. Retained Board-specific commands/examples apply only to explicitly selected `legacy-board` maintenance/migration; their storage mechanics never override the native default. Preserve all domain authority, traceability, risk, privacy, recovery and evidence gates.
 
 
 ## Portability
@@ -14,7 +19,7 @@ The Agent Skills package is the host-neutral semantic core. `agents/openai.yaml`
 
 ## Coordinated reproducibility contract
 
-This package participates in ecosystem release `1.10.1` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
+This package participates in ecosystem release `2.0.0` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
 
 ## Distributed ecosystem routing
 
@@ -29,11 +34,11 @@ Use the [routing contract](references/ecosystem-routing-contract.md) and [lifecy
 - Reject mixed ecosystem versions before mutation, unsupported envelope schemas, content/privacy-metadata contradictions, absent durable-artifact privacy lineage, unverified source-handoff authenticity when authenticity is claimed, legacy switches, and wrong-owner fields.
 - A Mago planning boundary is an authoring boundary; execution-required tasks are valid planning outputs when bounded, assigned to Magia, and linked to validation. Mago never executes them.
 
-Write only under a resolved `BOARD_ROOT` using [canonical paths](references/canonical-paths.md), [concurrent identity](references/concurrent-planning.md), and [shared ownership](references/shared-artifact-ownership.md). Registry/cycle/spec identity is authoritative; views are projections. Legacy planning enters only through `adapt`; legacy execution evidence must first be normalized by Magia.
+Write only within the resolved Mago artifact root using [canonical paths](references/canonical-paths.md) and [native operation](references/artifact-native.md). Mago owns stable planning identity; Workspace views are disposable projections. [Concurrent Board identity](references/concurrent-planning.md) and constrained shared surfaces apply only to explicit legacy-board compatibility. Legacy execution evidence must first be normalized by Magia.
 
 ## Required inputs and evidence
 
-Before writes resolve `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, evidence source, profile, lifecycle stage, one mode, and payload. `order` may atomically create a deduplicated `spec_id`; package modes require an existing registry-backed ID. Prefer current registry/package, typed handoff, repository, and validated planning evidence. Preserve unknowns; never invent technical, validation, or privacy truth. Apply [evidence rules](references/evidence-contract.md).
+Before writes resolve the repository/owner root, stable work-item, evidence source, profile, lifecycle stage, one mode, and payload. Use `native_planning.py identity` for a new Mago spec and reuse its immutable identity. Prefer current owner sources, typed handoff, repository and validated planning evidence. Board/registry inputs are required only by legacy-board commands. Preserve unknowns; never invent technical, validation, or privacy truth. Apply [evidence rules](references/evidence-contract.md).
 
 ## Public workflow
 
@@ -55,7 +60,7 @@ For unclear entrypoints load [getting started](references/getting-started.md). S
 
 ## Planning sequence
 
-1. Route non-Mago work; resolve identity/registry, profile, stage, and exactly one mode.
+1. Route non-Mago work; resolve owner-scoped planning identity, profile, stage, and exactly one mode.
 2. Load [common planning](references/common-planning.md), then only triggered references.
 3. Select artifacts with the [decision matrix](references/artifact-decision-matrix.md); templates do not trigger writes.
 4. Apply [technical standards](references/technical-artifact-standards.md), [ADR quality](references/adr-quality.md), and [security-risk v2](references/security-risk-contract.md) only when triggered.
@@ -66,12 +71,18 @@ For unclear entrypoints load [getting started](references/getting-started.md). S
 
 ## Tools and validation
 
-Use `scripts/create_planning_identity.py` and `scripts/write_artifact_scaffold.py`. Load only needed guidance: [activation](references/activation-routing.md), [operating rules](references/operating-rules.md), [roadmap evidence](references/roadmap-evidence-input.md), [RFC quality](references/rfc-quality.md), [planning-execution handoff](references/planning-execution-handoff.md), [validation/packaging](references/validation-and-packaging.md), [installation/release](references/installation-and-release.md). Run narrow validators. Package validation always runs `scripts/validate_artifact_matrix.py` against `references/artifact-decision-matrix.md` and `scripts/validate_planning_experience.py` as deterministic integration gates; do not bypass them. Governed work requires current traceability/quality and security v2 when triggered; ecosystem release requires explicit Mago/Magia/Nomia roots. Package only after local, contract, provenance, routing, lifecycle, recovery, privacy, and distribution gates pass.
+For native work use `scripts/native_planning.py` and `scripts/native_artifacts.py`. `scripts/create_planning_identity.py` and `scripts/write_artifact_scaffold.py` are retained legacy-board adapters. Load only needed guidance: [activation](references/activation-routing.md), [operating rules](references/operating-rules.md), [roadmap evidence](references/roadmap-evidence-input.md), [RFC quality](references/rfc-quality.md), [planning-execution handoff](references/planning-execution-handoff.md), [validation/packaging](references/validation-and-packaging.md), [installation/release](references/installation-and-release.md). Run narrow validators. Package validation always runs `scripts/validate_artifact_matrix.py` against `references/artifact-decision-matrix.md` and `scripts/validate_planning_experience.py` as deterministic integration gates; do not bypass them. Governed work requires current traceability/quality and security v2 when triggered; ecosystem release requires explicit Mago/Magia/Nomia roots. Package only after local, contract, provenance, routing, lifecycle, recovery, privacy, and distribution gates pass.
 
 ## Output contract
+
+Include the verified uniform `artifact_actions` array and `artifact_actions_validation` from native publication; report source changes separately from disposable projection refresh.
 
 Return: `Planning context`, `Artifact decisions`, `Traceability`, `Risk and compatibility`, `Validation`, `Handoff or reconciliation`, `Blockers`. Include profile/stage/mode, identity, evidence/assumptions, paths changed/skipped, rationale, traceability, compatibility/migration/security/operations/rollback/privacy impacts, exact command outcomes, downstream handoff, and remaining work. Separate executed evidence from planned validation.
 
 ## Stop conditions
 
-Stop before write/readiness when root/identity is unresolved; registry truth conflicts; evidence cannot support intent; another owner is required; required escalation is rejected; a second source of truth or editable generated view would result; Magia evidence would be rewritten; runtime proof would be fabricated; required traceability, dependency, security, migration, compatibility, transaction, privacy, package, or rollback gates fail; protected fixtures/evaluators/reports/secrets are targeted; or packaging fails.
+Stop before write/readiness when root/identity is unresolved; canonical planning identity conflicts; evidence cannot support intent; another owner is required; required escalation is rejected; a second source of truth or editable generated view would result; Magia evidence would be rewritten; runtime proof would be fabricated; required traceability, dependency, security, migration, compatibility, transaction, privacy, package, or rollback gates fail; protected fixtures/evaluators/reports/secrets are targeted; or packaging fails.
+
+## Data-only release packaging
+
+[Packaging isolation](references/packaging-isolation.md) requires externally executed evidence bound to exact bytes; no target-owned validator is executed by the packager.

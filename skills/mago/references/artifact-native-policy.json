@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "producer": "mago",
+  "default_root": "docs/specs",
+  "dimensions": [
+    "planning"
+  ],
+  "artifact_types": [
+    "requirements",
+    "prd",
+    "technical-design",
+    "tasks",
+    "validation-plan",
+    "planning-notes",
+    "adr",
+    "execution-handoff-plan",
+    "contract-spec",
+    "migration-strategy",
+    "observability-design",
+    "operational-requirements",
+    "security-risk",
+    "open-questions",
+    "complexity-reduction-plan",
+    "discovery",
+    "planning-reconciliation",
+    "planning-identity"
+  ],
+  "other_owner_roots": [
+    "docs/product",
+    "docs/implementation"
+  ]
+}

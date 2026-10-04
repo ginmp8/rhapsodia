@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.0] - 2026-10-03
+
+### Breaking
+- Artifact-native producer roots replace shared Board storage as the default.
+- Packaging requires external executed, tree-bound validation evidence; target scripts are never executed by the packager.
+- Canonical workers return uniform, live-bound artifact_actions. Workspace is optional and derived-only.
+
+### Added and fixed
+- Independent artifact publication, revision checks, tombstones, source hash validation, and bounded discovery.
+- Owner-side legacy copy migration with preserved originals and hash-approved recovery.
+- Native planning identity/contracts and execution evidence with no cross-owner writeback.
+- Strict legacy path, date, dependency and manifest checks for compatibility mode.
+- Frozen historical evaluator bytes remain immutable; explicit hashes replace migration-version coupling.
+
+
 ## Unreleased
 
 - Add optional gated-checkpoint execution guidance for externally orchestrated `workflow-plan/v2` runs without changing Magia domain ownership or the ecosystem handoff schema.

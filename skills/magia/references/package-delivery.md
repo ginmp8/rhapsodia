@@ -1,5 +1,8 @@
 # Package Delivery
 
+Use [data-only packaging](packaging-isolation.md) for current release commands. Old command examples below require the additional `--validation-evidence` argument; the packager does not execute target validators or tests. The trusted runner executes those gates separately.
+
+
 The package gate must run `scripts/validate_resource_integration.py` and `scripts/validate_booster_activation_scenarios.py`. The booster gate validates frozen corpus structure, category coverage, authority boundaries, and evidence-integrity criteria only; it must report `behavior_measured=false` unless independent live-model observations are supplied by a separate harness.
 
 

@@ -1,5 +1,8 @@
 # Mago Getting Started
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use this page when the user has selected Mago but has not supplied an internal mode or does not know the next planning step. It is an onboarding projection, not a new lifecycle or source of truth.
 
 ## Route by intent

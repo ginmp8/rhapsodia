@@ -1,8 +1,8 @@
 {
-  "contract": "agent-system-contract/v2",
+  "contract": "agent-system-contract/v3",
   "system": {
     "name": "rhapsodia-mago-magia-nomia",
-    "objective": "Coordinate governed product delivery, technical planning, bounded implementation, independent executable proof, adversarial review, and late-bound supporting semantic capabilities through Nomia, Mago, Magia, Rhapsodia Verifier, and Rhapsodia Analyst while preserving role ownership, typed evidence, gated checkpoint promotion, least authority, and native-host portability.",
+    "objective": "Coordinate governed product delivery, technical planning, bounded implementation, independent executable proof, adversarial review, and late-bound supporting semantic capabilities through Nomia, Mago, Magia, Rhapsodia Verifier, and Rhapsodia Analyst while preserving role ownership, typed evidence, gated checkpoint promotion, least authority, and native-host portability. Source-owned artifact orchestration and an optional derived-only Workspace preserve independent domain operation.",
     "autonomy": "policy-bounded-autonomous"
   },
   "authority": {
@@ -70,7 +70,8 @@
         "Rhapsodia Verifier",
         "Nomia",
         "Mago",
-        "Magia"
+        "Magia",
+        "Rhapsodia Workspace"
       ],
       "approval": "none",
       "idempotency": "required"
@@ -167,6 +168,18 @@
       ],
       "approval": "human",
       "idempotency": "reconcile-before-retry"
+    },
+    {
+      "id": "derived-output-write",
+      "authority": "write only explicitly authorized .rhapsodia/catalog and .rhapsodia/views; never canonical sources",
+      "required": false,
+      "effect": "local-write",
+      "scope": [
+        ".rhapsodia/catalog",
+        ".rhapsodia/views"
+      ],
+      "approval": "policy",
+      "idempotency": "required"
     }
   ],
   "state": {
@@ -309,6 +322,19 @@
         "repository-write",
         "bounded-process-execution"
       ]
+    },
+    {
+      "id": "rhapsodia-workspace",
+      "owns": [
+        "derived-artifact-catalog",
+        "offline-views"
+      ],
+      "capabilities": [
+        "repository-read",
+        "supporting-capability-resolution",
+        "derived-output-write",
+        "bounded-process-execution"
+      ]
     }
   ],
   "routing": {
@@ -349,6 +375,15 @@
       "optional_unavailable": "continue-with-not-run",
       "supporting_skill_may_expand_authority": false,
       "supporting_skill_may_change_owner": false
+    },
+    "derived_workspace": {
+      "agent": "rhapsodia-workspace",
+      "trigger": "explicit-visualization-request",
+      "canonical_write": false,
+      "max_refresh_attempts": 2,
+      "counts_toward_max_hops": true,
+      "concurrent_with_canonical_writer": false,
+      "missing_capability": "block-requested-presentation-only"
     }
   },
   "hosts": [
@@ -361,7 +396,8 @@
         "read-only-analysis": "isolated read-only worker capability",
         "executable-verification": "isolated bounded process + verification-only write capability",
         "adaptive-workflow-planning": "Agent Skill capability with serial fallback",
-        "supporting-capability-resolution": "semantic capability -> host-native Agent Skill discovery; no fixed catalog"
+        "supporting-capability-resolution": "semantic capability -> host-native Agent Skill discovery; no fixed catalog",
+        "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden"
       },
       "limitations": [
         "portable semantic support does not itself prove any host-specific discovery format or runtime behavior"
@@ -381,7 +417,8 @@
         "read-only-analysis": "Rhapsodia Analyst custom agent with explicit read + search tools only",
         "adaptive-workflow-planning": "optional Agent Skill guidance supporting workflow-plan/v1 and gated workflow-plan/v2; supervisor gate remains valid without it",
         "executable-verification": "Rhapsodia Verifier custom agent with read/search/edit/execute; edit is restricted by prompt contract to verification-only scope",
-        "supporting-capability-resolution": "host-native Agent Skills semantic discovery inside the active custom agent; no fixed catalog and no authority expansion"
+        "supporting-capability-resolution": "host-native Agent Skills semantic discovery inside the active custom agent; no fixed catalog and no authority expansion",
+        "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden"
       },
       "limitations": [
         "runtime behavior still depends on the selected model and installed skills",
@@ -404,7 +441,8 @@
         "read-only-analysis": "custom subagent with explicit read/search tool scope where supported",
         "adaptive-workflow-planning": "optional skill/customization guidance; serial fallback when unavailable",
         "executable-verification": "custom subagent with bounded execute and verification-only edit authority where supported",
-        "supporting-capability-resolution": "host-native Agent Skills/customization discovery where available; no fixed catalog and no authority expansion"
+        "supporting-capability-resolution": "host-native Agent Skills/customization discovery where available; no fixed catalog and no authority expansion",
+        "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden"
       },
       "limitations": [
         "the VS Code-specific agents allowlist is an adapter optimization and may be ignored by other Copilot surfaces",
@@ -453,5 +491,23 @@
         "translate the portable agent-system contract to native host capabilities without changing authority or gate semantics"
       ]
     }
-  ]
+  ],
+  "artifact_orchestration": {
+    "default_storage_profile": "artifact-native",
+    "selection_owner": "domain-skill",
+    "source_of_truth": "producer-owned-artifacts",
+    "workspace_required_for_domain_execution": false,
+    "projection_writeback": false,
+    "domain_state_inference": false,
+    "actions_schema": "artifact-actions/v1",
+    "actions": [
+      "created",
+      "updated",
+      "unchanged",
+      "deprecated",
+      "removed"
+    ],
+    "metadata_validation_is_runtime_proof": false,
+    "legacy_profile": "explicit-legacy-board-maintenance-or-copy-migration"
+  }
 }

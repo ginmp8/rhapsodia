@@ -8,13 +8,18 @@ description: "use when asked to create, update, normalize, validate, audit, or r
 Nomia owns product/delivery governance and reporting. It never owns technical design or technical/runtime validation; it may validate Nomia-owned governance artifacts and ecosystem contracts. It writes `business_priority`; generic `priority` is unsupported.
 
 
+## Default storage and artifact orchestration
+
+Use [artifact-native operation](references/artifact-native.md) before all storage-specific guidance. Each domain decides its own files, writes only its own sources, validates content, publishes sidecars and returns uniform `artifact_actions`. No Workspace, Board, cycle or shared registry is required. Retained Board-specific commands/examples apply only to explicitly selected `legacy-board` maintenance/migration; their storage mechanics never override the native default. Preserve all domain authority, traceability, risk, privacy, recovery and evidence gates.
+
+
 ## Portability
 
 The Agent Skills package is the host-neutral semantic core. `agents/openai.yaml` is an optional OpenAI adapter and must not be required for correctness. Resolve `<PYTHON>` to an available Python 3.11+ launcher; use package-relative paths and capability-based execution; do not depend on Bash, fixed install paths, or vendor-private APIs for core behavior.
 
 ## Coordinated reproducibility contract
 
-This package participates in ecosystem release `1.10.1` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
+This package participates in ecosystem release `2.0.0` with shared-contract version `1.0.0`. Use [ecosystem ownership](references/ecosystem-ownership-contract.json), [reproducibility](references/ecosystem-reproducibility-contract.json), and the frozen [cross-skill scenarios](evals/ecosystem-cross-skill-scenarios.json) as release gates. `scripts/validate_ecosystem_reproducibility.py` is package-local; it must not read/import peer skill packages. Package receipts bind baseline, frozen candidate, shared-contract, and archive hashes; the coordinator may combine those receipts into ecosystem compatibility evidence without creating runtime coupling.
 
 ## Distributed ecosystem routing
 
@@ -24,13 +29,13 @@ Use the [routing contract](references/ecosystem-routing-contract.md) and [lifecy
 
 - Own: intake, ops/status/stakeholder brief, replanning, portfolio, roadmap/feature map, governance RFC/decisions, release/internal notes, feature report, and roadmap-to-Mago handoff.
 - Never change code, tests, deployments, source control, Mago planning, Magia execution, ADR/technical design, implementation tasks/docs, or technical validation. Consume technical material read-only with attribution.
-- Mago owns cycle/spec identity and planning; Magia owns implementation/validation evidence. Nomia does not require Mago or Magia skill files at runtime.
+- Mago owns technical spec identity and planning (cycle identity only in legacy-board compatibility); Magia owns implementation/validation evidence. Nomia does not require Mago or Magia skill files at runtime.
 - Use the strict [ecosystem handoff contract](references/ecosystem-handoff-contract.md) through `scripts/ecosystem_handoff.py`: produce `nomia_to_mago`; consume `mago_to_nomia` and `magia_to_nomia`. Handoffs transfer evidence only.
 - Governance decides business concerns; technical decisions are handed off.
 
 ## Required Inputs
 
-Before writes resolve `BOARD_ROOT`, `board_id`, `year`, `cycle_id`, and required `spec_id`. Root: `docs/boards/<board_id>/<year>/cycles/<cycle_id>/`; IDs: `cycle-YYYY-MM-DD-cycle-key` and `spec-YYYY-MM-DD-feature-key`. Nomia must not mint planning identities, rename/register them, derive them from legacy IDs, or create/modify registry/package identity; it must never create or modify them. Identity requires user, handoff, or repository provenance such as `candidate_spec_id_provenance`.
+Before writes resolve the repository/owner root, stable work-item/feature key, profile/stage/mode and evidence. Governance does not require a Mago spec to exist. If a planning ID is supplied, Nomia must not mint, rename/register or infer it; require user, handoff or repository provenance. Board/year/cycle inputs are confined to explicitly selected legacy-board adapters.
 
 Volatile facts require source, observation time, freshness, authority, and no conflict; otherwise preserve explicit unknowns.
 
@@ -61,9 +66,9 @@ Select one profile (`quick`, `standard`, `governed`), stage (`intake`, `triage`,
 1. Select profile/stage/mode. For incomplete intake use `scripts/guide_intake.py`; guidance is non-authoritative.
 2. Resolve roots/identities/evidence; mark missing, stale, or conflicting facts unknown/blocked.
 3. Use schema-v2 governance records; keep governance, planning, execution, validation, and release states separate.
-4. Use writers/projectors; never freehand script-backed structures.
+4. Use domain content validators and native publication helpers; never bypass script-backed governance semantics. Board scaffold/projector entrypoints apply only to the legacy-board profile.
 5. Write only Nomia artifacts. Legacy governance is read-only; `scripts/adapt_governance.py` requires externally supplied current identity and never derives/carries old ULID identity.
-6. Generate non-authoritative views with `scripts/project_governance_views.py`, preserving canonical source, generated/evidence timestamps, unknowns/conflicts/loss, next action, owner, and privacy lineage. Use `scripts/project_lifecycle_status.py` for lifecycle status.
+6. When a domain-specific non-authoritative view is requested, use `scripts/project_governance_views.py` in its documented legacy profile, preserving canonical source, generated/evidence timestamps, unknowns/conflicts/loss, next action, owner, and privacy lineage. Use `scripts/project_lifecycle_status.py` for lifecycle status.
 7. Build/validate typed v3 handoffs with minimization, content/metadata privacy coherence, causal lineage, provenance, freshness, unknowns, conflicts, mapping, and technical authority.
 8. Technical completion cannot close governance without `scripts/validate_governance_closure.py`, explicit Nomia decision, and external release evidence.
 9. Validate touched artifacts/paths; readiness requires the ledger.
@@ -78,6 +83,8 @@ Select one profile (`quick`, `standard`, `governed`), stage (`intake`, `triage`,
 
 ## Output Contract
 
+Include the verified uniform `artifact_actions` array and `artifact_actions_validation` from native publication; report source changes separately from disposable projection refresh.
+
 Return structured Markdown with profile/stage/mode; roots/identities/provenance; artifacts and authority; volatile evidence source/time/freshness/authority/conflicts/unknowns; separate state dimensions; projection/privacy metadata; exact validation; untouched outside-scope files; downstream owner/action; blockers. For readiness/package work separate structural and measured evidence; never claim live activation, completion, validation, or release without proof.
 
 ## Acceptance Gates
@@ -90,4 +97,8 @@ Stop when roots/IDs/provenance are missing/conflicting; evidence is stale/confli
 
 ## Owned Artifact Families
 
-Board: portfolio, roadmap, governance RFC/decisions, feature map, release/internal notes. Spec: ops, status, stakeholder brief, replanning, feature report. Canonical names/paths are in [canonical paths](references/canonical-paths.md) and [contracts](references/contracts.md).
+Native governance root: portfolio, roadmap, governance RFC/decisions, feature map, release/internal notes, ops, status, stakeholder brief, replanning and feature report. Subdirectories follow the work item; no shared Board is required. Canonical names/paths are in [canonical paths](references/canonical-paths.md) and [contracts](references/contracts.md).
+
+## Data-only release packaging
+
+[Packaging isolation](references/packaging-isolation.md) requires externally executed evidence bound to exact bytes; no target-owned validator is executed by the packager.

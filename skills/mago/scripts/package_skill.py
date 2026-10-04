@@ -6,11 +6,15 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import subprocess
 import sys
 import zipfile
 from pathlib import Path
 from typing import Any
+import sys
+LOCAL_SCRIPTS = Path(__file__).resolve().parent
+if str(LOCAL_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(LOCAL_SCRIPTS))
+from package_evidence import deterministic_zip, outside, atomic_bytes, json_bytes
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml"}
 ARCHIVE_TEXT_SUFFIXES = TEXT_SUFFIXES | {".template"}
@@ -193,36 +197,11 @@ def validate_folder(target: Path) -> list[str]:
 
 
 
-def run_target_validator(target: Path) -> list[str]:
-    script = target / "scripts" / "validate_skill_package.py"
-    if not script.is_file():
-        return ["target validator missing: scripts/validate_skill_package.py"]
-    completed = subprocess.run(
-        [sys.executable, "-B", str(script), str(target)],
-        cwd=str(target), text=True, capture_output=True, check=False,
-    )
-    if completed.returncode == 0:
-        return []
-    detail = (completed.stderr or completed.stdout).strip()
-    return [f"target skill validator failed: {detail[-2000:]}"]
 
 
-def build_package(target: Path, output: Path) -> dict[str, Any]:
-    files, excluded = iter_package_files(target)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    if output.exists():
-        output.unlink()
-    root_name = target.name
-    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for file_path in files:
-            rel = file_path.relative_to(target).as_posix()
-            zf.write(file_path, f"{root_name}/{rel}")
-    return {
-        "output": str(output),
-        "file_count": len(files),
-        "excluded": excluded,
-        "size_bytes": output.stat().st_size,
-    }
+
+def build_package(target: Path, output: Path, validation_evidence: Path | None = None) -> dict[str, Any]:
+    return deterministic_zip(target, output, evidence=validation_evidence, archive_validator=validate_archive)
 
 
 def read_archive_text(zf: zipfile.ZipFile, name: str) -> str:
@@ -293,50 +272,38 @@ def validate_archive(zip_path: Path) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build and validate a ChatGPT skill package zip.")
-    parser.add_argument("--target", help="Path to the target skill folder.")
-    parser.add_argument("--output", help="Path to write skill.zip.")
-    parser.add_argument("--validate", action="store_true", help="Validate the folder before packaging and the zip after packaging.")
-    parser.add_argument("--validate-only", help="Validate an existing package zip without creating a new one.")
-    parser.add_argument("--json-output", help="Optional JSON evidence output path.")
+    parser = argparse.ArgumentParser(description="Data-only package construction; external executed evidence is mandatory.")
+    parser.add_argument("--target")
+    parser.add_argument("--output")
+    parser.add_argument("--validation-evidence", type=Path)
+    parser.add_argument("--validate", action="store_true", help="Retained compatibility flag; evidence is always required.")
+    parser.add_argument("--validate-only", type=Path)
+    parser.add_argument("--json-output", type=Path)
     args = parser.parse_args(argv)
-
-    result: dict[str, Any]
-    if args.validate_only:
-        zip_path = Path(args.validate_only).resolve()
-        archive_result = validate_archive(zip_path)
-        result = {"mode": "validate-only", "archive": archive_result, "zip_path": str(zip_path)}
-        status = archive_result["status"]
-    else:
-        if not args.target or not args.output:
-            print("ERROR: --target and --output are required unless --validate-only is used", file=sys.stderr)
-            return 2
-        target = Path(args.target).resolve()
-        output = Path(args.output).resolve()
-        folder_errors = validate_folder(target) if args.validate else []
-        if args.validate and not folder_errors:
-            folder_errors.extend(run_target_validator(target))
-        if folder_errors:
-            result = {"mode": "package", "status": "fail", "folder_errors": folder_errors, "target": str(target), "output": str(output)}
-            status = "fail"
+    try:
+        if args.validate_only:
+            result = validate_archive(args.validate_only)
+            if isinstance(result, list):
+                result = {"status": "fail" if result else "pass", "errors": result}
         else:
-            package_info = build_package(target, output)
-            archive_result = validate_archive(output) if args.validate else {"status": "not_run"}
-            status = "pass" if archive_result.get("status") in {"pass", "not_run"} else "fail"
-            result = {
-                "mode": "package",
-                "status": status,
-                "target": str(target),
-                "package": package_info,
-                "archive": archive_result,
-            }
-    if args.json_output:
-        out = Path(args.json_output)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        print(f"wrote {out}")
-    print(json.dumps(result, indent=2, sort_keys=True))
-    return 0 if status == "pass" else 1
+            if not args.target or not args.output:
+                parser.error("--target and --output are required")
+            target, output = Path(args.target), Path(args.output)
+            if args.json_output:
+                report = outside(target, args.json_output)
+                if report == output.resolve() or (args.validation_evidence and report == args.validation_evidence.resolve()):
+                    raise ValueError("report must not alias archive or validation evidence")
+            info = deterministic_zip(target, output, evidence=args.validation_evidence, archive_validator=validate_archive)
+            result = {"status": "pass", "package": info}
+        if args.json_output:
+            if args.validate_only and args.json_output.resolve() == args.validate_only.resolve():
+                raise ValueError("report must not overwrite inspected archive")
+            atomic_bytes(args.json_output, json_bytes(result))
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0 if result.get("status") == "pass" else 1
+    except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile) as exc:
+        print(json.dumps({"status": "fail", "error": str(exc)}, sort_keys=True))
+        return 1
 
 
 if __name__ == "__main__":

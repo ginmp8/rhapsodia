@@ -1,5 +1,11 @@
 # MAGO Validation and Packaging
 
+Use [data-only packaging](packaging-isolation.md) for current release commands. Old command examples below require the additional `--validation-evidence` argument; the packager does not execute target validators or tests. The trusted runner executes those gates separately.
+
+
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Load during MAGO hardening, package validation, or artifact edits needing mechanical validation.
 
 ## Artifact Validation Routing

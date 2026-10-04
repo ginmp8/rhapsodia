@@ -1,5 +1,30 @@
 # RhapsodIA
 
+## Artifact-native workspace (Mags 2.0.0)
+
+Mago, Magia and Nomia now operate on independent producer-owned artifacts by default. The supervisor routes the owner; that owner's skill decides which documents are necessary and returns live-validated `artifact_actions`. No Board, Workspace installation, external orchestrator, database or network service is required for domain work.
+
+| Component | Owns | Never owns |
+|---|---|---|
+| Nomia | Governance in `docs/product/<work_item_id>` | Technical planning or execution evidence |
+| Mago | Planning in `docs/specs/<work_item_id>` | Runtime execution or product priority |
+| Magia | Execution records in `docs/implementation/<work_item_id>` | Mago task definitions/checkboxes or governance closure |
+| Rhapsodia Workspace | Rebuildable catalog and local HTML views | Canonical source content, source metadata, or domain decisions |
+
+The optional `rhapsodia-workspace` skill and bounded Workspace agent support portfolio, metadata updates, relations and per-skill views. Unknown states and missing relationships remain explicit. A snapshot is not a live watcher and an updated-at timeline is not reconstructed process history.
+
+```bash
+python skills/rhapsodia-workspace/scripts/workspace.py index --repo-root /path/to/project
+python skills/rhapsodia-workspace/scripts/workspace.py render --repo-root /path/to/project
+```
+
+Open the generated `.rhapsodia/views/index.html` locally. Search, filter, inspect source hashes/relations, switch view/theme, or import/export snapshots without remote dependencies. Source content never executes in the viewer. See [the complete native workflow](docs/agents/ARTIFACT-ORCHESTRATION.md), [Workspace commands](skills/rhapsodia-workspace/references/commands.md), and [migration/rollback](skills/mago/references/ecosystem-migration.md).
+
+Existing Board tools remain an explicit `legacy-board` compatibility profile, not the storage model for new work. The implemented owner-side migration copies recognized artifacts, preserves originals and supports hash-approved recovery. The coordinated Mags release must be installed as one exact-version set. Historical evaluator bytes are retained with explicit SHA-256 pins.
+
+Release packaging is data-only. Run `scripts/validate_and_attest.py --target skills/mago --output /outside/repo/mago-validation.json --trust-target-code`, then pass that evidence to `skills/mago/scripts/package_skill.py --target skills/mago --output /outside/repo/skill.zip --validation-evidence /outside/repo/mago-validation.json --validate`. Repeat per skill. A changed tree invalidates its receipt. Executing validators requires an explicitly trusted target; merely packaging never executes target scripts.
+
+
 A curated collection of Agent Skills, evaluation harnesses, benchmarks, delivery workflows, and native-host agent profiles for agent-assisted software and product work.
 
 ## Purpose
@@ -17,17 +42,19 @@ The design goal is not to create one universal agent. It is to preserve clear ow
 
 ## Distribution scope
 
-This archive is a **complete RhapsodIA project snapshot** for the supplied feature branch. It contains the full Skill catalog present in the baseline plus the complete Agent layer, documentation, validators, tests, and manifests. Files that were not changed by this work are intentionally retained in the final archive.
+The repository contains the complete RhapsodIA distribution: the canonical Skill catalog, Agent layer, documentation, validators, tests, and marketplace manifests. Release archives are built from this source tree; generated validation evidence is intentionally kept outside the versioned source.
 
-The root `MANIFEST.json` remains the deterministic manifest for the **Agent-layer distribution surface** (README, agent profiles, agent docs, installer/validator, and agent tests). Individual Skills own their own package/integration validation contracts. The full-project ZIP is therefore broader than the root Agent manifest by design.
+The root `MANIFEST.json` remains the deterministic manifest for the **Agent-layer distribution surface** (README, agent profiles, agent docs, installer/validator, and agent tests). Individual Skills own their own package/integration validation contracts. A full-project ZIP is therefore broader than the root Agent manifest by design.
 
-This update adds two host-neutral capabilities and one bounded operator:
+Previously integrated capabilities retained by this release include:
 
 - `test-oracle-engineering`: executable falsifiable proof contracts and receipts;
 - `perceptual-validation`: optional semantic visual comparison with explicit invalid-state handling;
 - `Rhapsodia Verifier`: independent executable proof operator around `test-oracle-engineering`.
 
-It also evolves `adaptive-workflow-orchestration` with backward-compatible `workflow-plan/v2` gated convergence while preserving `workflow-plan/v1`, and adds checkpoint-candidate semantics to the Magia execution surface.
+The retained baseline also evolves `adaptive-workflow-orchestration` with backward-compatible `workflow-plan/v2` gated convergence while preserving `workflow-plan/v1`, and adds checkpoint-candidate semantics to the Magia execution surface.
+
+See the [Rhapsodia Workspace documentation](docs/workspace/README.md) for ownership, commands, validation, migration boundaries, and offline-view behavior. The [offline demo](docs/workspace/demo.html) uses synthetic records only.
 
 ## Marketplace distribution
 

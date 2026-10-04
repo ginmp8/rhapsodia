@@ -1,0 +1,11 @@
+{
+  "name": "rhapsodia-workspace",
+  "version": "1.0.0",
+  "released_at": "2026-10-03",
+  "python": ">=3.11",
+  "runtime_dependencies": [],
+  "artifact_contract": "1.0.0",
+  "authority": "derived-output-only",
+  "default_storage": "artifact-native",
+  "source_of_truth": false
+}

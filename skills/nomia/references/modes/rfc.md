@@ -1,5 +1,8 @@
 # RFC Mode
 
+> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
+
+
 Use `rfc-proposal` to create/update governance RFC entries in `rfc-proposals.md` before a material governance decision is made. It supports stakeholder comparison and alignment on roadmap, scope, sequencing, ownership, process, policy, vendor/tool, budget, accepted risk, go/no-go, or Mago handoff readiness.
 
 Do not use for technical RFCs, TDDs, implementation task decomposition, code changes, execution ADRs, or decisions already made. Use Mago `technical-design`, planned ADRs, or RFC-style planning for spec-scoped architecture/design choices. Use Magia implementation ADRs for execution-grounded runtime decisions. Use `governance-decision` after the decision is accepted, rejected, deferred, deprecated, corrected, or superseded.

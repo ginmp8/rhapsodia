@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "producer": "magia",
+  "default_root": "docs/implementation",
+  "dimensions": [
+    "execution",
+    "validation"
+  ],
+  "artifact_types": [
+    "implementation-notes",
+    "validation-evidence",
+    "execution-state",
+    "execution-receipt",
+    "runbook",
+    "troubleshooting",
+    "technical-gap-note",
+    "implementation-adr",
+    "complexity-reduction-evidence",
+    "migration-execution-note",
+    "contract-change-note",
+    "observability-note",
+    "security-risk-note"
+  ],
+  "other_owner_roots": [
+    "docs/specs",
+    "docs/product"
+  ]
+}
