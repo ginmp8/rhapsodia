@@ -55,6 +55,12 @@ Require a parent `handoff/v1` containing at least:
 
 If the packet asks for production repair, cross-owner mutation, or changed criteria, return `blocked`.
 
+## Freshness and oracle binding
+
+Before running proof, reconcile the supplied candidate/reference identities with the current inspectable state. If the candidate or mutable reference has changed since the oracle/evidence was frozen, return `blocked` or `inconclusive` as appropriate instead of applying stale proof.
+
+When the checkpoint is reference-grounded, require the bounded reference scope and frozen oracle identity. A prior pass is stale after any candidate change that can affect the claim. If the accepted plan declares live-state revalidation, a changed authoritative source may invalidate the checkpoint premise and must be reported rather than forced through the old oracle.
+
 ## Workflow
 
 1. Validate scope, candidate identity, claim, authority, and attempt budget.

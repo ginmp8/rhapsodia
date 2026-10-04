@@ -81,3 +81,15 @@ Keep these claims separate:
 - perceptual/human review evidence.
 
 A structurally portable package does not prove runtime parity across editors/models. Planned scenario files are not measured behavioral evidence until executed by an appropriate harness.
+
+## Shopify agentic workflow evidence (2025–2026)
+
+These public sources informed the reference-grounded convergence refinements. They are evidence inputs, not runtime dependencies.
+
+- Shopify Engineering, **Helix: The internal tool powering our Shopify app's native migration** (2026): https://shopify.engineering/helix
+- Shopify Engineering, **Building an agentic harness that outlasts the model** (2026): https://shopify.engineering/building-an-agentic-harness-that-outlasts-the-model
+- Shopify Engineering, **How River takes security work from a fix to merge** (2026): https://shopify.engineering/river-vulnerability-remediation
+- Shopify Engineering, **ShopGym: Realistic, reproducible sandboxes for shopping agents** (2026): https://shopify.engineering/shopgym
+- Shopify Engineering, **Introducing Roast: Structured AI workflows made easy** (2025): https://shopify.engineering/introducing-roast
+
+The reusable lessons are small checkpoints, source-as-spec, oracle-before-candidate, fresh execution contexts, current-state revalidation, deterministic enforcement, explicit evidence memory, and policy-bounded autonomy. RhapsodIA does not depend on Shopify's models, mobile stack, proprietary tools, or exact gate taxonomy.

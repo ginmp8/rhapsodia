@@ -102,6 +102,14 @@ If any unit needs edit/execute authority, cross-owner judgment, canonical artifa
 
 When `adaptive-workflow-orchestration` is installed, it may be used to choose among `single`, `sequential`, read-only `fan-out-synthesize`, independent verification, and `gated-convergence` patterns inside this gate. Its plan does not override these agent-system authority rules. When it is unavailable, apply this gate directly and default to serial execution.
 
+## Reference-grounded convergence
+
+When a high-fidelity reference exists, keep each checkpoint reviewable at a glance, bind it to a narrow reference slice, and require a frozen oracle/rubric identity derived before production. Treat declared gate order as control flow, not a voting panel. For mutable sources, revalidate live state when the accepted plan requires freshness checks; persisted state is evidence to reconcile, not truth.
+
+Prefer fresh-context repair/review iterations that reload current candidate state, the bounded reference slice, frozen oracle, accepted feedback, and remaining budgets. Do not let a long transcript become the workflow state store.
+
+Autonomous execution may omit a human-approval gate only when the accepted policy explicitly permits it. Autonomy never weakens executable, perceptual, adversarial, freshness, or closure requirements.
+
 ## Gated convergence inside Magia
 
 Use this only when the active domain owner is Magia and the accepted plan requires incremental promotion. It is not the default for routine changes.
@@ -113,7 +121,7 @@ For each checkpoint:
 3. Bind every gate result to the same current candidate identity and evaluator/rubric identity. A result for an older candidate is stale.
 4. A required `fail`, `rejected`, `blocked`, `invalid`, `inconclusive`, `not-run`, missing result, or unresolved reviewer finding is **not promotable**. The Supervisor must not vote it away or reinterpret it as pass.
 5. If repair is allowed and budget remains, return only the failed gate evidence to Magia for one bounded repair. The new candidate invalidates affected prior gate passes; rerun them as declared by the plan.
-6. Promote the checkpoint only when every required gate has current passing evidence and all dependency checkpoints are already promoted. Only then may the next dependent checkpoint begin.
+6. Promote the checkpoint only when every required gate has current passing evidence and all dependency checkpoints are already promoted. When gate order is binding, later gates cannot override an earlier required failure. When live-state revalidation is declared, reconcile the authoritative source before mutation/promotion. When checkpoint materialization is declared, record immutable promoted candidate/checkpoint identity plus gate evidence before dependent work starts. Only then may the next dependent checkpoint begin.
 7. Carry forward only explicitly accepted/proven feedback with source/checkpoint identity. Never persist inferred preferences or unaccepted reviewer suggestions as workflow memory.
 8. After all required checkpoints are promoted, invoke Magia once for normal finalization/closure evidence if the canonical phase has not already emitted it. Checkpoint promotion does not replace Magia's normal closure rules.
 

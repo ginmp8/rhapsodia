@@ -97,6 +97,17 @@
       "idempotency": "required"
     },
     {
+      "id": "reference-grounded-convergence",
+      "required": false,
+      "effect": "read-only",
+      "scope": [
+        "checkpoint/reference/oracle/gate/freshness planning inside one resolved lifecycle phase",
+        "does not grant mutation authority; Magia remains the canonical implementation owner"
+      ],
+      "approval": "none",
+      "idempotency": "required"
+    },
+    {
       "id": "supporting-capability-resolution",
       "required": false,
       "effect": "read-only",
@@ -189,7 +200,12 @@
       "blocked",
       "escalated",
       "failed"
-    ]
+    ],
+    "memory_policy": {
+      "storage": "explicit-evidence-only",
+      "accepted_feedback_only": true,
+      "live_state_overrides_stale_memory": true
+    }
   },
   "budgets": {
     "max_hops": 24,
@@ -218,7 +234,13 @@
     "only explicitly accepted or proven feedback with source/checkpoint identity may persist across checkpoints",
     "supporting capabilities are expressed semantically and resolved by the active worker through host-native Agent Skill discovery; the Rhapsodia contract contains no fixed external-skill catalog",
     "supporting Agent Skills are advisory within the active agent authority and cannot change lifecycle ownership, tools, write scope, acceptance criteria, or stop conditions",
-    "missing required supporting capability blocks the affected unit; missing optional supporting capability is recorded as not-run/degraded only when semantics remain valid"
+    "missing required supporting capability blocks the affected unit; missing optional supporting capability is recorded as not-run/degraded only when semantics remain valid",
+    "reference-grounded checkpoints derive and freeze oracle/rubric identity before production; acceptance criteria must not move after candidate inspection",
+    "when gate order is declared binding, checkpoint gate_ids execute in order and a later gate cannot override an earlier required failure",
+    "mutable reference or ledger state is revalidated according to the accepted freshness policy; persisted memory is evidence, not operational truth",
+    "fresh-context repair/review iterations reload current candidate/reference evidence, frozen oracle identity, accepted feedback, and remaining budgets",
+    "autonomous execution may reduce human approval only under explicit accepted policy; it never weakens required executable, perceptual, adversarial, freshness, or closure gates",
+    "when checkpoint materialization is required, dependent work cannot start until immutable promoted checkpoint/candidate identity and gate evidence are recorded"
   ],
   "stop_conditions": [
     "required Agent Skill is unavailable",
