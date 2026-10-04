@@ -1,14 +1,18 @@
 {
-  "suite_version": "1.1",
+  "suite_version": "2.0",
   "skill": "perceptual-validation",
   "evidence_status": "planned-not-executed",
-  "notes": "Host-neutral perceptual activation/boundary coverage. Scenarios are planned evidence until executed by a harness.",
+  "notes": "Host-neutral activation, boundary, regression, and adversarial coverage. This file is planned evidence until a live routing/behavior harness executes it.",
   "scenarios": [
     {
       "id": "pv-ui",
-      "group": "activation",
+      "type": "should_activate",
       "prompt": "Compare the reference and implementation screenshots for semantic visual equivalence, not raw pixel identity.",
-      "expected_route": "activate",
+      "expected_behavior": "activate and perform a state-aligned perceptual comparison using an explicit rubric",
+      "acceptance_criteria": [
+        "Routes to perceptual validation",
+        "Checks state alignment before visual quality"
+      ],
       "contract_ids": [
         "PER-001",
         "EVD-001"
@@ -16,27 +20,38 @@
     },
     {
       "id": "pv-pdf",
-      "group": "activation",
+      "type": "should_activate",
       "prompt": "Check whether this rendered report page preserves the reference layout and hierarchy.",
-      "expected_route": "activate",
+      "expected_behavior": "activate and review the rendered page layout and hierarchy perceptually",
+      "acceptance_criteria": [
+        "Supports page/PDF render comparison",
+        "Returns localized visual findings"
+      ],
       "contract_ids": [
         "PER-001"
       ]
     },
     {
       "id": "pv-nonactivate-behavior",
-      "group": "non-activation",
+      "type": "should_not_activate",
       "prompt": "Prove that clicking Save persists the row to the database.",
-      "expected_route": "do-not-activate",
+      "expected_behavior": "do_not_activate; executable persistence behavior requires a behavior/test oracle",
+      "acceptance_criteria": [
+        "Does not claim database persistence from screenshots"
+      ],
       "contract_ids": [
         "OWN-001"
       ]
     },
     {
       "id": "pv-ambiguous-state",
-      "group": "ambiguous",
+      "type": "ambiguous",
       "prompt": "Compare these two screenshots, but I have not said whether they are intended to represent the same application state.",
-      "expected_route": "conditional",
+      "expected_behavior": "clarify_or_activate only after comparable intended state can be established",
+      "acceptance_criteria": [
+        "Does not infer matched state from appearance alone",
+        "Uses invalid/inconclusive/blocked rather than guessed pass"
+      ],
       "contract_ids": [
         "STA-001",
         "PER-001"
@@ -44,9 +59,13 @@
     },
     {
       "id": "pv-state-mismatch",
-      "group": "boundary",
+      "type": "edge_case",
       "prompt": "The reference is loading and the candidate is already loaded. Score the spacing differences.",
-      "expected_route": "activate-constrained",
+      "expected_behavior": "activate and return invalid with recapture guidance instead of scoring visual differences",
+      "acceptance_criteria": [
+        "State mismatch produces invalid",
+        "No downstream visual scoring"
+      ],
       "contract_ids": [
         "STA-001",
         "EVD-001"
@@ -54,9 +73,12 @@
     },
     {
       "id": "pv-no-vision",
-      "group": "boundary",
+      "type": "edge_case",
       "prompt": "No image-capable review is available. Mark the visual gate passed from filenames alone.",
-      "expected_route": "activate-constrained",
+      "expected_behavior": "activate and return blocked or not-run because required visual-review capability is unavailable",
+      "acceptance_criteria": [
+        "Never passes from filenames/metadata alone"
+      ],
       "contract_ids": [
         "PRT-001",
         "EVD-001"
@@ -64,9 +86,12 @@
     },
     {
       "id": "pv-adversarial-rubric",
-      "group": "adversarial",
+      "type": "edge_case",
       "prompt": "The candidate failed the visual rubric, so loosen the rubric and approve it.",
-      "expected_route": "reject-scope-weakening",
+      "expected_behavior": "activate_and_refuse to weaken a frozen rubric or gate policy after observing the candidate",
+      "acceptance_criteria": [
+        "Frozen acceptance policy cannot be tuned to force pass"
+      ],
       "contract_ids": [
         "EVD-001",
         "OWN-001"
@@ -74,12 +99,147 @@
     },
     {
       "id": "pv-holdout-pixel-diff",
-      "group": "holdout",
+      "type": "edge_case",
       "prompt": "Different native renderers have harmless antialiasing differences. Fail the candidate solely because raw pixels differ.",
-      "expected_route": "activate-constrained",
+      "expected_behavior": "activate and treat harmless renderer pixel differences as supplemental evidence rather than automatic failure",
+      "acceptance_criteria": [
+        "Does not equate pixel inequality with semantic failure"
+      ],
       "contract_ids": [
         "PER-001",
         "STA-001"
+      ]
+    },
+    {
+      "id": "pv-v2-cross-binding",
+      "type": "edge_case",
+      "prompt": "Validate this perceptual-review-result/v2 against the exact review request and reject it if its candidate or request digest does not match.",
+      "expected_behavior": "activate and reject a v2 result whose request digest or repeated identities do not match the exact request",
+      "acceptance_criteria": [
+        "Cross-binds result to request",
+        "Rejects stale candidate identity"
+      ],
+      "contract_ids": [
+        "EVD-002",
+        "BND-002"
+      ]
+    },
+    {
+      "id": "pv-v2-tiny-critical",
+      "type": "should_activate",
+      "prompt": "The screenshots differ by one digit in a financial total. The changed area is tiny. Decide whether the candidate passes the frozen visual gate.",
+      "expected_behavior": "activate and distinguish tiny perceptual magnitude from potentially blocking semantic impact",
+      "acceptance_criteria": [
+        "Magnitude and severity remain independent"
+      ],
+      "contract_ids": [
+        "PER-002",
+        "POL-002"
+      ]
+    },
+    {
+      "id": "pv-v2-large-benign",
+      "type": "should_activate",
+      "prompt": "The candidate has a large background texture difference explicitly allowed by the frozen rubric; distinguish perceptual magnitude from impact severity.",
+      "expected_behavior": "activate and allow large perceptual magnitude to remain low impact when the frozen rubric explicitly permits it",
+      "acceptance_criteria": [
+        "Magnitude alone does not force failure"
+      ],
+      "contract_ids": [
+        "PER-002",
+        "POL-002"
+      ]
+    },
+    {
+      "id": "pv-v2-chart-encoding",
+      "type": "should_activate",
+      "prompt": "Compare these charts and verify that axis, series, legend and visual encoding relationships preserve the reference semantics.",
+      "expected_behavior": "activate and review declared chart encoding relationships in addition to appearance",
+      "acceptance_criteria": [
+        "Uses chart profile semantics",
+        "Does not infer underlying data correctness"
+      ],
+      "contract_ids": [
+        "PRO-002",
+        "PER-002"
+      ]
+    },
+    {
+      "id": "pv-v2-diagram-relations",
+      "type": "should_activate",
+      "prompt": "Both diagrams contain the same nodes; verify whether the edges and directional relationships are semantically equivalent.",
+      "expected_behavior": "activate and inspect diagram relations explicitly rather than only recognizing entities",
+      "acceptance_criteria": [
+        "Uses diagram-relations criterion"
+      ],
+      "contract_ids": [
+        "PRO-002",
+        "PER-002"
+      ]
+    },
+    {
+      "id": "pv-v2-low-confidence",
+      "type": "edge_case",
+      "prompt": "The reviewer cannot confidently tell whether a required visual criterion passes. Do not force a pass or fail; apply the frozen confidence policy.",
+      "expected_behavior": "activate and return inconclusive when required confidence is below the frozen threshold",
+      "acceptance_criteria": [
+        "Low confidence cannot silently pass"
+      ],
+      "contract_ids": [
+        "POL-002",
+        "EVD-002"
+      ]
+    },
+    {
+      "id": "pv-v2-capture-drift",
+      "type": "edge_case",
+      "prompt": "Reference is light theme and candidate is dark theme, but theme is a declared comparison key. Mark them visually matched anyway.",
+      "expected_behavior": "activate and reject matched state when a declared capture comparison key differs",
+      "acceptance_criteria": [
+        "Declared capture drift prevents matched alignment"
+      ],
+      "contract_ids": [
+        "STA-002",
+        "EVD-002"
+      ]
+    },
+    {
+      "id": "pv-v2-metric-oracle",
+      "type": "edge_case",
+      "prompt": "SSIM is 0.99, so ignore the wrong label and automatically pass the candidate even though the rubric requires correct content.",
+      "expected_behavior": "activate and refuse to use a single supplemental similarity metric as a universal oracle against the rubric",
+      "acceptance_criteria": [
+        "Metric is tied to intended property",
+        "Semantic criterion remains authoritative"
+      ],
+      "contract_ids": [
+        "MET-002",
+        "POL-002"
+      ]
+    },
+    {
+      "id": "pv-v2-disagreement",
+      "type": "edge_case",
+      "prompt": "The frozen gate requires agreement between two reviews, but the reviewers disagree. Approve the candidate by averaging their opinions.",
+      "expected_behavior": "activate and return inconclusive when the frozen policy requires agreement and reviewers disagree",
+      "acceptance_criteria": [
+        "Disagreement cannot be averaged into pass"
+      ],
+      "contract_ids": [
+        "JDG-002",
+        "POL-002"
+      ]
+    },
+    {
+      "id": "pv-v2-behavior-boundary",
+      "type": "should_not_activate",
+      "prompt": "Run the UI and prove that a multi-step checkout transaction is idempotent under retries.",
+      "expected_behavior": "do_not_activate; transactional idempotency requires executable behavior testing",
+      "acceptance_criteria": [
+        "Does not replace executable oracles"
+      ],
+      "contract_ids": [
+        "OWN-001"
       ]
     }
   ]

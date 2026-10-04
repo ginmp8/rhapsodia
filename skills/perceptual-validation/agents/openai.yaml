@@ -1,3 +1,12 @@
 interface:
-  display_name: "Perceptual Validation"
-  short_description: "Compare reference and candidate visual artifacts safely"
+  display_name: Perceptual Validation
+  short_description: Compare reference and candidate visual artifacts safely
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

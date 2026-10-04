@@ -1,0 +1,53 @@
+{
+  "contract": "perceptual-review-result/v2",
+  "review_id": "visual-001",
+  "request_digest": "<sha256-of-canonical-request-json>",
+  "reference_identity": "<reference hash/id>",
+  "candidate_identity": "<candidate hash/id>",
+  "rubric_identity": "rubric:ui:v1",
+  "gate_policy_identity": "gate:ui:v1",
+  "evaluator_protocol_identity": "eval:pairwise:v1",
+  "state_alignment": "matched",
+  "verdict": "pass",
+  "review_executed": true,
+  "trial_count": 1,
+  "agreement": "not-required",
+  "criteria_results": [
+    {
+      "criterion_id": "structure",
+      "status": "pass",
+      "confidence": "high",
+      "evidence_refs": [
+        "image:reference",
+        "image:candidate"
+      ]
+    },
+    {
+      "criterion_id": "spacing",
+      "status": "pass",
+      "confidence": "high",
+      "evidence_refs": [
+        "image:reference",
+        "image:candidate"
+      ]
+    }
+  ],
+  "findings": [],
+  "supplemental_measurements": [],
+  "evidence_refs": [
+    "image:reference",
+    "image:candidate"
+  ],
+  "uncertainty_reasons": [],
+  "limitations": [],
+  "recapture": {
+    "required": false,
+    "reason": ""
+  },
+  "policy_decision": {
+    "outcome": "pass",
+    "reasons": [
+      "required-criteria-passed"
+    ]
+  }
+}

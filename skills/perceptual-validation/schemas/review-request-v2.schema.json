@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rhapsodia.local/schemas/perceptual-review-request-v2.schema.json",
+  "title": "Perceptual Review Request v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract","review_id","artifact_kind","artifact_profile","reference","candidate","intended_state","capture_context","comparison_scope","rubric","gate_policy","evaluator_protocol"],
+  "properties": {
+    "contract": {"const": "perceptual-review-request/v2"},
+    "review_id": {"type": "string", "minLength": 1},
+    "artifact_kind": {"enum": ["screenshot","rendered-ui","page-render","pdf-page","slide","chart","diagram","image","other"]},
+    "artifact_profile": {"$ref": "#/$defs/artifactProfile"},
+    "reference": {"$ref": "#/$defs/artifact"},
+    "candidate": {"$ref": "#/$defs/artifact"},
+    "intended_state": {"$ref": "#/$defs/intendedState"},
+    "capture_context": {"$ref": "#/$defs/captureContext"},
+    "comparison_scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "rubric": {"$ref": "#/$defs/rubric"},
+    "gate_policy": {"$ref": "#/$defs/gatePolicy"},
+    "evaluator_protocol": {"$ref": "#/$defs/evaluatorProtocol"}
+  },
+  "$defs": {
+    "artifactProfile": {
+      "type": "object", "additionalProperties": false, "required": ["name","version"],
+      "properties": {"name": {"enum": ["ui","document-page-slide","chart","diagram","general-image","custom"]}, "version": {"type": "string", "minLength": 1}}
+    },
+    "dimensions": {
+      "type": "object", "additionalProperties": false, "required": ["width","height"],
+      "properties": {"width": {"type": "integer", "minimum": 1}, "height": {"type": "integer", "minimum": 1}}
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false, "required": ["identity","identity_kind"],
+      "properties": {
+        "identity": {"type": "string", "minLength": 1},
+        "identity_kind": {"enum": ["sha256","semantic","external"]},
+        "dimensions": {"$ref": "#/$defs/dimensions"}
+      }
+    },
+    "intendedState": {
+      "type": "object", "additionalProperties": false, "required": ["reference","candidate"],
+      "properties": {"reference": {"type": "string", "minLength": 1}, "candidate": {"type": "string", "minLength": 1}}
+    },
+    "factMap": {"type": "object", "additionalProperties": {"type": "string"}},
+    "captureContext": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reference_manifest_identity","candidate_manifest_identity","normalization_policy_identity","comparison_keys","reference_facts","candidate_facts"],
+      "properties": {
+        "reference_manifest_identity": {"type": "string", "minLength": 1},
+        "candidate_manifest_identity": {"type": "string", "minLength": 1},
+        "normalization_policy_identity": {"type": "string", "minLength": 1},
+        "comparison_keys": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "reference_facts": {"$ref": "#/$defs/factMap"},
+        "candidate_facts": {"$ref": "#/$defs/factMap"}
+      }
+    },
+    "criterion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id","category","required","description","evidence_types"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "category": {"enum": ["content-presence","structure","layout","alignment","spacing","typography","hierarchy","component-shape","chart-encoding","diagram-relations","other"]},
+        "required": {"type": "boolean"},
+        "description": {"type": "string", "minLength": 1},
+        "evidence_types": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["visual","content","geometry","measurement","relation","human"]}}
+      }
+    },
+    "rubric": {
+      "type": "object", "additionalProperties": false, "required": ["identity","version","criteria"],
+      "properties": {
+        "identity": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "criteria": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/criterion"}}
+      }
+    },
+    "gatePolicy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["identity","blocking_severities","max_medium_findings","minimum_confidence","low_confidence_action","require_finding_evidence","require_required_criterion_evidence","required_trials","require_agreement","disagreement_action"],
+      "properties": {
+        "identity": {"type": "string", "minLength": 1},
+        "blocking_severities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["blocking","high","medium","low"]}},
+        "max_medium_findings": {"type": "integer", "minimum": 0},
+        "minimum_confidence": {"enum": ["low","medium","high"]},
+        "low_confidence_action": {"const": "inconclusive"},
+        "require_finding_evidence": {"type": "boolean"},
+        "require_required_criterion_evidence": {"type": "boolean"},
+        "required_trials": {"type": "integer", "minimum": 1},
+        "require_agreement": {"type": "boolean"},
+        "disagreement_action": {"const": "inconclusive"}
+      }
+    },
+    "evaluatorProtocol": {
+      "type": "object", "additionalProperties": false,
+      "required": ["identity","kind","mode","required_capability","order_swap_required"],
+      "properties": {
+        "identity": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["human","model","hybrid"]},
+        "mode": {"enum": ["pairwise-criteria","single-review-criteria","human-review-criteria","hybrid-criteria","custom"]},
+        "required_capability": {"type": "string", "minLength": 1},
+        "order_swap_required": {"type": "boolean"},
+        "implementation_identity": {"type": "string", "minLength": 1},
+        "prompt_identity": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
