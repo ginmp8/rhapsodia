@@ -391,7 +391,7 @@ def validate_manifest(root, path, findings):
         rel = artifact.relative_to(root).as_posix()
         if full_repo:
             in_agent_surface = (
-                rel in {"README.md", "LICENSE", "scripts/install_agents.py", "scripts/validate_agents.py",
+                rel in {"README.md", "LICENSE", "scripts/generate_agent_manifest.py", "scripts/install_agents.py", "scripts/validate_agents.py",
                         "tests/agent-scenarios.json", "tests/test_install_agents.py", "tests/test_validate_agents.py"}
                 or rel.startswith("agents/")
                 or rel.startswith("docs/agents/")
