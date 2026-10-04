@@ -147,6 +147,28 @@ def test_success_receipt_matches_committed_package() -> None:
         assert not list(base.glob(".*.juiced-backup-*"))
 
 
+def test_distribution_surfaces_are_recorded_without_changing_canonical_package_semantics() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        base = Path(td)
+        skill = make_skill(base)
+        output = base / "skill.zip"
+        receipt = base / "receipt.json"
+        result = run(
+            "--target", str(skill),
+            "--output", str(output),
+            "--json-output", str(receipt),
+            "--validate",
+            "--portability-hosts", "portable-core,copilot",
+            "--distribution-surfaces", "copilot-vscode,copilot-visual-studio",
+        )
+        assert result.returncode == 0, result.stderr or result.stdout
+        persisted = json.loads(receipt.read_text(encoding="utf-8"))
+        assert persisted["distribution"]["semantic_profiles"] == ["portable-core", "copilot"]
+        assert persisted["distribution"]["surfaces"] == ["copilot-vscode", "copilot-visual-studio"]
+        assert persisted["distribution"]["canonical_semantics_unchanged"] is True
+        assert persisted["folder"]["host_portability"]["surface_results"]["copilot-visual-studio"]["semantic_profile"] == "copilot"
+
+
 def test_commit_failure_restores_last_good_and_reports_recovery() -> None:
     scripts = str(ROOT / "scripts")
     sys.path.insert(0, scripts)
@@ -200,5 +222,6 @@ if __name__ == "__main__":
     test_scaffold_marker_is_rejected()
     test_output_inside_frozen_target_is_rejected()
     test_success_receipt_matches_committed_package()
+    test_distribution_surfaces_are_recorded_without_changing_canonical_package_semantics()
     test_commit_failure_restores_last_good_and_reports_recovery()
     print("ok")

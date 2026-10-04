@@ -1,20 +1,28 @@
 #!/usr/bin/env python3
-"""Shared Agent Skills specification helpers for portable validation."""
+"""Shared Agent Skills specification helpers for portable validation.
+
+The frontmatter parser intentionally supports the Agent Skills subset used by the
+portable core with the Python standard library only. Unsupported YAML constructs
+fail closed so validation does not change depending on whether PyYAML happens to
+be installed on a host.
+"""
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from typing import Any
 
-try:
-    import yaml  # type: ignore
-except Exception:  # pragma: no cover
-    yaml = None
-
 SPEC_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
-FM_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
+FM_RE = re.compile(r"^---\n(.*?)\n---(?:\n|$)", re.DOTALL)
 MD_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+TOP_KEY_RE = re.compile(r"^[A-Za-z0-9_-]+$")
+BLOCK_MARKERS = {"|", "|-", "|+", ">", ">-", ">+"}
+
+
+class FrontmatterError(ValueError):
+    """Raised when portable frontmatter is malformed or uses unsupported YAML."""
 
 
 def read_text(path: Path) -> str:
@@ -24,49 +32,145 @@ def read_text(path: Path) -> str:
         return path.read_text(encoding="latin-1")
 
 
-def _strip_scalar(value: str) -> str:
+def _parse_scalar(value: str) -> str:
     value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
-        return value[1:-1]
+    if not value:
+        return ""
+    if value[0] == '"':
+        if len(value) < 2 or value[-1] != '"':
+            raise FrontmatterError("unterminated double-quoted scalar")
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError as exc:
+            raise FrontmatterError(f"invalid double-quoted scalar: {exc.msg}") from exc
+        if not isinstance(parsed, str):
+            raise FrontmatterError("frontmatter scalars must be strings")
+        return parsed
+    if value[0] == "'":
+        if len(value) < 2 or value[-1] != "'":
+            raise FrontmatterError("unterminated single-quoted scalar")
+        return value[1:-1].replace("''", "'")
+    if value[0] in "[{&*!":
+        raise FrontmatterError(f"unsupported YAML construct in scalar: {value[0]}")
     return value
 
 
-def _fallback_yaml(raw: str) -> dict[str, Any]:
-    data: dict[str, Any] = {}
-    current: str | None = None
-    for line in raw.splitlines():
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        if not line.startswith((" ", "\t")) and ":" in line:
-            key, value = line.split(":", 1)
-            key = key.strip()
-            value = value.strip()
-            current = key
-            if key == "metadata" and not value:
-                data[key] = {}
+def _fold_block(lines: list[str], marker: str) -> str:
+    if marker.startswith("|"):
+        text = "\n".join(lines)
+    else:
+        paragraphs: list[str] = []
+        current: list[str] = []
+        for line in lines:
+            if line == "":
+                if current:
+                    paragraphs.append(" ".join(current))
+                    current = []
+                paragraphs.append("")
             else:
-                data[key] = _strip_scalar(value)
+                current.append(line)
+        if current:
+            paragraphs.append(" ".join(current))
+        text = "\n".join(paragraphs)
+    if marker.endswith("-"):
+        return text.rstrip("\n")
+    if marker.endswith("+"):
+        return text + "\n"
+    return text.rstrip("\n") + "\n"
+
+
+def _portable_yaml(raw: str) -> dict[str, Any]:
+    lines = raw.splitlines()
+    data: dict[str, Any] = {}
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            i += 1
             continue
-        if current == "metadata" and isinstance(data.get("metadata"), dict) and ":" in line:
-            key, value = line.strip().split(":", 1)
-            data["metadata"][key.strip()] = _strip_scalar(value)
+        if "\t" in line[: len(line) - len(line.lstrip())]:
+            raise FrontmatterError(f"tabs are not allowed for indentation at line {i + 1}")
+        if line.startswith(" "):
+            raise FrontmatterError(f"unexpected indentation at line {i + 1}")
+        if ":" not in line:
+            raise FrontmatterError(f"expected key: value at line {i + 1}")
+        key, raw_value = line.split(":", 1)
+        key = key.strip()
+        value = raw_value.strip()
+        if not key or not TOP_KEY_RE.fullmatch(key):
+            raise FrontmatterError(f"invalid frontmatter key at line {i + 1}: {key!r}")
+        if key in data:
+            raise FrontmatterError(f"duplicate frontmatter key: {key}")
+
+        if key == "metadata" and value == "":
+            metadata: dict[str, str] = {}
+            i += 1
+            while i < len(lines):
+                child = lines[i]
+                child_stripped = child.strip()
+                if not child_stripped or child_stripped.startswith("#"):
+                    i += 1
+                    continue
+                indent = len(child) - len(child.lstrip(" "))
+                if indent == 0:
+                    break
+                if "\t" in child[:indent]:
+                    raise FrontmatterError(f"tabs are not allowed for indentation at line {i + 1}")
+                if indent != 2:
+                    raise FrontmatterError(f"metadata entries must use exactly two spaces at line {i + 1}")
+                body = child[2:]
+                if ":" not in body:
+                    raise FrontmatterError(f"expected metadata key: value at line {i + 1}")
+                child_key, child_value = body.split(":", 1)
+                child_key = child_key.strip()
+                child_value = child_value.strip()
+                if not child_key or not TOP_KEY_RE.fullmatch(child_key):
+                    raise FrontmatterError(f"invalid metadata key at line {i + 1}: {child_key!r}")
+                if child_key in metadata:
+                    raise FrontmatterError(f"duplicate metadata key: {child_key}")
+                if child_value in BLOCK_MARKERS or child_value == "":
+                    raise FrontmatterError("nested metadata mappings/block scalars are outside the portable frontmatter subset")
+                metadata[child_key] = _parse_scalar(child_value)
+                i += 1
+            data[key] = metadata
+            continue
+
+        if value in BLOCK_MARKERS:
+            marker = value
+            block: list[str] = []
+            i += 1
+            while i < len(lines):
+                child = lines[i]
+                if child.strip() and not child.startswith("  "):
+                    break
+                if child.strip():
+                    if child.startswith("\t"):
+                        raise FrontmatterError(f"tabs are not allowed for indentation at line {i + 1}")
+                    if not child.startswith("  "):
+                        raise FrontmatterError(f"block scalar lines require two-space indentation at line {i + 1}")
+                    block.append(child[2:])
+                else:
+                    block.append("")
+                i += 1
+            data[key] = _fold_block(block, marker)
+            continue
+
+        data[key] = _parse_scalar(value)
+        i += 1
     return data
 
 
 def parse_frontmatter(text: str) -> tuple[dict[str, Any] | None, str | None, str]:
-    match = FM_RE.match(text)
+    normalized = text.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n")
+    match = FM_RE.match(normalized)
     if not match:
         return None, "missing or invalid yaml frontmatter", "none"
-    raw = match.group(1)
-    if yaml is not None:
-        try:
-            data = yaml.safe_load(raw)
-        except Exception as exc:  # pragma: no cover
-            return None, f"invalid yaml: {exc}", "pyyaml"
-        if not isinstance(data, dict):
-            return None, "frontmatter is not a mapping", "pyyaml"
-        return data, None, "pyyaml"
-    return _fallback_yaml(raw), None, "fallback"
+    try:
+        data = _portable_yaml(match.group(1))
+    except FrontmatterError as exc:
+        return None, f"invalid portable yaml frontmatter: {exc}", "portable-minimal"
+    return data, None, "portable-minimal"
 
 
 def normalize_local_ref(raw: str) -> str | None:
@@ -132,16 +236,23 @@ def validate_agent_skill(target: Path, profile: str = "portable") -> dict[str, A
 
     unknown = sorted(set((fm or {}).keys()) - SPEC_KEYS)
     if unknown:
-        warnings.append(f"host-specific or unknown frontmatter keys reduce portable-core confidence: {unknown}")
+        message = f"host-specific or unknown frontmatter keys are not allowed in portable-core SKILL.md: {unknown}"
+        if profile == "portable":
+            errors.append(message)
+        else:
+            warnings.append(message)
 
     for raw in MD_LINK_RE.findall(text):
         ref = normalize_local_ref(raw)
         if ref is None:
             continue
         resolved = (target / ref).resolve()
-        if not str(resolved).startswith(str(target.resolve())):
+        try:
+            resolved.relative_to(target.resolve())
+        except ValueError:
             errors.append(f"SKILL.md local reference leaves package: {ref}")
-        elif not resolved.exists():
+            continue
+        if not resolved.exists():
             errors.append(f"SKILL.md referenced path missing: {ref}")
 
     # Compose private-token literals so package-wide scanners do not mistake this

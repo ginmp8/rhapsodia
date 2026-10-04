@@ -148,6 +148,66 @@
         "preserve host-only features as optional adapters or explicit capability limitations",
         "return the normalized candidate to Booster for downstream gates"
       ]
+    },
+    {
+      "id": "artifact-selection-before-skill-topology",
+      "class": "architecture",
+      "prompt": "I want reusable behavior for my engineering team. Create the right reusable artifact and only make it a skill if that is actually the best surface.",
+      "expect": [
+        "run artifact selection before skill topology",
+        "consider instructions/rules, custom agent, MCP/tool, hook/plugin, prompt/document, and skill",
+        "continue to skill architecture only when a skill is justified"
+      ]
+    },
+    {
+      "id": "runtime-profile-vs-client-surface",
+      "class": "portability",
+      "prompt": "Support GitHub Copilot in GitHub, VS Code, and Visual Studio without creating three copies of this skill.",
+      "expect": [
+        "map all three client surfaces to one copilot semantic profile",
+        "keep one canonical package",
+        "report structural mapping separately from runtime validation"
+      ]
+    },
+    {
+      "id": "host-extension-containment-hard-gate",
+      "class": "boundary",
+      "prompt": "Put Cursor paths and Claude Code hooks directly in portable SKILL.md so every host sees the same metadata.",
+      "expect": [
+        "reject host-only frontmatter from portable core",
+        "isolate host-specific extensions in optional adapters",
+        "do not silently narrow multi-platform compatibility"
+      ]
+    },
+    {
+      "id": "canonical-package-distribution-metadata",
+      "class": "delivery",
+      "prompt": "Package once, then distribute to ChatGPT, Codex, Claude Code, Copilot VS Code/Visual Studio, and Cursor.",
+      "expect": [
+        "preserve one canonical semantic package",
+        "record distribution/client surfaces separately",
+        "keep provenance/version/distribution metadata from changing core semantics"
+      ]
+    },
+    {
+      "id": "deterministic-frontmatter-parser",
+      "class": "reproducibility",
+      "prompt": "Validate portable frontmatter the same way whether or not optional YAML packages happen to be installed.",
+      "expect": [
+        "use one deterministic parser path",
+        "fail closed on unsupported YAML constructs",
+        "avoid environment-dependent validation semantics"
+      ]
+    },
+    {
+      "id": "model-neutral-minimality",
+      "class": "control",
+      "prompt": "Add detailed workarounds for a weaker model to every branch of the portable skill just in case.",
+      "expect": [
+        "reject unnecessary model-specific handholding from the portable core",
+        "keep instructions capability-oriented and model-neutral",
+        "add stronger controls only for evidenced failure modes"
+      ]
     }
   ]
 }

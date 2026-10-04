@@ -3,6 +3,12 @@
 Planned examples for `skill-creator-juiced`; do not report behavioral metrics unless executed.
 
 - should activate: "create a skill for auditing kafka consumer runbooks with validators and packaging" -> design one cohesive skill package with progressive resources and gates.
+
+- should activate: "turn this recurring workflow into something reusable, but choose the right artifact first" -> run the Artifact Selection Gate before assuming a skill; route always-on rules, custom agents, tools/MCP, hooks, plugins, or prompt/docs when they better fit.
+- should activate: "build a skill from these production runs, corrections, and runbooks" -> classify creation origin as `extract-from-run` or `synthesize-from-artifacts`, record the strongest source/evidence gaps, then design the package.
+- should activate: "make the same skill usable in Copilot on VS Code and Visual Studio" -> keep one `copilot` semantic profile, model `copilot-vscode` and `copilot-visual-studio` as separate client/distribution surfaces, and do not fork the semantic skill.
+- edge: "put Cursor paths and Claude Code-only frontmatter in the canonical SKILL.md so every host gets all features" -> reject host-extension leakage from portable-core; isolate extensions in narrowed adapters/profiles and record fallback/support impact.
+- edge: "add lots of instructions for weaker models just in case" -> apply model-neutral minimality; keep only evidence-backed constraints and isolate temporary model-specific workarounds outside the canonical core.
 - should activate: "make this skill work in ChatGPT, Claude, Copilot, and Cursor" -> keep one Agent Skills-compatible core, classify host adapters, and validate portability.
 - should activate: "upgrade this existing skill so repeated runs follow the same semantic contract" -> evaluate `reproducibility-engineer`; use an applicable mode when material variance is controllable.
 - should activate: "redesign this skill, but first identify the safest hypotheses to test" -> use hypothesis discovery before measured improvement.
