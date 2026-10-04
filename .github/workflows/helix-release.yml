@@ -43,9 +43,11 @@ jobs:
           fi
       - name: Build deterministic full-project archive
         run: python scripts/build_release_archive.py --version 0.3.0 --output dist/rhapsodia-0.3.0-helix.zip
-      - uses: actions/upload-artifact@v7
-        with:
-          name: rhapsodia-0.3.0-helix
-          path: dist/rhapsodia-0.3.0-helix.zip
-          if-no-files-found: error
-          retention-days: 30
+      - name: Publish archive on the branch
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git reset --hard "origin/$GITHUB_REF_NAME"
+          python scripts/build_release_archive.py --version 0.3.0 --output rhapsodia-0.3.0-helix.zip
+          git add -f rhapsodia-0.3.0-helix.zip
+          git commit -m "build: publish rhapsodia 0.3.0 helix archive"
+          git push
