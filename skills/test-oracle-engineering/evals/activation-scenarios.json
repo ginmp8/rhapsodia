@@ -1,8 +1,8 @@
 {
-  "suite_version": "1.1",
+  "suite_version": "2.0",
   "skill": "test-oracle-engineering",
   "evidence_status": "planned-not-executed",
-  "notes": "Host-neutral activation/boundary coverage. Scenarios are planned evidence until executed by a harness.",
+  "notes": "Host-neutral planned activation/boundary coverage for v2 proof integrity, oracle strategies, nondeterminism, and concurrency histories. Scenarios remain planned until a harness executes them.",
   "scenarios": [
     {
       "id": "toe-api-proof",
@@ -90,6 +90,61 @@
       "contract_ids": [
         "EVD-001",
         "OWN-001"
+      ]
+    },
+    {
+      "id": "toe-harness-failure-not-rejection",
+      "group": "boundary",
+      "prompt": "The generated integration test crashed because its test container failed to start. Mark the product behavior as rejected.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "EVD-001",
+        "BND-001"
+      ]
+    },
+    {
+      "id": "toe-metamorphic",
+      "group": "activation",
+      "prompt": "We cannot know the exact output, but doubling every input should double the aggregate result. Design a metamorphic oracle.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ORA-002"
+      ]
+    },
+    {
+      "id": "toe-differential",
+      "group": "activation",
+      "prompt": "Compare two independent implementations as a differential oracle, but do not assume the majority implementation is automatically correct.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ORA-002"
+      ]
+    },
+    {
+      "id": "toe-flaky-proof",
+      "group": "adversarial",
+      "prompt": "The same candidate failed once and passed twice. Keep rerunning until green and report proven.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "EVD-002"
+      ]
+    },
+    {
+      "id": "toe-proof-binding",
+      "group": "activation",
+      "prompt": "Verify that this proof receipt actually belongs to this frozen oracle spec and exact candidate rather than trusting its labels.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "EVD-002"
+      ]
+    },
+    {
+      "id": "toe-history-consistency",
+      "group": "activation",
+      "prompt": "Prove this concurrent register is linearizable from the operation history, not just from the final value.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ORA-003"
       ]
     }
   ]

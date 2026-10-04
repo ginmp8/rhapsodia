@@ -1,24 +1,59 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://rhapsodia.local/schemas/test-oracle-proof-v1.schema.json",
-  "title": "Test Oracle Proof v1",
+  "$id": "https://rhapsodia.local/schemas/test-oracle-proof-v2.schema.json",
+  "title": "Test Oracle Proof v2",
   "type": "object",
   "additionalProperties": false,
-  "required": ["contract","oracle_id","oracle_spec_identity","candidate_identity","verifier_identity","environment_identity","execution_state","verdict","command_argv","exit_code","evidence_refs","test_artifacts","production_mutation_performed","criteria_changed"],
+  "required": [
+    "contract", "oracle_id", "oracle_spec_identity", "candidate_identity", "verifier_identity", "environment_identity",
+    "attempt", "execution_state", "outcome_kind", "verdict", "command_argv", "exit_code", "observation", "attempts",
+    "evidence_refs", "test_artifacts", "production_mutation_performed", "criteria_changed"
+  ],
   "properties": {
-    "contract":{"const":"test-oracle-proof/v1"},
-    "oracle_id":{"type":"string","minLength":1},
-    "oracle_spec_identity":{"type":"string","minLength":1},
-    "candidate_identity":{"type":"string","minLength":1},
-    "verifier_identity":{"type":"string","minLength":1},
-    "environment_identity":{"type":"string","minLength":1},
-    "execution_state":{"enum":["pass","fail","blocked","not-run"]},
-    "verdict":{"enum":["proven","rejected","inconclusive","blocked","not-run"]},
-    "command_argv":{"type":"array","items":{"type":"string","minLength":1}},
-    "exit_code":{"type":["integer","null"]},
-    "evidence_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
-    "test_artifacts":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
-    "production_mutation_performed":{"const":false},
-    "criteria_changed":{"const":false}
+    "contract": {"const": "test-oracle-proof/v2"},
+    "oracle_id": {"type": "string", "minLength": 1},
+    "oracle_spec_identity": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "candidate_identity": {"$ref": "#/$defs/identity"},
+    "verifier_identity": {"$ref": "#/$defs/identity"},
+    "environment_identity": {"$ref": "#/$defs/identity"},
+    "attempt": {"type": "integer", "minimum": 1},
+    "execution_state": {"enum": ["pass", "fail", "blocked", "not-run"]},
+    "outcome_kind": {"enum": ["expected-observation", "oracle-rejection", "harness-error", "environment-error", "timeout", "cancelled", "unstable-observation", "not-run"]},
+    "verdict": {"enum": ["proven", "rejected", "inconclusive", "blocked", "not-run"]},
+    "command_argv": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "exit_code": {"type": ["integer", "null"]},
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_observed", "failure_observed", "summary", "evidence_refs"],
+      "properties": {
+        "expected_observed": {"type": "boolean"},
+        "failure_observed": {"type": "boolean"},
+        "summary": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "attempts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["attempt", "execution_state", "outcome_kind", "exit_code"],
+        "properties": {
+          "attempt": {"type": "integer", "minimum": 1},
+          "execution_state": {"enum": ["pass", "fail", "blocked", "not-run"]},
+          "outcome_kind": {"enum": ["expected-observation", "oracle-rejection", "harness-error", "environment-error", "timeout", "cancelled", "unstable-observation", "not-run"]},
+          "exit_code": {"type": ["integer", "null"]}
+        }
+      }
+    },
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "test_artifacts": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "production_mutation_performed": {"const": false},
+    "criteria_changed": {"const": false}
+  },
+  "$defs": {
+    "identity": {"type": "string", "pattern": "^(sha256:[0-9a-f]{64}|vcs:.+|version:.+|declared:.+)$"}
   }
 }

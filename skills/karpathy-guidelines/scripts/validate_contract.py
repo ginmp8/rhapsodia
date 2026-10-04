@@ -27,6 +27,7 @@ REQUIRED_PATHS = [
     "references/validation-and-stop-conditions.md",
     "references/activation-scenarios.md",
     "evals/activation-boundary-scenarios.json",
+    "evals/engineering-discipline-scenarios.json",
     "examples/hardening-scenarios.json",
     "assets/templates/implementation-response.md.template",
     "assets/templates/code-review-response.md.template",
@@ -52,6 +53,26 @@ REQUIRED_CANONICAL_SCENARIO_TYPES = {
 }
 
 VALID_CANONICAL_SCENARIO_TYPES = set(REQUIRED_CANONICAL_SCENARIO_TYPES)
+
+REQUIRED_RESEARCH_HEADINGS = {
+    "references/coding-discipline.md": {
+        "## Semantic change contract",
+        "## Repository archaeology gate",
+        "## Escalation ladder",
+    },
+    "references/context-and-evidence-policy.md": {
+        "## Repository-native tooling",
+        "## History as conditional evidence",
+    },
+    "references/validation-and-stop-conditions.md": {
+        "## Failure-model validation",
+        "## Action risk boundary",
+        "## Security escalation",
+    },
+}
+
+REQUIRED_DISCIPLINE_SCENARIO_IDS = {f"KD-R{i:02d}" for i in range(1, 11)}
+VALID_DISCIPLINE_SCENARIO_TYPES = {"core", "edge", "regression", "adversarial"}
 
 MARKER_PATTERNS = [
     re.compile(r"\[" + "TO" + "DO", re.IGNORECASE),
@@ -181,6 +202,51 @@ def validate_canonical_scenario_suite(path: Path) -> str | None:
     return None
 
 
+def validate_research_headings(skill_dir: Path) -> str | None:
+    for rel, headings in REQUIRED_RESEARCH_HEADINGS.items():
+        text = read_text(skill_dir / rel)
+        missing = sorted(heading for heading in headings if heading not in text)
+        if missing:
+            return f"{rel} missing research-derived headings: {missing}"
+    return None
+
+
+def validate_engineering_discipline_suite(path: Path) -> str | None:
+    try:
+        data = json.loads(read_text(path))
+    except json.JSONDecodeError as exc:
+        return f"engineering-discipline scenario json is invalid: {exc}"
+    if not isinstance(data, dict):
+        return "engineering-discipline scenario suite must be a json object"
+    if data.get("target_skill") != "karpathy-guidelines":
+        return "engineering-discipline target_skill must be karpathy-guidelines"
+    if data.get("status") != "planned":
+        return "engineering-discipline status must remain planned until executed"
+    scenarios = data.get("scenarios")
+    if not isinstance(scenarios, list):
+        return "engineering-discipline scenarios must be a list"
+    required = {"id", "type", "prompt", "expected_behavior", "acceptance_criteria"}
+    ids: set[str] = set()
+    for item in scenarios:
+        if not isinstance(item, dict):
+            return "each engineering-discipline scenario must be an object"
+        missing = required - set(item)
+        if missing:
+            return f"engineering-discipline scenario {item.get('id', '<missing>')} missing fields {sorted(missing)}"
+        sid = item["id"]
+        if sid in ids:
+            return f"duplicate engineering-discipline scenario id {sid}"
+        ids.add(sid)
+        if item["type"] not in VALID_DISCIPLINE_SCENARIO_TYPES:
+            return f"engineering-discipline scenario {sid} has unsupported type {item['type']}"
+        criteria = item["acceptance_criteria"]
+        if not isinstance(criteria, list) or not criteria or any(not isinstance(x, str) or not x.strip() for x in criteria):
+            return f"engineering-discipline scenario {sid} must have non-empty acceptance_criteria"
+    if ids != REQUIRED_DISCIPLINE_SCENARIO_IDS:
+        return f"engineering-discipline scenario ids mismatch: expected {sorted(REQUIRED_DISCIPLINE_SCENARIO_IDS)}, found {sorted(ids)}"
+    return None
+
+
 def scan_markers(skill_dir: Path) -> list[str]:
     hits: list[str] = []
     for path in sorted(skill_dir.rglob("*")):
@@ -227,6 +293,14 @@ def main() -> int:
     canonical_scenario_error = validate_canonical_scenario_suite(skill_dir / "evals" / "activation-boundary-scenarios.json")
     if canonical_scenario_error:
         return fail(canonical_scenario_error)
+
+    research_heading_error = validate_research_headings(skill_dir)
+    if research_heading_error:
+        return fail(research_heading_error)
+
+    discipline_scenario_error = validate_engineering_discipline_suite(skill_dir / "evals" / "engineering-discipline-scenarios.json")
+    if discipline_scenario_error:
+        return fail(discipline_scenario_error)
 
     marker_hits = scan_markers(skill_dir)
     if marker_hits:

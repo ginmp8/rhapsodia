@@ -1,19 +1,36 @@
 {
-  "contract": "test-oracle-spec/v1",
+  "contract": "test-oracle-spec/v2",
   "oracle_id": "oracle-001",
   "claim": "<one bounded claim>",
   "claim_type": "behavior",
-  "source_identity": "<requirement/contract/test identity>",
+  "source_identity": "declared:<requirement-or-contract>",
   "candidate_identity": "unbound",
   "target_scope": ["<source/**>"],
   "verification_write_scope": ["<tests/**>"],
   "protected_paths": ["<frozen expected outputs/fixtures if applicable>"],
+  "oracle_strategy": {
+    "type": "specified",
+    "rationale": "<why this strategy can falsify the claim>",
+    "assumptions": [],
+    "blind_spots": []
+  },
+  "oracle_origin": {
+    "type": "specification",
+    "generator_identity": "declared:<author-or-generator>",
+    "independent_validation": "<source truth or independent validation path>"
+  },
+  "quality": {
+    "soundness_assumptions": [],
+    "completeness_limits": [],
+    "strength_check": "not-required",
+    "strength_rationale": "<why the selected observation strength is adequate>"
+  },
   "observable": {
     "setup": "<state before action>",
     "input": "<input>",
     "action": "<action>",
     "expected": "<observable success>",
-    "failure_signal": "<observable rejection>"
+    "failure_signal": "<observable claim-level rejection>"
   },
   "execution": {
     "layer": "integration-public-stack",
@@ -21,6 +38,14 @@
     "requirements": ["run-bounded-process"],
     "command_argv": []
   },
-  "evaluator_identity": "<frozen evaluator/criteria identity>",
+  "nondeterminism": {
+    "mode": "deterministic",
+    "repetitions": 1,
+    "seed_policy": "not-applicable",
+    "order_policy": "not-applicable",
+    "clock_policy": "not-applicable",
+    "scheduler_policy": "not-applicable"
+  },
+  "evaluator_identity": "declared:<frozen-evaluator>",
   "max_attempts": 3
 }
