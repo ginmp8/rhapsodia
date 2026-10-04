@@ -2,13 +2,22 @@
   "contract": "workflow-plan/v2",
   "workflow_id": "<workflow-id>",
   "objective": "<bounded objective>",
-  "success_criteria": ["<terminal success criterion>"],
+  "success_criteria": [
+    "<terminal success criterion>"
+  ],
   "strategy": "gated-convergence",
   "authority": {
     "owner": "<current-domain-owner>",
-    "allowed_effects": ["read-only", "mutating"],
-    "forbidden_effects": ["external-side-effect"],
-    "write_scope": ["<authorized-scope/**>"]
+    "allowed_effects": [
+      "read-only",
+      "mutating"
+    ],
+    "forbidden_effects": [
+      "external-side-effect"
+    ],
+    "write_scope": [
+      "<authorized-scope/**>"
+    ]
   },
   "stages": [
     {
@@ -19,8 +28,12 @@
       "max_parallel": 1,
       "isolation": "serial",
       "effects": "mutating",
-      "read_set": ["<source/**>"],
-      "write_set": ["<authorized-scope/**>"],
+      "read_set": [
+        "<source/**>"
+      ],
+      "write_set": [
+        "<authorized-scope/**>"
+      ],
       "success": "candidate increment produced",
       "on_failure": "repair"
     }
@@ -35,18 +48,31 @@
   },
   "termination": {
     "success_predicate": "all required checkpoints are promoted",
-    "terminal_states": ["completed", "blocked", "escalated", "failed", "budget_exhausted"]
+    "terminal_states": [
+      "completed",
+      "blocked",
+      "escalated",
+      "failed",
+      "budget_exhausted"
+    ]
   },
   "capabilities": {
-    "required": ["isolated-context"],
-    "optional": ["parallelize-independent-work"],
-    "degradation": {"parallelize-independent-work": "serial"}
+    "required": [
+      "isolated-context"
+    ],
+    "optional": [
+      "parallelize-independent-work"
+    ],
+    "degradation": {
+      "parallelize-independent-work": "serial"
+    }
   },
   "evidence": {
     "input_identity": "<input identity>",
     "planner_identity": "<planner identity>",
     "evaluator_identity": "<evaluation contract identity>",
-    "reference_identity": "<optional reference/source identity>"
+    "reference_identity": "<optional reference/source identity>",
+    "freshness_policy": "revalidate-before-mutation"
   },
   "gates": [
     {
@@ -76,13 +102,24 @@
       "objective": "<small independently reviewable increment>",
       "depends_on": [],
       "producer_stage": "produce",
-      "gate_ids": ["proof", "review"],
-      "success": "required gates pass for the current candidate"
+      "gate_ids": [
+        "proof",
+        "review"
+      ],
+      "success": "required gates pass for the current candidate",
+      "reference_scope": [
+        "reference:replace-me"
+      ],
+      "oracle_identity": "oracle:replace-me",
+      "context_mode": "fresh-context"
     }
   ],
   "promotion": {
     "requires_all_required_gates": true,
     "next_checkpoint_requires_promoted_dependencies": true,
-    "accepted_feedback_only": true
+    "accepted_feedback_only": true,
+    "gate_order_is_binding": true,
+    "materialize_promoted_checkpoint": true,
+    "autonomy_policy": "human-default"
   }
 }

@@ -31,10 +31,10 @@ V2_BUDGET_FIELDS = V1_BUDGET_FIELDS | {"max_checkpoints", "max_checkpoint_repair
 TERMINATION_FIELDS = {"success_predicate", "terminal_states"}
 CAPABILITY_FIELDS = {"required", "optional", "degradation"}
 V1_EVIDENCE_FIELDS = {"input_identity", "planner_identity", "evaluator_identity"}
-V2_EVIDENCE_FIELDS = V1_EVIDENCE_FIELDS | {"reference_identity"}
+V2_EVIDENCE_FIELDS = V1_EVIDENCE_FIELDS | {"reference_identity", "freshness_policy"}
 GATE_FIELDS = {"id", "kind", "required", "isolation", "evaluator_identity", "capability", "on_failure", "rerun_after_repair", "max_attempts"}
-CHECKPOINT_FIELDS = {"id", "objective", "depends_on", "producer_stage", "gate_ids", "success"}
-PROMOTION_FIELDS = {"requires_all_required_gates", "next_checkpoint_requires_promoted_dependencies", "accepted_feedback_only"}
+CHECKPOINT_FIELDS = {"id", "objective", "depends_on", "producer_stage", "gate_ids", "success", "reference_scope", "oracle_identity", "context_mode"}
+PROMOTION_FIELDS = {"requires_all_required_gates", "next_checkpoint_requires_promoted_dependencies", "accepted_feedback_only", "gate_order_is_binding", "materialize_promoted_checkpoint", "autonomy_policy"}
 
 
 def _nonempty(value: Any) -> bool:
@@ -606,6 +606,39 @@ def _validate_v2(data: Any) -> dict[str, Any]:
     for node in cp_graph:
         visit_cp(node)
 
+    evidence = data.get("evidence") if isinstance(data.get("evidence"), dict) else {}
+    freshness = evidence.get("freshness_policy")
+    if freshness is not None and freshness not in {"frozen-input", "revalidate-before-mutation", "revalidate-before-promotion"}:
+        errors.append(_diag("E_FRESHNESS_POLICY", "$.evidence.freshness_policy", "unsupported freshness policy"))
+    if freshness in {"revalidate-before-mutation", "revalidate-before-promotion"} and not _nonempty(evidence.get("reference_identity")):
+        errors.append(_diag("E_FRESHNESS_REFERENCE", "$.evidence.reference_identity", "live revalidation requires reference_identity"))
+
+    reference_profile_used = False
+    for idx, cp in enumerate(checkpoints):
+        if not isinstance(cp, dict):
+            continue
+        path = f"$.checkpoints[{idx}]"
+        has_scope = cp.get("reference_scope") is not None
+        has_oracle = cp.get("oracle_identity") is not None
+        if has_scope or has_oracle:
+            reference_profile_used = True
+            if not _list_of_nonempty_strings(cp.get("reference_scope")) or not cp.get("reference_scope"):
+                errors.append(_diag("E_REFERENCE_SCOPE", f"{path}.reference_scope", "reference-grounded checkpoint requires non-empty reference_scope"))
+            if not _nonempty(cp.get("oracle_identity")):
+                errors.append(_diag("E_ORACLE_IDENTITY", f"{path}.oracle_identity", "reference-grounded checkpoint requires frozen oracle_identity"))
+        context_mode = cp.get("context_mode")
+        if context_mode is not None and context_mode not in {"fresh-context", "reuse-current"}:
+            errors.append(_diag("E_CONTEXT_MODE", f"{path}.context_mode", "must be fresh-context or reuse-current"))
+
+    if reference_profile_used:
+        if not _nonempty(evidence.get("reference_identity")):
+            errors.append(_diag("E_REFERENCE_IDENTITY", "$.evidence.reference_identity", "reference-grounded checkpoints require reference_identity"))
+        for idx, cp in enumerate(checkpoints):
+            if not isinstance(cp, dict):
+                continue
+            if not _list_of_nonempty_strings(cp.get("reference_scope")) or not cp.get("reference_scope") or not _nonempty(cp.get("oracle_identity")):
+                errors.append(_diag("E_REFERENCE_PROFILE_INCOMPLETE", f"$.checkpoints[{idx}]", "all checkpoints must declare reference_scope and oracle_identity once reference-grounded convergence is used"))
+
     promotion = data.get("promotion")
     if not isinstance(promotion, dict):
         errors.append(_diag("E_PROMOTION", "$.promotion", "must be an object"))
@@ -613,6 +646,22 @@ def _validate_v2(data: Any) -> dict[str, Any]:
         for field in ("requires_all_required_gates", "next_checkpoint_requires_promoted_dependencies", "accepted_feedback_only"):
             if promotion.get(field) is not True:
                 errors.append(_diag("E_PROMOTION_INVARIANT", f"$.promotion.{field}", "must be true for gated-convergence"))
+        if "gate_order_is_binding" in promotion and promotion.get("gate_order_is_binding") is not True:
+            errors.append(_diag("E_GATE_ORDER", "$.promotion.gate_order_is_binding", "must be true when declared"))
+        autonomy = promotion.get("autonomy_policy")
+        if autonomy is not None and autonomy not in {"human-required", "human-default", "policy-autonomous"}:
+            errors.append(_diag("E_AUTONOMY_POLICY", "$.promotion.autonomy_policy", "unsupported autonomy policy"))
+        if autonomy == "human-required":
+            for idx, cp in enumerate(checkpoints):
+                if not isinstance(cp, dict):
+                    continue
+                refs = cp.get("gate_ids") if isinstance(cp.get("gate_ids"), list) else []
+                has_required_human = any(
+                    gate_map.get(gid, {}).get("kind") == "human-approval" and gate_map.get(gid, {}).get("required") is True
+                    for gid in refs
+                )
+                if not has_required_human:
+                    errors.append(_diag("E_HUMAN_REQUIRED", f"$.checkpoints[{idx}].gate_ids", "human-required autonomy policy requires a required human-approval gate"))
 
     return {
         "validator": "workflow-plan-validator/v2",
