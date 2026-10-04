@@ -1,52 +1,59 @@
 # Usage reference
 
+## Runtime and portability
+
+The core updater is a Python 3 standard-library script. Resolve the host's available Python 3 launcher rather than requiring a particular executable name. Runtime validation additionally requires the `dotnet` CLI.
+
+Optional host adapters may copy this script into a repository, but the decision contract does not depend on a specific agent product.
+
 ## Local setup
 
 Recommended repository layout:
 
 ```text
 repo/
-├── .github/instructions/nuget-package-updater.instructions.md
+├── .github/instructions/nuget-package-updater.instructions.md   # optional Copilot adapter
 ├── tools/nuget-updater/nuget_update.py
 ├── docs/pkgs-versions/
+├── NuGet.Config                                                  # when repository-owned
 └── Directory.Packages.props
 ```
 
-Copy the portable pieces:
-
-```bash
-mkdir -p tools/nuget-updater .github/instructions docs/pkgs-versions
-cp scripts/nuget_update.py tools/nuget-updater/nuget_update.py
-cp assets/copilot/nuget-package-updater.instructions.md .github/instructions/nuget-package-updater.instructions.md
-```
+Copy the portable script and optional Copilot instructions as needed.
 
 ## Non-negotiable rule
 
-The script is the version-selection authority. Do not manually choose a package version when the script can decide, and do not bypass missing/untrusted metadata by editing `Directory.Packages.props` directly.
+The script is the version-selection authority for the supported static CPM surface. Do not manually choose a package version to bypass missing metadata, source ambiguity, unsupported conditional CPM semantics, an active `VersionOverride`, failed audit, or failed restore evidence.
 
 ## Commands
 
 ### Scan
 
-```bash
-python tools/nuget-updater/nuget_update.py scan \
+```text
+<PYTHON> tools/nuget-updater/nuget_update.py scan \
   --file Directory.Packages.props \
+  --repository-root . \
+  --nuget-config NuGet.Config \
   --target-framework net10.0 \
   --report-format markdown
 ```
 
+`--nuget-config` is optional. When omitted and no `--source` is supplied, nuget.org is used.
+
 ### Check with reproducibility evidence
 
-```bash
-python tools/nuget-updater/nuget_update.py check \
+```text
+<PYTHON> tools/nuget-updater/nuget_update.py check \
   --file Directory.Packages.props \
+  --repository-root . \
+  --nuget-config NuGet.Config \
   --target-framework net10.0 \
   --report-format markdown \
   --write-decision-doc \
   --write-evidence
 ```
 
-This creates under `docs/pkgs-versions/` by default:
+Default evidence outputs under `docs/pkgs-versions/`:
 
 - `nuget-package-update-decisions-<decision-id>.md`;
 - `nuget-metadata-snapshot-<snapshot-id>.json`;
@@ -54,11 +61,11 @@ This creates under `docs/pkgs-versions/` by default:
 
 ### Reproducible write from the checked decision
 
-Use both the checked decision receipt and exact metadata snapshot when available:
-
-```bash
-python tools/nuget-updater/nuget_update.py update \
+```text
+<PYTHON> tools/nuget-updater/nuget_update.py update \
   --file Directory.Packages.props \
+  --repository-root . \
+  --nuget-config NuGet.Config \
   --target-framework net10.0 \
   --write \
   --write-decision-doc \
@@ -66,78 +73,164 @@ python tools/nuget-updater/nuget_update.py update \
   --expected-decision-receipt docs/pkgs-versions/nuget-decision-receipt-<decision-id>.json \
   --metadata-snapshot-input docs/pkgs-versions/nuget-metadata-snapshot-<snapshot-id>.json \
   --validate-repository \
+  --audit-repository \
   --report-format markdown
 ```
 
-`--metadata-snapshot-input` fails closed if the snapshot lacks a required URL. It never silently returns to live network access.
+`--metadata-snapshot-input` is strict replay. A missing URL fails closed; no network fallback occurs.
 
-If you intentionally want fresh metadata, omit snapshot replay but keep `--expected-decision-receipt`; any decision drift blocks the write.
+If fresh metadata is intentional, omit replay but keep `--expected-decision-receipt`; decision drift blocks the write.
 
-### Custom repository validation
+## NuGet.Config and source mapping
 
-```bash
-python tools/nuget-updater/nuget_update.py update \
-  --file Directory.Packages.props \
-  --target-framework net10.0 \
-  --write \
-  --write-evidence \
-  --validation-command "restore::dotnet restore My.sln" \
-  --validation-command "build::dotnet build My.sln --no-restore" \
-  --validation-command "test::dotnet test tests/My.Tests/My.Tests.csproj --no-build"
+Use a repo-owned config when source identity matters:
+
+```text
+--nuget-config NuGet.Config
 ```
 
-Validation commands run without a shell, in the `Directory.Packages.props` directory, in the exact order supplied. The first failure stops validation and rolls the package file back to its last-known-good bytes.
+The updater binds the exact config SHA-256, reads `packageSources`, and applies `packageSourceMapping` specificity:
 
-### Pin the expected package-file baseline
+1. exact ID;
+2. longest matching prefix ending in `*`;
+3. `*` fallback.
 
-```bash
---expected-baseline-sha256 <sha256>
-```
-
-This rejects an unexpected starting file before package analysis proceeds.
+The updater does not merge the complete NuGet machine/user/repository config hierarchy. If inherited configs materially affect sources, mappings, credentials, audit sources, or trust policy, use a repository-local consolidated config or treat effective-config identity as incomplete.
 
 ### Multiple feeds
 
-```bash
+Without Package Source Mapping:
+
+```text
 --source https://api.nuget.org/v3/index.json \
 --source https://packages.example.test/v3/index.json
 ```
 
-Feed order is identity-bearing. For the same exact package version, the first configured feed is authoritative for that version.
+Source order remains part of input identity, but it is **not** an authority rule for restore. If the same exact candidate version is observed from multiple eligible sources, default policy rejects it as `candidate-source-ambiguous`.
 
-## NuGet metadata policy
+Prefer Package Source Mapping. `--allow-source-ambiguity` is a diagnostic/risk override only.
 
-The script discovers V3 resources from each service index:
+The metadata phase supports HTTP(S) NuGet V3 sources. Unsupported local-folder metadata sources fail explicitly rather than being rewritten as URLs.
 
-- `SearchAutocompleteService`: version enumeration with `prerelease=false` and `semVerLevel=2.0.0`;
-- `RegistrationsBaseUrl`: listed state, deprecation metadata, package metadata, and registration vulnerabilities;
-- `VulnerabilityInfo`: vulnerability index/page ranges.
+## Central Package Management guards
 
-Default policy:
+The updater intentionally supports literal central versions only.
+
+It fails closed for:
+
+- selected conditional `PackageVersion` declarations;
+- duplicate selected `PackageVersion` declarations for one package ID.
+
+It discovers project `VersionOverride` declarations under `--repository-root`; affected packages are skipped with `version-override-active`.
+
+Multiple `Directory.Packages.props` files are recorded in the repository model. The script does not automatically mutate sibling central props files or claim to fully evaluate MSBuild import/condition semantics.
+
+## Candidate metadata policy
+
+NuGet V3 resources used:
+
+- `SearchAutocompleteService`: stable version enumeration;
+- `RegistrationsBaseUrl`: listed/deprecation/registration vulnerability metadata;
+- `VulnerabilityInfo`: vulnerability ranges where exposed.
+
+Defaults:
 
 - stable only;
-- no major upgrades;
-- patch/minor upgrades allowed;
+- no major upgrade;
+- patch/minor allowed;
 - no downgrade;
-- reject unlisted;
-- reject deprecated;
-- reject known vulnerabilities at/above threshold;
-- require trusted metadata;
-- validate TFM compatibility;
-- never mutate locked/pinned entries.
+- reject unlisted/deprecated/vulnerable/untrusted candidates;
+- reject source ambiguity;
+- respect locks/pins;
+- validate candidate TFM compatibility.
 
-Diagnostic/test-only overrides remain available:
+Diagnostic/test-only risk overrides include:
 
 ```text
 --allow-deprecated
 --allow-vulnerable
 --allow-unlisted
 --allow-untrusted-metadata
+--allow-source-ambiguity
 --disable-safety-validation
 --disable-restore-validation
 ```
 
-Do not use these flags for a normal production repository upgrade unless the user explicitly requested that altered risk policy.
+Do not use them for a normal production update unless the user explicitly requests the altered risk policy.
+
+## Package compatibility probe
+
+The temporary candidate restore is a **package/TFM compatibility probe**, not graph-security proof.
+
+It uses isolated `NUGET_PACKAGES` and `NUGET_HTTP_CACHE_PATH` directories. If `--nuget-config` is present it uses `dotnet restore --configfile <config>` and does not replace config sources with `--source`. Otherwise explicit/default sources are passed with `--source`.
+
+`NuGetAudit` is disabled in this temporary probe deliberately; graph audit belongs to repository validation.
+
+## Repository validation and audit
+
+### Built-in sequence
+
+```text
+--validate-repository
+```
+
+runs:
+
+```text
+restore::dotnet restore
+build::dotnet build --no-restore
+test::dotnet test --no-build
+```
+
+Commands run without a shell from `--repository-root` (or the central props directory when no root is supplied).
+
+### Transitive audit
+
+```text
+--validate-repository --audit-repository
+```
+
+The audit flag implies validation and configures restore with:
+
+```text
+-p:NuGetAudit=true
+-p:NuGetAuditMode=all
+-p:NuGetAuditLevel=<configured threshold>
+```
+
+Interpretation:
+
+- `NU1901` low;
+- `NU1902` moderate;
+- `NU1903` high;
+- `NU1904` critical;
+- a warning at/above threshold fails validation;
+- `NU1905` fails because audit-source evidence is unavailable;
+- `NU1510` is recorded as package-pruning evidence but is non-blocking by itself.
+
+`--audit-repository` cannot be combined with custom validation commands because the updater cannot prove a custom restore preserved the audit contract.
+
+### Custom repository validation
+
+```text
+<PYTHON> tools/nuget-updater/nuget_update.py update \
+  --file Directory.Packages.props \
+  --repository-root . \
+  --write \
+  --validation-command "restore::dotnet restore My.sln" \
+  --validation-command "build::dotnet build My.sln --no-restore" \
+  --validation-command "test::dotnet test tests/My.Tests/My.Tests.csproj --no-build"
+```
+
+The first failing/timeout/unlaunchable command stops validation and triggers rollback.
+
+## Private feeds and credentials
+
+The Python V3 metadata client does not store or implement credentials. HTTP 401/403 returns `authenticated-source-credentials-required`.
+
+Do not place PATs/passwords/tokens in CLI flags, reports, evidence snapshots, or the skill package. `dotnet restore` may use the machine's standard NuGet credential-provider flow, but metadata discovery must still be established before the updater can select a version.
+
+If signed-package or `trustedSigners` policy matters, configure it in NuGet and require repository restore validation. This script does not implement a second signature-verification stack.
 
 ## Evidence options
 
@@ -149,67 +242,79 @@ Do not use these flags for a normal production repository upgrade unless the use
 | `--decision-receipt <path>` | override decision receipt path |
 | `--expected-decision-receipt <path>` | require current decision identity to match prior receipt |
 | `--package-update-receipt <path>` | override package-update receipt path |
-| `--last-known-good-dir <path>` | override LKG directory |
+| `--last-known-good-dir <path>` | override last-known-good root |
 | `--expected-baseline-sha256 <hash>` | pin exact package-file baseline |
-| `--validate-repository` | run default restore/build/test after write |
-| `--validation-command label::command` | custom ordered validation |
+| `--repository-root <path>` | root for project/lock-file repository model and validation working directory |
+| `--nuget-config <path>` | explicit config identity and Package Source Mapping source |
+| `--validate-repository` | built-in restore/build/test after write |
+| `--audit-repository` | transitive NuGetAudit gate on the built-in restore |
+| `--validation-command label::command` | custom ordered validation; not compatible with audit mode |
 
-## Write semantics
+## Write and recovery semantics
 
-A changed update uses:
+A changed write uses:
 
-1. pre-write baseline recheck;
-2. LKG preservation;
-3. same-directory temp file;
-4. fsync;
-5. atomic replace;
-6. post-write hash verification;
-7. requested repository validation;
-8. rollback on validation failure.
+1. baseline hash recheck;
+2. output/input alias preflight and validation-command preflight;
+3. exact package-file LKG preservation;
+4. exact existing `packages.lock.json` snapshot and durable backup;
+5. same-directory staged write + fsync + atomic replace;
+6. post-write package-file hash verification;
+7. requested repository validation/audit;
+8. post-validation lock-file identity capture;
+9. exact package-file/lock-file rollback on failure;
+10. removal of lock files created by the failed validation run.
 
-A second run after a successful update should converge to `writeStatus: no-change` when no newer safe candidate exists.
+A second successful run should converge to `writeStatus: no-change` when no newer safe candidate remains.
 
 ## Reason codes
 
-Automation should inspect `reason_code`, not free-form `reason` text. Common values:
+Automation should inspect `reason_code`, not free-form `reason`.
 
 ```text
 package-locked
 current-version-nonliteral
 metadata-unavailable
+authenticated-source-credentials-required
+unsupported-nuget-source
+source-mapping-no-match
+source-mapping-pattern-unsupported
+candidate-source-ambiguous
 candidate-metadata-missing
 candidate-metadata-untrusted
 candidate-unlisted
 candidate-deprecated
 candidate-vulnerable
+conditional-package-version-unsupported
+duplicate-package-version-declarations
+version-override-active
 no-safe-candidate
 no-policy-allowed-newer-version
 safe-update-selected
 safe-compatible-update
 already-selected
 no-compatible-candidate
+audit-custom-validation-unsupported
+output-aliases-input
+output-alias-collision
 ```
+
+## Optional differential oracles
+
+Where the installed SDK supports them, `dotnet package list` and `dotnet package update` may be used as independent cross-checks. They do not replace the updater's frozen metadata, policy, receipts, or rollback contract. Investigate disagreement instead of choosing whichever result is preferred.
 
 ## Exit codes
 
-- `0`: successful run, including a successful no-change rerun;
-- `1`: technical/precondition failure, including metadata snapshot mismatch/miss or atomic-write failure;
-- `2`: policy failure, including requested post-write validation that failed and was rolled back, or explicit `--fail-on-*` conditions.
+- `0`: successful run, including no-change;
+- `1`: technical/precondition failure;
+- `2`: policy failure such as post-write validation/audit failure followed by rollback, or explicit `--fail-on-*` conditions.
 
 ## Offline test mode
 
-`--versions-file` remains intentionally limited to parser/write tests. It does not prove deprecation, listed state, vulnerability status, or live feed provenance.
+`--versions-file` exists for deterministic parser/write tests. It does not prove listed/deprecation/vulnerability state, feed provenance, signatures, or the resolved repository graph.
 
-```json
-{
-  "Newtonsoft.Json": ["13.0.1", "13.0.4", "14.0.0-beta.1"]
-}
-```
+Use only with an explicit test policy such as:
 
-Use with:
-
-```bash
+```text
 --allow-untrusted-versions-file --disable-restore-validation
 ```
-
-Never use an offline versions file as a substitute for trusted live/snapshotted NuGet metadata in a real update decision.

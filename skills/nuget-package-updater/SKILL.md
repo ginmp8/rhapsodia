@@ -1,182 +1,166 @@
 ---
 name: nuget-package-updater
-description: update and validate nuget central package management versions in directory.packages.props for local copilot or chatgpt-assisted dotnet work. use when asked to check, upgrade, modernize, or validate nuget package versions, especially when selecting the latest stable non-prerelease version, rejecting deprecated unlisted or vulnerable versions through nuget v3 metadata, respecting locks/pins, validating target-framework compatibility, and producing reproducible metadata snapshots, decision receipts, package-update receipts, and rollback evidence.
+description: update, audit, and validate NuGet Central Package Management versions in Directory.Packages.props with reproducible evidence. use for safe .NET package upgrades, NuGet.Config and Package Source Mapping, stable non-prerelease selection, deprecated/unlisted/vulnerable package rejection, CPM locks and VersionOverride guards, TFM compatibility, transitive NuGetAudit, packages.lock.json recovery, decision receipts, metadata snapshots, and atomic rollback. portable across agent hosts because the core depends only on repository files, Python 3 stdlib, NuGet V3 HTTP metadata, and the dotnet CLI when runtime validation is requested.
 ---
 
 # NuGet Package Updater
 
-## Authority
+## Authority and scope
 
-Use the bundled `scripts/nuget_update.py` as the deterministic authority for package discovery, candidate ordering, metadata policy, compatibility decisions, write previews, file mutation, and receipts.
+Use `scripts/nuget_update.py` as the deterministic authority for package discovery, candidate ordering, metadata policy, compatibility probes, write previews, mutation, receipts, and recovery.
 
-Never manually select a version when the script can decide. Never replace unverified metadata with a guess. Never perform unrelated package upgrades.
+Never manually select a version when the script can decide. Never turn missing metadata, ambiguous source provenance, unsupported CPM semantics, or failed restore/audit evidence into permission to edit a package version manually. Never perform unrelated upgrades.
 
-Do not use MCP package metadata or MCP-assisted version edits for this workflow. The open NuGet V3 metadata consumed by the script and the repository files are the source evidence.
+The portable core must not depend on ChatGPT, Codex, Claude, Copilot, Cursor, MCP, or another vendor-private runtime. `agents/openai.yaml` and `assets/copilot/` are optional host adapters only. Resolve the available Python 3 launcher (`python`, `python3`, `py -3`, or equivalent) instead of assuming one spelling.
 
 ## Modes
 
 | Mode | Purpose | Writes `Directory.Packages.props` |
 |---|---|---|
-| `scan` | inventory packages and lock/pin state | no |
-| `check` | produce the safe update plan and evidence | no |
-| `update` | recompute the plan; writes only with `--write` | only with `--write` |
+| `scan` | inventory selected declarations, locks, repository model, and overrides | no |
+| `check` | compute the safe update plan and evidence | no |
+| `update` | recompute the plan; mutate only with `--write` | only with `--write` |
 
-A prior `check` does not authorize a later write by itself. For a reproducible check→write handoff, use the generated decision receipt as a precondition or replay the exact captured metadata snapshot.
+A prior `check` never authorizes a later write by itself. Bind check→write with `--expected-decision-receipt`; use `--metadata-snapshot-input` when exact replay of checked NuGet metadata is required.
 
 ## Required workflow
 
-1. Resolve the exact `Directory.Packages.props` and target framework.
-2. Run `scan`.
-3. Run `check` with `--write-decision-doc --write-evidence`.
-4. Review:
-   - baseline SHA-256;
-   - target-framework identity;
-   - ordered NuGet source identity;
-   - lock/pin identity;
-   - metadata snapshot identity and timestamp;
-   - selected candidate provenance;
-   - stable reason codes;
-   - write preview;
+1. Resolve the exact `Directory.Packages.props`, target framework, and repository root.
+2. If the repository uses a repo-local `NuGet.Config`, pass it explicitly with `--nuget-config`. Prefer Package Source Mapping when multiple feeds exist.
+3. Run `scan`.
+4. Run `check --write-decision-doc --write-evidence`.
+5. Review:
+   - package-file baseline SHA-256;
+   - target-framework and detected SDK identity;
+   - NuGet source identity;
+   - explicit `NuGet.Config` SHA-256 and Package Source Mapping identity when supplied;
+   - repository-model identity, `VersionOverride` evidence, locks/pins, and lock-file identity;
+   - metadata snapshot identity;
+   - candidate provenance and source ambiguity;
+   - stable reason codes and write preview;
    - decision receipt.
-5. Only when a write was requested, run `update --write` and require the prior decision receipt with `--expected-decision-receipt <receipt.json>`. Prefer `--metadata-snapshot-input <snapshot.json>` when the goal is exact replay of the checked external metadata.
-6. For normal repository updates, use `--validate-repository`, or pass explicit ordered `--validation-command label::command` arguments when the repository needs custom restore/build/test commands.
-7. Treat any post-write validation failure as a failed update. The script rolls the package file back to the preserved last-known-good bytes.
-8. Report the decision document, metadata snapshot, decision receipt, package-update receipt, hashes, validation evidence, and rollback state.
+6. Only when a write was requested, run `update --write` and require the checked decision receipt. Prefer exact metadata replay.
+7. For normal repository updates, use `--validate-repository --audit-repository`. Use custom `--validation-command label::command` only when repository-specific commands are necessary; `--audit-repository` intentionally requires the built-in validation sequence.
+8. Treat any post-write validation failure as a failed update. The script restores the exact package-file bytes and pre-validation `packages.lock.json` state, including removing lock files created by the failed validation run.
+9. Report decision, metadata, write, validation/audit, recovery, and receipt evidence separately.
 
 Recommended check:
 
-```bash
-python scripts/nuget_update.py check \
+```text
+<PYTHON> scripts/nuget_update.py check \
   --file Directory.Packages.props \
+  --repository-root . \
+  --nuget-config NuGet.Config \
   --target-framework net10.0 \
   --report-format markdown \
   --write-decision-doc \
   --write-evidence
 ```
 
-Recommended write after that check:
+Omit `--nuget-config` when the repository intentionally uses only the default nuget.org source or explicit `--source` arguments.
 
-```bash
-python scripts/nuget_update.py update \
+Recommended write after the check:
+
+```text
+<PYTHON> scripts/nuget_update.py update \
   --file Directory.Packages.props \
+  --repository-root . \
+  --nuget-config NuGet.Config \
   --target-framework net10.0 \
   --write \
   --write-decision-doc \
   --write-evidence \
   --expected-decision-receipt docs/pkgs-versions/nuget-decision-receipt-<id>.json \
   --metadata-snapshot-input docs/pkgs-versions/nuget-metadata-snapshot-<id>.json \
-  --validate-repository
+  --validate-repository \
+  --audit-repository
 ```
 
-If exact snapshot replay is unavailable, the update may query live metadata again, but `--expected-decision-receipt` must block the write when the resulting decision identity differs.
+If live metadata is intentionally re-queried, keep `--expected-decision-receipt`; any decision drift must block the write.
 
-## Reproducibility contract
+## NuGet source and configuration semantics
 
-### Input identities
+### Package Source Mapping
 
-Every `check`/`update` report carries:
+When `--nuget-config` is supplied, bind the exact config bytes into the decision identity and read its `packageSources` plus `packageSourceMapping` sections.
 
-- exact `Directory.Packages.props` baseline SHA-256;
-- target framework plus detected `dotnet` SDK identity;
-- ordered normalized NuGet source list and source identity hash;
-- lock/pin records and lock/pin identity hash;
-- offline versions-file hash when test mode is used.
+Resolve mapping specificity deterministically:
 
-Before mutation, the script rechecks the package-file hash. If another process or person changed the file during metadata/restore analysis, the write fails with `input-changed-before-write`.
+1. exact package ID;
+2. longest matching prefix pattern ending in `*`;
+3. `*` fallback.
 
-Use `--expected-baseline-sha256` when an external workflow already knows the required package-file baseline.
+If mapping resolves no eligible configured source, fail with `source-mapping-no-match`. Unsupported wildcard shapes fail with `source-mapping-pattern-unsupported`.
 
-### NuGet metadata evidence
+The metadata client supports HTTP(S) NuGet V3 sources only. Fail with `unsupported-nuget-source` rather than silently reinterpret a local-folder source.
 
-For live NuGet V3 requests the script captures the decoded JSON response body before semantic analysis and records:
+### Source ambiguity
 
-- request URL;
-- capture timestamp;
-- exact response-body SHA-256;
-- canonical JSON SHA-256;
-- transport mode (`live` or `replay`).
+NuGet `PackageReference` restore does not make source order authoritative for an ID/version that exists in multiple eligible feeds. Therefore:
 
-`--write-evidence` writes a metadata snapshot under `docs/pkgs-versions/`. `--metadata-snapshot-input` replays only URLs present in that snapshot and fails closed on a missing URL; it does not silently fall back to the network.
+- preserve every observed source for the candidate version in `sourceCandidates`;
+- reject multi-source exact-version candidates by default with `candidate-source-ambiguous`;
+- prefer Package Source Mapping to remove ambiguity;
+- use `--allow-source-ambiguity` only as an explicit diagnostic/risk override, never as the normal production policy.
 
-The metadata snapshot identity excludes timestamps and transport mode, so replay of the same captured bytes retains the same snapshot identity.
+Do not describe the first configured feed as the authoritative restore source.
 
-### Feed precedence and candidate ordering
+### Explicit-config boundary
 
-Configured `--source` order is part of the input contract. Candidate versions are ordered deterministically by NuGet version. When the exact same version exists in multiple feeds, the first configured feed is authoritative for that version.
+`--nuget-config` binds and interprets one explicit config file. The Python metadata phase does not recreate NuGet's entire machine/user/repository config hierarchy. When inherited config materially affects sources, mappings, credentials, audit sources, or trust policy, prefer a repository-local consolidated config or treat effective-config identity as not fully proven.
 
-Candidate provenance records the selected version, feed, feed index, and normalized metadata hash.
+Never emit credential values. The config is represented by hashes and non-secret source/mapping metadata only.
 
-### Stable rejection reasons
+## Central Package Management guards
 
-Human-readable reasons may contain metadata details, but automation should use `reason_code`. Important codes include:
+The updater edits literal `<PackageVersion ... Version="...">` values only. Fail closed rather than guess effective MSBuild behavior:
 
-- `package-locked`;
-- `current-version-nonliteral`;
-- `metadata-unavailable`;
-- `candidate-metadata-missing`;
-- `candidate-metadata-untrusted`;
-- `candidate-unlisted`;
-- `candidate-deprecated`;
-- `candidate-vulnerable`;
-- `no-safe-candidate`;
-- `no-policy-allowed-newer-version`;
-- `safe-update-selected`;
-- `safe-compatible-update`;
-- `already-selected`;
-- `no-compatible-candidate`.
+- selected conditional `PackageVersion` declarations → `conditional-package-version-unsupported`;
+- duplicate selected `PackageVersion` declarations for the same package → `duplicate-package-version-declarations`;
+- project-level `VersionOverride` for a selected package → skip that package with `version-override-active`;
+- non-literal property/range/wildcard version → `current-version-nonliteral`.
 
-Do not scrape free-form `reason` text when `reason_code` is available.
+The repository model records discovered `Directory.Packages.props` files, relevant `VersionOverride` declarations, and lock files. Multiple central props files are evidence, not permission to rewrite them automatically.
 
-## Safety policy
+When a repository requires full conditional/import evaluation beyond these guards, use MSBuild/NuGet evaluation outside this script and do not claim the static model proves the effective graph.
+
+## Candidate policy
 
 Preserve these defaults unless the user explicitly requests a diagnostic/test override:
 
 - stable versions only;
 - no preview/alpha/beta/rc/dev/nightly candidates;
-- no major upgrades unless `--allow-major` is explicit;
+- no major upgrade unless `--allow-major` is explicit;
 - no downgrade unless `--allow-downgrade` is explicit;
 - reject unlisted versions;
 - reject deprecated versions;
-- reject versions with known vulnerabilities at or above the configured threshold;
+- reject known vulnerabilities at or above `--vulnerability-severity-threshold`;
 - require trusted Registration metadata;
-- validate compatibility with the requested TFM;
-- never update MSBuild property-based versions, wildcards, ranges, or non-literal versions;
-- never bypass package locks/pins unless the user explicitly requests an unlock;
-- never choose a version manually after metadata, feed, SDK, or restore failure.
+- respect lock/pin/manual/no-update markers;
+- reject source ambiguity;
+- validate TFM compatibility unless explicitly disabled.
 
-When `sdk-does-not-support-target-framework` is reported, do not conclude the package itself is incompatible. The local SDK cannot validate that TFM.
+The bundled NuGet-version comparator must provide total SemVer-compatible ordering for mixed numeric/alphanumeric prerelease identifiers. Keep regression coverage for numeric-vs-string and prerelease-vs-stable ordering.
 
-## Atomic write and recovery
+## Package compatibility versus repository graph proof
 
-Before changing `Directory.Packages.props`, the script produces a write preview with:
+Keep these evidence layers distinct.
 
-- input hash;
-- expected output hash;
-- exact package/version replacements.
+### Package-level compatibility probe
 
-For a real mutation it:
+Candidate TFM compatibility uses a temporary project and `dotnet restore` with:
 
-1. verifies the input hash still matches the analyzed baseline;
-2. preserves the exact pre-write bytes in `.nuget-updater/last-known-good/` by default;
-3. stages the new file in the same directory;
-4. fsyncs and atomically replaces the target;
-5. verifies the committed hash matches the preview;
-6. runs requested repository validation;
-7. rolls back to last-known-good if post-write validation fails.
+- the exact candidate version;
+- isolated `NUGET_PACKAGES` and `NUGET_HTTP_CACHE_PATH` directories;
+- the explicit `--configfile` when `--nuget-config` is supplied;
+- otherwise explicit `--source` values;
+- `NuGetAudit=false` because this probe answers package/TFM compatibility, not repository graph security.
 
-Never delete last-known-good evidence merely to make a failed run look clean.
+Do not treat this probe as proof that the repository's resolved transitive graph is safe.
 
-## Restore/build/test evidence
+### Repository validation and audit
 
-Candidate TFM compatibility captures `dotnet restore` result kind, exit code, command identity, and output SHA-256.
-
-For repository-level evidence, prefer:
-
-```text
---validate-repository
-```
-
-which runs, in order:
+`--validate-repository` runs, in order:
 
 ```text
 restore::dotnet restore
@@ -184,73 +168,153 @@ build::dotnet build --no-restore
 test::dotnet test --no-build
 ```
 
-For repositories with custom validation, pass ordered commands explicitly:
+`--audit-repository` implies repository validation and augments restore with `NuGetAudit=true`, `NuGetAuditMode=all`, and the configured severity threshold.
+
+Audit interpretation:
+
+- `NU1901` low, `NU1902` moderate, `NU1903` high, `NU1904` critical;
+- a vulnerability warning at/above the configured threshold fails validation;
+- `NU1905` fails audit because configured audit evidence is unavailable;
+- `NU1510` is recorded as pruning evidence but is non-blocking by itself.
+
+Custom validation commands run without a shell. They are compatible with transactional rollback, but not with `--audit-repository` because the script cannot prove that a custom restore command preserved the required audit contract.
+
+## Authentication and trust
+
+The Python NuGet V3 metadata client does not implement or store credentials. HTTP 401/403 is surfaced as `authenticated-source-credentials-required` and must not be converted to a generic safe-update decision.
+
+`dotnet restore` may use the host's normal NuGet credential-provider/configuration flow. Do not add tokens, passwords, or PATs to CLI arguments, reports, snapshots, or skill files.
+
+Do not implement an ad-hoc package-signature verifier. When signed-package or `trustedSigners` policy is required, configure it in NuGet and use repository restore/validation as the authority. A passing metadata check alone does not prove signature trust.
+
+## Atomic write, lock files, and recovery
+
+Before a real mutation:
+
+1. recheck the analyzed `Directory.Packages.props` hash;
+2. validate command syntax and all declared output paths before mutation;
+3. preserve exact package-file bytes under `.nuget-updater/last-known-good/`;
+4. snapshot existing `packages.lock.json` files with byte SHA-256 and resolved/content-hash identity;
+5. persist exact lock-file backup bytes under the last-known-good area;
+6. stage and atomically replace the package file;
+7. verify the committed file hash;
+8. run requested repository validation;
+9. capture post-validation lock-file identity;
+10. on failure, restore exact package-file and lock-file bytes and remove validation-created lock files.
+
+Output/report/receipt paths must not alias the package file, explicit config, metadata replay input, expected receipt, versions file, lock files, or one another. Decision-document names must be simple `.md` filenames.
+
+Never delete last-known-good or incomplete recovery evidence merely to make a failed run look clean.
+
+## Reproducibility identities
+
+Keep identities separate:
+
+- `Directory.Packages.props` baseline SHA-256;
+- target framework + detected SDK identity;
+- normalized source/config/mapping identity;
+- repository-model identity based on relative repository structure, overrides, and lock identities rather than the absolute machine path;
+- lock/pin identity;
+- metadata snapshot identity;
+- decision identity;
+- package-update receipt/final file identity.
+
+`--expected-baseline-sha256` pins the initial package file. `--expected-decision-receipt` pins the recomputed decision before mutation. `--metadata-snapshot-input` is strict replay and never silently falls back to live metadata for a missing URL.
+
+## Evidence and receipts
+
+With `--write-evidence`, emit:
+
+- metadata snapshot: exact decoded NuGet JSON bodies plus hashes;
+- decision receipt: input/config/repository/metadata/policy/decision/write-preview identity;
+- package-update receipt for `update --write`: commit/no-change/rollback status, final file hash, lock-file before/after evidence, repository validation/audit evidence, and rollback evidence.
+
+Receipt filenames derive from content identities rather than wall-clock time. Receipt payloads include a canonical payload hash.
+
+Human-readable timestamps are provenance, not decision identity.
+
+## Stable reason codes
+
+Automation must inspect `reason_code`, not free-form `reason`. Important codes include:
 
 ```text
---validation-command "restore::dotnet restore My.sln"
---validation-command "build::dotnet build My.sln --no-restore"
---validation-command "test::dotnet test tests/My.Tests/My.Tests.csproj --no-build"
+package-locked
+current-version-nonliteral
+metadata-unavailable
+authenticated-source-credentials-required
+unsupported-nuget-source
+source-mapping-no-match
+source-mapping-pattern-unsupported
+candidate-source-ambiguous
+candidate-metadata-missing
+candidate-metadata-untrusted
+candidate-unlisted
+candidate-deprecated
+candidate-vulnerable
+conditional-package-version-unsupported
+duplicate-package-version-declarations
+version-override-active
+no-safe-candidate
+no-policy-allowed-newer-version
+safe-update-selected
+safe-compatible-update
+already-selected
+no-compatible-candidate
+audit-custom-validation-unsupported
+output-aliases-input
+output-alias-collision
 ```
 
-Commands run without a shell. Evidence records label, argv, timestamps, exit code/status, and output SHA-256. The first failure stops validation and triggers rollback after a write.
+## Optional independent oracles
 
-## Receipts
+On SDKs that provide them, `dotnet package list` and `dotnet package update` can be useful independent cross-checks of resolved/outdated/vulnerable package information. Treat them as differential/oracle evidence only; they do not replace this skill's frozen metadata, policy, receipts, or rollback contract.
 
-With `--write-evidence`, `check`/`update` produce:
-
-- metadata snapshot: exact external JSON response bodies plus hashes;
-- decision receipt: deterministic decision identity bound to input hash, TFM, sources, lock/pin state, metadata snapshot, policy, decisions, and write preview;
-- package-update receipt for `update --write`: commit/rollback state, final file hash, validation evidence, and links by hash to the decision/metadata evidence.
-
-Receipt filenames are derived from content identities, not wall-clock timestamps. Receipt payloads include a canonical payload hash.
-
-`--expected-decision-receipt` compares decision identity before any package-file write. Metadata changing between `check` and `update`, policy changes, feed-order changes, TFM changes, lock changes, or package-file changes therefore block the write.
-
-## Decision document
-
-For every real `check` or `update`, pass `--write-decision-doc`. The default filename is derived from `decisionIdentity`, making same-decision reruns converge to the same path.
-
-Use `references/decision-document.md` for the human-readable contract and `references/reproducibility.md` for evidence/receipt semantics.
+If the independent oracle materially disagrees with this updater, investigate the mismatch instead of choosing whichever answer is more convenient.
 
 ## Stop conditions
 
-Do not write when any of these holds:
+Do not write when any required condition is unresolved, including:
 
-- required metadata cannot be trusted;
-- a replay snapshot is incomplete or fails its hash check;
-- the expected decision receipt does not match;
-- the package-file baseline changed before write;
-- a lock/pin blocks the package;
-- no safe policy-allowed candidate exists;
-- target-framework compatibility cannot be established under the requested policy;
-- output paths alias the package file or one another;
-- atomic commit or post-write hash verification fails;
-- requested restore/build/test validation fails (rollback is required).
+- metadata unavailable/untrusted or private-feed authentication unavailable to the metadata phase;
+- replay snapshot miss/hash failure;
+- expected decision receipt mismatch;
+- baseline changes before mutation;
+- source mapping failure or unresolved multi-source ambiguity under default policy;
+- conditional/duplicate CPM declaration whose effective semantics cannot be proven;
+- active `VersionOverride` for that package;
+- lock/pin block;
+- no safe policy-allowed candidate;
+- required TFM compatibility cannot be established;
+- output aliases an input/protected file or sibling output;
+- atomic commit/hash verification fails;
+- repository validation/audit fails, including `NU1905` or a vulnerability at/above threshold.
 
-Do not reinterpret these failures as permission for a manual version selection.
+Do not reinterpret a stop condition as permission for manual package selection.
 
 ## Output contract
 
-Summaries should separate:
+Summaries must keep evidence layers separate:
 
-- **decision evidence**: selected/unchanged/locked/skipped/error packages with stable reason codes;
-- **external evidence**: metadata snapshot hash/timestamp/source identity;
-- **write evidence**: baseline/output/final hashes and last-known-good path;
-- **validation evidence**: restore/build/test statuses and output hashes;
-- **recovery evidence**: rollback status when applicable;
-- **artifact paths**: decision document, metadata snapshot, decision receipt, package-update receipt.
+- **decision evidence**: update/unchanged/locked/skipped/error with stable codes;
+- **external metadata evidence**: snapshot/source/config/mapping identities;
+- **repository-model evidence**: central props, overrides, lock-file identities;
+- **write evidence**: baseline/preview/final hashes and last-known-good path;
+- **validation evidence**: compatibility probe versus repository restore/build/test/audit;
+- **recovery evidence**: package and lock-file rollback state;
+- **artifact evidence**: decision document, metadata snapshot, decision receipt, package-update receipt.
 
-Never claim validation passed when a command was not executed.
+Never claim a command, audit, graph check, signature policy, or runtime validation passed when it was not executed.
 
 ## References
 
-- `references/usage.md`: complete command reference.
-- `references/decision-document.md`: decision document fields and interpretation.
-- `references/reproducibility.md`: identities, snapshots, receipts, recovery, and rerun rules.
-- `references/local-copilot-setup.md`: local Copilot setup.
-- `evals/reproducibility-scenarios.json`: frozen regression/edge scenario catalog.
-- `scripts/test_nuget_update.py`: preserved baseline smoke evaluator.
-- `scripts/test_reproducibility.py`: reproducibility regression evaluator.
-- `scripts/validate_evidence.py`: validates snapshot/receipt hashes without external dependencies.
-- `schemas/*.schema.json`: machine-readable snapshot and receipt contracts.
-- `assets/copilot/nuget-package-updater.instructions.md`: ready-to-copy Copilot instructions.
+- `references/usage.md`: command reference and examples.
+- `references/reproducibility.md`: identity, cache isolation, receipts, lock files, and recovery semantics.
+- `references/decision-document.md`: human decision-document contract.
+- `references/local-copilot-setup.md`: optional local Copilot adapter setup.
+- `evals/reproducibility-scenarios.json`: planned scenario catalog.
+- `scripts/test_nuget_update.py`: baseline smoke evaluator.
+- `scripts/test_reproducibility.py`: core reproducibility regression evaluator.
+- `scripts/test_research_improvements.py`: research-backed regression evaluator for source/config/CPM/audit/recovery controls.
+- `scripts/validate_evidence.py`: snapshot/receipt integrity validator.
+- `schemas/*.schema.json`: machine-readable evidence contracts.
+- `assets/copilot/nuget-package-updater.instructions.md`: optional Copilot instructions.

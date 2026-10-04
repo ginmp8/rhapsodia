@@ -37,6 +37,32 @@ def validate_receipt(data: dict[str, Any]) -> list[str]:
     for key in ["receiptVersion", "toolContractVersion", "decisionIdentity", "baselineSha256", "metadataSnapshotSha256"]:
         if key not in data:
             errors.append(f"missing {key}")
+
+    if isinstance(data.get("toolContractVersion"), int) and data["toolContractVersion"] >= 4:
+        if receipt_type == "nuget-package-decision":
+            for key in [
+                "targetFrameworkIdentity",
+                "nugetSourceIdentity",
+                "nugetConfigSha256",
+                "packageSourceMappingIdentity",
+                "repositoryModelIdentity",
+                "lockPinIdentity",
+                "identityMaterialSha256",
+            ]:
+                if key not in data:
+                    errors.append(f"missing {key}")
+        elif receipt_type == "nuget-package-update":
+            status = data.get("status")
+            write_evidence = data.get("writeEvidence")
+            if status in {"committed", "rolled-back-validation-failure"}:
+                if not isinstance(write_evidence, dict):
+                    errors.append("writeEvidence must be an object for a changed write")
+                else:
+                    for key in ["lockFilesBefore", "lockFilesAfterValidation"]:
+                        if key not in write_evidence:
+                            errors.append(f"writeEvidence missing {key}")
+            if status == "rolled-back-validation-failure" and not isinstance(data.get("rollbackEvidence"), dict):
+                errors.append("rollbackEvidence must be an object for rolled-back-validation-failure")
     return errors
 
 
@@ -72,9 +98,17 @@ def validate_snapshot(data: dict[str, Any]) -> list[str]:
     offline_identity = None
     if isinstance(offline, dict):
         offline_identity = {"path": offline.get("path"), "sha256": offline.get("sha256")}
+    sources = data.get("sources")
+    if isinstance(sources, list):
+        expected_source_identity = canonical_digest(sources)
+        if data.get("sourceIdentity") != expected_source_identity:
+            errors.append(
+                f"sourceIdentity mismatch: expected {data.get('sourceIdentity')}, observed {expected_source_identity}"
+            )
+
     material = {
         "schemaVersion": data.get("schemaVersion"),
-        "sources": data.get("sources"),
+        "sources": sources,
         "records": identity_records,
         "offlineVersions": offline_identity,
     }

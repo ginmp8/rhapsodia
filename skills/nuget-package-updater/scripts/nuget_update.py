@@ -32,14 +32,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.error
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Iterable
 
 DEFAULT_SOURCE = "https://api.nuget.org/v3/index.json"
 DEFAULT_TARGET_FRAMEWORK = "net10.0"
-TOOL_CONTRACT_VERSION = 3
+TOOL_CONTRACT_VERSION = 4
 EVIDENCE_SCHEMA_VERSION = 1
 RECEIPT_SCHEMA_VERSION = 1
 
@@ -133,7 +135,7 @@ class UpdaterError(RuntimeError):
 
 @dataclasses.dataclass(frozen=True, order=True)
 class NuGetVersion:
-    sort_key: tuple[int, int, int, int, tuple[int | str, ...]]
+    sort_key: tuple[int, int, int, int, int, tuple[tuple[int, int | str], ...]]
     original: str = dataclasses.field(compare=False)
     major: int = dataclasses.field(compare=False)
     minor: int = dataclasses.field(compare=False)
@@ -155,6 +157,7 @@ class PackageEntry:
     line: int
     locked: bool
     lock_reason: str | None
+    condition: str | None = None
 
 
 @dataclasses.dataclass
@@ -182,6 +185,16 @@ class Candidate:
     version: NuGetVersion
     metadata: PackageMetadata | None
     source: str | None
+    source_candidates: tuple[str, ...] = ()
+
+
+@dataclasses.dataclass(frozen=True)
+class NuGetConfigModel:
+    path: Path
+    sha256: str
+    package_sources: tuple[tuple[str, str], ...]
+    mappings: tuple[tuple[str, tuple[str, ...]], ...]
+    mapping_identity: str
 
 
 @dataclasses.dataclass
@@ -249,13 +262,15 @@ def parse_nuget_version(value: str) -> NuGetVersion | None:
         numbers.append(0)
 
     if sep:
+        stable_rank = 0
         prerelease_key = tuple(_parse_prerelease_piece(p) for p in prerelease.split("."))
     else:
         prerelease = None
-        prerelease_key = (sys.maxsize,)
+        stable_rank = 1
+        prerelease_key = ()
 
     return NuGetVersion(
-        sort_key=(numbers[0], numbers[1], numbers[2], numbers[3], prerelease_key),
+        sort_key=(numbers[0], numbers[1], numbers[2], numbers[3], stable_rank, prerelease_key),
         original=value.strip(),
         major=numbers[0],
         minor=numbers[1],
@@ -265,10 +280,10 @@ def parse_nuget_version(value: str) -> NuGetVersion | None:
     )
 
 
-def _parse_prerelease_piece(value: str) -> int | str:
+def _parse_prerelease_piece(value: str) -> tuple[int, int | str]:
     if value.isdigit():
-        return int(value)
-    return value.lower()
+        return (0, int(value))
+    return (1, value.lower())
 
 
 def read_text(path: Path) -> str:
@@ -314,12 +329,12 @@ def _fsync_directory(path: Path) -> None:
         os.close(fd)
 
 
-def atomic_write_text(path: Path, content: str) -> None:
+def atomic_write_bytes(path: Path, content: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=str(path.parent))
     temp_path = Path(temp_name)
     try:
-        with os.fdopen(fd, "w", encoding="utf-8", newline="") as handle:
+        with os.fdopen(fd, "wb") as handle:
             handle.write(content)
             handle.flush()
             os.fsync(handle.fileno())
@@ -328,6 +343,10 @@ def atomic_write_text(path: Path, content: str) -> None:
     finally:
         if temp_path.exists():
             temp_path.unlink()
+
+
+def atomic_write_text(path: Path, content: str) -> None:
+    atomic_write_bytes(path, content.encode("utf-8"))
 
 
 def write_text(path: Path, content: str) -> None:
@@ -424,6 +443,7 @@ def parse_package_entries(content: str) -> list[PackageEntry]:
 
         attrs = parse_attributes(attrs_text)
         lock_reason = lock_reason_from_attrs(attrs) or lock_reason_from_comments(content, tag.start())
+        condition = attrs.get("condition")
 
         entries.append(
             PackageEntry(
@@ -434,6 +454,7 @@ def parse_package_entries(content: str) -> list[PackageEntry]:
                 line=line,
                 locked=lock_reason is not None,
                 lock_reason=lock_reason,
+                condition=condition,
             )
         )
 
@@ -451,6 +472,150 @@ def normalize_source(source: str) -> str:
 
 def normalized_sources(sources: Iterable[str]) -> list[str]:
     return [normalize_source(source) for source in sources]
+
+
+def _xml_local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1].lower()
+
+
+def load_nuget_config(path: Path) -> NuGetConfigModel:
+    resolved = path.resolve()
+    if not resolved.is_file():
+        raise UpdaterError("nuget-config-not-found", f"NuGet.Config not found: {resolved}", stage="input")
+    try:
+        root = ET.fromstring(resolved.read_bytes())
+    except ET.ParseError as exc:
+        raise UpdaterError("nuget-config-invalid", f"invalid NuGet.Config XML: {exc}", stage="input") from exc
+
+    sources: list[tuple[str, str]] = []
+    mappings: list[tuple[str, tuple[str, ...]]] = []
+    for child in root.iter():
+        name = _xml_local_name(child.tag)
+        if name == "packagesources":
+            current: list[tuple[str, str]] = []
+            for item in child:
+                item_name = _xml_local_name(item.tag)
+                if item_name == "clear":
+                    current.clear()
+                elif item_name == "add":
+                    key = (item.attrib.get("key") or "").strip()
+                    value = (item.attrib.get("value") or "").strip()
+                    if key and value:
+                        current.append((key, value))
+            sources = current
+        elif name == "packagesourcemapping":
+            current_mappings: list[tuple[str, tuple[str, ...]]] = []
+            for source_node in child:
+                if _xml_local_name(source_node.tag) != "packagesource":
+                    continue
+                key = (source_node.attrib.get("key") or "").strip()
+                patterns = tuple(
+                    (node.attrib.get("pattern") or "").strip()
+                    for node in source_node
+                    if _xml_local_name(node.tag) == "package" and (node.attrib.get("pattern") or "").strip()
+                )
+                if key and patterns:
+                    current_mappings.append((key, patterns))
+            mappings = current_mappings
+
+    normalized = tuple((key, normalize_source(value)) for key, value in sources)
+    mapping_material = [{"sourceKey": key, "patterns": list(patterns)} for key, patterns in mappings]
+    return NuGetConfigModel(
+        path=resolved,
+        sha256=sha256_file(resolved),
+        package_sources=normalized,
+        mappings=tuple(mappings),
+        mapping_identity=canonical_sha256(mapping_material),
+    )
+
+
+def configure_nuget_inputs(args: argparse.Namespace) -> None:
+    model = load_nuget_config(Path(args.nuget_config)) if getattr(args, "nuget_config", None) else None
+    explicit_sources = list(args.source)
+    if not explicit_sources:
+        if model and model.package_sources:
+            args.source = [value for _, value in model.package_sources]
+        else:
+            args.source = [DEFAULT_SOURCE]
+    else:
+        args.source = explicit_sources
+    args._nuget_config_model = model
+    args._nuget_sources_explicit = bool(explicit_sources)
+
+
+def _mapping_match_rank(package_id: str, pattern: str) -> tuple[int, int] | None:
+    package_key = package_id.lower()
+    pattern_key = pattern.lower()
+    if pattern_key == package_key:
+        return (2, len(pattern_key))
+    if pattern_key == "*":
+        return (0, 0)
+    if pattern_key.endswith("*") and "*" not in pattern_key[:-1]:
+        prefix = pattern_key[:-1]
+        if package_key.startswith(prefix):
+            return (1, len(prefix))
+        return None
+    if "*" in pattern_key:
+        raise UpdaterError(
+            "source-mapping-pattern-unsupported",
+            f"unsupported Package Source Mapping pattern: {pattern}",
+            stage="input",
+        )
+    return None
+
+
+def sources_for_package(package_id: str, args: argparse.Namespace) -> list[str]:
+    model: NuGetConfigModel | None = getattr(args, "_nuget_config_model", None)
+    if model is None or not model.mappings:
+        selected = list(args.source)
+        for source in selected:
+            if urllib.parse.urlparse(source).scheme.lower() not in {"http", "https"}:
+                raise UpdaterError(
+                    "unsupported-nuget-source",
+                    f"metadata discovery supports HTTP(S) NuGet V3 sources only: {source}",
+                    stage="input",
+                    evidence={"packageId": package_id},
+                )
+        return selected
+    by_key = {key: value for key, value in model.package_sources}
+    ranked: list[tuple[tuple[int, int], str]] = []
+    for key, patterns in model.mappings:
+        best: tuple[int, int] | None = None
+        for pattern in patterns:
+            rank = _mapping_match_rank(package_id, pattern)
+            if rank is not None and (best is None or rank > best):
+                best = rank
+        if best is not None:
+            ranked.append((best, key))
+    if not ranked:
+        raise UpdaterError(
+            "source-mapping-no-match",
+            f"Package Source Mapping has no eligible source for {package_id}",
+            stage="policy",
+            evidence={"packageId": package_id, "mappingIdentity": model.mapping_identity},
+        )
+    best_rank = max(rank for rank, _ in ranked)
+    selected_keys = [key for rank, key in ranked if rank == best_rank]
+    mapped = [by_key[key] for key in selected_keys if key in by_key]
+    if getattr(args, "_nuget_sources_explicit", False):
+        allowed = set(normalized_sources(args.source))
+        mapped = [source for source in mapped if normalize_source(source) in allowed]
+    if not mapped:
+        raise UpdaterError(
+            "source-mapping-no-match",
+            f"Package Source Mapping resolved no configured HTTP source for {package_id}",
+            stage="policy",
+            evidence={"packageId": package_id, "sourceKeys": selected_keys},
+        )
+    for source in mapped:
+        if urllib.parse.urlparse(source).scheme.lower() not in {"http", "https"}:
+            raise UpdaterError(
+                "unsupported-nuget-source",
+                f"metadata discovery supports HTTP(S) NuGet V3 sources only: {source}",
+                stage="input",
+                evidence={"packageId": package_id},
+            )
+    return mapped
 
 
 def configure_metadata_replay(path: Path | None) -> None:
@@ -509,11 +674,21 @@ def get_json(url: str, timeout: int) -> dict[str, Any]:
                 "Accept-Encoding": "gzip, identity",
             },
         )
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            raw = response.read()
-            encoding = response.headers.get("Content-Encoding", "").lower()
-            if "gzip" in encoding:
-                raw = gzip.decompress(raw)
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                raw = response.read()
+                encoding = response.headers.get("Content-Encoding", "").lower()
+                if "gzip" in encoding:
+                    raw = gzip.decompress(raw)
+        except urllib.error.HTTPError as exc:
+            if exc.code in {401, 403}:
+                raise UpdaterError(
+                    "authenticated-source-credentials-required",
+                    f"NuGet source requires authentication ({exc.code}); use the host NuGet credential-provider flow and do not pass secrets to this tool",
+                    stage="metadata",
+                    evidence={"url": url, "statusCode": exc.code},
+                ) from exc
+            raise
         body = raw.decode("utf-8")
         transport = "live"
 
@@ -877,21 +1052,22 @@ def fetch_candidates(
                 source="versions-file",
                 trusted=allow_untrusted_versions_file,
             )
-            candidates.append(Candidate(parsed, metadata, "versions-file"))
+            candidates.append(Candidate(parsed, metadata, "versions-file", ("versions-file",)))
         candidates.sort(key=lambda c: c.version, reverse=True)
         return candidates, "versions-file"
 
     errors: list[str] = []
-    candidate_by_version: dict[str, Candidate] = {}
+    observations: dict[str, list[tuple[NuGetVersion, PackageMetadata, str]]] = {}
     first_source: str | None = None
 
     for source in sources:
+        normalized_source = normalize_source(source)
         try:
-            versions = fetch_autocomplete_versions(package_id, source, timeout)
-            metadata_by_version = fetch_registration_metadata(package_id, source, timeout)
-            package_advisories = fetch_vulnerability_info_for_package(package_id, source, timeout)
+            versions = fetch_autocomplete_versions(package_id, normalized_source, timeout)
+            metadata_by_version = fetch_registration_metadata(package_id, normalized_source, timeout)
+            package_advisories = fetch_vulnerability_info_for_package(package_id, normalized_source, timeout)
             if versions and first_source is None:
-                first_source = source
+                first_source = normalized_source
 
             for value in versions:
                 parsed = parse_nuget_version(value)
@@ -904,30 +1080,27 @@ def fetch_candidates(
                         listed=None,
                         deprecated=False,
                         vulnerabilities=[],
-                        source=source,
+                        source=normalized_source,
                         trusted=False,
                     )
                 metadata = enrich_metadata_with_vulnerability_info(metadata, parsed, package_advisories)
-                key = parsed.original.lower()
-                # Feed order is part of the input contract. For the same exact
-                # version, the first configured feed is authoritative.
-                candidate_by_version.setdefault(key, Candidate(parsed, metadata, source))
+                observations.setdefault(parsed.original.lower(), []).append((parsed, metadata, normalized_source))
+        except UpdaterError:
+            raise
         except Exception as exc:  # noqa: BLE001 - report source-specific failures.
-            errors.append(f"{source}: {exc}")
+            errors.append(f"{normalized_source}: {exc}")
 
-    if not candidate_by_version and errors:
+    if not observations and errors:
         raise RuntimeError("No versions could be read. " + " | ".join(errors))
 
-    candidates = list(candidate_by_version.values())
-    source_rank = {normalize_source(value): index for index, value in enumerate(sources)}
-    candidates.sort(
-        key=lambda c: (
-            c.version,
-            -source_rank.get(normalize_source(c.source or DEFAULT_SOURCE), len(source_rank)),
-            (c.source or "").lower(),
-        ),
-        reverse=True,
-    )
+    candidates: list[Candidate] = []
+    source_order = {normalize_source(value): index for index, value in enumerate(sources)}
+    for items in observations.values():
+        ordered = sorted(items, key=lambda item: (source_order.get(item[2], len(source_order)), item[2].lower()))
+        parsed, metadata, representative_source = ordered[0]
+        source_candidates = tuple(item[2] for item in ordered)
+        candidates.append(Candidate(parsed, metadata, representative_source, source_candidates))
+    candidates.sort(key=lambda c: c.version, reverse=True)
     return candidates, first_source
 
 
@@ -1015,6 +1188,11 @@ def is_allowed_by_version_policy(
 
 
 def safety_rejection_reason(candidate: Candidate, args: argparse.Namespace) -> Rejection | None:
+    if len(candidate.source_candidates) > 1 and not getattr(args, "allow_source_ambiguity", False):
+        return Rejection(
+            "candidate-source-ambiguous",
+            "the same package version is available from multiple eligible sources; configure Package Source Mapping or explicitly accept ambiguity",
+        )
     if args.disable_safety_validation:
         return None
 
@@ -1055,6 +1233,7 @@ def validate_package_compatibility(
     target_framework: str,
     sources: list[str],
     timeout: int,
+    nuget_config: Path | None = None,
 ) -> CompatibilityResult:
     if not has_dotnet():
         return CompatibilityResult(
@@ -1095,12 +1274,17 @@ def validate_package_compatibility(
             "--verbosity",
             "minimal",
         ]
-        for source in sources:
-            command.extend(["--source", source])
+        if nuget_config is not None:
+            command.extend(["--configfile", str(nuget_config.resolve())])
+        else:
+            for source in sources:
+                command.extend(["--source", source])
 
         env = os.environ.copy()
-        env.setdefault("DOTNET_CLI_TELEMETRY_OPTOUT", "1")
-        env.setdefault("DOTNET_NOLOGO", "1")
+        env["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
+        env["DOTNET_NOLOGO"] = "1"
+        env["NUGET_PACKAGES"] = str((Path(tmp) / "global-packages").resolve())
+        env["NUGET_HTTP_CACHE_PATH"] = str((Path(tmp) / "http-cache").resolve())
 
         completed = subprocess.run(
             command,
@@ -1161,6 +1345,8 @@ def candidate_provenance(candidate: Candidate | None, sources: list[str]) -> dic
         "version": candidate.version.original,
         "source": candidate.source,
         "sourceIndex": source_index,
+        "sourceCandidates": list(candidate.source_candidates),
+        "sourceAmbiguous": len(candidate.source_candidates) > 1,
         "metadataSha256": package_metadata_identity(candidate.metadata),
     }
 
@@ -1260,10 +1446,37 @@ def decide_package_update(
             source=None,
         )
 
+    overrides = getattr(args, "_version_overrides", {}).get(entry.package_id.lower(), [])
+    if overrides:
+        return make_decision(
+            entry=entry,
+            current_metadata=None,
+            latest_stable=None,
+            selected_version=None,
+            target_framework=args.target_framework,
+            compatible=None,
+            action="skipped",
+            reason="one or more projects use VersionOverride for this centrally managed package",
+            reason_code="version-override-active",
+            candidate_count=0,
+            safe_candidate_count=0,
+            validated_candidates=0,
+            source=None,
+        )
+
+    try:
+        eligible_sources = sources_for_package(entry.package_id, args)
+    except UpdaterError as exc:
+        return make_decision(
+            entry=entry, current_metadata=None, latest_stable=None, selected_version=None,
+            target_framework=args.target_framework, compatible=None, action="skipped", reason=str(exc),
+            reason_code=exc.code, candidate_count=0, safe_candidate_count=0, validated_candidates=0, source=None,
+        )
+
     current_metadata = get_current_metadata(
         entry.package_id,
         entry.current_version,
-        args.source,
+        eligible_sources,
         args.http_timeout,
         versions_by_package,
         args.allow_untrusted_versions_file,
@@ -1289,12 +1502,13 @@ def decide_package_update(
     try:
         candidates, source = fetch_candidates(
             entry.package_id,
-            args.source,
+            eligible_sources,
             args.http_timeout,
             versions_by_package,
             args.allow_untrusted_versions_file,
         )
     except Exception as exc:  # noqa: BLE001 - return per-package error.
+        reason_code = exc.code if isinstance(exc, UpdaterError) else "metadata-unavailable"
         return make_decision(
             entry=entry,
             current_metadata=current_metadata,
@@ -1304,7 +1518,7 @@ def decide_package_update(
             compatible=None,
             action="error",
             reason=str(exc),
-            reason_code="metadata-unavailable",
+            reason_code=reason_code,
             candidate_count=0,
             safe_candidate_count=0,
             validated_candidates=0,
@@ -1341,6 +1555,7 @@ def decide_package_update(
                     "code": rejection.code,
                     "message": rejection.message,
                     "source": candidate.source,
+                    "sourceCandidates": list(candidate.source_candidates),
                     "metadataSha256": package_metadata_identity(candidate.metadata),
                 }
             )
@@ -1410,7 +1625,7 @@ def decide_package_update(
                 source=source,
                 selected_metadata=candidate.metadata,
                 selected_candidate=candidate,
-                sources=args.source,
+                sources=eligible_sources,
                 compatibility_attempts=compatibility_attempts,
                 candidate_rejections=candidate_rejections,
             )
@@ -1420,8 +1635,9 @@ def decide_package_update(
             entry.package_id,
             candidate.version.original,
             args.target_framework,
-            args.source,
+            eligible_sources,
             args.restore_timeout,
+            nuget_config=(getattr(args, "_nuget_config_model", None).path if getattr(args, "_nuget_config_model", None) else None),
         )
         compatibility_attempts.append(compatibility_evidence(compatibility, candidate.version.original))
         if compatibility.compatible:
@@ -1442,7 +1658,7 @@ def decide_package_update(
                 source=source,
                 selected_metadata=candidate.metadata,
                 selected_candidate=candidate,
-                sources=args.source,
+                sources=eligible_sources,
                 compatibility_attempts=compatibility_attempts,
                 candidate_rejections=candidate_rejections,
             )
@@ -1609,6 +1825,7 @@ def decision_identity_material(report: dict[str, Any], metadata_snapshot: dict[s
                         "version": item.get("version"),
                         "code": item.get("code"),
                         "source": item.get("source"),
+                        "sourceCandidates": item.get("sourceCandidates"),
                         "metadataSha256": item.get("metadataSha256"),
                     }
                     for item in package.get("candidate_rejections") or []
@@ -1628,6 +1845,9 @@ def decision_identity_material(report: dict[str, Any], metadata_snapshot: dict[s
         "baselineSha256": report["identities"]["directoryPackagesPropsBaselineSha256"],
         "targetFramework": report["targetFramework"],
         "sourceIdentity": report["identities"]["nugetSourceIdentity"],
+        "nugetConfigSha256": report["identities"].get("nugetConfigSha256"),
+        "packageSourceMappingIdentity": report["identities"].get("packageSourceMappingIdentity"),
+        "repositoryModelIdentity": report["identities"].get("repositoryModelIdentity"),
         "lockPinIdentity": report["identities"]["lockPinIdentity"],
         "metadataSnapshotSha256": metadata_snapshot["snapshotSha256"],
         "policy": report["policy"],
@@ -1656,6 +1876,9 @@ def build_decision_receipt(report: dict[str, Any], metadata_snapshot: dict[str, 
         "targetFramework": report["targetFramework"],
         "targetFrameworkIdentity": report["identities"]["targetFrameworkIdentity"],
         "nugetSourceIdentity": report["identities"]["nugetSourceIdentity"],
+        "nugetConfigSha256": report["identities"].get("nugetConfigSha256"),
+        "packageSourceMappingIdentity": report["identities"].get("packageSourceMappingIdentity"),
+        "repositoryModelIdentity": report["identities"].get("repositoryModelIdentity"),
         "lockPinIdentity": report["identities"]["lockPinIdentity"],
         "metadataSnapshotSha256": metadata_snapshot["snapshotSha256"],
         "writePreview": {key: value for key, value in report["writePreview"].items() if key != "content"},
@@ -1673,15 +1896,17 @@ def resolve_sidecar_path(file_path: Path, requested: str | None, default_name: s
     return (file_path.parent / "docs" / "pkgs-versions" / default_name).resolve()
 
 
-def preflight_sidecar_paths(file_path: Path, paths: list[Path]) -> None:
-    canonical_file = file_path.resolve()
+def preflight_sidecar_paths(file_path: Path, paths: list[Path], protected_inputs: Iterable[Path] | None = None) -> None:
+    protected = {file_path.resolve()}
+    for value in protected_inputs or []:
+        protected.add(Path(value).resolve())
     seen: set[Path] = set()
     for path in paths:
         canonical = path.resolve()
-        if canonical == canonical_file:
-            raise UpdaterError("output-aliases-input", f"sidecar output aliases input file: {canonical}", stage="precondition")
+        if canonical in protected:
+            raise UpdaterError("output-aliases-input", f"output aliases an input/protected file: {canonical}", stage="precondition")
         if canonical in seen:
-            raise UpdaterError("output-alias-collision", f"sidecar outputs alias one another: {canonical}", stage="precondition")
+            raise UpdaterError("output-alias-collision", f"outputs alias one another: {canonical}", stage="precondition")
         seen.add(canonical)
 
 
@@ -1728,7 +1953,7 @@ def preserve_last_known_good(file_path: Path, baseline_hash: str, args: argparse
                 stage="precondition",
             )
         return target
-    atomic_write_text(target, read_text(file_path))
+    atomic_write_bytes(target, file_path.read_bytes())
     if sha256_file(target) != baseline_hash:
         raise UpdaterError("last-known-good-write-failed", "last-known-good hash verification failed", stage="write")
     return target
@@ -1779,7 +2004,7 @@ def commit_package_update(
 
 def rollback_package_update(file_path: Path, lkg: Path, baseline_hash: str) -> dict[str, Any]:
     try:
-        atomic_write_text(file_path, read_text(lkg))
+        atomic_write_bytes(file_path, lkg.read_bytes())
         observed = sha256_file(file_path)
         if observed != baseline_hash:
             raise RuntimeError(f"rollback hash mismatch: {observed}")
@@ -1793,11 +2018,45 @@ def rollback_package_update(file_path: Path, lkg: Path, baseline_hash: str) -> d
         ) from exc
 
 
+def analyze_restore_audit_output(output: str, threshold: str) -> dict[str, Any]:
+    threshold_rank = vulnerability_threshold_rank(threshold)
+    warning_severity = {"NU1901": 0, "NU1902": 1, "NU1903": 2, "NU1904": 3}
+    observed: list[dict[str, Any]] = []
+    for code, rank in warning_severity.items():
+        count = len(re.findall(rf"\b{code}\b", output, flags=re.IGNORECASE))
+        if count:
+            observed.append({"code": code, "severity": SEVERITY_LABELS[rank], "count": count})
+    audit_source_unavailable = bool(re.search(r"\bNU1905\b", output, flags=re.IGNORECASE))
+    prune_count = len(re.findall(r"\bNU1510\b", output, flags=re.IGNORECASE))
+    blocking = [item for item in observed if SEVERITY_ORDER[item["severity"]] >= threshold_rank]
+    return {
+        "status": "fail" if blocking or audit_source_unavailable else "pass",
+        "threshold": threshold,
+        "vulnerabilityWarningCount": sum(item["count"] for item in observed),
+        "blockingVulnerabilityWarningCount": sum(item["count"] for item in blocking),
+        "warnings": observed,
+        "auditSourceUnavailable": audit_source_unavailable,
+        "pruneWarningCount": prune_count,
+    }
+
+
 def configured_validation_commands(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
     configured: list[str] = list(args.validation_command)
+    if getattr(args, "audit_repository", False) and configured:
+        raise UpdaterError(
+            "audit-custom-validation-unsupported",
+            "--audit-repository requires the built-in repository validation sequence",
+            stage="input",
+        )
     if args.validate_repository and not configured:
+        restore = "dotnet restore"
+        if getattr(args, "audit_repository", False):
+            restore += (
+                " -p:NuGetAudit=true -p:NuGetAuditMode=all"
+                f" -p:NuGetAuditLevel={args.vulnerability_severity_threshold}"
+            )
         configured = [
-            "restore::dotnet restore",
+            f"restore::{restore}",
             "build::dotnet build --no-restore",
             "test::dotnet test --no-build",
         ]
@@ -1825,7 +2084,7 @@ def run_repository_validation(file_path: Path, args: argparse.Namespace) -> list
         try:
             completed = subprocess.run(
                 command,
-                cwd=file_path.parent,
+                cwd=getattr(args, "_repository_root", file_path.parent),
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
@@ -1834,14 +2093,17 @@ def run_repository_validation(file_path: Path, args: argparse.Namespace) -> list
                 env={**os.environ, "DOTNET_CLI_TELEMETRY_OPTOUT": "1", "DOTNET_NOLOGO": "1"},
             )
             output = completed.stdout or ""
+            audit = analyze_restore_audit_output(output, args.vulnerability_severity_threshold) if label.lower() == "restore" and getattr(args, "audit_repository", False) else None
+            status = "pass" if completed.returncode == 0 and (audit is None or audit["status"] == "pass") else "fail"
             record = {
                 "label": label,
                 "command": command,
                 "startedAt": started,
                 "completedAt": utc_now_iso(),
                 "exitCode": completed.returncode,
-                "status": "pass" if completed.returncode == 0 else "fail",
+                "status": status,
                 "outputSha256": sha256_text(output),
+                "audit": audit,
             }
         except subprocess.TimeoutExpired as exc:
             output = (exc.stdout or "") if isinstance(exc.stdout, str) else ""
@@ -1852,6 +2114,18 @@ def run_repository_validation(file_path: Path, args: argparse.Namespace) -> list
                 "completedAt": utc_now_iso(),
                 "exitCode": None,
                 "status": "timeout",
+                "outputSha256": sha256_text(output),
+            }
+        except OSError as exc:
+            output = str(exc)
+            record = {
+                "label": label,
+                "command": command,
+                "startedAt": started,
+                "completedAt": utc_now_iso(),
+                "exitCode": None,
+                "status": "fail",
+                "errorType": type(exc).__name__,
                 "outputSha256": sha256_text(output),
             }
         evidence.append(record)
@@ -1883,6 +2157,8 @@ def build_report(
             "rejectVulnerable": args.reject_vulnerable,
             "rejectUnlisted": args.reject_unlisted,
             "requireTrustedMetadata": args.require_trusted_metadata,
+            "allowSourceAmbiguity": getattr(args, "allow_source_ambiguity", False),
+            "auditRepository": getattr(args, "audit_repository", False),
             "vulnerabilitySeverityThreshold": args.vulnerability_severity_threshold,
         },
         "packageCount": len(entries),
@@ -1948,6 +2224,199 @@ def _md_cell(value: Any) -> str:
     return str(value).replace("|", "\\|").replace("\n", " ")
 
 
+REPOSITORY_SKIP_DIRS = {".git", ".vs", ".nuget-updater", "bin", "obj", "node_modules"}
+PACKAGE_REFERENCE_TAG_RE = re.compile(r"<PackageReference\b(?P<attrs>[^>]*)>", re.IGNORECASE | re.DOTALL)
+
+
+def validate_selected_cpm_complexity(entries: list[PackageEntry]) -> None:
+    conditional = [entry for entry in entries if entry.condition]
+    if conditional:
+        raise UpdaterError(
+            "conditional-package-version-unsupported",
+            "selected PackageVersion declarations contain Condition; evaluate the effective MSBuild model before changing them",
+            stage="policy",
+            evidence={"packages": sorted({entry.package_id for entry in conditional})},
+        )
+    counts: dict[str, int] = {}
+    for entry in entries:
+        counts[entry.package_id.lower()] = counts.get(entry.package_id.lower(), 0) + 1
+    duplicates = sorted(key for key, count in counts.items() if count > 1)
+    if duplicates:
+        raise UpdaterError(
+            "duplicate-package-version-declarations",
+            "selected package IDs have multiple PackageVersion declarations; text mutation is ambiguous",
+            stage="policy",
+            evidence={"packages": duplicates},
+        )
+
+
+def _walk_repository_files(root: Path, names: set[str] | None = None, suffixes: set[str] | None = None) -> list[Path]:
+    result: list[Path] = []
+    for current, dirs, files in os.walk(root):
+        dirs[:] = sorted(d for d in dirs if d not in REPOSITORY_SKIP_DIRS)
+        base = Path(current)
+        for name in sorted(files):
+            path = base / name
+            if names is not None and name in names:
+                result.append(path)
+            elif suffixes is not None and path.suffix.lower() in suffixes:
+                result.append(path)
+    return result
+
+
+def find_project_version_overrides(root: Path, package_ids: set[str]) -> dict[str, list[dict[str, str]]]:
+    result: dict[str, list[dict[str, str]]] = {}
+    for project in _walk_repository_files(root, suffixes={".csproj", ".fsproj", ".vbproj"}):
+        try:
+            text = read_text(project)
+        except (OSError, UnicodeError):
+            continue
+        for tag in PACKAGE_REFERENCE_TAG_RE.finditer(text):
+            attrs = parse_attributes(tag.group("attrs"))
+            package_id = (attrs.get("include") or attrs.get("update") or "").strip()
+            override = (attrs.get("versionoverride") or "").strip()
+            if package_id and override and package_id.lower() in package_ids:
+                result.setdefault(package_id.lower(), []).append(
+                    {"project": str(project.relative_to(root)), "packageId": package_id, "versionOverride": override}
+                )
+    return result
+
+
+def _lock_content_identity(raw: bytes) -> str | None:
+    try:
+        payload = json.loads(raw.decode("utf-8-sig"))
+    except (UnicodeError, json.JSONDecodeError):
+        return None
+    dependencies = payload.get("dependencies", {}) if isinstance(payload, dict) else {}
+    records: list[dict[str, Any]] = []
+    if isinstance(dependencies, dict):
+        for framework, packages in sorted(dependencies.items()):
+            if not isinstance(packages, dict):
+                continue
+            for package_id, value in sorted(packages.items()):
+                if not isinstance(value, dict):
+                    continue
+                records.append({
+                    "framework": framework,
+                    "packageId": package_id,
+                    "resolved": value.get("resolved"),
+                    "contentHash": value.get("contentHash"),
+                    "type": value.get("type"),
+                })
+    return canonical_sha256(records)
+
+
+def capture_lock_file_state(root: Path) -> dict[str, Any]:
+    files = []
+    byte_map: dict[str, bytes] = {}
+    for path in _walk_repository_files(root, names={"packages.lock.json"}):
+        rel = path.relative_to(root).as_posix()
+        raw = path.read_bytes()
+        byte_map[rel] = raw
+        files.append({"path": rel, "sha256": sha256_bytes(raw), "contentIdentity": _lock_content_identity(raw)})
+    public = {"root": str(root), "files": files}
+    public["identity"] = canonical_sha256(files)
+    public["_bytes"] = byte_map
+    return public
+
+
+def public_lock_file_state(state: dict[str, Any]) -> dict[str, Any]:
+    return {"root": state.get("root"), "files": state.get("files", []), "identity": state.get("identity")}
+
+
+def preserve_lock_file_state(root: Path, state: dict[str, Any], backup_root: Path) -> dict[str, str]:
+    backups: dict[str, str] = {}
+    for rel, raw in state.get("_bytes", {}).items():
+        target = (backup_root / rel).resolve()
+        try:
+            target.relative_to(backup_root.resolve())
+        except ValueError as exc:
+            raise UpdaterError("lockfile-backup-path-invalid", f"invalid lockfile backup path: {rel}", stage="precondition") from exc
+        atomic_write_bytes(target, raw)
+        backups[rel] = str(target)
+    return backups
+
+
+def restore_lock_file_state(root: Path, before: dict[str, Any], backups: dict[str, str]) -> dict[str, Any]:
+    expected = set(before.get("_bytes", {}))
+    current = {path.relative_to(root).as_posix(): path for path in _walk_repository_files(root, names={"packages.lock.json"})}
+    restored: list[str] = []
+    removed: list[str] = []
+    for rel, backup in backups.items():
+        target = (root / rel).resolve()
+        try:
+            target.relative_to(root.resolve())
+        except ValueError as exc:
+            raise UpdaterError("lockfile-rollback-path-invalid", f"invalid lockfile rollback path: {rel}", stage="rollback") from exc
+        atomic_write_bytes(target, Path(backup).read_bytes())
+        restored.append(rel)
+    for rel, path in current.items():
+        if rel not in expected:
+            resolved = path.resolve()
+            try:
+                resolved.relative_to(root.resolve())
+            except ValueError:
+                continue
+            if path.is_file() and not path.is_symlink():
+                path.unlink()
+                removed.append(rel)
+    after = capture_lock_file_state(root)
+    if after["identity"] != before["identity"]:
+        raise UpdaterError(
+            "lockfile-rollback-failed",
+            "lock files did not return to the pre-validation identity",
+            stage="rollback",
+            evidence={"expected": before["identity"], "observed": after["identity"]},
+        )
+    return {"status": "rolled-back", "restored": sorted(restored), "removedCreated": sorted(removed), "identity": after["identity"]}
+
+
+def protected_input_paths(file_path: Path, args: argparse.Namespace, repository_model: dict[str, Any]) -> list[Path]:
+    result = [file_path]
+    for attr in ["nuget_config", "versions_file", "metadata_snapshot_input", "expected_decision_receipt"]:
+        value = getattr(args, attr, None)
+        if value:
+            result.append(Path(value))
+    root = Path(repository_model["root"])
+    for record in repository_model.get("lockFiles", {}).get("files", []):
+        rel = record.get("path")
+        if rel:
+            result.append(root / rel)
+    return result
+
+
+def build_repository_model(file_path: Path, entries: list[PackageEntry], args: argparse.Namespace) -> dict[str, Any]:
+    root = Path(args.repository_root).resolve() if getattr(args, "repository_root", None) else file_path.parent.resolve()
+    try:
+        file_path.resolve().relative_to(root)
+    except ValueError as exc:
+        raise UpdaterError("repository-root-invalid", "Directory.Packages.props must be inside --repository-root", stage="input") from exc
+    args._repository_root = root
+    validate_selected_cpm_complexity(entries)
+    package_ids = {entry.package_id.lower() for entry in entries}
+    overrides = find_project_version_overrides(root, package_ids)
+    args._version_overrides = overrides
+    dpps = [path.relative_to(root).as_posix() for path in _walk_repository_files(root, names={"Directory.Packages.props"})]
+    locks = capture_lock_file_state(root)
+    material = {
+        "root": str(root),
+        "directoryPackagesProps": dpps,
+        "versionOverrides": overrides,
+        "lockFiles": public_lock_file_state(locks),
+    }
+    identity_material = {
+        "directoryPackagesProps": dpps,
+        "versionOverrides": overrides,
+        "lockFiles": {
+            "files": material["lockFiles"]["files"],
+            "identity": material["lockFiles"]["identity"],
+        },
+    }
+    material["identity"] = canonical_sha256(identity_material)
+    args._lock_file_state_before = locks
+    return material
+
+
 def select_entries(entries: list[PackageEntry], args: argparse.Namespace) -> list[PackageEntry]:
     include = {p.lower() for p in args.package} if args.package else None
     ignore = {p.lower() for p in args.ignore_package}
@@ -1975,6 +2444,9 @@ def resolve_file_path(args: argparse.Namespace) -> Path:
 
 def run(args: argparse.Namespace) -> int:
     reset_runtime_state()
+    configure_nuget_inputs(args)
+    if getattr(args, "audit_repository", False):
+        args.validate_repository = True
     configure_metadata_replay(Path(args.metadata_snapshot_input).resolve() if args.metadata_snapshot_input else None)
 
     file_path = resolve_file_path(args)
@@ -1993,9 +2465,15 @@ def run(args: argparse.Namespace) -> int:
     content = read_text(file_path)
     entries = parse_package_entries(content)
     selected_entries = select_entries(entries, args)
+    repository_model = build_repository_model(file_path, selected_entries, args)
     lock_identity, lock_records = lock_pin_identity(selected_entries)
     sdk_identity = dotnet_sdk_identity()
-    source_identity = canonical_sha256(normalized_sources(args.source))
+    config_model: NuGetConfigModel | None = getattr(args, "_nuget_config_model", None)
+    source_identity = canonical_sha256({
+        "sources": normalized_sources(args.source),
+        "nugetConfigSha256": None if config_model is None else config_model.sha256,
+        "packageSourceMappingIdentity": None if config_model is None else config_model.mapping_identity,
+    })
 
     versions_by_package = load_versions_file(Path(args.versions_file).resolve()) if args.versions_file else None
 
@@ -2025,9 +2503,17 @@ def run(args: argparse.Namespace) -> int:
             "dotnetSdk": sdk_identity,
             "nugetSourceIdentity": source_identity,
             "nugetSources": normalized_sources(args.source),
+            "nugetConfigSha256": None if config_model is None else config_model.sha256,
+            "packageSourceMappingIdentity": None if config_model is None else config_model.mapping_identity,
+            "repositoryModelIdentity": repository_model["identity"],
+            "repositoryModel": repository_model,
             "lockPinIdentity": lock_identity,
             "lockPinRecords": lock_records,
         }
+        if args.report:
+            report_path = resolve_sidecar_path(file_path, args.report, "unused-report.json")
+            preflight_sidecar_paths(file_path, [report_path], protected_input_paths(file_path, args, repository_model))
+            args._report_path = report_path
         emit_report(report, args)
         return EXIT_OK
 
@@ -2042,6 +2528,10 @@ def run(args: argparse.Namespace) -> int:
         "dotnetSdk": sdk_identity,
         "nugetSourceIdentity": source_identity,
         "nugetSources": normalized_sources(args.source),
+        "nugetConfigSha256": None if config_model is None else config_model.sha256,
+        "packageSourceMappingIdentity": None if config_model is None else config_model.mapping_identity,
+        "repositoryModelIdentity": repository_model["identity"],
+        "repositoryModel": repository_model,
         "lockPinIdentity": lock_identity,
         "lockPinRecords": lock_records,
     }
@@ -2060,9 +2550,19 @@ def run(args: argparse.Namespace) -> int:
     if args.expected_decision_receipt:
         verify_expected_decision_receipt(Path(args.expected_decision_receipt).resolve(), decision_receipt)
 
+    if args.command == "update" and args.write:
+        configured_validation_commands(args)
+
     metadata_path = None
     decision_receipt_path = None
     package_receipt_path = None
+    declared_outputs: list[Path] = []
+    if args.report:
+        args._report_path = resolve_sidecar_path(file_path, args.report, "unused-report.json")
+        declared_outputs.append(args._report_path)
+    if args.write_decision_doc:
+        args._decision_doc_path = resolve_decision_document_path(file_path, args, report)
+        declared_outputs.append(args._decision_doc_path)
     if args.write_evidence:
         short_id = decision_receipt["decisionIdentity"][:16]
         metadata_path = resolve_sidecar_path(
@@ -2071,13 +2571,17 @@ def run(args: argparse.Namespace) -> int:
         decision_receipt_path = resolve_sidecar_path(
             file_path, args.decision_receipt, f"nuget-decision-receipt-{short_id}.json"
         )
-        paths = [metadata_path, decision_receipt_path]
+        declared_outputs.extend([metadata_path, decision_receipt_path])
         if args.command == "update" and args.write:
             package_receipt_path = resolve_sidecar_path(
                 file_path, args.package_update_receipt, f"nuget-package-update-receipt-{short_id}.json"
             )
-            paths.append(package_receipt_path)
-        preflight_sidecar_paths(file_path, paths)
+            declared_outputs.append(package_receipt_path)
+    if declared_outputs:
+        preflight_sidecar_paths(file_path, declared_outputs, protected_input_paths(file_path, args, repository_model))
+
+    if args.write_evidence:
+        assert metadata_path is not None and decision_receipt_path is not None
         write_json_atomic(metadata_path, metadata_snapshot)
         write_json_atomic(decision_receipt_path, decision_receipt)
         report["metadataSnapshotPath"] = str(metadata_path)
@@ -2092,6 +2596,10 @@ def run(args: argparse.Namespace) -> int:
 
     if args.command == "update" and args.write:
         if preview["changed"]:
+            lock_state_before = getattr(args, "_lock_file_state_before", capture_lock_file_state(args._repository_root))
+            lkg_preflight = preserve_last_known_good(file_path, baseline_hash, args)
+            lock_backup_root = lkg_preflight.parent / "lock-files"
+            lock_backups = preserve_lock_file_state(args._repository_root, lock_state_before, lock_backup_root)
             write_evidence = commit_package_update(
                 file_path,
                 preview["content"],
@@ -2099,15 +2607,20 @@ def run(args: argparse.Namespace) -> int:
                 preview["outputSha256"],
                 args,
             )
+            write_evidence["lockFilesBefore"] = public_lock_file_state(lock_state_before)
             wrote_file = True
             write_status = "committed"
             validation_evidence = run_repository_validation(file_path, args)
+            lock_state_after = capture_lock_file_state(args._repository_root)
+            write_evidence["lockFilesAfterValidation"] = public_lock_file_state(lock_state_after)
             if validation_evidence and validation_evidence[-1]["status"] != "pass":
-                rollback_evidence = rollback_package_update(
+                file_rollback = rollback_package_update(
                     file_path,
                     Path(write_evidence["lastKnownGoodPath"]),
                     baseline_hash,
                 )
+                lock_rollback = restore_lock_file_state(args._repository_root, lock_state_before, lock_backups)
+                rollback_evidence = {"packageFile": file_rollback, "lockFiles": lock_rollback}
                 wrote_file = False
                 write_status = "rolled-back-validation-failure"
         else:
@@ -2161,19 +2674,27 @@ def run(args: argparse.Namespace) -> int:
         return EXIT_POLICY_FAILURE
     return EXIT_OK
 
-def write_decision_document(file_path: Path, args: argparse.Namespace, report: dict[str, Any]) -> Path:
+def resolve_decision_document_path(file_path: Path, args: argparse.Namespace, report: dict[str, Any]) -> Path:
     output_dir = Path(args.decision_doc_dir)
     if not output_dir.is_absolute():
         output_dir = file_path.parent / output_dir
-    output_dir.mkdir(parents=True, exist_ok=True)
-
     if args.decision_doc_name:
+        requested = Path(args.decision_doc_name)
+        if requested.name != args.decision_doc_name or requested.suffix.lower() != ".md":
+            raise UpdaterError(
+                "decision-doc-name-invalid",
+                "--decision-doc-name must be a simple .md filename without path separators",
+                stage="input",
+            )
         file_name = args.decision_doc_name
     else:
         identity = report.get("decisionIdentity") or "unidentified"
         file_name = f"nuget-package-update-decisions-{identity[:16]}.md"
+    return (output_dir / file_name).resolve()
 
-    target = output_dir / file_name
+
+def write_decision_document(file_path: Path, args: argparse.Namespace, report: dict[str, Any]) -> Path:
+    target = Path(getattr(args, "_decision_doc_path", resolve_decision_document_path(file_path, args, report)))
     atomic_write_text(target, format_decision_document(report))
     return target
 
@@ -2189,6 +2710,9 @@ def format_decision_document(report: dict[str, Any]) -> str:
         f"- Target framework: `{report['targetFramework']}`",
         f"- Target framework identity: `{report.get('identities', {}).get('targetFrameworkIdentity', '')}`",
         f"- NuGet source identity: `{report.get('identities', {}).get('nugetSourceIdentity', '')}`",
+        f"- NuGet.Config SHA-256: `{report.get('identities', {}).get('nugetConfigSha256', '')}`",
+        f"- Package Source Mapping identity: `{report.get('identities', {}).get('packageSourceMappingIdentity', '')}`",
+        f"- Repository model identity: `{report.get('identities', {}).get('repositoryModelIdentity', '')}`",
         f"- Lock/pin identity: `{report.get('identities', {}).get('lockPinIdentity', '')}`",
         f"- Metadata snapshot SHA-256: `{report.get('metadataSnapshot', {}).get('snapshotSha256', '')}`",
         f"- Decision identity: `{report.get('decisionIdentity', '')}`",
@@ -2207,6 +2731,9 @@ def format_decision_document(report: dict[str, Any]) -> str:
         "- Validate candidate package metadata through NuGet Registration API.",
         "- Cross-check vulnerability ranges through NuGet VulnerabilityInfo API when the source exposes it.",
         "- Respect locks and pins declared in `Directory.Packages.props`.",
+        "- Treat the same exact version from multiple eligible sources as ambiguous unless explicitly overridden.",
+        "- Apply Package Source Mapping from an explicit `NuGet.Config` when supplied.",
+        "- Repository audit evidence is separate from the package-level compatibility probe.",
         "- Do not use MCP or manual version selection for this package update workflow.",
         "",
         "## Summary",
@@ -2293,13 +2820,16 @@ def emit_report(report: dict[str, Any], args: argparse.Namespace) -> None:
     print(rendered)
 
     if args.report:
-        Path(args.report).write_text(rendered, encoding="utf-8")
+        target = getattr(args, "_report_path", None) or Path(args.report).resolve()
+        atomic_write_text(Path(target), rendered)
 
 
 def add_shared_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--file", help="Path to Directory.Packages.props. Defaults to auto-discovery.")
     parser.add_argument("--target-framework", default=DEFAULT_TARGET_FRAMEWORK)
-    parser.add_argument("--source", action="append", default=[], help="NuGet source/service index. Can be repeated.")
+    parser.add_argument("--source", action="append", default=[], help="NuGet source/service index. Can be repeated. When omitted, an explicit --nuget-config packageSources section is used, otherwise nuget.org.")
+    parser.add_argument("--nuget-config", help="Explicit NuGet.Config used for packageSources, Package Source Mapping identity, and compatibility restore configuration.")
+    parser.add_argument("--repository-root", help="Repository root used to discover projects, VersionOverride declarations, and packages.lock.json. Defaults to the Directory.Packages.props directory.")
     parser.add_argument("--package", action="append", default=[], help="Only process this package ID. Can be repeated.")
     parser.add_argument("--ignore-package", action="append", default=[], help="Skip this package ID. Can be repeated.")
     parser.add_argument("--versions-file", help="Offline JSON map of package IDs to versions. Useful for smoke tests only.")
@@ -2311,10 +2841,12 @@ def add_shared_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--write-evidence", action="store_true", help="Write metadata snapshot and decision/package receipts with hashes under docs/pkgs-versions by default.")
     parser.add_argument("--expected-baseline-sha256", help="Require Directory.Packages.props to match this SHA-256 before analysis/write.")
     parser.add_argument("--last-known-good-dir", default=".nuget-updater/last-known-good", help="Directory used to preserve exact pre-write bytes for rollback.")
-    parser.add_argument("--validate-repository", action="store_true", help="After a write, run restore, build --no-restore, and test --no-build; rollback on first failure.")
+    parser.add_argument("--validate-repository", action="store_true", help="After a write, run restore, build --no-restore, and test --no-build; rollback package and lock-file state on first failure.")
+    parser.add_argument("--audit-repository", action="store_true", help="With built-in repository validation, enable transitive NuGetAudit and fail on NU1905 or vulnerabilities at/above the configured threshold.")
     parser.add_argument("--validation-command", action="append", default=[], help="Ordered post-write command in label::command form. Executed without a shell; rollback on first failure.")
     parser.add_argument("--validation-timeout", type=int, default=600, help="Timeout in seconds for each post-write validation command.")
     parser.add_argument("--allow-untrusted-versions-file", action="store_true", help="Allow versions-file candidates to pass metadata trust checks. Use only in tests.")
+    parser.add_argument("--allow-source-ambiguity", action="store_true", help="Allow the same exact version from multiple eligible sources. Diagnostic escape hatch; Package Source Mapping is preferred.")
     parser.add_argument("--allow-major", action="store_true", help="Allow major version upgrades.")
     parser.add_argument("--no-minor", dest="allow_minor", action="store_false", help="Disallow minor version upgrades.")
     parser.add_argument("--no-patch", dest="allow_patch", action="store_false", help="Disallow patch version upgrades.")
@@ -2364,8 +2896,6 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    if not args.source:
-        args.source = [DEFAULT_SOURCE]
 
     try:
         return run(args)
