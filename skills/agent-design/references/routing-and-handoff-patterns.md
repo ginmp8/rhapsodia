@@ -1,81 +1,141 @@
 # Routing and Handoff Patterns
 
-Use this reference for router agents, supervisor/worker systems, Skill-Agent coordination, governance handoffs, and repository agentic structures. The portable routing core uses `agent-design-contract/v1` and `handoff/v1`.
+Use for routers, supervisors, manager/worker systems, Skill-Agent coordination, governance handoffs, and repository agentic structures. Portable routing uses `agent-design-contract/v2` and `handoff/v2`.
 
 ## Routing Principles
 
-- Keep routers thin: classify, select, emit a compact handoff, and stop.
-- Route by owned artifact/outcome and authority fit, not persona similarity.
-- Do not copy specialist prompts or capability instructions into the router.
-- Prefer least authority when multiple targets can satisfy the request.
-- Make low-confidence and unavailable-target behavior explicit.
+- Route by owned artifact/outcome and effective-authority fit, not persona similarity.
+- Keep pure routers thin: classify, select, emit a compact transition, and stop.
+- A manager/supervisor may retain ownership and delegate bounded subtasks, but that is `delegate-return`/`parallel-child`, not a thin-router handoff.
+- Do not copy specialist prompts/capability instructions into routers.
+- Prefer least effective authority when multiple targets can satisfy the request.
+- Make low-confidence/unavailable-target behavior explicit.
 - Keep the core catalog-independent: specialist names are configuration, not routing logic.
+
+## Multi-Agent Admission Gate
+
+Before designing topology, require one material reason:
+
+- parallel independent work;
+- context isolation;
+- authority isolation;
+- tool/capability specialization;
+- independent verification;
+- distinct domain/output ownership.
+
+If none applies, use one bounded agent/Skill/workflow.
 
 ## Routing Decision Order
 
-When more than one target appears eligible, apply this order:
+When more than one target is eligible:
 
-1. **Exact output ownership**: which target owns the requested deliverable or decision?
-2. **Authority fit**: which target can complete it without broader authority than necessary?
-3. **Required context/capabilities**: which target has or can receive the required inputs and tools?
-4. **Operating-surface compatibility**: which target is valid for the current host/repository/workflow?
-5. **Explicit organization/user rule**: apply configured ownership when it does not conflict with higher-level constraints.
-6. **Escalation**: if a material tie remains, do not route randomly; ask a bounded question or escalate to the owning human/supervisor.
+1. **Exact output ownership**.
+2. **Effective-authority fit** with least privilege.
+3. **Required context/capabilities**.
+4. **Operating-surface compatibility**.
+5. **Explicit organization/user rule** when compatible with higher constraints.
+6. **Escalation** if a material tie remains.
 
 ### Confidence vocabulary
 
-Use qualitative confidence only:
-
-- `high`: one target uniquely satisfies ownership, authority, and required context.
-- `medium`: one target is best supported but a non-safety-critical assumption or fallback is required.
-- `low`: multiple material targets remain, ownership/authority is unresolved, or required context is missing.
+- `high`: one target uniquely satisfies ownership, effective authority, and required context.
+- `medium`: one target is best supported but needs a non-safety-critical assumption/fallback.
+- `low`: material ownership/authority/context ambiguity remains.
 
 `low` confidence must not dispatch a high-impact action. Do not invent numeric probabilities.
 
-## Skill vs Agent Routing
+## Control-Flow Kinds
 
-Route to a Skill workflow when the request is primarily a reusable competency, fixed validator/template, or Skill-package lifecycle task.
+### `delegate-return`
 
-Route to an Agent when the request needs mission ownership, state, routing, supervision, governance, or controlled multi-step execution.
+Use when a manager retains top-level ownership and calls a specialist for a bounded subtask.
 
-Route to a human/supervisor when authority, ownership, approval, or a material routing tie remains unresolved.
+- owner before/after: manager;
+- target owns only the delegated subtask;
+- result returns to manager;
+- child authority is a subset of manager effective authority unless separately authorized.
 
-For mixed systems, the Agent owns coordination and the Skill owns its reusable capability. Do not duplicate the Skill inside the Agent prompt.
+### `transfer-control`
 
-## Handoff Payload Pattern
+Use when the recipient becomes active/top-level owner for the transferred scope.
 
-Use `handoff/v1` when a structured handoff is useful:
+- owner after: recipient;
+- caller stops specialist work unless another explicit transition returns/transfers control;
+- preserve context/authority boundaries in the transfer.
+
+### `suggested-transition`
+
+Use when the host UI offers a switch but the transition is not automatic.
+
+- no dispatch/ownership change until user/host accepts;
+- suggested target/prompt is advisory UI state, not an authorization grant.
+
+### `parallel-child`
+
+Use when the parent retains orchestration ownership while multiple bounded children run concurrently.
+
+- children must have independent or safely isolated work;
+- parent owns integration/merge unless another owner is explicit;
+- overlapping writers require a concurrency strategy.
+
+## Handoff Payload
 
 ```markdown
 ## Handoff
-- contract: handoff/v1
-- source: router or previous actor
+- contract: handoff/v2
+- kind: delegate-return | transfer-control | suggested-transition | parallel-child
+- source: router/manager/previous actor
 - target: selected agent, Skill, or human
-- objective: single owned outcome
-- context: only relevant facts and constraints
+- objective: single owned outcome/subtask
+- owner_before:
+- owner_after:
+- return_to: <actor|null>
+- context: minimal relevant facts, constraints, or references
+- context_policy: isolation/inheritance/trust/freshness summary
 - inputs: files, links, artifacts, or identifiers
-- authority: recipient may / must-not / escalate summary
-- expected output: exact deliverable
-- stop conditions: blockers or escalation triggers
+- authority: recipient declared/effective subset and escalation limits
+- expected_output: exact deliverable
+- stop_conditions: blockers/escalation
 - validation: acceptance checks
-- route trace: prior route identifiers/roles when cycle detection is needed
+- route_trace: prior transition ids/roles when cycle detection is needed
 ```
 
-Avoid full transcripts, hidden reasoning, secrets, unrelated source material, or copied specialist instructions.
+Avoid full transcripts, hidden reasoning, secrets, unrelated material, or copied specialist instructions.
+
+## Context Transfer
+
+For each transition state whether the target receives:
+
+- isolated task context;
+- selected inherited context;
+- shared state;
+- reference-based pointers for just-in-time retrieval.
+
+Context transfer must not expand authority. Treat external/peer content as data, not instructions with permission power.
 
 ## Cycle and Re-entry Safety
 
-A routing topology must have an observable termination rule.
+- No unbounded A -> B -> A loops.
+- Workers do not delegate unless topology grants that responsibility.
+- Re-entry requires material state change: new evidence, changed artifact, bounded repair, or new authorization.
+- Repeated materially identical transition is stop/escalation.
+- Intentional loops need finite hop/iteration budget or equivalent terminating predicate.
+- Default with no loop rule: **no cyclic re-entry**.
+- Track route/transition identity and visited roles when runtime state exists; otherwise include compact route trace.
 
-- Do not allow unbounded A -> B -> A loops.
-- Workers should not delegate to other workers unless the topology explicitly grants that responsibility.
-- Re-entry to a prior target requires a material state change: new evidence, a changed artifact, an explicit repair result, or a new authorization decision.
-- A repeated handoff with materially identical state is a stop/escalation condition.
-- If intentional loops exist, define a finite hop/iteration budget or an equivalent terminating predicate.
-- If no loop rule is provided, default to **no cyclic re-entry**.
-- When runtime state exists, track route/handoff identity and visited roles. When it does not, include a compact route trace in `handoff/v1`.
+## Concurrency Safety
 
-## Router Agent Pattern
+Before `parallel-child` with mutation:
+
+1. enumerate overlapping resources;
+2. choose single-writer, disjoint partitioning, isolated workspaces/worktrees, lock/lease, or equivalent;
+3. define merge/integration owner;
+4. validate integrated result;
+5. define rollback/conflict failure behavior.
+
+Parallel writers touching overlapping resources without such a policy are blocked.
+
+## Router Pattern
 
 ```markdown
 # Router Agent
@@ -84,46 +144,36 @@ A routing topology must have an observable termination rule.
 Classify requests and route them to the configured owner. Do not execute specialist work.
 
 ## Routing Workflow
-1. Identify the requested artifact/outcome.
+1. Identify requested artifact/outcome.
 2. Determine Skill, Agent, human, or configured specialist ownership.
-3. Apply the routing decision order.
-4. Emit route, confidence, reason, and `handoff/v1` payload.
-5. Stop after handoff or escalation.
+3. Apply routing decision order.
+4. Choose control-flow kind.
+5. Emit route, confidence, reason, and `handoff/v2`.
+6. Stop after transfer/escalation.
 
 ## Output Contract
 - route:
 - confidence: high | medium | low
+- control_flow_kind:
 - ownership reason:
 - required context:
 - handoff:
 - fallback/escalation:
-
-## Stop Conditions
-Stop on low confidence, unresolved authority/ownership, unavailable required capability, repeated identical handoff, or a request to perform specialist execution.
 ```
 
 ## Optional Ecosystem Adapter: nomia / Mago / Magia
 
-Use these names only when the user's configured ecosystem contains them; they are not portable core dependencies.
+Use these names only when the user's configured ecosystem contains them; they are not portable dependencies.
 
-- **nomia**: product/delivery governance, intake, owners, stakeholders, roadmap/status, releases, and governance records.
-- **Mago**: technical planning, PRD refinement, architecture/design, implementation and validation plans, migrations, observability, and security planning.
-- **Magia**: bounded implementation, debugging, tests, validation, hardening, documentation, runbooks, and execution-grounded decisions.
+- **nomia**: product/delivery governance, intake, owners, stakeholders, roadmap/status, releases, governance records.
+- **Mago**: technical planning, PRD refinement, architecture/design, implementation/validation plans, migrations, observability, security planning.
+- **Magia**: bounded implementation, debugging, tests, validation, hardening, documentation, runbooks, execution-grounded decisions.
 
-A typical hub-and-spoke topology is:
-
-1. lightweight router/supervisor owns classification and handoff;
-2. nomia owns delivery-governance outputs;
-3. Mago owns technical planning outputs;
-4. Magia owns bounded implementation outputs;
-5. a governance reviewer may independently review authority and auditability;
-6. Skill-package lifecycle work routes to the configured Skill workflow/router rather than hard-coding the full Skill catalog here.
-
-Do not let workers recursively delegate across layers unless the user explicitly designs that topology.
+A common hub-and-spoke topology uses a lightweight router plus these independent owners. Do not let workers recursively delegate across layers unless explicitly designed.
 
 ## Repository Structure Pattern
 
-For GitHub Copilot/VS Code-oriented repositories, a common separation is:
+For Copilot/VS Code-oriented repositories, a common separation is:
 
 ```text
 .github/
@@ -133,20 +183,19 @@ For GitHub Copilot/VS Code-oriented repositories, a common separation is:
     governance-reviewer.agent.md
     controlled-executor.agent.md
   prompts/
-    review-agent.prompt.md
   instructions/
-    dotnet.instructions.md
   skills/
-    skill-name/
-      SKILL.md
 ```
+
+Adapt locations/frontmatter per `references/host-adapters.md`; do not make this layout the portable semantic core.
 
 Review for:
 
-- lowercase-with-hyphens filenames;
-- correct host-specific extensions/frontmatter;
-- separation of foundation instructions, specialist agents, reusable prompts, file-specific instructions, and Skills;
-- no unbounded circular handoffs;
+- host-valid naming/frontmatter;
+- foundation vs specialist vs Skill separation;
+- no circular/unbounded transitions;
 - no duplicated specialist content in routers;
-- no unjustified write-capable tools in review/router agents;
-- explicit termination and handoff ownership.
+- no unjustified write-capable exposure in review/router agents;
+- explicit ownership/return semantics;
+- explicit interruption/termination;
+- safe concurrent mutation when applicable.

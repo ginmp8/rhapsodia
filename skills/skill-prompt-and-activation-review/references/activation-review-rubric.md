@@ -2,89 +2,121 @@
 
 Use with `references/activation-contract.md`. The contract defines semantics; this rubric defines how to inspect and report evidence.
 
-## 1. Activation description
+## 1. Discovery description
 
-Check whether the description alone identifies:
+A strong description is a compact routing surface, not a second instruction manual. Check whether it:
 
-- target artifacts and requested actions covered by ACT-001;
-- adjacent work excluded by NTR-001;
-- enough wording variety to avoid obvious FN risk without becoming generic;
-- no dependency on proprietary host invocation syntax;
-- no claims of measured validation that require EVD-001/CLM-001 evidence.
+- names the owned artifact(s) and action(s), not only generic verbs;
+- states the most important adjacent non-goals when they discriminate ownership;
+- uses realistic synonyms without keyword stuffing;
+- is concise enough to coexist with neighboring skill descriptions;
+- avoids promotional/superlative wording whose purpose is to win routing rather than describe ownership;
+- keeps detailed workflow, validation, and host behavior in the body/references;
+- remains host-neutral unless a host extension is explicitly being reviewed.
 
-A strong description is specific enough to route before loading the body, but it does not try to encode the entire workflow.
+Do not reward length. More trigger phrases can increase both context cost and overlap risk.
 
-## 2. False-positive risk vs confirmed false positive
+## 2. Invocation-mode review
 
-Use `ACTIVATION_FALSE_POSITIVE_RISK` when static text is overly broad, examples conflict, exclusions are missing, or overlap is unresolved.
+Distinguish:
+
+- explicit direct use;
+- implicit automatic routing;
+- contextual automatic routing under noise/long context/multi-intent.
+
+A description may support all three operationally, but explicit success is not evidence that automatic discovery works. Flag evaluation designs that mix explicit cases into automatic precision/recall as `EVIDENCE_CLAIM`.
+
+## 3. False-positive risk versus confirmed false positive
+
+Use `ACTIVATION_FALSE_POSITIVE_RISK` for static overbreadth, generic verbs, unresolved overlap, missing exclusions, keyword routing, or activation-gaming language.
 
 Use `ACTIVATION_FALSE_POSITIVE` only when FP-001 is satisfied by executed frozen routing evidence.
 
-Static indicators of FP risk include:
+High-value negative cases are near misses: they share vocabulary/intent with this skill but belong to another owner. Easy unrelated negatives are useful only as abstention controls.
 
-- generic verbs such as `improve`, `review`, or `validate` without naming the artifact;
-- owning generic writing, code review, benchmark, hardening, harness, or implementation work;
-- using keywords as the routing rule instead of artifact + action + ownership;
-- missing split-handoff behavior for mixed-scope requests.
-
-## 3. False-negative risk vs confirmed false negative
+## 4. False-negative risk versus confirmed false negative
 
 Use `ACTIVATION_FALSE_NEGATIVE_RISK` when valid artifacts/actions/synonyms are omitted or wording is overfit to one exact phrase.
 
 Use `ACTIVATION_FALSE_NEGATIVE` only when FN-001 is satisfied by executed frozen routing evidence.
 
-Common static omissions include:
+Check coverage for frontmatter descriptions, reusable agent instructions, boundary/handoff/stop text, activation scenarios, and output/evidence contracts.
 
-- frontmatter `description`, activation/trigger/when-to-use wording;
-- non-trigger boundaries, handoffs, overlap, stop conditions;
-- reusable agent instructions, chat modes, output contracts;
-- positive/negative/ambiguous/boundary/adversarial scenarios.
+## 5. Negative semantics and overlap
 
-## 4. Ambiguity and boundary review
+Classify negative scenarios as:
 
-Use AMB-001 and BND-001.
+- `alternative-owner`: another workflow should own the request; record the intended neighboring owner;
+- `abstain`: no relevant skill should own the request.
 
-Flag `ACTIVATION_AMBIGUITY` when the artifact or ownership cannot be inferred reliably from supplied context. Do not convert ambiguity into a forced yes/no activation judgment solely for scoring convenience.
+Do not merge these into one negative metric. Apply OVL-001 to alternative-owner cases: artifact -> requested action -> ownership -> split/handoff if decomposable.
 
-Flag `BOUNDARY_OWNERSHIP` when a reviewer starts owning package-wide mutation, benchmark authority, code implementation, or other responsibilities outside its contract.
+## 6. Ambiguity, boundary, and activation gaming
 
-## 5. Overlap review
+Flag `ACTIVATION_AMBIGUITY` when artifact/action/ownership cannot be inferred reliably.
 
-Apply OVL-001 in order:
+Flag `BOUNDARY_OWNERSHIP` when the reviewer starts owning package-wide mutation, benchmark authority, implementation, deployment, or unrelated code review.
 
-1. identify artifact;
-2. identify requested action;
-3. compare ownership contracts;
-4. prefer the narrower legitimate owner;
-5. split mixed requests when possible;
-6. record unresolved overlap explicitly instead of silently choosing by keyword count.
+Flag `ADVERSARIAL_RESILIENCE` when instructions can be induced to:
 
-Overlap is not automatically a defect: two workflows may inspect the same artifact for different actions. The defect is ambiguous or duplicated ownership for the same action.
+- remove non-trigger/stop conditions merely to activate more often;
+- claim priority over all neighboring skills;
+- add promotional or manipulative routing language;
+- weaken evaluator/evidence requirements to improve apparent metrics.
 
-## 6. Evidence requirements for frontmatter/description changes
+## 7. Scenario quality
 
-A proposed activation-text change is reviewable only when the report records:
+When routing changes, require coverage across positive, negative, ambiguous, boundary, adversarial, and candidate-visible regression cases. A true blind holdout must be external/evaluator-only.
+
+Use orthogonal dimensions when material:
+
+- language;
+- clean/noisy/long context;
+- terse/conversational/typo style;
+- single versus multi-intent requests;
+- explicit/implicit/contextual invocation.
+
+Prefer distinct failure modes over many paraphrases of one easy scenario.
+
+## 8. Evidence comparability
+
+For behavioral comparisons, inspect:
+
+- frozen suite/evaluator identity;
+- evaluator visibility/leakage;
+- competing catalog hash and size;
+- host/model/discovery metadata included in routing fingerprint;
+- fixed trial policy;
+- baseline/candidate case-set identity;
+- execution timestamp/provenance.
+
+A changed material routing fingerprint is a comparison blocker, not a small warning.
+
+## 9. Evidence requirements for activation-text changes
+
+Every recommendation that changes discovery/activation text must record:
 
 - exact original evidence/location;
-- defect/risk code from TAX-001;
-- contract clause or rubric criterion;
-- minimal proposed change;
-- affected frozen or proposed scenario IDs;
-- validation status and evidence layer.
+- TAX-001 defect/risk code;
+- contract/rubric criterion;
+- smallest supported change;
+- affected/new scenario IDs;
+- invocation modes affected when relevant;
+- validation status/evidence layer.
 
-If the report lacks these, classify the recommendation as insufficiently evidenced rather than accepting it because the rewrite sounds better.
+If these are missing, classify the recommendation as insufficiently evidenced.
 
-## 7. Stable severity
+## 10. Stable severity
 
-- **blocking:** would fabricate evidence, remove required safety/ownership boundary, corrupt frozen evaluator integrity, or cause uncontrolled ownership expansion.
-- **high:** likely material FP/FN risk, unresolved ownership overlap, contradictory routing rules, or missing stop/evidence gate.
-- **medium:** local ambiguity likely to produce inconsistent review/routing but bounded to one surface.
-- **low:** non-blocking wording/redundancy with little expected routing effect.
+- **blocking:** fabricated evidence, frozen-evaluator corruption, safety/ownership weakening, activation gaming that changes authority, or invalid behavioral comparison presented as measured.
+- **high:** likely material FP/FN risk, unresolved ownership overlap, contradictory routing rules, missing comparison identity, or missing stop/evidence gate.
+- **medium:** bounded ambiguity or scenario/evidence weakness likely to create inconsistent routing/review.
+- **low:** local wording/redundancy with little expected routing impact.
 - **note:** observation with no required change.
 
 Severity describes consequence/risk, not reviewer confidence.
 
-## 8. Finding record
+## 11. Finding record
 
 For each finding include:
 
@@ -97,5 +129,6 @@ For each finding include:
 - `proposed_change`;
 - `rationale`;
 - `scenario_ids`;
+- `invocation_modes` when relevant;
 - `validation_status`: proposed, observed-static, supplied, executed, or blocked;
 - `claim_level`: proposed-improvement, structurally-supported, or measured-behavioral-result.

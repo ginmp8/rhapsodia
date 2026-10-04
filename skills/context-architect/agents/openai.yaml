@@ -1,13 +1,7 @@
 interface:
   display_name: Context Architect
-  short_description: Maps codebase context, dependencies, patterns, tests, and safe
-    change sequences before multi-file edits.
+  short_description: Maps codebase context, dependencies, patterns, tests, and safe change sequences before multi-file edits.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
   allow_implicit_invocation: true
-  products:
-  - chatgpt
-  - codex
-  - api
-  - atlas

@@ -14,7 +14,7 @@ Map repository context before multi-file work so implementation starts from curr
 1. Build a context map before modifying repository files when scope is multi-file, cross-boundary, or uncertain.
 2. Treat repository evidence as primary; label inference instead of presenting it as observation.
 3. Trace the owning source and relevant consumers before proposing edits. Do not stop at the first plausible file.
-4. Use bounded search and explicit closure criteria. More files are not automatically better context.
+4. Use bounded, quality-aware context selection and explicit closure criteria. More files are not automatically better context; prefer the smallest evidence set that closes the required branches.
 5. Before implementing from an approved map, verify that the evidence used by the map is still current. Refresh only invalidated branches unless a central contract changed.
 6. Never invent paths, call sites, tests, commands, ownership, runtime wiring, or validation results.
 
@@ -75,9 +75,17 @@ Use these labels when materially useful:
 
 When evidence conflicts, apply the precedence rules in the reference and report unresolved conflicts instead of silently picking the convenient source.
 
+## Evidence acquisition model
+
+Load `references/dependency-tracing.md` when selecting repository evidence. Classify both the **provenance label** and, when material, the **evidence source class**: semantic index, build/project graph, syntax/AST, runtime/data-flow, exact lexical search, semantic/fuzzy retrieval, or historical association.
+
+Prefer stronger repository-native evidence for the relation being claimed, but do not require a specific vendor/tool. Represent material dependencies with typed directional relations such as `calls`, `implements`, `runtime-registers`, `build-depends-on`, `tested-by`, or `generated-from`. For `review-impact`, use a base/head or changed-file anchor when available, then follow reverse dependents with bounded multi-hop expansion rather than unbounded transitive search.
+
+When a frozen gold/reference context exists, load `references/context-selection-evaluation.md` and evaluate selection quality separately from final implementation. If no useful local repository context exists, return `no-useful-local-context` rather than forcing a plausible path.
+
 ## Progressive loading
 
-Use `SKILL.md` as the control plane. Load a supporting reference only when its branch is active: evidence/scope, dependency tracing, map rendering, implementation sequencing, risk/validation, or host portability. This keeps context bounded without changing the output contract.
+Use `SKILL.md` as the control plane. Load a supporting reference only when its branch is active: evidence/scope, dependency tracing, context-selection evaluation, map rendering, implementation sequencing, risk/validation, parallelization, or host portability. This keeps context bounded without changing the output contract.
 
 ## Context mapping workflow
 
@@ -85,14 +93,14 @@ Use repository-native tools first; use shell search only when appropriate. Follo
 
 1. **Normalize the task** into one sentence and identify the expected behavior change or investigation boundary.
 2. **Establish repository identity** and record the evidence tier. If the map will be reused for implementation, capture stable identities for the files that materially support the map when tooling allows.
-3. **Find the owning source**: definitions, contracts, schemas, generators, handlers, configuration owners, or source artifacts behind generated outputs.
-4. **Trace consumers and references**: direct usages, imports/exports, implementations, registrations, handlers, dynamic/config/string references, generated clients, and public/data boundaries.
-5. **Trace runtime wiring and ownership**: dependency injection, routers, schedulers, workers, package/build targets, CODEOWNERS when present, feature flags, deployment/configuration, and generator commands.
+3. **Find the owning source** with the strongest available evidence class: definitions, contracts, schemas, generators, handlers, configuration owners, or source artifacts behind generated outputs.
+4. **Trace typed direct relations**: usages/calls, imports/exports, implementations/inheritance, generated-from relationships, writers/readers, registrations, tests, and public/data boundaries. Record direction and material hop when it explains scope.
+5. **Trace reverse impact and runtime/build wiring**: for a diff/change-set, map changed files to owners and reverse dependents; inspect dependency injection, routers, schedulers, workers, project/build targets, feature flags, deployment/configuration, CODEOWNERS, and generator commands.
 6. **Find tests and validation**: nearest unit/integration/contract/migration/e2e coverage and repository-native commands.
 7. **Find one or more analogous patterns** only after the owning and consumer paths are known.
-8. **Map ripple effects**: compatibility, data migration, concurrency/idempotency/ordering, security, observability, rollout, generated-source drift, and external-consumer uncertainty. When downstream work may be decomposed, load `references/parallelization-map.md` and capture evidence-backed dependency edges, shared reads, write conflicts, barriers, isolation needs, and merge ownership.
-9. **Apply closure criteria** from `references/evidence-and-scope-control.md`. Stop expanding when the selected tier is closed; otherwise mark the map `provisional` or `blocked` and name the unresolved branch.
-10. **Render the map** using `references/context-map-contract.md`. Order entries using its canonical ordering and tie-breakers.
+8. **Map ripple effects**: compatibility, data migration, concurrency/idempotency/ordering, security, observability, rollout, generated-source drift, external-consumer uncertainty, and dependency-version risk. In `extended`, selectively consider data-flow/runtime evidence when references cannot close a behavior/source-to-sink branch. When downstream work may be decomposed, load `references/parallelization-map.md` and capture evidence-backed dependency edges, shared reads, write conflicts, barriers, isolation needs, and merge ownership.
+9. **Apply bounded closure criteria** from `references/evidence-and-scope-control.md`. Expand multi-hop only while it closes a required branch or risk class. Stop when the selected tier is closed; otherwise mark the map `provisional`, `blocked`, or `no-useful-local-context` as appropriate and name the unresolved boundary.
+10. **Render the map** using `references/context-map-contract.md`. Order entries using its canonical ordering and tie-breakers. When a gold/reference context exists, attach executed context-selection metrics from `references/context-selection-evaluation.md`; otherwise state that those metrics are not available.
 
 ## Context freshness and reuse
 
@@ -105,6 +113,18 @@ For `apply-after-approved-map`:
 5. If verification is unavailable, re-read every primary file and all critical secondary files before implementation and mark freshness as `observed`, not `measured`.
 
 A previous map is planning evidence, not permanent source truth.
+
+## Evidence layers and claim discipline
+
+Keep evidence layers separate:
+
+- **structural**: package/map shape, references, hashes, static contracts;
+- **semantic-review**: judgment that selected relations, scope, requirements, or mitigations are appropriate;
+- **behavioral**: an actual mapper/agent/retriever executed against frozen tasks or gold context;
+- **runtime**: repository/build/test/tool commands executed in the relevant environment;
+- **package-integrity**: frozen candidate/package/receipt hashes match exact delivered bytes.
+
+Do not call structural checks measured behavioral improvement. Freeze evaluator/gold inputs before baseline-candidate comparisons. After a final passing candidate is frozen, any later edit invalidates affected validation and requires revalidation.
 
 ## Output contract
 
@@ -147,19 +167,22 @@ If repository access is incomplete, mark the map `provisional` and state exactly
 
 - `references/context-map-contract.md`: versioned output contract, ordering, confidence, and compact forms.
 - `references/evidence-and-scope-control.md`: provenance, source precedence, context budget, closure, conflict, and freshness rules.
-- `references/dependency-tracing.md`: deterministic tracing order and ecosystem-specific heuristics.
+- `references/dependency-tracing.md`: evidence source classes, typed relation vocabulary, bounded multi-hop/reverse-impact tracing, and ecosystem heuristics.
+- `references/context-selection-evaluation.md`: frozen-gold precision/recall/F1, budgeted-yield, unsupported-selection, no-gold/abstention, and evidence-layer claim rules.
 - `references/change-sequencing.md`: safe ordering, PR splitting, map drift, and validation strategy.
 - `references/risk-and-validation-checklist.md`: risk checklist and validation evidence levels.
 - `references/upstream-source.md`: attribution and adaptation notes.
 - `references/host-portability.md`: capability-first multi-platform behavior and adapter boundaries.
 - `references/parallelization-map.md`: evidence-backed work-unit dependencies, read/write conflicts, safe parallel groups, barriers, isolation, and merge ownership for downstream orchestration.
-- `assets/templates/context-map.md.template`: reusable v2 context-map template.
-- `scripts/generate_context_map_skeleton.py`: generate a v2 context-map skeleton.
+- `assets/templates/context-map.md.template`: reusable context-map/2.1 template.
+- `scripts/generate_context_map_skeleton.py`: generate a context-map/2.1 skeleton.
 - `scripts/context_evidence_snapshot.py`: capture/verify selected repository evidence hashes with machine-readable diagnostics.
+- `scripts/evaluate_context_selection.py`: deterministically evaluate frozen path-level context-selection fixtures; synthetic regressions are not behavioral benchmark evidence.
 - `scripts/validate_context_architect_skill.py`: validate package structure, references, scripts, and scenario schemas.
 - `scripts/package_skill.py`: build a deterministic `skill.zip` with canonical output-path preflight, staged verification, last-known-good restoration, atomic replacement, and optional receipt.
 - `evals/activation-scenarios.json`: frozen planned activation and boundary scenarios; not measured unless executed externally.
-- `evals/reproducibility-scenarios.json`: planned provenance, stale-map, conflict, and closure scenarios; not measured unless executed externally.
+- `evals/reproducibility-scenarios.json`: planned provenance, stale-map, conflict, closure, and evidence-layer scenarios; not measured unless executed externally.
+- `evals/context-selection-fixtures.json`: deterministic synthetic calibration fixtures for selection metrics; not real-repository behavioral evidence.
 - `examples/example-context-map.md`: calibrated example.
 
 ## Stop conditions

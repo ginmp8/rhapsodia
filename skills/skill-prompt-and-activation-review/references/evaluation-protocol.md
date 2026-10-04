@@ -1,54 +1,87 @@
 # Activation Evaluation Protocol
 
-Protocol version: `1.1.0`
+Protocol version: `2.0.0`.
 
-Use this protocol when activation/boundary text changes or when a user asks for evidence beyond static review. It is deliberately host-neutral: a host adapter or external harness may execute routing, but the evidence contract remains the same.
+Use this protocol when activation/boundary text changes or when the user asks for evidence beyond static review. Keep the protocol host-neutral: a host adapter or external harness may execute routing, but the evidence contract is portable.
 
 ## Evidence layers
 
 Keep these distinct:
 
-- `static-contract`: deterministic validation of suite shape, traceability, evidence identity, and package rules;
-- `static-adjudication`: linguistic review performed without observing host auto-invocation;
-- `host-routing`: actual observed invocation/routing for a scenario in an isolated host/harness;
-- `runtime`: downstream tool/application behavior after routing.
+- `static-contract`: deterministic validation of suite shape, traceability, identities, and package rules;
+- `static-adjudication`: linguistic review without observing host auto-invocation;
+- `host-routing`: actual skill discovery/invocation observed in a host or harness;
+- `runtime`: downstream behavior after routing.
 
-Only `host-routing` may support activation precision/recall or routing-regression claims.
+Only `host-routing` supports automatic activation precision/recall or routing-regression claims.
 
 ## Canonical suite
 
-`evals/activation-scenarios.json` is the package's canonical seed suite. It uses the portable Harness scenario envelope (`type`, mirrored `category`, `expected_behavior`, `acceptance_criteria`) while retaining `group`, `expected_route`, and `contract_ids` for routing-specific adjudication. Because this file ships with the skill, its cases are candidate-visible calibration; a true blind holdout must be supplied outside candidate-visible inputs. For a target-specific review, add only scenarios needed for the changed surface and preserve the original scenario IDs/expectations used in the comparison.
+`evals/activation-scenarios.json` is the candidate-visible regression/calibration suite. Major version `3` adds invocation modes, negative kinds, realistic dimensions, and explicit external blind-holdout policy.
+
+Because the canonical suite ships with the skill, no bundled case is a true blind holdout. A blind holdout must be evaluator-only and supplied outside candidate-visible inputs.
 
 Before baseline execution:
 
 1. validate the suite with `scripts/validate_activation_suite.py`;
-2. freeze the exact suite plus evaluator/rubric assets with `scripts/freeze_activation_evaluator.py`;
-3. classify evaluator assets as candidate-visible or evaluator-only using `references/evaluator-visibility.md`;
-4. record the resulting `evaluator_sha256` and the canonical suite SHA-256;
-5. do not edit frozen assets after seeing candidate results.
+2. freeze the exact suite plus evaluator/rubric/profile assets with `scripts/freeze_activation_evaluator.py`;
+3. classify candidate-visible versus evaluator-only assets using `references/evaluator-visibility.md`;
+4. inventory the materially available skill catalog and derive its stable hash;
+5. freeze the routing profile and fixed trial policy;
+6. record suite/evaluator/catalog/environment identities before either arm runs.
 
-If `evaluator_visibility=hidden`, the candidate execution must not receive evaluator-only rubrics, expected routes, private holdout labels, grader prompts, or post-run adjudication. Exposure invalidates blind-evaluation claims and the comparison must be rerun with a clean boundary or reclassified as candidate-visible/open-rubric evidence.
+If a frozen evaluator is wrong, invalidate the experiment, fix it separately, freeze a new evaluator, and rerun both arms.
 
-If the evaluator is wrong, invalidate the comparison, fix it separately, freeze a new evaluator, and restart both arms.
+## Invocation-mode separation
+
+Every routing scenario declares exactly one mode:
+
+- `explicit`: direct named/selected skill use;
+- `implicit`: automatic discovery from user intent;
+- `contextual`: automatic discovery under realistic context/noise/multi-intent conditions.
+
+Explicit invocation is useful for direct-use compatibility but is excluded from automatic activation precision/recall. Do not let explicit cases inflate discovery metrics.
+
+## Routing environment identity
+
+Use `references/routing-evidence-profile.md`. Baseline and candidate are behaviorally comparable only when materially relevant routing inputs are equivalent, including:
+
+- host and material host version;
+- model/provider/snapshot when model routing is involved;
+- discovery mode;
+- exact competing catalog identity and size;
+- host-specific metadata extensions that can affect discovery;
+- evaluator visibility/isolation;
+- fixed trial policy.
+
+A changed competing catalog is environment drift. The old run remains historical evidence but cannot be attributed to the prompt/activation change alone.
+
+## Repeated trials
+
+A single routing observation is not repeatability evidence. For claims about reliability or stochastic improvement, predeclare a fixed number of trials and preserve the same count across paired arms.
+
+The bundled comparator reports trigger rates and Wilson 95% intervals. Treat them as descriptive uncertainty over the recorded trials, not proof of independent identical trials.
+
+Use a stronger stochastic-evaluation workflow for broad or high-confidence superiority claims. This reviewer must not manufacture statistical certainty from a small run count.
 
 ## Baseline/candidate pairing
 
-For any before/after claim:
+For any before/after behavioral claim:
 
-- run baseline and candidate with exactly the same scenario IDs, prompts, files, expectations, evaluator identity, and host configuration that materially affects routing;
-- record baseline and candidate package/source identity separately;
-- preserve holdout cases from candidate authoring when using them for robustness evidence;
-- do not drop difficult or failing scenarios after the baseline run;
-- compare using `scripts/compare_activation_evidence.py`.
+- use exactly the same scenario IDs/prompts/expectations;
+- use the same frozen evaluator identity;
+- use the same routing fingerprint;
+- use the same fixed trial policy and isolation policy;
+- preserve baseline/candidate identities separately;
+- do not drop difficult/failing cases after baseline observation;
+- verify evaluator assets remained unchanged after candidate execution;
+- compare with `scripts/compare_activation_evidence.py`.
 
-A static review may recommend a candidate without host execution, but the report must say that behavioral evidence was not obtained.
+A static rewrite may still be recommended when execution is unavailable, but the report must label the behavioral delta `not-run` or `blocked`.
 
+## Self-generated candidates
 
-## Self-generated activation candidate
-
-When the activation/prompt candidate was produced by a self-improving version of the same skill family, keep generation provenance separate from routing evaluation.
-
-Record when available:
+When a skill/controller authors a candidate for the same skill family, keep generation provenance separate from routing evaluation. Record when available:
 
 ```text
 candidate_origin = self-generated
@@ -58,90 +91,86 @@ baseline_identity
 candidate_identity
 ```
 
-Rules:
+For blind evaluation, neither the authoring controller nor the evaluated candidate may see evaluator-only expected routes, holdout labels, grader prompts, or post-run adjudication. Leakage invalidates blind-evaluation claims.
 
-- the controller that authored the candidate must not see evaluator-only holdout routes, private labels, grader prompts, or post-run adjudication when blind evaluation is claimed;
-- the candidate execution must remain equally blind to evaluator-only assets;
-- baseline and candidate must use materially equivalent host/routing configuration in addition to the same frozen suite/evaluator;
-- changing host configuration, evaluator visibility, expected routes, or holdout membership between arms makes behavioral routing deltas non-comparable;
-- controller identity is provenance, not an activation result;
-- this reviewer evaluates activation/prompt behavior only. It does not select or sequence unrelated improvement specialists and it does not own candidate promotion.
-
-A self-generated candidate may still receive a static rewrite recommendation when host execution is unavailable, but any behavioral activation claim remains blocked until the normal host-routing evidence gate is satisfied.
+Controller identity is provenance, not an activation result. This reviewer does not own candidate promotion or unrelated specialist orchestration.
 
 ## Result evidence contract
 
-A comparison arm should provide JSON like:
+Use evidence version `2` from `references/routing-evidence-profile.md`. Do not silently compare legacy one-case/one-observation evidence as if it were equivalent.
 
-```json
-{
-  "evidence_version": 1,
-  "suite_sha256": "...",
-  "evaluator_sha256": "...",
-  "execution_kind": "host-routing",
-  "evidence_status": "executed",
-  "host_profile": "documented capability/profile identity",
-  "evaluator_visibility": "hidden",
-  "candidate_saw_evaluator_only_assets": false,
-  "trace_manifest_sha256": "optional 64-hex trace identity",
-  "cases": [
-    {
-      "id": "act-001",
-      "observed_route": "activate",
-      "activated": true,
-      "evidence": "runner-specific trace/reference"
-    }
-  ]
-}
+Validate each arm before comparison:
+
+```text
+<PYTHON> scripts/validate_activation_evidence.py --input <ARM.json> --suite <FROZEN_SUITE.json> --json <OUT.json>
 ```
 
-Allowed `evidence_status`: `executed`, `supplied`, `planned`, `blocked`. `evaluator_visibility` may be `hidden`, `candidate-visible`, or `not-applicable`. A hidden evaluator requires `candidate_saw_evaluator_only_assets=false`. `trace_manifest_sha256` is optional because not every host exposes a usable trace.
+## Metrics
 
-Use `supplied` when a user gives results that were not independently executed in the current workflow. `planned` and `blocked` never support measured improvement claims.
+Keep metrics separated by semantic question:
 
-## False-positive/false-negative metrics
+- **automatic activation precision**: implicit/contextual binary discovery cases only;
+- **automatic activation recall**: implicit/contextual binary discovery cases only;
+- **explicit route accuracy**: direct invocation cases, reported separately;
+- **abstention accuracy**: negative cases where no skill should activate;
+- **near-miss false activation rate**: negative cases where a named alternative owner should win;
+- **overall expected-route accuracy**: full route equality across all evaluated trials;
+- **per-case trigger rate and expected-route-match rate**: diagnostic evidence;
+- **routing regressions**: any case whose candidate expected-route-match rate falls below baseline.
 
-Binary precision/recall applies only to scenarios whose frozen expectation is `activate`, `activate-constrained`, or `do-not-activate` and whose runner records a boolean `activated` value.
+Ambiguous, split-handoff, and policy-rejection cases are excluded from binary precision/recall unless the frozen evaluator explicitly gives a binary expectation. They remain eligible for route-regression analysis.
 
-Exclude `ambiguous`, `split-handoff`, and rejection-policy scenarios from binary precision/recall unless the frozen evaluator explicitly defines a binary expectation before both arms run.
+## Freshness and historical evidence
 
-A scenario may still be a routing regression even when it is excluded from precision/recall if its full `observed_route` no longer matches the frozen expected route.
+Record `executed_at` plus routing fingerprint on executed/supplied evidence.
 
-## Claim rules
+When host/model/catalog/discovery identity changes materially:
 
-Use this vocabulary:
+- preserve the prior result as historical evidence;
+- mark it non-comparable for current attribution;
+- rerun or explicitly re-baseline before claiming a current behavioral delta.
+
+Do not use date alone as a freshness cutoff. Identity drift, not age by itself, determines comparability.
+
+## Claim vocabulary
 
 - `proposed`: suggested but not validated;
-- `observed-static`: directly supported by text/package inspection or deterministic static validator;
-- `supplied`: based on user-provided execution evidence;
+- `observed-static`: supported by text/package inspection or deterministic static validator;
+- `supplied`: externally supplied execution evidence;
 - `executed`: actually run in the current workflow;
 - `derived`: deterministic calculation from executed/supplied evidence;
-- `blocked`: required evidence could not be obtained.
+- `blocked`: required evidence unavailable or invalid.
 
-Never report activation precision, activation recall, behavioral improvement, or regression reduction from `static-contract` or `static-adjudication` evidence alone.
+Never report automatic precision/recall, behavioral improvement, reliability improvement, or regression reduction from static evidence alone.
+
+`measured-single-run` is an observation, not stochastic reliability evidence. `measured-repeated` means repeated trials were recorded under the same declared profile; it is still bounded to that profile and trial set.
 
 ## Gate order
 
 1. target identity and scope fixed;
 2. suite validates;
-3. evaluator frozen;
-4. baseline evidence captured;
-5. candidate authored without changing evaluator;
-6. candidate evidence captured with same cases;
-7. evaluator manifest verifies unchanged;
-8. comparison passes identity, host-profile, and evaluator-visibility/leakage gates;
-9. target package validators/tests pass;
-10. final candidate freezes; any later edit restarts affected validation.
+3. evaluator and any blind holdout assets frozen;
+4. catalog/routing profile and trial policy frozen;
+5. baseline evidence captured;
+6. candidate authored without evaluator leakage;
+7. candidate evidence captured with the same identities;
+8. evaluator manifest verifies unchanged;
+9. both evidence arms validate under v2;
+10. comparator passes suite/evaluator/routing/trial gates;
+11. target package validators/tests pass;
+12. final candidate freezes; any later edit restarts affected validation.
 
 ## Stop conditions
 
-Stop the comparison when:
+Stop the behavioral comparison when:
 
 - suite/evaluator identity differs between arms;
-- materially relevant host profiles differ between arms;
-- hidden evaluator assets were exposed to either evaluated arm or leakage status is unresolved;
+- materially relevant routing fingerprint differs;
+- catalog identity is unavailable and catalog competition is material to the claim;
+- trial policies differ;
+- hidden evaluator assets leaked or leakage status is unresolved;
 - scenario IDs differ;
-- a frozen expectation was edited after seeing an outcome;
-- required routing evidence is unavailable for a requested behavioral metric;
-- the only way to pass is to weaken a boundary, evidence rule, or evaluator;
-- host-specific invocation behavior is undocumented enough that the observed route cannot be interpreted reliably.
+- a frozen expectation changed after outcome observation;
+- required host-routing evidence is unavailable for a requested behavioral metric;
+- the only path to pass weakens a boundary, evaluator, or expected result;
+- host-specific invocation behavior is too undocumented to interpret the observed route.

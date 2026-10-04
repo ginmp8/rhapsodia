@@ -7,10 +7,13 @@ Record:
 - root skill path or archive;
 - intended capability and owner role;
 - requested mode and output language;
+- review layers requested: normative conformance, package integrity, operational quality;
+- specification baseline when normative conformance is claimed;
+- requested host profiles and available host-semantic/runtime evidence;
 - files supplied, omitted, and protected;
 - known failures, prior reviews, expected behavior, supported versions, and migration commitments.
 
-Do not begin semantic scoring until the root is unambiguous. For ecosystem review, map each skill root separately before evaluating shared contracts. Resolve the target host profile only when host-specific metadata or portability is part of the request; otherwise review the portable core first.
+Do not begin semantic scoring until the root is unambiguous. For ecosystem review, map each skill root separately before evaluating shared contracts. Resolve the target host profile only when host-specific metadata or portability is part of the request; otherwise review the portable core first. When exact evidence identity matters and execution is available, build a review evidence manifest before interpretation and keep it outside the target.
 
 ## 2. Build the package map
 
@@ -58,12 +61,17 @@ At minimum, evaluate:
 9. The output contract can be satisfied from required inputs.
 10. Portable-core correctness does not depend on an optional vendor adapter or absolute host installation path.
 11. The correction input is self-contained.
-12. Normal execution accepts only current contracts and identifiers.
-13. Historical adaptation occurs only in an explicit, isolated migration mode.
-13. Unknown or malformed current input does not silently fall back to legacy behavior.
-14. Current and historical rules do not compete as sources of truth.
-15. Peer skills exchange versioned contracts rather than importing or reading each other's internals at runtime.
-16. Removal is blocked when owner, consumer, compatibility, or migration evidence is decision-critical and missing.
+12. Normative conformance claims identify a specification baseline; package and operational conclusions remain distinct.
+13. Multi-platform claims distinguish structural, host-semantic, runtime, and behavioral evidence per requested host.
+14. Strong stochastic reliability claims use repeated comparable trials or remain explicitly unproven.
+15. Decision-critical model-judge evidence records calibration status and is not mislabeled as measured.
+16. Score, evidence coverage, confidence, and gates are reported separately.
+17. Normal execution accepts only current contracts and identifiers.
+18. Historical adaptation occurs only in an explicit, isolated migration mode.
+19. Unknown or malformed current input does not silently fall back to legacy behavior.
+20. Current and historical rules do not compete as sources of truth.
+21. Peer skills exchange versioned contracts rather than importing or reading each other's internals at runtime.
+22. Removal is blocked when owner, consumer, compatibility, or migration evidence is decision-critical and missing.
 
 ## 5. Run structural and semantic passes
 
@@ -80,6 +88,11 @@ Trace behavior and challenge optimistic assumptions:
 - later steps contradict earlier scope or authority;
 - a resource is named but never loaded;
 - a validator checks structure while the report claims behavior;
+- a compliance claim omits the specification baseline;
+- a cross-host claim extrapolates discovery/invocation/scoping/context semantics without host evidence;
+- a one-run success is presented as reliability;
+- an uncalibrated judge score is presented as measured evidence;
+- target/evaluator identity changed after evidence capture;
 - an output template omits a mandatory field;
 - a stop condition makes a core mode impossible;
 - examples or tests preserve replaced behavior;
@@ -105,7 +118,11 @@ For every material candidate:
 
 In `legacy-audit` mode, always produce the legacy classification, ownership, compatibility, and runtime-coupling matrices, even when they contain no rows. In ordinary full review, include only relevant rows and classification counts. Do not claim that no legacy exists merely because searches returned no matches.
 
-## 7. Test defect hypotheses
+## 7. Calibrate evidence and validator strength
+
+Apply `evidence-and-calibration.md` before scoring. Record review layers, specification baseline, host-semantic evidence, evidence coverage, model-judge calibration status, and confidence. If a decision-critical validator's protection is uncertain, use a bounded temporary-copy challenge only when it can change a material finding or gate. Repeated trials are required only for strong stochastic reliability/accuracy claims; otherwise record the behavioral layer as `not-run` or `planned`.
+
+## 8. Test defect hypotheses
 
 For each high-value hypothesis record:
 
@@ -117,7 +134,7 @@ For each high-value hypothesis record:
 
 Do not combine unrelated hypotheses or convert a discovery signal directly into a finding.
 
-## 8. Score after findings
+## 9. Score after findings
 
 For each rubric dimension:
 
@@ -128,11 +145,11 @@ For each rubric dimension:
 - label the score static unless an evaluator was executed;
 - do not reward deletion or lower token count unless current behavior and authority are preserved.
 
-## 9. Build the correction input
+## 10. Build the correction input
 
 Include confirmed findings and explicitly selected likely findings only. Preserve current behavior, isolate valid migration-only behavior, consolidate duplicates, remove proven obsolete/noise items, repair contradictions, and keep blocked decisions outside mandatory fixes until evidence exists.
 
-## 10. Closure criteria
+## 11. Closure criteria
 
 A review is complete for the stated scope when:
 
@@ -144,4 +161,7 @@ A review is complete for the stated scope when:
 - findings satisfy the finding quality bar;
 - current behavior, legacy rejection, migration isolation, ownership, and runtime independence are validated or explicitly blocked;
 - the scorecard and verdict follow the evidence;
+- review profile, evidence coverage, confidence, and claim ceilings are explicit;
+- specification/host claims have the required baseline/freshness evidence or are labeled not-proven;
+- review evidence identity/manifest status is reported when material;
 - the correction input is self-contained and report validation was run or its gap is stated.

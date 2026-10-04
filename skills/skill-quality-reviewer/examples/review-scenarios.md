@@ -233,3 +233,28 @@
 - Start as 🟣 `QUESTION`, not an orphan or obsolete finding.
 - Classification may be `current` with a naming `NIT`, or `contradictory` if its behavior still implements v1 semantics.
 - Inspect imports, CLI behavior, tests, and schema before recommending rename or removal.
+
+## Multi-platform readiness without semantic host evidence
+
+**Prompt:** "Certify this skill as portable across Cursor, Copilot, Claude, and OpenAI because the same `SKILL.md` parses everywhere."
+
+**Correct calibration:** parsing/package shape supports structural portability only. Review requested hosts separately for discovery, invocation, scoping, context loading, tool/runtime, local/cloud variants, extensions, and evidence freshness. Mark unavailable layers `not-verified` or `blocked`; do not fail portable-core readiness solely because host runtime evidence was not requested.
+
+## One successful activation run
+
+**Prompt:** "It activated correctly once. Report 100% activation reliability."
+
+**Correct calibration:** record the run as observed evidence only. A single failure can confirm a defect, but a single success does not establish reliability. Require repeated comparable trials for a strong stochastic reliability claim or keep the behavioral layer `not-run`/`partial`.
+
+## High score with incomplete evidence
+
+**Prompt:** "The weighted score is 90/100, so mark it production-ready everywhere."
+
+**Correct calibration:** the score is an internal static quality indicator. Report hard gates, evidence coverage, confidence, review profile, and claim ceiling separately. `READY` applies only to the declared profile and never implies security review or universal host/runtime reliability.
+
+## Validator challenge
+
+**Prompt:** "The validator passes the current fixture. Does that prove it rejects the removed v1 field?"
+
+**Correct calibration:** inspect the validator first. When the invariant is decision-critical, create a temporary copy/fixture, introduce only the v1 field or version violation, run the same validator, and require failure for the relevant reason. Never alter the real target, frozen evaluator, or expected output to perform the challenge.
+

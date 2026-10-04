@@ -1,96 +1,141 @@
 # Agent Validation Scenarios
 
-Use this reference to design repeatable validation for agent behavior. The bundled frozen planning suite is `evals/agent-design-scenarios.json`. Its presence is **planned evidence**, not proof that an LLM behavior run occurred.
+Canonical evaluation contract: `agent-eval-contract/v2`.
+
+The bundled suite is `evals/agent-design-scenarios.json`. Its presence is **planned evidence**, not proof that an LLM/agent behavior run occurred.
+
+## Evaluation Model
+
+Separate these concepts:
+
+- **task/scenario**: one behavior claim and its inputs;
+- **trial**: one execution of a task against a specific candidate/runtime identity;
+- **grader**: deterministic assertion, outcome check, trace invariant, rubric/model/human review, or another declared evaluator;
+- **outcome**: whether the owned result satisfies acceptance criteria;
+- **trace/trajectory evidence**: selected tool/transition/state events when process invariants matter;
+- **harness**: system that executes tasks/trials and records identities/results.
+
+Prefer outcome validation over enforcing one exact trajectory. Use trace assertions only for genuine process invariants such as "no write capability used", "no authority amplification", "handoff kind explicit", or "no unbounded cycle".
 
 ## Scenario Groups
 
 Cover materially distinct behavior:
 
-1. `activation`: the agent-design capability should own the request.
-2. `non-activation`: another Skill, agent, repository workflow, or human owns it.
-3. `ambiguous`: safe defaults, a bounded question, or escalation is required.
-4. `core`: representative high-value design/routing behavior.
-5. `edge`: boundary, missing-tool, missing-context, partial-failure, or authority-edge cases.
-6. `regression`: a known defect or failure mode that must stay observable.
-7. `adversarial`: attempts to bypass controls, hide evidence, overreach authority, or create uncontrolled loops.
-8. `holdout`: cases reserved from normal authoring when a real comparative evaluation is run.
+1. `activation`;
+2. `non-activation`;
+3. `ambiguous`;
+4. `core`;
+5. `edge`;
+6. `regression`;
+7. `adversarial`;
+8. `holdout`.
 
-Prefer a small set of behaviorally distinct cases over many paraphrases.
+Prefer a small set of behaviorally distinct cases over paraphrase volume.
 
 ## Scenario Record
 
-Recommended machine-readable fields:
+Recommended planned shape:
 
 ```json
 {
-  "id": "regression-circular-handoff",
+  "id": "regression-readonly-omitted-tools",
   "group": "regression",
   "prompt": "...",
-  "expected": {"activate": true, "mode": "agent-routing-design"},
-  "must": ["define termination behavior"],
-  "must_not": ["allow an unbounded cycle"],
+  "expected": {"activate": true, "mode": "agent-governance-review"},
+  "must": ["treat omitted tools as unproven/broad exposure"],
+  "must_not": ["approve read-only authority from prompt wording alone"],
+  "trace_invariants": ["no unsupported runtime claim"],
   "evidence_status": "planned"
 }
 ```
 
-Scenario execution status is one of:
+Scenario execution status is `planned | executed | supplied`.
 
-- `planned`: defined but not run;
-- `executed`: run in the current evaluation with captured output/evaluator evidence;
-- `supplied`: result supplied by another actor and not independently executed here.
+## Frozen Evaluation Identity
 
-## Claim Evidence Labels
+Before baseline-vs-candidate behavioral comparison, freeze as applicable:
 
-When reporting validation results, use:
+- scenario suite identity;
+- expected invariants/outcomes;
+- grader/evaluator identity;
+- candidate/baseline identities;
+- input files/context fixtures;
+- environment/provider/model/tool profile when it can materially affect comparability.
 
-- `measured`: produced by an executed command, scenario harness, or runtime check;
-- `observed`: directly inspected in an artifact/source;
-- `supplied`: provided externally;
-- `inferred`: reasoned from evidence;
-- `planned`: specified but not executed;
-- `blocked`: unavailable.
+If the deciding evaluator changes after candidate results are seen, invalidate/re-baseline rather than silently tailoring the oracle.
 
-Do not convert `planned`, `supplied`, or `observed` evidence into `measured` merely because the design looks correct.
+## Trials and Reliability
+
+One trial may be enough for deterministic structural checks. For stochastic agent behavior, use repeated trials only when the claim is about reliability/robustness or one run is insufficient.
+
+Distinguish:
+
+- success at least once across `k` attempts (`pass@k`-style question);
+- consistent success across all `k` attempts (`pass^k`-style question).
+
+Do not claim reliability from one successful model run. Record trial count and failures/ties; do not force a winner.
+
+## Evidence Labels
+
+Use claim labels:
+
+- `measured`;
+- `observed`;
+- `supplied`;
+- `inferred`;
+- `planned`;
+- `blocked`.
+
+Do not convert `planned`, `supplied`, or static `observed` evidence into `measured` behavioral proof.
 
 ## Frozen Comparison Rule
 
-For baseline-vs-candidate behavioral claims:
+For baseline vs candidate:
 
-1. freeze prompts, expected invariants, evaluator criteria, and relevant input files before candidate mutation;
-2. run the same frozen cases against both arms;
-3. keep holdout cases unchanged after results are seen;
-4. repeat stochastic cases when a strong reliability claim requires it;
-5. record ties/failures rather than forcing a winner;
-6. invalidate the comparison if the evaluator changes.
+1. freeze prompts/outcomes/trace invariants/evaluators before mutation;
+2. run identical cases against both arms;
+3. keep holdouts unchanged after results are seen;
+4. repeat stochastic trials when the claim requires reliability evidence;
+5. preserve failure/tie evidence;
+6. invalidate comparison if deciding evaluator or materially relevant environment drifts.
 
-A static package audit, rubric score, or scenario file does not demonstrate behavioral improvement.
+A static package audit, rubric score, or scenario file can prove structure/coverage, not behavioral improvement.
 
 ## Default Acceptance Invariants
 
-An agent design should, where applicable:
+Where applicable, an agent design should:
 
-- activate or route according to owned outcome;
-- stay within declared authority;
-- use only allowed capabilities or state the missing dependency;
-- produce the declared output contract;
-- define stop/escalation behavior;
-- define termination/re-entry behavior for stateful or routing systems;
-- keep routers from specialist execution;
-- use compact handoffs without duplicated specialist prompts;
+- activate/route by owned outcome;
+- keep effective authority within declared authority;
+- use explicit restrictive capability exposure for restricted roles;
+- prevent delegation authority amplification;
+- keep context from granting authority and preserve trust/freshness boundaries;
+- choose explicit control-flow ownership semantics;
+- produce declared output contract;
+- define stop/escalation;
+- define interruption/resume/termination for stateful systems;
+- justify multi-agent topology;
+- prevent unsafe parallel mutation;
+- keep pure routers from specialist execution;
+- bound blast radius/downstream authorization for high-impact work;
 - preserve evidence labels;
-- avoid claiming unexecuted runtime or behavioral validation.
+- avoid claiming unexecuted runtime/behavioral validation.
 
 ## Structural Validator
 
-When a generated agent artifact is available as a file, run:
+When a generated artifact exists:
 
 ```text
 <PYTHON> scripts/validate_agent_artifact.py <ARTIFACT> --kind auto --profile <PROFILE> --json <RECEIPT>
 ```
 
-Profiles are `generic`, `router`, `review`, `governance`, or `controlled-executor`. Use `--require-complete` for final artifacts to reject unresolved template placeholders. Read-only profiles reject obvious write-capable tools unless `--allow-write-tools` is explicitly justified.
+Profiles: `generic`, `router`, `review`, `governance`, `controlled-executor`.
 
-This validator proves structural invariants only. Semantic quality still requires rubric/scenario review, and actual tool behavior requires runtime evidence.
+For `router`, `review`, and `governance`, omitted tool configuration is rejected because portable structural validation cannot prove restrictive exposure. `--allow-write-tools` only waives the obvious write-marker check; it does not waive effective-authority review.
+
+Use `--require-complete` for final artifacts to reject unresolved template placeholders.
+
+Structural validation does not prove semantic quality or actual host permissions/runtime behavior.
 
 ## Validation Plan Output
 
@@ -100,23 +145,28 @@ This validator proves structural invariants only. Semantic quality still require
 ## Scope
 ...
 
-## Frozen Inputs/Evaluator
-- scenario suite identity:
-- evaluator identity:
-- baseline/candidate arms:
+## Frozen Identities
+- scenario suite:
+- evaluator/graders:
+- baseline/candidate:
+- environment profile when material:
 
 ## Scenario Matrix
-| Scenario | Group | Expected behavior | Acceptance criteria | Evidence status |
-|---|---|---|---|---|
+| Scenario | Group | Outcome | Trace invariants | Trials | Evidence status |
+|---|---|---|---|---:|---|
 
 ## Critical Gates
 - mission/ownership:
-- authority:
+- effective authority:
 - tool least authority:
+- context trust/authority:
+- control-flow ownership:
+- multi-agent/concurrency:
 - stop/escalation:
-- state/termination:
+- state/interruption/termination:
+- containment/downstream auth:
 - evidence truthfulness:
 
 ## Not Measured
-List behaviors or metrics that were not executed.
+List behaviors/metrics not executed.
 ```

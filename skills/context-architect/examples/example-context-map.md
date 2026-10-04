@@ -3,28 +3,29 @@
 ## Context Map for: add a new onboarding status
 
 ### Evidence identity
-- Contract: context-map/2.0
+- Contract: context-map/2.1
 - Repository: `/repo/onboarding`
 - Revision/worktree: `abc1234`, clean
+- Change anchor: supplied feature request; no base/head diff
 - Evidence freshness: observed
 
 ### Scope classification
 - Change type: feature
 - Evidence tier: standard
-- Scope confidence: medium - owner, direct writer, response DTO, and nearest tests were inspected; downstream reporting consumers remain unresolved
-- Repository evidence inspected: `rg "OnboardingStatus|status" src tests`, `src/domain/onboarding_status.cs`, `src/api/onboarding_response.cs`, `src/workflows/open_account_handler.cs`, `tests/onboarding_status_tests.cs`
+- Scope confidence: medium - owner, direct writer, response DTO, build/runtime wiring, and nearest tests were inspected; downstream reporting consumers remain unresolved
+- Repository evidence inspected: semantic references for `OnboardingStatus`; exact searches for serialized value; project references; `src/domain/onboarding_status.cs`, `src/api/onboarding_response.cs`, `src/workflows/open_account_handler.cs`, `tests/onboarding_status_tests.cs`
 
 ### Primary files / owners
-| File | Evidence | Why primary | Expected action |
-|---|---|---|---|
-| `src/domain/onboarding_status.cs` | observed | owns allowed status values | edit |
-| `src/api/onboarding_response.cs` | observed | exposes status in the public response contract | inspect/update |
+| File | Evidence | Source class | Why primary | Expected action |
+|---|---|---|---|---|
+| `src/domain/onboarding_status.cs` | observed | semantic index | defines allowed status values | edit |
+| `src/api/onboarding_response.cs` | observed | semantic index | exposes status in public response contract | inspect/update |
 
 ### Secondary files and dependencies
-| File | Relation | Evidence | Action |
-|---|---|---|---|
-| `src/workflows/open_account_handler.cs` | direct writer | observed | update transition |
-| `tests/onboarding_status_tests.cs` | nearest behavioral coverage | observed | update/add cases |
+| File | Relation type | Direction / hop | Evidence | Source class | Selection role | Action |
+|---|---|---|---|---|---|---|
+| `src/workflows/open_account_handler.cs` | writes-data | status -> writer / 1 | observed | semantic index | direct writer | update transition |
+| `tests/onboarding_status_tests.cs` | tested-by | status -> test / 1 | observed | lexical + test discovery | validation | update/add cases |
 
 ### Test coverage and validation
 | Test or command | Evidence | Purpose | Confidence |
@@ -47,9 +48,11 @@
 - Closure: provisional
 - Owners/definitions: covered
 - Direct consumers: covered
-- Runtime/config: not-applicable in inspected scope
+- Runtime/build/config: covered for inspected service
 - Tests/validation: covered, not yet executed
 - External/dynamic consumers: unresolved
+- Traversal: hop 1 covered; expansion stopped at unavailable external reporting boundary
+- Context selection quality: no gold/reference set; metrics not claimed
 
 ### Suggested sequence
 1. Confirm compatibility strategy for external consumers.

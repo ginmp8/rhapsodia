@@ -1,9 +1,10 @@
 ## Context Map for: {{TASK}}
 
 ### Evidence identity
-- Contract: context-map/2.0
+- Contract: context-map/2.1
 - Repository: {{REPOSITORY}}
 - Revision/worktree: {{REVISION}}
+- Change anchor: {{CHANGE_ANCHOR}}
 - Evidence freshness: {{FRESHNESS}}
 
 ### Scope classification
@@ -13,14 +14,14 @@
 - Repository evidence inspected: {{EVIDENCE}}
 
 ### Primary files / owners
-| File | Evidence | Why primary | Expected action |
-|---|---|---|---|
-| {{PRIMARY_FILE}} | {{PRIMARY_EVIDENCE_LABEL}} | {{WHY_PRIMARY}} | {{EXPECTED_CHANGE}} |
+| File | Evidence | Source class | Why primary | Expected action |
+|---|---|---|---|---|
+| {{PRIMARY_FILE}} | {{PRIMARY_EVIDENCE_LABEL}} | {{PRIMARY_SOURCE_CLASS}} | {{WHY_PRIMARY}} | {{EXPECTED_CHANGE}} |
 
 ### Secondary files and dependencies
-| File | Relation | Evidence | Action |
-|---|---|---|---|
-| {{SECONDARY_FILE}} | {{RELATIONSHIP}} | {{SECONDARY_EVIDENCE_LABEL}} | {{ACTION}} |
+| File | Relation type | Direction / hop | Evidence | Source class | Selection role | Action |
+|---|---|---|---|---|---|---|
+| {{SECONDARY_FILE}} | {{RELATIONSHIP}} | {{DIRECTION_HOP}} | {{SECONDARY_EVIDENCE_LABEL}} | {{SECONDARY_SOURCE_CLASS}} | {{SELECTION_ROLE}} | {{ACTION}} |
 
 ### Test coverage and validation
 | Test or command | Evidence | Purpose | Confidence |
@@ -42,9 +43,11 @@
 - Closure: {{CLOSURE}}
 - Owners/definitions: {{OWNER_COVERAGE}}
 - Direct consumers: {{CONSUMER_COVERAGE}}
-- Runtime/config: {{RUNTIME_COVERAGE}}
+- Runtime/build/config: {{RUNTIME_COVERAGE}}
 - Tests/validation: {{VALIDATION_COVERAGE}}
 - External/dynamic consumers: {{EXTERNAL_COVERAGE}}
+- Traversal: {{TRAVERSAL_COVERAGE}}
+- Context selection quality: {{SELECTION_QUALITY}}
 
 ### Suggested sequence
 1. {{STEP_1}}

@@ -9,21 +9,34 @@
 - Allowed mutation scope: {{allowed_scope}}
 - Blocked paths: {{blocked_paths}}
 
+## Reachability model
+
+- Default roots: {{default_roots}}
+- Declared roots: {{declared_roots}}
+- Root coverage limitations: {{root_coverage_limitations}}
+- Reference-edge kinds observed: {{reference_edge_kinds}}
+
 ## Evidence inspected
 
 {{evidence_summary}}
 
 ## Resource classification summary
 
-| Path | State | Reference/consumer evidence | Proposed decision | Risk | Validation |
-|---|---|---|---|---|---|
+| Path | State | Reference/consumer evidence | Generated-evidence strength | Proposed decision | Risk | Validation |
+|---|---|---|---|---|---|---|
 {{classification_rows}}
 
 ## Planned mutations
 
-| Path | Action | State | Evidence kind | Expected SHA-256 | Rollback source | Validation gate |
-|---|---|---|---|---|---|---|
+| Checkpoint | Path | Action | State | Evidence kind | Expected SHA-256 | Rollback source | Validation gate |
+|---|---|---|---|---|---|---|---|
 {{change_rows}}
+
+## Approved validation commands
+
+{{validation_commands}}
+
+Commands must be explicit argv arrays, approved by the operator, bounded by timeout, and executed without a shell.
 
 ## Dry-run
 
@@ -33,11 +46,13 @@
 
 ## Execution order
 
-1. Preserve baseline / last-known-good evidence.
-2. Generate current inventory and reference graph.
-3. Dry-run the exact machine-readable plan.
-4. Apply only if dry-run passes.
-5. Validate and freeze; roll back on failure.
+1. Preserve baseline / last-known-good evidence outside the target.
+2. Generate a current inventory with the complete known root registry and typed reference graph.
+3. Classify weak generated-name signals separately from strong generated evidence.
+4. Dry-run the exact machine-readable plan.
+5. Apply checkpoint groups only if preflight succeeds; keep the whole transaction rollback-capable.
+6. Run structural validation after checkpoints and approved target-owned validators before commit.
+7. Freeze the passing candidate; roll back the full transaction on any required validation failure.
 
 ## Stop conditions
 

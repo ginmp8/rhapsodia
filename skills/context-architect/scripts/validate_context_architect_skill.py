@@ -16,15 +16,19 @@ REQUIRED_FILES = [
     "references/context-map-contract.md",
     "references/evidence-and-scope-control.md",
     "references/dependency-tracing.md",
+    "references/context-selection-evaluation.md",
     "references/change-sequencing.md",
     "references/risk-and-validation-checklist.md",
     "references/upstream-source.md",
     "assets/templates/context-map.md.template",
     "scripts/generate_context_map_skeleton.py",
     "scripts/context_evidence_snapshot.py",
+    "scripts/evaluate_context_selection.py",
     "scripts/package_skill.py",
     "evals/activation-scenarios.json",
     "evals/reproducibility-scenarios.json",
+    "evals/context-selection-fixtures.json",
+    "evals/context-architect-2.1-scenarios.json",
     "examples/example-context-map.md",
 ]
 
@@ -32,9 +36,11 @@ REQUIRED_SKILL_LINKS = [
     "references/context-map-contract.md",
     "references/evidence-and-scope-control.md",
     "references/dependency-tracing.md",
+    "references/context-selection-evaluation.md",
     "references/change-sequencing.md",
     "references/risk-and-validation-checklist.md",
     "scripts/context_evidence_snapshot.py",
+    "scripts/evaluate_context_selection.py",
 ]
 
 FORBIDDEN_MARKERS = [
@@ -122,6 +128,16 @@ def validate_scenarios(root: Path, diags: list[dict[str, Any]]) -> None:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except Exception as exc:
             add(diags, "invalid_scenario_json", path.relative_to(root).as_posix(), str(exc))
+            continue
+        if path.name == "context-selection-fixtures.json":
+            if not isinstance(payload, dict) or payload.get("schema_version") != "1.0" or not isinstance(payload.get("cases"), list) or not payload.get("cases"):
+                add(diags, "context_fixture_schema_invalid", path.relative_to(root).as_posix(), "expected schema_version 1.0 with non-empty cases array")
+                continue
+            ids = [case.get("id") for case in payload["cases"] if isinstance(case, dict)]
+            if len(ids) != len(payload["cases"]) or any(not x for x in ids) or len(ids) != len(set(ids)):
+                add(diags, "context_fixture_ids_invalid", path.relative_to(root).as_posix(), "case ids must be present and unique")
+            if not any(isinstance(case, dict) and not case.get("expected_relevant") for case in payload["cases"]):
+                add(diags, "context_fixture_no_gold_missing", path.relative_to(root).as_posix(), "at least one no-gold case is required")
             continue
         if not isinstance(payload, dict) or not isinstance(payload.get("scenarios"), list):
             add(diags, "scenario_schema_invalid", path.relative_to(root).as_posix(), "expected object with scenarios array")
@@ -213,8 +229,8 @@ def main() -> int:
             add(diags, "nested_skill_entrypoints", str(root), "package must contain exactly one SKILL.md")
 
         contract = root / "references/context-map-contract.md"
-        if contract.is_file() and "Contract version: **2.0**" not in contract.read_text(encoding="utf-8"):
-            add(diags, "context_contract_version_missing", contract.relative_to(root).as_posix(), "expected context-map contract version 2.0")
+        if contract.is_file() and "Contract version: **2.1**" not in contract.read_text(encoding="utf-8"):
+            add(diags, "context_contract_version_missing", contract.relative_to(root).as_posix(), "expected context-map contract version 2.1")
 
         validate_markdown_links(root, diags)
         validate_scenarios(root, diags)

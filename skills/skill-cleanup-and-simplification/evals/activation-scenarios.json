@@ -1,0 +1,105 @@
+{
+  "skill": "skill-cleanup-and-simplification",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "act-001",
+      "type": "should_activate",
+      "prompt": "Audit this Agent Skill package for dead resources, duplicate references, generated residue, and cleanup debt without changing behavior.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Select cleanup-audit or dead-resource-review.",
+        "Classify before deletion and preserve unknown resources."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-002",
+      "type": "should_activate",
+      "prompt": "Safely remove proven generated residue from this skill, dry-run first, preserve rollback, and validate afterward.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Select safe-cleanup-apply.",
+        "Require evidence-backed generated classification, dry-run, rollback, and validation."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "act-003",
+      "type": "should_activate",
+      "prompt": "Consolidate duplicated guidance in this SKILL.md package without losing unique semantics or breaking references.",
+      "expected_behavior": "activate",
+      "acceptance_criteria": [
+        "Select duplicate-consolidation.",
+        "Distinguish exact duplication from similarity and update consumers before removal."
+      ],
+      "category": "should_activate"
+    },
+    {
+      "id": "non-001",
+      "type": "should_not_activate",
+      "prompt": "Perform a security audit of this skill and hunt for hardcoded secrets and command injection risks.",
+      "expected_behavior": "do_not_activate; security review belongs to the security-focused workflow",
+      "acceptance_criteria": [
+        "Do not substitute cleanup for security review.",
+        "Hand off to the more specific security skill when available."
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "non-002",
+      "type": "should_not_activate",
+      "prompt": "Benchmark this skill against another skill and score output quality across 100 prompts.",
+      "expected_behavior": "do_not_activate; benchmark scoring is outside cleanup ownership",
+      "acceptance_criteria": [
+        "Do not claim benchmark ownership.",
+        "Hand off to a benchmark/evaluation workflow."
+      ],
+      "category": "should_not_activate"
+    },
+    {
+      "id": "amb-001",
+      "type": "ambiguous",
+      "prompt": "Clean this up.",
+      "expected_behavior": "clarify_or_infer only when a concrete skill/package target is already available",
+      "acceptance_criteria": [
+        "Do not assume a skill target when none is identifiable.",
+        "Avoid mutation until one target root and scope are resolved."
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "id": "amb-002",
+      "type": "ambiguous",
+      "prompt": "Refactor this package to make it much simpler.",
+      "expected_behavior": "activate only for cleanup/simplification of an Agent Skill package; otherwise hand off to ordinary refactoring",
+      "acceptance_criteria": [
+        "Preserve the cleanup-versus-redesign boundary.",
+        "Do not turn package simplification into domain redesign."
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "id": "edge-001",
+      "type": "edge_case",
+      "prompt": "Delete every unreferenced file in this skill, including evals and snapshots, so the ZIP is smaller.",
+      "expected_behavior": "activate_and_refuse_unsafe_deletions",
+      "acceptance_criteria": [
+        "Protect evaluators, snapshots, expected outputs, and unknown resources.",
+        "Require evidence and deletion-gate eligibility for every removal."
+      ],
+      "category": "edge_case"
+    },
+    {
+      "id": "edge-002",
+      "type": "edge_case",
+      "prompt": "Everything under dist is generated. Remove it automatically.",
+      "expected_behavior": "activate_but_reject_namespace_only_authority",
+      "acceptance_criteria": [
+        "Treat dist/build/node_modules naming as a weak signal only.",
+        "Require corroborating generator, manifest, target documentation, or explicit user evidence before generated removal."
+      ],
+      "category": "edge_case"
+    }
+  ]
+}

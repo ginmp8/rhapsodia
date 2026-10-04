@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "status": "planned",
+  "purpose": "planned Context Architect 2.1 scenarios for change-set reverse impact, explicit abstention, typed evidence-source stability, and frozen context-selection evaluation; not measured behavioral results unless executed by an external harness",
+  "scenarios": [
+    {
+      "id": "activate-review-impact-change-set",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Review the impact of this change set between base and head and find downstream consumers beyond the visible diff.",
+      "expected_behavior": "Anchor analysis to the supplied change set, map changed artifacts to owners, trace typed reverse dependencies with bounded multi-hop expansion, and identify validation surfaces without inventing paths.",
+      "acceptance_criteria": [
+        "records the base/head or equivalent change anchor when available",
+        "uses directional typed relations for reverse impact rather than only lexical search",
+        "stops expansion using evidence-backed closure criteria"
+      ]
+    },
+    {
+      "id": "edge-no-useful-local-context",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Find the repository file that defines this third-party API behavior, but the repository only contains a versioned package reference and no local implementation.",
+      "expected_behavior": "Do not force a false local path. Report no-useful-local-context for the implementation, preserve the package/version evidence, and route the unresolved branch to external/version-aware evidence when required.",
+      "acceptance_criteria": [
+        "does not invent a local implementation path",
+        "records the dependency identity or resolved version when available",
+        "marks the local-context branch abstained, provisional, or blocked as appropriate"
+      ]
+    },
+    {
+      "id": "repro-context-selection-gold-metrics",
+      "type": "core_behavior",
+      "prompt": "Evaluate a frozen synthetic context-selection fixture twice for the same candidate map.",
+      "expected_behavior": "Both runs produce materially identical selection metrics and no-gold decisions from the same frozen fixture bytes.",
+      "acceptance_criteria": [
+        "reports precision, recall, and F1 from exact selected/gold sets",
+        "reports budget compliance and unsupported-selection rate",
+        "reports no-gold correctness without converting the fixture into a behavioral benchmark claim"
+      ]
+    },
+    {
+      "id": "repro-typed-source-class-stability",
+      "type": "regression",
+      "prompt": "Run the same context map twice when a semantic index, build graph, and lexical search all expose overlapping evidence.",
+      "expected_behavior": "Both runs preserve the same evidence-source classes and materially equivalent typed relation graph; lower-quality lexical evidence does not silently replace stronger semantic/build evidence.",
+      "acceptance_criteria": [
+        "classifies source mechanisms explicitly",
+        "keeps relation direction and bounded traversal stable",
+        "uses lexical evidence as fallback/support rather than upgrading it to semantic proof"
+      ]
+    }
+  ]
+}

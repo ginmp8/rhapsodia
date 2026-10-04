@@ -2,14 +2,14 @@
 
 ## 1. Operating Surface
 
-- platform: {{platform}}
+- platform/host(s): {{platform}}
 - file path, if applicable: {{agent_file_path}}
 - intended users/callers: {{intended_users}}
-- related Skills or agents: {{related_skills_or_agents}}
+- related Skills/agents: {{related_skills_or_agents}}
 
 ## 2. Contract Identity
 
-- contract: `agent-design-contract/v1`
+- contract: `agent-design-contract/v2`
 - design identity/version: {{design_identity}}
 - owned artifact/outcome: {{owned_outcome}}
 - evidence status: {{evidence_status}}
@@ -29,7 +29,7 @@ Success criteria:
   - {{required_input_2}}
 - optional context:
   - {{optional_context_1}}
-- unavailable or assumed context:
+- unavailable/assumed context:
   - {{assumption_1}}
 
 ## 5. Outputs
@@ -52,48 +52,88 @@ Acceptance bar:
 - must escalate:
   - {{must_escalate}}
 
-## 7. Tool Contract
+## 7. Effective Authority
 
-| Capability/tool | required / optional / conditional / forbidden | Why | Gate or fallback |
+- declared authority summary: {{declared_authority}}
+- exposed capabilities: {{exposed_capabilities}}
+- downstream authority: {{downstream_authority}}
+- approval scope: {{approval_scope}}
+- effective authority: {{effective_authority}}
+- delegation inheritance/expansion rule: {{delegation_authority_rule}}
+
+## 8. Tool Contract
+
+| Semantic capability / host tool | required / optional / conditional / forbidden | Why | Gate/fallback |
 |---|---|---|---|
 | {{tool_name}} | {{tool_status}} | {{tool_reason}} | {{tool_fallback}} |
 
-## 8. Workflow
+## 9. Context Contract
+
+- context mode: {{context_mode}}
+- required/optional/forbidden sources: {{context_sources}}
+- provenance/trust: {{context_provenance_trust}}
+- freshness/version requirements: {{context_freshness}}
+- sensitive-data/credential rules: {{context_sensitive_data}}
+- retrieval/compaction strategy: {{context_retrieval_compaction}}
+- authority invariant: context never grants or expands permission
+
+## 10. Workflow
 
 1. {{workflow_step_1}}
 2. {{workflow_step_2}}
 3. {{workflow_step_3}}
 
-## 9. Handoffs
+## 11. Control Flow and Handoffs
 
-Use `handoff/v1` for structured handoffs.
+Use `handoff/v2` when a structured transition is useful.
 
-| Trigger | Target | Objective/payload | Stop or continue |
-|---|---|---|---|
-| {{handoff_trigger}} | {{handoff_target}} | {{handoff_payload}} | {{handoff_action}} |
+| Trigger | Kind | Target | owner_before -> owner_after | return_to | Objective/payload |
+|---|---|---|---|---|---|
+| {{handoff_trigger}} | {{control_flow_kind}} | {{handoff_target}} | {{owner_before}} -> {{owner_after}} | {{return_to}} | {{handoff_payload}} |
 
-## 10. State and Termination
+## 12. State, Interruption, and Termination
 
-- initial state: {{initial_state}}
-- allowed transitions: {{allowed_transitions}}
-- completion state: {{completion_state}}
-- blocked/escalated state: {{blocked_state}}
+- initial/active state: {{initial_state}}
+- allowed active transitions: {{allowed_transitions}}
+- interrupted states: {{interrupted_states}}
+- resume preconditions: {{resume_preconditions}}
+- terminal completion/failure/block states: {{terminal_states}}
 - retry/re-entry rule: {{reentry_rule}}
 - cycle/iteration limit or terminating predicate: {{termination_rule}}
 
-## 11. Stop Conditions
+## 13. Multi-Agent Admission and Concurrency
+
+- multi-agent benefit/justification: {{multi_agent_reason_or_na}}
+- orchestration owner: {{orchestration_owner}}
+- mutable resources/overlap: {{mutable_resource_overlap}}
+- conflict-control strategy: {{concurrency_strategy}}
+- integration/merge owner: {{integration_owner}}
+
+## 14. Governance and Containment
+
+- risk class / blast radius: {{blast_radius}}
+- containment boundary: {{containment_boundary}}
+- downstream authorization: {{downstream_authorization}}
+- approval granularity: {{approval_granularity}}
+- budget/rate/time limits: {{limits}}
+- rollback/compensation: {{rollback_compensation}}
+- audit evidence: {{audit_evidence}}
+
+## 15. Stop Conditions
 
 - {{stop_condition_1}}
 - {{stop_condition_2}}
 - {{stop_condition_3}}
 
-## 12. Prompt or Agent File
+## 16. Prompt or Host Agent File
+
+Use `references/host-adapters.md` to replace semantic capabilities with current host-valid fields/tool names. For restricted roles, do not omit tools merely to imply read-only behavior.
 
 ```markdown
 ---
 description: {{description}}
 name: {{display_name}}
-tools: [{{tools}}]
+tools: [{{explicit_host_tools}}]
 ---
 
 # {{display_name}}
@@ -117,17 +157,20 @@ tools: [{{tools}}]
 {{stop_conditions}}
 ```
 
-## 13. Validation Scenarios
+## 17. Validation Scenarios
 
-| Scenario | Group | Expected behavior | Acceptance criteria | Evidence status |
-|---|---|---|---|---|
-| {{scenario_name}} | {{scenario_group}} | {{expected_behavior}} | {{acceptance_criteria}} | planned |
+- evaluation contract: `agent-eval-contract/v2`
+- frozen scenario/evaluator identity: {{evaluator_identity}}
 
-## 14. Risks and Trade-offs
+| Scenario | Group | Expected outcome | Trace invariants | Trials | Evidence status |
+|---|---|---|---|---:|---|
+| {{scenario_name}} | {{scenario_group}} | {{expected_behavior}} | {{trace_invariants}} | {{trial_count}} | planned |
+
+## 18. Risks and Trade-offs
 
 - {{risk_or_tradeoff_1}}
 - {{risk_or_tradeoff_2}}
 
-## 15. Open Questions
+## 19. Open Questions
 
 - {{open_question_1}}
