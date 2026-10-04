@@ -32,8 +32,8 @@ def main() -> int:
         if key not in data:
             errors.append(f'missing key: {key}')
 
-    if data.get('contract_version') not in {1, 2}:
-        errors.append('contract_version must be 1 or 2')
+    if data.get('contract_version') not in {1, 2, 3}:
+        errors.append('contract_version must be 1, 2, or 3')
     ceiling = data.get('ceiling')
     if ceiling not in ALLOWED_CEILINGS:
         errors.append(f'unsupported ceiling: {ceiling!r}')
@@ -115,8 +115,35 @@ def main() -> int:
                         errors.append(f'self_hosting.{key} must be true when enabled')
                 if self_hosting.get('controller_identity') == self_hosting.get('candidate_identity') and self_hosting.get('controller_identity'):
                     errors.append('self_hosting controller_identity must differ from candidate_identity')
-    elif data.get('contract_version') == 2 and args.strict:
-        warnings.append('strict validation: contract_version 2 has no self_hosting section; declare enabled=false when not applicable')
+    elif data.get('contract_version') in {2, 3} and args.strict:
+        warnings.append(f"strict validation: contract_version {data.get('contract_version')} has no self_hosting section; declare enabled=false when not applicable")
+
+    evidence_profiles = data.get('evidence_profiles')
+    profile_specs = {
+        'environment_provenance': 'environment',
+        'stochastic_evaluation': 'stochastic',
+        'execution_lineage': 'lineage',
+    }
+    if evidence_profiles is not None:
+        if not isinstance(evidence_profiles, dict):
+            errors.append('evidence_profiles must be an object when present')
+        else:
+            for key, kind in profile_specs.items():
+                entry = evidence_profiles.get(key)
+                if not isinstance(entry, dict):
+                    errors.append(f'evidence_profiles.{key} must be an object')
+                    continue
+                policy = entry.get('policy')
+                if policy not in {'not-applicable', 'when-material', 'required'}:
+                    errors.append(f'evidence_profiles.{key}.policy must be not-applicable, when-material, or required')
+                validator = entry.get('validator')
+                if policy != 'not-applicable':
+                    if not isinstance(validator, str) or not validator.strip():
+                        errors.append(f'evidence_profiles.{key}.validator must be non-empty unless policy is not-applicable')
+                    elif 'validate_execution_evidence.py' not in validator or f'--kind {kind}' not in validator:
+                        errors.append(f'evidence_profiles.{key}.validator must use validate_execution_evidence.py --kind {kind}')
+    elif data.get('contract_version') == 3:
+        errors.append('contract_version 3 requires evidence_profiles')
 
     source_integrity = data.get('source_integrity')
     source_keys = [

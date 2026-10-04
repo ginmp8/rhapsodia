@@ -14,7 +14,7 @@ For material adaptive workflows keep, when available:
 4. `execution_trace_identity` - one observed execution of that plan;
 5. `evaluator_identity` - independent acceptance criteria/evaluator.
 
-Never collapse planner, plan, trace, and evaluator identity into one generic run id.
+Never collapse planner, plan, trace, and evaluator identity into one generic run id. When dependency identity matters across multiple stages, persist the graph using `references/execution-lineage.md`; a text trace alone does not prove which upstream bytes/configuration a canonical output depends on.
 
 ## Variability classes
 
@@ -34,12 +34,22 @@ Controls: stable inputs, isolated/fresh contexts where required, fixed evaluator
 
 Symptoms: host capability differences, concurrency scheduling, mutable repositories, changing web/API state.
 
-Controls: capability profile, source snapshot, environment/version identity, explicit degradation, state reconciliation before retries.
+Controls: capability profile, source snapshot, validated environment/version identity from `references/environment-provenance.md` when material, explicit degradation, state reconciliation before retries.
+
+## Persistent execution lineage
+
+For a material multi-stage workflow, use `assets/schemas/execution-lineage.schema.json` and validate the captured graph with:
+
+```text
+<PYTHON> scripts/validate_execution_evidence.py --kind lineage --input <LINEAGE.json>
+```
+
+Each node should bind its upstream node ids, execution identity, material input digests, output digest, replayability declaration, and invalidation key. Canonical outputs must resolve to node outputs. A changed upstream digest or invalidation key invalidates dependent evidence until recomputed or explicitly re-baselined.
 
 ## Comparison rules
 
 - To evaluate planner quality, freeze task/source/evaluator inputs and compare plan identities.
-- To evaluate execution repeatability, freeze one accepted plan and compare multiple traces.
+- To evaluate execution repeatability, freeze one accepted plan and compare multiple traces/lineages under materially comparable environment identities.
 - If both plan and execution change, do not attribute a delta to either layer without additional evidence.
 - A host-specific runtime may improve throughput without changing semantic plan quality; report runtime evidence separately.
 

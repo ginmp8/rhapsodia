@@ -75,6 +75,9 @@ def main() -> int:
         'package_builder': bool(package_files),
         'evidence_layer_separation': any_match(corpus, ['structural evidence', 'behavioral evidence', 'runtime evidence', 'perceptual evidence']),
         'version_or_migration_contract': any_match(corpus, ['schema_version', 'schema version', 'migration', 'compatibility']),
+        'environment_provenance_profile': (root / 'references' / 'environment-provenance.md').is_file() and (root / 'assets' / 'schemas' / 'execution-environment.schema.json').is_file(),
+        'stochastic_evaluation_profile': (root / 'references' / 'stochastic-evaluation.md').is_file() and (root / 'assets' / 'schemas' / 'stochastic-evaluation.schema.json').is_file(),
+        'execution_lineage_profile': (root / 'references' / 'execution-lineage.md').is_file() and (root / 'assets' / 'schemas' / 'execution-lineage.schema.json').is_file(),
         'assets_present': has_assets,
     }
 
@@ -112,6 +115,12 @@ def main() -> int:
         gaps.append('Preserve last-good outputs and explicit recovery locations when commit or rollback fails.')
     if signals['package_builder'] and not signals['durable_receipts']:
         gaps.append('Emit complete durable stage-aware receipts tied to the exact committed bytes.')
+    if r4 and not signals['environment_provenance_profile']:
+        gaps.append('Add a validated execution environment/provenance profile when runtime identity can affect comparison evidence.')
+    if r4 and not signals['stochastic_evaluation_profile']:
+        gaps.append('Add a validated repeated-trial stochastic evaluation profile for reliability/improvement claims.')
+    if r4 and not signals['execution_lineage_profile']:
+        gaps.append('Add a validated execution-lineage profile for material multi-stage replay/invalidation claims.')
 
     broken_links = []
     for md in [p for p in files if not p.is_symlink() and p.suffix.lower() == '.md']:
@@ -135,6 +144,12 @@ def main() -> int:
         'schema_or_contract_files': schema_files,
         'package_files': package_files,
         'broken_local_links': broken_links,
+        'advanced_execution_evidence': {
+            'environment_provenance': signals['environment_provenance_profile'],
+            'stochastic_evaluation': signals['stochastic_evaluation_profile'],
+            'execution_lineage': signals['execution_lineage_profile'],
+            'note': 'These profiles refine R4 evidence quality; they do not create a new structural maturity level.'
+        },
         'recommended_next_controls': gaps,
         'limitations': [
             'This audit does not execute target behavior or prove output quality.',

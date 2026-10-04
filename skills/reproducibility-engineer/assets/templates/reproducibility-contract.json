@@ -1,5 +1,5 @@
 {
-  "contract_version": 2,
+  "contract_version": 3,
   "target": {
     "name": "",
     "path": "",
@@ -44,6 +44,20 @@
     "immutable_pinned_vcs_reads_when_supported": true,
     "reject_source_alias_escape": true,
     "rebaseline_if_source_identity_changes": true
+  },
+  "evidence_profiles": {
+    "environment_provenance": {
+      "policy": "when-material",
+      "validator": "scripts/validate_execution_evidence.py --kind environment"
+    },
+    "stochastic_evaluation": {
+      "policy": "when-material",
+      "validator": "scripts/validate_execution_evidence.py --kind stochastic"
+    },
+    "execution_lineage": {
+      "policy": "when-material",
+      "validator": "scripts/validate_execution_evidence.py --kind lineage"
+    }
   },
   "self_hosting": {
     "enabled": false,

@@ -39,6 +39,7 @@ Branch on capabilities first, product name second. Record at least:
 5. **network/research** — is current external documentation reachable when freshness matters?
 6. **subagents/evaluators** — can independent comparison arms run, or must behavioral claims be limited?
 7. **artifact-delivery** — can the host return or persist a ZIP/report artifact?
+8. **environment-identity** — can the host expose stable model/tool/runtime/dependency identities needed by the current comparison?
 
 Do not claim a gate passed when the capability required to run it is absent.
 
@@ -72,6 +73,7 @@ If the host can read files but cannot execute Python:
 - `audit-only` and `plan-only` may continue with manual structural inspection;
 - `apply` may continue only for changes whose safety can be established without the missing gate;
 - script-based validation, frozen-evaluator verification, and package validation must be reported `not-run`;
+- evidence-profile validation that requires Python is `not-run`; if material environment identity is unavailable, paired runtime-sensitive claims are `not-proven`;
 - do not label the result `reproducibility-hardened` unless all applicable hard gates actually ran and passed.
 
 ## Official sources to re-check when host behavior matters

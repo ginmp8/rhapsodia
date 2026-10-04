@@ -104,6 +104,15 @@ Check:
 
 Do not pretend the validator can prove a judgment is correct.
 
+### Agent execution evidence
+Check environment/provenance, stochastic trial evidence, and multi-stage lineage only when those surfaces are material. Use `scripts/validate_execution_evidence.py` rather than free-form self-attestation.
+
+- environment: required identities, input/output digests, and material drift across paired arms;
+- stochastic evaluation: trial uniqueness/outcomes, declared stop rule, derived uncertainty/`pass^k`, judge identity/calibration when used, and independent replication for strong claims;
+- lineage: unique nodes, resolvable dependencies, acyclic graph, node/output digests, canonical-output agreement, and explicit invalidation/replay metadata.
+
+A valid profile proves contract conformance, not that an external model/API is deterministic or that the candidate is behaviorally superior.
+
 ### Tool/action workflows
 Check:
 - preconditions;

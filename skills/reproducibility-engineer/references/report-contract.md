@@ -24,6 +24,7 @@ Use this structure for substantive audit/apply/validation runs.
 - structural maturity before;
 - evaluator freeze status;
 - source snapshot/provenance identity when external evidence is material;
+- execution-environment identity/hermeticity and unresolved material fields when runtime comparability is material;
 - whether pinned VCS evidence was read from immutable revision objects or only a mutable working tree;
 - missing evidence.
 
@@ -52,16 +53,16 @@ Separate:
 - runtime evidence;
 - perceptual/editorial evidence.
 
-Include exact commands, pass/fail/not-run, paired comparison metrics, and significance output only when executed.
+Include exact commands, pass/fail/not-run, paired comparison metrics, and significance output only when executed. For stochastic claims include trial count, outcome counts, interval, requested `pass^k`, judge/calibration identity when used, and replication status. For multi-stage lineage claims include plan/lineage identities, canonical outputs, and invalidation/replay results.
 
 ### 7. Final gates
-State each applicable hard gate and its evidence. Include source-snapshot verification, output-alias preflight, last-good preservation/recovery, and receipt durability when those controls apply. Do not compress missing evidence into a pass.
+State each applicable hard gate and its evidence. Include source-snapshot verification, environment comparability, stochastic-profile/replication requirements, lineage validation, output-alias preflight, last-good preservation/recovery, and receipt durability when those controls apply. Do not compress missing evidence into a pass.
 
 ### 8. Before/after
 - structural maturity before/after, labeled structural;
 - measured behavioral delta when available;
 - token/time/rework trade-offs when measured;
-- remaining nondeterminism.
+- remaining nondeterminism, including environment drift or stochastic uncertainty that could not be removed.
 
 ### 9. Delivery
 - frozen candidate identity;

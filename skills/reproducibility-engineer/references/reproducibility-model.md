@@ -78,7 +78,7 @@ Map each material decision to one class:
 | schema/type | invented fields, malformed structure, inconsistent enums | schema/typed IR |
 | constrained heuristic | inconsistent ordering, defaults, tie choices | ordered rules/defaults/tie-breakers |
 | model judgment | interpretation, editorial choices, visual taste | evidence + rubric + independent review |
-| external nondeterminism | changing web data, tool state, versions, clocks | pin/snapshot/version/record identity |
+| external nondeterminism | changing web data, tool/model/runtime state, versions, clocks | pin/snapshot/version/record identity; validated environment profile when comparison depends on runtime identity |
 
 ## Control placement
 
@@ -110,7 +110,7 @@ R1 plus scripts/schemas/validators for objective behavior and machine-readable d
 R2 plus frozen evaluators, scenario suites, regression/golden cases, repair rules, and before/after comparison.
 
 ### R4 - Evidence reproducible
-R3 plus final freeze, atomic delivery/package integrity, artifact/source hashes where useful, environment/version identity, and truthful separation of structural, behavioral, runtime, and perceptual evidence.
+R3 plus final freeze, atomic delivery/package integrity, artifact/source hashes where useful, environment/version identity, and truthful separation of structural, behavioral, runtime, and perceptual evidence. Apply the environment/provenance, stochastic-evaluation, and execution-lineage profiles when those variance surfaces are material; R4 does not require irrelevant machinery.
 
 A subjective skill can reach R4 process maturity without producing byte-identical outputs.
 
