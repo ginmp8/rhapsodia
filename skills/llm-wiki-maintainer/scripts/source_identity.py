@@ -13,6 +13,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _wiki_common import (  # noqa: E402
     STATE_VERSION,
+    DEFAULT_SCHEMA_VERSION,
     atomic_write_json,
     ensure_within,
     load_json,
@@ -34,6 +35,19 @@ def _empty_manifest() -> dict:
 
 def _receipt_path(workspace: Path, explicit: str | None, operation_id: str) -> Path:
     return Path(explicit).resolve() if explicit else workspace / ".llm-wiki" / "receipts" / "ingest" / f"{operation_id.replace(':', '-')}.json"
+
+
+
+def _active_schema_version(workspace: Path) -> str:
+    schema_path = workspace / "WIKI_SCHEMA.md"
+    if schema_path.is_file():
+        for raw in schema_path.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if line.startswith("schema_version:"):
+                value = line.split(":", 1)[1].strip().strip('"\'')
+                if value:
+                    return value
+    return DEFAULT_SCHEMA_VERSION
 
 
 def identify(path: Path) -> dict:
@@ -62,7 +76,8 @@ def capture(args: argparse.Namespace) -> int:
     source_id = info["source_id"]
     rel = source.relative_to(workspace).as_posix()
     old = manifest.get("paths", {}).get(rel)
-    operation_id = stable_id("ingest", {"schema": args.schema_version, "source_id": source_id, "source_path": rel})
+    schema_version = args.schema_version or _active_schema_version(workspace)
+    operation_id = stable_id("ingest", {"schema": schema_version, "source_id": source_id, "source_path": rel})
     receipt_path = _receipt_path(workspace, args.json, operation_id).resolve(strict=False)
     raw_boundary = (workspace / "raw").resolve(strict=False)
     wiki_boundary = (workspace / "wiki").resolve(strict=False)
@@ -81,7 +96,7 @@ def capture(args: argparse.Namespace) -> int:
             "status": "blocked",
             "operation_id": operation_id,
             "classification": "source-modified",
-            "schema_version": args.schema_version,
+            "schema_version": schema_version,
             "source_path": rel,
             "previous_source_id": old.get("source_id"),
             **info,
@@ -149,7 +164,7 @@ def capture(args: argparse.Namespace) -> int:
         "status": "pass",
         "operation_id": operation_id,
         "classification": classification,
-        "schema_version": args.schema_version,
+        "schema_version": schema_version,
         "source_path": rel,
         "source_aliases": aliases,
         "snapshot_path": snapshot.relative_to(workspace).as_posix(),
@@ -231,7 +246,7 @@ def main() -> int:
     p.add_argument("--workspace", required=True)
     p.add_argument("--source", required=True)
     p.add_argument("--source-root")
-    p.add_argument("--schema-version", default="llm-wiki/2")
+    p.add_argument("--schema-version")
     p.add_argument("--accept-external-replacement", action="store_true")
     p.add_argument("--json")
     p = sub.add_parser("verify")

@@ -190,7 +190,7 @@ def commit_transaction(workspace: Path, staging: Path, plan: dict[str, Any], rec
     txn_id = _txn_identity(plan, changes)
     page_provenance = []
     for c in sorted(changes, key=lambda x: x["path"]):
-        if c["action"] != "write" or not c["path"].startswith(("wiki/sources/", "wiki/entities/", "wiki/concepts/", "wiki/syntheses/")) or not c["path"].endswith(".md"):
+        if c["action"] != "write" or not c["path"].startswith(("wiki/sources/", "wiki/entities/", "wiki/concepts/", "wiki/syntheses/", "wiki/claims/")) or not c["path"].endswith(".md"):
             continue
         try:
             meta, _ = parse_frontmatter(c["staged"].read_text(encoding="utf-8"))

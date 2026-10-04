@@ -1,17 +1,187 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:llm-wiki-maintainer:lint-receipt:1",
+  "$id": "urn:llm-wiki-maintainer:lint-receipt:2",
   "title": "LLM Wiki lint/validation receipt",
   "type": "object",
-  "required": ["receipt_version", "stage", "status", "structural_evidence", "semantic_editorial_judgment", "metrics", "limitations"],
+  "required": [
+    "receipt_version",
+    "stage",
+    "status",
+    "structural_evidence",
+    "semantic_editorial_judgment",
+    "metrics",
+    "limitations"
+  ],
   "properties": {
-    "receipt_version": {"const": 1},
-    "stage": {"const": "lint-validation"},
-    "status": {"enum": ["pass", "warn", "fail"]},
-    "structural_evidence": {"type": "array"},
-    "semantic_editorial_judgment": {"type": "array"},
-    "metrics": {"type": "object"},
-    "limitations": {"type": "array", "items": {"type": "string"}}
+    "receipt_version": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "stage": {
+      "const": "lint-validation"
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "warn",
+        "fail"
+      ]
+    },
+    "structural_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "layer",
+          "code",
+          "rule_id",
+          "status",
+          "severity",
+          "subject",
+          "focus",
+          "repairability",
+          "evidence"
+        ],
+        "properties": {
+          "layer": {
+            "enum": [
+              "structural",
+              "semantic"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "warn",
+              "fail",
+              "needs-review"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "warning",
+              "error",
+              "review"
+            ]
+          },
+          "subject": {
+            "type": "string"
+          },
+          "focus": {
+            "type": "string"
+          },
+          "repairability": {
+            "enum": [
+              "none",
+              "mechanical-candidate",
+              "semantic-review"
+            ]
+          },
+          "evidence": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "semantic_editorial_judgment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "layer",
+          "code",
+          "rule_id",
+          "status",
+          "severity",
+          "subject",
+          "focus",
+          "repairability",
+          "evidence"
+        ],
+        "properties": {
+          "layer": {
+            "enum": [
+              "structural",
+              "semantic"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "warn",
+              "fail",
+              "needs-review"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "warning",
+              "error",
+              "review"
+            ]
+          },
+          "subject": {
+            "type": "string"
+          },
+          "focus": {
+            "type": "string"
+          },
+          "repairability": {
+            "enum": [
+              "none",
+              "mechanical-candidate",
+              "semantic-review"
+            ]
+          },
+          "evidence": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "pages_checked",
+        "hard_errors",
+        "warnings",
+        "semantic_review_candidates",
+        "provenance_coverage",
+        "reviewed_source_coverage",
+        "claim_pages",
+        "lineage_relations",
+        "index_coverage"
+      ],
+      "additionalProperties": true
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   },
   "additionalProperties": true
 }

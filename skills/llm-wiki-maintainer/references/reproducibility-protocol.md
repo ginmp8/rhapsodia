@@ -11,7 +11,7 @@ Mechanically reproducible:
 - exact source bytes and SHA-256 identity;
 - duplicate detection and source aliases;
 - immutable captured source snapshots;
-- canonical page IDs once a semantic canonical key is chosen;
+- canonical page IDs once a semantic canonical key is chosen, including material `claim` pages in `llm-wiki/3`;
 - frontmatter ordering and normalization for the default schema;
 - expected-before hashes, path boundaries, per-file atomic replacement, rollback, and receipts;
 - structural provenance/link/schema checks;
@@ -49,6 +49,10 @@ For a wiki using the reproducibility controls, reserve this derived operational 
 `.llm-wiki/` is derived operational metadata/evidence. It is not source truth and must never be used as a substitute for semantic source reading. Captured `source-snapshots/` are exact source-evidence bytes and become immutable after capture.
 
 Do not put generated wiki prose into `source-snapshots/`.
+
+## Schema compatibility identity
+
+The default for newly initialized workspaces is `llm-wiki/3`. Existing `llm-wiki/2` workspaces remain governed by their recorded schema until an explicit `requires-migration` schema change. Historical receipts keep their original schema identity; never rewrite them to v3.
 
 ## Source identity and ingest manifest
 
@@ -255,7 +259,7 @@ A structural pass does not prove factual correctness or editorial quality.
 For new wikis using the default protocol, set:
 
 ```text
-schema_version: llm-wiki/2
+schema_version: llm-wiki/3
 ```
 
 Do not force that version onto an existing coherent wiki merely because this skill was upgraded. Existing wikis retain their schema until migration is explicitly authorized or required for a requested operation.

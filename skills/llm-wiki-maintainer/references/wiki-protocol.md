@@ -17,6 +17,7 @@ wiki/
   entities/
   concepts/
   syntheses/
+  claims/               # optional material factual claims in llm-wiki/3
 .llm-wiki/             # derived operational state; created only when needed
 ```
 
@@ -28,7 +29,7 @@ The root may differ when an existing wiki already has coherent conventions. Pres
 
 For a new wiki, define at least:
 
-- `schema_version: llm-wiki/2`;
+- `schema_version: llm-wiki/3`;
 - purpose and domain of the wiki;
 - raw-source boundary and read-only rule;
 - wiki writable boundary;
@@ -47,7 +48,7 @@ Do not duplicate the full skill inside the schema. Preserve an existing coherent
 
 ## Canonical frontmatter for the default schema
 
-For new default-schema pages, use deterministic frontmatter ordering from `scripts/page_identity.py`. Core fields are:
+For new `llm-wiki/3` default-schema pages, use deterministic frontmatter ordering from `scripts/page_identity.py`. Core fields are:
 
 ```text
 wiki_schema_version
@@ -61,6 +62,23 @@ reviewed_source_ids
 conflict_ids
 status
 supersedes_page_ids
+value_state
+valid_from
+valid_to
+point_in_time
+recorded_at
+derived_from_source_ids
+revision_of_source_ids
+quoted_from_source_ids
+primary_source_ids
+alternate_source_ids
+subject_page_ids
+depends_on_claim_ids
+supersedes_claim_ids
+alias_page_ids
+possible_same_entity_page_ids
+merged_into_page_ids
+split_from_page_ids
 ```
 
 List fields are sorted and deduplicated mechanically. The semantic `canonical_key`, title, source relevance, conflict meaning, and prose remain judgment-bearing.
@@ -105,6 +123,8 @@ Include:
 
 Update an existing entity page when semantic identity is the same. Do not create spelling variants as separate entities without a real identity distinction.
 
+For `llm-wiki/3`, explicit reconciliation may use `alias_page_ids`, `possible_same_entity_page_ids`, `merged_into_page_ids`, and `split_from_page_ids`. A possible-same relation is a review candidate, never an automatic merge. Preserve historical IDs and provenance across explicit merge/split operations.
+
 ### Concept page
 
 Use for durable themes, methods, ideas, mechanisms, patterns, or recurring topics that span sources.
@@ -138,6 +158,24 @@ Include:
 
 Do not persist routine chat answers, transient calculations, or restatements that add no durable knowledge.
 
+
+### Claim page (`llm-wiki/3`)
+
+Store under `wiki/claims/` only for material factual assertions that benefit from first-class provenance, temporal validity, conflict/supersession, or dependency identity. Do not atomize every sentence.
+
+Include when applicable:
+
+- stable `page_id` from a semantic canonical claim key;
+- concise statement/title and status;
+- `source_ids` and `reviewed_source_ids`;
+- subject page IDs;
+- claim dependency/supersession IDs;
+- `value_state` (`known`, `unknown`, or `none`);
+- valid-time fields (`valid_from`/`valid_to` or `point_in_time`) separately from `recorded_at`;
+- conflict IDs and explanatory body text.
+
+Source lineage belongs primarily on source-summary pages. Claim dependencies identify revalidation scope; they never mechanically decide truth. See `knowledge-integrity-and-claims.md`.
+
 ## Conflict representation
 
 Do not flatten conflicting evidence into one smooth paragraph.
@@ -150,6 +188,11 @@ A maintained conflict should preserve:
 - status: `unresolved`, `superseded`, or `scope-different` only after evidence review;
 - rationale for supersession when used;
 - a stable conflict identifier once the semantic conflict key is fixed.
+
+
+## Schema v2 to v3 compatibility
+
+`llm-wiki/3` is the default for newly initialized wikis. Existing coherent `llm-wiki/2` workspaces remain valid under their active schema and must not be silently reinterpreted. Adding first-class claim pages or v3 lineage/temporal fields to an existing v2 wiki is `requires-migration`; use the schema-evolution workflow with rollback and validation.
 
 ## `wiki/index.md`
 
