@@ -1,73 +1,68 @@
 ---
 name: migration-conflict-analyzer
-description: Use when asked to analyze Entity Framework Core (.NET) migration files or migration changes in pull requests for schema conflicts, ordering hazards, data-loss or destructive changes, duplicate operations, runtime migration deployment hazards including concurrent Database.Migrate or Database.MigrateAsync execution, model snapshot divergence, raw SQL risks, and expand/contract compatibility issues. Use for uploaded migration .cs files, repository paths, Git diffs, pull requests, or pasted migration code, with reproducible findings tied to exact input identity. Do not use for generic EF Core tutorials, general database design, or ordinary application code review unless migration-specific conflict or deployment-risk analysis is requested.
+description: Use when asked to analyze Entity Framework Core (.NET) migration .cs files, repository paths, Git diffs, pull requests or PRs, or pasted migration code for schema conflicts, ordering hazards, data-loss or destructive changes, duplicate operations or migration lineage conflicts, ModelSnapshot divergence, raw SQL or reviewed SQL/deployment SQL drift, provider-specific SQL Server/PostgreSQL/SQLite risks, EF Core version-dependent runtime migration/deployment hazards including concurrent Database.Migrate or Database.MigrateAsync, and expand/contract compatibility. Do not use for generic EF Core tutorials, general database design, or ordinary application code review unless migration-specific conflict or deployment-risk analysis is requested.
 ---
 
 # Migration Conflict Analyzer
 
 ## Purpose
 
-Analyze Entity Framework Core migration files, diffs, and pull-request migration changes for schema conflicts, ordering hazards, data-loss signals, snapshot divergence, raw-SQL risks, and runtime migration deployment hazards.
+Analyze EF Core migration changes as a version-aware, provider-aware, evidence-producing `research-analytic` workflow. Preserve a portable static core that works without the .NET SDK; use optional semantic evidence or provider SQL only when available.
 
-Use the installed analyzer as an evidence-producing static analysis tool. Prefer exact migration bytes, immutable Git revision identity, generated SQL when supplied, and explicit deployment evidence over assumptions.
-
-Do not use this skill for generic EF Core tutorials, normal database design, or ordinary application-code review unless migration conflict/risk analysis is the requested task.
+Do not infer production safety from static analysis. Separate observed/derived facts from bounded heuristic judgment and keep `confidence`, `evidence_status`, and `uncertainty` explicit.
 
 ## Reproducibility contract
 
-This skill is a `research-analytic` workflow with deterministic mechanics and bounded heuristic judgment.
-
 Mechanically reproducible surfaces:
 
-- input file SHA-256 identities;
-- resolved Git base/head/merge-base identities in PR mode;
-- ModelSnapshot and generated-SQL identities when supplied/discovered;
-- canonical migration ordering and operation extraction;
-- versioned heuristic-set identity and hash;
-- stable rule IDs, finding IDs, severity, gate, and confidence fields;
-- machine-readable report and analysis receipt;
+- exact file, Git revision, SQL artifact, runtime-code, semantic-evidence, provider-profile, and heuristic hashes;
+- canonical `Up`/`Down` operation extraction and ordering;
+- versioned heuristic and provider-profile identities;
+- stable finding IDs, severity, gate, confidence, evidence status, and hazard type;
+- canonical JSON report plus `analysis_receipt`;
 - same-input rerun identity for supported static inputs.
 
-Judgment that remains bounded rather than deterministic:
+Bounded judgment remains for rename intent, data value compatibility, provider/runtime effects not present in evidence, rolling-deployment compatibility, custom operations, and operational lock duration.
 
-- whether drop/add represents an intended rename;
-- whether destructive operations actually lose required data;
-- provider-specific SQL/locking/transaction behavior;
-- whether raw SQL is semantically safe beyond recognized patterns;
-- whether rolling deployment topology creates an actual runtime failure.
-
-Never convert those unknowns into certainty. Findings must preserve `confidence`, `evidence_status`, and `uncertainty`.
-
-The frozen heuristic contract is `references/heuristic-set.json`. The current contract version is `2.0.0`. Do not silently reinterpret a rule ID, severity, or gate. Incompatible heuristic changes require a version change plus regression re-baseline.
+The frozen rule contract is `references/heuristic-set.json` version `3.0.0`. Provider facts used for classification are in `references/provider-profiles.json` version `1.0.0`. Do not silently reinterpret rule IDs, severities, gates, or provider semantics; incompatible changes require a version bump and regression re-baseline.
 
 ## Modes
 
 Choose exactly one primary mode:
 
-1. **file/directory mode** — one or more migration files/directories are available.
-2. **PR/Git mode** — a repository plus base ref/commit is available.
-3. **manual review mode** — only pasted snippets or incomplete evidence are available; apply the same taxonomy manually and label script gates `not-run`.
+1. **file/directory mode** — analyze migration files/directories and optional support artifacts.
+2. **PR/Git mode** — analyze a repository against an explicit base revision; preferred for branch/lineage questions.
+3. **manual review mode** — only pasted/incomplete evidence exists; apply the same taxonomy manually and mark executable gates `not-run`.
 
-PR/Git mode is preferred when the question is about branch conflicts because it binds analysis to exact base/head identities and can compare changed migration identities with base history.
+## Context and optional evidence
 
-## Deterministic analyzer
-
-### File/directory mode
-
-```bash
-python3 -S scripts/migration_conflict_analyzer.py <paths> \
-  --format json \
-  --output migration-conflict-report.json \
-  --receipt migration-conflict-analysis-receipt.json
-```
-
-Include supporting snapshots found under directory inputs when relevant:
+Supply context only when known; unknown values must stay unknown.
 
 ```bash
 python3 -S scripts/migration_conflict_analyzer.py <path> \
-  --include-support-files \
+  --ef-core-version 10.0.0 \
+  --provider postgresql \
+  --dbcontext AppDbContext \
+  --migrations-assembly App.Infrastructure \
+  --deployment-method sql-script \
+  --deployment-instances multiple \
   --format json
 ```
+
+Optional evidence:
+
+```bash
+python3 -S scripts/migration_conflict_analyzer.py <path> \
+  --generated-sql generated.sql \
+  --reviewed-sql reviewed.sql \
+  --deployment-sql deployment.sql \
+  --rollback-sql rollback.sql \
+  --runtime-code Program.cs \
+  --semantic-evidence semantic-evidence.json \
+  --format json
+```
+
+`semantic-evidence.json` follows `schemas/semantic-evidence.schema.json`. Treat it as supplied evidence, not as proof that this analyzer executed EF tooling.
 
 ### PR/Git mode
 
@@ -79,165 +74,98 @@ python3 -S scripts/migration_conflict_analyzer.py . \
   --receipt migration-conflict-analysis-receipt.json
 ```
 
-The report must record:
-
-- requested Git base;
-- resolved base SHA;
-- HEAD SHA;
-- merge-base SHA;
-- changed-file identities;
-- changed migration hashes;
-- relevant snapshot identities;
-- base migration-history identities used for collision checks.
-
-Do not call working-tree bytes immutable Git evidence. File hashes are the identity of analyzed working bytes; Git SHAs identify repository revisions.
-
-### Optional evidence
-
-Bind generated SQL without claiming it was executed:
-
-```bash
-python3 -S scripts/migration_conflict_analyzer.py <path> \
-  --generated-sql migration.sql \
-  --format json
-```
-
-Supply runtime migration code only when runtime deployment analysis is requested:
-
-```bash
-python3 -S scripts/migration_conflict_analyzer.py <path> \
-  --runtime-code Program.cs \
-  --deployment-instances multiple \
-  --format json
-```
-
-A runtime concurrency finding requires explicit startup-migration code evidence plus supplied `multiple` deployment-instance evidence. Without that evidence, do not claim a concurrent runtime failure.
+Resolve and record requested base, base SHA, HEAD SHA, merge-base SHA, changed-file identities, migration hashes, snapshot identities, and base/head migration-history identities. Working-tree hashes identify analyzed bytes; Git SHAs identify repository revisions.
 
 ## Analysis order
 
-1. Resolve input mode and exact scope.
-2. Capture migration/support/runtime/generated-SQL file hashes.
+1. Resolve one mode, scope, EF version, provider, DbContext/migration assembly, and deployment context.
+2. Hash migrations, support files, SQL artifacts, runtime code, semantic evidence, heuristic set, and provider profiles.
 3. In Git mode, resolve immutable base/head/merge-base identities before interpreting conflicts.
-4. Parse main migration `Up`/`Down` operations into canonical operation records.
-5. Sort `Up` operations by migration timestamp/file order, then source invocation order.
-6. Load `references/heuristic-set.json`; record version and SHA-256.
-7. Apply only the frozen rule taxonomy.
-8. Emit stable finding IDs from rule ID + canonical operation/evidence subjects.
-9. Separate observed/derived evidence from inferred intent.
-10. Emit gates, summary, explicit limitations, and `analysis_receipt`.
-11. If writing artifacts, use output-path preflight and preserve last-good outputs on commit failure.
+4. Parse `Up` and `Down` into canonical structured operations scoped by migration identity and context.
+5. Compare full migration IDs and lineage; a shared timestamp alone is only a review signal.
+6. Apply version-aware runtime classification and provider-specific rules only when the required context is supplied.
+7. Bind reviewed SQL and deployment SQL by exact bytes; drift is an artifact-integrity failure, not a semantic comparison.
+8. Compare destructive `Up` operations with `Down`; structural recreation does not prove data recovery.
+9. Emit stable findings, explicit limitations, gates, and `analysis_receipt`.
+10. For output files, preflight path aliases and preserve last-good artifacts on delivery failure.
 
-## Required risk coverage
+## Required coverage
 
-Load `references/conflict-heuristics.md` when explaining findings. Coverage includes:
+Load `references/conflict-heuristics.md` when interpreting findings. Coverage includes:
 
-- duplicate AddColumn/CreateTable/named-object operations;
-- conflicting index definitions;
-- conflicting foreign-key definitions;
-- DropColumn/DropTable destructive-operation review gates;
-- rename vs drop/add heuristic with explicit uncertainty;
-- ordering after drop/rename;
-- required-column additions without default/backfill evidence;
-- branch/base migration-history collisions;
-- ModelSnapshot divergence signals;
-- raw SQL mutation, narrow non-idempotency patterns, and transaction suppression;
-- runtime startup-migration hazards only from supplied evidence;
-- unknown/custom migrationBuilder operations as manual-review coverage gaps;
-- expand/backfill/contract sequence detection as a low-confidence pattern, never proof of safe rolling compatibility.
+- duplicate columns/tables/object names and full migration-ID collisions;
+- branch/base history and EF11-capability-gated snapshot lineage;
+- snapshot divergence signals;
+- structured data operations `InsertData`/`UpdateData`/`DeleteData`;
+- destructive schema operations and rollback data-restorability review;
+- drop/add rename heuristics with explicit uncertainty;
+- operation ordering after drop/rename;
+- required-column additions and `AlterColumn` nullability/length/precision/type changes;
+- indexes, foreign keys, primary/unique/check constraints, and existing-data validation;
+- raw SQL mutation, rerun sensitivity, and transaction suppression;
+- runtime-dependent migration code such as clock/random/environment/filesystem/network access;
+- `ActiveProvider` branching and provider-profile coverage;
+- EF-version-aware startup migration/concurrency/transaction hazards;
+- SQLite rebuild/idempotent-script constraints;
+- generated SQL operational locking signals for supported providers;
+- reviewed/generated/deployment SQL identity drift;
+- unknown/custom operations as explicit parser-coverage gaps.
+
+## Version/provider discipline
+
+Do not project one EF Core version onto another. Runtime migration locking, transaction behavior, pending-model checks, and lineage capabilities are version-sensitive.
+
+Do not project one provider onto another. `references/provider-profiles.json` contains bounded profiles for SQL Server, PostgreSQL/Npgsql, and SQLite. Unknown providers fall back to generic rules without invented provider behavior.
+
+EF11-specific `LastMigrationId` lineage logic is capability-gated: use it only when snapshot evidence actually contains that identity. Do not assume unreleased/preview behavior from a version string alone.
 
 ## Stable severity and gate rules
 
-Severity and gate come from `references/heuristic-set.json`, not free-form reviewer judgment.
+Severity and gate come only from `references/heuristic-set.json`:
 
-- `critical` / `block`: deterministic identity/schema conflicts that should not be merged/applied without resolution.
-- `high` / `review-required`: destructive operations or strong deployment/order hazards needing explicit remediation/evidence.
-- `medium` / `review-required`: plausible integration/upgrade hazards whose actual impact depends on data/provider/context.
-- `low` / `manual-review`: coverage gaps or review signals that are not themselves merge blockers.
-- `info` / `none`: non-blocking structural observations when present.
+- `critical` / `block`: deterministic identity/artifact/provider-capability conflicts requiring resolution.
+- `high` / `review-required`: destructive or strong compatibility/deployment hazards.
+- `medium` / `review-required`: plausible provider/data/runtime hazards needing context.
+- `low` / `manual-review`: review signals and coverage gaps.
+- `info` / `none`: structural observations.
 
-Do not promote severity because a finding sounds alarming. Do not downgrade it to make a candidate pass. Change the versioned heuristic contract only through an explicit re-baseline.
+Never promote/downgrade a rule ad hoc to obtain a preferred result.
 
-## Evidence and confidence
+## Evidence meanings
 
-Every finding must include:
+Every finding must contain stable ID/rule ID, severity, confidence, evidence status, gate, hazard type, exact subjects, reason, smallest safe remediation, validation step, and uncertainty.
 
-- stable `id`;
-- stable `rule_id`;
-- `severity`;
-- `confidence`;
-- `evidence_status`;
-- `gate`;
-- `hazard_type`;
-- exact files/operation IDs or supporting evidence identity;
-- why it matters;
-- smallest safe remediation;
-- validation step;
-- explicit `uncertainty`.
+- `observed`: directly present in supplied bytes/options.
+- `derived`: deterministic relation between observed identities/operations.
+- `inferred`: bounded heuristic interpretation.
+- `supplied`: explicit external/semantic/deployment evidence.
+- `blocked`: semantics cannot be established safely.
 
-Use these evidence meanings:
+## SQL and semantic evidence
 
-- `observed`: directly present in analyzed bytes/options;
-- `derived`: deterministic calculation from observed evidence;
-- `inferred`: bounded heuristic interpretation;
-- `supplied`: contextual evidence explicitly supplied by the user/tooling;
-- `blocked`: semantics cannot be established by the analyzer.
+Generated SQL is provider evidence only when supplied. Hash it and inspect only bounded patterns; do not claim it was executed.
 
-## ModelSnapshot handling
+Reviewed SQL and deployment SQL must match byte-for-byte when the workflow claims the reviewed artifact is the deployment artifact. `artifact.review-execution-drift` does not say which SQL is better; it says the approved/executed identities differ.
 
-ModelSnapshot is supporting evidence, not a replacement for migration operations.
+Rollback SQL is a first-class identity. A syntactically valid rollback does not prove lost data can be reconstructed.
 
-In Git mode:
-
-- record changed snapshot identity;
-- record base snapshot identity when available;
-- flag snapshot-only changes as divergence signals;
-- flag changed migrations without a changed snapshot only as a review signal, because some legitimate migrations may not alter snapshot state;
-- never claim future migration corruption from snapshot divergence alone.
-
-## Raw SQL handling
-
-Raw SQL is intentionally bounded:
-
-- hash/bind the migration file containing it;
-- identify schema/data mutation keywords;
-- identify only narrow rerun-sensitive patterns such as self-increment or unguarded insert;
-- detect `suppressTransaction: true` when present;
-- keep confidence and uncertainty explicit;
-- require generated/provider-specific SQL execution for runtime conclusions.
-
-Do not claim a raw SQL statement is safe merely because no rule matched.
-
-## Runtime deployment hazard taxonomy
-
-Runtime findings describe evidence-backed hazard classes, not predicted failures:
-
-- `runtime-deployment`: application startup applies migrations;
-- `runtime-concurrency`: startup migration plus explicit multi-instance deployment evidence;
-- `transaction`: raw SQL intentionally bypasses the migration transaction;
-- `data-migration`: rerun-sensitive data mutation pattern;
-- `ordering`: later migration operations depend on objects already dropped/renamed;
-- `destructive-schema`: contract step removes schema objects.
-
-Prefer migration bundles/scripts or a single deployment migration job when runtime startup application is a relevant risk, but tie the recommendation to the observed deployment evidence.
+Optional semantic evidence may report EF version/provider/context, pending-model changes, migration-lock status, or transaction-suppressed commands. Keep provenance and exact file hash in the report.
 
 ## Output contract
 
-The output contract is defined by `references/report-contract.md`; JSON is the canonical machine-readable form.
+Use `references/report-contract.md`. JSON conforming to `schemas/analysis-report.schema.json` is canonical.
 
+`no-static-blocker` means only that the frozen static/optional-evidence rules emitted no critical/high/medium finding for the supplied scope. It is never a production-safety guarantee.
 
-Use `references/report-contract.md` for prose and machine-readable output requirements. JSON output must conform to the semantic contract documented by `schemas/analysis-report.schema.json`.
+## Validation
 
-A `no-static-blocker` result means only that the frozen static heuristic set emitted no blocking/high/medium finding for the supplied evidence. It is not a production-safety guarantee.
-
-## Validation and frozen scenarios
-
-Package-owned validation:
+Package contract:
 
 ```bash
 python3 -S scripts/validate_contracts.py --skill-root .
 ```
 
-Executable regression suite:
+Frozen analyzer regressions:
 
 ```bash
 python3 -S evals/run_analyzer_regressions.py \
@@ -246,53 +174,22 @@ python3 -S evals/run_analyzer_regressions.py \
   --expected-heuristics evals/expected-heuristics.json
 ```
 
-The frozen regression contract covers:
+Do not modify frozen expected outcomes merely to make analyzer changes pass. Correct evaluator defects only through explicit invalidation/re-baseline before interpreting candidate results.
 
-- duplicate AddColumn;
-- DropColumn;
-- rename vs drop/add;
-- conflicting indexes;
-- conflicting FKs;
-- migration ordering;
-- branch divergence/base collision;
-- snapshot divergence;
-- raw SQL;
-- non-idempotent data migration;
-- concurrent deploy hazard;
-- harmless migration;
-- unknown operation;
-- same-diff rerun stability.
+## Release discipline
 
-Do not edit frozen expected outcomes to make analyzer changes pass. A legitimate evaluator correction requires a new baseline/freeze before accepting analyzer behavior.
+Before changing this package, preserve an immutable baseline and exact source snapshot for material research/evidence bytes. **Freeze evaluator inputs before candidate mutation** and record evaluator hashes. Compare **baseline vs candidate** with the same frozen evaluator where compatible. Validators should emit machine-readable diagnostics/JSON when objective mechanics fail. Keep structural evidence, behavioral evidence, runtime evidence, and semantic-review evidence separate.
 
-
-## Release and evaluator freeze discipline
-
-When this skill package itself is changed, preserve an immutable baseline/source snapshot of the exact prior bytes before mutation. Freeze evaluator inputs and expected outcomes before evaluating the candidate; do not edit frozen evaluator assets to make a candidate pass.
-
-Compare baseline vs candidate with the same frozen regression inputs before making a behavioral-improvement claim. After the final pass, freeze the candidate and do not make unvalidated edits; any post-pass change restarts the affected validation gates.
-
-Keep evidence layers separate:
-
-- **structural evidence**: package shape, schema/contract validity, hashes;
-- **behavioral evidence**: executed regression scenarios and stable rerun identities;
-- **runtime evidence**: actual provider/database/deployment execution;
-- **perceptual evidence**: not applicable to this analyzer.
-
-The target package does not need to own its own archive builder. Packaging may be performed by the host/meta-skill, but the package must represent the exact frozen candidate and include a package receipt that binds the delivered archive to that candidate.
-
-## PR workflow
-
-Load `references/pr-workflow.md` for collection and review sequencing. Base conflict claims require the base migration history to have been inspected from the resolved base SHA.
+Package only the exact frozen candidate after all applicable validators pass; tie the archive to a durable hash/receipt. A post-pass edit invalidates affected evidence and requires revalidation. The package builder may be owned by a host-neutral meta-workflow; this analyzer must not depend on a vendor-private packager.
 
 ## Stop conditions
 
-Stop or return a bounded partial analysis when:
+Stop or return a bounded partial result when:
 
-- no migration/diff/snapshot evidence is available;
-- PR mode is requested but the repository/base revision cannot be resolved;
-- custom helper methods hide material migration behavior and no generated SQL is available;
-- a runtime safety conclusion is requested without deployment topology/provider/generated SQL/data evidence needed for that conclusion;
-- heuristic/evaluator identity cannot be established;
-- output aliases an analyzed input, evaluator, or receipt path;
-- the only way to produce a passing result is to weaken a frozen severity/gate/evaluator.
+- no migration/diff/snapshot evidence exists;
+- Git mode cannot resolve the requested base or repository identity;
+- custom helpers hide material semantics and generated/semantic evidence is unavailable;
+- a runtime-safety conclusion needs provider/database/data/deployment evidence not supplied;
+- heuristic/provider/evaluator identity cannot be established;
+- output aliases an analyzed input, evaluator, or receipt;
+- the only route to a pass is weakening a frozen severity/gate/evaluator.

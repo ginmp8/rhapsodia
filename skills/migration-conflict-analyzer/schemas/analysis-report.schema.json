@@ -1,72 +1,46 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:migration-conflict-analyzer:analysis-report:2.0",
-  "title": "Migration Conflict Analyzer Report",
+  "$id": "urn:migration-conflict-analyzer:analysis-report:3.0",
+  "title": "Migration Conflict Analyzer Report v3",
   "type": "object",
-  "required": [
-    "schema_version",
-    "analysis_version",
-    "analysis_id",
-    "heuristic_set",
-    "input_identity",
-    "operations",
-    "findings",
-    "gates",
-    "summary",
-    "limitations",
-    "analysis_receipt"
-  ],
+  "required": ["schema_version","analysis_version","analysis_id","heuristic_set","provider_profiles","input_identity","context","semantic_evidence","operations","findings","gates","summary","limitations","analysis_receipt"],
   "properties": {
-    "schema_version": {"const": "2.0"},
-    "analysis_version": {"const": "2.0.0"},
+    "schema_version": {"const": "3.0"},
+    "analysis_version": {"const": "3.0.0"},
     "analysis_id": {"type": "string", "pattern": "^analysis-[0-9a-f]{24}$"},
     "heuristic_set": {
-      "type": "object",
-      "required": ["name", "version", "sha256"],
-      "properties": {
-        "name": {"const": "migration-conflict-analyzer"},
-        "version": {"const": "2.0.0"},
-        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
-      }
+      "type": "object", "required": ["name","version","sha256"],
+      "properties": {"name":{"const":"migration-conflict-analyzer"},"version":{"const":"3.0.0"},"sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}}
+    },
+    "provider_profiles": {
+      "type": "object", "required": ["version","sha256","selected"],
+      "properties": {"version":{"const":"1.0.0"},"sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"selected":{"type":"object"}}
     },
     "input_identity": {
       "type": "object",
-      "required": ["digest", "files", "generated_sql", "runtime_code"],
+      "required": ["digest","files","generated_sql","reviewed_sql","deployment_sql","rollback_sql","runtime_code","semantic_evidence","provider_profile_sha256","git"],
       "properties": {
-        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "files": {"type": "array"},
-        "generated_sql": {"type": "array"},
-        "runtime_code": {"type": "array"}
+        "digest":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+        "files":{"type":"array"},"generated_sql":{"type":"array"},"reviewed_sql":{"type":"array"},"deployment_sql":{"type":"array"},"rollback_sql":{"type":"array"},"runtime_code":{"type":"array"},"semantic_evidence":{"type":"array"},
+        "provider_profile_sha256":{"type":["string","null"]},"git":{}
       }
     },
-    "operations": {"type": "array"},
+    "context": {
+      "type": "object",
+      "required": ["ef_core_version","provider","provider_key","dbcontext","migrations_assembly","deployment_instances","deployment_method"]
+    },
+    "semantic_evidence": {"type":"object"},
+    "operations": {"type":"array"},
     "findings": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "rule_id", "severity", "confidence", "evidence_status", "gate", "hazard_type", "uncertainty"],
-        "properties": {
-          "id": {"type": "string", "pattern": "^mca:"},
-          "severity": {"enum": ["critical", "high", "medium", "low", "info"]},
-          "confidence": {"enum": ["high", "medium", "low"]},
-          "evidence_status": {"enum": ["observed", "derived", "inferred", "supplied", "blocked"]},
-          "gate": {"enum": ["block", "review-required", "manual-review", "none"]},
-          "uncertainty": {"type": "string", "minLength": 1}
-        }
+      "type":"array",
+      "items": {"type":"object","required":["id","rule_id","severity","confidence","evidence_status","gate","hazard_type","files","operation_ids","why","recommendation","validation","uncertainty"],
+        "properties": {"id":{"type":"string","pattern":"^mca:"},"severity":{"enum":["critical","high","medium","low","info"]},"confidence":{"enum":["high","medium","low"]},"evidence_status":{"enum":["observed","derived","inferred","supplied","blocked"]},"gate":{"enum":["block","review-required","manual-review","none"]},"uncertainty":{"type":"string","minLength":1}}
       }
     },
-    "gates": {"type": "array"},
-    "summary": {
-      "type": "object",
-      "required": ["total_findings", "by_severity", "decision", "decision_basis"],
-      "properties": {
-        "decision": {"enum": ["block", "changes-required", "review-required", "no-static-blocker"]}
-      }
-    },
-    "limitations": {"type": "array", "minItems": 1},
-    "analysis_receipt": {
-      "type": "object",
-      "required": ["receipt_version", "status", "stage", "analysis_id", "analysis_core_sha256", "input_digest", "heuristic_set_sha256", "finding_ids"]
-    }
-  }
+    "gates":{"type":"array"},
+    "summary":{"type":"object","required":["total_findings","by_severity","decision","decision_basis"],"properties":{"decision":{"enum":["block","changes-required","review-required","no-static-blocker"]}}},
+    "limitations":{"type":"array","minItems":1},
+    "analysis_receipt":{"type":"object","required":["receipt_version","status","stage","analysis_id","analysis_core_sha256","input_digest","heuristic_set_sha256","provider_profiles_sha256","finding_ids"]}
+  },
+  "additionalProperties": true
 }

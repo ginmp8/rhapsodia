@@ -1,18 +1,17 @@
 {
-  "heuristic_set": "migration-conflict-analyzer",
-  "heuristic_version": "2.0.0",
+  "heuristic_version": "3.0.0",
   "required_rules": {
-    "duplicate.add-column": {"severity": "critical", "gate": "block"},
-    "destructive.drop-column": {"severity": "high", "gate": "review-required"},
-    "rename.drop-add": {"severity": "high", "gate": "review-required"},
-    "conflict.index-definition": {"severity": "high", "gate": "review-required"},
-    "conflict.foreign-key-definition": {"severity": "high", "gate": "review-required"},
-    "ordering.after-drop": {"severity": "high", "gate": "review-required"},
+    "artifact.review-execution-drift": {"severity": "critical", "gate": "block"},
+    "column.nullability-tightening": {"severity": "high", "gate": "review-required"},
+    "data.structured-mutation": {"severity": "medium", "gate": "review-required"},
     "history.base-collision": {"severity": "critical", "gate": "block"},
-    "snapshot.divergence": {"severity": "medium", "gate": "review-required"},
-    "raw-sql.opaque-mutation": {"severity": "medium", "gate": "review-required"},
-    "raw-sql.non-idempotent-data": {"severity": "high", "gate": "review-required"},
-    "runtime.concurrent-startup-migrate": {"severity": "high", "gate": "review-required"},
-    "unknown.operation": {"severity": "low", "gate": "manual-review"}
+    "history.diverged-lineage": {"severity": "critical", "gate": "block"},
+    "history.duplicate-full-id": {"severity": "critical", "gate": "block"},
+    "history.duplicate-timestamp": {"severity": "low", "gate": "manual-review"},
+    "provider.sqlite-idempotent-script-unsupported": {"severity": "critical", "gate": "block"},
+    "rollback.data-not-restorable": {"severity": "high", "gate": "review-required"},
+    "runtime.concurrent-startup-lock-aware": {"severity": "medium", "gate": "review-required"},
+    "runtime.concurrent-startup-unprotected": {"severity": "high", "gate": "review-required"},
+    "semantic.pending-model-changes": {"severity": "high", "gate": "review-required"}
   }
 }

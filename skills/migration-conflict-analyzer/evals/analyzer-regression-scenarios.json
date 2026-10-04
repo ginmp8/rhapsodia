@@ -1,133 +1,599 @@
 {
-  "schema_version": "2.0",
   "scenarios": [
     {
-      "id": "duplicate-add-column",
+      "expected_rules": [
+        "duplicate.add-column"
+      ],
+      "expected_severity": {
+        "duplicate.add-column": "critical"
+      },
       "files": {
         "20260919010000_AddEmail.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddEmail : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"Email\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"Email\", table: \"Customers\"); } }",
         "20260919010100_AddEmailAgain.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddEmailAgain : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"Email\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"Email\", table: \"Customers\"); } }"
       },
-      "expected_rules": ["duplicate.add-column"],
-      "expected_severity": {"duplicate.add-column": "critical"}
+      "id": "duplicate-add-column"
     },
     {
-      "id": "drop-column",
+      "expected_rules": [
+        "destructive.drop-column"
+      ],
+      "expected_severity": {
+        "destructive.drop-column": "high"
+      },
       "files": {
         "20260919010200_DropLegacy.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class DropLegacy : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"LegacyCode\", table: \"Customers\"); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"LegacyCode\", table: \"Customers\", nullable: true); } }"
       },
-      "expected_rules": ["destructive.drop-column"],
-      "expected_severity": {"destructive.drop-column": "high"}
+      "id": "drop-column"
     },
     {
-      "id": "rename-vs-drop-add",
+      "expected_rules": [
+        "rename.drop-add"
+      ],
+      "expected_severity": {
+        "rename.drop-add": "high"
+      },
       "files": {
         "20260919010300_RenameCustomerName.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class RenameCustomerName : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"Name\", table: \"Customers\"); migrationBuilder.AddColumn<string>(name: \"FullName\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "expected_rules": ["rename.drop-add"],
-      "expected_severity": {"rename.drop-add": "high"}
+      "id": "rename-vs-drop-add"
     },
     {
-      "id": "conflicting-indexes",
+      "expected_rules": [
+        "conflict.index-definition"
+      ],
+      "expected_severity": {
+        "conflict.index-definition": "high"
+      },
       "files": {
         "20260919010400_IndexEmail.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class IndexEmail : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.CreateIndex(name: \"IX_Customers_Email\", table: \"Customers\", column: \"Email\", unique: false); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropIndex(name: \"IX_Customers_Email\", table: \"Customers\"); } }",
         "20260919010500_IndexEmailUnique.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class IndexEmailUnique : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.CreateIndex(name: \"IX_Customers_Email_UQ\", table: \"Customers\", column: \"Email\", unique: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropIndex(name: \"IX_Customers_Email_UQ\", table: \"Customers\"); } }"
       },
-      "expected_rules": ["conflict.index-definition"],
-      "expected_severity": {"conflict.index-definition": "high"}
+      "id": "conflicting-indexes"
     },
     {
-      "id": "conflicting-fks",
+      "expected_rules": [
+        "conflict.foreign-key-definition"
+      ],
+      "expected_severity": {
+        "conflict.foreign-key-definition": "high"
+      },
       "files": {
         "20260919010600_FkOwner.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class FkOwner : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddForeignKey(name: \"FK_Orders_Owner\", table: \"Orders\", column: \"OwnerId\", principalTable: \"Users\", principalColumn: \"Id\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
         "20260919010700_FkOwnerOther.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class FkOwnerOther : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddForeignKey(name: \"FK_Orders_Owner_Alt\", table: \"Orders\", column: \"OwnerId\", principalTable: \"Accounts\", principalColumn: \"Id\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "expected_rules": ["conflict.foreign-key-definition"],
-      "expected_severity": {"conflict.foreign-key-definition": "high"}
+      "id": "conflicting-fks"
     },
     {
-      "id": "migration-ordering",
+      "expected_rules": [
+        "ordering.after-drop"
+      ],
+      "expected_severity": {
+        "ordering.after-drop": "high"
+      },
       "files": {
         "20260919010800_DropEmail.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class DropEmail : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"Email\", table: \"Customers\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
         "20260919010900_AlterEmail.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AlterEmail : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AlterColumn<string>(name: \"Email\", table: \"Customers\", nullable: false); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "expected_rules": ["ordering.after-drop"],
-      "expected_severity": {"ordering.after-drop": "high"}
+      "id": "migration-ordering"
     },
     {
-      "id": "snapshot-divergence",
+      "expected_rules": [
+        "snapshot.divergence"
+      ],
+      "expected_severity": {
+        "snapshot.divergence": "medium"
+      },
       "files": {
         "AppDbContextModelSnapshot.cs": "public class AppDbContextModelSnapshot { protected void BuildModel() { var version = 2; } }"
       },
-      "include_support_files": true,
-      "expected_rules": ["snapshot.divergence"],
-      "expected_severity": {"snapshot.divergence": "medium"}
+      "id": "snapshot-divergence",
+      "include_support_files": true
     },
     {
-      "id": "raw-sql",
+      "expected_rules": [
+        "raw-sql.opaque-mutation"
+      ],
+      "expected_severity": {
+        "raw-sql.opaque-mutation": "medium"
+      },
       "files": {
         "20260919011000_RawSql.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class RawSql : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.Sql(\"ALTER TABLE Customers ADD LegacyFlag int NULL\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "expected_rules": ["raw-sql.opaque-mutation"],
-      "expected_severity": {"raw-sql.opaque-mutation": "medium"}
+      "id": "raw-sql"
     },
     {
-      "id": "non-idempotent-data-migration",
+      "expected_rules": [
+        "raw-sql.non-idempotent-data"
+      ],
+      "expected_severity": {
+        "raw-sql.non-idempotent-data": "high"
+      },
       "files": {
         "20260919011100_IncrementCounter.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class IncrementCounter : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.Sql(\"UPDATE Counters SET Value = Value + 1\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "expected_rules": ["raw-sql.non-idempotent-data"],
-      "expected_severity": {"raw-sql.non-idempotent-data": "high"}
+      "id": "non-idempotent-data-migration"
     },
     {
-      "id": "concurrent-deploy-hazard",
+      "args": [
+        "--deployment-instances",
+        "multiple"
+      ],
+      "expected_rules": [
+        "runtime.concurrent-startup-version-unknown"
+      ],
+      "expected_severity": {
+        "runtime.concurrent-startup-version-unknown": "medium"
+      },
       "files": {
         "20260919011200_AddPhone.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddPhone : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"Phone\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "runtime_files": {
+      "fixture_files": {
         "Program.cs": "await db.Database.MigrateAsync();"
       },
-      "args": ["--deployment-instances", "multiple"],
-      "expected_rules": ["runtime.concurrent-startup-migrate"],
-      "expected_severity": {"runtime.concurrent-startup-migrate": "high"}
+      "id": "concurrent-deploy-version-unknown",
+      "path_args": {
+        "--runtime-code": [
+          "Program.cs"
+        ]
+      }
     },
     {
-      "id": "harmless-migration",
+      "expected_rules": [],
       "files": {
         "20260919011300_AddNickname.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddNickname : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"Nickname\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"Nickname\", table: \"Customers\"); } }"
       },
-      "expected_rules": [],
-      "forbidden_severities": ["critical", "high", "medium"]
+      "forbidden_severities": [
+        "critical",
+        "high",
+        "medium"
+      ],
+      "id": "harmless-migration"
     },
     {
-      "id": "unknown-operation",
+      "expected_rules": [
+        "unknown.operation"
+      ],
+      "expected_severity": {
+        "unknown.operation": "low"
+      },
       "files": {
         "20260919011400_CustomOp.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class CustomOp : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.CustomProviderOperation(name: \"x\", table: \"Customers\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "expected_rules": ["unknown.operation"],
-      "expected_severity": {"unknown.operation": "low"}
+      "id": "unknown-operation"
     },
     {
-      "id": "same-diff-rerun",
+      "expected_rules": [
+        "duplicate.add-column"
+      ],
       "files": {
         "20260919011500_DuplicateOne.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class DuplicateOne : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"Code\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
         "20260919011600_DuplicateTwo.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class DuplicateTwo : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"Code\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
       },
-      "expected_rules": ["duplicate.add-column"],
-      "rerun_equal": ["analysis_id", "heuristic_set.sha256", "input_identity.digest", "finding_ids"]
+      "id": "same-diff-rerun",
+      "rerun_equal": [
+        "analysis_id",
+        "heuristic_set.sha256",
+        "input_identity.digest",
+        "finding_ids"
+      ]
     },
     {
-      "id": "branch-divergence",
+      "expected_rules": [
+        "history.base-collision"
+      ],
+      "expected_severity": {
+        "history.base-collision": "critical"
+      },
       "git_base_files": {
-        "Migrations/20260918090000_AddBase.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddBase : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"BaseCode\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
+        "Migrations/20260918090000_AddBase.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddBase : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"BaseCode\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"BaseCode\", table: \"Customers\"); } }",
         "Migrations/AppDbContextModelSnapshot.cs": "public class AppDbContextModelSnapshot { protected void BuildModel() { var version = 1; } }"
       },
       "git_head_files": {
-        "Migrations/20260918090000_AddOther.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddOther : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"OtherCode\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
+        "Migrations/20260918090000_AddBase.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddBase : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"ChangedCode\", table: \"Customers\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"ChangedCode\", table: \"Customers\"); } }",
         "Migrations/AppDbContextModelSnapshot.cs": "public class AppDbContextModelSnapshot { protected void BuildModel() { var version = 2; } }"
       },
-      "expected_rules": ["history.base-collision"],
-      "expected_severity": {"history.base-collision": "critical"},
+      "id": "base-migration-rewrite",
       "require_git_identity": true
+    },
+    {
+      "expected_rules": [
+        "history.duplicate-timestamp"
+      ],
+      "expected_severity": {
+        "history.duplicate-timestamp": "low"
+      },
+      "files": {
+        "Migrations/20261001090000_AddA.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddA : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"A\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"A\", table: \"T\"); } }",
+        "Migrations/20261001090000_AddB.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class AddB : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"B\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"B\", table: \"T\"); } }"
+      },
+      "forbidden_rules": [
+        "history.duplicate-full-id"
+      ],
+      "id": "parallel-same-timestamp-signal"
+    },
+    {
+      "args": [
+        "--dbcontext",
+        "AppDbContext"
+      ],
+      "expected_rules": [
+        "history.duplicate-full-id"
+      ],
+      "expected_severity": {
+        "history.duplicate-full-id": "critical"
+      },
+      "files": {
+        "A/20261001090100_Same.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Same : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"A\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
+        "B/20261001090100_Same.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Same : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"B\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "duplicate-full-id"
+    },
+    {
+      "args": [
+        "--ef-core-version",
+        "11.0.0-preview.3"
+      ],
+      "expected_rules": [
+        "history.diverged-lineage"
+      ],
+      "expected_severity": {
+        "history.diverged-lineage": "critical"
+      },
+      "files": {
+        "Migrations/20261001090100_First.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class First : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"A\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
+        "Migrations/20261001090200_Second.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Second : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"B\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }",
+        "Migrations/AppDbContextModelSnapshot.cs": "public partial class AppDbContextModelSnapshot { public override string LastMigrationId => \"20261001090100_First\"; protected void BuildModel() { } }"
+      },
+      "id": "ef11-snapshot-lineage-mismatch",
+      "include_support_files": true
+    },
+    {
+      "expected_rules": [
+        "data.structured-mutation"
+      ],
+      "expected_severity": {
+        "data.structured-mutation": "medium"
+      },
+      "files": {
+        "20261001090300_Seed.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Seed : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.InsertData(table: \"Roles\", columns: new[] { \"Id\", \"Name\" }, values: new object[] { 1, \"Admin\" }); migrationBuilder.UpdateData(table: \"Roles\", keyColumn: \"Id\", keyValue: 1, column: \"Name\", value: \"Administrator\"); migrationBuilder.DeleteData(table: \"Roles\", keyColumn: \"Id\", keyValue: 2); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "structured-data-mutation"
+    },
+    {
+      "expected_rules": [
+        "destructive.drop-column",
+        "rollback.data-not-restorable"
+      ],
+      "expected_severity": {
+        "rollback.data-not-restorable": "high"
+      },
+      "files": {
+        "20261001090400_DropLegacy.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class DropLegacy : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"Legacy\", table: \"Customers\"); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"Legacy\", table: \"Customers\", nullable: true); } }"
+      },
+      "id": "destructive-rollback-recreation"
+    },
+    {
+      "expected_rules": [
+        "column.nullability-tightening"
+      ],
+      "expected_severity": {
+        "column.nullability-tightening": "high"
+      },
+      "files": {
+        "20261001090500_RequireName.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class RequireName : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AlterColumn<string>(name: \"Name\", table: \"Customers\", nullable: false, oldClrType: typeof(string), oldNullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.AlterColumn<string>(name: \"Name\", table: \"Customers\", nullable: true, oldClrType: typeof(string)); } }"
+      },
+      "id": "alter-nullability-tightening"
+    },
+    {
+      "expected_rules": [
+        "column.length-narrowing",
+        "column.precision-narrowing"
+      ],
+      "expected_severity": {
+        "column.length-narrowing": "medium",
+        "column.precision-narrowing": "medium"
+      },
+      "files": {
+        "20261001090600_Narrow.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Narrow : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AlterColumn<string>(name: \"Code\", table: \"Items\", type: \"varchar(50)\", maxLength: 50, nullable: true, oldClrType: typeof(string), oldType: \"varchar(200)\", oldMaxLength: 200, oldNullable: true); migrationBuilder.AlterColumn<decimal>(name: \"Amount\", table: \"Items\", precision: 12, scale: 2, nullable: false, oldClrType: typeof(decimal), oldPrecision: 18, oldScale: 4); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "alter-length-precision-narrowing"
+    },
+    {
+      "expected_rules": [
+        "constraint.existing-data-validation"
+      ],
+      "expected_severity": {
+        "constraint.existing-data-validation": "medium"
+      },
+      "files": {
+        "20261001090700_Constraints.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Constraints : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddUniqueConstraint(name: \"AK_Customers_Code\", table: \"Customers\", column: \"Code\"); migrationBuilder.AddCheckConstraint(name: \"CK_Customers_Age\", table: \"Customers\", sql: \"Age >= 18\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "constraint-existing-data"
+    },
+    {
+      "args": [
+        "--provider",
+        "Npgsql.EntityFrameworkCore.PostgreSQL"
+      ],
+      "expected_rules": [
+        "provider.branch-incomplete"
+      ],
+      "expected_severity": {
+        "provider.branch-incomplete": "high"
+      },
+      "files": {
+        "20261001090800_ProviderSql.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class ProviderSql : Migration { protected override void Up(MigrationBuilder migrationBuilder) { if (migrationBuilder.ActiveProvider == \"Microsoft.EntityFrameworkCore.SqlServer\") { migrationBuilder.Sql(\"CREATE TABLE X(Id int)\"); } } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "provider-branch-incomplete"
+    },
+    {
+      "expected_rules": [
+        "determinism.runtime-dependent-migration"
+      ],
+      "expected_severity": {
+        "determinism.runtime-dependent-migration": "medium"
+      },
+      "files": {
+        "20261001090900_Nondeterministic.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Nondeterministic : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.InsertData(table: \"Jobs\", columns: new[] { \"Id\", \"CreatedAt\" }, values: new object[] { Guid.NewGuid(), DateTime.UtcNow }); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "runtime-dependent-migration"
+    },
+    {
+      "args": [
+        "--deployment-instances",
+        "multiple",
+        "--ef-core-version",
+        "8.0.8"
+      ],
+      "expected_rules": [
+        "runtime.concurrent-startup-unprotected"
+      ],
+      "expected_severity": {
+        "runtime.concurrent-startup-unprotected": "high"
+      },
+      "files": {
+        "20261001091000_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "Program.cs": "await db.Database.MigrateAsync();"
+      },
+      "id": "ef8-concurrent-startup-unprotected",
+      "path_args": {
+        "--runtime-code": [
+          "Program.cs"
+        ]
+      }
+    },
+    {
+      "args": [
+        "--deployment-instances",
+        "multiple",
+        "--ef-core-version",
+        "10.0.0",
+        "--provider",
+        "Microsoft.EntityFrameworkCore.SqlServer"
+      ],
+      "expected_rules": [
+        "runtime.concurrent-startup-lock-aware"
+      ],
+      "expected_severity": {
+        "runtime.concurrent-startup-lock-aware": "medium"
+      },
+      "files": {
+        "20261001091100_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "Program.cs": "await db.Database.MigrateAsync();"
+      },
+      "forbidden_rules": [
+        "runtime.concurrent-startup-unprotected"
+      ],
+      "id": "ef10-concurrent-startup-lock-aware",
+      "path_args": {
+        "--runtime-code": [
+          "Program.cs"
+        ]
+      }
+    },
+    {
+      "args": [
+        "--ef-core-version",
+        "10.0.0"
+      ],
+      "expected_rules": [
+        "runtime.explicit-migrate-transaction"
+      ],
+      "expected_severity": {
+        "runtime.explicit-migrate-transaction": "high"
+      },
+      "files": {
+        "20261001091200_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "Program.cs": "await using var tx = await db.Database.BeginTransactionAsync(); await db.Database.MigrateAsync(); await tx.CommitAsync();"
+      },
+      "id": "ef10-explicit-migrate-transaction",
+      "path_args": {
+        "--runtime-code": [
+          "Program.cs"
+        ]
+      }
+    },
+    {
+      "expected_rules": [
+        "artifact.review-execution-drift"
+      ],
+      "expected_severity": {
+        "artifact.review-execution-drift": "critical"
+      },
+      "expected_values": {
+        "input_identity.rollback_sql.0.role": "rollback_sql"
+      },
+      "files": {
+        "20261001091300_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "deploy.sql": "ALTER TABLE T ADD X varchar(100);",
+        "reviewed.sql": "ALTER TABLE T ADD X text;",
+        "rollback.sql": "ALTER TABLE T DROP COLUMN X;"
+      },
+      "id": "review-deployment-sql-drift",
+      "path_args": {
+        "--deployment-sql": [
+          "deploy.sql"
+        ],
+        "--reviewed-sql": [
+          "reviewed.sql"
+        ],
+        "--rollback-sql": [
+          "rollback.sql"
+        ]
+      }
+    },
+    {
+      "expected_rules": [
+        "artifact.generated-reviewed-drift"
+      ],
+      "expected_severity": {
+        "artifact.generated-reviewed-drift": "medium"
+      },
+      "files": {
+        "20261001091400_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "generated.sql": "ALTER TABLE T ADD X text;",
+        "reviewed.sql": "ALTER TABLE T ADD X text NOT NULL;"
+      },
+      "id": "generated-reviewed-sql-drift",
+      "path_args": {
+        "--generated-sql": [
+          "generated.sql"
+        ],
+        "--reviewed-sql": [
+          "reviewed.sql"
+        ]
+      }
+    },
+    {
+      "args": [
+        "--provider",
+        "Microsoft.EntityFrameworkCore.Sqlite",
+        "--deployment-method",
+        "idempotent-script"
+      ],
+      "expected_rules": [
+        "provider.sqlite-idempotent-script-unsupported"
+      ],
+      "expected_severity": {
+        "provider.sqlite-idempotent-script-unsupported": "critical"
+      },
+      "files": {
+        "20261001091500_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "sqlite-idempotent-script-unsupported"
+    },
+    {
+      "args": [
+        "--provider",
+        "Microsoft.EntityFrameworkCore.Sqlite"
+      ],
+      "expected_rules": [
+        "provider.sqlite-rebuild-required"
+      ],
+      "expected_severity": {
+        "provider.sqlite-rebuild-required": "medium"
+      },
+      "files": {
+        "20261001091600_Alter.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Alter : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddCheckConstraint(name: \"CK_T_X\", table: \"T\", sql: \"X > 0\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "id": "sqlite-rebuild-required"
+    },
+    {
+      "expected_rules": [
+        "semantic.pending-model-changes"
+      ],
+      "expected_severity": {
+        "semantic.pending-model-changes": "high"
+      },
+      "expected_values": {
+        "context.ef_core_version": "10.0.0"
+      },
+      "files": {
+        "20261001091700_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "semantic.json": "{\"schema_version\":\"1.0\",\"ef_core_version\":\"10.0.0\",\"provider\":\"Microsoft.EntityFrameworkCore.SqlServer\",\"pending_model_changes\":true,\"transaction_suppressed_command_count\":0}\n"
+      },
+      "id": "semantic-pending-model-changes",
+      "path_args": {
+        "--semantic-evidence": [
+          "semantic.json"
+        ]
+      }
+    },
+    {
+      "expected_rules": [
+        "transaction.suppressed-command"
+      ],
+      "expected_severity": {
+        "transaction.suppressed-command": "high"
+      },
+      "files": {
+        "20261001091800_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "semantic.json": "{\"schema_version\":\"1.0\",\"ef_core_version\":\"10.0.0\",\"transaction_suppressed_command_count\":1}\n"
+      },
+      "id": "semantic-transaction-suppressed-command",
+      "path_args": {
+        "--semantic-evidence": [
+          "semantic.json"
+        ]
+      }
+    },
+    {
+      "args": [
+        "--provider",
+        "Npgsql.EntityFrameworkCore.PostgreSQL"
+      ],
+      "expected_rules": [
+        "operational.ddl-locking-potential"
+      ],
+      "expected_severity": {
+        "operational.ddl-locking-potential": "medium"
+      },
+      "files": {
+        "20261001091900_Index.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Index : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.CreateIndex(name: \"IX_T_X\", table: \"T\", column: \"X\"); } protected override void Down(MigrationBuilder migrationBuilder) { } }"
+      },
+      "fixture_files": {
+        "generated.sql": "CREATE INDEX \"IX_T_X\" ON \"T\" (\"X\");"
+      },
+      "id": "postgresql-index-locking-potential",
+      "path_args": {
+        "--generated-sql": [
+          "generated.sql"
+        ]
+      }
+    },
+    {
+      "args": [
+        "--ef-core-version",
+        "10.0.0",
+        "--provider",
+        "Microsoft.EntityFrameworkCore.SqlServer"
+      ],
+      "expected_rules": [],
+      "files": {
+        "20261001092000_Add.cs": "using Microsoft.EntityFrameworkCore.Migrations; public partial class Add : Migration { protected override void Up(MigrationBuilder migrationBuilder) { migrationBuilder.AddColumn<string>(name: \"X\", table: \"T\", nullable: true); } protected override void Down(MigrationBuilder migrationBuilder) { migrationBuilder.DropColumn(name: \"X\", table: \"T\"); } }"
+      },
+      "id": "same-diff-rerun-v3",
+      "rerun_equal": [
+        "analysis_id",
+        "heuristic_set.sha256",
+        "input_identity.digest",
+        "finding_ids"
+      ]
     }
-  ]
+  ],
+  "suite_version": "3.0"
 }

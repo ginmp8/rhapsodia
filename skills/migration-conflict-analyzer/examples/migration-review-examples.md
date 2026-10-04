@@ -1,69 +1,38 @@
-# Migration Conflict Analyzer Examples
+# Migration Review Examples v3
 
-These examples show the distinction between observed evidence and bounded interpretation. Rule IDs and severities come from `references/heuristic-set.json`.
+## Parallel branches with the same timestamp
 
-## Duplicate AddColumn
+Two files named `20261004103000_AddFoo.cs` and `20261004103000_AddBar.cs` share a timestamp but have different full migration IDs. Report `history.duplicate-timestamp` as a low/manual-review signal, not a blocker. If the full migration ID collides with different bytes or lineage diverges from the reconciled history, use the blocking identity/lineage rule instead.
 
-Two changed migrations both add `Customers.Email`.
+## EF8 vs EF10 startup migration
 
-Expected primary finding:
+`Database.MigrateAsync()` plus `--deployment-instances multiple` is version-sensitive. EF8 maps to the pre-lock high review rule. EF10 maps to the lock-aware medium review rule, while still requiring provider/deployment validation. Unknown EF version remains explicitly uncertain.
 
-- rule: `duplicate.add-column`;
-- severity: critical;
-- evidence status: derived;
-- gate: block;
-- rationale: duplicate structured creation is directly derived from the changed operations.
+## Rollback that recreates a dropped column
 
-## Standalone DropColumn
+`Up` drops `Customers.Cpf`; `Down` adds `Customers.Cpf`. Report the destructive operation and `rollback.data-not-restorable`: recreating the column does not reconstruct prior CPF values.
 
-A migration drops `Customers.LegacyCode`.
+## Structured data migration
 
-Expected primary finding:
+`InsertData`, `UpdateData`, and `DeleteData` are provider-aware data changes even without `migrationBuilder.Sql`. Report them as structured data mutations and review keys, rerun behavior, generated SQL, and rollback.
 
-- rule: `destructive.drop-column`;
-- severity: high;
-- evidence status: observed;
-- uncertainty: data presence and consumer dependency are unknown.
+## Reviewed SQL drift
 
-Do not rewrite this as "data loss will occur" without data/consumer evidence.
+If `reviewed.sql` and `deployment.sql` hash differently, emit `artifact.review-execution-drift` and block the claimed review-to-execution chain. Do not claim the deployment SQL is unsafe solely because bytes differ.
 
-## Drop/Add possible rename
+## Optional semantic evidence
 
-One migration drops `Customers.Name` and adds `Customers.FullName`.
+A separate EF-aware probe can write:
 
-Expected findings include destructive review plus `rename.drop-add`. The rename interpretation is inferred/medium-confidence because replacement can be intentional.
+```json
+{
+  "schema_version": "1.0",
+  "ef_core_version": "10.0.0",
+  "provider": "Microsoft.EntityFrameworkCore.SqlServer",
+  "dbcontext": "AppDbContext",
+  "pending_model_changes": false,
+  "transaction_suppressed_command_count": 0
+}
+```
 
-## Conflicting indexes
-
-Two migrations create indexes over the same table/column set but disagree on uniqueness or identity.
-
-Expected primary finding: `conflict.index-definition` high. Multiple same-column indexes can be intentional, so the report requests reconciliation rather than asserting invalid SQL.
-
-## Conflicting FKs
-
-Two migrations map `Orders.OwnerId` to different principal tables.
-
-Expected primary finding: `conflict.foreign-key-definition` high with explicit business-intent uncertainty.
-
-## Raw SQL increment
-
-`UPDATE Counters SET Value = Value + 1` inside `migrationBuilder.Sql(...)`.
-
-Expected findings include:
-
-- `raw-sql.opaque-mutation`;
-- `raw-sql.non-idempotent-data`.
-
-The second rule detects a narrow rerun-sensitive pattern. Provider behavior and surrounding guards still require exact SQL execution evidence.
-
-## Runtime startup migration
-
-Runtime code contains `Database.MigrateAsync()` and deployment evidence explicitly says multiple application instances can start.
-
-Expected primary finding: `runtime.concurrent-startup-migrate` high. Report a concurrency hazard, not a guaranteed failure.
-
-## Harmless static case
-
-A single migration adds one nullable column to an existing table, with no other evidence.
-
-Expected: no critical/high/medium finding from the frozen static heuristic set. This means `no-static-blocker`, not "production safe".
+The analyzer hashes this file and treats its values as `supplied` evidence. The static core remains usable without this file or the .NET SDK.

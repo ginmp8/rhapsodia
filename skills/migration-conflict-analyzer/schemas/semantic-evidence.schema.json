@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:migration-conflict-analyzer:semantic-evidence:1.0",
+  "title": "Migration Conflict Analyzer Semantic Evidence",
+  "type": "object",
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "ef_core_version": {"type": "string", "minLength": 1},
+    "provider": {"type": "string", "minLength": 1},
+    "dbcontext": {"type": "string", "minLength": 1},
+    "migrations_assembly": {"type": "string", "minLength": 1},
+    "pending_model_changes": {"type": "boolean"},
+    "migration_lock_protected": {"type": "boolean"},
+    "transaction_suppressed_command_count": {"type": "integer", "minimum": 0},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
