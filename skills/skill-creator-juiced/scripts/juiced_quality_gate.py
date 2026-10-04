@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 from skill_spec import read_text, validate_agent_skill
-from validate_portability import normalize_hosts, validate_portability
+from validate_portability import normalize_hosts, normalize_surfaces, validate_portability
 
 PLACEHOLDER_PATTERNS = [
     "TO" + "DO",
@@ -86,7 +86,7 @@ def local_markdown_links(target: Path, markdown_file: Path):
         yield markdown_file, ref, (markdown_file.parent / ref).resolve()
 
 
-def run_gate(target: Path, profile: str, hosts: str | None = None) -> dict:
+def run_gate(target: Path, profile: str, hosts: str | None = None, surfaces: str | None = None) -> dict:
     errors: list[str] = []
     warnings: list[str] = []
     inspected: list[str] = []
@@ -104,7 +104,7 @@ def run_gate(target: Path, profile: str, hosts: str | None = None) -> dict:
     warnings.extend(portability["warnings"])
     host_portability = None
     if hosts:
-        host_portability = validate_portability(target, normalize_hosts(hosts))
+        host_portability = validate_portability(target, normalize_hosts(hosts), normalize_surfaces(surfaces))
         errors.extend(item["evidence"] for item in host_portability["errors"])
         warnings.extend(item["evidence"] for item in host_portability["warnings"])
 
@@ -117,6 +117,33 @@ def run_gate(target: Path, profile: str, hosts: str | None = None) -> dict:
     for term in REQUIRED_BODY_TERMS:
         if term not in lower_text:
             warnings.append(f"SKILL.md does not visibly include '{term}'")
+
+    line_count = len(text.splitlines())
+    estimated_tokens = (len(text) + 3) // 4
+    if line_count > 500:
+        warnings.append(f"SKILL.md exceeds progressive-disclosure review threshold: {line_count} lines > 500")
+    if estimated_tokens > 5000:
+        warnings.append(f"SKILL.md exceeds approximate context review threshold: ~{estimated_tokens} tokens > 5000")
+
+    directly_discoverable: set[str] = set()
+    for raw in MARKDOWN_LINK_RE.findall(text):
+        ref = raw.split("#", 1)[0].strip()
+        if ref and not ref.startswith(("#", "/", "mailto:")) and "://" not in ref:
+            resolved = (skill_md.parent / ref).resolve()
+            if str(resolved).startswith(str(target.resolve())) and resolved.exists() and resolved.is_file():
+                directly_discoverable.add(resolved.relative_to(target).as_posix())
+    for file_path in target.rglob("*"):
+        if file_path.is_file():
+            rel = file_path.relative_to(target).as_posix()
+            if rel in text:
+                directly_discoverable.add(rel)
+
+    refs_dir = target / "references"
+    if refs_dir.exists():
+        for file_path in sorted(refs_dir.rglob("*.md")):
+            rel = file_path.relative_to(target).as_posix()
+            if rel not in directly_discoverable:
+                warnings.append(f"reference is not directly discoverable from SKILL.md: {rel}")
 
     for path in target.rglob("*"):
         if ".git" in path.parts:
@@ -177,11 +204,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run structural and portability gates for a skill package.")
     parser.add_argument("target", help="Path to a skill folder")
     parser.add_argument("--profile", choices=["portable", "openai"], default="portable")
-    parser.add_argument("--hosts", help="Optional multi-host matrix: portable-core,openai,codex,claude,copilot,cursor,all")
+    parser.add_argument("--hosts", help="Optional semantic profile matrix: portable-core,openai,codex,claude,copilot,cursor,all")
+    parser.add_argument("--surfaces", help="Optional distribution/client surfaces or all")
     parser.add_argument("--json", dest="json_path", help="Optional JSON output path")
     args = parser.parse_args()
 
-    report = run_gate(Path(args.target).resolve(), args.profile, args.hosts)
+    report = run_gate(Path(args.target).resolve(), args.profile, args.hosts, args.surfaces)
     if args.json_path:
         out = Path(args.json_path)
         out.parent.mkdir(parents=True, exist_ok=True)

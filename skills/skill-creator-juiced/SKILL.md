@@ -22,12 +22,15 @@ Preserve one canonical skill when the operational responsibility is unchanged. D
 
 Resolve or infer before writing files:
 
-1. target skill name, folder, or proposed capability;
-2. activation, non-activation, ambiguous, and edge prompts when available;
-3. expected inputs, outputs, language, format, citations, and evidence rules;
-4. required capabilities such as filesystem read/write, command execution, network access, connectors, subagents, or artifact delivery;
-5. target hosts when portability matters; portability/redesign defaults to `portable-core,openai,codex,claude,copilot,cursor` unless the user explicitly narrows support;
-6. blocked paths, fixtures, expected outputs, secrets, evaluator evidence, and packaging expectations.
+1. requested reusable outcome and whether a skill is the correct customization primitive;
+2. target skill name, folder, or proposed capability when the artifact-selection gate keeps the work in skill scope;
+3. creation origin: `extract-from-run`, `synthesize-from-artifacts`, `design-from-spec`, or `adapt-existing`, plus the strongest available source and material evidence gaps;
+4. activation, non-activation, ambiguous, and edge prompts when available;
+5. expected inputs, outputs, language, format, citations, and evidence rules;
+6. required capabilities such as filesystem read/write, command execution, network access, connectors, subagents, or artifact delivery;
+7. semantic/runtime profiles when portability matters; portability/redesign defaults to `portable-core,openai,codex,claude,copilot,cursor` unless the user explicitly narrows support;
+8. client/distribution surfaces when discovery, installation, packaging, or publication matters; keep them separate from semantic/runtime profiles;
+9. blocked paths, fixtures, expected outputs, secrets, evaluator evidence, and packaging expectations.
 
 Default to the open Agent Skills format as the canonical core. Detect capabilities instead of assuming product-specific tool names. Mutate only the target skill folder. Keep `.git`, secrets, credentials, fixtures, expected outputs, frozen evaluator evidence, generated baseline evidence, old archives, and unrelated files protected.
 
@@ -51,8 +54,10 @@ Default to the open Agent Skills format as the canonical core. Detect capabiliti
 
 - Preserve the target skill's purpose, constraints, examples, safety boundaries, and expected outputs.
 - Infer the target's current lifecycle state and harvest established context before asking questions or repeating earlier workflow stages.
+- Do not assume every reusable customization belongs in a skill. Run the artifact-selection gate before skill topology; route always-on rules/instructions, custom agents, tools/MCP, hooks, plugins, or prompt/document assets to their proper owner when they better fit the requested behavior.
 - Prefer one cohesive capability over duplicated host-specific variants.
-- Keep `SKILL.md` as the compact control plane; move detailed branches, rubrics, schemas, and host notes to `references/`.
+- Keep `SKILL.md` as the compact control plane; move detailed branches, rubrics, schemas, and host notes to `references/`. Required branch resources must remain directly discoverable from `SKILL.md` or one declared root index.
+- Apply model-neutral minimality while authoring: keep a non-invariant instruction only when evidence or a material failure mode shows supported agents need it. Isolate model/host workarounds in adapters or scoped references with provenance instead of leaking them into the portable core.
 - Use scripts for deterministic, fragile, repetitive, validation-heavy, or packaging work; do not encode subjective judgment as fake determinism.
 - Treat examples and evals as calibration or planned evidence until they are actually executed.
 - For behavioral comparison, use `without-skill` as the net-new baseline when meaningful and an immutable prior-version snapshot for existing-skill updates; otherwise mark comparison `not-run`.
@@ -69,13 +74,14 @@ Read [references/host-portability.md](references/host-portability.md) whenever t
 Portable defaults:
 
 - use the Agent Skills `SKILL.md` contract as source of truth;
-- when portability is the objective, target `portable-core,openai,codex,claude,copilot,cursor` by default and record an explicit result for each profile;
-- use relative package paths;
-- keep scripts self-contained or document dependencies explicitly;
+- treat `portable-core,openai,codex,claude,copilot,cursor` as semantic/runtime profiles, not as a flat list of IDEs or distribution clients;
+- model client/distribution surfaces separately. For example, VS Code and Visual Studio are distinct Copilot surfaces but share the `copilot` semantic profile;
+- use relative package paths and keep the canonical skill package semantically identical across compatible distribution surfaces;
+- keep scripts self-contained or document dependencies explicitly; portable validators should not change semantics merely because an optional third-party parser/runtime library happens to be installed;
 - describe required capabilities, not product-specific tool names, unless the skill intentionally targets one host;
 - treat `agents/openai.yaml` and other host metadata as optional adapters, never as semantic requirements of the portable core;
-- keep host-only frontmatter or installation conventions out of the canonical core unless portability is intentionally narrowed;
-- when a host lacks a capability, degrade explicitly, mark the affected gate `not-run`, and do not claim equivalent validation.
+- reject host-only frontmatter in the canonical portable `SKILL.md`; put host extensions in adapters/profiles and record their fallback or support impact;
+- when a runtime/profile or distribution surface lacks a capability, degrade explicitly, mark the affected gate `not-run`, and do not claim equivalent validation.
 
 ## Resource Loading
 
@@ -101,17 +107,18 @@ Load only what the active branch needs:
 
 Follow [references/creation-workflow.md](references/creation-workflow.md):
 
-1. Infer lifecycle state, harvest established context, and establish target identity, scope, protected evidence, host/runtime capabilities, and the appropriate baseline.
-2. Decide cohesion: unified skill, modes, router, or split.
-3. Design the portable package core and optional host adapters. When portability is the objective, preserve one semantic core, classify each host-specific feature as optional adapter/optimization, required capability, or blocker, and produce a compatibility matrix for `portable-core,openai,codex,claude,copilot,cursor` unless explicitly narrowed.
-4. Draft or update the smallest coherent set of files, define the evaluation contract, and apply the proportional reproducibility-by-design pass from [references/reproducibility-by-design.md](references/reproducibility-by-design.md).
-5. Run the reproducibility decision gate from [references/reproducibility-routing.md](references/reproducibility-routing.md) only after local design controls are understood; invoke the specialist when material gaps remain or deeper reproducibility work is explicitly required.
-6. Run only the specialist passes that own material risks.
-7. Evaluate against the correct baseline when possible; inspect failures for generalizable causes, use held-out scenarios for final claims, and reject eval-specific fixes.
-8. Repair by diagnosis: rerun the narrowest failing gate after each fix; stop random search after two non-improving rounds.
-9. Validate portability, package structure, scripts, references, and target-owned tests. Portability/redesign must run the requested host matrix; a structural pass is not runtime proof.
-10. Apply change acceptance for existing-skill updates.
-11. Freeze the passing candidate, package atomically, and report evidence by layer.
+1. Infer lifecycle state, harvest established context, record creation origin, and establish target identity, scope, protected evidence, runtime capabilities, and the appropriate baseline.
+2. Run the Artifact Selection Gate. If the best artifact is not a skill, stop skill creation and hand off to the owner of instructions/rules, custom agents, tools/MCP, hooks, plugins, or prompt/document assets.
+3. For skill-scoped work, decide cohesion: unified skill, modes, router, or split.
+4. Design the portable package core and optional host adapters. Preserve one semantic core, classify each host-specific feature as optional adapter/optimization, required capability, or blocker, and keep semantic/runtime profiles separate from client/distribution surfaces.
+5. Draft or update the smallest coherent set of files, apply model-neutral minimality, define the evaluation contract, and apply the proportional reproducibility-by-design pass from [references/reproducibility-by-design.md](references/reproducibility-by-design.md).
+6. Run the reproducibility decision gate from [references/reproducibility-routing.md](references/reproducibility-routing.md) only after local design controls are understood; invoke the specialist when material gaps remain or deeper reproducibility work is explicitly required.
+7. Run only the specialist passes that own material risks.
+8. Evaluate against the correct baseline when possible; inspect failures for generalizable causes, use held-out scenarios for final claims, and reject eval-specific fixes.
+9. Repair by diagnosis: rerun the narrowest failing gate after each fix; stop random search after two non-improving rounds.
+10. Validate package structure, scripts, references, semantic/runtime profiles, requested client/distribution surfaces, and target-owned tests. Structural compatibility is not runtime proof.
+11. Apply change acceptance for existing-skill updates.
+12. Freeze the passing candidate, build one canonical package, attach distribution metadata/adapters only when requested, and report evidence by layer.
 
 ## Reproducibility Engineer Integration
 
@@ -146,9 +153,9 @@ Before delivery, apply [references/quality-gates.md](references/quality-gates.md
 When command execution is available:
 
 ```text
-<PYTHON> scripts/validate_portability.py <target-skill-folder> --hosts portable-core,openai,codex,claude,copilot,cursor
-<PYTHON> scripts/juiced_quality_gate.py <target-skill-folder> --profile portable --hosts portable-core,openai,codex,claude,copilot,cursor
-<PYTHON> scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --profile portable --validate --portability-hosts portable-core,openai,codex,claude,copilot,cursor --json-output <output-dir>/package-receipt.json
+<PYTHON> scripts/validate_portability.py <target-skill-folder> --hosts portable-core,openai,codex,claude,copilot,cursor --surfaces chatgpt,openai-api,codex,claude-code,copilot-vscode,copilot-visual-studio,cursor
+<PYTHON> scripts/juiced_quality_gate.py <target-skill-folder> --profile portable --hosts portable-core,openai,codex,claude,copilot,cursor --surfaces chatgpt,openai-api,codex,claude-code,copilot-vscode,copilot-visual-studio,cursor
+<PYTHON> scripts/package_skill.py --target <target-skill-folder> --output <output-dir>/skill.zip --profile portable --validate --portability-hosts portable-core,openai,codex,claude,copilot,cursor --distribution-surfaces chatgpt,openai-api,codex,claude-code,copilot-vscode,copilot-visual-studio,cursor --json-output <output-dir>/package-receipt.json
 ```
 
 Resolve `<PYTHON>` to an available Python 3 interpreter; do not assume the executable name.
@@ -169,7 +176,7 @@ A pass in one layer does not imply another.
 For substantive creation or update work, report:
 
 1. target skill and mode;
-2. architecture decision, portability profile, requested host set, and compatibility matrix;
+2. artifact-selection decision, architecture decision, semantic/runtime profile matrix, requested client/distribution surfaces, and surface mapping;
 3. changed files and purpose;
 4. specialists invoked, checklist-applied, skipped, unavailable, or not-applicable with reasons;
 5. reproducibility-by-design classification/controls and the `reproducibility-engineer` routing decision when applicable;
@@ -186,7 +193,8 @@ Stop or return a bounded partial result when:
 - zero or multiple target roots exist and identity cannot be resolved;
 - source truth required for semantic behavior is unavailable;
 - the requested change would edit protected evidence or unrelated paths;
-- portability requires a host-only capability with no safe degradation and the user requires equivalent behavior everywhere;
+- artifact selection shows the request belongs to another customization primitive and continuing would silently create the wrong artifact;
+- portability requires a runtime/profile- or surface-only capability with no safe degradation and the user requires equivalent behavior everywhere;
 - a required evaluator cannot be frozen or protected;
 - a specialist cycle would re-enter the current owner without new responsibility;
 - validation fails and the only route to success is weakening semantics, safety, evidence, or thresholds;

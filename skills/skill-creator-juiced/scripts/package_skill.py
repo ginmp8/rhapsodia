@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from skill_spec import read_text, validate_agent_skill
-from validate_portability import normalize_hosts, validate_portability
+from validate_portability import normalize_hosts, normalize_surfaces, validate_portability
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".template"}
 EXCLUDED_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "reports", "benchmark-reports", "test-results", "tmp"}
@@ -153,7 +153,7 @@ def source_tree_sha256(target: Path, files: list[Path]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def validate_folder(target: Path, profile: str, portability_hosts: str | None = None) -> dict[str, Any]:
+def validate_folder(target: Path, profile: str, portability_hosts: str | None = None, distribution_surfaces: str | None = None) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
     portability = validate_agent_skill(target, profile)
@@ -161,7 +161,7 @@ def validate_folder(target: Path, profile: str, portability_hosts: str | None = 
     warnings.extend(portability["warnings"])
     host_portability = None
     if portability_hosts:
-        host_portability = validate_portability(target, normalize_hosts(portability_hosts))
+        host_portability = validate_portability(target, normalize_hosts(portability_hosts), normalize_surfaces(distribution_surfaces))
         errors.extend(item["evidence"] for item in host_portability["errors"])
         warnings.extend(item["evidence"] for item in host_portability["warnings"])
 
@@ -351,7 +351,8 @@ def main() -> int:
     parser.add_argument("--output")
     parser.add_argument("--profile", choices=["portable", "openai"], default="portable")
     parser.add_argument("--validate", action="store_true")
-    parser.add_argument("--portability-hosts", help="Optional multi-host matrix required for package acceptance")
+    parser.add_argument("--portability-hosts", help="Optional semantic profile matrix required for package acceptance")
+    parser.add_argument("--distribution-surfaces", help="Optional client/distribution surfaces recorded and structurally mapped during package acceptance")
     parser.add_argument("--validate-only")
     parser.add_argument("--json-output")
     args = parser.parse_args()
@@ -374,7 +375,7 @@ def main() -> int:
         emit_result(result, None)
         return 1
 
-    folder = validate_folder(target, args.profile, args.portability_hosts) if args.validate else {"status": "not-run", "errors": [], "warnings": [], "host_portability": None}
+    folder = validate_folder(target, args.profile, args.portability_hosts, args.distribution_surfaces) if args.validate else {"status": "not-run", "errors": [], "warnings": [], "host_portability": None}
     if folder["status"] == "fail":
         result = {"receipt_version": 2, "mode": "package", "stage": "validation", "profile": args.profile, "status": "fail", "target": str(target), "output": str(output), "folder": folder, "output_preserved": target_exists(output), "receipt_preserved": bool(receipt and target_exists(receipt))}
         emit_result(result, str(receipt) if receipt else None, preserve_existing_on_failure=True)
@@ -399,6 +400,11 @@ def main() -> int:
             "status": "pass",
             "target": str(target),
             "folder": folder,
+            "distribution": {
+                "semantic_profiles": normalize_hosts(args.portability_hosts) if args.portability_hosts else [],
+                "surfaces": normalize_surfaces(args.distribution_surfaces),
+                "canonical_semantics_unchanged": True,
+            },
             "package": package,
             "archive": archive,
             "delivery": {
