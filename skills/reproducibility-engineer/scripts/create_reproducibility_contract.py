@@ -8,7 +8,7 @@ import argparse
 import json
 from pathlib import Path
 
-from _common import dump_json, parse_frontmatter, sha256_file
+from _common import dump_json, parse_frontmatter, tree_hash
 
 
 def main() -> int:
@@ -29,11 +29,11 @@ def main() -> int:
         audit = json.loads(Path(args.audit).read_text(encoding='utf-8'))
 
     contract = {
-        'contract_version': 2,
+        'contract_version': 3,
         'target': {
             'name': fm.get('name', root.name),
             'path': str(root),
-            'baseline_identity': sha256_file(skill_md),
+            'baseline_identity': tree_hash(root),
         },
         'ceiling': 'unclassified',
         'protected_paths': [],
@@ -56,6 +56,20 @@ def main() -> int:
             'immutable_pinned_vcs_reads_when_supported': True,
             'reject_source_alias_escape': True,
             'rebaseline_if_source_identity_changes': True
+        },
+        'evidence_profiles': {
+            'environment_provenance': {
+                'policy': 'when-material',
+                'validator': 'scripts/validate_execution_evidence.py --kind environment'
+            },
+            'stochastic_evaluation': {
+                'policy': 'when-material',
+                'validator': 'scripts/validate_execution_evidence.py --kind stochastic'
+            },
+            'execution_lineage': {
+                'policy': 'when-material',
+                'validator': 'scripts/validate_execution_evidence.py --kind lineage'
+            }
         },
         'self_hosting': {
             'enabled': False,

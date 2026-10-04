@@ -1,0 +1,20 @@
+{
+  "profile_version": 1,
+  "source_identity": "source-identity",
+  "planner_identity": "planner-identity",
+  "workflow_plan_identity": "workflow-plan-identity",
+  "evaluator_identity": "evaluator-identity",
+  "nodes": [
+    {
+      "id": "node-1",
+      "kind": "tool",
+      "upstream": [],
+      "execution_identity": "execution-identity",
+      "input_digests": ["0000000000000000000000000000000000000000000000000000000000000000"],
+      "output_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "replayable": true,
+      "invalidation_key": "node-1:v1"
+    }
+  ],
+  "canonical_outputs": [{"name": "result", "node_id": "node-1", "sha256": "1111111111111111111111111111111111111111111111111111111111111111"}]
+}

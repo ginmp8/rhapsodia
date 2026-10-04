@@ -104,6 +104,8 @@ Record separately:
 - live source identity;
 - captured source/snapshot identity;
 - evaluator identity;
+- execution-environment identity when runtime comparability is material;
+- execution-lineage identity when a multi-stage dependency graph is material;
 - candidate tree identity;
 - delivered artifact/package identity;
 - receipt identity when the receipt is persisted.
@@ -116,6 +118,7 @@ Fail or restart the experiment when:
 
 - source bytes change after a frozen source snapshot and the comparison depends on those bytes;
 - a pinned revision cannot be resolved to stable bytes but the report claims immutability;
+- material paired execution environments drift without an explicit re-baseline or experiment design that models the drift;
 - an output aliases an input/protected path/receipt;
 - a failed delivery overwrites the last-good output;
 - a receipt is truncated, unparsable, or refers to bytes different from the committed artifact;

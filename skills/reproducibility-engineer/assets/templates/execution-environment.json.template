@@ -1,0 +1,16 @@
+{
+  "profile_version": 1,
+  "run_id": "run-id",
+  "host": "portable-core",
+  "runtime": {"python": "3.x", "os": "os/version"},
+  "model": {"provider": "provider-or-not-applicable", "name": "model-or-not-applicable", "configuration_identity": "stable-config-identity"},
+  "tools": [],
+  "dependencies": [],
+  "locale": "locale",
+  "timezone": "timezone",
+  "cache_policy": "declared-policy",
+  "concurrency_policy": "declared-policy",
+  "hermeticity": "recorded",
+  "inputs": [{"subject": "input", "sha256": "0000000000000000000000000000000000000000000000000000000000000000"}],
+  "outputs": [{"subject": "output", "sha256": "0000000000000000000000000000000000000000000000000000000000000000"}]
+}
