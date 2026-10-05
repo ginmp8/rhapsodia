@@ -1,5 +1,26 @@
 # Changelog
 
+## At a Glance
+
+- **Purpose:** Preserve the historical Nomia release record and compatibility-impact narrative.
+- **Load when:** Investigating release history, migration/compatibility changes, or why a current contract exists.
+- **Decision impact:** Supplies historical context only; current `SKILL.md`, machine-readable contracts, release metadata, and validators remain authoritative for present behavior.
+- **Do not load when:** Performing ordinary Nomia governance work that does not depend on release history.
+
+## Contents
+
+- [2.0.0] - 2026-10-03
+- [1.10.1] - 2026-09-22
+- [1.10.0] - 2026-09-19
+- [1.9.4] - 2026-08-18
+- [1.9.3] - 2026-08-18
+- [1.9.2] - 2026-08-17
+- [1.9.1] - 2026-07-23
+- 1.9.0 - 2026-07-23
+- [1.8.0] - 2026-07-23
+- [1.7.0] - 2026-07-22
+- 1.6.0 - 2026-07-22
+
 ## [2.0.0] - 2026-10-03
 
 ### Breaking

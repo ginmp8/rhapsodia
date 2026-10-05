@@ -1,6 +1,22 @@
 # Host Portability
 
-Use when the target skill must work across ChatGPT/OpenAI, Codex, Claude/Claude Code, GitHub Copilot, Cursor, or another Agent Skills-compatible host.
+## At a Glance
+
+- **Purpose:** Define the portable Agent Skills semantic core, capability-first execution rules, optional host adapters, frontmatter constraints, Python/runtime assumptions, validation profiles, and packaging portability boundary.
+- **Load when:** The target must work across multiple Agent Skills-compatible hosts, the active host is uncertain, or runtime/discovery capabilities affect validation or delivery.
+- **Decision impact:** Determines which semantics must remain host-neutral, which host-specific metadata may be optional, which capabilities gate execution, and what evidence is required for portable vs named-host claims.
+- **Do not load when:** A task is explicitly single-host and no portability, adapter, runtime-capability, or packaging claim depends on host differences.
+
+## Contents
+
+- Canonical portable core
+- Capability-first execution
+- Current host adapters and discovery
+- Portable frontmatter rules
+- Python/runtime portability
+- Validation profiles
+- Packaging rule
+- Source pointers to re-check
 
 ## Canonical portable core
 

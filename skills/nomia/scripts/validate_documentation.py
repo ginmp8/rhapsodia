@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate local Markdown links in Nomia documentation with normalized relative paths."""
+"""Validate Nomia Markdown links plus long-document context-loading previews."""
 
 from __future__ import annotations
 
@@ -12,7 +12,10 @@ from typing import Any
 from nomia_utils import atomic_write_text
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+H2_RE = re.compile(r"(?m)^##\s+(.+?)\s*$")
 MARKDOWN_DIRS = ("references", "examples")
+PREVIEW_HEADINGS = {"at a glance", "summary", "quick reference", "overview"}
+NAV_HEADINGS = {"contents", "table of contents", "section map"}
 
 
 def normalize_target(raw: str) -> str | None:
@@ -26,7 +29,7 @@ def normalize_target(raw: str) -> str | None:
 
 
 def markdown_files(root: Path) -> list[Path]:
-    files = [root / "SKILL.md"]
+    files = [root / "SKILL.md", root / "CHANGELOG.md"]
     for directory in MARKDOWN_DIRS:
         base = root / directory
         if base.is_dir():
@@ -34,11 +37,67 @@ def markdown_files(root: Path) -> list[Path]:
     return [path for path in files if path.is_file()]
 
 
+def _context_preview_files(root: Path) -> list[Path]:
+    files = [root / "CHANGELOG.md"]
+    refs = root / "references"
+    if refs.is_dir():
+        files.extend(sorted(refs.rglob("*.md")))
+    return [path for path in files if path.is_file() and len(path.read_text(encoding="utf-8").splitlines()) > 100]
+
+
+def _section_items(lines: list[str], heading: str) -> list[str]:
+    start = None
+    for index, line in enumerate(lines):
+        if line.strip().lower() == f"## {heading}".lower():
+            start = index + 1
+            break
+    if start is None:
+        return []
+    items: list[str] = []
+    for line in lines[start:]:
+        if line.startswith("## "):
+            break
+        if line.startswith("- "):
+            items.append(line[2:].strip())
+    return items
+
+
+def _validate_context_preview(path: Path, root: Path) -> list[str]:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if len(lines) <= 100:
+        return []
+    rel = path.relative_to(root).as_posix()
+    top40 = "\n".join(lines[:40])
+    lower = top40.lower()
+    if "context-preview-exception:" in lower:
+        return []
+    errors: list[str] = []
+    for signal in ("**purpose:**", "**load when:**", "**decision impact:**"):
+        if signal not in lower:
+            errors.append(f"long Markdown preview is missing {signal} within first 40 lines: {rel}")
+    headings_top40 = {match.group(1).strip().lower() for match in H2_RE.finditer(top40)}
+    if not (headings_top40 & PREVIEW_HEADINGS):
+        errors.append(f"long Markdown is missing a preview heading within first 40 lines: {rel}")
+    nav = headings_top40 & NAV_HEADINGS
+    if not nav:
+        errors.append(f"long Markdown is missing Contents/section map within first 40 lines: {rel}")
+        return errors
+    nav_heading = next(iter(sorted(nav)))
+    actual = [match.group(1).strip() for match in H2_RE.finditer("\n".join(lines))]
+    material = [heading for heading in actual if heading.lower() not in PREVIEW_HEADINGS | NAV_HEADINGS]
+    listed = _section_items(lines[:40], nav_heading)
+    if listed != material:
+        errors.append(f"long Markdown Contents drift in {rel}: expected {material}, found {listed}")
+    return errors
+
+
 def validate_documentation(root: Path) -> dict[str, Any]:
     root = root.resolve()
     errors: list[str] = []
     checked_links = 0
     files = markdown_files(root)
+    for preview_file in _context_preview_files(root):
+        errors.extend(_validate_context_preview(preview_file, root))
     for source in files:
         text = source.read_text(encoding="utf-8")
         for match in LINK_RE.finditer(text):
@@ -65,7 +124,7 @@ def validate_documentation(root: Path) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate local Markdown links in the Nomia package.")
+    parser = argparse.ArgumentParser(description="Validate Nomia Markdown links and long-document context-loading previews.")
     parser.add_argument("--target", default=str(Path(__file__).resolve().parents[1]))
     parser.add_argument("--json-output")
     args = parser.parse_args(argv)

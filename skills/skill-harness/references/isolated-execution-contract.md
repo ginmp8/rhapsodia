@@ -1,6 +1,25 @@
 # Isolated Execution and Evaluator Visibility Contract
 
-Use this contract only when a harness will execute behavioral scenarios or ingest execution evidence. Static audits do not need a runtime sandbox.
+## At a Glance
+
+- **Purpose:** Define the minimum isolation and visibility boundaries required before behavioral scenario results can count as comparable evidence.
+- **Load when:** A harness executes behavioral scenarios, ingests execution evidence, uses hidden evaluators/holdouts, compares baseline vs candidate runs, or self-hosts evaluation.
+- **Decision impact:** Determines candidate-visible vs evaluator-only inputs, acceptable isolation level, required run identity fields, leakage/trace gates, and when a measured comparison must be rejected.
+- **Do not load when:** The work is a static structural audit with no behavioral execution evidence.
+
+## Contents
+
+- Goal
+- Visibility zones
+- Isolation levels
+- Run evidence
+- Self-hosted execution profile
+- Leakage gate
+- Optional no-skill control
+- Trace discipline
+- Stop conditions
+- Target-owned executable trust gate
+- Environment comparability
 
 ## Goal
 

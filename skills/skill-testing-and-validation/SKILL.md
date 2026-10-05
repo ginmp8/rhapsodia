@@ -1,79 +1,84 @@
 ---
 name: skill-testing-and-validation
-description: use when asked to create, improve, validate, run, lint, debug, or minimally fix tests, validators, build commands, test commands, lint commands, runners, benchmark tools, packaging checks, or small polyglot technical packages, especially reusable skill packages and their scripts. supports python, javascript/typescript, shell, and detectable multi-language projects. do not use for generic feature implementation, security review, documentation-only work, governance artifacts, or edits to fixtures, expected outputs, benchmark evidence, secrets, .git, or blocked files without explicit authorization.
+description: use when the primary task is to plan, generate, run, validate, diagnose, or minimally repair tests, validators, build/test/lint commands, gate runners, package checks, benchmark helpers, or small polyglot validation packages. use for evidence-backed gate execution and test-plumbing fixes; do not use as the primary workflow for generic feature implementation, generic bug diagnosis, security review, documentation/governance work, standalone oracle engineering, or edits to protected fixtures, expected outputs, benchmark evidence, secrets, .git, or other blocked paths without exact authorization.
 ---
 
 # Skill Testing and Validation
 
-## Mission
+## Purpose and activation boundary
 
-Operate as an evidence-first testing and validation workflow. Given the same material target bytes, supported environment, scope, and evidence, converge on the same relevant commands, failure categories, gate states, reliability interpretation, and conclusion wherever objective mechanisms can decide them.
+Own evidence-first testing and validation. Given the same material target bytes, supported environment, scope, and evidence, converge on the same relevant commands, failure categories, gate states, reliability interpretation, and conclusion wherever objective mechanisms can decide them.
 
-Remain a testing/validation skill. Do not become a generic implementation workflow, fuzzing framework, mutation framework, or oracle-design framework. Production behavior changes are out of scope unless they are strictly test/validator/build/lint/packaging plumbing required to restore an observed gate.
+Use this skill when the requested outcome is a test/validator/build/lint/package gate, deterministic test planning/generation, failure classification, validation evidence, or a minimal repair to testing/validation plumbing.
 
-## Portable core and capabilities
-
-The semantic core is host-neutral Agent Skills content. `agents/openai.yaml` is an optional OpenAI adapter, not a correctness dependency.
-
-Before execution, detect capabilities rather than branching on host name:
-
-- filesystem read;
-- filesystem write for baseline/candidate evidence;
-- command execution;
-- Python 3.10+ for bundled deterministic helpers;
-- required project runtimes/tools;
-- optional testing capabilities such as property/stateful testing, fuzzing, contract testing, or mutation testing only when selected by problem shape;
-- artifact delivery when a ZIP/report is requested.
-
-Load [`references/host-portability.md`](references/host-portability.md) when host/runtime assumptions affect execution. If a required capability is absent, mark the affected gate `blocked` or `not-run`; never infer a pass or auto-install a substitute.
-
-## Core invariants
-
-- Preserve a baseline before every repair. No repair without baseline evidence.
-- Never claim build, test, lint, validator, or packaging success without executed or supplied evidence.
-- Preserve exact target-command exit codes in receipts; do not replace them with the runner's exit code.
-- Classify failures only as: `build`, `test`, `lint`, `validator`, `environment`, `configuration`, `packaging`, or `unknown`.
-- Gate states are only: `pass`, `fail`, `blocked`, or `not-run`.
-- Gate execution, reliability/stability, and test/oracle effectiveness are separate evidence dimensions. A passing gate does not prove the suite is stable or capable of detecting incorrect behavior.
-- Never turn instability into a pass by retrying until green. Repeated attempts are diagnostic evidence and use the separate stability states in [`references/test-reliability.md`](references/test-reliability.md).
-- For generated tests, record test intent and oracle source. When the SUT may be faulty, do not derive a bug-finding expected result only from the SUT's current output.
-- Treat coverage, mutation score, and similar measurements as proxy metrics, not proof of correctness.
-- Protect `.git`, secrets, credentials, fixtures, snapshots, expected outputs, golden files, benchmark evidence, baseline evidence, frozen evaluators, and user-declared read-only paths unless the user explicitly authorizes the exact protected category/path.
-- Repair from diagnostics, not taste. Apply the smallest supported patch and rerun the exact failing gate before adjacent gates.
-- Do not weaken validators, tests, thresholds, fixtures, or expected outputs to manufacture a pass.
-- Once the final applicable gates pass, freeze the candidate. Any later material edit invalidates affected evidence and requires rerun.
+Do not use it as the primary owner for production feature implementation, generic application debugging, security audits, documentation/governance work, or a standalone executable-oracle design task. It may route to advanced testing strategies, but it does not become a fuzzing, mutation, or oracle-design framework. Production behavior changes are out of scope unless strictly required test/validator/build/lint/packaging plumbing is the observed cause.
 
 ## Mode router
 
-Choose one primary mode.
+Choose one primary mode before acting.
 
 | Mode | Use for | Primary output |
 |---|---|---|
-| `research-testability` | Inspect structure, runtimes, commands, risks, oracle/reliability gaps, and test strategy | Testability research plus deterministic command candidates |
-| `plan-tests` | Turn research into bounded test/validator phases | Phase plan with gates, intent/oracle, reliability, and risks |
-| `generate-tests` | Generate tests/cases/validator scenarios | Test artifacts or a patch plan with intent/oracle provenance |
-| `implement-test-phase` | Implement one named test/validator phase | Minimal changes plus gate evidence |
-| `run-build` | Select and execute build/compile gate | Build receipt |
-| `run-tests` | Select and execute test gate | Test receipt; stability evidence when required |
-| `run-lint` | Select and execute check-only lint gate | Lint receipt |
-| `fix-failures` | Repair observed build/test/lint/validator/package failures | Baseline, diagnosis, minimal patch, same-gate rerun |
-| `validation-report` | Summarize completed validation evidence | Deterministic gate/report summary |
+| `research-testability` | Inspect structure, commands, risks, oracle/reliability gaps, and strategy | Testability research + command candidates |
+| `plan-tests` | Convert evidence into bounded test/validator phases | Phase plan with gates, oracle, reliability, risks |
+| `generate-tests` | Generate tests/cases/validator scenarios | Test artifacts or patch plan with oracle provenance |
+| `implement-test-phase` | Implement one named test/validator phase | Minimal changes + gate evidence |
+| `run-build` | Execute the selected build/compile gate | Build receipt |
+| `run-tests` | Execute the selected test gate | Test receipt; stability evidence when required |
+| `run-lint` | Execute a check-only lint gate | Lint receipt |
+| `fix-failures` | Repair observed build/test/lint/validator/package failures | Baseline, diagnosis, minimal patch, exact-gate rerun |
+| `validation-report` | Summarize completed validation evidence | Deterministic validation report |
 
-## Input normalization
+## Critical rules
 
-Before mutation, normalize and record:
+- Preserve a baseline before every repair. No repair without baseline evidence.
+- Never claim build, test, lint, validator, or packaging success without executed or supplied evidence.
+- Gate states are only `pass`, `fail`, `blocked`, or `not-run`; failure categories are only `build`, `test`, `lint`, `validator`, `environment`, `configuration`, `packaging`, or `unknown`.
+- Preserve the exact target-command exit code in receipts; never replace it with a runner exit code.
+- Gate execution, reliability/stability, and test/oracle effectiveness are separate evidence dimensions; a green gate proves neither stability nor adequacy.
+- Never retry until green. If reliability matters, preserve every attempt and assess stability with a declared bounded run count.
+- Generated or changed semantic tests require explicit test intent and an adequate oracle source. Do not derive a bug-finding expected value only from a suspected faulty SUT.
+- Coverage, mutation score, fuzz counts, and similar values are proxy metrics, not correctness proof.
+- Protect `.git`, secrets, credentials, fixtures, snapshots, expected outputs, golden files, benchmark/baseline evidence, frozen evaluators, and user-declared read-only paths unless the exact category/path is authorized.
+- Repair from diagnostics, not taste. Apply the smallest supported patch and rerun the exact failed gate before adjacent gates.
+- Never weaken validators, tests, thresholds, fixtures, expected outputs, reliability requirements, or oracle quality to manufacture a pass.
+- After final applicable gates pass, freeze the candidate. Any later material edit invalidates affected evidence and requires rerun.
 
-1. one canonical target root;
-2. mode;
-3. requested scope and required gates;
-4. writable paths and protected paths;
-5. baseline source: executed command, supplied log, or static evidence;
-6. explicit user-provided commands, if any;
-7. final artifact/report expectation;
-8. detected capabilities and environment fingerprint;
-9. when tests are generated or assessed semantically: test intent, oracle source, and known behavioral requirements/contracts/invariants;
-10. whether reliability/stability evidence is required and why;
-11. any proxy metric requested, including its limited interpretation.
+## Quick-start workflow
+
+1. Resolve one canonical target root, choose the mode, and record scope, required gates, writable/protected paths, baseline source, requested output, and available capabilities.
+2. Discover commands deterministically. Precedence is: exact user command -> approved frozen plan command -> helper-selected project command; never command-shop for an easier pass. See [`references/command-selection.md`](references/command-selection.md).
+3. Before repair, preserve original target state plus the narrowest relevant failing gate/receipt. Static inspection may establish context but cannot prove a runtime pass.
+4. For test design/generation, state intent and oracle source first; map known requirements/contracts/invariants to tests. See [`references/test-effectiveness.md`](references/test-effectiveness.md) and, only when needed, [`references/advanced-test-strategies.md`](references/advanced-test-strategies.md).
+5. Execute safe gates with machine-readable receipts. For skill packages, use the structural validator before packaging; a read-only gate that mutates material target bytes is not final acceptance evidence without explicit re-baselining.
+6. When flakiness/nondeterminism is material, run bounded stability assessment and interpret it separately from the gate result. See [`references/test-reliability.md`](references/test-reliability.md).
+7. Classify failure formally, patch only authorized testing/validation plumbing, verify protected paths, then rerun the exact same gate/argv and working directory first. See [`references/failure-classification.md`](references/failure-classification.md).
+8. Compute final required-gate conclusion with fixed precedence: any `fail` -> fail; else any `blocked` -> blocked; else all required applicable gates pass and at least one ran -> pass; otherwise not-run. Apply reliability/oracle/effectiveness overlays separately, then freeze/package only the validated candidate.
+
+## Direct resource map
+
+Load only the branch that changes the decision; all required Markdown is directly reachable from this file.
+
+- [`references/acceptance-criteria.md`](references/acceptance-criteria.md): hard completion gates, overall conclusion, skill-package gates, proxy/evidence labels.
+- [`references/command-selection.md`](references/command-selection.md): command precedence, tie-breaks, working directory, multi-runtime behavior, safe execution.
+- [`references/failure-classification.md`](references/failure-classification.md): allowed failure categories, precedence, gate-state mapping, diagnostic repair.
+- [`references/testability-strategy.md`](references/testability-strategy.md): research/plan/generation phase contract and priorities.
+- [`references/test-effectiveness.md`](references/test-effectiveness.md): test intent, oracle provenance, behavioral coverage, proxy limits.
+- [`references/test-reliability.md`](references/test-reliability.md): hermeticity, flakiness, bounded repetition, stability interpretation.
+- [`references/advanced-test-strategies.md`](references/advanced-test-strategies.md): conditional property/stateful, metamorphic/differential, fuzz, contract, mutation routing.
+- [`references/host-portability.md`](references/host-portability.md): capability-based cross-host behavior and degraded mode.
+- [`examples/prompt-scenarios.md`](examples/prompt-scenarios.md): activation, ambiguity, anti-cheating, reliability/oracle, and delivery-boundary examples.
+- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation/non-activation coverage only; never treat it as executed evidence unless a harness actually runs it.
+
+## Stop or block early
+
+Stop or return a bounded partial result when target identity is ambiguous; repair lacks preservable baseline evidence; execution needs missing credentials, destructive actions, unapproved dependency installation, or unavailable runtime/network; required repair touches protected evidence without exact authorization; the fix requires production behavior changes outside testing/validation plumbing; test generation would invent domain facts or use a circular faulty-SUT oracle; passing requires weakening evidence/thresholds/reliability/oracle quality; or two consecutive repair rounds fail to improve the same objective diagnostic set.
+
+## Input normalization and portable capabilities
+
+Before mutation, normalize and record: canonical target root; mode; requested scope and gates; writable/protected paths; baseline source; explicit user commands; final artifact/report expectation; detected capabilities/environment fingerprint; test intent/oracle/contracts when semantic tests are material; reliability requirement; and requested proxy metrics with their limited interpretation.
+
+The semantic core is host-neutral Agent Skills content. Detect filesystem read/write, command execution, Python 3.10+ for bundled helpers, required project runtimes/tools, optional advanced-test capabilities only when selected by problem shape, and artifact delivery when requested. Load [`references/host-portability.md`](references/host-portability.md) when runtime/host assumptions affect execution. Missing required capability means `blocked` or `not-run`, never inferred pass or silent substitute installation.
 
 Use canonical resolved paths. If multiple target roots remain plausible and choosing one changes what is executed or mutated, stop as `blocked` rather than guessing.
 
@@ -234,19 +239,6 @@ After the last applicable pass:
 - package only the frozen candidate when packaging is requested.
 
 For skill packaging, use [`scripts/package_skill.py`](scripts/package_skill.py) only after required validation passes. Package and report outputs must remain outside the validated target tree and must not alias one another. The packager stages the archive before atomic replacement and emits its SHA-256 receipt.
-
-## Progressive references
-
-- [`references/command-selection.md`](references/command-selection.md): precedence, ranks, tie-breakers, canonical working directory.
-- [`references/failure-classification.md`](references/failure-classification.md): formal categories and state mapping.
-- [`references/acceptance-criteria.md`](references/acceptance-criteria.md): hard gates and final acceptance.
-- [`references/testability-strategy.md`](references/testability-strategy.md): research/plan/test-generation guidance.
-- [`references/test-reliability.md`](references/test-reliability.md): hermeticity, flakiness, bounded repeated execution, and stability interpretation.
-- [`references/test-effectiveness.md`](references/test-effectiveness.md): test intent, oracle provenance, behavioral coverage, and proxy-metric limits.
-- [`references/advanced-test-strategies.md`](references/advanced-test-strategies.md): conditional routing for property/stateful, metamorphic/differential, fuzz, contract, and mutation testing.
-- [`references/host-portability.md`](references/host-portability.md): capability-based cross-host behavior.
-- [`examples/prompt-scenarios.md`](examples/prompt-scenarios.md): activation and boundary examples.
-- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned prompt coverage only; never report it as executed behavioral evidence unless a harness actually runs it.
 
 ## Integration surface
 
