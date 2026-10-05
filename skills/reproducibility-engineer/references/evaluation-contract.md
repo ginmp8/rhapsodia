@@ -6,14 +6,18 @@ Freeze evaluators and material source identity before mutation. Compare the mini
 
 ## Contents
 
+- Goal
 - Freeze before mutation
 - Freeze source identity
 - Environment comparability
 - Comparison arms
-- Scenario groups and metrics
+- Scenario groups
+- Metrics
 - Repetition and stochastic reliability
-- Acceptance and saturated metrics
-- Evaluator independence and claim vocabulary
+- Acceptance rule
+- Saturated metrics
+- Evaluator independence
+- Claim vocabulary
 
 ## Goal
 

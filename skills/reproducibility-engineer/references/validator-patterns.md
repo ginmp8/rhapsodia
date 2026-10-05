@@ -6,10 +6,12 @@ Design validators as independent gates, not generator self-assertions. Prefer st
 
 ## Contents
 
+- Core rule
 - Receipt shape
 - Output path preflight
-- Validator patterns by target class
-- Diagnostics and repair ordering
+- By target class
+- Diagnostics
+- Repair ordering
 - Independence traps
 
 ## Core rule

@@ -16,6 +16,77 @@ def has_any(text: str, patterns: list[str]) -> bool:
     return any(pattern.lower() in low for pattern in patterns)
 
 
+PREVIEW_HEADINGS = {'at a glance', 'summary', 'quick reference', 'overview'}
+CONTENTS_HEADINGS = {'contents', 'table of contents', 'section map'}
+
+
+def h2_headings(lines: list[str]) -> list[str]:
+    headings: list[str] = []
+    in_fence = False
+    fence = None
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith(('```', '~~~')):
+            marker = stripped[:3]
+            if not in_fence:
+                in_fence = True
+                fence = marker
+            elif marker == fence:
+                in_fence = False
+                fence = None
+            continue
+        if in_fence:
+            continue
+        match = re.match(r'^##\s+(.+?)\s*$', line)
+        if match:
+            headings.append(match.group(1).strip())
+    return headings
+
+
+def material_h2_headings(lines: list[str]) -> list[str]:
+    excluded = PREVIEW_HEADINGS | CONTENTS_HEADINGS
+    return [heading for heading in h2_headings(lines) if heading.strip().lower() not in excluded]
+
+
+def contents_items(lines: list[str]) -> list[str] | None:
+    in_fence = False
+    fence = None
+    start = None
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith(('```', '~~~')):
+            marker = stripped[:3]
+            if not in_fence:
+                in_fence = True
+                fence = marker
+            elif marker == fence:
+                in_fence = False
+                fence = None
+            continue
+        if in_fence:
+            continue
+        match = re.match(r'^##\s+(.+?)\s*$', line)
+        if match and match.group(1).strip().lower() in CONTENTS_HEADINGS:
+            start = index + 1
+            break
+    if start is None:
+        return None
+
+    items: list[str] = []
+    for line in lines[start:]:
+        if re.match(r'^##\s+', line):
+            break
+        match = re.match(r'^\s*[-*+]\s+(.+?)\s*$', line)
+        if not match:
+            continue
+        item = match.group(1).strip()
+        link = re.fullmatch(r'\[([^\]]+)\]\([^)]+\)', item)
+        if link:
+            item = link.group(1).strip()
+        items.append(item.strip('`'))
+    return items
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description='Validate progressive context-loading structure for an Agent Skill package.')
     ap.add_argument('--target', required=True)
@@ -55,6 +126,22 @@ def main() -> int:
         for code in ['CONTEXT_TOP100_SCOPE', 'CONTEXT_TOP100_ROUTING', 'CONTEXT_TOP100_WORKFLOW', 'CONTEXT_TOP100_INVARIANTS', 'CONTEXT_TOP100_CONTROL_MODEL']:
             check(code, True, 'SKILL.md:first100', {'not_applicable': True, 'line_count': len(lines)})
 
+    skill_h2 = {heading.lower() for heading in h2_headings(lines)}
+    acceptance_applies = long_skill and 'acceptance gates' in skill_h2
+    stop_applies = long_skill and 'stop conditions' in skill_h2
+    check(
+        'CONTEXT_TOP100_ACCEPTANCE_GATES',
+        (not acceptance_applies) or has_any(first100, ['acceptance gates', 'acceptance gate']),
+        'SKILL.md:first100',
+        {'not_applicable': not acceptance_applies},
+    )
+    check(
+        'CONTEXT_TOP100_STOP_CONDITIONS',
+        (not stop_applies) or has_any(first100, ['stop conditions', 'stop condition', 'stop early', 'stop when']),
+        'SKILL.md:first100',
+        {'not_applicable': not stop_applies},
+    )
+
     all_refs = sorted((root / 'references').glob('*.md')) if (root / 'references').is_dir() else []
     direct_targets = {target.split('#', 1)[0] for target in markdown_local_links(skill_md)}
     direct_ref_paths = {target for target in direct_targets if target.startswith('references/') and target.endswith('.md')}
@@ -69,6 +156,7 @@ def main() -> int:
 
     long_markdown: list[str] = []
     preview_failures: list[dict] = []
+    contents_failures: list[dict] = []
     for path in all_refs:
         ref_lines = path.read_text(encoding='utf-8', errors='replace').splitlines()
         if len(ref_lines) <= CONTROL_LIMIT:
@@ -79,11 +167,18 @@ def main() -> int:
         missing = []
         if '## at a glance' not in preview:
             missing.append('At a Glance')
-        if '## contents' not in preview:
+        if not any(f'## {heading}' in preview for heading in CONTENTS_HEADINGS):
             missing.append('Contents')
         if missing:
             preview_failures.append({'path': rel, 'missing': missing, 'line_count': len(ref_lines)})
+            continue
+
+        expected = material_h2_headings(ref_lines)
+        actual = contents_items(ref_lines)
+        if actual != expected:
+            contents_failures.append({'path': rel, 'expected': expected, 'actual': actual or []})
     check('CONTEXT_LONG_MARKDOWN_PREVIEW', not preview_failures, 'references/*.md', {'long_markdown': long_markdown, 'failures': preview_failures})
+    check('CONTEXT_LONG_MARKDOWN_CONTENTS', not contents_failures, 'references/*.md', {'failures': contents_failures})
 
     report = {
         'status': 'pass' if not diagnostics else 'fail',

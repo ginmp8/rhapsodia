@@ -1,28 +1,23 @@
 ---
 name: research-traceability
-description: Create, improve, audit, or refresh Agent Skills from research evidence by turning source-backed findings into explicit skill requirements, implementation links, evaluations, and a bidirectional traceability matrix. Use when research results must be transferred into a new or existing skill with evidence that every relevant finding was accounted for and every substantive change is justified. Do not use for standalone research, ordinary skill edits without research evidence, generic requirements traceability unrelated to Agent Skills, or benchmark/security work that does not depend on a research-to-skill evidence chain.
+description: Create, improve, audit, or refresh Agent Skills from a bounded research corpus by tracing source-backed findings into requirements, implementation, evaluations, and bidirectional evidence. Use when research must materially govern a skill change and every relevant finding/change needs explicit accounting. Do not use for standalone research, ordinary skill edits without research evidence, generic requirements traceability, or benchmark/security work whose acceptance does not depend on a research-to-skill chain.
 ---
 
 # Research Traceability
 
 ## Mission and authority
 
-Convert one bounded research corpus into a verifiable Agent Skill change set. Preserve a bidirectional chain:
+Convert one bounded research corpus into a verifiable Agent Skill change set while preserving:
 
 `research evidence -> atomic findings -> dispositions -> requirements -> implementation -> evaluations -> trace audit`
 
-Own only the convergence layer between research and skill authoring. Do not replace the research workflow, generic skill authoring, benchmarking, security review, or release governance. Keep the semantic core host-neutral and describe capabilities rather than vendor-private tool names.
+Own only the convergence layer between research and skill authoring. Do not replace the research workflow, generic skill authoring, benchmarking, security review, documentation review, packaging governance, or release governance. Keep the semantic core host-neutral and describe capabilities rather than vendor-private tool names.
 
 ## Activation and routing
 
-Use this skill when research evidence must materially determine a new or existing Agent Skill and the result needs explicit evidence accounting, justification, and verification.
+Use this skill only when research evidence must materially determine a new or existing Agent Skill and the result needs explicit evidence accounting, justification, and verification.
 
-Do not activate for:
-
-- standalone research or literature/web summaries;
-- ordinary skill edits with no research corpus;
-- generic product/software requirements traceability;
-- benchmark, security, documentation, or packaging work whose acceptance does not depend on research-to-skill traceability.
+Do not activate for standalone research/summaries; ordinary skill edits with no research corpus; generic product/software requirements traceability; or benchmark, security, documentation, or packaging work whose acceptance does not depend on research-to-skill traceability.
 
 If research and skill transformation are requested together, obtain and freeze the requested research corpus before deriving findings. Never substitute a shallow ad hoc search for a requested deep-research phase.
 
@@ -37,40 +32,42 @@ If research and skill transformation are requested together, obtain and freeze t
 
 ## Core invariants
 
-- Treat completeness as **corpus-bounded**, never universal: traceability can prove accounting of recorded findings, not completeness of human knowledge or the web.
-- Account for every finding with exactly one disposition: `implement`, `already-covered`, `rejected`, `not-applicable`, `uncertain`, or `conflict`, plus rationale.
-- Require reverse justification: every substantive target change must trace back to at least one accepted requirement and finding; remove probable gold plating.
-- Freeze evaluator assets before candidate mutation when feasible. Never change an oracle, expected outcome, threshold, or protected evidence merely to obtain a pass.
-- Separate mechanical proof from model judgment. Structural coverage does not prove that a source supports a finding, a requirement preserves intent, a change satisfies it, or an evaluation is adequate.
-- In `improve`/`refresh`, use paired baseline-vs-candidate execution with the same frozen evaluator inputs before claiming measured behavioral improvement.
-- Preserve the target skill's discovery/control plane. If target `SKILL.md` exceeds 100 lines, keep purpose/scope, activation/routing, material modes, usable workflow, critical constraints, and direct branch-resource pointers within the first 100 physical lines. For supporting Markdown over 100 lines, expose an early summary plus contents/index. Prefer `SKILL.md -> supporting file`; do not hide required instructions behind multi-hop Markdown chains.
-- A passing candidate is immutable: any later content change invalidates affected evidence and requires revalidation.
+- Completeness is **corpus-bounded**, never universal: prove accounting of recorded findings, not completeness of human knowledge or the web.
+- Every finding gets exactly one disposition plus rationale: `implement`, `already-covered`, `rejected`, `not-applicable`, `uncertain`, or `conflict`.
+- Every substantive target change must reverse-trace to at least one accepted requirement and finding; remove probable gold plating.
+- Freeze evaluator assets before related mutation when feasible. Never change an oracle, expected outcome, threshold, or protected evidence merely to obtain a pass.
+- Separate mechanical proof from model judgment: structural coverage does not prove source support, derivation validity, implementation satisfaction, evaluation adequacy, or Top-100 semantic quality.
+- In `improve`/`refresh`, use paired baseline-vs-candidate execution with identical frozen evaluator inputs before claiming measured behavioral improvement.
+- Preserve the target discovery/control plane. If target `SKILL.md` exceeds 100 lines, keep purpose/scope, activation/routing, material modes, usable workflow, critical constraints, and direct branch-resource pointers within the first 100 physical lines.
+- For editable supporting Markdown over 100 lines, require an early summary plus an accurate contents/section map. Prefer `SKILL.md -> supporting file`; required instructions must not depend on multi-hop Markdown chains.
+- A passing candidate is immutable. Any later content change invalidates affected evidence and requires revalidation.
+- Stop rather than invent or weaken evidence when the corpus is unavailable, target identity is ambiguous, a material conflict is unresolved, protected evidence would need mutation, or green would require weaker semantics/safety/coverage/evaluators.
 
-## Workflow at a glance
+## Quick-start workflow
 
-1. **Resolve and freeze** — choose mode; identify corpus, target, writable/protected scope, output, and baseline/evaluator identities; freeze mutable evidence.
-2. **Normalize and extract** — register `S-*` sources, derive atomic `F-*` findings, detect duplicates/conflicts/qualifiers, and disposition every finding.
-3. **Derive and map** — translate accepted findings into testable `R-*` requirements; map existing coverage and target control-plane quality before proposing edits.
-4. **Freeze evaluation and plan** — create `E-*` evaluations before related mutation when feasible; create justified `C-*` changes; preserve pre-existing evaluators.
-5. **Mutate minimally and evaluate** — apply the smallest coherent change, compare baseline/candidate when claiming improvement, then run deterministic, target-owned, context-loading, and semantic checks.
+1. **Resolve and freeze** — choose mode; identify corpus, target, writable/protected scope, output, baseline/evaluator identities, and freeze mutable evidence.
+2. **Normalize and extract** — register `S-*` sources, derive atomic `F-*` findings, run an omission/duplicate/conflict/qualifier pass, and disposition every finding.
+3. **Derive and map** — translate accepted findings into testable `R-*` requirements; map existing coverage and context-loading topology before proposing edits.
+4. **Freeze evaluation and plan** — define/freeze `E-*` evaluations before related mutation when feasible; create justified `C-*` changes; preserve pre-existing evaluators.
+5. **Mutate minimally and evaluate** — apply the smallest coherent change, compare baseline/candidate when claiming improvement, then run deterministic, target-owned, context-loading, behavioral when available, and semantic checks.
 6. **Repair, freeze, deliver** — repair one causal defect at a time, rerun the same gate plus adjacent gates, freeze the passing candidate, and package atomically only after final validation.
 
-## Resource loading
+## Minimum finalization gates
 
-Load only the active branch; all required Markdown is directly reachable from this root:
+For `create`, `improve`, and `refresh`: require `finding_accounting = 100%`; complete bidirectional `F -> R -> C/E` justification; no unresolved required conflict; no required evaluation left `fail` or `planned`; mandatory target validators/tests passing; applicable Top-100/direct-reference checks passing; frozen evaluator/protected evidence unchanged; no candidate edit after the last passing validation; and delivered package/receipt identity matching the frozen candidate. Allow `not-run` only when the required runtime/capability is unavailable, record the limitation, and do not claim unavailable proof. In `audit`, report gaps without mutating the target.
 
-- [references/workflow.md](references/workflow.md) — detailed ordered create/improve/audit/refresh workflow.
-- [references/traceability-model.md](references/traceability-model.md) — `S/F/R/C/E/K` entities, dispositions, bidirectional relations, and coverage vs validity.
-- [references/workspace-contract.md](references/workspace-contract.md) — canonical workspace, identity separation, IDs, resumption, and schema lifecycle.
-- [references/semantic-review.md](references/semantic-review.md) — independent semantic trace review and anti-cheating checks.
-- [references/reproducibility.md](references/reproducibility.md) — evidence identity, evaluator freeze, paired comparison, recovery, and claim boundaries.
+## Direct resource map
+
+All required Markdown is one hop from this file. Load only the active branch:
+
+- [references/workflow.md](references/workflow.md) — ordered create/improve/audit/refresh execution and repair flow.
+- [references/traceability-model.md](references/traceability-model.md) — `S/F/R/C/E/K` entities, dispositions, relations, coverage vs validity.
+- [references/workspace-contract.md](references/workspace-contract.md) — canonical workspace, identity separation, IDs, schema lifecycle, resumption.
+- [references/semantic-review.md](references/semantic-review.md) — independent semantic trace review, gold-plating checks, and Top-100 semantic review.
+- [references/reproducibility.md](references/reproducibility.md) — evidence identities, evaluator freeze, paired comparison, repair/freeze/package boundaries.
 - [references/refresh-impact.md](references/refresh-impact.md) — dependency invalidation only for `refresh` mode.
 - [assets/schemas/traceability.schema.json](assets/schemas/traceability.schema.json) — machine-readable workspace contract.
-- `scripts/init_traceability.py` — initialize canonical JSON state.
-- `scripts/validate_traceability.py` — deterministic referential-integrity and coverage checks.
-- `scripts/snapshot_evidence.py` — freeze local research, target, or evaluator bytes.
-- `scripts/validate_target_skill.py` — portable static checks for a generated or modified target skill.
-- `scripts/package_target.py` — validated, hash-addressed, recovery-safe ZIP delivery.
+- `scripts/init_traceability.py` initializes canonical JSON state; `scripts/validate_traceability.py` checks referential integrity/coverage; `scripts/snapshot_evidence.py` freezes local evidence; `scripts/validate_target_skill.py` runs portable target checks; `scripts/package_target.py` builds validated hash-addressed ZIPs.
 
 ## Required inputs and defaults
 

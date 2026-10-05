@@ -11,11 +11,13 @@ Engineer reproducibility for one existing Agent Skills-compatible skill without 
 
 Default to `apply` when the user asks to make a skill reproducible/repeatable/Archify-like, then validate. Never improve apparent reproducibility by weakening semantics, safety, tests, evaluators, evidence, or thresholds.
 
-Use the lowest reliable control layer that preserves meaning:
+Use the lowest reliable control layer that preserves meaning: `runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`. Keep structural, behavioral, runtime, and perceptual/editorial evidence claims separate.
 
-`runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`
+## Activation and Routing
 
-Keep evidence claims separate: package/structure, behavioral evaluation, runtime/tool behavior, and perceptual/editorial quality require distinct evidence.
+Use this skill when reproducibility itself is the goal for one existing skill: repeatable semantics, cross-agent consistency, bounded model improvisation, deterministic mechanics, schemas/contracts, validators/evals, repair loops, frozen evaluators, receipts, or atomic/versioned delivery.
+
+Do not use it for net-new skill creation, generic review or benchmark-only work, ordinary application code, or prompt-only rewriting where reproducibility is not the explicit target. Preserve the target's responsibility boundary; route ownership-changing redesigns elsewhere.
 
 ## Modes
 
@@ -30,11 +32,11 @@ Keep evidence claims separate: package/structure, behavioral evaluation, runtime
 ## Core invariants
 
 - Resolve exactly one target skill root and mutate only its authorized scope.
-- Preserve an immutable baseline before edits; snapshot external source bytes when they materially determine the change or acceptance decision.
+- Preserve an immutable baseline before edits; snapshot material external source bytes before they can drift.
 - Protect `.git`, secrets, credentials, user fixtures, expected outputs, golden baselines, frozen evaluators, generated baseline evidence, and unrelated repositories.
-- Freeze evaluators before candidate mutation; if a frozen evaluator changes, invalidate and restart the comparison rather than accepting the candidate.
+- Freeze evaluators before candidate mutation; evaluator drift invalidates the comparison and requires restart/re-baseline.
 - Trace legacy owners, consumers, compatibility commitments, migrations, tests, and validators before removing behavior.
-- A final passing candidate is frozen. Any later edit invalidates affected evidence and requires revalidation.
+- A final passing candidate is frozen; any later edit invalidates affected evidence and requires revalidation.
 - Package only the exact frozen candidate; preflight aliases and preserve last-good/recovery evidence on failure.
 - Never claim benchmark uplift, runtime portability, stochastic reliability, or subjective quality without matching executed/supplied evidence.
 
@@ -51,36 +53,35 @@ State the ceiling explicitly. Do not promise byte-level determinism above the ta
 
 ## Workflow at a Glance
 
-1. **Establish** one target, baseline identity, runtime capabilities, writable/protected scope, source/evaluator identities, and package expectation.
-2. **Classify** the reproducibility ceiling and separate irreducible model/external nondeterminism from controllable variance.
-3. **Map variance** across discovery/activation -> top-100 control surface -> input normalization -> mode/router -> reference loading -> decisions -> generation -> validation -> repair -> delivery -> packaging.
+1. **Establish** one target, baseline, runtime capabilities, writable/protected scope, source/evaluator identities, and package expectation.
+2. **Classify** the reproducibility ceiling; separate irreducible model/external nondeterminism from controllable variance.
+3. **Map variance** across discovery/activation -> Top-100 -> normalization -> routing -> references -> decisions -> generation -> validation -> repair -> delivery -> packaging.
 4. **Freeze the contract**: hard gates, protected paths, variability items, evaluator/scenario identities, acceptance rules, and delivery guarantees before material mutation.
-5. **Transform minimally**: clarify routing, normalize inputs, define contracts, reduce degrees of freedom, extract mechanics, add validators/repair rules/scenarios, then delivery integrity.
-6. **Repair causally**: failing diagnostic -> smallest supported fix -> same gate -> adjacent gates; stop a branch after two non-improving rounds unless new evidence changes the hypothesis.
-7. **Evaluate** baseline vs candidate with identical scenarios; add no-skill/full-context arms, environment profiles, repeated trials, or holdouts only when the claim needs them.
-8. **Prove and freeze**: verify evaluator/source identity, run package/target gates and applicable evidence-profile validators, then freeze exact candidate bytes.
-9. **Deliver atomically**: package only the frozen candidate, verify archive/receipt identity, preserve last-good artifacts on failure, and report residual nondeterminism truthfully.
+5. **Transform minimally**: routing, normalization, contracts, bounded choices, deterministic mechanics, validators, repair rules, scenarios, then delivery integrity.
+6. **Repair causally**: failing diagnostic -> smallest supported fix -> same gate -> adjacent gates; stop after two non-improving rounds unless evidence changes the hypothesis.
+7. **Evaluate** baseline vs candidate on identical scenarios; add environment profiles, repeated trials, no-skill/full-context arms, or holdouts only when the claim needs them.
+8. **Prove and freeze**: verify source/evaluator identity, run target/package/context gates, then freeze exact candidate bytes.
+9. **Deliver atomically**: package only frozen bytes, verify receipt identity, preserve last-good artifacts on failure, and report residual nondeterminism.
 
-## Context-loading reproducibility
+## Context Loading, Acceptance Gates, and Stop Conditions
 
-For any target `SKILL.md` over 100 physical lines, treat partial-read behavior as a reproducibility surface. The first 100 lines must expose purpose/scope, routing or modes, workflow sufficient to begin correctly, critical invariants/constraints, the relevant control model, and direct pointers to branch-specific resources. Do not hide mandatory instructions below line 100 merely to reduce metadata.
+For `SKILL.md` over 100 physical lines, the first 100 must contain enough scope, routing, modes, workflow, invariants/control model, acceptance/stop signals, and direct branch pointers to begin safely. Authored supporting Markdown over 100 lines needs an early `At a Glance` plus a `Contents` that exactly matches its material `##` headings. Required Markdown must be directly reachable from `SKILL.md`; nested Markdown links are navigation only, never the sole route to mandatory instructions.
 
-For authored supporting Markdown over 100 lines, place an early `At a Glance` plus `Contents`/index. Prefer one-level discovery (`SKILL.md -> supporting file`); a reference-to-reference link must not be the only route to mandatory instructions. Validate structure mechanically, but treat semantic quality as review/evaluation evidence rather than pretending keyword presence proves correctness.
+Acceptance gates remain blocking when they protect semantics, safety, evidence identity, compatibility, validation, or packaging. Stop when target identity is ambiguous, a baseline/evaluator/source identity cannot be preserved, protected evidence would be edited, required validation cannot be trusted, passing would require weakening a hard gate, or the requested determinism exceeds the target ceiling. Run `scripts/validate_context_loading.py` whenever this surface changes.
 
-## Reference map
+## Direct Reference Map
 
 - Model/ceiling/variance: [`references/reproducibility-model.md`](references/reproducibility-model.md).
-- Transformation/repair/validators: [`references/transformation-playbook.md`](references/transformation-playbook.md), [`references/validator-patterns.md`](references/validator-patterns.md).
-- Evaluation/scenarios/stochastic claims: [`references/evaluation-contract.md`](references/evaluation-contract.md), [`references/scenario-design.md`](references/scenario-design.md), [`references/stochastic-evaluation.md`](references/stochastic-evaluation.md).
-- Integrity/delivery/recovery: [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md).
+- Transformation/validators: [`references/transformation-playbook.md`](references/transformation-playbook.md), [`references/validator-patterns.md`](references/validator-patterns.md).
+- Evaluation/scenarios/stochastic evidence: [`references/evaluation-contract.md`](references/evaluation-contract.md), [`references/scenario-design.md`](references/scenario-design.md), [`references/stochastic-evaluation.md`](references/stochastic-evaluation.md).
+- Integrity/reporting: [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md), [`references/report-contract.md`](references/report-contract.md).
 - Portability/environment: [`references/host-portability.md`](references/host-portability.md), [`references/environment-provenance.md`](references/environment-provenance.md).
 - Workflow/lineage: [`references/workflow-reproducibility.md`](references/workflow-reproducibility.md), [`references/execution-lineage.md`](references/execution-lineage.md).
-- Self-hosting controls: [`references/self-hosting-reproducibility.md`](references/self-hosting-reproducibility.md).
-- Reporting: [`references/report-contract.md`](references/report-contract.md).
+- Self-hosting: [`references/self-hosting-reproducibility.md`](references/self-hosting-reproducibility.md).
 
 ## Runtime and portability
 
-Treat the open Agent Skills format as the canonical core. Detect capabilities instead of branching only on host name, resolve an available Python 3.10+ launcher, keep paths host-neutral, and treat `agents/openai.yaml` as an optional adapter. Full `apply`, `validation-only`, and `package` evidence requires a writable filesystem plus Python 3.10+ for bundled deterministic validators; otherwise mark script gates `not-run` and do not claim package-validation pass. When runtime identity can affect comparison evidence, capture the execution-environment profile instead of leaving provider/model/tool/dependency/cache/concurrency/locale/timezone state implicit. Run `scripts/validate_context_loading.py` whenever context-loading structure is in scope.
+Treat the open Agent Skills format as the canonical core. Detect capabilities rather than branching only on host name; keep host adapters optional. Full `apply`, `validation-only`, and `package` evidence requires a writable filesystem plus Python 3.10+ for bundled deterministic validators; otherwise mark script gates `not-run` and do not claim package-validation pass. Capture an execution-environment profile when runtime identity can materially affect comparison evidence.
 
 ## Detailed workflow
 

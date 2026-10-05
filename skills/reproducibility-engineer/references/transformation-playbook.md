@@ -6,8 +6,23 @@ Reduce variance with the smallest mechanism that fixes an observed failure: expl
 
 ## Contents
 
-- Core principle
-- Patterns 1-16
+- Principle
+- Pattern 1: Router before execution
+- Pattern 2: Typed IR between intent and artifact
+- Pattern 3: Strong defaults and bounded overrides
+- Pattern 4: Semantic data cannot be deleted to fix presentation
+- Pattern 5: Independent validator
+- Pattern 6: Repair by one causal change
+- Pattern 7: Freeze after pass
+- Pattern 8: Atomic delivery
+- Pattern 9: Separate evidence layers
+- Pattern 10: Version the contract
+- Pattern 11: Progressive loading and Top-100 control surface
+- Pattern 12: Regression from every meaningful failure
+- Pattern 13: Snapshot evidence before analysis
+- Pattern 14: Canonical output preflight
+- Pattern 15: Recovery-aware multi-output commit
+- Pattern 16: Durable stage-aware receipts
 - Transformation priority
 - Anti-patterns
 
