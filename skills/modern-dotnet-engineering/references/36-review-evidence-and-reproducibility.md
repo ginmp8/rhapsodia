@@ -2,15 +2,26 @@
 
 ## At a Glance
 
-Use this contract whenever a .NET review or gate makes claims about correctness, security, performance, reliability, validation, or readiness. Bind claims to target/runtime identity, use the fixed evidence labels, separate severity from confidence, and never turn missing evidence into a pass. Findings require a concrete failure condition; style preference alone is not a defect.
+- **Purpose:** Standardize evidence labels, target/source identity, finding identity, severity, confidence, verdict rules, validation depth, regression discipline, and reproducibility boundaries for .NET reviews and gates.
+- **Load when:** Use for `code-review` or `production-gate`, or whenever the response makes material claims about correctness, security, performance, reliability, validation, or readiness. Do not load for a simple syntax/API lookup with no review or gate claim.
+- **Decision impact:** Determines whether an item is a defect or recommendation, which evidence label/confidence is valid, whether a verdict may pass, how deep validation must go, and when source/runtime drift makes earlier evidence stale.
 
 ## Contents
 
-- evidence labels and source identity
-- finding identity, severity, and confidence
-- production/security verdict rules and tie-breakers
-- validation ladder plus performance/security claim discipline
-- regression discipline, claim vocabulary, and runtime identity
+- Purpose
+- Evidence labels
+- Target and source identity
+- Finding identity
+- Severity rubric
+- Confidence rubric
+- Production/security verdict rules
+- Decision tie-breakers
+- Validation ladder
+- Performance claims
+- Security claims
+- Regression discipline
+- Claim vocabulary
+- Build and runtime identity
 
 ## Purpose
 

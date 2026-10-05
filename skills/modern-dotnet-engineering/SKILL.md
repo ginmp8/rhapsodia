@@ -61,7 +61,41 @@ Precedence: go/no-go -> `production-gate`; concrete artifact findings -> `code-r
 
 ## Direct reference map
 
-Load details directly from `SKILL.md`; required knowledge must not depend on a Markdown-to-Markdown chain. Start with: lifecycle/SDK `references/03-dotnet-10-baseline.md`; EF/migrations `references/09-ef-core-10-persistence.md`; APIs/authorization/limits `references/11-aspnet-core-10-api-design.md`; Minimal APIs `references/12-minimal-apis-net10.md`; security `references/15-security-auth-secrets-sensitive-data.md`; supply chain/NuGet `references/18-supply-chain-dependencies-cicd-scripts.md`; resilience/retries `references/21-resilience-timeout-retry-circuitbreaker-ratelimit.md`; testing `references/26-testing-modern-tooling.md`; deployment/Aspire `references/28-deployment-containers-healthchecks-shutdown.md`; AOT/trimming `references/29-aot-trimming-reflection-source-generators.md`; production gate `references/34-production-readiness-checklist.md`; design decisions `references/35-decision-matrix.md`; review evidence `references/36-review-evidence-and-reproducibility.md`; .NET AI/agents/MCP `references/37-dotnet-ai-agents-mcp.md`. The complete one-level topic index follows.
+Load only the branch that changes the decision. Every required Markdown reference is directly reachable from this file; cross-links inside references are navigation aids, not mandatory discovery hops.
+
+- **Runtime/language:** lifecycle and SDK `references/03-dotnet-10-baseline.md`; C# types `references/04-csharp-14-type-modeling.md`; async/cancellation `references/05-async-tasks-cancellation.md`.
+- **Architecture/design:** system shape `references/02-solution-architecture.md`; abstraction pressure `references/22-abstractions-design-overengineering.md`; CQRS/DDD `references/23-cqrs-mediator-ddd.md`; anti-patterns `references/33-modern-antipatterns.md`.
+- **Data/API/contracts:** EF/migrations `references/09-ef-core-10-persistence.md`; transactions/concurrency `references/10-transactions-concurrency-consistency.md`; ASP.NET Core APIs `references/11-aspnet-core-10-api-design.md`; Minimal APIs `references/12-minimal-apis-net10.md`; serialization/versioning `references/13-serialization-contract-versioning.md`.
+- **Security/reliability/dependencies:** security/auth `references/15-security-auth-secrets-sensitive-data.md`; NuGet/supply chain `references/18-supply-chain-dependencies-cicd-scripts.md`; HTTP resilience `references/21-resilience-timeout-retry-circuitbreaker-ratelimit.md`; outbox/idempotency `references/24-events-outbox-idempotency.md`; messaging/backpressure `references/25-messaging-workers-background-services.md`.
+- **Performance/operations/deployment:** observability `references/14-logging-observability-pii.md`; performance `references/19-dotnet-10-performance.md`; caching `references/20-caching.md`; build quality `references/27-build-analyzers-cicd-quality.md`; deployment/Aspire `references/28-deployment-containers-healthchecks-shutdown.md`; AOT/trimming `references/29-aot-trimming-reflection-source-generators.md`.
+- **Testing/review/gates:** testing `references/26-testing-modern-tooling.md`; production readiness `references/34-production-readiness-checklist.md`; pattern decision gate `references/35-decision-matrix.md`; evidence/severity/reproducibility `references/36-review-evidence-and-reproducibility.md`.
+- **AI/agents/MCP:** load `references/37-dotnet-ai-agents-mcp.md` only when model APIs, agents, RAG, tool execution, or MCP are actually in scope.
+
+## Evidence vocabulary
+
+For review, validation, security, performance, reliability, or production-readiness claims, use exactly one primary label:
+
+- `executed`: directly run in the current work and outcome observed;
+- `observed`: directly inspected in supplied code/config/output;
+- `supplied`: result provided but not independently rerun;
+- `inferred`: reasoned from evidence, not directly measured;
+- `planned`: recommended check/change not executed;
+- `blocked`: required evidence could not be obtained.
+
+Never describe `planned`, `inferred`, or missing evidence as executed validation. Use `references/36-review-evidence-and-reproducibility.md` for severity, confidence, verdict, and stale-evidence rules.
+
+## Stop conditions
+
+Stop, narrow scope, or mark the affected evidence `blocked` when:
+
+- required code/repository/file content is unavailable;
+- material SDK/runtime/TFM/provider/package/deployment identity is unknown;
+- a freshness-sensitive lifecycle/security/framework fact cannot be verified and the decision depends on it;
+- a destructive database/API/contract change lacks migration, compatibility, rollback, or forward-recovery evidence;
+- a security or production-readiness verdict needs tests/scans/runtime/telemetry evidence that is unavailable;
+- repository instructions, package/lock policy, generated-file ownership, or dependency constraints are unknown and the proposed edit could violate them;
+- Native AOT is requested while trimming/AOT support of the relevant framework/dependencies is unresolved;
+- the only route to a positive verdict is weakening tests, analyzers, NuGet audit, security controls, validation, compatibility requirements, or evidence gates.
 
 ## Progressive reference loading
 
@@ -107,18 +141,7 @@ Load these files as needed:
 | review evidence, severity, confidence, reproducibility | `references/36-review-evidence-and-reproducibility.md` |
 | .net ai / agents / mcp | `references/37-dotnet-ai-agents-mcp.md` |
 
-## Evidence vocabulary
 
-For review, validation, security, performance, reliability, or production-readiness claims, use one of:
-
-- `executed`: directly run in the current work and outcome observed;
-- `observed`: directly inspected in supplied code/config/output;
-- `supplied`: result provided by the user or external system but not independently rerun;
-- `inferred`: reasoned conclusion from evidence, not directly measured;
-- `planned`: recommended check or change not executed;
-- `blocked`: required evidence could not be obtained.
-
-Never describe `planned`, `inferred`, or missing evidence as executed validation. Full rules are in `references/36-review-evidence-and-reproducibility.md`.
 
 ## Output contracts
 
@@ -210,18 +233,6 @@ approved | approved with reservations | blocked
 
 Apply the verdict rules in `references/34-production-readiness-checklist.md`. Missing evidence for a required gate is not equivalent to a passing gate.
 
-## Stop conditions
-
-Stop, narrow scope, or explicitly mark evidence `blocked` when:
-
-- the requested code/repository/file is not available and the answer depends on its contents;
-- target framework, SDK, provider, deployment model, or package version is material but unknown;
-- a freshness-sensitive support/security/framework claim cannot be verified and the decision materially depends on it;
-- a destructive database/API/contract change lacks migration, rollback, forward-recovery, or compatibility evidence;
-- a security or production-ready conclusion requires tests/scans/runtime/telemetry evidence that was not supplied or executable;
-- repository instructions, SDK policy, lockfiles, central package rules, dependency graph, or generated-file ownership are unknown and the proposed edit could conflict with them;
-- Native AOT is requested but the framework/dependency graph has unsupported or unresolved trimming/AOT behavior;
-- the only path to a positive verdict is to weaken tests, analyzers, NuGet audit, security controls, validation, compatibility requirements, or evidence gates.
 
 ## Templates
 
