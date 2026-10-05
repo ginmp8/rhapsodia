@@ -1,6 +1,20 @@
 # Reference file patterns for Skill documentation
 
-Use this guide when reviewing or creating files in the `references/` directory in Skill packages. The goal is to improve future execution while preserving context economy.
+## At a Glance
+
+- **Purpose:** Define how Skill reference files, READMEs/guides, script documentation, and restructures should hold conditional detail without duplicating the always-loaded control plane.
+- **Load when:** Reviewing or creating `references/`, reorganizing Skill documentation, or deciding where detailed guidance belongs.
+- **Decision impact:** Determines canonical homes for detail, required structure for reference/script docs, and when added documentation would harm context economy.
+
+## Contents
+
+- Purpose of `references/`
+- Recommended reference shape
+- README or guide pattern
+- Script or validator documentation pattern
+- Documentation restructure pattern
+- Context economy rules
+- Anti-patterns
 
 ## Purpose of `references/`
 

@@ -2,7 +2,18 @@
 
 Rubric identity: `documentation-quality-rubric-v3`
 
-Use this rubric to review, rewrite, or evaluate technical documentation in Skill packages and repositories. Apply only criteria relevant to the selected mode and content kind. For stable evidence labels, severity rules, finding shape, ordering, comparison identity, and completion gates, also load `review-contract.md`. When document purpose changes the obligation, load `content-type-contracts.md`.
+## At a Glance
+
+- **Purpose:** Define the versioned quality criteria used to review, rewrite, or evaluate technical documentation in Skill packages and repositories.
+- **Load when:** A selected documentation mode needs explicit quality criteria or a substantive review/edit must tie findings to stable criterion IDs.
+- **Decision impact:** Selects the applicable DQ criteria by mode, separates conditional reader-success criteria from ordinary review, and constrains what counts as source fidelity, actionability, context economy, completeness, maintainability, accessibility, and task outcome.
+
+## Contents
+
+- Mode-to-criterion map
+- Evaluation criteria
+- Review discipline
+- Review questions
 
 ## Mode-to-criterion map
 
