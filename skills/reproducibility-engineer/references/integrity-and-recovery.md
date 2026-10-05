@@ -2,7 +2,10 @@
 
 ## At a Glance
 
-Preserve byte identity from evidence intake through delivery. Snapshot mutable sources before analysis, bind pinned evidence to immutable bytes, canonicalize output paths before mutation, commit related outputs recovery-safely, keep complete receipts tied to committed bytes, and preserve last-good artifacts when publication fails.
+- **Purpose:** Preserve exact evidence and artifact identity from source capture through package/receipt delivery, including failure recovery.
+- **Load when:** Mutable external sources, pinned repository evidence, output-path aliases, multi-output commits, package replacement, receipts, or last-known-good recovery can affect trust.
+- **Decision impact:** Requires source snapshots or immutable reads, canonical output preflight, recovery-aware commits, separate evidence identities, and receipts bound to committed bytes; drift or unsafe aliasing can block acceptance.
+- **Do not load when:** No external/source identity, output commit, package, or recovery behavior is material to the current run.
 
 ## Contents
 

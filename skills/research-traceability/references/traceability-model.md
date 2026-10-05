@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Model research-to-skill transformation as evidence-bearing entities with stable IDs: source (`S`), finding (`F`), requirement (`R`), change (`C`), evaluation (`E`), and conflict (`K`). Structural completeness requires bidirectional links; semantic validity still requires review of whether each linked claim is actually true.
-
-Keep corpus completeness and trace completeness separate. A complete matrix proves accounting of recorded evidence, not completeness of external knowledge.
+- **Purpose:** Define the canonical `S/F/R/C/E/K` entity semantics, disposition vocabulary, bidirectional relations, and the difference between trace coverage and trace validity.
+- **Load when:** Creating or reviewing `traceability.json`, assigning a finding disposition, deciding whether a change is justified, representing conflicting evidence, or auditing forward/reverse link completeness.
+- **Decision impact:** Determines what each record type means, which six finding dispositions are legal, when a change is gold plating, which reverse links are mandatory, when an unresolved conflict blocks finalization, and why 100% structural coverage cannot prove semantic validity or research completeness.
 
 ## Contents
 

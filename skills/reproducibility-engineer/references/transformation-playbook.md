@@ -2,7 +2,10 @@
 
 ## At a Glance
 
-Reduce variance with the smallest mechanism that fixes an observed failure: explicit routing, typed IR where useful, strong defaults, independent validation, causal repair, freeze-after-pass, atomic delivery, versioned contracts, shallow progressive loading, and regression scenarios.
+- **Purpose:** Select the smallest reproducibility mechanism that addresses an observed variance source or evidence gap while preserving semantics and target ownership.
+- **Load when:** A baseline and transformation contract exist and the workflow must choose or apply routing, schemas/IR, defaults, validators, repair rules, regression controls, context-loading changes, or delivery integrity.
+- **Decision impact:** Determines transformation priority, allowed control patterns, causal repair order, freeze/delivery behavior, and Top-100/reference-loading rules; forbids deleting semantic data or adding machinery without evidence.
+- **Do not load when:** The active mode is audit-only and no transformation choice is being planned.
 
 ## Contents
 
@@ -123,9 +126,9 @@ If schema/layout/output semantics change incompatibly:
 
 Keep `SKILL.md` as the control plane. When it exceeds 100 physical lines, its first 100 lines must still expose purpose/scope, routing or modes, workflow sufficient to start correctly, critical invariants/control model, and direct pointers to branch-specific resources.
 
-Move branch-specific rules, schemas, long rubrics, examples, and implementation details to one-level references loaded only when needed. For authored supporting Markdown over 100 lines, put an early `At a Glance` plus `Contents`/index. Avoid a mandatory `SKILL.md -> reference -> reference` chain; reference-to-reference links may aid navigation only when required material is also directly discoverable from `SKILL.md`.
+Move branch-specific rules, schemas, long rubrics, examples, and implementation details to one-level references loaded only when needed. For authored supporting Markdown over 100 lines, put an early semantic preview with explicit **Purpose**, **Load when**, and **Decision impact** signals before a synchronized `Contents`/section map. A copied heading list, `Primary topics`, or generic "read this file when needed" text is navigation noise, not a decision-useful preview. Avoid a mandatory `SKILL.md -> reference -> reference` chain; reference-to-reference links may aid navigation only when required material is also directly discoverable from `SKILL.md`.
 
-Validate the structure mechanically, but do not confuse keyword/heading presence with semantic correctness. This reduces context dilution, accidental rule mixing, and host-dependent partial-read failures.
+Validate labels, heading-map synchronization, and direct reachability mechanically, then review preview specificity semantically. Keyword/heading presence alone does not prove the correct routing knowledge survived. This reduces context dilution, accidental rule mixing, and host-dependent partial-read failures.
 
 ## Pattern 12: Regression from every meaningful failure
 

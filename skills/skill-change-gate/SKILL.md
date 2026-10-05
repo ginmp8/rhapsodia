@@ -1,87 +1,99 @@
 ---
 name: skill-change-gate
-description: evaluate proposed changes to existing Agent Skills-compatible packages across ChatGPT/OpenAI, Claude, GitHub Copilot, Cursor, Codex, and similar hosts before acceptance. use for diffs, before/after folders, benchmark or search candidates, hardening patches, and package updates when acceptance must detect regressions in activation, Top-100/context loading, scope, authority, safety, portability, evidence identity, evaluator exposure, policy/verifier identity, freshness, validation, consumer compatibility, packaging, recovery, waivers, or receipt integrity. do not use for broad repair loops, benchmark scoring, new skill creation, or generic application-code review.
+description: gate proposed changes to an existing Agent Skills-compatible package before acceptance. use for a diff, before/after package, experiment or search candidate, hardening patch, or package update that needs a read-only acceptance decision over activation and Top-100 loading, scope/authority, safety, portability, evidence identity/exposure/freshness, validation, consumer compatibility, packaging/recovery, waivers, or receipts. do not use to create skills, iteratively repair them, score benchmarks, rank candidates, or review generic application code.
 ---
 
 # Skill Change Gate
 
 ## Mission
 
-Decide whether one proposed change to an existing skill package can be accepted without quality regression. Remain a stateless, read-only gate: inspect candidate-bound evidence, classify regressions, and return `pass`, `pass-with-warnings`, `fail`, or `insufficient-evidence`.
+Decide whether one proposed change to an existing skill package can be accepted without quality regression. Stay stateless and read-only: inspect candidate-bound evidence, classify regressions, and return `pass`, `pass-with-warnings`, `fail`, or `insufficient-evidence`.
 
-Do not mutate the target unless the user separately authorizes an implementation pass. Benchmark scoring, hypothesis selection, broad repair, candidate ranking, and promotion execution remain caller-owned.
+Do not mutate the target unless implementation is separately authorized. Benchmark scoring, hypothesis selection, broad repair, candidate ranking, and promotion execution remain caller-owned.
 
 ## Activation and Routing
 
-Use this skill when there is an existing skill candidate, diff, patch summary, before/after pair, experiment/search candidate, or package update that needs an accept/reject decision.
+Use this skill when an existing skill candidate, diff, patch summary, before/after pair, search/evolution candidate, or package update needs an accept/reject decision.
 
-Gate these surfaces when material: activation/routing, Top-100 control-plane quality, scope/authority, local references, safety, portability, evidence identity and exposure, validation claims, consumer compatibility, packaging/recovery, waivers, and delivery receipts.
+Gate the surfaces actually touched or claimed: activation/routing, Top-100/context loading, scope/authority, references, safety, portability, evidence identity/exposure/freshness, validation claims, consumer compatibility, packaging/recovery, waivers, and delivery receipts.
 
-Do not use for net-new skill creation, iterative repair, generic repository/code review, evaluator tuning, benchmark scoring, or unsupported improvement claims. A gate finding may recommend repair, but this skill does not perform it.
+Do not use for net-new skill creation, iterative repair loops, generic repository/code review, evaluator tuning, benchmark scoring, winner selection, or unsupported improvement claims.
+
+## Decision Model
+
+- **Policy:** `normal` by default; `strict` for automated/self-improvement or promotion-sensitive gates; `advisory` only when explicitly requested.
+- **Claim scope:** `local-acceptance`, `promotion`, or `ecosystem-safe`. Never widen a local pass into an ecosystem-safe claim.
+- **Status:** `pass`, `pass-with-warnings`, `fail`, or `insufficient-evidence`.
+- **Caller action:** `accept`, `reject`, `repair-before-accept`, `gather-evidence`, or `advisory-only`.
+- Missing, stale, contaminated, candidate-mismatched, or otherwise required-but-unproven evidence cannot justify acceptance.
+- A better benchmark score never overrides a blocking regression.
 
 ## Modes
 
 | Mode | Use when | Primary result |
 |---|---|---|
-| `candidate-gate` | changed candidate/diff exists | acceptance decision with regressions |
-| `preflight-gate` | required evidence must be known before patching | evidence checklist/blockers |
-| `post-validation-gate` | validators/benchmark already ran | interpretation of supplied evidence |
-| `advisory-review` | caller requests non-blocking review | warnings/follow-up hypotheses |
+| `candidate-gate` | changed candidate/diff exists | acceptance decision plus regressions |
+| `preflight-gate` | evidence requirements must be known before patching | evidence checklist/blockers |
+| `post-validation-gate` | validators/benchmarks already ran | interpretation of supplied evidence |
+| `advisory-review` | caller explicitly wants non-blocking review | warnings/follow-up hypotheses |
 
-Default to `candidate-gate` when a changed package, diff, or hypothesis is present. Default policy is `normal`; use `strict` for automated/self-improvement loops and `advisory` only when the caller explicitly wants non-blocking guidance.
+Default to `candidate-gate` when a changed package, diff, or candidate hypothesis exists.
 
 ## Top-100 Context-Loading Gate
 
-Treat context loading as an acceptance surface, separate from task outcome. For any candidate `SKILL.md` longer than 100 physical lines, the first 100 must expose enough control-plane knowledge to begin correctly:
+For any candidate `SKILL.md` longer than 100 physical lines, the first 100 must make correct selection and safe task start possible by exposing:
 
-1. purpose/scope and discriminative activation or routing boundary;
-2. mode/branch selection when materially different paths exist;
-3. workflow/quick-start sufficient to start the task safely;
-4. critical rules, invariants, guardrails, or decision conditions;
-5. direct pointers to branch-specific supporting resources;
-6. no contradiction between the first 100 lines and deeper instructions.
+1. purpose/scope plus discriminative activation and non-use boundaries;
+2. mode/branch choice when paths differ materially;
+3. a usable workflow or quick-start;
+4. critical rules, invariants, guardrails, and decision conditions;
+5. direct pointers from `SKILL.md` to required branch resources;
+6. no contradiction with deeper instructions.
 
-For editable supporting `.md` files over 100 lines, require an early `At a Glance`/summary plus a `Contents`/section map within the first 40 lines, unless an explicit generated/vendor/unsafe-to-rewrite exception is recorded. The map must reflect the document's real material `##` headings.
+For editable supporting Markdown over 100 lines, require within the first 40 lines a decision-useful preview with explicit `Purpose`, `Load when`, and `Decision impact`, followed by a real heading-derived `Contents`/section map. A generic topic list or `Contents` alone is not a semantic preview. Generated/vendor/unsafe-to-rewrite files need an explicit early exception. Prefer `SKILL.md -> supporting file`; never make a multi-hop Markdown chain the only route to required instructions.
 
-Prefer one-level discovery: `SKILL.md -> supporting file`. A Markdown-to-Markdown chain may aid navigation, but must not be the only route to required instructions. Treat Top-100/preview failures as `portable-package-policy`, not as claims about the Agent Skills specification.
+Treat these as `portable-package-policy`, not as claims about the Agent Skills specification.
 
-## Core Gate Invariants
+## Critical Gate Invariants
 
-- Missing, stale, blocked, contaminated, or candidate-mismatched required evidence is never a pass.
-- A better benchmark score never overrides a blocking regression.
 - Static success does not prove semantic safety, runtime behavior, behavioral improvement, holdout validity, or ecosystem compatibility.
-- Expected identity mismatch is blocking; never refresh an expected hash after seeing the mismatch merely to pass.
-- Frozen evaluator/protected-evidence mutation invalidates a measured experiment unless the experiment is explicitly restarted.
-- Byte-identical holdouts can still be contaminated by candidate-generation or selection exposure.
+- Expected identity mismatch is blocking; never refresh an expected hash after observing a mismatch merely to obtain a pass.
+- Frozen evaluator/protected-evidence mutation invalidates a measured experiment unless it is explicitly restarted.
+- Evaluator exposure matters separately from bytes; a byte-identical holdout can still be contaminated.
 - Artifact/promotion receipts must bind to the exact gated candidate bytes.
 - Under `strict`, unresolved material concerns fail unless validly waived; non-waivable classes always fail.
 - `ecosystem-safe` requires complete known-consumer inventory plus compatible evidence for every known consumer.
 - Host-specific adapters are allowed; host-private semantic-core dependencies are portability regressions under a portable requirement.
-- Do not convert findings into edits unless implementation is separately authorized.
+- Findings stay findings: do not silently convert review into edits.
+
+## Minimum Evidence to Start
+
+Resolve or explicitly mark missing: target identity; candidate/diff evidence; caller context; policy; claim scope; supporting validator/benchmark/reviewer/package evidence; baseline/direct-parent/candidate identities when material; evaluator/policy/verifier identities and exposure when measured; protected paths; portability profile; destination/current state, waivers, and known consumers when the requested claim depends on them.
+
+If the evidence needed for the requested acceptance claim cannot be established, return `insufficient-evidence` rather than weakening the claim implicitly.
 
 ## Workflow at a Glance
 
-1. Resolve one target, candidate evidence, caller context, policy, claim scope (`local-acceptance`, `promotion`, `ecosystem-safe`), portability profile, and runtime capabilities.
-2. Establish the identities that matter: baseline, optional direct parent, candidate, evaluator/scenarios, policy/verifier, destination/current state, artifact/receipt, and self-improvement/search provenance when supplied.
-3. Bind strict/automated/promotion/waiver/authority-expansion/ecosystem decisions with Gate Context v1 when applicable; evidence for different bytes is not reusable acceptance evidence.
-4. Check evidence sufficiency and freshness before interpreting results; return `insufficient-evidence` when acceptance cannot be justified.
-5. Inventory touched surfaces, including Top-100/context loading, activation, authority, references, scripts, assets, evals/tests, validators, exported contracts, packaging, protected paths, host adapters, output contract, and recovery.
-6. Run available mechanical gates with reports outside baseline/candidate roots; mechanical findings are evidence, not the final semantic decision.
-7. Review semantically with the rubric; prefer stronger behavioral/current-state evidence over weak heuristics.
-8. Classify each material finding by severity, `rule_origin`, and `regression_delta` (`introduced`, `worsened`, `preexisting-unchanged`, `improved`, `resolved`, `unknown`).
-9. Decide for the requested claim scope; local acceptance never silently implies ecosystem-safe acceptance.
-10. Report `accept`, `reject`, `repair-before-accept`, `gather-evidence`, or `advisory-only` with explicit missing/stale evidence.
+1. Resolve one target, candidate evidence, policy, claim scope, portability profile, and runtime capabilities.
+2. Bind baseline/parent/candidate/evaluator/policy/verifier/destination/artifact identities that matter to the decision.
+3. Use Gate Context v1 when strict automation, promotion, waivers, authority expansion, evaluator exposure, or ecosystem compatibility is material.
+4. Check evidence sufficiency/freshness before interpreting results.
+5. Inventory touched surfaces, including Top-100/context loading and exported contracts.
+6. Run available mechanical gates with reports outside baseline/candidate roots; mechanical output is evidence, not the final semantic decision.
+7. Review semantically with the rubric and prefer stronger behavioral/current-state evidence over weak heuristics.
+8. Classify each material finding by severity, `rule_origin`, and `regression_delta`.
+9. Decide only for the requested claim scope and report the caller action plus missing/stale evidence.
 
 ## Direct Resource Map
 
-- [`references/gate-rubric.md`](references/gate-rubric.md): severity, gate areas, Top-100/context-loading rules, and decision matrix.
-- [`references/evidence-integrity.md`](references/evidence-integrity.md): identities, frozen evidence, receipts, aliases, recovery, durable evidence.
-- [`references/decision-evidence-contract.md`](references/decision-evidence-contract.md): candidate binding, policy/verifier identity, exposure, stochastic sufficiency, freshness, authority, ecosystem claims.
-- [`references/waiver-policy.md`](references/waiver-policy.md): waiver validity and non-waivable classes.
-- [`references/host-portability.md`](references/host-portability.md): portable core and optional host adapters.
-- [`references/integration-with-skill-improver.md`](references/integration-with-skill-improver.md): measured/self-improvement loops.
-- [`references/capability-preservation-and-parent-provenance.md`](references/capability-preservation-and-parent-provenance.md): capability state, regression attribution, parent/baseline distinction.
-- [`references/search-candidate-gate.md`](references/search-candidate-gate.md): multi-candidate/evolution lineage and candidate-local gating.
+- [`references/gate-rubric.md`](references/gate-rubric.md): severity precedence, gate areas, Top-100 semantics, and final decision matrix.
+- [`references/evidence-integrity.md`](references/evidence-integrity.md): candidate/evaluator/artifact identity, exposure, freshness, output safety, recovery, and receipts.
+- [`references/decision-evidence-contract.md`](references/decision-evidence-contract.md): Gate Context v1, evidence subject binding, policy/verifier identity, trials, authority, and ecosystem claims.
+- [`references/waiver-policy.md`](references/waiver-policy.md): valid candidate/policy-bound waivers and non-waivable failure classes.
+- [`references/host-portability.md`](references/host-portability.md): portable semantic core, optional host adapters, capability detection, and runtime fallbacks.
+- [`references/integration-with-skill-improver.md`](references/integration-with-skill-improver.md): role split and acceptance ordering for measured/self-improvement loops.
+- [`references/capability-preservation-and-parent-provenance.md`](references/capability-preservation-and-parent-provenance.md): semantic capability preservation plus parent/baseline regression attribution.
+- [`references/search-candidate-gate.md`](references/search-candidate-gate.md): candidate-local gating, lineage, evaluator exposure, and limits for evolutionary/search candidates.
 
 ## Portable Core
 

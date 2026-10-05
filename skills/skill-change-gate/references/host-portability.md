@@ -1,8 +1,10 @@
 # Host Portability Contract
 
-## Purpose
+## At a Glance
 
-Keep `skill-change-gate` and the skills it reviews portable across Agent Skills-compatible hosts. Treat the open Agent Skills format as the semantic core and isolate host-specific discovery paths, metadata, invocation syntax, and capabilities at the edges.
+- **Purpose:** Keep gate semantics portable while isolating host-specific discovery metadata, invocation syntax, and adapters.
+- **Load when:** Cross-host support, `agents/openai.yaml`, host-only tools/paths, runtime dependencies, or package-install layout are part of acceptance.
+- **Decision impact:** A host-private dependency in the semantic core is a portability regression; missing runtime capabilities can reduce the decision to semantic/manual evidence or `insufficient-evidence` rather than a fabricated script pass.
 
 ## Portable core
 

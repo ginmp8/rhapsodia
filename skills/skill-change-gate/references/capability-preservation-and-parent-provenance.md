@@ -1,6 +1,10 @@
 # Capability Preservation and Parent Provenance
 
-Use when the caller supplies a capability map, transformation record, direct-parent identity, or when before/after attribution is material.
+## At a Glance
+
+- **Purpose:** Distinguish semantic capability regression from file-level change and keep direct-parent attribution separate from stable-baseline drift.
+- **Load when:** A capability map, transformation record, parent identity, or before/after attribution affects acceptance.
+- **Decision impact:** Required capabilities classified `regressed` or `removed-breaking` block acceptance; `unproven` becomes insufficient evidence when the claim depends on that capability, while pre-existing unchanged debt is not falsely blamed on the candidate.
 
 ## Capability preservation
 

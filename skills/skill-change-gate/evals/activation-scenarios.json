@@ -1,5 +1,5 @@
 {
-  "suite_version": "1.0.0",
+  "suite_version": "1.1.0",
   "purpose": "Planned host-neutral activation and boundary scenarios for skill-change-gate; presence is not execution evidence.",
   "contract_catalog": {
     "SCG-001": "Gate proposed changes to an existing skill for regression-safe acceptance.",
@@ -21,7 +21,12 @@
       ],
       "expected_mode": "candidate-gate",
       "category": "should_activate",
-      "expected_behavior": "activate"
+      "expected_behavior": "activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-001",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "act-002",
@@ -33,7 +38,12 @@
       ],
       "expected_mode": "candidate-gate",
       "category": "should_activate",
-      "expected_behavior": "activate"
+      "expected_behavior": "activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-001",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "act-003",
@@ -45,7 +55,12 @@
       ],
       "expected_mode": "post-validation-gate",
       "category": "should_activate",
-      "expected_behavior": "activate"
+      "expected_behavior": "activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-001",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "act-004",
@@ -57,7 +72,12 @@
       ],
       "expected_mode": "candidate-gate",
       "category": "should_activate",
-      "expected_behavior": "activate"
+      "expected_behavior": "activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-001",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "act-005",
@@ -69,7 +89,12 @@
       ],
       "expected_mode": "post-validation-gate",
       "category": "should_activate",
-      "expected_behavior": "activate"
+      "expected_behavior": "activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-004",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "act-006",
@@ -81,7 +106,12 @@
       ],
       "expected_mode": "post-validation-gate",
       "category": "should_activate",
-      "expected_behavior": "activate"
+      "expected_behavior": "activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-004",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "act-007",
@@ -93,7 +123,12 @@
       ],
       "expected_mode": "candidate-gate",
       "category": "should_activate",
-      "expected_behavior": "activate"
+      "expected_behavior": "activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-004",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "non-001",
@@ -105,7 +140,12 @@
       ],
       "reason": "skill creation belongs to a creator workflow",
       "category": "should_not_activate",
-      "expected_behavior": "do-not-activate"
+      "expected_behavior": "do_not_activate: do-not-activate",
+      "type": "should_not_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-002",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "non-002",
@@ -117,7 +157,12 @@
       ],
       "reason": "benchmark scoring belongs to a benchmark workflow",
       "category": "should_not_activate",
-      "expected_behavior": "do-not-activate"
+      "expected_behavior": "do_not_activate: do-not-activate",
+      "type": "should_not_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-002",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "non-003",
@@ -129,7 +174,12 @@
       ],
       "reason": "broad repair loops belong to an improvement or hardening workflow",
       "category": "should_not_activate",
-      "expected_behavior": "do-not-activate"
+      "expected_behavior": "do_not_activate: do-not-activate",
+      "type": "should_not_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-002",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "non-004",
@@ -141,7 +191,12 @@
       ],
       "reason": "ordinary application-code review is outside the skill-change acceptance gate",
       "category": "should_not_activate",
-      "expected_behavior": "do-not-activate"
+      "expected_behavior": "do_not_activate: do-not-activate",
+      "type": "should_not_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-002",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "amb-001",
@@ -153,7 +208,12 @@
       ],
       "resolution": "proceed as a gate if candidate evidence is present; otherwise determine whether the user wants gate-only review, benchmarking, or implementation",
       "category": "ambiguous",
-      "expected_behavior": "conditional"
+      "expected_behavior": "clarify_or_activate only when candidate evidence and gate intent are present: conditional",
+      "type": "ambiguous",
+      "acceptance_criteria": [
+        "preserve contracts SCG-003",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "adv-001",
@@ -163,8 +223,13 @@
       "contract_ids": [
         "SCG-004"
       ],
-      "expected_behavior": "fail or require an explicit evidence-valid waiver policy; never hide failed evidence",
-      "category": "edge_case"
+      "expected_behavior": "activate_and_refuse invalid or unsafe acceptance behavior: fail or require an explicit evidence-valid waiver policy; never hide failed evidence",
+      "category": "edge_case",
+      "type": "edge_case",
+      "acceptance_criteria": [
+        "preserve contracts SCG-004",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "adv-002",
@@ -174,8 +239,13 @@
       "contract_ids": [
         "SCG-004"
       ],
-      "expected_behavior": "fail the frozen-identity gate; do not refresh the expected identity after observing drift",
-      "category": "edge_case"
+      "expected_behavior": "activate_and_refuse invalid or unsafe acceptance behavior: fail the frozen-identity gate; do not refresh the expected identity after observing drift",
+      "category": "edge_case",
+      "type": "edge_case",
+      "acceptance_criteria": [
+        "preserve contracts SCG-004",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "bnd-001",
@@ -185,8 +255,13 @@
       "contract_ids": [
         "SCG-005"
       ],
-      "expected_behavior": "reject the report path because the gate must not mutate the subject it is identifying",
-      "category": "edge_case"
+      "expected_behavior": "activate_and_refuse invalid or unsafe acceptance behavior: reject the report path because the gate must not mutate the subject it is identifying",
+      "category": "edge_case",
+      "type": "edge_case",
+      "acceptance_criteria": [
+        "preserve contracts SCG-005",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "adv-003",
@@ -196,8 +271,13 @@
       "contract_ids": [
         "SCG-004"
       ],
-      "expected_behavior": "strict gate fails because promotion receipt correspondence is blocking; do not let the candidate self-authorize promotion.",
-      "category": "edge_case"
+      "expected_behavior": "activate_and_refuse invalid or unsafe acceptance behavior: strict gate fails because promotion receipt correspondence is blocking; do not let the candidate self-authorize promotion.",
+      "category": "edge_case",
+      "type": "edge_case",
+      "acceptance_criteria": [
+        "preserve contracts SCG-004",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "hold-001",
@@ -207,8 +287,13 @@
       "contract_ids": [
         "SCG-001"
       ],
-      "expected_behavior": "semantic activation or boundary regression remains gate-relevant even when mechanical validation is green",
-      "category": "edge_case"
+      "expected_behavior": "activate_and_refuse invalid or unsafe acceptance behavior: semantic activation or boundary regression remains gate-relevant even when mechanical validation is green",
+      "category": "edge_case",
+      "type": "edge_case",
+      "acceptance_criteria": [
+        "preserve contracts SCG-001",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "act-008",
@@ -219,8 +304,13 @@
         "SCG-006"
       ],
       "expected_mode": "candidate-gate",
-      "expected_behavior": "review evaluator visibility and leakage; matching hashes alone do not establish blind-evaluation integrity",
-      "category": "should_activate"
+      "expected_behavior": "activate: review evaluator visibility and leakage; matching hashes alone do not establish blind-evaluation integrity",
+      "category": "should_activate",
+      "type": "should_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-006",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "non-005",
@@ -232,7 +322,12 @@
       ],
       "reason": "documentation rewriting belongs to a documentation or optimization workflow, not candidate acceptance",
       "category": "should_not_activate",
-      "expected_behavior": "do-not-activate"
+      "expected_behavior": "do_not_activate: do-not-activate",
+      "type": "should_not_activate",
+      "acceptance_criteria": [
+        "preserve contracts SCG-002",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     },
     {
       "id": "adv-004",
@@ -242,8 +337,13 @@
       "contract_ids": [
         "SCG-007"
       ],
-      "expected_behavior": "do not make an ecosystem-safe acceptance claim while a known consumer remains unresolved",
-      "category": "edge_case"
+      "expected_behavior": "activate_and_refuse invalid or unsafe acceptance behavior: do not make an ecosystem-safe acceptance claim while a known consumer remains unresolved",
+      "category": "edge_case",
+      "type": "edge_case",
+      "acceptance_criteria": [
+        "preserve contracts SCG-007",
+        "route consistently with the declared scenario type without inventing evidence or authority"
+      ]
     }
   ]
 }

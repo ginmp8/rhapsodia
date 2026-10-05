@@ -1,8 +1,10 @@
 # Search Candidate Gate
 
-Use when a caller submits one candidate produced by multi-candidate/evolution search. The gate remains stateless and candidate-local.
+## At a Glance
 
-Require search-candidate-context v3 for current search integrations. Record search/candidate identity, base and donor parents, operator, transformation ids, deterministic request signature, generation receipt, and frozen evaluator/scenario/policy identity. Validate with `scripts/validate_search_candidate_context.py` and verify the actual candidate bytes correspond to the supplied identity.
+- **Purpose:** Gate one search/evolution candidate independently of ranking, novelty, or survivor selection.
+- **Load when:** The caller supplies a candidate produced by multi-candidate or evolutionary search.
+- **Decision impact:** Search lineage never waives blocking regressions; repeated evaluator exposure can invalidate holdout claims, and each finalist still needs candidate-local identity, evidence, portability, safety, and compatibility checks.
 
 ## Search-specific evidence rules
 

@@ -1,6 +1,10 @@
 # Integration with Skill Improver
 
-Use when `skill-change-gate` participates in a measured improvement loop. Integration is protocol-based; no runtime dependency on another installed skill is required.
+## At a Glance
+
+- **Purpose:** Define the protocol boundary between a measured improvement loop and this read-only acceptance gate.
+- **Load when:** A candidate comes from iterative improvement, self-improvement, or any baseline/candidate measurement loop.
+- **Decision impact:** The improvement metric and change gate are independent conditions; frozen evaluator/policy identities, candidate-bound evidence, last-known-good recovery, and promotion receipts must stay outside candidate self-authorization.
 
 ## Role split
 

@@ -1,6 +1,10 @@
 # Waiver Policy
 
-A waiver is evidence of an authorized risk decision, not a mechanism for hiding failed evidence.
+## At a Glance
+
+- **Purpose:** Distinguish an authorized, bounded risk acceptance from an attempt to hide or bypass failed evidence.
+- **Load when:** A material finding may be accepted under policy instead of repaired before acceptance.
+- **Decision impact:** A waiver is valid only when candidate/policy/finding/authority-bound; identity drift, protected-evaluator mutation, receipt mismatch, unsafe path/secret exposure, fabricated evidence, contaminated holdout claims, and candidate self-authorization remain non-waivable failures.
 
 ## Required waiver fields
 

@@ -2,7 +2,10 @@
 
 ## At a Glance
 
-Freeze evaluators and material source identity before mutation. Compare the minimum arms needed for the claim, control environment drift, use repeated trials for stochastic reliability, keep holdouts independent, and separate structural, behavioral, runtime, and subjective evidence.
+- **Purpose:** Define how baseline/candidate evidence is frozen, compared, repeated, and interpreted before any improvement or reliability claim is accepted.
+- **Load when:** Designing or evaluating baseline-vs-candidate comparisons, stochastic/repeated trials, holdouts, evaluator independence, or runtime-sensitive evidence.
+- **Decision impact:** Determines evaluator/source freeze timing, comparison arms, environment comparability, repetition and holdout requirements, acceptance rules, and the strongest claim vocabulary the evidence can support.
+- **Do not load when:** The task only concerns package/output byte integrity and recovery; use `integrity-and-recovery.md` for that branch.
 
 ## Contents
 

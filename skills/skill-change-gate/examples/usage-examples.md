@@ -1,5 +1,11 @@
 # Usage Examples
 
+## At a Glance
+
+- **Purpose:** Calibrate how common evidence patterns map to gate statuses and caller actions.
+- **Load when:** The correct outcome format is unclear after applying the normative root instructions and rubric.
+- **Decision impact:** Examples illustrate expected classification only; they never override evidence identity, severity, policy, or acceptance contracts.
+
 ## Pass
 
 User: "Gate this candidate before acceptance. Baseline and candidate hashes match the frozen manifests, protected eval files did not change, validators passed, and the package receipt points to the candidate hash."
