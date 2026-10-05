@@ -1,5 +1,9 @@
 # Reproducibility Model
 
+## At a Glance
+
+Classify the target ceiling before adding controls. Move objective variance downward into scripts/schemas/validators, constrain heuristic choices with defaults and tie-breakers, preserve genuine model judgment behind evidence/rubrics, and pin external nondeterminism where feasible.
+
 ## Contents
 
 - Reproducibility ceilings
