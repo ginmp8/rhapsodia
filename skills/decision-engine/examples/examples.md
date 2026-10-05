@@ -1,6 +1,16 @@
 # Examples
 
-These examples calibrate shape and boundaries. They are not evidence that a host/model will produce the same answer.
+## At a Glance
+
+These examples calibrate valid `decision-engine/2` envelope shapes and boundary behavior. They are illustrative, candidate-visible material only: they do not prove that a host/model will reproduce the same decision.
+
+## Contents
+
+- Binary
+- Choice with a non-exhaustive option set
+- Ordinal score
+- Numeric score
+- Escalation
 
 ## Binary
 

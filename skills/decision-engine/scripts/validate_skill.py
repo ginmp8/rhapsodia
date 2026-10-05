@@ -42,7 +42,7 @@ REQUIRED={
  'scripts/validate_decision.py','scripts/validate_evals.py','scripts/validate_skill.py','scripts/package_skill.py',
  'tests/fixtures/decision-envelope-cases.json','tests/test_decision_contract.py',
  'tests/test_english_only_contract.py','tests/test_validate_skill_no_self_contamination.py',
- 'tests/test_test_suite_no_self_contamination.py'
+ 'tests/test_test_suite_no_self_contamination.py','tests/test_top100_contract.py'
 }
 
 def add(errors,code,msg): errors.append({'code':code,'message':msg})
@@ -68,6 +68,46 @@ def main():
     if not version.is_file() or not re.fullmatch(r'\d+\.\d+\.\d+\n?',version.read_text(encoding='utf-8')): add(errors,'SK010','VERSION must contain semantic version x.y.z')
     if skill.is_file() and 'Keep the package English-only.' not in skill.read_text(encoding='utf-8'):
         add(errors,'SK011','SKILL.md must preserve the English-only package contract')
+
+    # Discovery/control-plane contract: the complete SKILL.md must fit inside the
+    # first 100 physical lines, and all decision-critical sections must be present.
+    if skill.is_file():
+        skill_text=skill.read_text(encoding='utf-8')
+        skill_lines=skill_text.splitlines()
+        first100='\n'.join(skill_lines[:100])
+        if len(skill_lines)>100:
+            add(errors,'SK080',f'SKILL.md must fit within 100 physical lines; found {len(skill_lines)}')
+        required_top100=(
+            '## Mission','## Activation and boundaries','## Decision forms and statuses',
+            '## Required inputs','## Core invariants','## Decision workflow',
+            '## Output contract','## Stop conditions','## Progressive loading and validation'
+        )
+        missing_top100=[marker for marker in required_top100 if marker not in first100]
+        if missing_top100:
+            add(errors,'SK081',f'missing Top-100 control-plane sections: {missing_top100}')
+        direct_markdown=(
+            'references/behavior-contract.md','references/control-placement.md',
+            'references/decision-contract.md','references/evaluation-protocol.md',
+            'references/evidence-and-confidence.md','references/host-portability.md',
+            'references/maintenance-and-evidence.md','references/versioning-and-compatibility.md',
+            'references/migration-v1-to-v2.md','examples/examples.md'
+        )
+        missing_direct=[rel for rel in direct_markdown if rel not in skill_text]
+        if missing_direct:
+            add(errors,'SK082',f'required Markdown must be directly discoverable from SKILL.md: {missing_direct}')
+
+    # Long supporting Markdown needs preview-first navigation so partial reads are useful.
+    for md in sorted(root.rglob('*.md')):
+        if md == skill:
+            continue
+        lines=md.read_text(encoding='utf-8').splitlines()
+        if len(lines)>100:
+            preview='\n'.join(lines[:40])
+            missing=[]
+            if '## At a Glance' not in preview: missing.append('## At a Glance')
+            if '## Contents' not in preview: missing.append('## Contents')
+            if missing:
+                add(errors,'SK083',f'long Markdown lacks preview-first structure {md.relative_to(root)}: {missing}')
 
     # Conservative deterministic guard against Portuguese-language regressions.
     # Semantic review still owns the broader English-only claim.

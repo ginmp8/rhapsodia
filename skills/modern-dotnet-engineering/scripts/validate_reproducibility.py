@@ -59,6 +59,26 @@ REQUIRED_SKILL_MARKERS = [
     "evals/scenarios.json",
 ]
 
+REQUIRED_TOP100_MARKERS = [
+    "## Purpose",
+    "## Activation contract",
+    "## Baseline assumptions",
+    "## Mode router",
+    "## Core workflow",
+    "## Global rules",
+    "## Direct reference map",
+    "net10.0",
+    "C# 14",
+    "CancellationToken",
+    "DbContext",
+    "idempotency",
+    "untrusted input",
+    "references/34-production-readiness-checklist.md",
+    "references/35-decision-matrix.md",
+    "references/36-review-evidence-and-reproducibility.md",
+    "references/37-dotnet-ai-agents-mcp.md",
+]
+
 
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
@@ -99,6 +119,17 @@ def main() -> int:
             add("skill/marker-present", "pass", marker)
         else:
             add("skill/marker-missing", "fail", marker, {}, [f"add {marker} to SKILL.md"])
+
+    skill_lines = text.splitlines()
+    top100 = "\n".join(skill_lines[:100])
+    missing_top100 = [marker for marker in REQUIRED_TOP100_MARKERS if marker not in top100]
+    add(
+        "skill/top100-control-plane",
+        "pass" if not missing_top100 else "fail",
+        "SKILL.md first 100 physical lines",
+        {"line_count": len(skill_lines), "missing_markers": missing_top100},
+        ["move activation/routing/workflow/rules/direct references into the first 100 lines"] if missing_top100 else [],
+    )
 
     ref = root / "references" / "36-review-evidence-and-reproducibility.md"
     if ref.exists():

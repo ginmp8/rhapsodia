@@ -2,6 +2,22 @@
 
 Contract: `workflow-plan/v1`
 
+## At a Glance
+
+Compatibility contract for existing material orchestration workflows. It defines authority, acyclic stages, resource-conflict rules, finite budgets, semantic capabilities/degradation, and evidence identities. It is a proposed/accepted control-flow artifact, not proof that workers executed. New runtime-adaptive work should use `dynamic-workflow-plan/v1`; new reference-grounded checkpoint promotion belongs to `checkpoint-convergence`.
+
+## Contents
+
+- Required top-level fields
+- Authority
+- Stages
+- Dependency and conflict semantics
+- Verification isolation
+- Budgets
+- Capabilities and degradation
+- Evidence identities
+- Strategy consistency
+
 Use this contract for material task-specific orchestration. It is a proposed/accepted control-flow artifact, not proof that workers executed.
 
 ## Required top-level fields

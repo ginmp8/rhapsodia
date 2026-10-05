@@ -1,3 +1,10 @@
 interface:
-  display_name: "Adaptive Workflow Orchestration"
-  short_description: "Plan and validate bounded runtime workflow topology"
+  display_name: Adaptive Workflow Orchestration
+  short_description: Plan and validate bounded runtime workflow topology
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - CHAT
+  - CODEX
+  allow_implicit_invocation: true

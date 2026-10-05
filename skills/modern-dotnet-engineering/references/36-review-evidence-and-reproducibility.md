@@ -1,5 +1,17 @@
 # Review Evidence and Reproducibility Contract
 
+## At a Glance
+
+Use this contract whenever a .NET review or gate makes claims about correctness, security, performance, reliability, validation, or readiness. Bind claims to target/runtime identity, use the fixed evidence labels, separate severity from confidence, and never turn missing evidence into a pass. Findings require a concrete failure condition; style preference alone is not a defect.
+
+## Contents
+
+- evidence labels and source identity
+- finding identity, severity, and confidence
+- production/security verdict rules and tie-breakers
+- validation ladder plus performance/security claim discipline
+- regression discipline, claim vocabulary, and runtime identity
+
 ## Purpose
 
 Use this reference for code reviews, architecture reviews, production/security gates, and any claim about correctness, security, performance, reliability, or validation. It constrains process and evidence without pretending that engineering judgment can be fully deterministic.
