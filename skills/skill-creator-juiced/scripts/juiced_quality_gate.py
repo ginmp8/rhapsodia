@@ -33,6 +33,111 @@ TOP100_LIMIT = 100
 TOP100_BOUNDARY_TERMS = ("activation", "routing", "scope", "use when", "do not use", "modes", "mode selection")
 TOP100_EXECUTION_TERMS = ("workflow", "quick start", "procedure", "process", "steps", "execution")
 TOP100_RULE_TERMS = ("core rules", "rules", "constraints", "guardrails", "invariants", "requirements")
+PREVIEW_SUMMARY_HEADINGS = {"at a glance", "summary", "quick reference", "overview"}
+PREVIEW_CONTENTS_HEADINGS = {"contents", "table of contents", "section map"}
+PREVIEW_EXCEPTION_RE = re.compile(
+    r"<!--\s*context-preview-exception:\s*(generated|vendor|unsafe-to-rewrite)\s*-->",
+    re.IGNORECASE,
+)
+MARKDOWN_HEADING_RE = re.compile(r"^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
+CONTENTS_ITEM_RE = re.compile(r"^\s*[-*+]\s+(?:\[([^\]]+)\]\([^)]+\)|(.+?))\s*$")
+
+
+def normalize_heading_label(value: str) -> str:
+    value = re.sub(r"`([^`]*)`", r"\1", value)
+    value = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", value)
+    value = re.sub(r"<[^>]+>", "", value)
+    value = re.sub(r"[*_~]", "", value)
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def visible_markdown_lines(lines: list[str]):
+    in_fence = False
+    fence_char: str | None = None
+    for index, line in enumerate(lines):
+        stripped = line.lstrip()
+        fence = re.match(r"(`{3,}|~{3,})", stripped)
+        if fence:
+            marker_char = fence.group(1)[0]
+            if not in_fence:
+                in_fence = True
+                fence_char = marker_char
+            elif marker_char == fence_char:
+                in_fence = False
+                fence_char = None
+            continue
+        if not in_fence:
+            yield index, line
+
+
+def h2_headings(lines: list[str]) -> list[tuple[int, str]]:
+    headings: list[tuple[int, str]] = []
+    for index, line in visible_markdown_lines(lines):
+        match = MARKDOWN_HEADING_RE.match(line)
+        if match and len(match.group(1)) == 2:
+            headings.append((index, normalize_heading_label(match.group(2))))
+    return headings
+
+
+def contents_entries(lines: list[str], contents_index: int) -> list[str]:
+    entries: list[str] = []
+    for _index, line in visible_markdown_lines(lines[contents_index + 1 :]):
+        if MARKDOWN_HEADING_RE.match(line):
+            break
+        if not line.strip():
+            continue
+        match = CONTENTS_ITEM_RE.match(line)
+        if match:
+            entries.append(normalize_heading_label(match.group(1) or match.group(2)))
+            continue
+        if entries:
+            break
+        return []
+    return entries
+
+
+def validate_long_markdown_preview(md: Path, display_path: str) -> tuple[list[str], list[str]]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    lines = read_text(md).splitlines()
+    if len(lines) <= TOP100_LIMIT:
+        return errors, warnings
+
+    first40 = "\n".join(lines[:40])
+    exception = PREVIEW_EXCEPTION_RE.search(first40)
+    if exception:
+        warnings.append(f"long markdown preview exception declared ({exception.group(1).lower()}): {display_path}")
+        return errors, warnings
+
+    headings = h2_headings(lines)
+    summary_locations = [
+        index for index, label in headings
+        if index < 40 and label.casefold() in PREVIEW_SUMMARY_HEADINGS
+    ]
+    contents_locations = [
+        index for index, label in headings
+        if index < 40 and label.casefold() in PREVIEW_CONTENTS_HEADINGS
+    ]
+    if not summary_locations or not contents_locations or min(summary_locations) >= min(contents_locations):
+        errors.append(
+            f"long markdown requires an early summary followed by heading-derived contents within first 40 lines: {display_path}"
+        )
+        return errors, warnings
+
+    contents_index = min(contents_locations)
+    expected = [
+        label for _index, label in headings
+        if label.casefold() not in PREVIEW_SUMMARY_HEADINGS | PREVIEW_CONTENTS_HEADINGS
+    ]
+    actual = contents_entries(lines, contents_index)
+    expected_norm = [label.casefold() for label in expected]
+    actual_norm = [label.casefold() for label in actual]
+    if actual_norm != expected_norm:
+        errors.append(
+            "long markdown contents do not match material H2 headings in document order: "
+            f"{display_path}; expected={expected!r}; found={actual!r}"
+        )
+    return errors, warnings
 
 
 def check_top100_contract(target: Path, skill_md: Path) -> tuple[list[str], list[str]]:
@@ -60,13 +165,9 @@ def check_top100_contract(target: Path, skill_md: Path) -> tuple[list[str], list
     for md in sorted(target.rglob("*.md")):
         if md == skill_md or ".git" in md.parts:
             continue
-        md_lines = read_text(md).splitlines()
-        if len(md_lines) > TOP100_LIMIT:
-            first40 = "\n".join(md_lines[:40]).lower()
-            has_summary = any(token in first40 for token in ("## at a glance", "## summary", "## quick reference", "## overview"))
-            has_index = any(token in first40 for token in ("## contents", "## table of contents", "## section map"))
-            if not (has_summary and has_index):
-                warnings.append(f"long markdown lacks an early summary/index for partial preview: {md.relative_to(target)}")
+        preview_errors, preview_warnings = validate_long_markdown_preview(md, md.relative_to(target).as_posix())
+        errors.extend(preview_errors)
+        warnings.extend(preview_warnings)
 
         for _source, _link, resolved in local_markdown_links(target, md):
             if resolved.suffix.lower() == ".md" and resolved != skill_md.resolve() and resolved not in direct_markdown:

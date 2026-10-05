@@ -1,13 +1,19 @@
 # Reporting Contract
-
 ## At a Glance
-
-Read this file when the active workflow needs **Reporting Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Target, Source Trust Intake, Host Compatibility, Baseline, Source Integrity.
+Defines the required final Skill Booster optimization report, its evidence
+language, evaluation integrity, traceability, and promotion evidence.
 
 ## Contents
+- Report template
+- Evidence language
+- Pass ledger example
+- Run-state and strategy decision
+- Evaluation integrity
+- Research traceability
+- Promotion attestation
 
+## Report Template
+### Required sections
 - Target
 - Source Trust Intake
 - Host Compatibility
@@ -27,13 +33,6 @@ Primary topics: Target, Source Trust Intake, Host Compatibility, Baseline, Sourc
 - Package
 - Remaining Risks
 - Next Recommended Hypothesis
-- Evidence language
-- Pass ledger example
-- Run-state and strategy decision
-- Evaluation integrity
-- Research traceability
-- Promotion attestation
-
 
 Use this final report shape. Omit only sections that are truly not applicable, and state why when omission could be mistaken for an unrun gate.
 

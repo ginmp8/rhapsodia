@@ -48,9 +48,11 @@ Optimize by reordering, compressing, and moving branch detail outward. Do not de
 
 ## Supporting Markdown Previews
 
-For any `.md` over 100 lines, prefer an early `At a Glance`/summary and a contents/index. A partial preview should reveal the document purpose, major decisions, and section map before line 100.
+For every editable supporting `.md` over 100 physical lines, require an early `At a Glance`/summary followed by a `Contents`, `Table of Contents`, or `Section Map` within the first 40 lines. A partial preview must reveal the document purpose, major decisions, and section map before line 100.
 
-Treat missing preview structure as a progressive-disclosure finding, not automatic proof that behavior is wrong. For complete optimization, resolve or explicitly disposition the finding.
+Derive the contents list from the document's actual material `##` headings outside fenced code. Exclude the document title and preview headings (`At a Glance`/`Summary`/`Quick Reference`/`Overview` plus the contents heading itself). Every remaining H2 must appear exactly once, in document order, and the contents list must not name sections that do not exist. H3+ entries are optional unless the document explicitly needs a deeper map. Revalidate the list whenever headings change.
+
+Treat missing preview structure or contents/heading drift as a structural validation failure for editable Markdown. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; record the exception and surface it as a warning rather than silently skipping the file.
 
 ## One-Level Reference Topology
 

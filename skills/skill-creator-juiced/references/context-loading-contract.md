@@ -48,12 +48,18 @@ The first 100 lines may summarize detailed rules that are expanded later. Do not
 
 ## Supporting Markdown
 
-For a supporting `.md` file over 100 lines:
+For every editable supporting `.md` file over 100 physical lines:
 
-- put `At a Glance`, `Summary`, `Quick Reference`, or equivalent near the top;
-- put `Contents`/`Table of Contents` or an equivalent section map near the top;
+- put `At a Glance`, `Summary`, `Quick Reference`, or `Overview` near the top;
+- immediately follow it with `Contents`, `Table of Contents`, or `Section Map`, with both headings inside the first 40 lines;
+- derive the contents entries from the document's actual material `##` headings outside fenced code;
+- exclude the document title and preview headings themselves;
+- include every remaining H2 exactly once, preserve document order, and do not list sections that do not exist;
+- revalidate the contents list whenever headings change; H3+ entries remain optional unless a deeper map is intentionally needed;
 - expose the document purpose, decision criteria, and major sections before line 100;
 - keep deep examples, schemas, and long rationale later.
+
+Missing preview structure or contents/heading drift is a structural readiness failure for editable Markdown, not merely an editorial warning. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; the validator must surface the exception as a warning.
 
 For shorter Markdown, the same preview-first pattern is preferred when it improves scanning but is not mandatory.
 
@@ -80,6 +86,6 @@ A deviation is acceptable only when compression would materially reduce correctn
 For packages created or redesigned by Skill Creator Juiced:
 
 - fail readiness when a `SKILL.md` over 100 lines lacks early boundary, execution, and rule/control signals;
-- warn on supporting Markdown over 100 lines without an early summary/index;
+- fail editable supporting Markdown over 100 lines when the early summary/heading-derived contents contract is missing or stale; warn only for an explicit generated/vendor/unsafe-to-rewrite exception;
 - warn when required Markdown is not directly discoverable from `SKILL.md` or when a deeper discovery chain appears;
 - keep activation evaluation separate from instruction-following and outcome evaluation.
