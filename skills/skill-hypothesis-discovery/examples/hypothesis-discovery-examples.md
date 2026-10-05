@@ -1,5 +1,28 @@
 # Hypothesis Discovery Examples
 
+## At a Glance
+
+- **Purpose:** Calibrate classification and decision behavior with concrete examples; these examples are explanatory fixtures, not executed benchmark or runtime evidence.
+- **Load when:** A borderline classification, saturation, deduplication, conflict, evaluator, research, falsification, deep-discovery, or evidence-gap decision needs an example after the normative root/reference rules are known.
+- **Decision impact:** Helps interpret the normative contracts consistently but cannot override them, establish behavioral success, or substitute for validator/test evidence.
+
+## Contents
+
+- 1. Saturated metric
+- 2. Weak activation boundary with measured false positives
+- 3. Evidence gap, not a hypothesis
+- 4. Duplicate hypotheses
+- 5. Conflicting hypotheses
+- 6. Missing evaluator
+- 7. No measurable effect
+- 8. Ranking tie
+- 9. No mutation recommended
+- 10. Bounded research closes a source-resolvable gap
+- 11. Validation leakage
+- 12. Falsification before research-backed handoff
+- 13. Deep-discovery is not deep research
+- 14. Evidence-gap priority
+
 These examples show classification and decision behavior. They are not executed benchmark evidence.
 
 ## 1. Saturated metric
