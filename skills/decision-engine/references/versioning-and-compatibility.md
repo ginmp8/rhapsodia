@@ -10,7 +10,7 @@ Use semantic versioning for the skill package:
 - minor: additive capability that keeps existing valid inputs/results compatible;
 - major: activation/authority changes or incompatible skill-package behavior.
 
-The current package version is `2.0.0` because the v2 contract intentionally makes breaking semantic changes.
+The current package version is `2.0.1`. The v2 envelope remains unchanged; this patch improves context loading, Top-100 control-plane validation, and preview-first documentation without changing public decision semantics.
 
 ## Decision envelope version
 

@@ -1,9 +1,14 @@
 interface:
   display_name: Modern .NET Engineering
-  short_description: C#/.NET 10 architecture, APIs, EF Core, security, reliability, testing,
-    Native AOT, Aspire, AI/MCP, and production engineering guidance.
+  short_description: C#/.NET 10 architecture, APIs, EF Core, security, reliability,
+    testing, Native AOT, Aspire, AI/MCP, and production engineering guidance.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
   brand_color: '#512BD4'
 policy:
   allow_implicit_invocation: true
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas

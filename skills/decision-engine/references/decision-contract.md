@@ -1,5 +1,17 @@
 # Decision Contract
 
+## At a Glance
+
+Defines the canonical `decision-engine/2` semantics for `binary`, `choice`, and `score`; the four statuses; materiality; result fields; and deterministic tie-breakers. Preserve caller-supplied decision surfaces, use null type-specific values plus `confidence: null` for non-decided outcomes, and never force a winner when evidence or alternatives are insufficient.
+
+## Contents
+
+- Canonical types: Binary, Choice, Score
+- Status
+- Materiality
+- Canonical result fields
+- Decision policy and tie-breakers
+
 ## Canonical types
 
 ### Binary

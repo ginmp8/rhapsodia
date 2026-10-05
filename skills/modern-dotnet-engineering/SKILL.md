@@ -7,65 +7,61 @@ description: use for c#/.net 10 software engineering guidance, code review, arch
 
 ## Purpose
 
-Use this skill to produce practical, production-oriented C#/.NET guidance. Optimize for clear code, explicit business behavior, current supported .NET 10 servicing, observable operations, secure defaults, bounded complexity, reproducible builds, and evidence-based review.
-
-## Baseline assumptions
-
-- Assume stable `net10.0`, C# 14, ASP.NET Core 10, and EF Core 10 unless the user supplies another target. Treat the current servicing patch as part of the supported production baseline; reverify support/patch status when freshness matters.
-- Keep nullable reference types, implicit usings, central package management, and warnings-as-errors unless repository policy says otherwise.
-- Prefer Minimal APIs for new bounded HTTP surfaces unless Controllers solve a concrete requirement better.
-- Prefer simple, explicit designs and a modular single deployable before Clean Architecture, DDD, CQRS, mediator, distributed messaging, microservices, caching, reflection-heavy infrastructure, or new abstractions.
-- Treat production concerns as first-class: authorization, resource limits, idempotency, observability, graceful shutdown, secret handling, auditability, validation, dependency risk, and rollback/forward recovery.
-- For reproducible repository work, identify the selected SDK policy, target framework, package graph, provider/runtime versions, and deployment model when they can change the answer. Pin the stable SDK with global.json when the repository requires repeatable builds; do not silently consume previews or RCs.
-- Do not optimize for older .NET versions unless the user asks for compatibility or migration. For unsupported or near-EOL targets, state the lifecycle risk rather than backporting modern guidance silently.
+Produce practical, production-oriented C#/.NET guidance. Optimize for explicit behavior, current supported .NET servicing, secure defaults, bounded complexity, observable operations, reproducible builds, and evidence-based review. Prefer the simplest complete design that satisfies the actual requirement.
 
 ## Activation contract
 
-Activate when the primary task materially depends on C#, .NET, ASP.NET Core, EF Core, .NET runtime/SDK behavior, NuGet/project structure, .NET testing/deployment, Native AOT, Aspire, or .NET-specific AI/agent/MCP engineering.
+Activate when the primary task materially depends on C#, .NET, ASP.NET Core, EF Core, runtime/SDK behavior, NuGet/project structure, .NET testing/deployment, Native AOT, Aspire, or .NET-specific AI/agent/MCP engineering.
 
-Do not activate for:
+Do not activate for non-.NET implementation, generic writing/artifact work, stack-agnostic architecture, or cloud/database/security/AI/MCP/frontend questions where .NET-specific behavior would not change the answer. If the stack is unspecified and runtime choice is material, do not silently force .NET. Load AI/agent/MCP guidance only when model APIs, agents, RAG, tool execution, or MCP are actually in scope.
 
-- non-.NET implementation work;
-- generic writing or artifact-formatting tasks;
-- stack-agnostic architecture where .NET-specific behavior would not change the answer;
-- general cloud, database, security, AI, MCP, or frontend questions with no meaningful .NET dimension.
+## Baseline assumptions
 
-Boundary rule: if the stack is unspecified and the recommendation would materially change by runtime/framework, do not silently force .NET. State the assumption only when low-risk and obvious; otherwise request the missing stack/version evidence.
-
-AI boundary: load .NET AI/agent/MCP guidance only when the request materially involves model APIs, agents, RAG, tool execution, or MCP. Do not inject AI patterns into ordinary .NET application work.
+- Default to stable `net10.0`, C# 14, ASP.NET Core 10, and EF Core 10 unless the user/repository specifies another target. Reverify lifecycle, current servicing patch, prerelease status, or security facts when freshness matters; previews/RCs never silently replace the stable/requested baseline.
+- Preserve repository policy for nullable references, implicit usings, central package management, analyzers, warnings-as-errors, lockfiles, SDK selection, and deployment model.
+- Prefer Minimal APIs for new bounded HTTP surfaces unless Controllers solve a concrete requirement better.
+- Prefer a modular single deployable with explicit boundaries before Clean Architecture, CQRS/mediator, DDD ceremony, distributed messaging, microservices, caching, reflection-heavy infrastructure, Aspire, Native AOT, or new abstractions.
+- Treat authorization, resource limits, idempotency, observability, graceful shutdown, secrets, dependency risk, migrations, compatibility, and rollback/forward recovery as production concerns, not optional polish.
 
 ## Mode router
 
-Choose exactly one primary mode before answering:
+Choose exactly one primary mode:
 
 | Mode | Select when |
 |---|---|
-| `quick-guidance` | focused question, concept, API choice, version/lifecycle choice, or concise recommendation |
-| `code-review` | concrete code, diff, repository, PR, stack trace, or implementation is being inspected |
-| `architecture-design` | boundaries, components, dependencies, data flow, scalability, distribution, or system shape are the main question |
-| `implementation-plan` | the user wants sequencing, file layout, migration/refactor steps, or an execution plan |
-| `production-gate` | the user asks whether code/system is production-ready, secure enough, deployable, supportable, or should be blocked |
+| `quick-guidance` | focused question, API/version/lifecycle choice, or concise recommendation |
+| `code-review` | concrete code, diff, repository, PR, stack trace, or implementation is inspected |
+| `architecture-design` | boundaries, dependencies, data flow, scalability, distribution, or system shape are central |
+| `implementation-plan` | sequencing, file layout, migration/refactor steps, or execution planning is requested |
+| `production-gate` | production readiness, security, deployability, or supportability needs a verdict |
 
-Routing precedence when several appear applicable:
-
-1. explicit production/security/supportability go-no-go request -> `production-gate`;
-2. concrete artifact with requested findings -> `code-review`;
-3. requested implementation sequence -> `implementation-plan`;
-4. requested system/design decision -> `architecture-design`;
-5. otherwise -> `quick-guidance`.
-
-For mixed requests, keep one primary mode and add only the secondary sections needed to answer the request. Do not merge every output contract into one response.
+Precedence: go/no-go -> `production-gate`; concrete artifact findings -> `code-review`; execution sequence -> `implementation-plan`; design decision -> `architecture-design`; otherwise -> `quick-guidance`. Mixed requests keep one primary mode and only the necessary secondary sections.
 
 ## Core workflow
 
-1. Establish the supplied target identity: repository/file/revision, SDK/runtime/TFM, framework/provider/package versions, deployment model, and relevant constraints when available. For repository/file reviews, prefer an exact commit or immutable supplied snapshot when practical; if the source changes, treat earlier evidence as stale and re-baseline affected conclusions.
-2. For freshness-sensitive support, prerelease, security, package, Native AOT, or framework-behavior claims, verify the current official source when the answer depends on the latest state. Do not hardcode a historical patch/version as timeless policy.
-3. Load only the references needed for the selected mode and topic. Do not load all references for simple questions; load `references/37-dotnet-ai-agents-mcp.md` only for relevant AI/agent/MCP work.
+1. Establish target identity and relevant evidence: repository/file/revision, SDK/runtime/TFM, framework/provider/package versions, deployment model, constraints, and repository instructions.
+2. Verify current official sources for freshness-sensitive lifecycle, support, security, package, Native AOT, or framework-behavior claims.
+3. Load only the directly relevant references; never load the whole knowledge base for a focused question.
 4. Apply `references/35-decision-matrix.md` before adding patterns, dependencies, layers, caches, mediators, queues, distributed boundaries, Aspire, Native AOT, or AI/MCP infrastructure.
-5. Separate evidence from inference using `references/36-review-evidence-and-reproducibility.md`. For code/repository gates, SDK identity and dependency-graph evidence are part of reproducibility when they can affect build/restore/analyzer behavior.
-6. Prefer the smallest complete change or design that satisfies the business need and preserves existing contracts unless change is explicitly requested.
-7. Validate at the lowest reliable layer available: restore/build -> focused tests -> analyzers/security/dependency checks -> provider/runtime smoke -> performance/load evidence -> production telemetry. Passing an earlier layer never implies later layers pass.
-8. For reviews and gates, stop escalating certainty when required evidence is missing. Mark it `blocked` or `planned`; do not convert absence of evidence into a pass.
+5. Separate evidence from inference with `references/36-review-evidence-and-reproducibility.md`; source/SDK/package/provider/runtime identity is part of the evidence boundary when it can change behavior.
+6. Prefer the smallest complete change that preserves existing contracts unless the request explicitly includes migration/breaking change work.
+7. Validate bottom-up: restore/build -> focused tests -> analyzers/security/dependency checks -> provider/runtime smoke -> performance/load evidence -> production telemetry. Earlier layers never prove later ones.
+8. When required evidence is missing, use `blocked` or `planned`; never convert uncertainty into a pass.
+
+## Global rules
+
+- Keep business rules out of endpoints/controllers, EF configuration/migrations, infrastructure adapters, Aspire ServiceDefaults, and model prompts when an application/domain model exists; do not expose EF entities directly from public APIs.
+- Propagate `CancellationToken` through I/O/long-running work unless a boundary explicitly owns cancellation. Treat `DbContext` as scoped, short-lived, and not thread-safe; query filters are data-scope conveniences, never the sole authorization boundary.
+- Prefer deployment-controlled migrations for important systems; startup migration needs explicit concurrency, privilege, and deployment justification.
+- Never log secrets, tokens, cookies, private keys, full connection strings, unnecessary PII, or sensitive prompt/tool content. Prefer identity-based access and managed secret stores over long-lived static credentials.
+- Retries require operation-semantic justification; state-changing operations need idempotency or equivalent protection. Use outbox/dead-letter/retry limits when the failure model requires them, and bounded queues/channels with explicit backpressure when producers can outrun consumers.
+- Treat model output/tool arguments as untrusted input. Authorization, schema validation, tenant/resource checks, and destructive-action controls must remain executable code/policy outside prompts.
+- Preserve public contracts, migrations, package policy, architecture boundaries, tests, analyzers, audit/security controls, and compatibility requirements unless the requested change explicitly owns their migration/impact.
+- Do not add generic repositories, CQRS/mediator, DDD ceremony, caching, eventing, microservices, Aspire, Native AOT, source-generation-heavy infrastructure, or AI/MCP abstractions without a concrete need supported by the decision matrix.
+
+## Direct reference map
+
+Load details directly from `SKILL.md`; required knowledge must not depend on a Markdown-to-Markdown chain. Start with: lifecycle/SDK `references/03-dotnet-10-baseline.md`; EF/migrations `references/09-ef-core-10-persistence.md`; APIs/authorization/limits `references/11-aspnet-core-10-api-design.md`; Minimal APIs `references/12-minimal-apis-net10.md`; security `references/15-security-auth-secrets-sensitive-data.md`; supply chain/NuGet `references/18-supply-chain-dependencies-cicd-scripts.md`; resilience/retries `references/21-resilience-timeout-retry-circuitbreaker-ratelimit.md`; testing `references/26-testing-modern-tooling.md`; deployment/Aspire `references/28-deployment-containers-healthchecks-shutdown.md`; AOT/trimming `references/29-aot-trimming-reflection-source-generators.md`; production gate `references/34-production-readiness-checklist.md`; design decisions `references/35-decision-matrix.md`; review evidence `references/36-review-evidence-and-reproducibility.md`; .NET AI/agents/MCP `references/37-dotnet-ai-agents-mcp.md`. The complete one-level topic index follows.
 
 ## Progressive reference loading
 
@@ -213,24 +209,6 @@ approved | approved with reservations | blocked
 ```
 
 Apply the verdict rules in `references/34-production-readiness-checklist.md`. Missing evidence for a required gate is not equivalent to a passing gate.
-
-## Global rules
-
-- Do not put business rules in endpoints, controllers, EF configurations, migrations, infrastructure adapters, Aspire ServiceDefaults, or model prompts when an application/domain model exists.
-- Do not return EF entities directly from public APIs.
-- Do not introduce generic repositories, mediator, CQRS, DDD, outbox, caching, eventing, microservices, Aspire, Native AOT, source-generation-heavy infrastructure, or AI/MCP abstractions unless the decision matrix supports the concrete need.
-- Always propagate `CancellationToken` through I/O and long-running operations unless a boundary intentionally owns cancellation semantics and that exception is explicit.
-- Treat `DbContext` as scoped, short-lived, and not thread-safe. Treat global/named query filters as data-scope conveniences, never as the sole authorization boundary.
-- Prefer deployment-controlled database migrations for important systems; application-startup migration requires an explicit concurrency/privilege/deployment justification.
-- Prefer structured logs; never log secrets, bearer tokens, cookies, private keys, full connection strings, unnecessary PII, or sensitive prompt/tool content.
-- Prefer identity-based access and managed secret stores over long-lived static credentials.
-- For external side effects after database writes, consider outbox, idempotency, retry limits, and dead-letter handling when the failure model requires them.
-- Retries must be justified by operation semantics. Never assume POST or another state-changing operation is safe to retry without idempotency or equivalent protection.
-- Use bounded in-process queues/channels when producers can outrun consumers; define saturation/backpressure behavior instead of allowing unbounded memory growth.
-- Prefer compile-time generation over runtime reflection only when it materially improves AOT/trimming compatibility, startup, hot-path performance, or contract safety. Simpler reflection at startup/tooling boundaries can be the better design.
-- For .NET 10 features, explain the concrete benefit and any readability, provider, migration, AOT, trimming, compatibility, or operational risk.
-- For AI/agent/MCP work, treat model output and tool arguments as untrusted input; executable authorization, schema validation, tenant/resource checks, and destructive-action controls must live outside prompt instructions.
-- Preserve existing public contracts, migrations, package policies, and architectural boundaries unless changing them is part of the request and migration/compatibility impact is addressed.
 
 ## Stop conditions
 

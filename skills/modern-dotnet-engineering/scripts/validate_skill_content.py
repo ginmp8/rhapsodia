@@ -44,6 +44,29 @@ REFERENCE_FILES = [
     '37-dotnet-ai-agents-mcp.md',
 ]
 
+TOP100_REQUIRED_MARKERS = [
+    '## Purpose',
+    '## Activation contract',
+    '## Baseline assumptions',
+    '## Mode router',
+    '## Core workflow',
+    '## Global rules',
+    '## Direct reference map',
+    'net10.0',
+    'C# 14',
+    'modular single deployable',
+    'CancellationToken',
+    'DbContext',
+    'idempotency',
+    'untrusted input',
+    'references/34-production-readiness-checklist.md',
+    'references/35-decision-matrix.md',
+    'references/36-review-evidence-and-reproducibility.md',
+    'references/37-dotnet-ai-agents-mcp.md',
+]
+
+TOP100_MAX_SKILL_LINES = 500
+
 # These markers make the research integration mechanically regression-testable.
 # Each tuple is: relative path -> material knowledge that must remain present.
 REQUIRED_KNOWLEDGE_MARKERS = {
@@ -141,6 +164,21 @@ def main() -> int:
         for ref in REFERENCE_FILES:
             if f'references/{ref}' not in text:
                 errors.append(f'SKILL.md does not reference {ref}')
+
+        lines = text.splitlines()
+        if len(lines) > TOP100_MAX_SKILL_LINES:
+            errors.append(f'SKILL.md exceeds {TOP100_MAX_SKILL_LINES} lines: {len(lines)}')
+        top100 = '\n'.join(lines[:100])
+        for marker in TOP100_REQUIRED_MARKERS:
+            if marker not in top100:
+                errors.append(f'SKILL.md top-100 missing marker: {marker}')
+
+    for md in sorted((root / 'references').glob('*.md')):
+        md_lines = md.read_text(encoding='utf-8').splitlines()
+        if len(md_lines) > 100:
+            preview = '\n'.join(md_lines[:40])
+            if '## At a Glance' not in preview or '## Contents' not in preview:
+                errors.append(f'long reference missing early At a Glance/Contents preview: {md.name}')
 
     for index, ref in enumerate(REFERENCE_FILES, start=1):
         if not ref.startswith(f'{index:02d}-'):
