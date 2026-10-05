@@ -42,6 +42,57 @@ PORTUGUESE_MARKERS = [
     "se" + "nha", "cha" + "ve", "inje" + "cao",
 ]
 
+TOP100_REQUIRED_HEADINGS = [
+    "## Mission",
+    "## Activation and routing",
+    "## Mode router",
+    "## Quick start",
+    "## Critical rules",
+    "## Direct resource map",
+]
+TOP100_REQUIRED_MODES = [
+    "pr-risk-review",
+    "flow-bug-hunt",
+    "project-wide-audit",
+    "security-threat-review",
+    "stress-harness-design",
+    "quick-triage",
+]
+TOP100_DIRECT_REFERENCES = [
+    "references/review-workflow.md",
+    "references/reproducible-review-contract.md",
+    "references/pr-and-code-rubric.md",
+    "references/async-flow-analysis.md",
+    "references/security-threat-model.md",
+    "references/csharp-dotnet-hotspots.md",
+    "references/stress-harness.md",
+    "references/verification-coverage.md",
+    "references/security-taxonomy.md",
+    "references/supply-chain-and-ci.md",
+    "references/external-tool-evidence.md",
+    "references/api-and-business-abuse.md",
+    "references/output-contracts.md",
+]
+TOP100_CRITICAL_ANCHORS = {
+    "evidence-first finding discipline": ("evidence over speculation",),
+    "static-vs-measured provenance": ("static source inspection is `observed`, never `measured`",),
+    "anti-fabrication boundary": ("never fabricate findings",),
+    "future-issue treatment boundary": ("future issue does not reduce severity",),
+    "secret redaction": ("never reproduce secrets",),
+    "safe stop boundary": ("stop, narrow, or switch to a safe plan",),
+    "bounded hypothesis search": ("keep bug hunting bounded",),
+    "external analyzer evidence discipline": ("external analyzer output is evidence, not authority",),
+    "taxonomy evidence boundary": ("taxonomy never substitutes",),
+    "portable semantic core": ("semantic core portable",),
+}
+LONG_MARKDOWN_PREVIEW_FIELDS = (
+    "## At a Glance",
+    "**Purpose:**",
+    "**Load when:**",
+    "**Decision impact:**",
+    "## Contents",
+)
+
 
 def fail(message: str) -> None:
     print(f"FAIL: {message}")
@@ -52,6 +103,83 @@ def text_files(root: Path):
     for path in root.rglob("*"):
         if path.is_file() and (path.suffix in TEXT_SUFFIXES or path.name.endswith(".template")):
             yield path
+
+
+def material_h2_headings(text: str) -> list[str]:
+    headings: list[str] = []
+    in_fence = False
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if not in_fence and line.startswith("## "):
+            headings.append(line[3:].strip())
+    return headings
+
+
+def contents_entries(text: str) -> list[str]:
+    lines = text.splitlines()
+    try:
+        start = next(i for i, line in enumerate(lines) if line.strip() == "## Contents") + 1
+    except StopIteration:
+        return []
+    entries: list[str] = []
+    in_fence = False
+    for line in lines[start:]:
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if not in_fence and line.startswith("## "):
+            break
+        if not in_fence and stripped.startswith("- "):
+            entries.append(stripped[2:].strip())
+    return entries
+
+
+def validate_top100(skill_text: str) -> None:
+    lines = skill_text.splitlines()
+    if len(lines) <= 100:
+        return
+    top100 = "\n".join(lines[:100])
+    top100_lower = top100.lower()
+    for heading in TOP100_REQUIRED_HEADINGS:
+        if heading not in top100:
+            fail(f"Top-100 contract missing heading within first 100 lines: {heading}")
+    if "do not use this skill" not in top100_lower:
+        fail("Top-100 contract must expose an explicit non-use boundary")
+    for mode in TOP100_REQUIRED_MODES:
+        if mode not in top100:
+            fail(f"Top-100 contract missing mode: {mode}")
+    for ref in TOP100_DIRECT_REFERENCES:
+        if ref not in top100:
+            fail(f"Top-100 direct resource map missing required reference: {ref}")
+    for label, anchors in TOP100_CRITICAL_ANCHORS.items():
+        if not any(anchor.lower() in top100_lower for anchor in anchors):
+            fail(f"Top-100 contract missing critical rule: {label}")
+
+
+def validate_long_markdown_previews(root: Path) -> None:
+    for path in sorted(root.rglob("*.md")):
+        if path.name == "SKILL.md":
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        lines = text.splitlines()
+        if len(lines) <= 100:
+            continue
+        rel = path.relative_to(root)
+        first40 = "\n".join(lines[:40])
+        for field in LONG_MARKDOWN_PREVIEW_FIELDS:
+            if field not in first40:
+                fail(f"long Markdown preview missing {field!r} in first 40 lines: {rel}")
+        actual = [h for h in material_h2_headings(text) if h not in {"At a Glance", "Contents"}]
+        listed = contents_entries(text)
+        if listed != actual:
+            fail(
+                f"long Markdown Contents must exactly match material H2 headings in {rel}: "
+                f"listed={listed!r} actual={actual!r}"
+            )
 
 
 def main() -> int:
@@ -86,6 +214,9 @@ def main() -> int:
     description = re.search(r"description:\s*(.*)", fm)
     if not description or len(description.group(1).strip()) < 80:
         fail("frontmatter description is missing or too short")
+
+    validate_top100(skill_text)
+    validate_long_markdown_previews(root)
 
     for path in text_files(root):
         text = path.read_text(encoding="utf-8", errors="ignore")

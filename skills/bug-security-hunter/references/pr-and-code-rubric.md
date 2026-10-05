@@ -1,5 +1,23 @@
 # PR and Code Rubric
 
+## At a Glance
+
+- **Purpose:** Define the PR/diff review sweep, finding treatment, severity/verdict discipline, and language-neutral defect patterns used by `pr-risk-review`.
+- **Load when:** Reviewing a PR, diff, code snippet, or repository area where introduced/changed risk and merge disposition matter.
+- **Decision impact:** Determines what surfaces must be inspected, how PR findings are classified/treated, and when the review can approve, request changes, or require more context.
+
+## Contents
+
+- Aggressive PR review posture
+- Visual severity and treatment
+- PR review sequence
+- Review dimensions adapted from PR review discipline
+- Language-neutral bug patterns
+- Integration and data hazards
+- Severity, verdict, and expected treatment
+- PR verdict guide
+- Suggested PR comment guidance
+
 ## Aggressive PR review posture
 
 Review for high recall on real defects. Assume the PR can fail in production until the supplied evidence shows otherwise, but keep false positives under control with evidence labels.
