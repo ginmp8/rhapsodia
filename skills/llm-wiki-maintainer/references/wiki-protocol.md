@@ -1,6 +1,25 @@
 # Wiki Protocol
 
-Use this reference for concrete structure, page contracts, naming, index/log behavior, and operation sequencing. Load `reproducibility-protocol.md` whenever ingestion or mutation needs stable identities, receipts, recovery, migration, or rerun guarantees.
+## At a Glance
+
+- **Purpose:** Define the maintained wiki structure and concrete contracts for schema, page types/frontmatter, links, index/log behavior, and ingest/query/batch sequencing.
+- **Load when:** Load when creating a new wiki, creating/updating canonical pages, changing index/log entries, or deciding the concrete shape/order of ingest, query persistence, or batch work.
+- **Decision impact:** Determines required directories/fields, page and log contracts, compatibility behavior, and the exact derived-state updates an operation must stage before validation.
+- **Do not load when:** Do not use it as the source of truth for evidence precedence or transaction mechanics; those are owned by the provenance and reproducibility references.
+
+## Contents
+
+- Default Structure
+- `WIKI_SCHEMA.md` Contract
+- Canonical frontmatter for the default schema
+- Page Contracts
+- Conflict representation
+- Schema v2 to v3 compatibility
+- `wiki/index.md`
+- `wiki/log.md`
+- Ingest Update Algorithm
+- Query Persistence Rule
+- Batch Ingest
 
 ## Default Structure
 

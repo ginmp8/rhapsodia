@@ -1,6 +1,22 @@
 # Usage Scenarios
 
-These examples calibrate expected behavior. They are examples, not executed evaluation results.
+## At a Glance
+
+- **Purpose:** Calibrate expected routing and observable behavior for representative initialize, ingest, query, lint, drift, conflict, and non-activation scenarios.
+- **Load when:** Load when examples would clarify how the control plane should behave or when reviewing activation/behavior coverage.
+- **Decision impact:** Provides concrete calibration only; it may clarify expected actions but cannot override `SKILL.md`, source evidence, schema contracts, or executed validation.
+- **Do not load when:** Do not treat examples as executed evaluation results or frozen acceptance evidence.
+
+## Contents
+
+- 1. Initialize a research wiki
+- 2. First ingest with reproducible identity
+- 3. Idempotent reingestion
+- 4. Manual page drift
+- 5. Conflicting sources
+- 6. Cross-source query with persistence
+- 7. Health check
+- Non-activation examples
 
 ## 1. Initialize a research wiki
 

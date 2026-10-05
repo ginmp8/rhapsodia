@@ -20,6 +20,42 @@ REQUIRED_SECTIONS = [
     "## Supporting references",
 ]
 
+TOP_100_REQUIRED_MARKERS = [
+    "## Scope",
+    "## Core rule",
+    "## Decision control model",
+    "## Expected inputs",
+    "## Mode-specific behavior",
+    "## Operating workflow",
+    "## Evidence and context policy",
+    "## Validation checklist",
+    "## Stop Conditions",
+    "## Progressive loading",
+    "## Output contracts",
+    "smallest sufficient change",
+    "Do not manufacture determinism",
+    "Do not invent missing repository or runtime facts",
+    "generic passing suite does not prove",
+    "explicit authority and a recovery path",
+    "Do not repeat secrets",
+    "stricter domain-specific",
+]
+
+TOP_100_REQUIRED_REFS = [
+    "references/coding-discipline.md",
+    "references/decision-variance-model.md",
+    "references/context-and-evidence-policy.md",
+    "references/response-contracts.md",
+    "references/validation-and-stop-conditions.md",
+    "references/activation-scenarios.md",
+]
+
+LONG_MD_PREVIEW_SIGNALS = [
+    "- **Purpose:**",
+    "- **Load when:**",
+    "- **Decision impact:**",
+]
+
 REQUIRED_PATHS = [
     "references/coding-discipline.md",
     "references/context-and-evidence-policy.md",
@@ -247,6 +283,73 @@ def validate_engineering_discipline_suite(path: Path) -> str | None:
     return None
 
 
+def validate_top_100(text: str) -> str | None:
+    top_100 = "\n".join(text.splitlines()[:100])
+    missing_markers = [marker for marker in TOP_100_REQUIRED_MARKERS if marker not in top_100]
+    if missing_markers:
+        return "Top-100 control plane missing markers: " + ", ".join(missing_markers)
+    missing_refs = [ref for ref in TOP_100_REQUIRED_REFS if ref not in top_100]
+    if missing_refs:
+        return "Top-100 control plane missing direct references: " + ", ".join(missing_refs)
+    return None
+
+
+def h2_headings_outside_fences(text: str) -> list[str]:
+    headings: list[str] = []
+    in_fence = False
+    fence: str | None = None
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            marker = stripped[:3]
+            if not in_fence:
+                in_fence = True
+                fence = marker
+            elif marker == fence:
+                in_fence = False
+                fence = None
+            continue
+        if not in_fence and line.startswith("## "):
+            headings.append(line[3:].strip())
+    return headings
+
+
+def contents_entries(text: str) -> list[str] | None:
+    lines = text.splitlines()
+    try:
+        start = lines.index("## Contents") + 1
+    except ValueError:
+        return None
+    entries: list[str] = []
+    for line in lines[start:]:
+        if line.startswith("## "):
+            break
+        if line.startswith("- "):
+            entries.append(line[2:].strip())
+    return entries
+
+
+def validate_long_markdown_previews(skill_dir: Path) -> str | None:
+    for path in sorted((skill_dir / "references").glob("*.md")):
+        text = read_text(path)
+        lines = text.splitlines()
+        if len(lines) <= 100:
+            continue
+        preview = "\n".join(lines[:40])
+        missing = [signal for signal in LONG_MD_PREVIEW_SIGNALS if signal not in preview]
+        if "## At a Glance" not in preview:
+            missing.append("## At a Glance")
+        if "## Contents" not in preview:
+            missing.append("## Contents")
+        if missing:
+            return f"{path.relative_to(skill_dir).as_posix()} missing long-document preview signals: " + ", ".join(missing)
+        expected = [heading for heading in h2_headings_outside_fences(text) if heading not in {"At a Glance", "Contents"}]
+        actual = contents_entries(text)
+        if actual != expected:
+            return f"{path.relative_to(skill_dir).as_posix()} Contents map drift: expected {expected}, found {actual}"
+    return None
+
+
 def scan_markers(skill_dir: Path) -> list[str]:
     hits: list[str] = []
     for path in sorted(skill_dir.rglob("*")):
@@ -277,6 +380,14 @@ def main() -> int:
     missing_sections = [section for section in REQUIRED_SECTIONS if section not in text]
     if missing_sections:
         return fail("missing sections: " + ", ".join(missing_sections))
+
+    top_100_error = validate_top_100(text)
+    if top_100_error:
+        return fail(top_100_error)
+
+    preview_error = validate_long_markdown_previews(skill_dir)
+    if preview_error:
+        return fail(preview_error)
 
     missing_paths = [ref for ref in REQUIRED_PATHS if not (skill_dir / ref).exists()]
     if missing_paths:
