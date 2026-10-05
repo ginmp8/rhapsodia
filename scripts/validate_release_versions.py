@@ -7,7 +7,7 @@ def main():
  catalog=json.loads((ROOT/"marketplace/catalog.json").read_text(encoding="utf-8"))
  expected=catalog["plugin"]["version"]; errors=[]
  if catalog["marketplace"]["version"]!=expected: errors.append("marketplace.version != plugin.version")
- if expected!="0.4.0": errors.append("package release must remain 0.4.0")
+ if expected!="0.5.0": errors.append("package release must be 0.5.0")
  for rel in [".claude-plugin/plugin.json",".cursor-plugin/plugin.json",".github/plugin/plugin.json",".codex-plugin/plugin.json"]:
   p=ROOT/rel
   if p.is_file():

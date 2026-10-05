@@ -20,7 +20,7 @@ def render(version:str)->dict:
   entries.append({"path":rel,"sha256":sha256(p),"size":p.stat().st_size})
  return {"files":entries,"manifest_version":1,"package":"rhapsodia-agents-vscode","package_version":version}
 def main()->int:
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument("--package-version",default="0.4.0");ap.add_argument("--check",action="store_true");a=ap.parse_args()
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument("--package-version",default="0.5.0");ap.add_argument("--check",action="store_true");a=ap.parse_args()
  expected=json.dumps(render(a.package_version),indent=2,ensure_ascii=False)+"\n"
  if a.check:
   if not MANIFEST.is_file() or MANIFEST.read_text(encoding="utf-8")!=expected:
