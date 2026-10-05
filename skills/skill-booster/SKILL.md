@@ -32,7 +32,7 @@ Treat discovery and context loading as first-class optimization surfaces. Any ac
 5. material rules, constraints, or invariants;
 6. direct pointers to branch-specific resources.
 
-Do not move critical instructions below line 100 merely to shorten metadata. Prefer compression, ordering, and progressive disclosure. Long supporting Markdown should place an early summary/`At a Glance` plus contents/index near the top. Prefer one-level discovery: `SKILL.md -> supporting file`; avoid making a Markdown-to-Markdown chain the only route to required instructions.
+Do not move critical instructions below line 100 merely to shorten metadata. Prefer compression, ordering, and progressive disclosure. Every editable supporting `.md` over 100 physical lines must place an early summary/`At a Glance` followed by a `Contents`/section map derived from the document's actual material `##` headings, in document order. The index must not invent headings, omit material H2 sections, or drift after headings change; generated/vendor Markdown may use the explicit documented exception defined in the context-loading contract. Treat a missing or stale long-document preview as a validation failure, not a style suggestion. Prefer one-level discovery: `SKILL.md -> supporting file`; avoid making a Markdown-to-Markdown chain the only route to required instructions.
 
 For optimization, assess four distinct layers instead of conflating them: `metadata selection -> skill activation -> instruction following -> task outcome`. When nearby skills compete semantically, include catalog-competition activation cases rather than evaluating the target in isolation. Read [references/context-loading-contract.md](references/context-loading-contract.md) for the reusable rules.
 

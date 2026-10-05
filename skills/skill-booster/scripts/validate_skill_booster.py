@@ -33,6 +33,14 @@ TOP100_LIMIT = 100
 TOP100_BOUNDARY_TERMS = ("activation", "routing", "scope", "use when", "do not use", "modes", "mode selection")
 TOP100_EXECUTION_TERMS = ("workflow", "quick start", "procedure", "process", "steps", "execution")
 TOP100_RULE_TERMS = ("core rules", "rules", "constraints", "guardrails", "invariants", "requirements")
+PREVIEW_SUMMARY_HEADINGS = {"at a glance", "summary", "quick reference", "overview"}
+PREVIEW_CONTENTS_HEADINGS = {"contents", "table of contents", "section map"}
+PREVIEW_EXCEPTION_RE = re.compile(
+    r"<!--\s*context-preview-exception:\s*(generated|vendor|unsafe-to-rewrite)\s*-->",
+    re.IGNORECASE,
+)
+MARKDOWN_HEADING_RE = re.compile(r"^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
+CONTENTS_ITEM_RE = re.compile(r"^\s*[-*+]\s+(?:\[([^\]]+)\]\([^)]+\)|(.+?))\s*$")
 
 
 def read_text(path: Path) -> str:
@@ -163,7 +171,106 @@ def check_top100_control_plane(skill_md: Path) -> list[str]:
     return errors
 
 
-def check_progressive_disclosure(root: Path, skill_md: Path) -> list[str]:
+
+def normalize_heading_label(value: str) -> str:
+    value = re.sub(r"`([^`]*)`", r"\1", value)
+    value = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", value)
+    value = re.sub(r"<[^>]+>", "", value)
+    value = re.sub(r"[*_~]", "", value)
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def visible_markdown_lines(lines: list[str]):
+    in_fence = False
+    fence_char: str | None = None
+    for index, line in enumerate(lines):
+        stripped = line.lstrip()
+        fence = re.match(r"(`{3,}|~{3,})", stripped)
+        if fence:
+            marker_char = fence.group(1)[0]
+            if not in_fence:
+                in_fence = True
+                fence_char = marker_char
+            elif marker_char == fence_char:
+                in_fence = False
+                fence_char = None
+            continue
+        if not in_fence:
+            yield index, line
+
+
+def h2_headings(lines: list[str]) -> list[tuple[int, str]]:
+    headings: list[tuple[int, str]] = []
+    for index, line in visible_markdown_lines(lines):
+        match = MARKDOWN_HEADING_RE.match(line)
+        if match and len(match.group(1)) == 2:
+            headings.append((index, normalize_heading_label(match.group(2))))
+    return headings
+
+
+def contents_entries(lines: list[str], contents_index: int) -> list[str]:
+    entries: list[str] = []
+    for _index, line in visible_markdown_lines(lines[contents_index + 1 :]):
+        if MARKDOWN_HEADING_RE.match(line):
+            break
+        if not line.strip():
+            continue
+        match = CONTENTS_ITEM_RE.match(line)
+        if match:
+            entries.append(normalize_heading_label(match.group(1) or match.group(2)))
+            continue
+        if entries:
+            break
+        return []
+    return entries
+
+
+def validate_long_markdown_preview(md: Path, display_path: str) -> tuple[list[str], list[str]]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    lines = read_text(md).splitlines()
+    if len(lines) <= TOP100_LIMIT:
+        return errors, warnings
+
+    first40 = "\n".join(lines[:40])
+    exception = PREVIEW_EXCEPTION_RE.search(first40)
+    if exception:
+        warnings.append(f"long markdown preview exception declared ({exception.group(1).lower()}): {display_path}")
+        return errors, warnings
+
+    headings = h2_headings(lines)
+    summary_locations = [
+        index for index, label in headings
+        if index < 40 and label.casefold() in PREVIEW_SUMMARY_HEADINGS
+    ]
+    contents_locations = [
+        index for index, label in headings
+        if index < 40 and label.casefold() in PREVIEW_CONTENTS_HEADINGS
+    ]
+    if not summary_locations or not contents_locations or min(summary_locations) >= min(contents_locations):
+        errors.append(
+            f"long markdown requires an early summary followed by heading-derived contents within first 40 lines: {display_path}"
+        )
+        return errors, warnings
+
+    contents_index = min(contents_locations)
+    expected = [
+        label for _index, label in headings
+        if label.casefold() not in PREVIEW_SUMMARY_HEADINGS | PREVIEW_CONTENTS_HEADINGS
+    ]
+    actual = contents_entries(lines, contents_index)
+    expected_norm = [label.casefold() for label in expected]
+    actual_norm = [label.casefold() for label in actual]
+    if actual_norm != expected_norm:
+        errors.append(
+            "long markdown contents do not match material H2 headings in document order: "
+            f"{display_path}; expected={expected!r}; found={actual!r}"
+        )
+    return errors, warnings
+
+
+def check_progressive_disclosure(root: Path, skill_md: Path) -> tuple[list[str], list[str]]:
+    errors: list[str] = []
     warnings: list[str] = []
     skill_text = read_text(skill_md)
     line_count = len(skill_text.splitlines())
@@ -184,13 +291,9 @@ def check_progressive_disclosure(root: Path, skill_md: Path) -> list[str]:
     for md in sorted(root.rglob("*.md")):
         if md == skill_md or any(part in FORBIDDEN_PACKAGE_PARTS for part in md.relative_to(root).parts):
             continue
-        md_lines = read_text(md).splitlines()
-        if len(md_lines) > TOP100_LIMIT:
-            first40 = "\n".join(md_lines[:40]).lower()
-            has_summary = any(token in first40 for token in ("## at a glance", "## summary", "## quick reference", "## overview"))
-            has_index = any(token in first40 for token in ("## contents", "## table of contents", "## section map"))
-            if not (has_summary and has_index):
-                warnings.append(f"long markdown lacks an early summary/index for partial preview: {md.relative_to(root)}")
+        preview_errors, preview_warnings = validate_long_markdown_preview(md, md.relative_to(root).as_posix())
+        errors.extend(preview_errors)
+        warnings.extend(preview_warnings)
 
     for ref in sorted(direct_targets):
         if ref.suffix.lower() != ".md":
@@ -206,7 +309,7 @@ def check_progressive_disclosure(root: Path, skill_md: Path) -> list[str]:
                 warnings.append(
                     f"reference chain is deeper than one level from SKILL.md: {ref.relative_to(root)} -> {nested.relative_to(root)}"
                 )
-    return warnings
+    return errors, warnings
 
 
 def diagnostic_from_message(message: str, severity: str) -> dict:
@@ -223,7 +326,9 @@ def diagnostic_from_message(message: str, severity: str) -> dict:
         ("description may be too short", "ACTIVATION_DESCRIPTION_SHORT", "frontmatter.description", "add specific activation and non-activation context"),
         ("500-line control-plane limit", "PROGRESSIVE_DISCLOSURE_SIZE", "SKILL.md", "move detailed branch logic into focused references"),
         ("top-100 control plane", "TOP100_CONTROL_PLANE", "SKILL.md", "move activation/routing, workflow, and material rules into the first 100 physical lines"),
-        ("long markdown lacks an early summary/index", "TOP100_SUPPORT_PREVIEW", "markdown references", "add an early At a Glance/summary and Contents/index"),
+        ("long markdown requires an early summary", "TOP100_SUPPORT_PREVIEW", "markdown references", "add an early At a Glance/summary followed by heading-derived Contents"),
+        ("long markdown contents do not match", "TOP100_SUPPORT_CONTENTS_DRIFT", "markdown references", "regenerate Contents from the actual material H2 headings in document order"),
+        ("long markdown preview exception declared", "TOP100_SUPPORT_PREVIEW_EXCEPTION", "markdown references", "review whether the explicit generated/vendor/unsafe-to-rewrite exception is still necessary"),
         ("reference chain is deeper than one level", "PROGRESSIVE_DISCLOSURE_DEPTH", "markdown references", "link needed reference files directly from SKILL.md"),
         ("should visibly include", "CONTROL_PLANE_SECTION_MISSING", "SKILL.md", "add the missing control-plane section"),
         ("forbidden generated or control path", "FORBIDDEN_PATH", "package tree", "remove generated/control artifacts from the target package"),
@@ -341,7 +446,9 @@ def validate(root: Path) -> dict:
             if term not in body:
                 warnings.append(f"SKILL.md should visibly include {term}")
         errors.extend(check_top100_control_plane(skill_md))
-        warnings.extend(check_progressive_disclosure(root, skill_md))
+        disclosure_errors, disclosure_warnings = check_progressive_disclosure(root, skill_md)
+        errors.extend(disclosure_errors)
+        warnings.extend(disclosure_warnings)
 
     for path in root.rglob("*"):
         rel = path.relative_to(root)

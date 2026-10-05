@@ -32,6 +32,8 @@ Use these gates before claiming a skill is ready.
 - referenced local files exist and remain inside the package;
 - required workflow references are directly discoverable from `SKILL.md` or one declared root index; hidden required multi-hop reference chains are not allowed;
 - `SKILL.md` above roughly 500 lines or 5,000 estimated tokens triggers an architecture/progressive-loading warning, not an automatic split;
+- every editable supporting `.md` over 100 physical lines has an early summary plus a Contents/section map derived from all material H2 headings in document order; missing, invented, omitted, reordered, or stale entries fail structural readiness;
+- generated/vendor/unsafe-to-rewrite Markdown may use only the explicit `context-preview-exception` marker defined by the context-loading contract, and the exception remains visible as a warning;
 - no scaffold markers, caches, generated reports, old archives, or secrets are packaged.
 
 ## Portability Gates

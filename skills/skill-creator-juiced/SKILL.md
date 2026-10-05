@@ -38,7 +38,7 @@ Within those first 100 lines, expose the smallest complete control plane needed 
 
 Treat line 100 as a context-engineering budget, not a reason to duplicate details. Put branch detail after the decision surface or in directly linked references. Read [references/context-loading-contract.md](references/context-loading-contract.md) for the reusable authoring and validation rules.
 
-Supporting Markdown should follow the same preview-first principle: when a `.md` file exceeds 100 lines, put an `At a Glance`, summary, or equivalent plus a contents/index near the top so a partial preview exposes its purpose, major decisions, and sections. Prefer a single reference level: `SKILL.md -> supporting file`. Avoid reference-to-reference discovery chains; if a supporting file is important, link it directly from `SKILL.md`.
+Supporting Markdown follows the same preview-first contract: every editable `.md` over 100 physical lines must put an `At a Glance`, summary, or equivalent near the top followed by a `Contents`/section map derived from its actual material `##` headings in document order. The index must not invent headings, omit material H2 sections, or drift after heading changes; generated/vendor Markdown may use the explicit documented exception defined in the context-loading contract. Missing or stale long-document previews fail structural readiness. Prefer a single reference level: `SKILL.md -> supporting file`. Avoid reference-to-reference discovery chains; if a supporting file is important, link it directly from `SKILL.md`.
 
 ## Modes
 
@@ -156,7 +156,7 @@ Before delivery, apply [references/quality-gates.md](references/quality-gates.md
 
 - validate Agent Skills frontmatter and package shape;
 - enforce the Top-100 Context Contract for long `SKILL.md` files;
-- verify long supporting Markdown has an early summary/index or record an explicit exception;
+- require editable supporting Markdown over 100 lines to have an early summary plus heading-derived Contents synchronized with material H2 headings, or record an explicit generated/vendor/unsafe-to-rewrite exception;
 - verify required Markdown is directly discoverable from `SKILL.md` and avoid deeper reference chains;
 - validate local references, scripts, semantic/runtime profiles, and requested client/distribution surfaces;
 - preserve frozen evaluator assets and protected evidence;
