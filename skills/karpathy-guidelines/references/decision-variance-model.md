@@ -1,5 +1,24 @@
 # Decision Variance Model
 
+## At a Glance
+
+- **Purpose:** Control how coding decisions are made repeatable without forcing contextual engineering judgment into false determinism.
+- **Load when:** A task contains material trade-offs, severity or readability judgments, architecture choices, reproducibility pressure, or disagreement about whether a rule should be mechanical, heuristic, judgment-based, or subjective.
+- **Decision impact:** Determines which decisions must use objective validators, which may use overridable defaults, which require evidence-backed judgment, and which must remain preference-only after correctness constraints are satisfied.
+- **Do not load when:** The task is mechanically decidable and the root skill already supplies the required invariant or validator.
+
+## Contents
+
+- Control classes
+- Classification test
+- Mixed decisions
+- Heuristic defaults and tie-breakers
+- Judgment rubric
+- Subjective review
+- Evidence precedence
+- Reporting
+- Anti-patterns
+
 Use this reference when a coding task contains choices that could be over-constrained in the name of consistency. The goal is to reduce unjustified variance while preserving useful engineering judgment.
 
 ## Control classes

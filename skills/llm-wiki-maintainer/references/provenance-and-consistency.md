@@ -1,6 +1,28 @@
 # Provenance and Consistency
 
-Use this reference when claims conflict, source freshness matters, manual edits exist, the wiki is large, or a mutation could damage traceability. Load `reproducibility-protocol.md` for exact hashes, source snapshots, transactions, receipts, and rollback.
+## At a Glance
+
+- **Purpose:** Define evidence precedence and reconciliation rules for provenance, conflicts, staleness, source/manual drift, transactional safety, privacy, and scale.
+- **Load when:** Load when evidence authority or consistency affects a decision: conflicting/stale claims, changed or missing sources, manual page edits, external research capture, large-wiki search, or mutation safety.
+- **Decision impact:** Determines which evidence outranks derived prose, when a claim stays unresolved, when revalidation is required, which repairs are mechanical versus semantic, and when mutation must stop for reconciliation.
+- **Do not load when:** Do not load for exact hash/transaction/receipt mechanics; use `reproducibility-protocol.md` for those details.
+
+## Contents
+
+- Evidence hierarchy
+- Provenance rules
+- Structural evidence vs semantic/editorial judgment
+- Contradictions
+- Staleness
+- Source lineage and corroboration
+- Dependency-scoped revalidation
+- Source changes and removals
+- Manual derived-page changes
+- Transactional mutation
+- Mechanical vs semantic repairs
+- Untrusted-content authority boundary
+- Privacy and external research
+- Scale and search
 
 ## Evidence hierarchy
 

@@ -1,6 +1,27 @@
 # Reproducibility Protocol
 
-Use this reference for source identity, operational state, idempotency, transactions, recovery, receipts, schema identity, and final freeze. It governs objective mechanics only. It does not replace semantic reading or editorial judgment.
+## At a Glance
+
+- **Purpose:** Define deterministic mechanics for source/page identity, operational state, idempotency, transactions, receipts, rollback, schema migration, and final freeze.
+- **Load when:** Load for ingest or any derived mutation that needs stable hashes/IDs, source snapshots, precondition checks, transactional commit, recovery, rerun guarantees, or migration/freeze evidence.
+- **Decision impact:** Fixes the mechanical identity and recovery contract: what can be proven by hashes, when a mutation is already applied, how drift blocks commit, what receipts must bind, and when final state is frozen.
+- **Do not load when:** Do not use it to decide source meaning, entity equivalence, claim importance, conflict resolution, or editorial conclusions.
+
+## Contents
+
+- Reproducibility ceiling
+- Operational state
+- Schema compatibility identity
+- Source identity and ingest manifest
+- Canonical page identity
+- Deterministic frontmatter
+- Source-to-page and page-to-source provenance
+- Conflicts
+- Stale-claim detection
+- Recovery-aware wiki mutation
+- Structural validation and lint receipt
+- Schema version and migration contract
+- Final freeze
 
 ## Reproducibility ceiling
 
