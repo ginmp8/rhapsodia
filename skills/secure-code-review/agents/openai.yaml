@@ -1,7 +1,11 @@
 interface:
   display_name: Secure Code Review
-  short_description: Review secret and credential exposure across code, history, artifacts, CI/IaC, logs, and agent skills with explicit coverage and redacted evidence.
+  short_description: Review secret and credential exposure across code, history, artifacts,
+    CI/IaC, logs, and agent skills with explicit coverage and redacted evidence.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
   allow_implicit_invocation: true
+  products:
+  - CHAT
+  - CODEX

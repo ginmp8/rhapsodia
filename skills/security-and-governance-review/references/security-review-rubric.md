@@ -2,6 +2,23 @@
 
 `rubric_version: SGR-2.0`
 
+## At a Glance
+
+- **Purpose:** Define the canonical SGR-2.0 finding classifications, evidence sufficiency, severity/confidence rules, CVE and authority criteria, critical review gates, and finding shape.
+- **Load when:** Classifying or reviewing any material finding, resolving severity/confidence, deciding whether current dependency or authority evidence is sufficient, or validating completion gates.
+- **Decision impact:** Controls which classifications are allowed, how severity is bounded by evidence, when `needs-verification`/fail-closed behavior applies, and what every complete review must prove.
+
+## Contents
+
+- Canonical finding classifications
+- Evidence sufficiency
+- Stable severity criteria
+- Confidence
+- External vulnerability/CVE claims
+- Governance and authority criteria
+- Critical review gates
+- Finding format
+
 Use this versioned rubric for every finding, report, and comparison. Do not silently mix classifications from older reports with SGR-2.0. Legacy labels such as `confirmed risk`, `potential risk`, and `evidence limitation` may be interpreted as historical input, but new output uses the canonical classifications below.
 
 ## Canonical finding classifications
