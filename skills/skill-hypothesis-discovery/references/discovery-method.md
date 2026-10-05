@@ -1,5 +1,31 @@
 # Discovery Method
 
+## At a Glance
+
+- **Purpose:** Define the deterministic evidence-to-backlog method, including evidence sufficiency, research branching, eligibility, deduplication, ranking, selection, validation, and stop rules.
+- **Load when:** Running or reviewing the discovery pipeline beyond the root quick-start, especially when evidence status, deep-discovery, saturation, dependencies/conflicts, or handoff ordering changes the decision.
+- **Decision impact:** Determines whether an item is eligible, downgraded, deduplicated, blocked, ranked, selected, or stopped before mutation; fixes the ordered pipeline and anti-random-search behavior.
+
+## Contents
+
+- Deterministic discovery pipeline
+- 1. Resolve baseline identity
+- 2. Evidence sufficiency and optional research
+- 3. Research trace and evidence roles
+- 4. Snapshot discovery evidence
+- 5. Classify signals
+- 6. Classify each backlog item before ranking
+- 7. Causal and falsification gate
+- 8. Deep-discovery semantics
+- 9. Deduplicate and resolve conflicts
+- 10. Saturated metrics
+- 11. Evidence-gap priority
+- 12. Score and rank v2 hypotheses
+- 13. Bounded selection
+- 14. Validate and hand off
+- Stop conditions
+- Anti-random-search and anti-overfitting rules
+
 Generate hypotheses from identified evidence, not open-ended mutation search. Acquire new external evidence only when a bounded source-resolvable gap materially blocks discovery and the active research policy allows it.
 
 ## Deterministic discovery pipeline

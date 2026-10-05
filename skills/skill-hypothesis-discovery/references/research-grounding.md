@@ -1,5 +1,22 @@
 # Research Grounding
 
+## At a Glance
+
+- **Purpose:** Define the optional evidence-acquisition branch used when a material source-resolvable gap blocks hypothesis discovery, including provenance, evidence-role separation, falsification, evaluator independence, and evidence-gap ranking.
+- **Load when:** `research_policy` permits/requires external evidence, a source-resolvable gap blocks a causal/measurable hypothesis, or `evidence-gap-review` must prioritize collection.
+- **Decision impact:** Determines whether research may run, what must be frozen, whether research-backed hypotheses may enter v2 handoff, and which evidence gap should be collected first; it never changes the v2 peer contract.
+
+## Contents
+
+- Research policy
+- Evidence sufficiency gate
+- Source -> finding -> hypothesis
+- Discovery vs validation evidence
+- Falsification contract
+- Research-discovery artifact
+- Evidence-gap priority
+- Anti-bias and anti-overfitting rules
+
 Use this reference only when identified evidence is materially insufficient, the user explicitly supplies/requests research, or `evidence-gap-review` needs to prioritize evidence collection. Research is an evidence-acquisition capability, not a mandatory dependency.
 
 ## Research policy

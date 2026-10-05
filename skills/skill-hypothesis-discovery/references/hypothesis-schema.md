@@ -1,5 +1,25 @@
 # Hypothesis Backlog Contract
 
+## At a Glance
+
+- **Purpose:** Define the canonical `skill-opt.hypothesis-pool` v2 item taxonomy, evidence/metric gates, stable identities, dependency/conflict semantics, deterministic ranking, caps, and recommendation constraints.
+- **Load when:** Constructing, validating, ranking, serializing, or consuming a v2 hypothesis backlog, or when exact eligibility/tie-break behavior matters.
+- **Decision impact:** Determines whether an item can be `test-now`, how duplicate/conflicting/dependent items are treated, the exact ranking order, final caps, and the peer-facing machine-readable contract.
+
+## Contents
+
+- Contract version
+- Item taxonomy
+- Minimum evidence for a testable hypothesis
+- Evidence snapshot
+- Metrics and saturation
+- Stable hypothesis identity and deduplication
+- Conflict and dependency edges
+- Priority and deterministic ordering
+- Experiment limits
+- Canonical v2 shape
+- Recommendation constraints
+
 ## Contract version
 
 The canonical machine-readable backlog is `schema_version: "2.0"`. Unversioned legacy backlogs may be read by the validator for compatibility, but new outputs must use v2. Legacy compatibility is read-only and does not prove the v2 reproducibility gates.
