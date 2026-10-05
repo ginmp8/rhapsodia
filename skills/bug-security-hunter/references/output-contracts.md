@@ -1,5 +1,22 @@
 # Output Contracts
 
+## At a Glance
+
+- **Purpose:** Define the user-facing response shapes for quick triage, PR review, flow hunt, project audit, threat review, harness design, and machine-readable receipts.
+- **Load when:** After selecting the review mode, when the answer format, required fields, severity/verdict presentation, or durable receipt shape must be fixed.
+- **Decision impact:** Determines mandatory output sections and fields; prevents a compact request from expanding unnecessarily and prevents substantive reviews from omitting evidence, gaps, coverage, treatment, or verdict information.
+
+## Contents
+
+- Quick triage
+- PR risk review
+- Flow bug/security hunt
+- Project-wide audit
+- Security threat review
+- Harness design
+- Machine-readable receipt
+- Finding line format
+
 Use these shapes unless the user requests a different format. Keep answers in English unless the user explicitly requests another language for the final response.
 
 ## Quick triage

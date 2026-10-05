@@ -1,5 +1,26 @@
 # Reproducible Review Contract
 
+## At a Glance
+
+- **Purpose:** Define the evidence, identity, deduplication, severity, ordering, verdict, validation-claim, and closure contract for every substantive review.
+- **Load when:** Any substantive review, durable audit, baseline/candidate comparison, or PR decision where findings and verdicts must be reproducible and evidence-bounded.
+- **Decision impact:** Controls which observations qualify as findings, their evidence/confidence labels and severity, deterministic ordering, PR verdict derivation, and when the review is complete for scope.
+
+## Contents
+
+- 1. Review identity
+- 2. Separate evidence status from confidence
+- 3. Canonical finding record
+- 4. Severity contract
+- 5. Deterministic ordering
+- 6. Hypothesis budget and stop rules
+- 7. Verdict derivation for PRs
+- 8. Validation claims
+- 8A. Verification and external-evidence normalization
+- 9. Closure and coverage
+- 10. Machine-readable receipt
+- 11. Baseline/candidate comparisons
+
 Use this contract for every substantive review. It constrains process, evidence, severity, ordering, and closure without pretending that security or correctness judgment is fully deterministic.
 
 ## 1. Review identity
