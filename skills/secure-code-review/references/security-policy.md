@@ -1,5 +1,25 @@
 # Security Review Standard for Secrets
 
+## At a Glance
+
+- **Purpose:** Define the semantic policy for classifying secret/credential findings after candidate detection, including taxonomy, confidence, severity, evidence, deduplication, and coverage-bounded conclusions.
+- **Load when:** A candidate secret or secret-handling defect must be classified, prioritized, deduplicated, or reported; also when scanner strength must be separated from final security judgment.
+- **Decision impact:** Controls whether material is credential-bearing, how `confirmed | likely | possible` differs from `critical | high | medium | low`, how external validity is treated, and when evidence or incomplete coverage prevents a stronger conclusion.
+
+## Contents
+
+- Contract identity
+- Secret and credential taxonomy
+- Detector signal is not final severity
+- Finding taxonomy
+- Severity model
+- Confidence model
+- External validity evidence
+- Severity tie-breakers
+- Evidence rules
+- Ordering and deduplication
+- Coverage semantics
+
 ## Contract identity
 
 Policy version: `3`

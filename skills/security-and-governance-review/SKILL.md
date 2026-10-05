@@ -1,156 +1,120 @@
 ---
 name: security-and-governance-review
-description: 'use when asked to audit a skill package, agent package, validator, script, or auxiliary technical project for security and governance risks: hardcoded secrets, sensitive logging, dangerous shell commands, unsafe file handling, dependency and supply-chain risk, permissions, tool authority boundaries, llm/agent governance controls, policy enforcement, responsible ai, compliance risk, threat modeling, or remediation planning. do not use for general skill hardening, ordinary code style review, or implementing risky fixes without a plan, evidence, validation, and explicit authorization.'
+description: 'Use when the primary task is an evidence-based security/governance review of a skill or agent package, script, validator, template, or nearby helper project, including secrets/sensitive logging, unsafe shell/file handling, dependency or supply-chain risk, agent/tool authority, responsible AI or compliance evidence, threat modeling, and remediation planning. Default read-only. Do not use for broad package hardening/optimization, ordinary application or PR security review, MCP-only security review, or direct risky remediation.'
 ---
 
 # Security and Governance Review
 
-## Purpose
+## Selection boundary
 
-Review reusable skill packages, agents, scripts, validators, templates, and nearby technical helper projects for security, supply-chain, governance, llm/agent authority, responsible-ai, and compliance risks. This is evidence-based assurance work, not general hardening or style cleanup.
+Use this skill when security/governance assurance is the primary objective for reusable AI/agent packages or their supporting technical artifacts. It owns evidence-based review across code/configuration plus authority, supply chain, responsible-AI, compliance-evidence, or threat-model concerns.
 
-Default to **read-only** review. Mutation requires explicit user authorization and must not change protected evidence merely to make a finding disappear.
+Do not use it as the primary skill for:
 
-## Reproducibility contract
+- broad skill quality, activation, portability, packaging, or hardening -> use a package hardening/optimization skill;
+- ordinary application/PR bug or security review -> use the code/security reviewer that owns that target;
+- focused secret/credential handling in ordinary application code -> use `secure-code-review`;
+- MCP server/client/gateway security as the main subject -> use `mcp-security-review`; load this skill's MCP profile only when MCP is one surface in a broader package/agent review;
+- implementing risky remediation. Review and plan first; mutate only with explicit authorization and separate validation gates.
 
-This is a `research-analytic` skill. Reproducibility means equivalent inputs/evidence should produce materially comparable classifications, severity reasoning, evidence mappings, gates, and report structure. It does **not** require byte-identical threat-model prose or eliminate analyst judgment.
+## Critical rules and invariants
 
-Use:
-
-- rubric `SGR-2.0` from `references/security-review-rubric.md`;
-- deterministic local helpers for static triage, evidence identity, redaction, and report validation;
-- explicit source/evidence identity;
-- frozen scenario/evaluator inputs when comparing versions;
-- separate structural, behavioral, runtime, and external-current evidence.
-
-Do not convert threat modeling, responsible-ai analysis, or governance judgment into mechanical scoring merely to increase determinism.
-
-## Scope boundary
-
-Use this skill only for security/governance review. It may inspect `SKILL.md`, agents, references, scripts, templates, dependency manifests/lockfiles, validators, packaging scripts, examples, small auxiliary project files, and policy evidence relevant to the review.
-
-Do not use it to replace broad skill hardening, ordinary code review, vulnerability exploitation, dependency installation, destructive execution, or risky remediation. If code changes are needed, first produce a remediation plan with validation gates; implement only when explicitly authorized.
-
-## Required inputs
-
-Resolve or conservatively infer:
-
-1. `TARGET_PATH`: exact skill/project/files/snippets being reviewed.
-2. Review mode: one mode below, or `security-report` when unspecified.
-3. Evidence policy: target files, user context, local read-only scan output, manifests/lockfiles, runtime evidence supplied by the user, and approved current primary/scanner sources when freshness matters.
-4. Allowed actions: read-only by default; no installs, dependency hooks, destructive commands, network mutation, or target mutation unless separately authorized.
-5. Protected paths/evidence: `.git`, credentials, `.env`, private keys, real secrets, fixtures/golden inputs, expected outputs, frozen evaluator evidence, generated baseline evidence, and user-declared protected paths.
-6. Output expectation: inline findings, Markdown report, machine-readable JSON report, threat model, or remediation plan.
-
-If target identity is ambiguous and a concrete finding depends on it, do not guess.
+- **Read-only by default.** Never install dependencies, run untrusted hooks, perform destructive actions, mutate network state, or edit the target unless separately authorized.
+- **Never reveal a complete secret.** Mask or omit credentials, tokens, private keys, cookies, session ids, passwords, or equivalent secret material.
+- **Evidence before claims.** Do not claim vulnerability/CVE applicability, concrete exposure, license violation, conformity, certification, or compliance failure without evidence bound to the relevant target/source identity.
+- **Fail closed on critical evidence gaps.** High-impact unknown authorization, stale/unbound CVE evidence, post-snapshot identity drift, or unsafe secret verification cannot produce positive assurance.
+- **Capability is not authorization.** For high-impact agent actions, identify resource scope, authorization source, approval, audit/receipt, failure behavior, and rollback/containment where applicable.
+- **Separate evidence layers.** Structural/static evidence is not behavioral, runtime, or external-current evidence; unexecuted scenarios and checklists never prove runtime enforcement.
+- **Use SGR-2.0.** Every material finding is `confirmed`, `suspicious-pattern`, `governance-risk`, `needs-verification`, or `not-applicable`, with severity/confidence from `references/security-review-rubric.md`.
+- **Map every material finding:** `finding -> evidence -> risk -> recommendation -> validation`, preserving source identity when available.
+- Protect `.git`, credentials, `.env`, private keys, fixtures/golden inputs, expected outputs, frozen evaluators, generated baseline evidence, and user-declared protected paths from mutation.
+- Reproducibility is analytic: equivalent evidence should yield materially comparable classifications, severity reasoning, mappings, gates, and report structure; do not mechanize analyst judgment merely for determinism.
 
 ## Modes
 
-- `secret-handling-review`: hardcoded secrets, tokens, credentials, connection strings, private keys, `.env` leakage, and sensitive logging. Never emit a complete secret value.
-- `script-security-review`: unsafe subprocess/shell use, injection, traversal, symlinks, archive extraction, deserialization, broad deletes, and unsafe writes.
-- `dependency-risk-review`: manifests/lockfiles, floating versions, install-from-url, lifecycle hooks, registries, licenses/policy, and current vulnerability evidence. Never claim a CVE/applicability without evidence bound to dependency/source identity.
-- `llm-agent-governance-review`: authority boundaries, permissions, approval, policy enforcement, audit, rate/budget limits, handoffs, fail-closed behavior, and cross-agent trust. Add `protocol_profile: mcp` only when MCP is materially in scope.
-- `agentic-security-review`: agent-specific attack surfaces across goals, tools, identities/privileges, memory/context, inter-agent communication, cascading failures, human-agent trust, rogue/out-of-scope behavior, runtime controls, and agentic supply chain.
-- `responsible-ai-review`: contextual risks around privacy, fairness, accessibility, explainability, consent, automation impact, human override, and exclusion; use a lifecycle impact assessment for consequential systems.
-- `threat-model`: evidence-linked assets, trust boundaries, actors, abuse cases, controls, assumptions, residual risks, and validation probes using `schemas/threat-model.schema.json` as the machine-readable shape.
-- `remediation-plan`: prioritized fixes with evidence, risk, owner assumption, safe order, validation gate, and rollback/containment.
-- `security-report`: complete report using the Markdown template and, when machine-readable output is useful/requested, `schemas/security-review-report.schema.json`.
+- `secret-handling-review`: secrets, credentials, `.env` leakage, sensitive logging.
+- `script-security-review`: subprocess/shell injection, traversal, symlinks, archives, deserialization, broad deletes/writes.
+- `dependency-risk-review`: manifests/locks, floating versions, install URLs/hooks, registries, provenance, licenses/policy, current vulnerability evidence.
+- `llm-agent-governance-review`: authority, approvals, policy enforcement, audit, budgets/rates, handoffs, fail-closed behavior, cross-agent trust.
+- `agentic-security-review`: goals/tools/privileges, memory/context, inter-agent trust, cascading failures, runtime controls, agentic supply chain.
+- `responsible-ai-review`: privacy, fairness, accessibility, explainability, consent, automation impact, human override, exclusion; add lifecycle impact assessment for consequential systems.
+- `threat-model`: assets, boundaries, actors, abuse cases, controls, assumptions, residual risks, validation probes.
+- `remediation-plan`: prioritized fixes, owner assumption, safe order, validation, rollback/containment.
+- `security-report` (default): complete evidence-based review and optional machine-readable report.
 
-## Progressive resource loading
+## Quick start
 
-Load only what the active mode needs:
+1. Resolve `TARGET_PATH`, mode, evidence policy, allowed actions, protected evidence, and requested output. If a concrete finding depends on ambiguous target identity, do not guess.
+2. Read target `SKILL.md` first when present; inventory only relevant files and never follow symlinks into blocked/out-of-scope paths.
+3. For filesystem targets, snapshot source identity to work storage outside the target before substantive conclusions; then run deterministic static triage when useful. Treat scanner matches as triage, not exploit/live-secret/CVE proof.
+4. Load only the mode-specific references below. For agent/governance review, build an explicit authority boundary; for agentic systems, also record control-effectiveness level and runtime inventory when composition can drift independently of source bytes.
+5. Classify findings with SGR-2.0, enforce evidence mapping, and block positive assurance when critical evidence is missing.
+6. Validate JSON output with the core validator; run the extension validator when authority/inventory/control/framework/compliance extensions are present. Report every command as pass/fail/not-run.
+7. Freeze the final evidence/report state. Any later edit affecting findings, evidence, redaction, classification, or validation requires rerunning affected gates.
 
-- `references/security-review-rubric.md`: SGR-2.0 classifications, stable severity criteria, confidence, tie-breakers, and critical gates.
-- `references/evidence-and-source-integrity.md`: deterministic source/evidence snapshot, protected evidence, dependency/source identity, and evidence-layer separation.
-- `references/secret-handling-checklist.md`: secret detection, absolute no-full-secret rule, protected secret sources, and safe remediation.
-- `references/script-security-checklist.md`: scripts, subprocess, file handling, traversal, archives, deserialization, and packaging.
-- `references/agent-governance-checklist.md`: authority matrix, approvals, audit, fail-closed rules, handoffs, and trust boundaries.
-- `references/agentic-security-checklist.md`: agent-specific coverage lens and evidence/control questions.
-- `references/runtime-control-and-inventory.md`: control-effectiveness ladder, enforcement points, runtime inventory, and drift rules.
-- `references/mcp-security-profile.md`: optional MCP authorization, token, metadata, transport, and tool/resource/prompt trust profile.
-- `references/supply-chain-security.md`: provenance, build/workflow authority, pinning, privileged/untrusted workflow separation, and agentic artifact origin.
-- `references/responsible-ai-checklist.md`: contextual responsible-ai discovery.
-- `references/ai-impact-assessment.md`: lifecycle impact record, affected populations/harms, validation, residual impact, and reassessment triggers for consequential systems.
-- `references/framework-crosswalk-policy.md`: versioned external-framework mappings and strict boundary between mapping, assessment, conformity, certification, and legal/regulatory conclusions.
-- `assets/templates/security-report.md.template`: durable Markdown report.
-- `schemas/security-review-report.schema.json`: backward-compatible machine-readable report contract with optional typed extensions.
-- `schemas/threat-model.schema.json`: threat-model contract with optional framework/authority/control references.
-- `schemas/authority-boundary.schema.json`, `schemas/agent-inventory.schema.json`, and `schemas/control-evidence.schema.json`: optional typed extension contracts for authority, runtime composition, and control evidence.
-- `evals/activation-scenarios.json`: frozen/planned routing regression scenarios.
-- `evals/agentic-security-scenarios.json` and `evals/mcp-security-scenarios.json`: planned domain scenarios; scenario files are not behavioral evidence until executed against a frozen evaluator/runtime identity.
-- `scripts/security_static_review.py`: deterministic read-only static triage.
-- `scripts/evidence_snapshot.py`: deterministic evidence/source identity receipt.
-- `scripts/validate_security_report.py`: frozen standard-library core report gate.
-- `scripts/validate_security_extensions.py`: companion stdlib gate for optional authority/inventory/control/framework/compliance extensions; it never replaces the core validator.
-- `tests/test_security_tools.py`: deterministic regression tests for protected-source handling, read-only output boundaries, redaction, and validator CLI behavior.
-- `examples/security-review-prompts.md`: compact calibration prompts for supported review modes and boundaries.
+## Direct resource map
 
-## Review workflow
+Always load `references/security-review-rubric.md` for SGR-2.0 and `references/evidence-and-source-integrity.md` when identity, dependencies, current sources, or protected evidence matter.
 
-### 1. Resolve target, mode, authority, and protected scope
+- Secrets -> `references/secret-handling-checklist.md`.
+- Scripts/files/archives -> `references/script-security-checklist.md`.
+- Dependencies/build provenance -> `references/supply-chain-security.md`.
+- Agent authority/governance -> `references/agent-governance-checklist.md`.
+- Agent-specific attack surfaces -> `references/agentic-security-checklist.md` plus `references/runtime-control-and-inventory.md` when control/runtime drift matters.
+- MCP as a secondary profile -> `references/mcp-security-profile.md`.
+- Responsible AI -> `references/responsible-ai-checklist.md`; consequential systems -> `references/ai-impact-assessment.md`.
+- Framework/regulatory mapping -> `references/framework-crosswalk-policy.md`; mapping is not conformity/certification/legal compliance.
+- Report/threat-model output -> `assets/templates/security-report.md.template`, `schemas/security-review-report.schema.json`, `schemas/threat-model.schema.json`; optional authority/runtime/control extensions use the corresponding schemas under `schemas/`.
+- Calibration/regression context -> `examples/security-review-prompts.md`, `evals/activation-scenarios.json`, `evals/agentic-security-scenarios.json`, and `evals/mcp-security-scenarios.json`; planned scenarios are not behavioral evidence until executed against frozen evaluator/runtime identity.
 
-Read target `SKILL.md` first when present, then inventory relevant files. Record what may be read and what is protected from mutation or content exposure. Do not follow symlinks into blocked/out-of-scope paths.
+## Evidence tooling
 
-### 2. Snapshot evidence identity before analysis
-
-When a filesystem target exists and the runtime permits it, create a receipt before substantive conclusions:
+Use the standard-library helpers when local Python is available. `<WORK>` must resolve outside the reviewed target.
 
 ```text
 <PYTHON> scripts/evidence_snapshot.py --target <TARGET_PATH> --output <WORK>/evidence-receipt.json
-```
-
-`<WORK>` must resolve outside the reviewed target. Reject output aliases and paths inside the target so evidence collection remains read-only and cannot contaminate target identity. Use relative paths and hashes for safe files. Credentials/`.env`/private-key sources should be `protected-unread`; fixtures/expected outputs should be protected from mutation and may be `protected-hash-only`. A hash proves identity, not safety.
-
-If material source identity cannot be established, say so. For high-impact conclusions that depend on missing evidence, fail closed.
-
-### 3. Run deterministic static triage when useful
-
-```text
 <PYTHON> scripts/security_static_review.py --target <TARGET_PATH> --format json --output <WORK>/static-triage.json
 ```
 
-Keep `<WORK>` outside the reviewed target. Treat results as triage evidence only. The scanner uses stable ordering/ids and deterministic redaction. Pattern matches do not prove exploitability, a live credential, a CVE, or concrete exposure.
+The evidence snapshot records safe relative paths/hashes and protected states without contaminating target identity. Secret-bearing paths should be `protected-unread`; fixtures/expected outputs may be `protected-hash-only`. A hash proves identity, not safety.
+
+Static triage uses deterministic ordering/ids/redaction. Pattern matches do not prove exploitability, a live credential, a CVE, or concrete exposure.
+
+## Detailed review workflow
+
+### 1. Resolve target, mode, authority, and protected scope
+
+Record what may be read, what may be executed, and what is protected from mutation or content exposure. No authorization is inferred from capability or user intent that did not explicitly grant it.
+
+### 2. Snapshot evidence identity before analysis
+
+For a filesystem target, create the receipt before substantive conclusions when runtime permits. Reject output aliases or paths inside the reviewed target. If material source identity cannot be established, state the limitation; high-impact conclusions depending on that evidence fail closed.
+
+### 3. Run deterministic static triage when useful
+
+Keep triage output outside the target. The scanner is an evidence provider, not a finding classifier by itself.
 
 ### 4. Perform mode-specific review
 
-Apply the relevant checklists. For agent/governance work, build an authority matrix for meaningful read/write/execute/delete/send/publish/schedule/deploy/approve/delegate actions. Capability never implies authorization.
+For agent/governance work, build an authority matrix for meaningful read/write/execute/delete/send/publish/schedule/deploy/approve/delegate actions. Capability never implies authorization.
 
-For agentic systems, also classify the strongest supported control-effectiveness level (`declared`, `statically-present`, `behaviorally-demonstrated`, `runtime-observed`) and capture a separate runtime inventory when model/tool/policy/MCP/runtime configuration can drift independently of source bytes. Load the MCP profile only when MCP is actually in scope.
+For agentic systems, classify the strongest supported control-effectiveness level (`declared`, `statically-present`, `behaviorally-demonstrated`, `runtime-observed`) and capture a separate runtime inventory when model/tool/policy/MCP/runtime configuration can drift independently of source bytes. Load the MCP profile only when MCP is actually in scope.
 
-For supply-chain work, inspect provenance and privileged build/workflow boundaries in addition to package/CVE evidence. Do not treat absence of a specific attestation/BOM framework as a vulnerability by itself.
+For supply-chain work, inspect provenance and privileged build/workflow boundaries in addition to package/CVE evidence. Absence of a specific attestation/BOM framework is not a vulnerability by itself.
 
 For threat modeling, use the schema as structure while preserving evidence-based analyst judgment. State assumptions and evidence refs; do not generate arbitrary scores.
 
 ### 5. Classify with SGR-2.0
 
-Every material finding uses exactly one classification:
-
-- `confirmed`
-- `suspicious-pattern`
-- `governance-risk`
-- `needs-verification`
-- `not-applicable`
-
-Then assign severity/confidence using the versioned rubric and tie-breakers. Do not upgrade based on naming, intuition, or model consensus.
+Assign exactly one canonical classification and then severity/confidence using the versioned rubric and tie-breakers. Do not upgrade from naming, intuition, keywords, or model consensus.
 
 ### 6. Enforce evidence mapping
 
-Every material finding must map:
-
-`finding -> evidence -> risk -> recommendation -> validation`
-
-Evidence should include source identity when available. For secrets, report only masked/omitted evidence. For current dependency/CVE claims, bind the claim to resolved dependency identity plus scanner/authoritative source identity; otherwise use `needs-verification`. For living framework/protocol/regulatory mappings, also record source version/date or retrieval identity and keep the mapping separate from SGR severity/classification.
+Evidence should include source identity when available. For secrets, report only masked/omitted evidence. For current dependency/CVE claims, bind the claim to resolved dependency identity plus scanner/authoritative-source identity; otherwise use `needs-verification`. For living framework/protocol/regulatory mappings, record source version/date or retrieval identity and keep mapping separate from SGR severity/classification.
 
 ### 7. Fail closed on critical evidence gaps
 
-Do not silently produce a positive assurance conclusion when critical evidence is missing. Examples:
-
-- high-impact agent mutation authority exists but authorization policy cannot be verified;
-- user asks whether a dependency is affected by a current CVE but resolved version/current advisory evidence is unavailable;
-- target integrity changed after the evidence snapshot;
-- a secret-like value appears but authenticity/exposure cannot be safely established.
-
-For machine-readable reports, non-empty `critical_evidence_gaps` requires `review_status=blocked-critical-evidence`.
+Examples include unverifiable high-impact mutation authority, unresolved/current CVE evidence unavailable, target integrity drift after snapshot, or secret-like material whose authenticity/exposure cannot be safely established. In machine-readable reports, non-empty `critical_evidence_gaps` requires `review_status=blocked-critical-evidence`.
 
 ### 8. Validate output
 
@@ -160,64 +124,53 @@ For JSON reports:
 <PYTHON> scripts/validate_security_report.py <REPORT.json>
 ```
 
-The core validator checks report/rubric versions, classifications, severities, evidence mapping, evidence layers, fail-closed status, duplicate finding ids, and recognized unredacted secret-like values. When a report uses optional authority/inventory/control/framework/compliance extension sections, also run:
+When optional authority/inventory/control/framework/compliance extension sections are present, also run:
 
 ```text
 <PYTHON> scripts/validate_security_extensions.py <REPORT.json>
 ```
 
-The extension validator enforces evidence-level prerequisites (for example, `runtime-observed` requires runtime evidence), unique runtime component identity, authority-record shape, and compliance/framework claim boundaries. It is additive so report v1 compatibility remains intact.
-
-State commands executed and exact pass/fail/not-run status. If dynamic/runtime checks were not run, do not imply they passed.
+The extension validator is additive and never replaces the core validator. Do not imply dynamic/runtime checks passed when they were not run.
 
 ### 9. Finalize without post-pass mutation
 
-Once the final evidence/report gates pass, treat that result as frozen. Any later edit that affects findings, evidence, redaction, classification, or validation requires rerunning the affected gates.
-
-## Absolute secret rule
-
-Never print a complete credential, token, private key, cookie, session id, password, connection-string password, or equivalent secret. This is absolute for this skill's outputs and helper scripts.
-
-Use `[masked secret]`, `[masked private key block]`, or an evidence fingerprint that omits content. Do not use prefix/suffix fragments as the default redaction mechanism.
+Treat the final evidence/report gates as frozen. Any later edit affecting the reviewed conclusions invalidates the affected evidence and requires revalidation.
 
 ## Claims and evidence limits
 
-- Do not allege a vulnerability, CVE applicability, concrete exposure, license violation, or compliance failure without appropriate evidence. `mapped to` a framework is not equivalent to conformity, certification, or legal compliance.
-- `confirmed` confirms only the scope of the precise claim supported by evidence; do not inflate it into exploitability or impact not demonstrated.
-- Use `needs-verification` when evidence is absent/stale/unbound to exact source identity.
-- Do not call a static score, checklist, unexecuted scenario file, or model-only review behavioral validation. A declared or statically present policy is not evidence that a runtime action was intercepted.
-- Current vulnerability/license/policy facts may require current primary/scanner evidence; if unavailable, report the limitation rather than guessing.
+- `confirmed` confirms only the precise claim supported by evidence; it does not automatically prove exploitability or broader impact.
+- Use `needs-verification` when evidence is absent, stale, blocked, or unbound to exact source identity.
+- Current vulnerability/license/policy facts may require current primary/scanner evidence. If freshness/applicability cannot be verified, report the limitation rather than guessing.
+- A declared/statically present policy is not evidence that a runtime action was intercepted.
+- Framework mapping is interpretation metadata, not proof of compliance, exploitability, or severity.
 
 ## Machine-readable report contract
 
 A JSON report should contain at least:
 
-- `report_version: security-review-report-1`
-- `rubric_version: SGR-2.0`
-- target name/identity and mode
-- `review_status: complete | partial | blocked-critical-evidence`
-- evidence snapshot/tree identity
-- `critical_evidence_gaps`
-- findings with classification/severity/confidence/location/evidence/risk/recommendation/validation/residual risk
-- optional threat model conforming to `schemas/threat-model.schema.json`
-- commands and outcomes
-- evidence layers: `structural`, `behavioral`, `runtime`, `external_current`
-- limitations
+- `report_version: security-review-report-1` and `rubric_version: SGR-2.0`;
+- target name/identity, mode, and `review_status: complete | partial | blocked-critical-evidence`;
+- evidence snapshot/tree identity and `critical_evidence_gaps`;
+- findings with classification/severity/confidence/location/evidence/risk/recommendation/validation/residual risk;
+- optional threat model conforming to `schemas/threat-model.schema.json`;
+- commands and outcomes;
+- evidence layers: `structural`, `behavioral`, `runtime`, `external_current`;
+- limitations.
 
 ## Output contract
 
-A complete review should include:
+A complete review includes:
 
 1. Mode, target, rubric/report version, and evidence identity.
 2. Files/sources inspected plus protected/uninspected surfaces.
-3. Executive posture stated without unsupported assurance.
-4. Findings ordered by stable severity criteria, each with the full evidence mapping.
+3. Executive posture without unsupported assurance.
+4. Findings ordered by stable severity criteria with full evidence mapping.
 5. Threat model when requested/useful, with assumptions and evidence refs.
-6. Dependency/supply-chain observations with dependency/source identity where applicable.
-7. Governance/responsible-ai observations tied to actual authority/domain evidence, including impact/reassessment records when consequential.
+6. Dependency/supply-chain observations with dependency/source identity when applicable.
+7. Governance/responsible-AI observations tied to actual authority/domain evidence, including impact/reassessment records when consequential.
 8. Remediation plan with safe validation and rollback/containment where relevant.
 9. Commands/gates with pass/fail/not-run.
-10. Structural evidence separated from behavioral/runtime/external-current evidence, with control-effectiveness level and runtime inventory identity when applicable.
+10. Structural evidence separated from behavioral/runtime/external-current evidence, including control-effectiveness and runtime-inventory identity when applicable.
 11. Limitations, critical evidence gaps, and residual risk.
 
 ## Stop conditions
@@ -225,21 +178,19 @@ A complete review should include:
 Stop before risky analysis or mutation when:
 
 - output would require exposing a full secret;
-- the user asks to execute destructive/untrusted code, malware, exploit code, or install hooks without a safe authorized sandbox;
+- the request requires destructive/untrusted code, malware/exploit execution, or install hooks without a safe authorized sandbox;
 - concrete findings are requested but no inspectable target exists;
 - a current CVE/license/compliance conclusion requires evidence that is unavailable;
 - remediation would mutate `.git`, credentials, `.env`, private keys, fixtures, expected outputs, frozen evaluators, generated baseline evidence, or unrelated project files;
 - target/source identity changed after snapshot and trustworthy re-baselining cannot be done;
-- the only way to reach a positive conclusion is to weaken evidence, redaction, or fail-closed gates.
+- positive assurance would require weakening evidence, redaction, or fail-closed gates.
 
 ## Host portability
 
-Keep the semantic core host-independent and portable across compatible hosts. Use Agent Skills-compatible Markdown/references/scripts and Python standard-library helpers. Do not require ChatGPT-, Claude-, Copilot-, Cursor-, or other host-specific invocation semantics for correctness. Treat `agents/openai.yaml` and other host-specific adapters as optional adapters, never core dependencies.
+Keep the semantic core host-independent across compatible hosts. Use Agent Skills-compatible Markdown/references/scripts and Python standard-library helpers. Host adapters such as `agents/openai.yaml` are optional and never core dependencies.
 
 If local command execution or Python 3.10+ is unavailable, continue with the safe read-only subset, mark script gates `not-run`, and do not claim those mechanical validations passed.
 
 ## Relationship to neighboring skills
 
-- Use broad hardening/reproducibility skills for package maturity, activation, regression infrastructure, and packaging beyond this security/governance scope.
-- Use secure-code-review for focused secret/credential handling in ordinary application code.
-- Use this skill when security review spans skills/agents/scripts/dependencies together with authority, governance, responsible-ai, compliance evidence, or threat modeling.
+The selection boundary above is authoritative. Broad package maturity belongs to hardening/optimization skills; application/PR security belongs to code/security reviewers; focused secret handling in ordinary app code belongs to `secure-code-review`; MCP-only security belongs to `mcp-security-review`. This skill owns broader package/agent security-governance assurance when those concerns span artifacts, authority, supply chain, responsible AI, compliance evidence, or threat modeling.
