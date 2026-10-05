@@ -1,5 +1,9 @@
 # RhapsodIA
 
+## 0.5.0 — expanded skill catalog and stronger quality contracts
+
+This release adds new specialist skills and improves existing ones with clearer activation and context-loading contracts, validation, evaluation scenarios, and supporting references. It builds on the artifact-native governance, planning, and execution workflows introduced in 0.4.0.
+
 ## 0.4.0 — artifact-native workflows and convergent execution
 
 This release brings together artifact-native governance, planning, and execution workflows with a **compile-to-workflow + checkpoint-and-gate** model. For risky multi-step work, RhapsodIA prefers small reviewable checkpoints, reference-derived oracle identity, declared gate order, fresh-context verification, explicit evidence memory, live-state revalidation for mutable sources, and immutable checkpoint evidence before dependent work proceeds.
