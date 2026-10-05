@@ -2,7 +2,10 @@
 
 ## At a Glance
 
-Classify the target ceiling before adding controls. Move objective variance downward into scripts/schemas/validators, constrain heuristic choices with defaults and tie-breakers, preserve genuine model judgment behind evidence/rubrics, and pin external nondeterminism where feasible.
+- **Purpose:** Classify the target reproducibility ceiling and each variance source so controls are placed at the lowest reliable layer without erasing legitimate judgment.
+- **Load when:** Before choosing transformations, when deciding whether variance is mechanical, heuristic, model judgment, or external nondeterminism, or when a determinism claim needs a ceiling.
+- **Decision impact:** Sets the maximum defensible reproducibility claim, control-placement choice, maturity interpretation, and variance budget; prevents forcing subjective/stochastic decisions into fake deterministic mechanisms.
+- **Do not load when:** The target ceiling and variance classification are already frozen and the task is only executing a known downstream gate.
 
 ## Contents
 

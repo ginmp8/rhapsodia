@@ -58,33 +58,33 @@ def contents_entries(lines: list[str]) -> list[str]:
 class ContextLoadingContractTests(unittest.TestCase):
     def test_skill_top_100_is_self_sufficient_control_plane(self):
         lines = SKILL.read_text(encoding="utf-8").splitlines()
-        self.assertGreater(len(lines), 100)
         top = "\n".join(lines[:100]).lower()
 
         required_markers = {
-            "mission/scope": [
+            "mission/authority": [
                 "## mission and authority",
-                "own only the convergence layer",
                 "research evidence -> atomic findings",
+                "own only the convergence layer",
             ],
             "activation/routing": [
                 "## activation and routing",
-                "use this skill only when",
+                "activate only when all are true",
                 "do not activate for",
                 "deep-research phase",
             ],
             "modes": ["## modes", "`create`", "`improve`", "`audit`", "`refresh`"],
             "critical invariants": [
-                "## core invariants",
+                "## non-negotiable invariants",
                 "corpus-bounded",
                 "exactly one disposition",
                 "reverse-trace",
                 "freeze evaluator assets",
-                "mechanical proof from model judgment",
+                "structural coverage is not semantic proof",
                 "paired baseline-vs-candidate",
                 "first 100 physical lines",
-                "multi-hop markdown chains",
+                "hidden markdown-to-markdown hops",
                 "passing candidate is immutable",
+                "stop instead of inventing evidence",
             ],
             "usable workflow": [
                 "## quick-start workflow",
@@ -95,13 +95,15 @@ class ContextLoadingContractTests(unittest.TestCase):
                 "mutate minimally and evaluate",
                 "repair, freeze, deliver",
             ],
-            "finalization": [
-                "## minimum finalization gates",
+            "finalization/claims": [
+                "## finalization and claim gate",
                 "finding_accounting = 100%",
                 "bidirectional `f -> r -> c/e`",
                 "no unresolved required conflict",
-                "no candidate edit after the last passing validation",
-                "do not claim unavailable proof",
+                "no candidate edit follows the last passing validation",
+                "cannot support the missing proof",
+                "never present structural trace coverage",
+                "never claim measured behavioral improvement without paired comparable execution",
             ],
             "direct resources": [
                 "## direct resource map",
@@ -111,10 +113,6 @@ class ContextLoadingContractTests(unittest.TestCase):
                 "references/semantic-review.md",
                 "references/reproducibility.md",
                 "references/refresh-impact.md",
-            ],
-            "claim boundary": [
-                "## reproducibility ceiling",
-                "never present structural trace coverage",
             ],
         }
         for surface, markers in required_markers.items():
@@ -144,7 +142,7 @@ class ContextLoadingContractTests(unittest.TestCase):
                     with self.subTest(source=path.name, target=rel):
                         self.assertIn(rel, direct)
 
-    def test_long_supporting_markdown_preview_matches_material_h2_sections(self):
+    def test_long_supporting_markdown_has_decision_useful_preview_and_synced_map(self):
         for path in sorted((ROOT / "references").glob("*.md")):
             lines = path.read_text(encoding="utf-8").splitlines()
             if len(lines) <= 100:
@@ -152,11 +150,29 @@ class ContextLoadingContractTests(unittest.TestCase):
             top = "\n".join(lines[:40]).lower()
             with self.subTest(path=path.name):
                 self.assertIn("## at a glance", top)
+                self.assertIn("**purpose:**", top)
+                self.assertIn("**load when:**", top)
+                self.assertIn("**decision impact:**", top)
                 self.assertIn("## contents", top)
 
                 actual = [h for h in h2_headings(lines) if h.lower() not in PREVIEW_HEADINGS]
                 indexed = contents_entries(lines)
                 self.assertEqual(actual, indexed)
+
+    def test_long_supporting_previews_are_not_generic_topic_lists(self):
+        banned = (
+            "read this file when the active workflow needs",
+            "primary topics:",
+            "this file contains information about",
+        )
+        for path in sorted((ROOT / "references").glob("*.md")):
+            lines = path.read_text(encoding="utf-8").splitlines()
+            if len(lines) <= 100:
+                continue
+            top = "\n".join(lines[:40]).lower()
+            with self.subTest(path=path.name):
+                for phrase in banned:
+                    self.assertNotIn(phrase, top)
 
 
 if __name__ == "__main__":

@@ -2,9 +2,11 @@
 
 ## At a Glance
 
-Judge one candidate skill change without redesigning the whole package. Separate structural, context-loading, behavioral, runtime, delivery, and reviewer evidence. Blocking regressions fail; material concerns fail under `strict` unless validly waived; mechanical signals require semantic interpretation.
+- **Purpose:** Convert evidence about one changed skill candidate into severity-classified regressions and a policy-aware acceptance decision without redesigning the package.
+- **Load when:** Performing semantic review after touched surfaces and evidence identities are known, especially for Top-100/context loading, authority, evidence integrity, portability, delivery, or output-contract changes.
+- **Decision impact:** Blocking regressions fail under every policy; material concerns fail under `strict` unless validly waived; insufficient/stale required evidence yields `insufficient-evidence`; mechanical signals never become semantic proof by themselves.
 
-Top-100/context-loading quality is a first-class gate surface: long `SKILL.md` files must expose the control plane early, long editable supporting Markdown must preview its purpose and real section map, and required instructions should be directly discoverable from `SKILL.md`. Treat these rules as `portable-package-policy`, not as Agent Skills specification claims.
+Top-100/context-loading rules in this rubric are `portable-package-policy`: the control plane must be reachable early and required Markdown must be directly discoverable from `SKILL.md`; do not misstate these local acceptance rules as Agent Skills specification requirements.
 
 ## Contents
 
@@ -13,8 +15,6 @@ Top-100/context-loading quality is a first-class gate surface: long `SKILL.md` f
 - Gate areas
 - Decision matrix
 - Review discipline
-
-Use this rubric to judge one candidate skill change. Separate structural, context-loading, behavioral, runtime, delivery, and reviewer evidence. Review the candidate change, not the entire package as a redesign exercise.
 
 ## Severity model
 
@@ -129,7 +129,7 @@ Blocking examples:
 - strict measured acceptance cannot identify the deciding policy/verifier when exact identity is material;
 - artifact/promotion receipt identifies different candidate bytes.
 
-Use `references/decision-evidence-contract.md` and `references/evidence-integrity.md`.
+Apply both evidence-subject binding and evidence-integrity rules: deciding evidence must match the gated candidate and required frozen identities, evaluator exposure, freshness, and artifact correspondence must remain valid.
 
 ### 6A. Evaluator exposure and stochastic sufficiency
 
@@ -207,7 +207,7 @@ For machine consumption use `contracts/change-gate-result.schema.json`.
 
 ### 11. Waivers
 
-A valid waiver is explicit, authorized, candidate-bound, policy-bound, scoped to named findings, and preserved in the audit trail. Read `references/waiver-policy.md`.
+A valid waiver is explicit, authorized, candidate-bound, policy-bound, scoped to named findings, and preserved in the audit trail. Non-waivable classes remain failures even when the caller accepts the risk.
 
 Non-waivable classes remain failures: identity drift, protected evaluator mutation, receipt/candidate mismatch, unsafe path/secret exposure, fabricated required evidence, contaminated holdout claims, and candidate self-authorization.
 

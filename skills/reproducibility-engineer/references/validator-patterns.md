@@ -2,7 +2,10 @@
 
 ## At a Glance
 
-Design validators as independent gates, not generator self-assertions. Prefer stable machine-readable diagnostics, canonical path preflight, class-specific checks, bounded supported fixes, and receipts that identify the exact validated bytes.
+- **Purpose:** Define independent validator, diagnostic, preflight, repair, and receipt patterns for objective acceptance gates.
+- **Load when:** Adding or changing a validator, machine-readable receipt, output-path preflight, target-class check, or diagnostic-driven repair rule.
+- **Decision impact:** Determines what a validator may prove, required receipt identity, path-collision checks, target-class assertions, diagnostic stability, repair ordering, and independence boundaries.
+- **Do not load when:** No objective/mechanical gate is being designed or modified.
 
 ## Contents
 

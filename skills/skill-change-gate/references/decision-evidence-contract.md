@@ -1,6 +1,10 @@
 # Decision Evidence Contract
 
-Use this reference when acceptance depends on supplied or executed validation, benchmark, scenario, runtime, review, packaging, or promotion evidence.
+## At a Glance
+
+- **Purpose:** Bind acceptance evidence to the exact candidate and decision context that produced it.
+- **Load when:** Validation, benchmarks, runtime checks, reviews, packaging, promotion, evaluator exposure, authority expansion, waivers, or ecosystem compatibility influence the decision.
+- **Decision impact:** Candidate/policy/verifier/evaluator/destination mismatches make evidence stale, unrelated, or blocking; required failed/not-run evidence cannot be relabeled as a pass.
 
 ## Principle
 

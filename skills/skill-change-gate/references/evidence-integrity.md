@@ -1,8 +1,10 @@
 # Evidence Integrity and Recovery Gate
 
-## Purpose
+## At a Glance
 
-Prevent acceptance because the gate inspected different bytes, stale/contaminated evidence, unsafe outputs, or incomplete receipts. These checks complement semantic review; they do not replace it.
+- **Purpose:** Prevent acceptance based on different bytes, contaminated evaluators, stale destination state, unsafe output aliases, or receipts that do not identify the delivered candidate.
+- **Load when:** A measured experiment, holdout, package/promotion receipt, destination-state check, destructive delivery, or recovery guarantee is material.
+- **Decision impact:** Identity mismatch, protected-evidence mutation, contaminated required holdout, stale required promotion state, receipt mismatch, or unsafe output/recovery behavior blocks acceptance or makes evidence insufficient.
 
 ## Keep evidence identities separate
 
@@ -25,7 +27,7 @@ For local folders, `scripts/static_change_gate.py` emits deterministic tree hash
 
 ## Decision evidence binding
 
-When evidence influences acceptance, prefer Gate Context v1 from `references/decision-evidence-contract.md`. Every deciding evidence record should identify the exact candidate it describes and its producer. Candidate-mismatched evidence is blocking even when the result itself says `pass`.
+When evidence influences acceptance, use Gate Context v1 when the root workflow requires it. Every deciding evidence record should identify the exact candidate it describes and its producer. Candidate-mismatched evidence is blocking even when the result itself says `pass`.
 
 Under strict measured acceptance, preserve stable policy/verifier identities when those rules can change. A policy mode label alone is not exact decision provenance.
 

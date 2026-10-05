@@ -2,9 +2,10 @@
 
 ## At a Glance
 
-Use this file for the detailed execution order behind the six-phase control plane in `SKILL.md`. Preserve evidence identity before interpretation, convert the frozen corpus into atomic findings and testable requirements, freeze evaluators before related mutation when feasible, apply only reverse-justified changes, validate structure and semantics separately, then freeze/package exact passing bytes.
-
-For Agent Skills over 100 lines, preserve the decision-critical control plane in the first 100 physical lines and keep required Markdown directly reachable from `SKILL.md`. This is a context-loading quality gate, not proof that the content is semantically correct.
+- **Purpose:** Define the canonical detailed execution order for turning a frozen research corpus into traced Agent Skill requirements, changes, evaluations, semantic review, and an exact frozen delivery.
+- **Load when:** Executing `create`, `improve`, or `refresh`; auditing a trace end to end; or deciding exactly when evidence/evaluators must freeze, mutation may start, paired comparison is required, repair must stop, or packaging may occur.
+- **Decision impact:** Fixes phase order and mutation boundaries, requires the omission/duplicate/conflict pass, distinguishes structural from semantic validation, constrains repair behavior, and determines when candidate bytes are eligible to freeze/package.
+- **Do not load when:** Only deciding whether the skill should activate; the root `SKILL.md` already owns selection, modes, core invariants, quick-start, and finalization gates.
 
 ## Contents
 
