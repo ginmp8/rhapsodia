@@ -1,5 +1,24 @@
 # Discovery and Order Artifacts
 
+## At a Glance
+
+- **Purpose:** Define the discovery, ordering, registry, and generated-view artifact shapes retained for explicit `legacy-board` discovery/order/prepare-define flows.
+- **Load when:** A selected legacy-board mode needs discovery state, candidate documents, registry records, define handoff fields, or generated-view invariants.
+- **Do not load when:** Native artifact storage or publication is being chosen; `references/artifact-native.md` owns those mechanics.
+- **Decision impact:** Constrains which legacy discovery/order files are authoritative, which are projections, and what cross-stage identity/dependency rules must hold without changing native ownership.
+
+## Contents
+
+- Discovery Root Layout
+- discovery-state.json
+- discovery-index.yaml
+- candidates/<candidate_id>.md
+- Order Outputs
+- registry/<spec_id>.yaml
+- define-queue.yaml
+- Generated Views
+- Cross-Stage Invariants
+
 > Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
 
 

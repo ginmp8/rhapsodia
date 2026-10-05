@@ -1,40 +1,41 @@
 # MAGO Activation Routing
 
-> Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
-
-
-Use this reference during hardening, packaging, or when a prompt could be confused with implementation, governance, general documentation, or repository execution work.
+> Storage binding: `artifact-native` is the default. Board/registry/cycle mechanics in retained mode references apply only after explicit `legacy-board` selection. Authority, privacy, evidence, validation, and handoff rules apply in both profiles.
 
 ## Should Activate
 
-Activate MAGO for canonical repository planning intent: discovery, ordering, adapt, prepare-define, define, refine, technical-design, reshape-tasks, define-product, refine-product, define-tasks, and refine-tasks. A resolved `BOARD_ROOT` is required before writes, not before identifying the planning mode or reporting missing canonical inputs. The expected output must be a MAGO-owned planning artifact, a read-only blocker diagnosis, or a validator report for such artifacts.
+Activate Mago when the requested outcome is a Mago-owned technical planning artifact, a read-only diagnosis of why such planning cannot proceed, or validation/reconciliation of existing Mago planning state. Typical intents include discovery, ordering, adapt, prepare/define/refine, technical design, planned ADRs, complexity reduction, product-only planning, task-only planning, task reshaping, and read-only reconciliation.
 
-For read-only reconciliation, activate `reconcile` only when canonical Mago intent and supplied Magia evidence are both identifiable; preserve both authorities and emit only a non-authoritative reconciliation report.
+For the default native profile, write eligibility depends on a resolved repository/owner root, `work_item_id` or existing planning identity, evidence source, rigor/lifecycle selection, and one internal mode. A Board, cycle, shared registry, Workspace, or UI is not required. If only the mode or blocker can be established, Mago may load read-only far enough to report it but must not mutate.
+
+For read-only reconciliation, activate `reconcile` only when canonical Mago intent and supplied Magia evidence are both identifiable. Preserve both authorities and emit only a non-authoritative reconciliation result.
 
 ## Should Not Activate
 
-Do not activate MAGO for product-code implementation, runtime execution, deployment, test execution, runtime evidence gathering, delivery governance, release notes, stakeholder status, portfolio reporting, or general documentation outside the canonical board tree. These are handoff cases.
+Do not activate Mago for product-code implementation, runtime execution, deployment, test execution, runtime evidence gathering, delivery governance, release notes, stakeholder/portfolio reporting, or general documentation that is not a Mago planning artifact. Route execution work to Magia and governance/status ownership to Nomia.
 
 ## Ambiguous Cases
 
-Treat requests such as "plan this", "make a package", "update docs", or "turn this roadmap into specs" as ambiguous until the user or repository evidence establishes the canonical board root, board_id, cycle_id, and artifact family. Ask only for the smallest missing input when a safe default cannot be derived.
+Requests such as "plan this", "make a package", "update docs", or "turn this roadmap into specs" are ambiguous until the planning owner, repository/owner root, work item or existing planning identity, evidence source, and intended artifact family can be resolved. Ask only for the smallest missing input when an interactive safe default cannot be derived; in unattended work, preserve the unknown and stop before mutation if it blocks correctness.
+
+If `legacy-board` is explicitly selected, additionally resolve its required Board/cycle/registry identity. Never infer `legacy-board` merely because old Board files exist.
 
 ## Edge Cases
 
-If the prompt is in scope but lacks required identifiers, activate the mode decision only far enough to name the blocker; do not write files. If the prompt mixes planning with implementation or governance, keep the planning boundary explicit and hand off the non-MAGO portion.
+If a prompt mixes planning with implementation or governance, keep only the Mago-owned planning portion and hand off the rest. If a selected mode document exposes only Board-specific write mechanics while native mode is active, do not invent a native write path; remain read-only or block until the native contract supplies one.
 
 ## Local Scenario Oracle
 
-Native activation scenarios use one shared meaning: `expected_owner` is `mago`, `magia`, `nomia`, or `none`; `expected_activation: true` means Mago is the resolved owner, `false` means Mago must not be selected, and `null` means owner resolution is still open. `diagnostic_entry_allowed: true` permits read-only loading only to resolve ambiguity or report an in-scope blocker; it never permits mutation before owner and canonical write inputs are resolved.
+Scenario metadata uses one shared meaning: `expected_owner` is `mago`, `magia`, `nomia`, or `none`; `expected_activation: true` means Mago is the resolved owner, `false` means Mago must not be selected, and `null` means owner resolution is still open. `diagnostic_entry_allowed: true` permits read-only loading only to resolve ambiguity or report an in-scope blocker; it never permits mutation before owner and write inputs are resolved.
 
 ## Regression and Adversarial Coverage
 
-The activation scenario suite must include positive, negative, ambiguous, edge, regression, and adversarial cases. Regression cases preserve previously fixed routing behavior, such as product-only and task-only separation. Adversarial cases protect against prompts that try to smuggle implementation, runtime validation, release governance, or noncanonical docs into a planning request.
+Activation coverage must include positive, negative, ambiguous, edge, regression, and adversarial cases. Protect product-only/task-only separation, native-vs-legacy storage selection, and prompts that try to smuggle implementation, runtime validation, release governance, or noncanonical documentation into a planning request.
 
 ## Measurement Limits
 
-The deterministic scenario validator is a package gate, not a live model-routing benchmark. Treat its metrics as static oracle conformance: useful for catching package regressions, insufficient coverage, and unclear expected boundaries. For release-critical changes, supplement it with a live prompt review using the same scenario suite and record live results separately; do not mark live routing as measured unless prompts were actually executed.
+The deterministic scenario validator is a package gate, not a live model-routing benchmark. Static oracle conformance can catch package regressions and unclear expected boundaries but does not measure live selection accuracy. For release-critical routing claims, execute a live prompt review against the same frozen scenario corpus and record it separately.
 
 ## Measured routing evidence
 
-Use the shared external contract in `scripts/live_routing_harness.py` and `references/live-routing-result-schema.json`. Structural scenarios are not live-model accuracy evidence.
+Use `scripts/live_routing_harness.py` with `references/live-routing-result-schema.json` for live routing evidence. Never report structural scenarios as measured live-model accuracy.
