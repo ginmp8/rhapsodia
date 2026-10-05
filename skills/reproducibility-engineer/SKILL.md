@@ -1,50 +1,50 @@
 ---
 name: reproducibility-engineer
-description: Engineer reproducibility for one existing Agent Skills-compatible skill across portable hosts when reproducibility itself is the goal or a bounded reproducibility batch has been selected. Use to reduce controllable variance across agents and runs with explicit contracts, deterministic mechanics, schemas, validators, evals, frozen evidence, repair loops, receipts, and atomic/versioned delivery while preserving the skill's responsibility boundary. Do not use for generic skill optimization/review/benchmarking, net-new skill creation, ordinary application code, or prompt-only rewrites; route general optimization to skill-booster and ownership-changing redesign to skill-creator-juiced.
+description: Engineer reproducibility for exactly one existing Agent Skills-compatible skill when the goal is to reduce controllable run-to-run or cross-agent variance without changing the skill's ownership boundary. Use for bounded reproducibility audit, transformation, validation, or packaging. Do not use for general skill optimization, benchmark-only scoring, net-new skills, ordinary application code, or prompt-only rewrites; route those to skill-booster, skill-benchmark, or skill-creator-juiced as appropriate.
 ---
 
 # Reproducibility Engineer
 
 ## At a Glance
 
-- **Purpose:** Make one existing Agent Skills-compatible skill reproducible at its real semantic ceiling without changing what the skill owns.
-- **Use when:** Reproducibility/repeatability/cross-agent consistency is the explicit goal, or Skill Booster has selected a bounded reproducibility transformation for the target.
-- **Do not use when:** The request is generic skill improvement, benchmark-only scoring, net-new skill creation, ordinary application code, or prompt-only rewriting without a reproducibility objective.
-- **Outcome:** Repeated runs with the same material inputs in a supported environment satisfy the same semantic contract, hard gates, evidence standards, and delivery guarantees; byte-identical model prose is not promised unless the target class can guarantee it.
+- **Purpose:** Make one existing Agent Skills-compatible skill repeatedly satisfy the same semantic contract for materially equivalent inputs and environments, up to the target class's real reproducibility ceiling.
+- **Use when:** Reproducibility, repeatability, or cross-agent consistency is an explicit objective, or Skill Booster has selected a bounded reproducibility transformation.
+- **Do not use when:** The task is general skill optimization, benchmark-only scoring, net-new skill creation, ordinary application code, or prompt-only rewriting without a reproducibility objective.
+- **Outcome:** Controllable variance is reduced with explicit contracts and gates; irreducible model, external, or subjective variance stays bounded and reported rather than disguised as determinism.
 
 ## Activation and Routing
 
-Use this skill only when all of these are true: there is exactly one existing skill target, reproducibility is material to the requested outcome, and the target's responsibility boundary can remain intact. For general optimization use `skill-booster`; for ownership-changing/new-skill design use `skill-creator-juiced`; for benchmark-only measurement use `skill-benchmark`.
+Activate only when there is exactly one existing skill target, reproducibility materially affects the requested outcome, and the target's capability/ownership boundary can remain intact. Route general optimization to `skill-booster`, benchmark-only measurement to `skill-benchmark`, and net-new or ownership-changing design to `skill-creator-juiced`.
 
-Preserve the target's existing capability boundary. A self-hosting target is a special branch: freeze controller, generation, evaluator, candidate, and last-known-good identities before mutation and load the self-hosting reference directly.
+For a target that can modify itself, freeze controller, generation, evaluator, candidate, and last-known-good identities before mutation and load [`references/self-hosting-reproducibility.md`](references/self-hosting-reproducibility.md).
 
 ## Modes
 
 | Mode | Use for | Mutation |
 |---|---|---|
-| `audit-only` | diagnose reproducibility weaknesses and ceiling | no |
-| `plan-only` | produce a bounded transformation plan and contract | no |
-| `apply` | modify an existing skill toward reproducible behavior | yes |
-| `validation-only` | verify an already-modified skill | no unless explicitly allowed |
-| `package` | validate and build final `skill.zip` | only repairs required by declared gates |
+| `audit-only` | diagnose variance sources and the reproducibility ceiling | no |
+| `plan-only` | define a bounded transformation contract and gates | no |
+| `apply` | reduce observed controllable variance in the existing skill | yes |
+| `validation-only` | verify an already-modified skill | no unless explicitly authorized |
+| `package` | validate and build the final `skill.zip` | only repairs required by declared gates |
 
-Default to `apply` when the user explicitly asks to make a skill reproducible/repeatable/Archify-like; otherwise choose the narrowest mode supported by the request.
+Default to `apply` only when the user explicitly asks to make the target reproducible/repeatable; otherwise select the narrowest mode that satisfies the request.
 
-## Core invariants
+## Core Invariants
 
-- Resolve exactly one target skill root and mutate only its authorized scope.
-- Preserve an immutable baseline before edits; snapshot material external source bytes before they can drift.
+- Resolve exactly one target root and mutate only authorized target files.
+- Preserve an immutable baseline before edits; snapshot material external source bytes before analysis when their identity affects a decision.
 - Protect `.git`, secrets, credentials, user fixtures, expected outputs, golden baselines, frozen evaluators, generated baseline evidence, and unrelated repositories.
-- Keep the portable Agent Skills core host-neutral; treat host adapters as optional and detect capabilities instead of branching only on host name.
-- Full `apply`, `validation-only`, and `package` evidence requires writable filesystem access and Python 3.10+ for bundled deterministic validators; otherwise mark script gates `not-run` and do not claim package-validation pass.
-- Freeze evaluators before candidate mutation; evaluator drift invalidates the comparison and requires restart/re-baseline.
-- Trace legacy owners, consumers, compatibility commitments, migrations, tests, and validators before removing behavior.
+- Keep the portable Agent Skills core host-neutral; host adapters remain optional and capability detection takes precedence over host-name branching.
+- Full `apply`, `validation-only`, and `package` evidence requires writable filesystem access and Python 3.10+ for bundled validators; otherwise mark those script gates `not-run` and do not claim they passed.
+- Freeze evaluators before candidate mutation; evaluator drift invalidates the comparison and requires restart or explicit re-baselining.
+- Trace legacy owners, consumers, compatibility commitments, migrations, tests, and validators before removing or transferring behavior.
 - Never weaken semantics, safety, tests, evaluators, evidence, thresholds, or protected paths to manufacture reproducibility.
-- A final passing candidate is frozen; any later edit invalidates affected evidence and requires revalidation.
-- Package only the exact frozen candidate; preflight output aliases and preserve last-good/recovery evidence on failure.
-- Never claim benchmark uplift, runtime portability, stochastic reliability, or subjective quality without matching executed/supplied evidence.
+- Freeze the final passing candidate; any later edit invalidates affected evidence and requires revalidation.
+- Package only frozen candidate bytes; reject output aliases and preserve last-known-good/recovery evidence on failure.
+- Claim only what executed or supplied evidence supports; structural, behavioral, runtime, stochastic, portability, and perceptual evidence are not interchangeable.
 
-## Reproducibility ceiling and control placement
+## Reproducibility Ceiling and Control Placement
 
 | Target class | Mechanically enforce | Keep bounded judgment |
 |---|---|---|
@@ -53,43 +53,47 @@ Default to `apply` when the user explicitly asks to make a skill reproducible/re
 | `research-analytic` | source hierarchy, traceability, output contract, claim/evidence rules | conclusions/interpretation |
 | `constrained-subjective` | structure, process, constraints, evidence collection | perceptual/editorial quality |
 
-State the ceiling before transformation. Use the lowest reliable control layer that preserves meaning: `runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`. Do not move genuine judgment into code merely to appear deterministic.
+State the ceiling before transformation. Place each control at the lowest reliable layer that preserves meaning: `runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`. Never move genuine judgment into code merely to appear deterministic.
 
 ## Workflow at a Glance
 
-1. **Establish** target, immutable baseline, capabilities, writable/protected scope, source/evaluator identities, and package expectation.
-2. **Classify** the reproducibility ceiling and separate irreducible model/external nondeterminism from controllable variance.
-3. **Map variance** across discovery/activation -> Top-100 -> normalization -> routing -> references -> decisions -> generation -> validation -> repair -> delivery -> packaging.
-4. **Freeze the contract**: hard gates, protected paths, variability items, evaluator/scenario identities, acceptance rules, and delivery guarantees before material mutation.
-5. **Transform minimally** using the lowest reliable control layer; add machinery only for an observed variance source or evidence gap.
-6. **Repair causally**: failing diagnostic -> smallest supported fix -> same gate -> adjacent gates; stop after two non-improving rounds unless evidence changes the hypothesis.
-7. **Evaluate** baseline vs candidate on identical scenarios; add environment profiles, repeated trials, no-skill/full-context arms, or holdouts only when the claim requires them.
-8. **Prove and freeze** source/evaluator identity, target-owned tests, package/context gates, then exact candidate bytes.
-9. **Deliver atomically** only from frozen bytes; verify receipt identity and preserve last-good/recovery artifacts on failure.
+1. **Establish:** target, baseline, capabilities, writable/protected scope, material source/evaluator identities, and whether packaging is required.
+2. **Classify:** reproducibility ceiling; separate controllable variance from irreducible model/external/subjective variance.
+3. **Map variance:** discovery/activation -> Top-100 -> input normalization -> routing -> references -> decisions -> generation -> validation -> repair -> delivery -> packaging.
+4. **Freeze contract:** hard gates, protected paths, variability items, evaluators/scenarios, acceptance rules, and delivery guarantees before material mutation.
+5. **Transform minimally:** use the lowest reliable control layer; add machinery only for an observed variance source or evidence gap.
+6. **Repair causally:** failing diagnostic -> smallest supported fix -> same gate -> adjacent gates; stop a branch after two non-improving repair rounds unless evidence changes the hypothesis.
+7. **Evaluate:** baseline vs candidate on identical scenarios; add environment profiles, repeated trials, no-skill/full-context arms, or holdouts only when the claim requires them.
+8. **Prove and freeze:** verify source/evaluator identity, target-owned tests, context/package gates, then freeze exact candidate bytes.
+9. **Deliver atomically:** package only frozen bytes, verify package/receipt identity, and preserve last-good/recovery artifacts on failure.
 
 ## Acceptance Gates and Stop Conditions
 
-Acceptance is blocked by semantic/safety/compatibility regressions, changed protected/frozen evidence, failing required validation, candidate/package identity mismatch, unsupported behavioral or portability claims, or edits after final freeze. Keep structural, behavioral, runtime, and perceptual/editorial evidence claims separate.
+Acceptance gates require protected/frozen evidence to remain unchanged; mandatory target validators/tests and applicable context/package gates pass; no blocking activation, semantic, safety, compatibility, validation, or packaging regression remains; every quality/portability/reliability claim stays within the target ceiling and executed/supplied evidence; and final package/receipt identity matches the frozen candidate.
 
-Stop when target identity is ambiguous; a required baseline/evaluator/source identity cannot be preserved; protected evidence would be edited; a trustworthy required gate cannot run; passing would require weakening a hard gate; source/evaluator drift makes comparison invalid; or the requested determinism exceeds the target's real ceiling.
+Stop when target identity is ambiguous; required baseline/evaluator/source identity cannot be preserved; a mandatory trustworthy gate cannot run; protected evidence would need mutation; passing would require weakening a hard gate; source/evaluator drift invalidates comparison; or requested determinism exceeds the target's real ceiling.
+
+## Output Summary
+
+Every substantive run reports target/mode/baseline identity, reproducibility ceiling and irreducible variance, changed files, evaluator/source identity, exact validation outcomes, accepted/rejected transformations, final gates, Top-100/reference-depth status, and residual risks. Report a package path only when the archive exists and validation passed.
 
 ## Direct Reference Map
 
-- **Ceiling and transformation choice:** [`references/reproducibility-model.md`](references/reproducibility-model.md), [`references/transformation-playbook.md`](references/transformation-playbook.md), [`references/validator-patterns.md`](references/validator-patterns.md).
-- **Evaluation evidence:** [`references/evaluation-contract.md`](references/evaluation-contract.md), [`references/scenario-design.md`](references/scenario-design.md), [`references/stochastic-evaluation.md`](references/stochastic-evaluation.md).
-- **Integrity and reporting:** [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md), [`references/report-contract.md`](references/report-contract.md).
-- **Portability and environment:** [`references/host-portability.md`](references/host-portability.md), [`references/environment-provenance.md`](references/environment-provenance.md).
-- **Adaptive/multi-stage workflows:** [`references/workflow-reproducibility.md`](references/workflow-reproducibility.md), [`references/execution-lineage.md`](references/execution-lineage.md).
+- **Ceiling / transformation / validators:** [`references/reproducibility-model.md`](references/reproducibility-model.md), [`references/transformation-playbook.md`](references/transformation-playbook.md), [`references/validator-patterns.md`](references/validator-patterns.md).
+- **Evaluation / scenarios / stochastic claims:** [`references/evaluation-contract.md`](references/evaluation-contract.md), [`references/scenario-design.md`](references/scenario-design.md), [`references/stochastic-evaluation.md`](references/stochastic-evaluation.md).
+- **Integrity / reporting:** [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md), [`references/report-contract.md`](references/report-contract.md).
+- **Portability / environment:** [`references/host-portability.md`](references/host-portability.md), [`references/environment-provenance.md`](references/environment-provenance.md).
+- **Adaptive / multi-stage:** [`references/workflow-reproducibility.md`](references/workflow-reproducibility.md), [`references/execution-lineage.md`](references/execution-lineage.md).
 - **Self-hosting:** [`references/self-hosting-reproducibility.md`](references/self-hosting-reproducibility.md).
 
-Load only the branch-relevant files above. Required Markdown must be directly reachable from `SKILL.md`; Markdown-to-Markdown links may aid navigation but must never be the sole route to mandatory instructions. For authored supporting Markdown over 100 lines, require a decision-useful preview with explicit **Purpose**, **Load when**, and **Decision impact** before a synchronized `Contents` map; a generic topic list is not sufficient.
+All mandatory Markdown is linked directly from `SKILL.md`; reference-to-reference links are navigation only. For authored supporting Markdown over 100 lines, require **Purpose**, **Load when**, and **Decision impact** before a synchronized `Contents` map; generic topic lists do not satisfy the preview contract.
 
 ## Detailed workflow
 
 ### 1. Establish target identity and baseline
 
 1. Resolve exactly one target skill root containing `SKILL.md`.
-2. Record target path, current version/identity when present, requested behavior, host/runtime profile, detected capabilities, writable scope, blocked paths, and package expectation. If the target will modify itself, also load `references/self-hosting-reproducibility.md` and freeze controller/generation/last-known-good identity before candidate mutation.
+2. Record target path, current version/identity when present, requested behavior, host/runtime profile, detected capabilities, writable scope, blocked paths, and whether final packaging is required plus its requested profile. If the target will modify itself, also load `references/self-hosting-reproducibility.md` and freeze controller/generation/last-known-good identity before candidate mutation.
 3. Preserve an immutable baseline before edits: copy, clean VCS commit, or equivalent snapshot.
 4. If external files or repository evidence materially determine the transformation or acceptance decision, capture the exact source bytes before analysis and use that snapshot as evidence. Prefer immutable VCS object reads for pinned revisions; do not let working-tree edits or replacement refs silently redefine a pinned source. Read `references/integrity-and-recovery.md` when this applies.
 5. Run target-owned validators/tests/package checks first when available. Record exact commands and exit status.

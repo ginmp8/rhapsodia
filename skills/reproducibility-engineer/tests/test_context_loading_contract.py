@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -32,6 +33,46 @@ class ContextLoadingContractTests(unittest.TestCase):
         self.assertEqual('pass', report['status'])
         self.assertTrue(report['control_surface']['long_skill_contract_applies'])
 
+
+    def test_reproducibility_engineer_top100_preserves_critical_rule_families(self) -> None:
+        first100 = '\n'.join((ROOT / 'SKILL.md').read_text(encoding='utf-8').splitlines()[:100]).lower()
+        required_families = {
+            'purpose': ('**purpose:**',),
+            'activation': ('**use when:**', 'activate only when'),
+            'non-activation': ('**do not use when:**',),
+            'modes': ('## modes',),
+            'immutable baseline': ('immutable baseline',),
+            'source identity': ('snapshot material external source bytes',),
+            'protected evidence': ('protect `.git`',),
+            'portable core': ('portable agent skills core host-neutral',),
+            'validator capability': ('python 3.10+',),
+            'evaluator freeze': ('freeze evaluators before candidate mutation',),
+            'compatibility trace': ('trace legacy owners, consumers',),
+            'no gate weakening': ('never weaken semantics, safety, tests, evaluators',),
+            'freeze after pass': ('freeze the final passing candidate',),
+            'package identity/recovery': ('package only frozen candidate bytes',),
+            'claim boundary': ('claim only what executed or supplied evidence supports',),
+            'reproducibility ceiling': ('## reproducibility ceiling and control placement',),
+            'control placement': ('runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt',),
+            'workflow': ('## workflow at a glance',),
+            'acceptance gates': ('## acceptance gates and stop conditions',),
+            'stop conditions': ('stop when target identity is ambiguous',),
+            'output summary': ('## output summary',),
+            'direct reference map': ('## direct reference map',),
+        }
+        missing = [
+            name for name, alternatives in required_families.items()
+            if not any(fragment in first100 for fragment in alternatives)
+        ]
+        self.assertEqual([], missing, f'critical rule families missing from first 100 lines: {missing}')
+
+        all_references = {path.relative_to(ROOT).as_posix() for path in (ROOT / 'references').glob('*.md')}
+        top100_references = set(re.findall(r'\((references/[^)#]+\.md)(?:#[^)]+)?\)', first100))
+        self.assertEqual(all_references, top100_references, 'every supporting Markdown reference must be directly discoverable in the first 100 lines')
+
+        vague_fragments = ('archify-like', 'package expectation', 'primary topics:', 'details below', 'read this file when needed')
+        present_vague = [fragment for fragment in vague_fragments if fragment in first100]
+        self.assertEqual([], present_vague, f'vague/context-dependent phrases leaked into top-100 control plane: {present_vague}')
 
     def test_long_skill_requires_activation_and_non_activation_boundary(self) -> None:
         with tempfile.TemporaryDirectory() as td:
