@@ -1,82 +1,72 @@
 ---
 name: nuget-package-updater
-description: update, audit, and validate NuGet Central Package Management versions in Directory.Packages.props with reproducible evidence. use for safe .NET package upgrades, NuGet.Config and Package Source Mapping, stable non-prerelease selection, deprecated/unlisted/vulnerable package rejection, CPM locks and VersionOverride guards, TFM compatibility, transitive NuGetAudit, packages.lock.json recovery, decision receipts, metadata snapshots, and atomic rollback. portable across agent hosts because the core depends only on repository files, Python 3 stdlib, NuGet V3 HTTP metadata, and the dotnet CLI when runtime validation is requested.
+description: safely update, audit, and validate NuGet Central Package Management versions in Directory.Packages.props with deterministic NuGet V3 evidence, CPM/source guards, compatibility checks, NuGetAudit, receipts, and rollback. use when a repository centrally manages NuGet versions and package updates must be reproducible and fail-closed. do not use for generic PackageReference/csproj edits, package-install advice, or repositories whose effective versions require unsupported MSBuild evaluation. portable core uses repository files, Python 3 stdlib, NuGet V3 HTTP metadata, and dotnet only for runtime validation.
 ---
 
 # NuGet Package Updater
 
-## Authority and scope
+## Selection and authority
 
-Use `scripts/nuget_update.py` as the deterministic authority for package discovery, candidate ordering, metadata policy, compatibility probes, write previews, mutation, receipts, and recovery.
+Use this skill for safe NuGet **Central Package Management** updates in `Directory.Packages.props`: discovery, candidate selection, source/config policy, TFM compatibility, repository audit, atomic mutation, receipts, and recovery.
 
-Never manually select a version when the script can decide. Never turn missing metadata, ambiguous source provenance, unsupported CPM semantics, or failed restore/audit evidence into permission to edit a package version manually. Never perform unrelated upgrades.
+Do not use it to edit ordinary `<PackageReference Version=...>` values, migrate package-management models, choose packages by taste, bypass an unsupported CPM graph, or perform unrelated upgrades.
 
-The portable core must not depend on ChatGPT, Codex, Claude, Copilot, Cursor, MCP, or another vendor-private runtime. `agents/openai.yaml` and `assets/copilot/` are optional host adapters only. Resolve the available Python 3 launcher (`python`, `python3`, `py -3`, or equivalent) instead of assuming one spelling.
+`scripts/nuget_update.py` is the deterministic authority for the supported static CPM surface. Never manually choose a version to bypass missing/untrusted metadata, source ambiguity, unsupported CPM semantics, active `VersionOverride`, lock/pin policy, failed compatibility, or failed repository validation/audit.
 
 ## Modes
 
-| Mode | Purpose | Writes `Directory.Packages.props` |
+| Mode | Use when | Mutation |
 |---|---|---|
-| `scan` | inventory selected declarations, locks, repository model, and overrides | no |
-| `check` | compute the safe update plan and evidence | no |
-| `update` | recompute the plan; mutate only with `--write` | only with `--write` |
+| `scan` | inventory declarations, locks, overrides, configs, and repository model | none |
+| `check` | compute the safe update plan plus evidence | none |
+| `update --write` | recompute and commit an authorized plan | `Directory.Packages.props` only, transactionally |
 
-A prior `check` never authorizes a later write by itself. Bind check→write with `--expected-decision-receipt`; use `--metadata-snapshot-input` when exact replay of checked NuGet metadata is required.
+A previous `check` is evidence, not write authority. Bind check -> write with `--expected-decision-receipt`; add `--metadata-snapshot-input` for exact metadata replay. Any decision drift blocks mutation.
+
+## Core rules and invariants
+
+- Default candidate policy is stable-only: no prerelease, major upgrade, downgrade, unlisted, deprecated, vulnerable-at-threshold, untrusted metadata, or ambiguous exact-version source unless the matching diagnostic/test override was explicitly requested.
+- Fail closed on selected conditional or duplicate `PackageVersion`, non-literal version expressions, unsupported source mapping/source type, or other static CPM semantics the script cannot prove. An active project `VersionOverride` skips that package.
+- With `--nuget-config`, bind the exact config bytes and Package Source Mapping identity. Prefer mapping when multiple feeds are eligible. Never treat configured source order as authoritative for an ID/version present in multiple feeds.
+- The metadata client supports HTTP(S) NuGet V3 and does not store credentials. Surface 401/403 as an authentication requirement; never place PATs, tokens, passwords, or credential values in arguments, reports, snapshots, receipts, or skill files.
+- Package/TFM compatibility probing is not repository graph proof. For normal writes, use `--validate-repository --audit-repository`; repository validation is `restore -> build --no-restore -> test --no-build` and audit policy is evaluated separately.
+- A write is atomic and recoverable: recheck the baseline, preserve exact last-known-good package bytes and existing `packages.lock.json` bytes, commit, validate, and restore/remove lock-file changes if validation fails.
+- Keep identities separate: package baseline, TFM+SDK, source/config/mapping, repository model, locks/pins, metadata snapshot, decision, and final update receipt. Timestamps are provenance, not decision identity.
+- Treat `reason_code` as the automation contract; free-form `reason` is explanatory only.
+- Never claim compatibility, restore/build/test, NuGetAudit, signature trust, graph safety, rollback, or package success unless the corresponding evidence was executed or supplied.
+- Portable core must not depend on ChatGPT, Codex, Claude, Copilot, Cursor, MCP, or another vendor-private runtime. Resolve the available Python 3 launcher instead of assuming `python`.
+- Stop without writing when required metadata/trust/authentication is unresolved, replay/receipt/baseline identity mismatches, source mapping or source ambiguity is unresolved, CPM semantics are unsupported, a lock/pin or override blocks the package, no safe compatible candidate exists, output paths alias protected inputs, or commit/validation/audit fails.
 
 ## Required workflow
 
-1. Resolve the exact `Directory.Packages.props`, target framework, and repository root.
-2. If the repository uses a repo-local `NuGet.Config`, pass it explicitly with `--nuget-config`. Prefer Package Source Mapping when multiple feeds exist.
-3. Run `scan`.
-4. Run `check --write-decision-doc --write-evidence`.
-5. Review:
-   - package-file baseline SHA-256;
-   - target-framework and detected SDK identity;
-   - NuGet source identity;
-   - explicit `NuGet.Config` SHA-256 and Package Source Mapping identity when supplied;
-   - repository-model identity, `VersionOverride` evidence, locks/pins, and lock-file identity;
-   - metadata snapshot identity;
-   - candidate provenance and source ambiguity;
-   - stable reason codes and write preview;
-   - decision receipt.
-6. Only when a write was requested, run `update --write` and require the checked decision receipt. Prefer exact metadata replay.
-7. For normal repository updates, use `--validate-repository --audit-repository`. Use custom `--validation-command label::command` only when repository-specific commands are necessary; `--audit-repository` intentionally requires the built-in validation sequence.
-8. Treat any post-write validation failure as a failed update. The script restores the exact package-file bytes and pre-validation `packages.lock.json` state, including removing lock files created by the failed validation run.
-9. Report decision, metadata, write, validation/audit, recovery, and receipt evidence separately.
+1. Resolve the exact `Directory.Packages.props`, repository root, target framework, and available Python 3 launcher; identify any repo-local `NuGet.Config`.
+2. Run `scan` to capture declarations, locks/pins, overrides, central props, and lock-file state.
+3. Run `check --write-decision-doc --write-evidence`; pass `--nuget-config` when repository-owned config matters.
+4. Review baseline/config/repository/metadata identities, source ambiguity, stable reason codes, candidate policy, write preview, and decision receipt.
+5. If no write was requested, stop after reporting the check evidence. Never mutate implicitly.
+6. If a write was requested, run `update --write` with `--expected-decision-receipt`; prefer `--metadata-snapshot-input` for exact replay.
+7. For normal repository changes require `--validate-repository --audit-repository`. Custom `--validation-command label::command` is only for repository-specific validation and is incompatible with the built-in audit contract.
+8. If post-write validation fails, treat the update as failed and preserve/report rollback evidence for both package and lock files.
+9. Report decision, external metadata, repository model, write, validation/audit, recovery, and artifact evidence as separate layers.
 
-Recommended check:
+## Quick start
 
 ```text
-<PYTHON> scripts/nuget_update.py check \
-  --file Directory.Packages.props \
-  --repository-root . \
-  --nuget-config NuGet.Config \
-  --target-framework net10.0 \
-  --report-format markdown \
-  --write-decision-doc \
-  --write-evidence
+<PYTHON> scripts/nuget_update.py scan --file Directory.Packages.props --repository-root . --target-framework net10.0
+<PYTHON> scripts/nuget_update.py check --file Directory.Packages.props --repository-root . --target-framework net10.0 --write-decision-doc --write-evidence
+<PYTHON> scripts/nuget_update.py update --file Directory.Packages.props --repository-root . --target-framework net10.0 --write --write-decision-doc --write-evidence --expected-decision-receipt <receipt.json> --metadata-snapshot-input <snapshot.json> --validate-repository --audit-repository
 ```
 
-Omit `--nuget-config` when the repository intentionally uses only the default nuget.org source or explicit `--source` arguments.
+Add `--nuget-config NuGet.Config` whenever that explicit repository config is part of the decision. If live metadata is intentionally re-queried during write, keep `--expected-decision-receipt`; drift must still block mutation.
 
-Recommended write after the check:
+## Direct resource map
 
-```text
-<PYTHON> scripts/nuget_update.py update \
-  --file Directory.Packages.props \
-  --repository-root . \
-  --nuget-config NuGet.Config \
-  --target-framework net10.0 \
-  --write \
-  --write-decision-doc \
-  --write-evidence \
-  --expected-decision-receipt docs/pkgs-versions/nuget-decision-receipt-<id>.json \
-  --metadata-snapshot-input docs/pkgs-versions/nuget-metadata-snapshot-<id>.json \
-  --validate-repository \
-  --audit-repository
-```
-
-If live metadata is intentionally re-queried, keep `--expected-decision-receipt`; any decision drift must block the write.
+- [`references/usage.md`](references/usage.md): command/flag reference, source mapping, CPM guards, candidate policy, validation/audit, credentials, reason codes, and offline test mode.
+- [`references/reproducibility.md`](references/reproducibility.md): evidence identities, exact replay, cache isolation, alias safety, last-known-good state, lock-file transaction, audit evidence, and stable reruns.
+- [`references/decision-document.md`](references/decision-document.md): human-readable decision-document contract and evidence boundaries.
+- [`references/local-copilot-setup.md`](references/local-copilot-setup.md): optional Copilot adapter setup; never required by the portable core.
+- `scripts/nuget_update.py`: executable authority; `scripts/test_nuget_update.py`, `scripts/test_reproducibility.py`, `scripts/test_research_improvements.py`, and `scripts/validate_evidence.py`: deterministic regression/evidence validators.
+- `schemas/metadata-snapshot.schema.json`, `schemas/decision-receipt.schema.json`, and `schemas/package-update-receipt.schema.json`: machine-readable evidence contracts; `evals/reproducibility-scenarios.json`: planned reproducibility scenarios.
 
 ## NuGet source and configuration semantics
 
