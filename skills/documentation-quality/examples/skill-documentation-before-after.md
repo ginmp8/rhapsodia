@@ -1,6 +1,16 @@
 # Skill documentation before and after examples
 
-Use these examples to calibrate concise, evidence-grounded documentation improvements for Skill packages.
+## At a Glance
+
+- **Purpose:** Calibrate concise, evidence-grounded before/after rewrites for common Skill documentation problems.
+- **Load when:** The active task needs concrete rewrite examples for a reference file, README/guide, or Markdown accessibility cleanup.
+- **Decision impact:** Shows the expected granularity of edits and reinforces source-backed claims, ownership boundaries, descriptive navigation, and minimal context growth; it does not define new rules.
+
+## Contents
+
+- Example 1: Reference file review
+- Example 2: README restructuring
+- Example 3: Markdown accessibility pass
 
 ## Example 1: Reference file review
 

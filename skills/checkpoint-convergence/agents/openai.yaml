@@ -1,3 +1,12 @@
 interface:
-  display_name: "Checkpoint Convergence"
-  short_description: "Reference-grounded checkpoint and gate progression"
+  display_name: Checkpoint Convergence
+  short_description: Reference-grounded checkpoint and gate progression
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

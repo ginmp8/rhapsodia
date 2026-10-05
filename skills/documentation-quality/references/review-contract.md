@@ -2,7 +2,23 @@
 
 Contract identity: `documentation-review-v2`
 
-Use this reference for substantive documentation reviews, direct edits that require validation, durable reports, or before/after claims. It stabilizes evidence, finding shape, severity, ordering, comparison identity, and completion claims without pretending editorial judgment is deterministic.
+## At a Glance
+
+- **Purpose:** Stabilize evidence labels, finding shape, severity, ordering, before/after identity, repair limits, and completion claims for documentation-quality work.
+- **Load when:** Running a substantive review, validated direct edit, durable report, or any before/after claim.
+- **Decision impact:** Controls which evidence words are allowed, how findings are ranked/deduplicated, when comparisons are fair, when repair must stop, and what is required to claim completion.
+
+## Contents
+
+- Evidence labels
+- Finding schema
+- Severity rules
+- Deterministic ordering and deduplication
+- Rubric identity and content intent
+- Before/after fairness and identity
+- Evidence layers
+- Repair loop
+- Completion gates
 
 ## Evidence labels
 
