@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Reproducibility by Design**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Goal, 1. Classify the skill's reproducibility ceiling, 2. Build a variability map, 3. Choose controls proportionally, 4. Snapshot material evidence before analysis.
+- **Purpose:** Define the local proportional reproducibility pass that moves fragile objective behavior to lower-variance controls without eliminating useful model judgment.
+- **Load when:** Creating or materially redesigning a skill before deciding whether a dedicated reproducibility specialist is necessary.
+- **Decision impact:** Determines reproducibility ceiling, variability map, control layer, source/evaluator identity, output/transaction/receipt safeguards, and the later specialist-routing decision.
 
 ## Contents
 

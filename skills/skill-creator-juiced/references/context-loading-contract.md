@@ -2,19 +2,16 @@
 
 ## At a Glance
 
-Use this contract when creating or substantially redesigning a skill. It separates the skill into three context surfaces so discovery is cheap, initial execution is reliable, and detailed knowledge is loaded only when needed.
-
-- **Discovery surface:** frontmatter `name` + `description`.
-- **Control surface:** the first 100 physical lines of `SKILL.md`.
-- **Detail surface:** directly linked references, scripts, examples, schemas, and assets.
-
-The goal is not to force every skill into identical headings. The goal is to ensure a partial read exposes the information needed to decide and begin correctly.
+- **Purpose:** Define the discovery, Top-100, semantic-preview, and reference-depth contract used when creating or substantially redesigning a skill.
+- **Load when:** Authoring `SKILL.md`, writing long supporting Markdown, or validating that an agent can decide what to load without reading deep reference chains.
+- **Decision impact:** Requires the primary control plane in the first 100 lines of `SKILL.md`, requires decision-useful semantic previews for long references, and keeps navigation indexes separate from relevance/decision signals.
 
 ## Contents
 
 - Discovery surface
 - Top-100 control surface
-- Supporting Markdown
+- Semantic preview contract
+- Navigation map contract
 - Reference depth
 - Exceptions
 - Validation
@@ -46,22 +43,30 @@ Cover these semantic elements, using natural headings appropriate to the skill:
 
 The first 100 lines may summarize detailed rules that are expanded later. Do not duplicate large procedures solely to satisfy this contract.
 
-## Supporting Markdown
+## Semantic Preview Contract
 
-For every editable supporting `.md` file over 100 physical lines:
+For every editable supporting `.md` over 100 physical lines, put `At a Glance`, `Summary`, `Quick Reference`, or `Overview` inside the first 40 lines. Before the navigation map, the preview must explicitly state:
 
-- put `At a Glance`, `Summary`, `Quick Reference`, or `Overview` near the top;
-- immediately follow it with `Contents`, `Table of Contents`, or `Section Map`, with both headings inside the first 40 lines;
-- derive the contents entries from the document's actual material `##` headings outside fenced code;
-- exclude the document title and preview headings themselves;
-- include every remaining H2 exactly once, preserve document order, and do not list sections that do not exist;
-- revalidate the contents list whenever headings change; H3+ entries remain optional unless a deeper map is intentionally needed;
-- expose the document purpose, decision criteria, and major sections before line 100;
-- keep deep examples, schemas, and long rationale later.
+- **Purpose:** what the document owns or explains;
+- **Load when:** the workflow branch, decision, risk, or task state that makes it relevant;
+- **Decision impact:** what decisions, invariants, contracts, outputs, or failure modes it changes or constrains.
 
-Missing preview structure or contents/heading drift is a structural readiness failure for editable Markdown, not merely an editorial warning. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; the validator must surface the exception as a warning.
+Add **Do not load when** when a sibling reference could plausibly be confused with it. The required signals must be specific to the document. Boilerplate such as `Read this file when the workflow needs <title>`, a `Primary topics` line, or a copied section list is insufficient.
 
-For shorter Markdown, the same preview-first pattern is preferred when it improves scanning but is not mandatory.
+A semantic preview exists to answer `why should the active branch load this file?`; a navigation list answers only `where are its sections?`. Do not treat one as evidence for the other.
+
+## Navigation Map Contract
+
+After the semantic preview, put `Contents`, `Table of Contents`, or `Section Map` within the first 40 lines.
+
+- derive entries from actual material `##` headings outside fenced code;
+- exclude the document title and preview/navigation headings;
+- include every remaining H2 exactly once and preserve document order;
+- do not list headings that do not exist;
+- revalidate whenever headings change;
+- keep H3+ entries optional unless a deeper map is intentionally useful.
+
+Missing semantic-preview signals, generic placeholder preview language, missing navigation structure, or contents/heading drift is a structural readiness failure for editable Markdown. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; the validator must surface the exception as a warning.
 
 ## Reference Depth
 
@@ -86,6 +91,8 @@ A deviation is acceptable only when compression would materially reduce correctn
 For packages created or redesigned by Skill Creator Juiced:
 
 - fail readiness when a `SKILL.md` over 100 lines lacks early boundary, execution, and rule/control signals;
-- fail editable supporting Markdown over 100 lines when the early summary/heading-derived contents contract is missing or stale; warn only for an explicit generated/vendor/unsafe-to-rewrite exception;
+- fail editable supporting Markdown over 100 lines when required semantic-preview signals are missing, generic boilerplate is used, or the heading-derived navigation map is missing/stale;
+- treat a valid navigation map as navigation evidence only, never as proof of semantic-preview quality;
+- warn only for an explicit generated/vendor/unsafe-to-rewrite exception;
 - warn when required Markdown is not directly discoverable from `SKILL.md` or when a deeper discovery chain appears;
 - keep activation evaluation separate from instruction-following and outcome evaluation.

@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Self-Improvement Orchestration**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Orchestration boundary, Self-improvement roles, Routing rules, Optimization state ownership, Ordering for a self-improvement cycle.
+- **Purpose:** Define safe controller, candidate-generation, evaluation, and promotion boundaries for self-improvement or controller/meta-skill optimization.
+- **Load when:** The optimizer is improving itself, coordinating self-improvement generations, or must resume a self-improvement run without letting the candidate control its own acceptance.
+- **Decision impact:** Separates controller and candidate authority, constrains recursion and mutation surfaces, preserves evaluator independence, and defines resumable evidence/promotion ownership.
 
 ## Contents
 

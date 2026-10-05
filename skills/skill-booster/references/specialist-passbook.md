@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Specialist Passbook**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Transformation ownership invariant, Ordered pass ledger, Reproducibility pass rules, Provider rules, Pass rules.
+- **Purpose:** Define the specialist pass ledger, statuses, sequencing, and mutation-ownership rules inside Skill Booster's six canonical phases.
+- **Load when:** Selecting which specialist capabilities to invoke, apply by checklist, skip, or reconcile during a complete optimization run.
+- **Decision impact:** Keeps evidence providers read-only by default, requires exactly one transformation owner per batch, and makes pass/sequence reconciliation explicit before acceptance.
 
 ## Contents
 

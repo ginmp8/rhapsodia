@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Integrity and Recovery**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Source evidence identity, Output preflight, Last-known-good and recovery, Durable receipts, Acceptance implications.
+- **Purpose:** Define source-evidence identity, output preflight, last-known-good recovery, durable receipts, and promotion provenance for mutable deliveries.
+- **Load when:** External source bytes influence acceptance, or packaging/report delivery can replace existing artifacts or create receipts.
+- **Decision impact:** Makes source drift, output aliasing, destructive failed writes, rollback loss, or receipt/candidate mismatch invalidate readiness and requires recoverable atomic delivery evidence.
 
 ## Contents
 

@@ -1,10 +1,13 @@
 # Reporting Contract
+
 ## At a Glance
-Defines the required final Skill Booster optimization report, its evidence
-language, evaluation integrity, traceability, and promotion evidence.
+
+- **Purpose:** Define the final Skill Booster optimization report contract, required evidence vocabulary, and promotion/reporting fields.
+- **Load when:** Producing or validating the final report after an optimization, validation-only run, or package/promotion decision.
+- **Decision impact:** Determines mandatory report sections and evidence labels, including source trust, baseline, specialist ledger, change gate, validation, freeze/package identity, research traceability, and promotion attestation.
 
 ## Contents
-- Report template
+
 - Evidence language
 - Pass ledger example
 - Run-state and strategy decision
@@ -12,27 +15,6 @@ language, evaluation integrity, traceability, and promotion evidence.
 - Research traceability
 - Promotion attestation
 
-## Report Template
-### Required sections
-- Target
-- Source Trust Intake
-- Host Compatibility
-- Baseline
-- Source Integrity
-- Reproducibility Routing
-- Specialist Pass Ledger
-- Required Specialist Sequence Reconciliation
-- Hypothesis Discovery
-- Change Gate
-- Hypotheses
-- Changes Applied
-- Portability Evidence
-- Validation Evidence
-- Final Evaluation
-- Final Freeze
-- Package
-- Remaining Risks
-- Next Recommended Hypothesis
 
 Use this final report shape. Omit only sections that are truly not applicable, and state why when omission could be mistaken for an unrun gate.
 

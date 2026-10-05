@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Host Portability**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Two-dimensional portability model, Canonical portable core, Common-denominator rules, Default profile matrix, Host-extension containment.
+- **Purpose:** Define the two-dimensional portability model that separates semantic/runtime profiles from client/distribution surfaces and protects one canonical portable core.
+- **Load when:** Multiple or uncertain hosts are targeted, an IDE/client surface is named, or a host-specific feature could affect package semantics.
+- **Decision impact:** Determines canonical core versus adapter responsibilities, profile/surface mapping, packaging profiles, safe degradation, and the scope of portability claims.
 
 ## Contents
 

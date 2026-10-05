@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Host Compatibility Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Portable core, Host profiles, Capability model, Python launcher policy, Specialist invocation policy.
+- **Purpose:** Define the portable-core, host-profile, capability, adapter, and portability-claim rules for Skill Booster targets.
+- **Load when:** A target host matters, multiple hosts are requested, or host-specific metadata/tools/capabilities could leak into the canonical skill.
+- **Decision impact:** Determines what belongs in the portable core versus optional adapters, how missing runtime capabilities are reported, and what evidence is required for structural or runtime portability claims.
 
 ## Contents
 

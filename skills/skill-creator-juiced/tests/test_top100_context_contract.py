@@ -42,12 +42,30 @@ def valid_long_reference() -> str:
     return (
         "# Detail\n\n"
         "## Summary\n\n"
-        "Detailed rules for the active branch.\n\n"
+        "- **Purpose:** Define the detailed rules and accepted output for the active demo branch.\n"
+        "- **Load when:** The demo branch is selected and its branch-specific constraints are needed.\n"
+        "- **Decision impact:** Determines Alpha/Beta behavior and which result may be accepted.\n\n"
         "## Table of Contents\n\n"
         "- [Alpha](#alpha)\n"
         "- [Beta](#beta)\n\n"
         "## Alpha\n\n"
         "```markdown\n## Embedded Example Heading\n```\n\n"
+        + filler
+        + "\n\n## Beta\n\nFinal details.\n"
+    )
+
+
+def vague_long_reference() -> str:
+    filler = "\n".join(f"detail line {i}" for i in range(110))
+    return (
+        "# Detail\n\n"
+        "## Summary\n\n"
+        "Read this file when the active workflow needs Detail.\n\n"
+        "Primary topics: Alpha, Beta.\n\n"
+        "## Table of Contents\n\n"
+        "- [Alpha](#alpha)\n"
+        "- [Beta](#beta)\n\n"
+        "## Alpha\n\n"
         + filler
         + "\n\n## Beta\n\nFinal details.\n"
     )
@@ -72,10 +90,18 @@ def test_long_supporting_markdown_without_preview_fails() -> None:
         root = make_long_skill(Path(td), early_control=True)
         skill = add_reference(root, "# Detail\n\n" + "\n".join(f"line {i}" for i in range(120)) + "\n")
         errors, _warnings = check_top100_contract(root, skill)
-        assert any("requires an early summary" in error for error in errors)
+        assert any("requires an early semantic preview" in error for error in errors)
 
 
-def test_long_supporting_markdown_passes_with_heading_derived_contents() -> None:
+def test_long_supporting_markdown_rejects_vague_summary_even_with_valid_contents() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = make_long_skill(Path(td), early_control=True)
+        skill = add_reference(root, vague_long_reference())
+        errors, _warnings = check_top100_contract(root, skill)
+        assert any("semantic preview is not decision-useful" in error for error in errors)
+
+
+def test_long_supporting_markdown_passes_with_semantic_preview_and_heading_derived_contents() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = make_long_skill(Path(td), early_control=True)
         skill = add_reference(root, valid_long_reference())
@@ -106,7 +132,8 @@ if __name__ == "__main__":
     test_long_skill_requires_decision_and_execution_surface_in_first_100_lines()
     test_long_skill_passes_when_boundary_workflow_and_rules_are_early()
     test_long_supporting_markdown_without_preview_fails()
-    test_long_supporting_markdown_passes_with_heading_derived_contents()
+    test_long_supporting_markdown_rejects_vague_summary_even_with_valid_contents()
+    test_long_supporting_markdown_passes_with_semantic_preview_and_heading_derived_contents()
     test_long_supporting_markdown_rejects_stale_contents()
     test_long_supporting_markdown_allows_explicit_exception_with_warning()
     print("ok")

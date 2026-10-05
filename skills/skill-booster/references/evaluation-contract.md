@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Evaluation Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Baseline record, Freeze rules, Reproducibility decision contract, Optimization state contract, Material finding closure contract.
+- **Purpose:** Define the baseline, freeze, evaluation, hypothesis, change-gate, and final-delivery evidence contracts used to compare a candidate with its protected baseline.
+- **Load when:** Before target mutation or evaluation, when recording hypotheses/metrics, or when deciding whether evidence is valid for final acceptance.
+- **Decision impact:** Freezes candidate/source/evaluator identities, constrains metric and finding closure, detects evaluator exposure/contamination, and prevents stale or mismatched evidence from supporting promotion.
 
 ## Contents
 

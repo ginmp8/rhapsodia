@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Optimization Workflow**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Phase 1: Establish, Phase 2: Diagnose, Phase 3: Select and strategy gate, Phase 4: Transform, Phase 5: Evaluate.
+- **Purpose:** Define the canonical six-phase optimization sequence from target establishment through final proof and packaging.
+- **Load when:** Running a full optimization or deciding where diagnosis, transformation, evaluation, gates, and final freeze belong in the workflow.
+- **Decision impact:** Fixes phase ordering, baseline/evaluator freeze timing, transformation ownership, stop conditions, and the final evidence required before a candidate can be promoted.
 
 ## Contents
 
