@@ -1,5 +1,22 @@
 # Perceptual Review Contract
 
+## At a Glance
+
+- **Purpose:** Define the canonical v2 request/result contract that freezes identities, comparable state/capture facts, rubric, gate policy, evaluator protocol, evidence requirements, and request/result binding while preserving v1 compatibility.
+- **Load when:** Designing a v2 request, interpreting or producing a v2 result, deciding gate-policy semantics, checking stale-result binding, or validating how findings/measurements affect a verdict.
+- **Decision impact:** Determines what must be frozen before review, when artifacts are comparable, what evidence a pass/fail may rely on, how uncertainty and measurements are treated, and when a result is invalid or stale.
+
+## Contents
+
+- Contract generations
+- Request v2
+- Rubric
+- Gate policy
+- Evaluator protocol
+- Result v2
+- State and verdict relations
+- Compatibility v1
+
 ## Contract generations
 
 Use v2 for new reviews. v1 remains accepted for compatibility and is intentionally not reinterpreted as v2.

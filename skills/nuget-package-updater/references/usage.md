@@ -1,5 +1,30 @@
 # Usage reference
 
+## At a Glance
+
+- **Purpose:** Provide the complete command/flag and policy reference for operating `nuget_update.py` without weakening source, CPM, candidate, validation, credential, or recovery rules.
+- **Load when:** You need exact CLI syntax, local setup, source mapping behavior, candidate policy, compatibility/audit options, reason codes, exit codes, or offline test mode beyond the Top-100 quick start.
+- **Decision impact:** Determines which command/flags are valid, which overrides are diagnostic-only, how NuGet sources and CPM declarations are interpreted, and what validation/evidence is required before a write can be accepted.
+
+## Contents
+
+- Runtime and portability
+- Local setup
+- Non-negotiable rule
+- Commands
+- NuGet.Config and source mapping
+- Central Package Management guards
+- Candidate metadata policy
+- Package compatibility probe
+- Repository validation and audit
+- Private feeds and credentials
+- Evidence options
+- Write and recovery semantics
+- Reason codes
+- Optional differential oracles
+- Exit codes
+- Offline test mode
+
 ## Runtime and portability
 
 The core updater is a Python 3 standard-library script. Resolve the host's available Python 3 launcher rather than requiring a particular executable name. Runtime validation additionally requires the `dotnet` CLI.

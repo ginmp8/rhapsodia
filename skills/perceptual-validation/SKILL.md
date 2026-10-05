@@ -5,141 +5,67 @@ description: "Compare reference and candidate visual artifacts with a bounded, a
 
 # Perceptual Validation
 
-## Mission
+## Mission and boundary
 
-Provide a host-neutral perceptual gate for visual artifacts. Make objective mechanics deterministic, keep irreducible visual judgment explicit, and never turn subjective similarity into fake pixel determinism.
+Provide a host-neutral, constrained-subjective gate for semantic visual equivalence. First establish that reference and candidate are comparable states/captures; only then judge the declared visual criteria. Deterministic contract checks constrain the review but never prove perceptual truth.
 
-The first question is **whether the artifacts are comparable states**. Only then judge the declared visual criteria.
+Use this skill to normalize/bind a perceptual-review contract, compare supplied visual artifacts under a frozen rubric/policy, or validate a supplied result. Own identity/state/capture/rubric/policy/evaluator binding, criterion review, localized findings, policy application, stale-result detection, and explicit non-pass outcomes. Do **not** own image/UI generation or editing, executable behavior proof, production repair, acceptance-criteria mutation, checkpoint promotion, or exact-pixel claims without deterministic measurement.
 
-## Ownership boundary
+## Modes and contracts
 
-Own:
+- `request-design` — prepare/freeze the comparison request, artifact profile, rubric, gate policy, and evaluator protocol.
+- `perceptual-review` — inspect comparable artifacts criterion by criterion and emit a request-bound result.
+- `result-review` — validate a supplied result against the exact request and evidence identities.
+- New work uses `perceptual-review-request/v2` and `perceptual-review-result/v2`; v1 is compatibility-only.
 
-- request normalization and contract validation;
-- reference/candidate, state, capture, rubric, policy, and evaluator identity binding;
-- rubric-guided perceptual comparison;
-- localized findings with evidence, magnitude, impact severity, and confidence;
-- result-policy validation and stale-result detection through request binding;
-- explicit `invalid`, `blocked`, and `inconclusive` outcomes.
-
-Do not own image/UI generation or editing, executable behavior proof, production repair, acceptance-criteria mutation, checkpoint promotion, or claims of exact pixel equivalence without deterministic measurement.
-
-## Modes
-
-- `request-design` — prepare a comparison request, profile, rubric, gate policy, and evaluator protocol.
-- `perceptual-review` — inspect comparable artifacts and emit a bound result.
-- `result-review` — validate a supplied result against its exact request and evidence identities.
-
-For new work, use `perceptual-review-request/v2` and `perceptual-review-result/v2`. Preserve v1 only for compatibility with existing callers.
-
-## Reproducibility ceiling
-
-This is a **constrained-subjective** skill. Mechanically enforce identities, schemas, state/capture declarations, criteria coverage, evidence requirements, policy thresholds, and request/result binding. Keep actual perceptual judgment bounded by the frozen rubric and evaluator protocol.
-
-Do not claim deterministic visual truth, cross-model equivalence, or human-level agreement from schema validation.
-
-## Core invariants
+## Critical invariants
 
 1. Freeze reference, candidate, intended state, capture/normalization context, scope, rubric, gate policy, and evaluator protocol before a promotion-bearing review.
-2. Validate state/capture alignment before visual quality. Incompatible states yield `invalid`, not `fail`.
-3. `pass` and `fail` require `state_alignment=matched`, an executed review, and the frozen policy's required criterion/evidence conditions.
-4. Unknown state/capture comparability yields `inconclusive` or `blocked`; never infer `pass`.
-5. Every material finding must be localized and evidence-backed when the gate policy requires it.
-6. Keep **perceptual magnitude** separate from **impact severity**. A tiny wrong digit can be blocking; a large allowed texture change can be low impact.
-7. Supplemental measurements are evidence about a declared property, not a universal similarity oracle. Thresholded measurements must bind to the gate policy.
-8. A candidate, rubric, gate-policy, evaluator-protocol, or material capture-context change invalidates prior promotion evidence unless deliberately re-baselined.
-9. Low-confidence or evaluator disagreement follows the frozen policy, normally to `inconclusive`; never average uncertainty into a silent pass.
-10. Keep the semantic core host-neutral. No named vision model, browser, or proprietary tool is required.
+2. Validate state/capture alignment before visual quality. Mismatch => `invalid`; unknown comparability => `inconclusive` or `blocked`; never infer `pass`.
+3. `pass|fail` require `state_alignment=matched`, `review_executed=true`, and all frozen criterion/evidence/policy conditions.
+4. Review only declared scope; localize material findings and attach evidence when policy requires it.
+5. Keep **perceptual magnitude** separate from **impact severity**; changed area never mechanically determines semantic/business severity.
+6. Supplemental pixel/geometry/DOM/layout/perceptual metrics prove only their declared property; thresholded measurements bind to the frozen gate policy and are never universal similarity oracles.
+7. Candidate, rubric, policy, evaluator protocol, or material capture-context changes invalidate prior promotion evidence unless deliberately re-baselined; any relevant visible repair requires a new review.
+8. Low confidence or required-reviewer disagreement follows the frozen policy, normally to `inconclusive`; never average uncertainty into a silent pass.
+9. Keep contract, deterministic-measurement, perceptual, and runtime/behavior evidence distinct; one layer never implies another.
+10. Keep the semantic core host-neutral: no named model/browser/proprietary tool is required, and schema validation never implies deterministic visual truth or cross-reviewer equivalence.
 
-## Workflow
+## Quick-start workflow
 
-1. **Resolve artifacts and identities.** Prefer immutable hashes; otherwise record a stable semantic/external identity and state its limitation.
-2. **Resolve intended state and capture context.** Record the comparison facts that materially affect equivalence (for example viewport, theme, locale, data fixture, expansion/loading state). Do not add irrelevant environment fields.
-3. **Select an artifact profile.** Load [references/artifact-profiles.md](references/artifact-profiles.md). Profiles are starting points only; resolve them into an explicit rubric in the request.
-4. **Freeze the rubric, gate policy, and evaluator protocol.** Load [references/review-contract.md](references/review-contract.md). For model/human calibration or repeated review, load [references/evaluator-and-calibration.md](references/evaluator-and-calibration.md).
-5. **Validate the request.** Use the deterministic validator before review.
-6. **Acquire review capability.** Use any available image-capable reviewer or human that satisfies the declared protocol. If absent, return `blocked`/`not-run` rather than guessing from filenames or metadata.
-7. **Check state/capture alignment first.** If mismatched, return `invalid` with explicit recapture/re-render guidance. Do not score downstream visual differences.
-8. **Review criterion by criterion.** Compare only the declared scope. Attach evidence references to criterion results and findings.
-9. **Apply the frozen gate policy.** Do not loosen criteria, thresholds, confidence rules, trial count, or agreement requirements after seeing the candidate.
-10. **Validate the result against the exact request.** For v2, cross-binding is mandatory.
-11. **Invalidate after relevant visible change.** A repaired candidate needs a new review result.
+1. Resolve reference/candidate identities; prefer immutable hashes, otherwise record semantic/external identity and its limitation.
+2. Resolve intended state and only material capture facts (for example viewport, theme, locale, fixture/data snapshot, zoom/font/render state).
+3. Select the narrowest profile in [artifact profiles](references/artifact-profiles.md). Profiles are starting points, not hidden criteria; resolve the chosen profile into explicit request criteria.
+4. Freeze rubric, gate policy, and evaluator protocol using [review contract](references/review-contract.md); load [evaluator/calibration](references/evaluator-and-calibration.md) only for repeated trials, agreement, bias controls, or higher-stakes adjudication.
+5. Validate the request before review. Acquire a human/image-capable reviewer satisfying the protocol; if unavailable, return `blocked`/`not-run` rather than infer from metadata.
+6. Check state/capture alignment first. On mismatch return `invalid` with recapture/re-render guidance and do not score downstream visual differences.
+7. Review every required criterion in declared scope, attach evidence, and apply the frozen policy without post-hoc threshold/criterion/confidence/trial/agreement changes.
+8. Validate the result against the exact request; v2 cross-binding is mandatory. Any material visible change reopens review.
 
-## Verdict semantics
+## Verdicts and degraded operation
 
-- `pass` — comparable state; required criteria and frozen policy permit acceptance.
-- `fail` — comparable state; one or more criteria/policy rules reject the candidate.
-- `invalid` — artifacts are not comparable states/captures; recapture or re-render is required.
-- `blocked` — a required capability/evidence source is unavailable.
-- `inconclusive` — review ran or partially ran, but confidence/agreement/evidence is insufficient for pass/fail.
+- `pass` — comparable state and frozen criteria/policy permit acceptance.
+- `fail` — comparable state but one or more frozen criteria/policy rules reject the candidate.
+- `invalid` — state/capture is mismatched; recapture/re-render is required.
+- `blocked` — required review capability/evidence is unavailable.
+- `inconclusive` — review ran or partially ran but confidence/agreement/evidence is insufficient.
+- Without visual inspection, request design/contract validation remain available but perceptual review is `blocked`/`not-run`. Without Python, perceptual review may still run, but deterministic validation is `not-run`. Without capture/render, compare only supplied artifacts. If agreement is required but independent review is unavailable, return `blocked`/`inconclusive`. See [host portability](references/host-portability.md).
 
-## Machine contracts
+## Deterministic validation
 
-v1 compatibility:
-
-- [schemas/review-request.schema.json](schemas/review-request.schema.json)
-- [schemas/review-result.schema.json](schemas/review-result.schema.json)
-
-v2 canonical contracts:
-
-- [schemas/review-request-v2.schema.json](schemas/review-request-v2.schema.json)
-- [schemas/review-result-v2.schema.json](schemas/review-result-v2.schema.json)
-- [references/review-contract.md](references/review-contract.md)
-
-Validate a request or a v1 result:
+Canonical schemas: [request v2](schemas/review-request-v2.schema.json) and [result v2](schemas/review-result-v2.schema.json). v1 compatibility schemas remain [request v1](schemas/review-request.schema.json) and [result v1](schemas/review-result.schema.json).
 
 ```text
-<PYTHON> scripts/validate_perceptual_artifact.py <ARTIFACT.json> --json <REPORT.json>
+<PYTHON> scripts/validate_perceptual_artifact.py <REQUEST_OR_V1_RESULT.json> --json <REPORT.json>
+<PYTHON> scripts/validate_perceptual_artifact.py <V2_RESULT.json> --request <V2_REQUEST.json> --json <REPORT.json>
 ```
 
-Validate a v2 result with mandatory request binding:
-
-```text
-<PYTHON> scripts/validate_perceptual_artifact.py <RESULT.json> --request <REQUEST.json> --json <REPORT.json>
-```
-
-The validator uses only the Python standard library and emits stable machine-readable diagnostic codes. Its pass proves contract/policy conformance, not perceptual truth.
-
-## Evidence model
-
-Keep evidence layers distinct:
-
-- **contract evidence** — schemas, request/result binding, policy checks;
-- **deterministic measurements** — optional pixel/geometry/DOM/layout metrics tied to their intended property;
-- **perceptual evidence** — human or image-capable judgment under the frozen rubric;
-- **runtime/behavior evidence** — external executable or browser/tool oracle; this skill does not provide it.
-
-Never let one layer imply another.
-
-## Portability and degradation
-
-Load [references/host-portability.md](references/host-portability.md) when runtime differences matter. The portable core requires only readable artifacts/metadata for request design and Python 3 for deterministic validation when execution is available. Visual review may be human or host-native image inspection.
-
-If the host lacks image inspection, `request-design` and contract validation remain available; `perceptual-review` is `blocked`/`not-run`.
+The bundled validator is Python-stdlib-only and emits stable machine-readable diagnostics. A pass proves schema/request-binding/frozen-policy conformance only, not perceptual correctness.
 
 ## Stop conditions
 
-Stop or return a bounded non-pass result when:
-
-- reference/candidate identity is unresolved;
-- intended state or material capture facts do not align;
-- required visual-review capability is unavailable;
-- required evidence cannot be inspected;
-- requested judgment depends on hidden interaction/behavior that belongs to an executable oracle;
-- the only path to green is weakening the frozen rubric, policy, evaluator protocol, or evidence requirement;
-- a v2 result cannot be bound to the exact request used for review.
+Stop or return bounded non-pass when identities are unresolved; material state/capture comparability is mismatched/unknown; required evidence/capability is unavailable; the requested claim depends on hidden executable behavior; green would require weakening the frozen rubric/policy/protocol/evidence; or a v2 result cannot bind to the exact reviewed request.
 
 ## Output contract
 
-Return:
-
-1. contract and request identity;
-2. reference/candidate identities and artifact profile;
-3. state/capture alignment;
-4. rubric, gate-policy, and evaluator-protocol identities;
-5. verdict and whether review executed;
-6. criterion results;
-7. localized findings with evidence, magnitude, impact severity, and confidence;
-8. supplemental measurements with intended property when used;
-9. uncertainty/limitations and recapture guidance when applicable;
-10. capability limitations and which evidence layers actually executed.
+Return contract/request identity; reference/candidate identities and profile; state/capture alignment; rubric/policy/evaluator identities; verdict and whether review executed; criterion results; localized findings with evidence, magnitude, impact severity, confidence; supplemental measurements with intended property; uncertainty/recapture guidance; and capability limitations plus which evidence layers actually executed.

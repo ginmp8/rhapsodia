@@ -1,5 +1,28 @@
 # Reproducibility and recovery contract
 
+## At a Glance
+
+- **Purpose:** Define the identities, replay boundaries, cache isolation, transactional rollback, lock-file recovery, and evidence interpretation that make NuGet update decisions reproducible and auditable.
+- **Load when:** A check must be replayed, a write must be bound to prior evidence, repository/config identity matters, lock files can change, validation/audit is required, or rollback/stable-rerun claims are being made.
+- **Decision impact:** Determines when two runs are comparable, when identity drift blocks mutation, what bytes must be preserved/restored, and which receipt/evidence layer can support each reproducibility or recovery claim.
+
+## Contents
+
+- Evidence identities
+- Explicit NuGet.Config boundary
+- Source ambiguity
+- Metadata snapshot
+- Compatibility cache isolation
+- Repository model and CPM safety
+- Preconditions and alias safety
+- Last-known-good package bytes
+- Lock-file transaction
+- Repository validation and audit evidence
+- Authentication/trust boundary
+- Receipt interpretation
+- Stable reruns
+- Evidence-layer claim rules
+
 ## Evidence identities
 
 Keep evidence layers separate:
