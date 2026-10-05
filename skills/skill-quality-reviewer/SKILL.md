@@ -1,171 +1,100 @@
 ---
 name: skill-quality-reviewer
-description: review, audit, score, compare, or validate Agent Skills-compatible packages across ChatGPT/OpenAI, Codex, Claude, GitHub Copilot, Cursor, and other compatible hosts, including folders, zips, skill.md files, references, scripts, evals, and prior review reports. use when the user wants evidence-based findings about activation, ownership, architecture, workflow correctness, legacy coupling, obsolete compatibility, migration residue, duplicated contracts, runtime peer coupling, structural noise, resource integration, contradictions, validation gaps, package hygiene, portability, token efficiency, or prompt-ready remediation instructions. produce severity-ranked findings, an evidence-based scorecard, legacy and ownership matrices when applicable, a readiness verdict, and a self-contained correction input. do not use to implement fixes, create new skills, review ordinary application code, or perform security audits.
+description: Review, audit, score, compare, or validate existing Agent Skills-compatible packages or prior skill-review reports across ChatGPT/OpenAI, Codex, Claude, GitHub Copilot, Cursor, and other compatible hosts. Use for evidence-backed findings about activation, ownership, workflow correctness, architecture, progressive loading, obsolete compatibility, migration or runtime peer coupling, duplicated or contradictory contracts, structural noise, resource integration, validation gaps, package hygiene, portability, token efficiency, readiness, or remediation inputs. Do not use to implement fixes, create new skills, review ordinary application code, or perform security audits.
 ---
 
 # Skill Quality Reviewer
 
-## Mission
+## Mission and Boundary
 
-Review a skill package as an operational system, not as isolated prose. Find real defects, inconsistencies, activation failures, dead workflow branches, broken resources, unsupported claims, validation gaps, historical coupling, obsolete compatibility, migration residue, ownership drift, and package-quality regressions. Produce an auditable report that can be used directly as the input or prompt for correcting the target skill.
+Review one existing skill package as a connected operational system, not as isolated prose. Find defects that can change activation, routing, authority, execution, evidence, outputs, compatibility, portability, or package integrity, then produce an auditable review and self-contained correction input.
 
-## Core Rules
-
-- Review only by default. Do not mutate the target skill, rewrite files, package a replacement, or claim a fix was applied unless the user explicitly requests a separate correction phase.
-- Prefer evidence over preference. Tie every material finding to a file, section, link, script result, scenario, command output, consumer, contract, or explicit missing artifact.
-- Distinguish `confirmed`, `likely`, `needs verification`, `planned`, and `out of scope` evidence.
-- Inspect the skill as a connected package: activation description, instructions, modes, references, scripts, assets, examples, evals, validators, agent metadata, packaging rules, handoffs, migrations, changelogs, and peer-skill boundaries.
-- Hunt failure paths, not only style defects. Check routing, ordering, unreachable branches, contradictory duties, hidden dependencies, stale resources, evaluator drift, invalid assumptions, outputs that cannot satisfy their own contract, and normal paths that silently preserve old behavior.
-- Reconstruct the current canonical contract before classifying historical content. Do not assume the newest-looking file, highest version, or most repeated statement is authoritative.
-- Classify legacy candidates as `current`, `migration-only`, `obsolete`, `duplicate`, `contradictory`, `noise`, or `blocked`.
-- Treat keyword and filename matches as discovery signals only. Do not confirm or recommend removal without tracing current owners, writers, readers, imports, tests, validators, examples, packaging, and supported migration paths.
-- Require explicit isolation for `migration-only` behavior. Normal activation and execution must not silently fall back to old schemas, aliases, paths, states, or versions.
-- Recommend the smallest sufficient correction. Do not turn a local defect into a broad redesign unless the evidence shows an architectural cause.
-- Do not penalize an unconventional design merely because it differs from a preferred template. Penalize only behavior, maintainability, evidence, or package-integrity consequences.
-- Do not treat optional folders or host adapters as mandatory unless the target platform, target skill, or declared contract requires them. Review the portable core first and host adapters separately.
-- Keep checklist scoring separate from executed validation. Never describe a static score as a measured behavioral benchmark or universal readiness grade.
-- Separate normative conformance, package integrity, and operational quality. Bind external conformance claims to a named specification baseline.
-- For multi-platform claims, distinguish structural, host-semantic, runtime, and behavioral portability; do not extrapolate one host's semantics to another.
-- Pair the weighted score with the declared review profile, evidence coverage, confidence, and hard gates.
-- Produce a self-contained correction input that does not depend on this conversation, hidden reasoning, or unstated context.
-
-## Security Exclusion
-
-Security is intentionally outside this skill's review rubric. Do not score secrets, authorization, permissions, threat models, dependency vulnerabilities, sandbox escape, or abuse resistance. When scripts exist, review them only for correctness, determinism, error handling, path assumptions, runtime coupling, integration, and package behavior. Route an explicit security request to a dedicated security-review skill.
+- Default to read-only review. Do not mutate or repackage the target unless a separate correction phase is explicitly authorized.
+- Keep security outside this rubric. For bundled scripts, review correctness, determinism, error handling, path assumptions, runtime coupling, integration, and package behavior only; route secrets, authorization, permissions, threat models, dependency vulnerabilities, sandbox escape, and abuse resistance to a dedicated security skill.
+- If the user wants implementation rather than review, finish the correction input and hand it to an improvement workflow instead of silently editing the target.
 
 ## Modes
 
-| Mode | Trigger | Primary output |
+| Mode | Use | Primary output |
 |---|---|---|
-| `full-review` | complete audit, score, readiness, or correction prompt | full report, weighted scorecard, findings, legacy assessment, correction input |
-| `legacy-audit` | legacy cleanup, historical coupling, obsolete compatibility, migration residue, old aliases, permissive fallback, ownership drift, or structural noise | classification matrices, ownership and compatibility analysis, severity-ranked findings, correction input |
-| `quick-triage` | quick check, first pass, small `SKILL.md`, or limited files | up to five highest-value findings and next checks |
-| `compare-versions` | before/after folders, candidate patch, or two packages | regressions, improvements, unresolved defects, legacy reintroduction or removal, acceptance verdict |
-| `report-validation` | validate a prior skill-review report or remediation input | missing evidence, unsupported claims, incomplete findings, prompt defects, legacy-classification gaps |
+| `full-review` | complete audit, score, readiness, remediation | report, weighted scorecard, findings, verdict, correction input |
+| `legacy-audit` | obsolete compatibility, migrations, aliases, ownership drift, structural noise | legacy/ownership/compatibility matrices, findings, correction input |
+| `quick-triage` | explicitly short review or intentionally small target | up to five highest-value findings and next checks |
+| `compare-versions` | two inspectable packages or before/after candidate | capability deltas, regressions, improvements, acceptance verdict |
+| `report-validation` | prior review report or remediation input | unsupported claims, missing evidence, structural/report defects |
 
-Default to `full-review`. Select `legacy-audit` when the user explicitly asks to remove or classify historical behavior, compatibility, migrations, aliases, old flows, changelog noise, or cross-skill coupling. Use `quick-triage` only when the user explicitly asks for a short review or the supplied target is small. Use `compare-versions` only when both baselines are inspectable.
+Default to `full-review`. Use `legacy-audit` when historical behavior or compatibility is the subject. Use `compare-versions` only when both baselines are inspectable.
 
-## Required Inputs and Defaults
+## Critical Invariants
 
-Use the strongest available target:
+- Tie every material finding to inspectable evidence; use `confirmed`, `likely`, `needs verification`, `planned`, or `out of scope` instead of filling gaps.
+- Reconstruct the current canonical contract before classifying history; newest-looking or most-repeated text is not automatically authoritative.
+- Treat keyword, filename, and deterministic legacy-signal matches as discovery leads only until owners, writers, readers, consumers, tests, validators, examples, packaging, and migration paths are traced.
+- Classify legacy candidates as `current`, `migration-only`, `obsolete`, `duplicate`, `contradictory`, `noise`, or `blocked`; require explicit isolation for `migration-only` behavior.
+- Recommend the smallest sufficient correction. Do not penalize unconventional structure without a behavioral, maintenance, evidence, or package-integrity consequence.
+- Do not require optional folders or host adapters without a declared need. Keep portable-core requirements separate; `agents/openai.yaml` is optional unless OpenAI metadata is explicitly required.
+- Separate normative conformance, package integrity, and operational quality. A pass in one layer never proves another.
+- Separate static checklist/scoring from executed validation. A weighted score is an internal static quality indicator unless stronger evaluator evidence exists.
+- For multi-platform claims, distinguish structural, host-semantic, runtime, and behavioral portability; never extrapolate one host's semantics to another.
+- Produce a correction input that is self-contained and does not depend on the conversation, hidden reasoning, or unstated context.
 
-- skill folder, extracted ZIP, ZIP archive, repository path, or supplied files;
-- intended purpose, owner role, and expected activation surface when available;
-- current contract sources, supported versions, migration commitments, and ownership map when legacy decisions depend on them;
-- requested mode, output language, strictness, scoring expectations, and target host/profile when host-specific metadata or portability matters;
-- specification baseline or source when normative conformance is requested;
-- known failures, previous reports, validation commands, protected files, evaluator/scenario identities, or peer packages when supplied.
+## Quick Start
 
-Defaults:
+1. Resolve exactly one skill root, review mode, intended output, protected scope, and requested host/profile.
+2. Declare the review profile: normative conformance, package integrity, operational quality, or a combination; pin a specification baseline only when claiming conformance.
+3. When execution is available, build review identity/evidence outside the target and run the deterministic package preflight; treat structural findings as evidence and legacy-signal inventory as leads only.
+4. Inventory the connected package and reconstruct current activation, boundaries, owner role, modes, inputs, outputs, schemas/states, tools, handoffs, stop conditions, versions, writers, readers, and consumers.
+5. Define invariants, canonical sources, and bounded defect hypotheses before scoring. Trace common paths and failure paths, including silent fallback and dead branches.
+6. Load only the branch-specific references below. Keep required Markdown one hop from this file; do not make a reference-to-reference chain the only route to required instructions.
+7. Run semantic review, legacy/compatibility analysis when applicable, host-semantic review when requested, and capability-delta analysis for baseline/candidate comparisons.
+8. Score only after findings. Apply hard gates, evidence coverage, confidence, and claim ceilings before deciding readiness or acceptance.
+9. Write the mode-appropriate report, build the correction input, run report validation when possible, and close with inspected coverage, executed checks, unresolved gaps, and the bounded verdict.
 
-- infer the target purpose from frontmatter and package contents;
-- answer in the user's language;
-- review all inspectable files under the selected skill root;
-- treat missing compatibility or consumer evidence as `blocked` instead of preserving or removing by assumption;
-- keep generated reports outside the target package;
-- treat the open Agent Skills package as the portable semantic core; `agents/openai.yaml` is an optional OpenAI adapter and its absence is not a defect unless OpenAI metadata is explicitly required;
-- treat a weighted score as an internal static quality indicator, not a universal compliance or behavioral metric;
-- resolve an available Python 3 launcher as `<PYTHON>` (`python`, `python3`, `py -3`, absolute interpreter path, or host execution equivalent) instead of assuming one executable name;
-- do not require a correction implementation to complete the review.
+## Inputs and Defaults
 
-Stop and request the correct target only when zero or multiple candidate root `SKILL.md` files make the review subject ambiguous. If a partial target is intentional, proceed and state the limitation. For multi-skill ecosystem review, keep a separate package map and score per skill before evaluating shared contracts.
+- Accept a skill folder, extracted ZIP, ZIP archive, repository path, supplied files, or prior review report.
+- Infer purpose from frontmatter and package contents; answer in the user's language; inspect all available files under the selected root.
+- Treat missing compatibility/consumer evidence as `blocked`, not as permission to preserve or remove by assumption.
+- Keep generated reports, manifests, and validator outputs outside the target package.
+- Resolve an available Python 3 launcher as `<PYTHON>` instead of assuming one executable name.
+- Stop for an ambiguous root. If an intentionally partial target is supplied, proceed and state the limitation.
 
-## Resource Loading
+## Decision-Driven Resource Map
 
-Load only what the active mode needs:
+- Core investigation and closure: [`references/review-workflow.md`](references/review-workflow.md).
+- Scoring, severity, gates, and readiness: [`references/review-rubric.md`](references/review-rubric.md).
+- Evidence layers, calibration, identities, trials, and claim ceilings: [`references/evidence-and-calibration.md`](references/evidence-and-calibration.md).
+- Legacy, migrations, compatibility, ownership, and structural noise: [`references/legacy-and-compatibility-audit.md`](references/legacy-and-compatibility-audit.md).
+- Finding quality and confidence: [`references/finding-model.md`](references/finding-model.md).
+- Baseline/candidate capability preservation and regression taxonomy: [`references/capability-delta-review.md`](references/capability-delta-review.md).
+- Host portability and semantic-evidence boundaries: [`references/host-portability.md`](references/host-portability.md).
+- Report shapes and required sections: [`references/report-contract.md`](references/report-contract.md).
+- Copy-paste-ready remediation instructions: [`references/correction-input-contract.md`](references/correction-input-contract.md).
+- Severity/legacy calibration examples: [`examples/review-scenarios.md`](examples/review-scenarios.md).
 
-- [`references/review-workflow.md`](references/review-workflow.md): ordered investigation and closure workflow.
-- [`references/host-portability.md`](references/host-portability.md): portable-core rules, host adapters, capability detection, launcher policy, and portability evidence boundaries.
-- [`references/review-rubric.md`](references/review-rubric.md): dimensions, defect taxonomy, scorecard, and readiness gates.
-- [`references/evidence-and-calibration.md`](references/evidence-and-calibration.md): specification baselines, evidence/grader strength, stochastic trials, score interpretation, review identity, and bounded validator challenges.
-- [`references/legacy-and-compatibility-audit.md`](references/legacy-and-compatibility-audit.md): legacy classifications, migration gates, audit surfaces, technical searches, ownership calibration, and closure criteria.
-- [`references/finding-model.md`](references/finding-model.md): severity, evidence labels, finding quality bar, legacy classification, and confidence rules.
-- [`references/capability-delta-review.md`](references/capability-delta-review.md): evidence-bound baseline/candidate capability comparison, preservation/regression taxonomy, self-generated candidate provenance, and anti-overclaim rules.
-- [`references/report-contract.md`](references/report-contract.md): full-review, legacy-audit, quick-triage, comparison, and report-validation formats.
-- [`references/correction-input-contract.md`](references/correction-input-contract.md): copy-paste-ready remediation prompt contract.
-- [`scripts/inspect_skill_package.py`](scripts/inspect_skill_package.py): deterministic package preflight and discovery-only legacy-signal inventory.
-- [`scripts/build_review_evidence_manifest.py`](scripts/build_review_evidence_manifest.py): dependency-free target/reviewer/evaluator/source fingerprinting for reproducible review identity; writes outside the target and never executes target code.
-- [`scripts/validate_review_report.py`](scripts/validate_review_report.py): deterministic validation of the generated Markdown report.
-- [`assets/templates/skill-review-report.md.template`](assets/templates/skill-review-report.md.template): fillable full-report skeleton.
-- [`examples/review-scenarios.md`](examples/review-scenarios.md): calibration examples when severity, legacy classification, or verdict is uncertain.
-- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation and boundary scenarios; do not claim live activation metrics from this file.
+## Deterministic Helpers
+- [`scripts/inspect_skill_package.py`](scripts/inspect_skill_package.py): structural/package preflight and discovery-only legacy-signal inventory.
+- [`scripts/build_review_evidence_manifest.py`](scripts/build_review_evidence_manifest.py): dependency-free target/reviewer/evaluator/source fingerprinting; write output outside the target.
+- [`scripts/validate_review_report.py`](scripts/validate_review_report.py): deterministic structural validation of the generated Markdown report.
+- [`evals/activation-scenarios.json`](evals/activation-scenarios.json): planned activation/boundary scenarios only; never describe them as executed metrics.
+- [`assets/templates/skill-review-report.md.template`](assets/templates/skill-review-report.md.template): full-review report skeleton.
 
-## Workflow
-
-1. **Classify the target and mode.** Identify the skill root, requested depth, intended output, and whether the task is review-only, legacy audit, comparison, or report validation.
-2. **Establish the review profile and evidence identities.** Apply `references/evidence-and-calibration.md`: state whether the review claims normative conformance, package integrity, operational quality, or a combination; name any specification baseline; select portable/host profiles; and freeze target/reviewer/evaluator/source identities when material. When execution is available, write `scripts/build_review_evidence_manifest.py` output outside the target.
-3. **Run deterministic preflight when possible.** Resolve `<PYTHON>` from available host capabilities, then execute `<PYTHON> scripts/inspect_skill_package.py <target> --host-profile <auto|portable|openai|codex|claude|copilot|cursor> --json-out <report.json>`. Default to `auto`; use an explicit profile only when the requested host matters. Treat structural findings as evidence and `legacy_signal_summary` entries as discovery candidates, not semantic verdicts.
-4. **Inventory the package.** Record `SKILL.md`, optional host adapters such as `agents/openai.yaml`, references, scripts, assets, examples, evals, validators, package builders, changelogs, generated files, peer dependencies, and uninspected surfaces. Separate portable-core requirements from host-specific metadata.
-5. **Reconstruct intended current behavior.** State the skill's owner role, target artifacts, activation prompts, non-activation boundaries, modes, inputs, outputs, tools, handoffs, stop conditions, current identifiers, schemas, states, and supported versions.
-6. **Identify canonical sources.** Map each important concept to its current machine-readable schema, validator, `SKILL.md` rule, canonical reference, validated fixture, owner, and consumer. Treat disagreements as candidates rather than resolving them silently.
-7. **Define invariants.** Identify what must remain true for correct activation, routing, execution, authority, evidence, output, validation, migration isolation, compatibility, and packaging.
-8. **Establish capability baseline when comparison evidence exists.** For baseline/candidate reviews, reconstruct the evidence-backed capability set before scoring. Classify each material capability delta using `references/capability-delta-review.md`; do not treat more files, more instructions, or new scripts as capability gains by themselves. When the candidate is self-generated, record controller/baseline/candidate/generation provenance if supplied, but review capabilities using the same evidence rules and do not let self-reported claims substitute for independent evidence.
-9. **Run structural and semantic evidence passes.** Use deterministic inspection for objective package signals, then trace behavior, current contracts, ownership, consumers, compatibility paths, and failure hypotheses. Treat keyword or filename matches as discovery only.
-10. **Review activation and boundaries.** Check false-positive and false-negative risks, ambiguous prompts, adjacent-skill overlap, contradictory trigger text, and missing handoffs. If strong activation reliability/accuracy is claimed, require repeated comparable trials or lower the claim ceiling.
-11. **Review architecture and progressive loading.** Check cohesion, mode-versus-router decisions, control-plane size, reference depth, resource ownership, and hidden runtime dependencies.
-12. **Review workflow correctness.** Trace each core mode from intake through evidence, decisions, outputs, validation, stop conditions, and closure. Hunt unreachable steps, order defects, circular duties, missing transitions, and branches that cannot satisfy their output contract.
-13. **Audit legacy, compatibility, and structural noise.** Apply `references/legacy-and-compatibility-audit.md`. Trace every material candidate to writers, readers, imports, tests, validators, examples, packaging, and migration entry points; classify it before recommending preserve, isolate, consolidate, remove, reject, or gather evidence.
-14. **Review package consistency.** Cross-check frontmatter, `SKILL.md`, references, scripts, templates, examples, evals, metadata, validators, changelogs, and packaging rules for drift or contradiction.
-15. **Review evidence, grader calibration, and validation strength.** Separate executed checks from planned scenarios. Normalize activation-scenario coverage across supported `type`, `category`, `group`, and `expected_route` schemas before reporting missing coverage; do not emit `EVAL002` merely because a package uses a richer compatible scenario shape. Apply the evidence/grader ladder, record model-judge calibration status when decision-critical, and check whether validators actually protect claimed properties. Use a bounded validator challenge only when its result can change a material finding or readiness claim.
-16. **Review host semantics when requested.** Apply `references/host-portability.md`. Record discovery, invocation, scoping, context loading, tool/runtime, local/cloud, extensions, and source freshness per requested host. Do not infer host-semantic or behavioral portability from portable-core structure alone.
-17. **Generate bounded defect hypotheses.** Prioritize activation failure, core workflow failure, current-contract contradiction, implicit legacy acceptance, ownership transfer, runtime peer coupling, broken resources, validator drift, package invalidity, and repeated-context dilution. Confirm, reject, or retain each as a named gap.
-18. **Score with evidence.** Apply `references/review-rubric.md`. Record each dimension's evidence, raw judgment, weighted score, and any gate override. Label the score `static review judgment` unless a supplied or executed evaluator supports more. Also record evidence coverage by layer and an evidence-backed confidence level; the score alone never establishes universal readiness.
-19. **Apply gates and decide the provisional verdict.** Resolve score/verdict contradictions, decision-critical `blocked` items, unresolved common-path majors, profile-specific portability gaps, and unsupported behavioral claims before drafting remediation.
-20. **Write findings and matrices.** Order findings by severity. Each material finding must satisfy `references/finding-model.md`. Include legacy classification, ownership, compatibility, and runtime-coupling matrices when applicable; include them unconditionally in `legacy-audit` mode.
-21. **Build the correction input.** Convert accepted findings into ordered, bounded remediation instructions using `references/correction-input-contract.md`. Preserve current behavior, remove obsolete compatibility, isolate valid migrations, replace acceptance tests with rejection tests where support ended, and prohibit scope drift.
-22. **Validate the report when possible.** Execute `<PYTHON> scripts/validate_review_report.py <report.md>`. Repair report-shape failures without weakening findings.
-23. **Close honestly.** State verdict, review profile, score type, evidence coverage, confidence, inspected coverage, executed commands, identity/manifest status, classification counts, unresolved questions, and whether the correction input is ready to use.
+## Special Evidence Rules
+- Normalize activation-scenario coverage across supported `type`, `category`, `group`, and `expected_route` shapes before declaring missing coverage; do not emit `EVAL002` solely because a richer compatible schema is used.
+- For model-judge evidence, record calibration status when decision-critical. Use bounded validator challenges only when their result can change a material finding or readiness claim.
+- For baseline/candidate work, classify each material capability delta using `references/capability-delta-review.md`. More files, instructions, or scripts are not capability gains by themselves.
+- If a candidate is self-generated, record supplied controller/baseline/candidate/generation provenance separately from capability classification; self-reported claims never replace independent evidence.
+- Strong activation reliability or accuracy claims require repeated comparable trials or a lower claim ceiling.
 
 ## Review Priorities
-
-Inspect in this order:
-
-1. package root and parseability;
-2. current canonical sources, ownership, and supported compatibility;
-3. activation and non-activation boundaries;
-4. core workflow correctness and output feasibility;
-5. implicit legacy acceptance, migration leakage, aliases, state translation, old paths, and runtime peer coupling;
-6. contradictions, duplicated contracts, and ownership drift;
-7. broken or orphaned resources;
-8. validation, rejection tests, and evidence discipline;
-9. package hygiene, changelog discipline, and deterministic tooling;
-10. documentation clarity and token efficiency;
-11. cosmetic style only after behavioral risks.
+Inspect in this order: package root/parseability; canonical sources and ownership; activation/boundaries; core workflow/output feasibility; implicit legacy acceptance and migration leakage; contradictions/duplicated contracts/ownership drift; broken or orphaned resources; validation/evidence discipline; package hygiene; documentation/token efficiency; cosmetic style last.
 
 ## Output Contract
+Use [`references/report-contract.md`](references/report-contract.md). Every substantive review must include target/mode/scope, reconstructed current contract and canonical sources, invariants, review profile, evidence coverage/confidence, weighted scorecard with gate effects, severity-ranked findings with failure path and smallest fix, legacy/compatibility assessment, rejected hypotheses and positive signals, validation gaps, prioritized remediation, self-contained correction input, and a verdict bounded to the declared evidence profile.
 
-Use `references/report-contract.md`.
-
-Every substantive review must include:
-
-1. target, mode, scope, assumptions, and uninspected surfaces;
-2. reconstructed current skill contract and canonical sources;
-3. behavioral and authority invariants;
-4. review profile: specification baseline when claimed, requested host profiles, evidence layers, and calibration status;
-5. evidence coverage, confidence, and review evidence/identity manifest status;
-6. weighted scorecard with evidence and gate effects;
-7. severity-ranked findings with evidence, failure path, impact, smallest fix, acceptance criteria, and validation;
-8. legacy and compatibility assessment with classification counts and blocked decisions;
-9. rejected hypotheses, positive signals, and validation gaps;
-10. prioritized remediation plan;
-11. self-contained correction input;
-12. verdict and next review gate bounded to the declared review profile.
-
-For baseline/candidate comparison work, also include an evidence-bound capability-delta matrix with `added`, `preserved`, `regressed`, `removed-authorized`, `removed-breaking`, `redundant`, or `unproven` classifications. If the candidate is self-generated, include candidate origin and supplied controller/generation provenance separately from the capability classification. Do not call static presence/absence a behavioral improvement.
-
-In `legacy-audit` mode, also require legacy classification, ownership, compatibility, and runtime-coupling matrices. Do not claim that no legacy exists merely because keyword searches returned no matches.
+For baseline/candidate comparison, also include an evidence-bound capability-delta matrix. For `legacy-audit`, always include legacy classification, ownership, compatibility, and runtime-coupling matrices. Do not call static presence/absence a behavioral improvement.
 
 ## Stop Conditions
+Return `NEEDS_MORE_CONTEXT`, narrow the claim, or stop when the root is ambiguous; the canonical current contract cannot be reconstructed; essential compatibility/consumer/migration evidence is missing for a removal decision; two sources claim current authority with no resolving evidence; a requested behavioral/readiness claim requires execution that was not supplied or run; a prior report lacks enough target evidence; or the task is primarily a security audit.
 
-Stop, narrow, or return `NEEDS_MORE_CONTEXT` when:
-
-- the target has zero or multiple ambiguous root `SKILL.md` files;
-- the current canonical contract cannot be reconstructed and the review would invent intended behavior;
-- compatibility, consumer, or migration evidence is essential to a removal decision and unavailable; classify the item `blocked` instead of guessing;
-- two sources claim current authority and no evidence resolves the conflict;
-- a requested score or readiness claim requires behavioral execution that was not supplied or run; lower the claim to the supported static profile when that still answers the request;
-- a prior report lacks enough target evidence to validate its findings;
-- the user requests direct implementation rather than review; hand the correction input to a skill-improvement workflow;
-- the request is primarily a security audit.
-
-Do not stop merely because the package is large. Bound the inspected scope, report coverage, and continue with the highest-impact surfaces.
+Do not stop merely because the package is large. Bound inspected scope, report coverage, and continue with the highest-impact surfaces.

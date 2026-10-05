@@ -1,5 +1,20 @@
 # Report Contract
 
+## At a Glance
+
+- **Purpose:** Define the required human-facing report structure for each review mode and the evidence language expected by the bundled report validator.
+- **Load when:** Load when drafting or validating full-review, quick-triage, compare-versions, report-validation, or legacy-audit output.
+- **Decision impact:** Controls required sections, headings, evidence disclosures, verdict framing, score presentation, capability deltas, and correction-input placement.
+
+## Contents
+
+- Full review
+- Quick triage
+- Compare versions
+- Report validation
+- Evidence language
+
+
 Match the user's language unless explicitly requested otherwise. Keep evidence labels and legacy classifications consistent. The canonical English section names below are used by the bundled structural validator; when producing a localized report that must pass that validator, retain these section headings and localize their contents.
 
 ## Full review

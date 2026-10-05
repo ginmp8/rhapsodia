@@ -1,5 +1,36 @@
 # Review Scenarios
 
+## At a Glance
+
+- **Purpose:** Provide calibration examples for ambiguous finding severity, legacy classification, validator strength, activation evidence, portability claims, and score/readiness interpretation.
+- **Load when:** Load only when a real review decision is uncertain or needs calibration against representative cases.
+- **Decision impact:** Constrains judgment by showing acceptable classifications and smallest-fix reasoning; examples are calibration aids, never target evidence or executed evaluation.
+
+## Contents
+
+- Scenario 1: Activation text hides the real trigger
+- Scenario 2: Unreferenced example file
+- Scenario 3: Validator proves less than the report claims
+- Scenario 4: Large but cohesive skill
+- Scenario 5: Security request
+- Scenario 6: Current path always enters the legacy workflow
+- Scenario 7: Isolated adapter with an active consumer
+- Scenario 8: Silent fallback masks malformed current input
+- Scenario 9: Old and current validators are competing sources of truth
+- Scenario 10: Locally unreferenced alias with unknown external consumers
+- Scenario 6: Keyword match is not a legacy finding
+- Scenario 7: Current validator silently accepts an old handoff
+- Scenario 8: Migration-only behavior is valid
+- Scenario 9: Runtime coupling between peer skills
+- Scenario 10: Generic priority transfers authority
+- Scenario 11: Changelog is a second operational manual
+- Scenario 12: Old-named script with a current consumer
+- Multi-platform readiness without semantic host evidence
+- One successful activation run
+- High score with incomplete evidence
+- Validator challenge
+
+
 ## Scenario 1: Activation text hides the real trigger
 
 **Observed package**
@@ -257,4 +288,3 @@
 **Prompt:** "The validator passes the current fixture. Does that prove it rejects the removed v1 field?"
 
 **Correct calibration:** inspect the validator first. When the invariant is decision-critical, create a temporary copy/fixture, introduce only the v1 field or version violation, run the same validator, and require failure for the relevant reason. Never alter the real target, frozen evaluator, or expected output to perform the challenge.
-

@@ -1,5 +1,26 @@
 # Review Workflow
 
+## At a Glance
+
+- **Purpose:** Define the ordered investigation and closure workflow for substantive skill-quality reviews.
+- **Load when:** Load when running full-review, legacy-audit, or any review that needs canonical-contract reconstruction, evidence passes, hypothesis testing, scoring, remediation, and closure.
+- **Decision impact:** Controls sequencing so scoring follows evidence, legacy conclusions follow tracing, validation claims stay bounded, and the review closes only after report/correction-input requirements are satisfied.
+
+## Contents
+
+- 1. Establish the target
+- 2. Build the package map
+- 3. Reconstruct the canonical current contract
+- 4. Define invariants
+- 5. Run structural and semantic passes
+- 6. Audit legacy, compatibility, ownership, and structural noise
+- 7. Calibrate evidence and validator strength
+- 8. Test defect hypotheses
+- 9. Score after findings
+- 10. Build the correction input
+- 11. Closure criteria
+
+
 ## 1. Establish the target
 
 Record:

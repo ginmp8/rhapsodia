@@ -1,18 +1,25 @@
 <!-- legacy-scan: definitions-only -->
 # Legacy, Compatibility, and Structural Noise Audit
 
+## At a Glance
+
+- **Purpose:** Classify and investigate historical behavior, compatibility paths, migrations, aliases, ownership drift, runtime peer coupling, and structural noise.
+- **Load when:** Load when legacy, compatibility, migration residue, old paths/states/schemas, permissive fallback, or cross-skill ownership is material to the review.
+- **Decision impact:** Determines whether a candidate is current, migration-only, obsolete, duplicate, contradictory, noise, or blocked and therefore whether it must be preserved, isolated, removed, consolidated, or left unresolved.
+
 ## Contents
 
-1. Purpose and decision model
-2. Canonical-current contract
-3. Investigation workflow
-4. Migration-only gate
-5. Audit surfaces
-6. Technical discovery searches
-7. Finding and correction rules
-8. Ecosystem ownership calibration
-9. Required matrices
-10. Closure criteria
+- 1. Purpose and decision model
+- 2. Canonical-current contract
+- 3. Investigation workflow
+- 4. Migration-only gate
+- 5. Audit surfaces
+- 6. Technical discovery searches
+- 7. Finding and correction rules
+- 8. Ecosystem ownership calibration
+- 9. Required matrices
+- 10. Closure criteria
+
 
 ## 1. Purpose and decision model
 

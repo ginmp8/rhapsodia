@@ -1,5 +1,23 @@
 # Skill Review Rubric
 
+## At a Glance
+
+- **Purpose:** Define scoring dimensions, defect taxonomy, severity treatment, legacy scoring, gate overrides, and score safeguards.
+- **Load when:** Load after evidence gathering when classifying findings, assigning severity, scoring dimensions, or deciding whether a gate overrides the numeric score.
+- **Decision impact:** Determines weighted score construction, gate precedence, readiness constraints, and when evidence gaps prevent a favorable verdict despite a high static score.
+
+## Contents
+
+- Scoring policy
+- Dimensions
+- Cross-cutting evidence profile
+- Cross-cutting capability-delta review
+- Defect taxonomy
+- Legacy classification scoring
+- Gate overrides
+- Scoring safeguards
+
+
 ## Scoring policy
 
 Use a 0-5 raw score per dimension, then apply the dimension weight.
