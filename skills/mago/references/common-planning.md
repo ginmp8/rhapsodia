@@ -1,5 +1,25 @@
 # Common Planning
 
+## At a Glance
+
+- **Purpose:** Preserve the canonical model, paths, identities, statuses, mode boundaries, and cross-artifact consistency rules for explicit `legacy-board` compatibility.
+- **Load when:** `legacy-board` has been explicitly selected, or a legacy Board artifact must be inspected, normalized, or validated.
+- **Do not load when:** Native artifact storage/identity is the active decision; use `references/artifact-native.md` for those mechanics.
+- **Decision impact:** Activates Board/cycle/registry/manifest constraints and legacy write boundaries. These mechanics must never leak into default artifact-native planning.
+
+## Contents
+
+- Canonical Model
+- Operational Roots and Layout
+- Source of Truth
+- Dependencies and Status
+- Mode Boundaries
+- Planning Boundary and Rules
+- Template Rules
+- Cross-Artifact Consistency
+- Naming Rules
+- Clarification readiness
+
 > Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
 
 
