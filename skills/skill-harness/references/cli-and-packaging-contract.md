@@ -1,6 +1,18 @@
 # CLI and Packaging Contract
 
-Use for deterministic harness commands, host-neutral execution, exits, receipts, and packaging.
+## At a Glance
+
+- **Purpose:** Define the harness's deterministic command surface, host-neutral runtime tokens, exit behavior, packaging exclusions, final-freeze requirements, and delivery identity checks.
+- **Load when:** Running snapshot/inventory/audit/validation/self-test/package commands, deciding command failure semantics, or producing/verifying `skill.zip`.
+- **Decision impact:** Determines which script to run, what a passing exit can prove, which files must be excluded, and whether a package may be claimed as valid for the exact frozen candidate.
+- **Do not load when:** The task is only about scenario design, evaluator validity, or behavioral isolation and no CLI/package decision is needed.
+
+## Contents
+
+- Runtime convention
+- Commands
+- Packaging exclusions
+- Final freeze
 
 ## Runtime convention
 

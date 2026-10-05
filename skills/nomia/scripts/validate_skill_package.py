@@ -16,6 +16,39 @@ from validate_ecosystem_release_metadata import validate as validate_release_met
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".toml", ".template"}
 EXPECTED_FRONTMATTER_KEYS = ["name", "description"]
+TOP100_REQUIRED_PHRASES = [
+    "scope and ownership",
+    "mode selection matrix",
+    "execution workflow",
+    "progressive loading",
+    "output contract",
+    "acceptance gates",
+    "stop conditions",
+    "owned artifact families",
+    "business_priority",
+    "never route governed work directly from nomia to magia",
+]
+REQUIRED_DIRECT_MARKDOWN_REFS = {
+    "references/artifact-native.md",
+    "references/canonical-paths.md",
+    "references/ecosystem-routing-contract.md",
+    "references/ecosystem-lifecycle.md",
+    "references/ecosystem-handoff-contract.md",
+    "references/modes/delivery.md",
+    "references/modes/roadmap.md",
+    "references/modes/rfc.md",
+    "references/modes/governance-decision.md",
+    "references/modes/reporting.md",
+    "references/modes/validation.md",
+    "references/modes/governance-adapt.md",
+    "references/artifacts/delivery.md",
+    "references/artifacts/roadmap.md",
+    "references/artifacts/rfc.md",
+    "references/artifacts/governance-decision.md",
+    "references/artifacts/reporting.md",
+    "references/roadmap-to-mago-contract.md",
+    "references/packaging-isolation.md",
+}
 REQUIRED_DIRS = ["agents", "references", "references/modes", "references/artifacts", "assets/templates", "scripts", "examples/golden", "evals", "tests"]
 REQUIRED_FILES = [
     "SKILL.md",
@@ -234,11 +267,25 @@ def validate_skill_md(root: Path, errors: list[str]) -> None:
         errors.append("SKILL.md description must be present and lowercase")
     if len(description.split()) < 25:
         errors.append("SKILL.md description must be specific enough for activation")
+    if "do not use for" not in description:
+        errors.append("SKILL.md description must include an explicit non-use boundary")
+
+    top100 = "\n".join(text.splitlines()[:100]).lower()
+    for phrase in TOP100_REQUIRED_PHRASES:
+        if phrase not in top100:
+            errors.append(f"SKILL.md top 100 lines are missing critical control-plane phrase: {phrase}")
+
+    direct_refs = set(referenced_paths(text))
+    for ref in sorted(REQUIRED_DIRECT_MARKDOWN_REFS):
+        if ref not in direct_refs:
+            errors.append(f"SKILL.md must directly reference required branch resource: {ref}")
+
     required_phrases = [
         "mode selection matrix",
         "output contract",
         "acceptance gates",
         "stop conditions",
+    "owned artifact families",
         "progressive loading",
         "scripts/validate_skill_package.py",
         "scripts/validate_activation_scenarios.py",

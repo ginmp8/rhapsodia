@@ -1,5 +1,23 @@
 # Delivery Artifacts
 
+## At a Glance
+
+- **Purpose:** Define Nomia-owned delivery-governance artifact schemas, authoring rules, allowed content, and validation expectations for `ops.yaml`, status/stakeholder/replanning files, and portfolio outputs.
+- **Load when:** A selected delivery mode creates, normalizes, projects, or validates delivery artifacts; apply Board-specific placement only when `legacy-board` was explicitly selected.
+- **Decision impact:** Forces schema-v2 canonical authoring, `business_priority` ownership, script-backed creation, explicit unknowns, and exclusion of technical execution/runtime state from governance artifacts.
+- **Do not load when:** The active branch is only roadmap, RFC, governance-decision, or reporting work with no delivery artifact touched.
+
+## Contents
+
+- Canonical version policy
+- ops.yaml
+- status.md
+- stakeholder-brief.md
+- replanning.md
+- portfolio.yaml
+- portfolio.md
+- Canonical governed record (`schema_version: 2`)
+
 > Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
 
 
