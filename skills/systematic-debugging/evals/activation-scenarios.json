@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "activate-ci-regression",
+      "type": "should_activate",
+      "prompt": "My tests pass locally but started failing in CI after yesterday's merge. Diagnose it before changing code.",
+      "expected_behavior": "activate: unknown regression with an environment differential requires diagnosis before a permanent fix",
+      "acceptance_criteria": ["Select systematic debugging", "Classify as regression/environment differential", "Do not propose an unexplained permanent fix"]
+    },
+    {
+      "id": "activate-flaky",
+      "type": "should_activate",
+      "prompt": "This integration test fails about 1 in 20 runs. Help me find why instead of adding another sleep.",
+      "expected_behavior": "activate: nondeterministic failure requires repeated evidence and timing/order/race investigation",
+      "acceptance_criteria": ["Select systematic debugging", "Route to flaky/nondeterministic strategy", "Reject arbitrary sleep as a causal fix"]
+    },
+    {
+      "id": "activate-prod-latency",
+      "type": "should_activate",
+      "prompt": "Latency doubled after the deploy and CPU looks normal. I need to diagnose the regression.",
+      "expected_behavior": "activate: measured performance regression has an unknown cause",
+      "acceptance_criteria": ["Select systematic debugging", "Freeze workload and baseline", "Profile or measure before optimization"]
+    },
+    {
+      "id": "activate-distributed",
+      "type": "should_activate",
+      "prompt": "An API request succeeds at the gateway but the downstream worker sometimes never updates the database. Trace where it breaks.",
+      "expected_behavior": "activate: multi-component failure requires boundary and correlation evidence",
+      "acceptance_criteria": ["Select systematic debugging", "Route to distributed/integration strategy", "Correlate one execution across relevant boundaries"]
+    },
+    {
+      "id": "activate-deadlock",
+      "type": "should_activate",
+      "prompt": "The service occasionally hangs with no exception. How do we diagnose whether tasks or locks are stuck?",
+      "expected_behavior": "activate: hang or deadlock diagnosis is in scope",
+      "acceptance_criteria": ["Select systematic debugging", "Inspect task/thread/lock state", "Do not treat a longer timeout as root-cause proof"]
+    },
+    {
+      "id": "activate-build",
+      "type": "should_activate",
+      "prompt": "The build suddenly fails with an error we don't understand after upgrading the toolchain.",
+      "expected_behavior": "activate: build failure with unknown cause requires evidence-driven diagnosis",
+      "acceptance_criteria": ["Select systematic debugging", "Preserve exact error and toolchain identity", "Compare known-good and failing state"]
+    },
+    {
+      "id": "nonactivate-known-fix",
+      "type": "should_not_activate",
+      "prompt": "The vendor advisory says version 3.2.1 fixes the confirmed issue and we approved the upgrade. Apply the known patch.",
+      "expected_behavior": "do_not_activate: only implementation of an already accepted fix remains",
+      "acceptance_criteria": ["Do not select systematic debugging as the primary skill", "Do not restart causal investigation without contradictory evidence"]
+    },
+    {
+      "id": "nonactivate-feature",
+      "type": "should_not_activate",
+      "prompt": "Add an export-to-CSV feature to this page.",
+      "expected_behavior": "do_not_activate: feature implementation has no observed failure to diagnose",
+      "acceptance_criteria": ["Do not select systematic debugging"]
+    },
+    {
+      "id": "nonactivate-code-review",
+      "type": "should_not_activate",
+      "prompt": "Review this pull request for readability and architecture.",
+      "expected_behavior": "do_not_activate: ordinary code review is outside the debugging responsibility",
+      "acceptance_criteria": ["Do not select systematic debugging"]
+    },
+    {
+      "id": "nonactivate-perf-design",
+      "type": "should_not_activate",
+      "prompt": "Design a caching strategy for a new service that has no measured performance problem yet.",
+      "expected_behavior": "do_not_activate: architecture and performance design without an observed failure is out of scope",
+      "acceptance_criteria": ["Do not select systematic debugging"]
+    },
+    {
+      "id": "ambiguous-fix-bug",
+      "type": "ambiguous",
+      "prompt": "Fix the authentication bug.",
+      "expected_behavior": "clarify_or_activate_if_cause_unknown: diagnose first unless supplied evidence already establishes an accepted cause and correction",
+      "acceptance_criteria": ["Do not assume the cause is known", "Activate when diagnosis is still needed", "Do not activate when only an accepted implementation remains"]
+    },
+    {
+      "id": "catalog-tdd",
+      "type": "edge_case",
+      "prompt": "A regression test is failing for unknown reasons. Diagnose the cause, then add the smallest regression test and fix.",
+      "expected_behavior": "activate: systematic debugging owns causal diagnosis; testing or TDD may own the later regression-test implementation",
+      "acceptance_criteria": ["Select systematic debugging for the diagnosis phase", "Preserve the handoff boundary to testing/TDD after causal diagnosis", "Do not collapse diagnosis into speculative test-driven patching"]
+    }
+  ]
+}

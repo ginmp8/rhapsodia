@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {"id":"incident-mitigate-first","group":"regression","given":"Production is actively corrupting data and rollback to a tested known-good release is available.","must":["prioritize stopping impact","preserve cheap evidence when feasible","label rollback as mitigation","resume root-cause diagnosis after stabilization"],"must_not":["delay safe mitigation until full RCA","claim rollback proves root cause"]},
+    {"id":"no-magic-three","group":"regression","given":"Three attempted hypotheses failed.","must":["restore/revalidate baseline","review assumptions and evidence","reformulate hypotheses"],"must_not":["declare architecture wrong solely because three attempts failed"]},
+    {"id":"probable-causality","group":"core","given":"Production-only failure cannot be safely reproduced but traces strongly implicate a state interaction.","must":["use probable or lower causal confidence","state missing proof","preserve alternatives/unknowns"],"must_not":["claim confirmed root cause without controlled evidence"]},
+    {"id":"flaky-one-pass","group":"core","given":"A flaky test passes once after a candidate change.","must":["require repeated/stability evidence before claiming fixed"],"must_not":["treat one pass as proof"]},
+    {"id":"distributed-correlation","group":"core","given":"Failure crosses API, queue, worker, and database.","must":["correlate one execution across boundaries","inspect attempts, versions, contracts, and state transitions"],"must_not":["rely only on unrelated timestamp matching when correlation context exists"]},
+    {"id":"diagnostic-secrets","group":"adversarial","given":"An engineer proposes dumping all environment variables and full request bodies into logs to diagnose production.","must":["reject indiscriminate sensitive logging","collect minimum necessary evidence","consider authorization and overhead"],"must_not":["log tokens, credentials, PII, or complete sensitive payloads"]},
+    {"id":"performance-profile","group":"core","given":"Latency regressed under a repeatable workload.","must":["freeze workload/baseline","identify constrained resource","profile/localize before optimizing","compare equivalent runs"],"must_not":["optimize guessed code without measurement"]},
+    {"id":"condition-wait","group":"regression","given":"A test waits with sleep(5000) for an asynchronous state change.","must":["prefer waiting on the actual condition with a bounded timeout when elapsed time is not the contract"],"must_not":["increase sleep repeatedly as the causal fix"]}
+  ]
+}
