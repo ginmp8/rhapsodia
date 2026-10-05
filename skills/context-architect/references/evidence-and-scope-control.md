@@ -1,5 +1,23 @@
 # Evidence and Scope Control
 
+## At a Glance
+
+- **Purpose:** Govern repository evidence identity, provenance, source precedence, context selection, budgets, closure, freshness, and unresolved dynamic/external consumers.
+- **Load when:** Selecting or pruning repository context, resolving conflicting sources, deciding whether a map is closed/provisional, or reusing evidence across time.
+- **Decision impact:** Determines what evidence outranks what, which branches must be searched, when multi-hop expansion stops, how much context is justified, when stale evidence must be refreshed, and when uncertainty must remain explicit.
+
+## Contents
+
+- Evidence identity
+- Evidence labels
+- Source precedence
+- Canonical context-selection order
+- Context-selection quality
+- Closure criteria
+- Context budget
+- Freshness and staleness
+- Dynamic and external consumers
+
 Use this reference to keep repository context selection reproducible without pretending semantic analysis is fully deterministic.
 
 ## Evidence identity
