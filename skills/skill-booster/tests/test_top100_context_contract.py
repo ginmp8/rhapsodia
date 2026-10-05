@@ -43,12 +43,30 @@ def valid_long_reference() -> str:
     return (
         "# Detail\n\n"
         "## At a Glance\n\n"
-        "Use this document for detailed behavior.\n\n"
+        "- **Purpose:** Define the rules that govern the demo branch and its accepted output.\n"
+        "- **Load when:** The demo branch is active and its detailed constraints are needed before execution.\n"
+        "- **Decision impact:** Constrains Alpha/Beta behavior and determines which output is valid for the branch.\n\n"
         "## Contents\n\n"
         "- Alpha\n"
         "- Beta\n\n"
         "## Alpha\n\n"
         "```markdown\n## Embedded Example Heading\n```\n\n"
+        + filler
+        + "\n\n## Beta\n\nFinal details.\n"
+    )
+
+
+def vague_long_reference() -> str:
+    filler = "\n".join(f"detail line {i}" for i in range(110))
+    return (
+        "# Detail\n\n"
+        "## At a Glance\n\n"
+        "Read this file when the active workflow needs Detail.\n\n"
+        "Primary topics: Alpha, Beta.\n\n"
+        "## Contents\n\n"
+        "- Alpha\n"
+        "- Beta\n\n"
+        "## Alpha\n\n"
         + filler
         + "\n\n## Beta\n\nFinal details.\n"
     )
@@ -70,13 +88,22 @@ def test_validator_rejects_long_reference_without_preview() -> None:
         assert any(d.get("code") == "TOP100_SUPPORT_PREVIEW" for d in report["diagnostics"])
 
 
-def test_validator_accepts_heading_derived_contents_and_ignores_fenced_headings() -> None:
+def test_validator_rejects_vague_preview_even_when_contents_is_correct() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        root = make_skill(Path(td), early_control=True)
+        add_reference(root, vague_long_reference())
+        report = run(root)
+        assert report["status"] == "fail"
+        assert any(d.get("code") == "TOP100_SUPPORT_SEMANTIC_PREVIEW" for d in report["diagnostics"])
+
+
+def test_validator_accepts_semantic_preview_and_heading_derived_contents() -> None:
     with tempfile.TemporaryDirectory() as td:
         root = make_skill(Path(td), early_control=True)
         add_reference(root, valid_long_reference())
         report = run(root)
         assert report["status"] == "pass"
-        assert not any(d.get("code") in {"TOP100_SUPPORT_PREVIEW", "TOP100_SUPPORT_CONTENTS_DRIFT"} for d in report["diagnostics"])
+        assert not any(d.get("code") in {"TOP100_SUPPORT_PREVIEW", "TOP100_SUPPORT_SEMANTIC_PREVIEW", "TOP100_SUPPORT_CONTENTS_DRIFT"} for d in report["diagnostics"])
 
 
 def test_validator_rejects_stale_contents_when_h2_headings_change() -> None:
@@ -102,7 +129,8 @@ def test_validator_allows_explicit_preview_exception_with_warning() -> None:
 if __name__ == "__main__":
     test_validator_rejects_long_skill_when_control_plane_is_after_line_100()
     test_validator_rejects_long_reference_without_preview()
-    test_validator_accepts_heading_derived_contents_and_ignores_fenced_headings()
+    test_validator_rejects_vague_preview_even_when_contents_is_correct()
+    test_validator_accepts_semantic_preview_and_heading_derived_contents()
     test_validator_rejects_stale_contents_when_h2_headings_change()
     test_validator_allows_explicit_preview_exception_with_warning()
     print("ok")

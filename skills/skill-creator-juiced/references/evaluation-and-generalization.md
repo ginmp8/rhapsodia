@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Evaluation and Generalization**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: 1. Enter at the current lifecycle state, 2. Harvest context before asking questions, 3. Select the correct baseline, 4. Build a small realistic seed set, then expand, 5. Separate objective and subjective evaluation.
+- **Purpose:** Define lifecycle-aware evaluation, baseline choice, realistic scenarios, evaluator separation, and anti-overfitting rules for skill creation/redesign.
+- **Load when:** Designing evaluation, diagnosing failed cases, choosing a comparator, or deciding whether a repair generalizes beyond visible examples.
+- **Decision impact:** Determines the correct baseline and lifecycle entry point, separates objective/subjective evidence, requires difficult activation boundaries, and prevents eval-specific fixes from being reported as general improvement.
 
 ## Contents
 

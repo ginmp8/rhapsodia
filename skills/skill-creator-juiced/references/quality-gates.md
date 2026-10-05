@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Quality Gates**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Agent Skills Structural Gates, Portability Gates, Activation Gates, Architecture Gates, Evaluation and Generalization Gates.
+- **Purpose:** Define the minimum structural, portability, activation, architecture, evaluation, reproducibility, code, evidence, and packaging gates for readiness.
+- **Load when:** Before claiming a created/redesigned skill is ready, before packaging, or when deciding whether a failed check blocks delivery.
+- **Decision impact:** Separates structural from behavioral/runtime evidence, turns material gate failures into readiness blockers, and defines the conditions for producing the final package.
 
 ## Contents
 
@@ -32,7 +32,7 @@ Use these gates before claiming a skill is ready.
 - referenced local files exist and remain inside the package;
 - required workflow references are directly discoverable from `SKILL.md` or one declared root index; hidden required multi-hop reference chains are not allowed;
 - `SKILL.md` above roughly 500 lines or 5,000 estimated tokens triggers an architecture/progressive-loading warning, not an automatic split;
-- every editable supporting `.md` over 100 physical lines has an early summary plus a Contents/section map derived from all material H2 headings in document order; missing, invented, omitted, reordered, or stale entries fail structural readiness;
+- every editable supporting `.md` over 100 physical lines has an early semantic preview with explicit `Purpose`, `Load when`, and `Decision impact` signals plus a heading-derived Contents/section map; generic title/topic boilerplate, missing semantic signals, or missing/invented/omitted/reordered/stale navigation entries fail structural readiness;
 - generated/vendor/unsafe-to-rewrite Markdown may use only the explicit `context-preview-exception` marker defined by the context-loading contract, and the exception remains visible as a warning;
 - no scaffold markers, caches, generated reports, old archives, or secrets are packaged.
 

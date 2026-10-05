@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Design Principles**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: 1. Choose the correct artifact before designing a skill, 2. Start from real work, record creation origin, and reuse established context, 3. Enter at the current lifecycle state, 4. Cohesion beats size, 5. Portable core before host adapters; profiles before surfaces.
+- **Purpose:** Define the architecture principles for choosing the right customization primitive and shaping a cohesive, portable, progressively loaded skill package.
+- **Load when:** Deciding whether work should become a skill, choosing one skill versus modes/router/split, or redesigning package topology and context loading.
+- **Decision impact:** Constrains artifact choice, cohesion, portable-core/adapters, activation boundaries, progressive loading, evidence discipline, backward compatibility, and simplicity under gates.
 
 ## Contents
 

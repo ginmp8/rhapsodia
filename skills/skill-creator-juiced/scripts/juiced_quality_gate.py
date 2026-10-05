@@ -41,6 +41,16 @@ PREVIEW_EXCEPTION_RE = re.compile(
 )
 MARKDOWN_HEADING_RE = re.compile(r"^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
 CONTENTS_ITEM_RE = re.compile(r"^\s*[-*+]\s+(?:\[([^\]]+)\]\([^)]+\)|(.+?))\s*$")
+SEMANTIC_PREVIEW_FIELD_RE = re.compile(
+    r"^\s*(?:[-*+]\s+)?\*\*(Purpose|Load when|Decision impact|Do not load when):\*\*\s*(.+?)\s*$",
+    re.IGNORECASE,
+)
+GENERIC_PREVIEW_SNIPPETS = (
+    "read this file when the active workflow needs",
+    "the decision-critical scope and section map are surfaced here",
+    "primary topics:",
+)
+SEMANTIC_PREVIEW_REQUIRED = {"purpose", "load when", "decision impact"}
 
 
 def normalize_heading_label(value: str) -> str:
@@ -96,6 +106,19 @@ def contents_entries(lines: list[str], contents_index: int) -> list[str]:
     return entries
 
 
+def semantic_preview_fields(lines: list[str], summary_index: int, contents_index: int) -> tuple[dict[str, str], str]:
+    fields: dict[str, str] = {}
+    visible: list[str] = []
+    for index, line in visible_markdown_lines(lines):
+        if index <= summary_index or index >= contents_index:
+            continue
+        visible.append(line)
+        match = SEMANTIC_PREVIEW_FIELD_RE.match(line)
+        if match:
+            fields[match.group(1).casefold()] = match.group(2).strip()
+    return fields, "\n".join(visible).casefold()
+
+
 def validate_long_markdown_preview(md: Path, display_path: str) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -120,11 +143,29 @@ def validate_long_markdown_preview(md: Path, display_path: str) -> tuple[list[st
     ]
     if not summary_locations or not contents_locations or min(summary_locations) >= min(contents_locations):
         errors.append(
-            f"long markdown requires an early summary followed by heading-derived contents within first 40 lines: {display_path}"
+            f"long markdown requires an early semantic preview followed by heading-derived contents within first 40 lines: {display_path}"
         )
         return errors, warnings
 
+    summary_index = min(summary_locations)
     contents_index = min(contents_locations)
+    fields, preview_text = semantic_preview_fields(lines, summary_index, contents_index)
+    missing = sorted(SEMANTIC_PREVIEW_REQUIRED - set(fields))
+    short = sorted(name for name in SEMANTIC_PREVIEW_REQUIRED if name in fields and len(fields[name]) < 20)
+    generic = [snippet for snippet in GENERIC_PREVIEW_SNIPPETS if snippet in preview_text]
+    if missing or short or generic:
+        details: list[str] = []
+        if missing:
+            details.append(f"missing={missing!r}")
+        if short:
+            details.append(f"too-short={short!r}")
+        if generic:
+            details.append(f"generic={generic!r}")
+        errors.append(
+            "long markdown semantic preview is not decision-useful; require explicit Purpose, Load when, and Decision impact signals: "
+            f"{display_path}; " + "; ".join(details)
+        )
+
     expected = [
         label for _index, label in headings
         if label.casefold() not in PREVIEW_SUMMARY_HEADINGS | PREVIEW_CONTENTS_HEADINGS
@@ -138,7 +179,6 @@ def validate_long_markdown_preview(md: Path, display_path: str) -> tuple[list[st
             f"{display_path}; expected={expected!r}; found={actual!r}"
         )
     return errors, warnings
-
 
 def check_top100_contract(target: Path, skill_md: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []

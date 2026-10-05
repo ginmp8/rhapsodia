@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Creation Workflow**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Phase 1: Lifecycle, context, origin, identity, baseline, and capabilities, Phase 2: Artifact Selection Gate, Phase 3: Skill capability boundary, Phase 4: Portable package architecture, Phase 5: Draft or update and define evaluation.
+- **Purpose:** Define the ordered end-to-end creation/redesign workflow from lifecycle/context intake and artifact selection through validation, freeze, canonical packaging, and reporting.
+- **Load when:** Creating a net-new skill, materially redesigning one, or resuming a quality-upgrade at its earliest unresolved lifecycle stage.
+- **Decision impact:** Enforces artifact selection before topology, capability/portability boundaries, evaluation and reproducibility decisions, specialist ownership, validation/acceptance, final freeze, and package/report integrity.
 
 ## Contents
 

@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Optimization Foundation**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: 1. Canonical phase model, 2. Target classes, 3. Capability map, 4. Change-intent taxonomy, 5. Strategy gate.
+- **Purpose:** Define the canonical optimization control model shared by direct repair, single-candidate optimization, and explicit evolutionary search.
+- **Load when:** Choosing target class, change intent, execution strategy, evaluation depth, or promotion evidence for a material optimization.
+- **Decision impact:** Determines direct-repair vs candidate/search routing, transformation ownership, the staged evaluation ladder, evaluator/holdout isolation, and the evidence required before promotion.
 
 ## Contents
 

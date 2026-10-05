@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-Read this file when the active workflow needs **Reproducibility Routing**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
-
-Primary topics: Goal, Decision gate, Mode selection, Ordering, Ownership boundaries.
+- **Purpose:** Decide whether dedicated `reproducibility-engineer` work is warranted after the local reproducibility-by-design pass and, if so, which mode it owns.
+- **Load when:** Material controllable variance remains after local design controls or specialist sequencing needs an explicit reproducibility decision.
+- **Decision impact:** Determines invoke/skip mode, ordering, ownership boundaries, cycle guards, and the evidence required before reproducibility work can affect acceptance.
 
 ## Contents
 
