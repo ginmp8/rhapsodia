@@ -1,5 +1,31 @@
 # Execution Runbook
 
+## At a Glance
+
+- **Purpose:** Define concrete execution mechanics for bounded improvement runs: target resolution, source snapshots, command adapters, autonomous-loop constraints, cancellation, rollback, final identity, packaging, and receipts.
+- **Load when:** Load when commands will actually run, an automated loop or adapter is selected, source evidence must be captured, cancellation/rollback behavior matters, or a validated candidate must be packaged.
+- **Decision impact:** Constrains runtime prerequisites, finite budgets, blocked paths, command selection, cancellation semantics, rollback behavior, package staging, receipt integrity, and the conditions that force rejection or revert.
+- **Do not load when:** Do not load for an audit that will not execute commands or change/deliver a candidate.
+
+## Contents
+
+- Defaults
+- Runtime capability check
+- Skill path resolution
+- Material source snapshot
+- Hypothesis discovery
+- Optional Codex adapter
+- Autonomous runner: generic command adapter
+- Custom evaluator
+- Structural change gate
+- Graceful cancellation
+- Diagnostic repair
+- Final candidate identity
+- Package and receipt
+- Self-improvement safeguards
+- Reject/revert when
+
+
 Use for CLI execution details, autonomous adapters, evidence snapshots, packaging, cancellation, and rollback.
 
 ## Defaults

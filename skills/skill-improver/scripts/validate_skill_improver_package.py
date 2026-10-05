@@ -56,6 +56,13 @@ REQUIRED_CATEGORIES = {
     'edge_case': 5,
     'regression': 5,
 }
+HARNESS_TYPES = {'should_activate', 'should_not_activate', 'ambiguous', 'edge_case'}
+EXPECTED_PREFIX_BY_TYPE = {
+    'should_activate': ('activate',),
+    'should_not_activate': ('do_not_activate',),
+    'ambiguous': ('clarify_or_', 'activate only'),
+    'edge_case': ('activate_and_refuse', 'refuse', 'activate'),
+}
 
 REFERENCE_PATTERN = re.compile(
     r'`([^`]+\.(?:md|py|json|yaml|yml|template|sh|js))`|'
@@ -155,7 +162,7 @@ def validate_scenarios(path: Path) -> tuple[dict[str, int], list[str]]:
 
     counts = {name: 0 for name in REQUIRED_CATEGORIES}
     ids: set[str] = set()
-    required_fields = ['id', 'type', 'prompt', 'expected_behavior', 'acceptance_criteria']
+    required_fields = ['id', 'type', 'category', 'prompt', 'expected_behavior', 'acceptance_criteria']
 
     for idx, item in enumerate(data):
         if not isinstance(item, dict):
@@ -168,11 +175,22 @@ def validate_scenarios(path: Path) -> tuple[dict[str, int], list[str]]:
         if sid in ids:
             errors.append(f'duplicate scenario id {sid}')
         ids.add(sid)
-        category = item.get('type')
+
+        scenario_type = item.get('type')
+        if scenario_type not in HARNESS_TYPES:
+            errors.append(f'scenario {sid or idx} has unknown harness type {scenario_type}')
+        else:
+            expected = item.get('expected_behavior')
+            prefixes = EXPECTED_PREFIX_BY_TYPE[scenario_type]
+            if not isinstance(expected, str) or not expected.strip().startswith(prefixes):
+                errors.append(f'scenario {sid or idx} has expected_behavior inconsistent with type {scenario_type}')
+
+        category = item.get('category')
         if category in counts:
             counts[category] += 1
         else:
-            errors.append(f'scenario {sid or idx} has unknown type {category}')
+            errors.append(f'scenario {sid or idx} has unknown category {category}')
+
         criteria = item.get('acceptance_criteria')
         if not isinstance(criteria, list) or not criteria or any(not isinstance(x, str) or not x.strip() for x in criteria):
             errors.append(f'scenario {sid or idx} has invalid acceptance_criteria')

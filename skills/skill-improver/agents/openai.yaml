@@ -1,6 +1,6 @@
 interface:
   display_name: Skill Improver
-  short_description: Hypothesis-driven skill improvement loops
+  short_description: Bounded evidence-backed skill improvement experiments
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

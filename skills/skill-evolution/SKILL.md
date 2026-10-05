@@ -1,46 +1,94 @@
 ---
 name: skill-evolution
-description: "use when explicitly invoked as the multi-candidate search controller, or when an optimization orchestrator hands off a frozen evolutionary-search contract for an existing agent skills-compatible skill; controls reproducible champion-challenger search, identity-bound lineage/provenance, validated semantic recombination/backcross, evidence-aware pareto and scenario-specialist selection, derived diversity, deterministic semantic stagnation/checkpoints, and finalist selection. do not use for ordinary single-candidate optimization, net-new skill creation, direct target mutation, evaluator/benchmark/harness semantics, candidate acceptance gates, or final promotion, packaging, or installation."
+description: "use when explicitly invoked to control bounded multi-candidate/evolutionary search for one existing Agent Skills-compatible skill, or when an optimizer hands off a frozen search contract; owns search state, lineage/provenance, validated semantic recombination/backcross, hard-gate-first Pareto/scenario-specialist selection, derived diversity/stagnation, checkpoints, and finalist recommendation. do not use for single-candidate optimization, skill creation, target mutation, evaluator/benchmark/harness design, acceptance gates, or final promotion, packaging, or installation."
 ---
 
 # Skill Evolution
 
-## Mission
+## Mission and activation boundary
 
-Control evidence-guided multi-candidate search without becoming a second optimizer, benchmark, harness, or promotion gate. Treat baseline, capability/hypothesis/transformation identities, evaluator identities, gates, objectives, interfaces, and budgets as frozen search inputs. Request candidate generation from the caller, compare only identity-compatible evidence, preserve lineage and negative evidence, and return finalists for an external promotion decision.
+Control evidence-guided multi-candidate search for one existing skill without becoming a second optimizer, evaluator, benchmark, harness, mutation owner, acceptance gate, or promotion authority.
 
-## Scope
+Use only when evolutionary search is explicitly selected or a caller hands off a valid frozen search contract. Operate on search metadata/state, candidate/evaluation envelopes, lineage, selection, semantic recombination plans, checkpoints, termination, and finalist recommendations.
 
-Use only after evolutionary search is explicitly selected for an existing skill and a valid frozen search contract is supplied, or when Skill Evolution is explicitly invoked for that controller role. Operate on search metadata, candidate/evaluation envelopes, lineage, selection, recombination plans, checkpoints, and finalist recommendations. Do not mutate target bytes, design evaluators, own acceptance gates, or perform final package/install delivery.
+Do not use for ordinary single-candidate optimization, net-new skill creation, direct target edits, evaluator/scenario/threshold design, benchmark/harness semantics, final acceptance, freeze, packaging, installation, or workflow-policy promotion.
 
 ## Authority boundary
 
 Own only:
-
-- population/search state and candidate lifecycle;
-- parent/donor lineage and generation-receipt consistency;
-- recombination/backcross/repair-crossover planning;
-- hard-gate-first Pareto/non-dominance selection;
-- derived novelty/diversity preservation;
-- search budget, deterministic stagnation, checkpoint chain, and termination;
-- finalist selection and promotion recommendation.
+- population/search state, candidate lifecycle, lineage, receipt consistency, and checkpoint chain;
+- dependency/conflict/invariant-aware recombination/backcross/repair-crossover planning;
+- hard-gate-first Pareto/non-dominance selection, scenario specialists, and derived diversity;
+- bounded budgets, deterministic stagnation/termination, finalist selection, and caller-facing recommendation.
 
 Do not own:
+- broad specialist orchestration, hypothesis/transformation-registry invention, or target-byte mutation;
+- evaluator/benchmark/scenario/statistical semantics, threshold changes, or acceptance-gate decisions;
+- final target/workflow promotion, freeze, package, install, or delivery.
 
-- broad specialist discovery/orchestration;
-- direct target-byte mutation;
-- mutation implementation;
-- evaluator/benchmark/scenario semantics;
-- evaluator/threshold edits;
-- candidate acceptance gates;
-- target or workflow-policy promotion;
-- final package/install delivery.
+The caller supplies frozen mutation/evaluation interfaces, performs candidate generation/evaluation, and remains final promotion owner.
 
-The caller supplies mutation/evaluation interfaces and remains final promotion owner.
+## Search modes
 
-## Required inputs
+- `plan-only`: validate inputs and emit bounded candidate/recombination requests; no mutation/evaluation claims.
+- `search`: caller-mediated multi-candidate search with validated requests and identity-compatible evidence.
+- `resume`: continue only after the latest checkpoint and frozen identities verify.
+- `selection-only`: select from already evaluated, identity-compatible candidates.
+- `validation-only`: validate contract/state/request/checkpoint/package integrity without advancing search.
 
-Before search, resolve a **v4 search contract** containing:
+Default to `search` only when caller mutation and evaluation interfaces are available; otherwise choose the narrowest safe mode and state the limitation.
+
+## Quick-start workflow
+
+1. Freeze the v4 search contract, baseline/target, capability/hypothesis/transformation registries, mutation/evaluation interfaces, evaluator/scenario/policy, hard gates, objectives, finalist policy, and finite budget; validate before any request.
+2. Seed a deliberately small evidence-backed population; keep immutable baseline and configured canonical comparator distinct from active candidates.
+3. Validate every candidate request before mutation; reject unknown/rejected transformations, dependency/conflict/invariant violations, effect/provenance mismatches, duplicates, parent errors, and budget overflow.
+4. Bind generated candidate bytes to immutable identity plus generation receipt; changed bytes create a new candidate and never rewrite lineage/history.
+5. Evaluate with the caller's frozen ladder and identity; compare only compatible evidence and never upgrade `supplied` evidence to `measured`.
+6. Validate state, apply hard gates before Pareto/scenario-specialist/diversity selection, and recombine only validated semantic transformations — never raw file diffs.
+7. Checkpoint each completed round, derive stagnation deterministically, and stop on finalist sufficiency, budget, stagnation, no admissible experiment, indistinguishable evidence, or required policy/evaluator drift.
+8. Enforce the frozen finalist policy, return finalists plus lineage/evidence/trade-offs and `promote-candidate|keep-baseline|gather-evidence|no-single-winner`; never self-promote.
+
+## Critical invariants
+
+- Frozen search, evaluator/scenario/policy, transformation-registry, interface, gate, objective, and finalist identities never drift mid-search; drift requires explicit re-baseline.
+- Hard-gate failure cannot be compensated by another metric, scenario-specialist status, diversity, or aggregate score.
+- Finalist membership and sufficient-finalist termination are valid only when the frozen finalist policy is satisfied at the required evaluation/holdout level.
+- Baseline, canonical comparator, and direct parent remain distinct roles; preserve configured comparator roles when eligible.
+- State/history is append-only except declared lifecycle/status fields; candidate ids are never reused and lineage is acyclic.
+- Generation receipts must match candidate identity, base parent, donors, operator, and transformation set.
+- Transformation dependencies/conflicts/capability invariants and declared deficit-address coverage are mechanically enforced before mutation.
+- Selection compares only compatible evidence at the same frozen evaluation level; never invent a weighted global winner after observing results.
+- Novelty/diversity is derived from frozen behavior descriptors when configured, otherwise deterministic transformation-set distance; never accept model-authored novelty scores.
+- Optional uncertainty, slices, stability, scenario-frontier, complexity, and semantic-stagnation policies are frozen before results and never inferred post-hoc.
+- Checkpoint/request hashes and semantic signatures are deterministic over canonical data; transformation-only novelty cannot reset semantic stagnation when the profile forbids it.
+- Holdout exposure changes evidence status; revealed holdout feedback cannot satisfy a blind-pass requirement without a fresh unseen holdout.
+- Preserve negative/rejected evidence, gate eliminations, and lineage history needed to explain search decisions; do not erase failed candidates to make the search look cleaner.
+- Budget is a ceiling, not a target; target-level search success never auto-promotes workflow policy.
+- Public integration-surface changes require an explicit version decision and caller-side impact gate; local tests alone do not prove ecosystem compatibility.
+
+## Required search contract
+
+Before search, require a valid **search-contract v4** with immutable target/baseline and target class; stable capability/hypothesis/transformation/evaluation/interface identities; finite budget; hard gates; objective directions and predeclared `min_delta`; allowed levels/operators; preserved roles; selection/novelty/finalist policies; capability invariants; and transformation status/dependencies/conflicts/effects/violations/optional deficit addresses.
+
+Use the compatibility profile by default. Enable `evidence_aware` extension profile v1 only when the caller already supplies its frozen uncertainty, required-slice, stability, scenario-frontier, behavior-descriptor, complexity, and optional semantic-stagnation semantics; the extension must remain valid under canonical v4/v2 validators.
+
+Validate canonical compatibility first, then the evidence-aware validator when active. Never reinterpret v1/v2/v3 state as v4 or silently make extension controls mandatory for a legacy v4 caller.
+
+## Direct resource map
+
+- [references/search-model.md](references/search-model.md): lifecycle, v4 freeze/re-baseline, population, budgets, and stagnation.
+- [references/candidate-and-lineage-contract.md](references/candidate-and-lineage-contract.md): candidate identity, parent/donor semantics, receipts, and lineage invariants.
+- [references/recombination-contract.md](references/recombination-contract.md): transformation compatibility and candidate-request v2.
+- [references/selection-and-pareto.md](references/selection-and-pareto.md): evidence eligibility, Pareto/scenario-specialist selection, uncertainty/stability/complexity, and diversity.
+- [references/evaluation-and-promotion.md](references/evaluation-and-promotion.md): evaluation identity/ladder, stochastic metadata, slices, holdouts, and external promotion boundary.
+- [references/state-integrity-and-resume.md](references/state-integrity-and-resume.md): checkpoint hashes/chain, resume, stagnation signatures, and deficit coverage.
+- [references/host-portability.md](references/host-portability.md): portable-core capability/runtime behavior across Agent Skills-compatible hosts.
+- [references/evidence-aware-profile.md](references/evidence-aware-profile.md): extension profile v1 and its compatibility-preserving evidence/stagnation rules.
+
+## Detailed search-contract fields
+
+The v4 contract contains:
 
 1. immutable target/baseline identity and target class;
 2. stable ids for capability map, hypothesis pool, and transformation registry;
@@ -58,76 +106,37 @@ Before search, resolve a **v4 search contract** containing:
 14. when richer evidence is available, frozen uncertainty semantics, required evaluation slices, stability policy, scenario-frontier policy, behavior-descriptor identity, and complexity limits;
 15. an optional deterministic stagnation policy.
 
-Use [assets/templates/search-contract.json.template](assets/templates/search-contract.json.template) for the compatibility profile. Prefer [assets/templates/search-contract-evidence-aware.json.template](assets/templates/search-contract-evidence-aware.json.template) when the caller can supply the richer evidence it requires. The evidence-aware profile is an additive **extension profile v1** carried inside an otherwise-valid search-contract v4; it does not redefine the v4/v2 public surfaces.
+Use [assets/templates/search-contract.json.template](assets/templates/search-contract.json.template) for compatibility and [assets/templates/search-contract-evidence-aware.json.template](assets/templates/search-contract-evidence-aware.json.template) only when the richer evidence is available.
 
-Always validate canonical compatibility first:
+Canonical validation:
 
 ```text
 <PYTHON> scripts/validate_search_contract.py <SEARCH_CONTRACT.json>
 ```
 
-When `evidence_aware` is present, also run:
+When `evidence_aware` is present, additionally run:
 
 ```text
 <PYTHON> scripts/validate_evidence_aware_search_contract.py <SEARCH_CONTRACT.json>
 ```
 
-Never silently make extension controls mandatory for a legacy v4 caller.
-
 Do not silently continue a v1/v2/v3 search as v4. Read [references/search-model.md](references/search-model.md) for re-baseline rules.
 
-## Search modes
+## Package self-validation
 
-- `plan-only`: validate inputs and emit bounded candidate/recombination requests; no mutation/evaluation claims.
-- `search`: caller-mediated multi-candidate search with validated requests/evidence.
-- `resume`: continue only after latest state checkpoint verifies.
-- `selection-only`: select from already evaluated identity-compatible candidates.
-- `validation-only`: validate contract/state/request/checkpoint integrity without changing search state.
-
-Default to `search` only when caller mutation/evaluation interfaces are actually available. Otherwise use the narrow safe mode and state the limitation.
-
-### Package self-validation
-
-Run the package validator during preflight when package integrity is material, for every `validation-only` request, and again after any edit to this skill before claiming it is ready for integration:
+Run during preflight when package integrity is material, for every `validation-only` request, and after any edit before claiming integration readiness:
 
 ```text
 <PYTHON> scripts/validate_skill_evolution.py --target <SKILL_EVOLUTION_ROOT>
 ```
 
-This gate validates the declared integration manifest and all declared public surfaces, including v4 search/state and v2 candidate-request/evaluation. A missing or invalid declared surface blocks readiness; do not substitute generic package validation for this skill-specific gate.
+This gate validates package/context structure, the integration manifest, and declared public surfaces including v4 search/state and v2 candidate-request/evaluation. Missing/invalid declared surfaces block readiness.
 
-## Progressive loading
+## Operational resources
 
-Load only what the active stage needs:
+Load only what the active stage needs. Templates: `assets/templates/search-state.json.template`, `candidate-evaluation.json.template`, `search-report.md.template`, and evidence-aware variants when that profile is active. Validators/planners/selectors: `validate_candidate_request.py`, `validate_candidate_evaluation.py`, `validate_search_state.py`, `select_survivors.py`, `plan_recombination.py`, `checkpoint_search_state.py`, plus `*_evidence_aware.py` counterparts under the extension profile. `scripts/_common.py` and `_evidence_common.py` are import-only helpers, not user-facing CLIs. `contracts/integration-manifest.json` declares versioned exports/imports. `evals/activation-scenarios.json` is planned activation coverage, never behavioral proof until executed.
 
-- [references/search-model.md](references/search-model.md): lifecycle, v4 freeze, population, deterministic stagnation, and cost control.
-- [references/candidate-and-lineage-contract.md](references/candidate-and-lineage-contract.md): candidate identity, parent/donor semantics, receipt and lineage invariants.
-- [references/recombination-contract.md](references/recombination-contract.md): transformation compatibility and candidate-request v2.
-- [references/selection-and-pareto.md](references/selection-and-pareto.md): evaluator compatibility, evidence eligibility, uncertainty/stability, aggregate Pareto plus scenario specialists, complexity, and derived diversity.
-- [references/evaluation-and-promotion.md](references/evaluation-and-promotion.md): evidence identity, repeated/stochastic evidence metadata, evaluation slices, ladder, holdout, and external promotion boundary.
-- [references/state-integrity-and-resume.md](references/state-integrity-and-resume.md): checkpoint hashes, receipt chain, resume, legacy/semantic stagnation, behavior signatures, and deficit coverage.
-- [references/host-portability.md](references/host-portability.md): capability-first portable-core runtime handling across Agent Skills-compatible hosts.
-- [references/evidence-aware-profile.md](references/evidence-aware-profile.md): extension profile v1, typed stochastic evidence, scenario specialists, behavior diversity, provenance, and semantic stagnation without changing canonical v4/v2 surfaces.
-- `contracts/integration-manifest.json`: declares the versioned contracts this controller owns plus the external generation-receipt contract it accepts, enabling orchestrator impact analysis without duplicating peer schemas.
-- [assets/templates/candidate-evaluation.json.template](assets/templates/candidate-evaluation.json.template): compatibility example for normalized candidate-evaluation v2 envelopes.
-- [assets/templates/candidate-evaluation-evidence-aware.json.template](assets/templates/candidate-evaluation-evidence-aware.json.template): v2 evidence-aware example with typed uncertainty metadata, slices, stability, scenario scores, and behavior descriptors.
-- [assets/templates/search-state-evidence-aware.json.template](assets/templates/search-state-evidence-aware.json.template): coherent v4 state example for the evidence-aware profile.
-- [scripts/validate_candidate_evaluation.py](scripts/validate_candidate_evaluation.py): validates normalized evaluator identity, hard gates, metrics, uncertainty, level, and holdout status against the frozen search contract.
-- [scripts/validate_evidence_aware_candidate_evaluation.py](scripts/validate_evidence_aware_candidate_evaluation.py): additive profile validation for typed uncertainty metadata, slices, stability, scenario scores, and behavior descriptors.
-- [assets/templates/search-state.json.template](assets/templates/search-state.json.template): v4 state shape.
-- [assets/templates/search-report.md.template](assets/templates/search-report.md.template): durable report skeleton.
-- [scripts/validate_search_state.py](scripts/validate_search_state.py): lineage, receipts, transformation sets, evaluation identity, budget, and finalist validation.
-- [scripts/validate_candidate_request.py](scripts/validate_candidate_request.py): canonical deterministic pre-mutation request gate.
-- [scripts/validate_evidence_aware_candidate_request.py](scripts/validate_evidence_aware_candidate_request.py): extension provenance/address validation when the evidence profile is active.
-- [scripts/select_survivors.py](scripts/select_survivors.py): canonical v4 survivor selector.
-- [scripts/select_survivors_evidence_aware.py](scripts/select_survivors_evidence_aware.py): extension selector for evaluated pools, slices, stability, complexity, scenario specialists, and behavior diversity.
-- [scripts/plan_recombination.py](scripts/plan_recombination.py): dependency/conflict/invariant-aware deterministic planning.
-- [scripts/checkpoint_search_state.py](scripts/checkpoint_search_state.py): canonical state hash-chain receipt and transformation-signature stagnation checks.
-- [scripts/checkpoint_search_state_evidence_aware.py](scripts/checkpoint_search_state_evidence_aware.py): extension checkpoint for deterministic behavior/deficit-aware stagnation.
-- `scripts/_common.py`: import-only standard-library helper shared by bundled validators/planners; it is not a user-facing CLI.
-- [evals/activation-scenarios.json](evals/activation-scenarios.json): planned activation/boundary scenarios; never behavioral proof until executed.
-
-## Workflow
+## Detailed workflow
 
 ### 1. Freeze and validate search inputs
 
@@ -245,24 +254,6 @@ Return search identity, frozen inputs, complete lineage/receipts, evaluation com
 - `no-single-winner`.
 
 The caller independently reruns final gates and owns freeze/package/promotion.
-
-## Selection and integrity invariants
-
-- frozen search/evaluator identities never drift mid-search;
-- hard-gate failure cannot be compensated by another metric;
-- finalist status/list membership and sufficient-finalist termination are valid only when the frozen finalist policy is satisfied;
-- baseline and direct parent remain distinct roles;
-- canonical comparator remains available when configured and eligible;
-- state/history is append-only except lifecycle/status fields;
-- candidate ids are never reused and lineage is acyclic;
-- generation receipt matches candidate provenance claims;
-- transformation dependencies/conflicts/invariants and declared deficit-address coverage are mechanically enforced;
-- transformation-registry identity remains frozen for the search; a registry revision requires re-baseline;
-- no arbitrary novelty score controls survival; behavior-based novelty uses a frozen descriptor identity;
-- optional uncertainty/stability/scenario/complexity policies are frozen before results and never inferred post-hoc;
-- request/state checkpoint hashes and semantic signatures are deterministic over canonical data;
-- holdout exposure changes its evidence status;
-- target-level search success never auto-promotes a global workflow policy.
 
 ## Output contract
 

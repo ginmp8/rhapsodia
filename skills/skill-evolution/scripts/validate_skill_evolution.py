@@ -7,6 +7,20 @@ import re
 import sys
 from pathlib import Path
 
+TOP100_REQUIRED = {
+    "activation-boundary": ("## Mission and activation boundary", "Do not use"),
+    "mode-router": ("## Search modes",),
+    "quick-start": ("## Quick-start workflow",),
+    "critical-invariants": ("## Critical invariants",),
+    "direct-resource-map": ("## Direct resource map",),
+    "mutation-boundary": ("target-byte mutation",),
+    "promotion-boundary": ("final promotion owner",),
+    "hard-gate-precedence": ("Hard-gate failure cannot be compensated",),
+    "lineage-integrity": ("candidate ids are never reused and lineage is acyclic",),
+    "holdout-exposure": ("Holdout exposure changes evidence status",),
+    "negative-evidence": ("Preserve negative/rejected evidence",),
+}
+
 REQUIRED = [
     "SKILL.md",
     "references/search-model.md",
@@ -104,6 +118,43 @@ def _validate_integration_manifest(root: Path, manifest: dict) -> list[str]:
     return errors
 
 
+
+def _validate_context_loading(root: Path, skill_text: str) -> list[str]:
+    errors: list[str] = []
+    lines = skill_text.splitlines()
+    top100 = "\n".join(lines[:100])
+
+    if len(lines) > 100:
+        for code, anchors in TOP100_REQUIRED.items():
+            if not all(anchor in top100 for anchor in anchors):
+                errors.append(f"context:top100:{code}")
+
+    direct_links = set(re.findall(r"\]\((references/[^)#]+\.md)\)", skill_text))
+    for rel in REQUIRED:
+        if rel.startswith("references/") and rel.endswith(".md") and rel not in direct_links:
+            errors.append(f"context:indirect-required-reference:{rel}")
+
+    for ref in sorted((root / "references").glob("*.md")):
+        ref_lines = ref.read_text(encoding="utf-8").splitlines()
+        if len(ref_lines) <= 100:
+            continue
+        first40 = "\n".join(ref_lines[:40])
+        for label in ("**Purpose:**", "**Load when:**", "**Decision impact:**", "## Contents"):
+            if label not in first40:
+                errors.append(f"context:long-reference-preview:{ref.name}:{label.strip('*# :').lower().replace(' ', '-')}")
+        h2 = [
+            line[3:].strip()
+            for line in ref_lines
+            if line.startswith("## ") and line[3:].strip() not in {"At a Glance", "Contents"}
+        ]
+        if "## Contents" in first40:
+            contents = {line[2:].strip() for line in ref_lines[:40] if line.startswith("- ")}
+            for heading in h2:
+                if heading not in contents:
+                    errors.append(f"context:contents-drift:{ref.name}:{heading}")
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--target", default=str(Path(__file__).resolve().parents[1]))
@@ -125,6 +176,7 @@ def main() -> int:
         for path in re.findall(r"\]\(([^)]+)\)", text):
             if "://" not in path and not path.startswith("#") and not (root / path).exists():
                 errors.append(f"broken-link:{path}")
+        errors.extend(_validate_context_loading(root, text))
 
     for rel in ("assets/templates/search-contract.json.template", "assets/templates/search-state.json.template", "assets/templates/candidate-evaluation.json.template", "assets/templates/search-contract-evidence-aware.json.template", "assets/templates/search-state-evidence-aware.json.template", "assets/templates/candidate-evaluation-evidence-aware.json.template", "contracts/integration-manifest.json", "evals/activation-scenarios.json"):
         path = root / rel

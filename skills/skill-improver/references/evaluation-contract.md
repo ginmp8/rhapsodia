@@ -1,5 +1,36 @@
 # Evaluation Contract
 
+## At a Glance
+
+- **Purpose:** Define the acceptance contract for skill candidates: evaluator freeze, evidence identity, hard gates, comparable arms, contamination/holdout handling, runtime comparability, capability deltas, and truthful evidence labels.
+- **Load when:** Load whenever a candidate mutation may be accepted or rejected, or when designing the evaluator, benchmark comparison, holdout, stochastic trial plan, or final acceptance rule.
+- **Decision impact:** Determines what must be frozen before mutation, which evidence can support which claims, when score gains are invalid, when drift or contamination forces re-baselining/rejection, and what conditions allow final freeze.
+- **Do not load when:** Do not load for pure package navigation or delivery mechanics when no candidate acceptance decision is being made.
+
+## Contents
+
+- Lifecycle
+- Evaluator result contract
+- Built-in `skill-benchmark`
+- Severity handling
+- Hypothesis discovery contract
+- Structural change gate
+- Acceptance rule
+- Freeze policy
+- Source integrity policy
+- Saturated metrics
+- Diagnostic repair rule
+- Freeze after pass
+- Anti-overfitting
+- Evaluation arms and marginal skill value
+- Evaluation partitions, promotion holdout, and contamination
+- Stochastic evaluation profile
+- Multi-dimensional acceptance
+- Runtime identity and comparability
+- Capability delta and authority floor
+- Evidence vocabulary
+
+
 Use this contract whenever a candidate mutation can be accepted or rejected.
 
 ## Lifecycle

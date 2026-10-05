@@ -1,5 +1,30 @@
 # Reproducibility Controls
 
+## At a Glance
+
+- **Purpose:** Define deterministic controls for source/evaluator identity, bounded repair, saturated metrics, final candidate freeze, canonical output paths, recovery-aware delivery, durable receipts, evidence layers, and compatibility.
+- **Load when:** Load when acceptance depends on trustworthy repeated comparison, mutable source inputs, evaluator integrity, output/path safety, final freeze, delivery recovery, holdout isolation, or runtime comparability.
+- **Decision impact:** Selects the lowest reliable control layer and decides when source/evaluator drift invalidates evidence, when repairs must stop, when packaging/delivery is unsafe, and what identity/receipt evidence is required for promotion.
+- **Do not load when:** Do not load merely to make subjective judgments appear deterministic; keep inherently perceptual decisions outside mechanical controls.
+
+## Contents
+
+- Control hierarchy
+- 1. Source snapshot before analysis
+- 2. Frozen evaluator
+- 3. Diagnostic-driven repair loop
+- 4. Saturated metrics
+- 5. Freeze after pass
+- 6. Canonical output preflight
+- 7. Recovery-aware delivery
+- 8. Durable receipt
+- 9. Evidence layers
+- 10. Version and compatibility
+- Promotion holdout isolation and contamination
+- Stochastic evaluation and runtime identity
+- Capability delta
+
+
 Use this reference when candidate acceptance depends on trustworthy source bytes, bounded repair, final freezing, or safe artifact delivery.
 
 ## Control hierarchy
