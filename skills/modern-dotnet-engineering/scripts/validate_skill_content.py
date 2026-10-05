@@ -52,6 +52,8 @@ TOP100_REQUIRED_MARKERS = [
     '## Core workflow',
     '## Global rules',
     '## Direct reference map',
+    '## Evidence vocabulary',
+    '## Stop conditions',
     'net10.0',
     'C# 14',
     'modular single deployable',
@@ -59,6 +61,8 @@ TOP100_REQUIRED_MARKERS = [
     'DbContext',
     'idempotency',
     'untrusted input',
+    '`executed`',
+    '`blocked`',
     'references/34-production-readiness-checklist.md',
     'references/35-decision-matrix.md',
     'references/36-review-evidence-and-reproducibility.md',
@@ -173,12 +177,35 @@ def main() -> int:
             if marker not in top100:
                 errors.append(f'SKILL.md top-100 missing marker: {marker}')
 
+    skill_text = skill.read_text(encoding='utf-8') if skill.exists() else ''
     for md in sorted((root / 'references').glob('*.md')):
-        md_lines = md.read_text(encoding='utf-8').splitlines()
+        md_text = md.read_text(encoding='utf-8')
+        md_lines = md_text.splitlines()
         if len(md_lines) > 100:
             preview = '\n'.join(md_lines[:40])
-            if '## At a Glance' not in preview or '## Contents' not in preview:
-                errors.append(f'long reference missing early At a Glance/Contents preview: {md.name}')
+            required_preview_signals = ['## At a Glance', '**Purpose:**', '**Load when:**', '**Decision impact:**', '## Contents']
+            for signal in required_preview_signals:
+                if signal not in preview:
+                    errors.append(f'long reference missing semantic preview signal {signal}: {md.name}')
+
+            h2 = [line[3:].strip() for line in md_lines if line.startswith('## ')]
+            expected = [h for h in h2 if h not in {'At a Glance', 'Contents'}]
+            contents = []
+            in_contents = False
+            for line in md_lines[:40]:
+                if line == '## Contents':
+                    in_contents = True
+                    continue
+                if in_contents and line.startswith('## '):
+                    break
+                if in_contents and line.startswith('- '):
+                    contents.append(line[2:].strip())
+            if contents != expected:
+                errors.append(f'long reference Contents does not match H2 headings: {md.name}; expected={expected!r}; actual={contents!r}')
+
+        for linked in re.findall(r'(?:references|checklists|templates|examples)/[A-Za-z0-9._/-]+\.md', md_text):
+            if linked.startswith('references/') and linked not in skill_text:
+                errors.append(f'mandatory Markdown discovery may be multi-hop; SKILL.md does not directly reference {linked} (found in {md.name})')
 
     for index, ref in enumerate(REFERENCE_FILES, start=1):
         if not ref.startswith(f'{index:02d}-'):
