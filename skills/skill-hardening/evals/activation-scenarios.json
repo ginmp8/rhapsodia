@@ -96,9 +96,9 @@
       "id": "ambiguous-001",
       "type": "ambiguous",
       "prompt": "Improve my skill.",
-      "expected_behavior": "Infer hardening only if an existing target package is supplied or identifiable; otherwise ask for or locate the target path before editing.",
+      "expected_behavior": "Do not assume hardening from the word improve alone. Resolve whether the goal is package integrity/readiness (hardening) or broader evidence-led optimization/benchmark/compression (prefer Skill Booster).",
       "acceptance_criteria": [
-        "resolve the target and skill-package scope before mutation"
+        "resolve the primary objective before selecting skill-hardening as owner"
       ]
     },
     {
@@ -132,9 +132,9 @@
       "id": "ambiguous-005",
       "type": "ambiguous",
       "prompt": "Fix the activation behavior here.",
-      "expected_behavior": "Inspect frontmatter and scenarios if the target is a skill; ask for target context if no package is available.",
+      "expected_behavior": "If activation is only the requested surface, prefer the activation/optimization owner; use hardening as primary only when package-level repair/readiness is also required.",
       "acceptance_criteria": [
-        "resolve the target and skill-package scope before mutation"
+        "do not let skill-hardening steal activation-only work from a more specific owner"
       ]
     },
     {
@@ -216,6 +216,42 @@
       "expected_behavior": "Refuse to write secrets into the package and recommend safe configuration patterns.",
       "acceptance_criteria": [
         "reject or safely bound the unsafe or evidence-weakening request"
+      ]
+    },
+    {
+      "id": "coexistence-001",
+      "type": "coexistence",
+      "prompt": "@Skill Booster improve @Skill Hardening for Top-100 activation quality, benchmark the before/after behavior, and keep its responsibility unchanged.",
+      "expected_behavior": "Prefer Skill Booster as the primary optimization owner; Skill Hardening may be used only as a bounded validation/hardening provider if the Booster workflow calls for it.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as the primary owner when evidence-led optimization is explicitly requested"
+      ]
+    },
+    {
+      "id": "coexistence-002",
+      "type": "coexistence",
+      "prompt": "Only run the validators and tests for this existing skill and report whether they pass; do not otherwise harden it.",
+      "expected_behavior": "Prefer Skill Testing and Validation because the requested work is validation-only plumbing/evidence rather than package hardening.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as the primary owner for testing/validator-only work"
+      ]
+    },
+    {
+      "id": "semantic-collision-001",
+      "type": "semantic_collision",
+      "prompt": "Optimize this existing skill for activation precision, context cost, and benchmark quality without changing what the skill owns.",
+      "expected_behavior": "Prefer Skill Booster; the request is optimization with measured quality goals, not primarily package integrity/readiness hardening.",
+      "acceptance_criteria": [
+        "route optimization/benchmark/compression intent away from skill-hardening as primary owner"
+      ]
+    },
+    {
+      "id": "semantic-collision-002",
+      "type": "semantic_collision",
+      "prompt": "Create a new Agent Skill for incident triage, choose its architecture, then make it production ready.",
+      "expected_behavior": "Prefer Skill Creator Juiced for the net-new skill and architecture; hardening can only become relevant after an existing package boundary exists.",
+      "acceptance_criteria": [
+        "do not select skill-hardening as primary owner for net-new skill creation or ownership redesign"
       ]
     }
   ],

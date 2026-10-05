@@ -5,7 +5,7 @@
 1. **Scope/authority boundary:** owned artifact family, explicit non-goals, handoffs, protected evidence, and unknowns.
 2. **Mode before work:** select one primary mode from intent/inputs/outputs/closure; use a mode matrix only when multiple modes genuinely exist.
 3. **Portable core:** one host-neutral Agent Skills workflow; isolate host adapters and discovery/install concerns.
-4. **Progressive loading:** keep `SKILL.md` as control plane; move conditional detail/rubrics/schemas to references when they are actually needed.
+4. **Top-100 progressive loading:** keep `SKILL.md` as the control plane. If it exceeds 100 physical lines, the first 100 must expose purpose/scope, discriminative activation/non-use boundaries, material mode choice, usable workflow, critical invariants, and direct pointers. Long editable supporting Markdown should expose an early decision-useful `Purpose` / `Load when` / `Decision impact` preview. Prefer `SKILL.md -> supporting file`; do not hide required instructions behind multi-hop Markdown chains.
 5. **Need-aware resources:** scripts/references/templates/examples/evals are optional. Add them only when they reduce variance, encode a stable artifact, or produce useful evidence; presence alone is not maturity.
 6. **Deterministic helpers:** use scripts for fragile/repeated mechanics, not as ornamental wrappers around clear instructions.
 7. **Template-backed artifacts:** keep reusable templates operationally connected to a fill/copy/writer/validator path when their structure matters.

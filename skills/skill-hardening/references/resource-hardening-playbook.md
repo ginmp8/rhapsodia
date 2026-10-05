@@ -21,7 +21,7 @@ For each proposed resource record: evidence/hypothesis, requirement, file, expec
 Present resources must still be sound:
 
 - scripts: deterministic inputs/outputs where objective, nonzero failure exit, readable diagnostics, no hidden network dependency unless declared, representative execution evidence, no secrets in args/logs/fixtures;
-- references: narrow purpose, explicit loading condition, minimal duplication, no knowledge-dump drift;
+- references: narrow purpose, explicit loading condition, decision-useful preview when long, direct discoverability from `SKILL.md` for required knowledge, minimal duplication, no knowledge-dump drift;
 - templates: stable artifact, workflow-fillable placeholders, usage rule, validation when strict;
 - scenarios: concrete acceptance criteria and frozen execution evidence for measured claims.
 
