@@ -1,0 +1,10 @@
+interface:
+  display_name: Systematic Debugging
+  short_description: Evidence-driven diagnosis for bugs, regressions, flakiness, performance failures, and integration issues.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - CHAT
+  - CODEX
+  allow_implicit_invocation: true
