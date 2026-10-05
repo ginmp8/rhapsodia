@@ -1,79 +1,96 @@
 ---
 name: skill-prompt-and-activation-review
 description: >-
-  Review or rewrite existing skill/agent activation descriptions, reusable instructions, boundaries, handoffs, activation scenarios, and output/evidence contracts. Use for trigger/non-trigger, overlap, ambiguity, or prompt-routing review. Do not use for net-new prompt authoring, package-wide benchmark/hardening/harness work, or application-code implementation.
+  Review or rewrite an existing skill, agent, chat-mode, or reusable prompt activation surface: discovery descriptions, instructions, boundaries, handoffs, activation scenarios, and output/evidence contracts. Use when the primary artifact and action concern trigger/non-trigger behavior, overlap, ambiguity, prompt routing, or evidence wording. Do not use for net-new prompt authoring, package-wide benchmark/hardening/harness work, application-code implementation, deployment, or packaging.
 ---
 
 # Skill Prompt and Activation Review
 
-## Purpose
+## Purpose and Scope
 
-Review prompt and activation surfaces for reusable Agent Skills, agents, chat modes, and instruction packages. Preserve linguistic judgment where it is useful while making routing boundaries, evidence identity, stochastic comparison, and claims reproducible.
+Review existing prompt and activation surfaces without expanding their ownership. Preserve linguistic judgment where useful while making routing boundaries, evidence identity, comparison rules, and claims reproducible.
 
-This is a focused reviewer. It may propose or apply bounded rewrites inside the target prompt/activation surface and validate activation evidence. It does not own package-wide benchmark/harness infrastructure, hardening, consistency repair, repository implementation, deployment, or packaging.
+This focused reviewer may propose or apply bounded rewrites only inside the supplied prompt/activation surface and may validate activation evidence. It does not own package-wide benchmark/harness infrastructure, hardening, consistency repair, repository implementation, deployment, or packaging.
+
+## Activation and Routing Boundary
+
+Use this skill when the **primary artifact + requested action** is one or more of:
+
+- an existing Agent Skill/frontmatter discovery description, reusable agent/chat-mode instruction, or reusable prompt;
+- activation, non-activation, boundary, handoff, overlap, ambiguity, or stop-condition language;
+- activation scenario suites, near-miss negatives, adversarial cases, or prompt-routing evidence;
+- output/evidence contracts tied directly to activation or prompt behavior.
+
+Do **not** own net-new generic prompt authoring, generic copy editing, package-wide benchmark/maturity/harness work, package hardening/cleanup/consistency, application code, repository mutation outside prompt surfaces, deployment, packaging, or domain review where prompt/activation text is incidental. If a broader request contains one narrow prompt/activation subproblem, review only that surface and hand off the rest.
 
 ## Required Inputs
 
-Resolve the exact target surface, requested review action, allowed mutation scope, current ownership, and available evidence. When behavioral comparison is requested, also resolve invocation modes, evaluator visibility, competing catalog identity, routing environment, and trial policy. If target/ownership is materially ambiguous, stop that branch rather than inventing authority.
+Resolve the exact target surface, requested review action, allowed mutation scope, current ownership, and available evidence. For behavioral comparison also resolve invocation mode, evaluator visibility, competing catalog identity, routing environment, and fixed trial policy. If target or ownership remains materially ambiguous, stop that branch rather than inventing authority.
 
-## Portable Core
+## Mode Selection
 
-Treat `SKILL.md` plus relative `references/`, `scripts/`, `evals/`, examples, and assets as the semantic core. Host-specific discovery paths, invocation syntax, metadata, and permissions are optional adapters.
-
-`agents/openai.yaml` is an OpenAI adapter when present. Claude-, Copilot-, Cursor-, or other host extensions may be preserved as adapters, but correctness must not depend on them.
-
-## Required Contracts
-
-Load only what the active branch needs:
-
-- [references/activation-contract.md](references/activation-contract.md) — canonical trigger/non-trigger, invocation, overlap, evidence, claim, anti-gaming, stop, and portability rules.
-- [references/activation-review-rubric.md](references/activation-review-rubric.md) — evidence/severity criteria for discovery descriptions, boundaries, scenarios, and output contracts.
-- [references/prompt-rewrite-patterns.md](references/prompt-rewrite-patterns.md) — minimal rewrite patterns and evidence requirements.
-- [references/adversarial-scenarios.md](references/adversarial-scenarios.md) — scenario groups, realistic dimensions, near-miss negatives, and anti-gaming cases.
-- [references/evaluation-protocol.md](references/evaluation-protocol.md) — frozen baseline/candidate protocol, metrics, freshness, and comparison gates.
-- [references/routing-evidence-profile.md](references/routing-evidence-profile.md) — evidence v2, routing fingerprint, catalog identity, invocation modes, and repeated-trial shape.
-- [references/evaluator-visibility.md](references/evaluator-visibility.md) — candidate-visible versus evaluator-only isolation/leakage rules.
-- [evals/activation-scenarios.json](evals/activation-scenarios.json) — canonical candidate-visible suite v3; presence is not execution evidence and bundled cases are not blind holdouts.
-- [examples/good-and-bad-descriptions.md](examples/good-and-bad-descriptions.md) — optional description calibration.
-- [examples/prompt-review-cases.md](examples/prompt-review-cases.md) — optional finding/ownership calibration.
-- [tests/test_activation_eval_tools.py](tests/test_activation_eval_tools.py) — deterministic regression coverage for suite, evidence, freeze, and comparison helpers.
-- [assets/templates/review-report.md.template](assets/templates/review-report.md.template) — durable review report when useful.
-
-## Modes
-
-| Mode | Use when the user asks to... | Primary output |
+| Mode | Use for | Primary output |
 |---|---|---|
-| `activation-description-review` | review frontmatter/trigger text | evidence-backed findings and minimal rewrite |
-| `instruction-clarity-review` | review reusable prompt/agent instructions | clarity findings and bounded edits |
-| `boundary-review` | inspect scope, non-goals, handoffs, overlap, stop rules | ownership/boundary findings |
-| `adversarial-review` | stress prompt/activation rules for bypasses/gaming | adversarial findings and scenarios |
-| `output-contract-review` | inspect expected output/evidence wording | output-contract findings and corrected contract |
-| `prompt-rewrite` | rewrite an existing prompt/activation surface | rewritten text plus evidence/rationale |
-| `activation-scenarios` | create/revise activation test cases | versionable scenario records |
-| `verification-report` | produce formal review evidence | report using the template |
+| `activation-description-review` | discovery/frontmatter trigger text | evidence-backed findings and minimal rewrite |
+| `instruction-clarity-review` | reusable prompt/agent instructions | clarity findings and bounded edits |
+| `boundary-review` | scope, non-goals, handoffs, overlap, stop rules | ownership/boundary findings |
+| `adversarial-review` | bypass, gaming, or boundary-weakening attempts | adversarial findings and scenarios |
+| `output-contract-review` | output/evidence wording | output-contract findings and corrected contract |
+| `prompt-rewrite` | bounded rewrite of an existing surface | rewritten text plus evidence/rationale |
+| `activation-scenarios` | versionable routing/activation scenarios | versionable scenario records |
+| `verification-report` | formal evidence-backed review | formal review evidence |
 
-Use one primary mode unless the request clearly spans multiple surfaces. Group findings by TAX-001 defect code.
+Use one primary mode unless the request clearly spans multiple owned surfaces. Group material findings by TAX-001 defect code.
+
+## Core Rules and Invariants
+
+- Route by **artifact + action + ownership**, not keywords; preserve the target role, authority, safety rules, and supplied scope.
+- Separate `explicit` direct invocation from `implicit`/`contextual` automatic routing; never count explicit cases in automatic precision/recall.
+- Static breadth/omission is FP/FN **risk**; only frozen executed host-routing evidence can confirm a false positive/negative.
+- Keep `alternative-owner` negatives separate from true `abstain` negatives.
+- Before behavioral comparison, freeze suite/evaluator, catalog/routing fingerprint, evaluator visibility, and trial policy; paired arms must use identical material identities.
+- Bundled activation scenarios are candidate-visible regression/calibration evidence, never a blind holdout. Blind holdouts stay external/evaluator-only.
+- Use TAX-001 severity and EVD-001 traceability for material rewrites; reject ADV-001/GAME-001/STOP-001 weakening.
+- Keep `planned`, `observed-static`, `supplied`, `executed`, `derived`, and `blocked` evidence distinct.
+- Only comparable executed/supplied `host-routing` evidence supports measured activation behavior. Static checks support structural/static claims only.
+- Reject activation gaming, evaluator weakening, expected-outcome edits made to pass, fabricated validation, or authority expansion.
+- Keep host-specific metadata/invocation mechanisms as optional adapters; portable-core correctness must not depend on them.
 
 ## Workflow
 
-1. **Resolve target and scope.** Identify the exact prompt/activation surface, authority, writable scope, and whether work is static review or behavioral comparison.
-2. **Apply the activation contract.** Read `references/activation-contract.md`; preserve target-specific policy when it is stronger.
-3. **Select the smallest mode.** Do not escalate a local rewrite into package-wide work.
-4. **Classify evaluation intent.** Distinguish explicit direct invocation, implicit auto-routing, contextual auto-routing, or no behavioral execution. Never treat explicit invocation as automatic-discovery evidence.
-5. **Capture baseline before edits.** Preserve original text/location and, for comparisons, exact suite/evaluator/catalog/routing/trial identities.
-6. **Classify defects with TAX-001.** Keep static FP/FN risks separate from executed FP/FN defects.
-7. **Resolve overlap with OVL-001/NEG-001.** Route by artifact + action + ownership; distinguish alternative-owner negatives from true abstention.
-8. **Apply the smallest supported change.** Satisfy EVD-001 for every activation/frontmatter rewrite. Reject GAME-001 activation gaming.
-9. **Build scenario coverage when routing changes.** Include positive, near-miss negative, abstention, ambiguous, boundary, adversarial, and candidate-visible regression cases with realistic dimensions. True blind holdouts stay external/evaluator-only.
-10. **Freeze before behavioral comparison.** Follow `references/evaluation-protocol.md`: freeze evaluator/suite, routing fingerprint (including catalog identity), visibility boundary, and fixed trial policy before baseline execution.
-11. **Validate evidence before comparing.** Validate suite and each evidence arm; compare only identical suite/evaluator/routing/trial identities. Repeated trials support bounded repeatability evidence; one run remains a single observation.
-12. **Report metrics by question.** Keep automatic precision/recall, explicit route accuracy, abstention accuracy, near-miss false activation rate, full-route regressions, and trigger rates separate.
-13. **Gate claims and freshness.** Apply CLM-001/FRESH-001. Material host/model/catalog drift makes prior runs historical/non-comparable until rerun or re-baselined.
-14. **Stop on integrity/scope blockers.** Apply STOP-001 instead of weakening authority, evaluator, evidence, or expected outcomes.
+1. Resolve the exact target, authority, writable scope, review mode, and whether work is static review or behavioral comparison.
+2. Apply [`references/activation-contract.md`](references/activation-contract.md); preserve stronger target-specific policy.
+3. Classify evaluation intent as explicit direct invocation, implicit auto-routing, contextual auto-routing, or no behavioral execution; explicit success is not discovery evidence.
+4. Capture the original text/location before edits; for comparisons also capture exact suite/evaluator/catalog/routing/trial identities.
+5. Classify defects with TAX-001, keeping static FP/FN risks distinct from executed routing defects.
+6. Resolve overlap and negatives using OVL-001/NEG-001; prefer the narrow legitimate owner and split cleanly decomposable work.
+7. Apply the smallest EVD-001-supported rewrite; do not broaden authority or optimize for trigger frequency.
+8. When routing changes, cover positive, near-miss negative, abstention, ambiguous, boundary, adversarial, and regression cases.
+9. Before behavioral execution, freeze evaluator/suite, visibility boundary, routing fingerprint, and fixed trial policy.
+10. Validate suite/evidence arms, compare only materially identical identities, and keep single-run observations separate from repeatability evidence.
+11. Report metrics by question: automatic precision/recall, explicit route accuracy, abstention, near-miss false activation, full-route regressions, and trigger rates.
+12. Apply CLM-001/FRESH-001; host/model/catalog drift makes prior evidence historical/non-comparable until rerun or re-baselined.
+13. Apply STOP-001 rather than weakening scope, evaluator integrity, evidence requirements, expected outcomes, or ownership.
+
+## Direct Resource Map
+
+Load only the branch that changes the decision; required Markdown is directly reachable from this file.
+
+- **Normative routing rules:** [`references/activation-contract.md`](references/activation-contract.md).
+- **Static review/severity/evidence rubric:** [`references/activation-review-rubric.md`](references/activation-review-rubric.md).
+- **Bounded rewrite patterns:** [`references/prompt-rewrite-patterns.md`](references/prompt-rewrite-patterns.md).
+- **Adversarial and scenario design:** [`references/adversarial-scenarios.md`](references/adversarial-scenarios.md) and [`evals/activation-scenarios.json`](evals/activation-scenarios.json).
+- **Behavioral comparison only:** [`references/evaluation-protocol.md`](references/evaluation-protocol.md), [`references/routing-evidence-profile.md`](references/routing-evidence-profile.md), and [`references/evaluator-visibility.md`](references/evaluator-visibility.md).
+- **Optional calibration/reporting:** [`examples/good-and-bad-descriptions.md`](examples/good-and-bad-descriptions.md), [`examples/prompt-review-cases.md`](examples/prompt-review-cases.md), and [`assets/templates/review-report.md.template`](assets/templates/review-report.md.template).
+- **Deterministic regression coverage:** [`tests/test_activation_eval_tools.py`](tests/test_activation_eval_tools.py).
+
+## Portable Core
+
+Treat `SKILL.md` plus relative `references/`, `scripts/`, `evals/`, examples, and assets as the semantic core. `agents/openai.yaml` and equivalent host-specific discovery paths, invocation syntax, metadata, or permissions are adapters only and must not be required for correctness.
 
 ## Deterministic Helpers
 
-Use Python 3.10+ when command execution is available. Resolve the Python launcher from capabilities rather than assuming a product-specific command.
+Use Python 3.10+ when command execution is available. Resolve the launcher from capabilities rather than assuming a host-specific command.
 
 Validate suite v3:
 
@@ -112,27 +129,6 @@ Compare paired evidence only after all identity gates pass:
 ```
 
 These helpers validate evidence/contracts; they do not execute model routing. If host-routing execution is unavailable, mark behavioral evidence `blocked` or `not-run`.
-
-## Review and Evidence Rules
-
-- Route by artifact + action + ownership under ACT-001/NTR-001/OVL-001; preserve ROLE-001/BND-001.
-- Keep explicit invocation out of auto-routing precision/recall under INV-001.
-- Preserve catalog/routing identity under CAT-001/RTE-001 and repeated-trial semantics under STO-001.
-- Separate alternative-owner and abstention negatives under NEG-001.
-- Use TAX-001 severity and EVD-001 traceability for every material rewrite; reject ADV-001/GAME-001/STOP-001 weakening.
-- Keep `planned`, `observed-static`, `supplied`, `executed`, `derived`, and `blocked` evidence distinct.
-- Only comparable executed/supplied host-routing evidence supports measured activation behavior. Static checks support structural/static claims only.
-
-## Handoffs
-
-Hand off the out-of-scope portion when the primary request needs:
-
-- generic prompt authoring from scratch;
-- full package benchmark/scorecard or repeated-run harness infrastructure;
-- package-wide hardening/consistency/cleanup;
-- technical implementation, repository mutation outside prompt surfaces, deployment, or packaging.
-
-Use capability roles rather than hard-coding neighboring skill names into the portable core.
 
 ## Output Contract
 

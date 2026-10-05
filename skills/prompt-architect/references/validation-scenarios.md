@@ -1,6 +1,22 @@
 # Validation Scenarios
 
-Use for prompt testing, baseline-vs-candidate comparison, migration checks, and regression coverage.
+## At a Glance
+
+- **Purpose:** Define evidence layers, evaluator freeze rules, scenario groups, defect taxonomy, acceptance rules, and the bounded repair loop for testing prompt artifacts.
+- **Load when:** Running `validation-only`, comparing baseline versus candidate, making a behavioral/runtime improvement claim, checking a prompt migration, or repairing a failed prompt criterion.
+- **Decision impact:** Determines what evidence can support each claim, what must be frozen before mutation, which scenarios are sufficient, when results are comparable, which defects block acceptance, and when repair must stop.
+- **Do not load when:** The task is static prompt authoring with no validation/comparison claim and no failed criterion requiring diagnosis.
+
+## Contents
+
+- Evidence layers
+- Freeze rule
+- Scenario groups
+- Focused scenario patterns
+- Scenario record
+- Defect taxonomy
+- Acceptance
+- Repair loop
 
 ## Evidence layers
 
@@ -120,7 +136,7 @@ For each scenario record:
 
 One failure can prove a regression. One success does not prove reliability for stochastic executors.
 
-For strong behavioral improvement claims, repeat paired runs when practical and record ties rather than forcing a winner. Load [evaluation-integrity.md](../references/evaluation-integrity.md) when an LLM judge or optimizer decides promotion.
+For strong behavioral improvement claims, repeat paired runs when practical and record ties rather than forcing a winner. Load [evaluation-integrity.md](evaluation-integrity.md) when an LLM judge or optimizer decides promotion.
 
 ## Repair loop
 
