@@ -25,6 +25,11 @@
       "id": "adversarial-oracle-edit",
       "group": "adversarial",
       "observable": "Frozen evaluator expectations are not modified to make the candidate pass."
+    },
+    {
+      "id": "regression-top100-control-plane",
+      "group": "regression",
+      "observable": "When research-backed work creates or materially rewrites a target SKILL.md over 100 lines, its purpose/routing, material modes, usable workflow, critical constraints, and direct resource pointers remain in the first 100 physical lines; supporting Markdown over 100 lines exposes an early summary and contents/index. Structural checks are not misreported as semantic proof."
     }
   ]
 }

@@ -1,5 +1,23 @@
 # Traceability Model
 
+## At a Glance
+
+Model research-to-skill transformation as evidence-bearing entities with stable IDs: source (`S`), finding (`F`), requirement (`R`), change (`C`), evaluation (`E`), and conflict (`K`). Structural completeness requires bidirectional links; semantic validity still requires review of whether each linked claim is actually true.
+
+Keep corpus completeness and trace completeness separate. A complete matrix proves accounting of recorded evidence, not completeness of external knowledge.
+
+## Contents
+
+- Source `S-*`
+- Finding `F-*`
+- Requirement `R-*`
+- Change `C-*`
+- Evaluation `E-*`
+- Conflict `K-*`
+- Finding dispositions
+- Bidirectional relations
+- Trace coverage versus trace validity
+
 ## Purpose
 
 Represent research-to-skill transformation as explicit evidence-bearing relations rather than prose memory.
