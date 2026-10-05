@@ -6,8 +6,10 @@ Classify the target ceiling before adding controls. Move objective variance down
 
 ## Contents
 
+- Purpose
 - Reproducibility ceilings
 - Variability taxonomy
+- Control placement
 - Maturity levels
 - Variance budget
 

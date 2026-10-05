@@ -45,6 +45,46 @@ class ContextLoadingContractTests(unittest.TestCase):
             self.assertIn('CONTEXT_TOP100_INVARIANTS', codes)
             self.assertIn('CONTEXT_TOP100_CONTROL_MODEL', codes)
 
+    def test_long_skill_with_deep_acceptance_gates_requires_top100_gate_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / 'demo-skill'
+            root.mkdir()
+            top = '# Demo\n\n## At a Glance\n\nPurpose.\n\n## Modes\n\napply\n\n## Workflow at a Glance\n\nDo work.\n\n## Core Invariants\n\nKeep evidence.\n\n`runtime/script > schema/type > validator/gate`'
+            tail = '\n## Acceptance Gates\n\nA candidate is acceptable only when validation passes.'
+            write_long_skill(root, top, tail)
+            code, report = run(root)
+            self.assertNotEqual(0, code)
+            codes = {row['code'] for row in report['diagnostics']}
+            self.assertIn('CONTEXT_TOP100_ACCEPTANCE_GATES', codes)
+
+    def test_long_skill_with_deep_stop_conditions_requires_top100_stop_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / 'demo-skill'
+            root.mkdir()
+            top = '# Demo\n\n## At a Glance\n\nPurpose.\n\n## Modes\n\napply\n\n## Workflow at a Glance\n\nDo work.\n\n## Core Invariants\n\nKeep evidence.\n\n`runtime/script > schema/type > validator/gate`'
+            tail = '\n## Stop Conditions\n\nStop when evidence identity drifts.'
+            write_long_skill(root, top, tail)
+            code, report = run(root)
+            self.assertNotEqual(0, code)
+            codes = {row['code'] for row in report['diagnostics']}
+            self.assertIn('CONTEXT_TOP100_STOP_CONDITIONS', codes)
+
+    def test_long_reference_contents_must_match_material_h2_headings(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / 'demo-skill'
+            refs = root / 'references'
+            refs.mkdir(parents=True)
+            top = '# Demo\n\n## At a Glance\n\nPurpose.\n\n## Modes\n\napply\n\n## Workflow at a Glance\n\nDo work.\n\n## Core Invariants\n\nKeep evidence.\n\n`runtime/script > schema/type > validator/gate`\n\n[Guide](references/guide.md)'
+            write_long_skill(root, top)
+            (refs / 'guide.md').write_text(
+                '# Guide\n\n## At a Glance\n\nSummary.\n\n## Contents\n\n- Alpha\n\n## Alpha\n\nA.\n\n## Beta\n\n' + '\n'.join(f'detail {i}' for i in range(110)),
+                encoding='utf-8',
+            )
+            code, report = run(root)
+            self.assertNotEqual(0, code)
+            codes = {row['code'] for row in report['diagnostics']}
+            self.assertIn('CONTEXT_LONG_MARKDOWN_CONTENTS', codes)
+
     def test_long_reference_requires_preview_and_direct_root_link(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = Path(td) / 'demo-skill'

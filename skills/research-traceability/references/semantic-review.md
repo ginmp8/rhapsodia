@@ -59,9 +59,9 @@ Verify final language claims only corpus-bounded completeness. A trace matrix ca
 
 ### 9. Context-loading quality
 
-When the candidate creates or materially rewrites an Agent Skill, inspect whether its early control plane is actually sufficient to act correctly from a partial read. For `SKILL.md` over 100 lines, verify that the first 100 physical lines contain the real purpose/routing boundary, material modes, a usable workflow, critical constraints, and direct pointers to required branch resources.
+When the candidate creates or materially rewrites an Agent Skill, inspect whether its early control plane is sufficient to select, route, and begin the skill correctly from a partial read. For `SKILL.md` over 100 lines, verify that the first 100 physical lines contain the real purpose/routing boundary, material modes, a usable workflow, critical constraints/finalization gates, and direct pointers to required branch resources.
 
-Do not accept keyword presence alone as proof. Reject compression that technically satisfies a marker check while moving essential semantics out of the early control plane, weakening activation boundaries, or deleting required detail. For long supporting Markdown, verify the early summary/index accurately represents the file rather than merely existing.
+Do not accept keyword presence alone as proof. Reject compression that technically satisfies a marker check while moving essential semantics out of the early control plane, weakening activation boundaries, or deleting required detail. For editable supporting Markdown over 100 lines, verify the early summary and contents/section map accurately reflect the actual material H2 sections in order. Reject mandatory multi-hop Markdown chains when the required file can be linked directly from `SKILL.md`.
 
 ## Review result
 

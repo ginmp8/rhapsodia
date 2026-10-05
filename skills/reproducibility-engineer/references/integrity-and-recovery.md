@@ -6,12 +6,14 @@ Preserve byte identity from evidence intake through delivery. Snapshot mutable s
 
 ## Contents
 
-- Snapshot evidence before analysis
-- Immutable pinned repository evidence
-- Canonical output-path preflight
-- Recovery-aware multi-output commit
-- Durable receipts and exact-byte identity
-- Failure/recovery rules
+- Purpose
+- 1. Snapshot evidence before analysis
+- 2. Pinned repository evidence must mean immutable repository evidence
+- 3. Canonicalize output paths before mutation
+- 4. Commit multiple outputs as one recovery-aware transaction
+- 5. Receipts are durable evidence, not decoration
+- 6. Keep evidence identities separate
+- Acceptance implications
 
 ## Purpose
 

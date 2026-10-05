@@ -8,20 +8,20 @@ For Agent Skills over 100 lines, preserve the decision-critical control plane in
 
 ## Contents
 
-1. Intake and mode selection
-2. Freeze input identities
-3. Register sources
-4. Extract atomic findings
-5. Disposition every finding
-6. Derive requirements
-7. Map existing coverage and context loading
-8. Define evaluation before candidate mutation
-9. Plan and apply changes
-10. Baseline vs candidate comparison
-11. Mechanical validation
-12. Semantic review
-13. Repair
-14. Freeze and deliver
+- 1. Intake and mode selection
+- 2. Freeze input identities
+- 3. Register sources
+- 4. Extract atomic findings
+- 5. Disposition every finding
+- 6. Derive requirements
+- 7. Map existing coverage and context loading
+- 8. Define evaluation before candidate mutation
+- 9. Plan and apply changes
+- 10. Baseline vs candidate comparison
+- 11. Mechanical validation
+- 12. Semantic review
+- 13. Repair
+- 14. Freeze and deliver
 
 ## 1. Intake and mode selection
 
@@ -66,13 +66,13 @@ Translate findings into `R-*` requirements. Merge multiple findings only when th
 
 A requirement should say what the target skill must achieve, not prematurely dictate a file edit.
 
-## 7. Map existing coverage
+## 7. Map existing coverage and context loading
 
 For existing targets, trace current files/instructions/scripts/evals before editing. Also map context-loading topology before mutation:
-- inspect the discovery metadata separately from the loaded body;
-- if `SKILL.md` exceeds 100 lines, identify whether purpose/scope, routing, material modes, usable workflow, critical constraints, and direct resource pointers are visible in the first 100 physical lines;
-- for supporting Markdown over 100 lines, check for an early summary plus contents/index;
-- verify required Markdown is directly reachable from `SKILL.md` rather than hidden behind mandatory multi-hop chains.
+- inspect discovery metadata separately from the loaded body;
+- if `SKILL.md` exceeds 100 lines, verify that purpose/scope, routing, material modes, a usable workflow, critical constraints, and direct branch-resource pointers are visible in the first 100 physical lines;
+- for every editable supporting Markdown file over 100 lines, require an early summary plus contents/section map within the first 40 lines; derive that map from the file's actual material `##` headings in document order and revalidate it after heading changes;
+- prefer one-level discovery (`SKILL.md -> supporting file`); a Markdown-to-Markdown link may aid navigation but must not be the only route to required instructions.
 
 If a requirement is already satisfied:
 - mark the finding `already-covered`;

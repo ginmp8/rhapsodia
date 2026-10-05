@@ -8,15 +8,11 @@ Keep corpus completeness and trace completeness separate. A complete matrix prov
 
 ## Contents
 
-- Source `S-*`
-- Finding `F-*`
-- Requirement `R-*`
-- Change `C-*`
-- Evaluation `E-*`
-- Conflict `K-*`
+- Purpose
+- Entity model
 - Finding dispositions
 - Bidirectional relations
-- Trace coverage versus trace validity
+- Two independent quality dimensions
 
 ## Purpose
 
