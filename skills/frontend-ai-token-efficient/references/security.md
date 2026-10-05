@@ -1,5 +1,26 @@
 # Frontend leak prevention and browser-side security
 
+## At a Glance
+
+- **Purpose:** Define browser-side security and leak-prevention rules for secrets, storage, OAuth, logs/analytics, URLs/cache, XSS, CSP, third-party scripts, source maps, and authorization UX.
+- **Load when:** The primary mode is security-review or any frontend change crosses a sensitive-data, authentication, authorization, browser-storage, unsafe-HTML, or telemetry boundary.
+- **Decision impact:** Establishes hard prohibitions and required controls for browser-delivered code, including where secrets cannot exist and which protections must be enforced server-side.
+- **Do not load when:** Do not load for infrastructure/backend security audits except where they are necessary to define the frontend trust boundary.
+
+## Contents
+
+- Security boundary
+- Never allow
+- Environment variables
+- Token and storage rules
+- Browser OAuth architecture (RFC 10017)
+- Logs, analytics, and error tracking
+- URL and cache exposure
+- XSS and unsafe HTML
+- CSP, third-party scripts, and source maps
+- Authorization and permission UX
+- Security review output
+
 Use this reference for frontend security reviews focused on data exposure, browser storage, logs, analytics, XSS risk, CSP posture, source maps, cache behavior, and authorization boundaries.
 
 ## Security boundary

@@ -1,5 +1,25 @@
 # Runtime validation
 
+## At a Glance
+
+- **Purpose:** Define when frontend behavior requires browser/Playwright validation and how to gather evidence for forms, focus, dialogs, routing, responsiveness, accessibility, console, and network behavior.
+- **Load when:** The primary mode is runtime-validation, or another mode reaches behavior that static code inspection cannot establish reliably.
+- **Decision impact:** Determines which browser states/interactions must be exercised, evidence precedence, locator/check strategy, and the boundary between observed runtime behavior and planned checks.
+- **Do not load when:** Do not load when static/type/test evidence fully resolves the question and no interactive/browser behavior is being claimed.
+
+## Contents
+
+- When runtime validation is required
+- Evidence hierarchy
+- Playwright plan template
+- Playwright locator hierarchy
+- Modal and dialog checks
+- Form checks
+- Responsive checks
+- Accessibility smoke checks
+- Console and network checks
+- Specialist browser agents
+
 Use this reference when static review is not enough and the frontend behavior must be checked in a browser or with Playwright.
 
 ## When runtime validation is required

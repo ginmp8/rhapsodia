@@ -1,5 +1,28 @@
 # Reproducibility and evidence contract
 
+## At a Glance
+
+- **Purpose:** Define reproducible evidence, exact-source/context-budget rules, deterministic finding order, repair loops, comparison discipline, validation layers, and final freeze semantics.
+- **Load when:** Context efficiency is part of the claim, a baseline/candidate comparison is being made, repeated reviews should be comparable, or validation/freeze identity matters.
+- **Decision impact:** Determines acceptable evidence labels, when context may expand, how before/after claims remain comparable, when a repair branch stops, and when prior evidence becomes stale.
+- **Do not load when:** Do not load for a small standalone frontend answer when no evidence comparison, context-budget claim, repair loop, or freeze concern is material.
+
+## Contents
+
+- Evidence labels
+- Context identity and source snapshot
+- Context-budget rules
+- Context-efficiency receipt
+- Stable finding contract
+- Deterministic ordering
+- Repair loop
+- Freeze evaluator inputs before comparison
+- Comparison discipline
+- Validation layers
+- Final freeze
+- Scanner receipt and delivery integrity
+- Freeze after pass
+
 Use this reference to keep repeated frontend reviews/plans materially comparable without pretending that architecture, UX, or code-review judgment is byte-deterministic.
 
 ## Evidence labels
