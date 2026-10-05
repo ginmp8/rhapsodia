@@ -1,5 +1,23 @@
 # UX quality tied to frontend implementation
 
+## At a Glance
+
+- **Purpose:** Define implementation-linked UX/CRO guidance for existing product language, new UI direction, forms, onboarding, metrics, experiments, accessibility, and interaction quality.
+- **Load when:** The primary mode is ux-flow-review or a frontend implementation decision materially affects user friction, activation, accessibility, or design-system consistency.
+- **Decision impact:** Constrains UI changes to existing product/design-system language, ties UX recommendations to measurable hypotheses, and prevents aesthetic novelty from overriding task clarity or accessibility.
+- **Do not load when:** Do not load for visual-only branding or concept art without frontend implementation scope.
+
+## Contents
+
+- Existing project: preserve the product language
+- New interface without a design system
+- Visual intensity by context
+- Forms and friction
+- Onboarding, activation, and first use
+- Metrics and experiments
+- Visual accessibility and interaction
+- UX review output
+
 Use this reference when UX, CRO, visual quality, onboarding, forms, empty states, or friction are connected to frontend code, design-system usage, accessibility, analytics, or runtime validation.
 
 This reference should not turn the skill into a pure creative design generator. In existing products, project consistency and user task clarity matter more than novelty.

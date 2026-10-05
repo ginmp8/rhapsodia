@@ -1,5 +1,27 @@
 # Short documentation for AI agents
 
+## At a Glance
+
+- **Purpose:** Define concise, non-duplicated repository guidance for AI agents and provide templates for the specific frontend guidance files this skill may create.
+- **Load when:** Creating or reviewing AI-facing repository docs, deciding which rules belong in shared versus host-specific instruction surfaces, or preventing duplicated agent guidance.
+- **Decision impact:** Determines which guidance files should exist, where instructions belong across hosts, and what each file must contain so context stays local and maintainable.
+- **Do not load when:** Do not load for ordinary feature implementation when no AI-facing repository guidance is being created or changed.
+
+## Contents
+
+- Recommended files
+- Instruction layering for multiple hosts
+- `AI_CONTEXT.md` template
+- `ARCHITECTURE.md` template
+- `CONVENTIONS.md` template
+- `DEPENDENCY_RULES.md` template
+- `TESTING_GUIDE.md` template
+- `API_GUIDE.md` template
+- `UI_GUIDE.md` template
+- `SECURITY_FRONTEND.md` template
+- `RUNTIME_VALIDATION.md` template
+- Writing rules for AI-facing docs
+
 Use this reference to create or review repository files that guide AI agents. Keep guides short, practical, and tied to real project decisions.
 
 ## Recommended files

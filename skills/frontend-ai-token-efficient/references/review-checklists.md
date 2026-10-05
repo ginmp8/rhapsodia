@@ -1,5 +1,23 @@
 # Review checklists
 
+## At a Glance
+
+- **Purpose:** Provide bounded triage checklists for architecture, PR/code, AI-maintainability, UX/CRO, runtime, frontend security, documentation, and reproducibility.
+- **Load when:** Running a structured review or needing coverage prompts after exact-source inspection has identified the relevant surfaces.
+- **Decision impact:** Expands review coverage without changing proof standards: checklist completion can surface omissions but never upgrades static review into executed validation.
+- **Do not load when:** Do not load as a substitute for reading the target code, contracts, tests, or runtime evidence.
+
+## Contents
+
+- Architecture checklist
+- PR review checklist
+- AI-maintainability checklist
+- UX and CRO checklist tied to implementation
+- Runtime validation checklist
+- Frontend security checklist
+- Documentation checklist
+- Reproducibility and context-efficiency checklist
+
 Use these checklists for frontend architecture, PR, security, UX, runtime validation, and AI-maintainability reviews. Do not treat checklist completion as proof of correctness; it is triage plus reasoning.
 
 ## Architecture checklist

@@ -1,5 +1,26 @@
 # Architecture for low-context AI maintenance
 
+## At a Glance
+
+- **Purpose:** Define low-context frontend architecture rules for locality, ownership, dependency direction, API/contracts, state, duplication, and repository structure.
+- **Load when:** The primary mode is architecture-plan, or another mode needs a concrete boundary/ownership decision that cannot be resolved from the local source alone.
+- **Decision impact:** Constrains module boundaries, feature/shared ownership, allowed dependencies, state location, abstraction promotion, and the architecture evidence expected in the output.
+- **Do not load when:** Do not load merely because the repository has folders; load only when structure, ownership, dependency direction, or context locality is material.
+
+## Contents
+
+- Decision principles
+- Generic feature/domain shape (optional)
+- Framework-native locality adapters
+- Dependency rules
+- Feature folders
+- `shared` rules
+- Duplication policy
+- API and contract boundaries
+- State ownership
+- Documentation that reduces context
+- Architecture review output
+
 Use this reference when planning or reviewing frontend structure, dependencies, feature boundaries, or repository guidance for AI-assisted coding.
 
 ## Decision principles

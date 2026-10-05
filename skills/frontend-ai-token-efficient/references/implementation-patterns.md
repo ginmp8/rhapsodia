@@ -1,5 +1,29 @@
 # Implementation patterns
 
+## At a Glance
+
+- **Purpose:** Define concrete React/TypeScript implementation patterns for components, hooks, forms, runtime contracts, APIs, state, design-system usage, accessibility, performance, observability, and tests.
+- **Load when:** The task is implementation-guidance or code-review and needs concrete implementation rules beyond the target file and its direct contracts.
+- **Decision impact:** Constrains the smallest safe implementation shape, runtime validation boundaries, data-flow patterns, test expectations, and when local code should stay local instead of becoming shared.
+- **Do not load when:** Do not load for framework selection or pure architecture decisions that do not depend on implementation mechanics.
+
+## Contents
+
+- Minimal-change process
+- Component rules
+- Hook rules
+- React causal simplicity
+- Forms
+- TypeScript and runtime contracts
+- API layer
+- State selection
+- Design-system usage
+- Accessibility defaults
+- Performance defaults
+- Observability and analytics
+- Testing pattern
+- Implementation guidance output
+
 Use this reference for concrete frontend implementation guidance: components, forms, state, APIs, mappers, tests, accessibility, performance, and observability.
 
 ## Minimal-change process

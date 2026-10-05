@@ -1,48 +1,68 @@
 ---
 name: frontend-ai-token-efficient
-description: use when the user asks for react/typescript frontend architecture, implementation guidance, refactoring, review, scaffolding, checklists, runtime validation, ux/cro tied to code, or frontend leak-prevention so ai agents can modify the project with low context and humans can maintain it safely. covers vite, next.js, react router, feature-based structure, contracts, forms, onboarding, state, api boundaries, design-system usage, tests, accessibility, observability, and browser-side security. do not use for pure backend, native mobile, visual-only design, brand identity, or skill creation.
+description: use when the primary goal is React/TypeScript frontend AI-maintainability or low-context change safety, including architecture, refactoring/review, frontend runtime validation, browser-side leak prevention, or concise repo guidance; covers Vite, Next.js, React Router, TanStack, Astro, contracts, forms, state, API boundaries, design systems, tests, accessibility, observability, and frontend security. do not use as the primary skill for generic frontend implementation without an AI-maintainability/context concern, pure visual design or branding, native mobile, backend/infrastructure work, or skill creation.
 ---
 
 # Frontend AI Token Efficient
 
-## Mission
+## Control plane
 
-Help design, review, and guide React/TypeScript frontends that are easy for AI agents to modify with limited context and safe for humans to maintain. Optimize for **small sufficient context**, explicit ownership/contracts, bounded scope, evidence-backed findings, and verifiable validation rather than for fewer lines of code alone. Treat efficiency as **validated task success first**, then context/tokens, files inspected, expansion rounds, tool turns, latency, or cost when those measures are available.
+**Purpose:** Design, review, or guide React/TypeScript frontends so an agent can make correct changes from the smallest sufficient context while humans retain clear ownership, contracts, and validation paths. Efficiency means validated task success first; token/context cost is secondary.
 
-This is not a visual-design-first generator. UX, CRO, and visual quality belong here only when tied to frontend implementation, an existing design system, accessibility, runtime behavior, or maintainable code changes.
+**Use when:** AI-maintainability/context locality is a primary concern, or the request is specifically about frontend architecture/review, runtime validation, browser-side leak prevention, or AI-facing repository guidance owned by this skill.
 
-## Scope
+**Do not use when:** The task is pure backend/infrastructure/native mobile, visual-only design/branding, skill creation, or generic frontend coding where low-context maintainability and this skill's owned safety/runtime concerns are not material.
 
-Use this skill to:
+## Core rules
 
-- choose a frontend stack with AI-maintainability as a decision factor;
-- design or review React/TypeScript, Vite, Next.js, React Router, TanStack, Astro, or similar frontend structure;
-- review folders, dependencies, components, forms, state, API access, tests, accessibility, observability, and AI-facing repo docs;
-- review UX implementation for forms, onboarding, empty states, CTAs, responsiveness, friction, and design-system consistency;
-- plan or interpret browser/Playwright validation;
-- create concise `AI_CONTEXT.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `DEPENDENCY_RULES.md`, `TESTING_GUIDE.md`, `API_GUIDE.md`, `UI_GUIDE.md`, `SECURITY_FRONTEND.md`, and related guidance when useful;
-- review browser-side leak risks: secrets, tokens, storage, logs, analytics, URLs, source maps, XSS, CSP, cache behavior, and frontend authorization assumptions;
-- guide focused implementation/refactoring while minimizing touched files and context expansion.
-
-Do not use for pure backend work, native mobile, visual-only design without frontend implementation, brand identity, skill creation, infrastructure security audits, or repository implementation without a clear frontend scope.
-
-## Invariants
-
-- Never optimize token or context volume independently of validated task success.
-- Reduce required context before reducing code size.
+- Never optimize token or context volume independently of validated task success; reduce required context before reducing code size.
 - Existing project conventions win unless evidence shows a correctness, security, coupling, accessibility, or context-cost problem.
-- Prefer the framework's strongest locality primitive before imposing a generic folder taxonomy. Feature/domain folders are one valid pattern, not a universal requirement.
-- Use summaries, maps, and indexes to orient/localize; inspect exact source before mutation or exact contract claims.
-- Prefer explicit ownership; keep business rules out of generic `shared` layers when such a layer exists.
-- Prefer small local duplication over premature global abstraction.
+- Prefer framework-native locality before imposing a generic folder taxonomy; feature/domain folders are optional, not universal.
+- Use summaries/maps/indexes only to orient or localize. Inspect exact source before mutation or exact contract claims.
+- Keep ownership explicit. Business rules do not belong in generic `shared` layers; small local duplication is preferable to premature global abstraction.
 - Components do not call transport clients directly; use feature/API boundaries, orchestration hooks, schemas, and mappers.
-- Never invent an API contract. Read it, request it, or mark it as missing/assumed.
-- TypeScript types are static and erased at runtime; validate untrusted runtime boundaries proportionally to risk.
+- Never invent an API contract. Read it, request it, or mark it missing/assumed.
+- TypeScript types are erased at runtime; validate untrusted runtime boundaries proportionally to risk.
 - Frontend authorization is UX only; backend authorization is the security boundary.
-- Never put secrets in browser bundles, sensitive session material in web storage by default, or sensitive payloads in logs/analytics/URLs.
+- Never put secrets in browser bundles, sensitive session material in web storage by default, or sensitive payloads in logs, analytics, or URLs.
 - Preserve the existing visual language, UI library, design tokens, CSS conventions, and component patterns before introducing new aesthetics.
-- Separate evidence from recommendation. Never turn static reasoning into an executed validation claim.
+- Separate evidence from recommendation; static reasoning is not executed validation.
 - Do not expand repository scope merely to feel comprehensive.
+
+## Mode selection
+
+Choose exactly one primary mode; the primary mode owns the response contract.
+
+| mode | primary intent | direct reference |
+|---|---|---|
+| `framework-selection` | choose framework/major stack pieces | [framework-selection](references/framework-selection.md) |
+| `architecture-plan` | structure, dependencies, ownership, migration | [architecture](references/architecture.md) |
+| `implementation-guidance` | plan one concrete change without editing | [implementation-patterns](references/implementation-patterns.md) |
+| `code-review` | review diff/PR/component/hook/feature code | [review-checklists](references/review-checklists.md) + implementation reference as needed |
+| `ux-flow-review` | implementation-linked forms/onboarding/friction | [ux-quality](references/ux-quality.md) |
+| `runtime-validation` | browser/Playwright/screenshots/traces/logs | [runtime-validation](references/runtime-validation.md) |
+| `security-review` | frontend leaks/browser trust boundaries | [security](references/security.md) |
+| `ai-context-docs` | create/review concise agent-facing repo guidance | [ai-context-docs](references/ai-context-docs.md) |
+| `repo-scan` | explicitly requested lightweight local scanner | `scripts/check_frontend_ai_package.py` |
+
+Routing precedence: explicit in-scope mode > browser security/leak risk > requested runtime behavior > code/diff review > architecture > concrete implementation plan > implementation-linked UX > AI-context docs > framework selection. `repo-scan` is supplemental unless explicitly requested. If two modes remain equally primary and would materially change the answer, ask one precise question; otherwise choose the higher-precedence mode and declare the secondary concern.
+
+## Quick workflow
+
+1. Establish target identity, frontend scope, requested outcome, local repository instructions, framework/runtime, and acceptance criteria.
+2. Select one primary mode and identify available evidence versus assumptions or missing contracts.
+3. Localize with symbols, routes, imports, tests, configs, or concise maps; identify the smallest plausible owner set.
+4. Inspect the exact target plus only the contracts needed to change or judge it: imported types/schemas, API boundary, nearest tests, route/provider/config, and design-system primitive when material.
+5. Expand only for an observed `dependency`, `contract-owner`, `cross-boundary`, `security-boundary`, `route-config`, `design-system`, or `failing-validation` reason.
+6. Load only the direct reference for the selected mode plus [output-contracts](references/output-contracts.md); load [reproducibility](references/reproducibility.md) when evidence comparison, context budgeting, repair loops, or freeze identity matter.
+7. Produce the smallest coherent recommendation/finding/change plan; prefer causal fixes and framework-native locality over broad cleanup.
+8. Validate at the lowest reliable layer: parse/type/lint/test -> focused runtime/browser checks -> perceptual/manual review when applicable. Keep executed evidence separate from planned checks.
+9. On failure: diagnose -> smallest causal fix -> rerun the same gate -> adjacent gates. Stop after two consecutive non-improving repair rounds unless new evidence changes the diagnosis.
+10. Freeze after the final pass; any later material edit invalidates affected validation and requires rerun.
+
+## Critical stop rules
+
+Stop, narrow, or report a blocker instead of guessing when a required API/schema/permission/policy/compliance contract is missing; the real repository/diff is unavailable for a file-specific conclusion; the proposal depends on frontend-only authorization; browser-delivered code would contain a secret; validation/security/readiness/runtime behavior would be claimed without evidence; or further context expansion has no concrete dependency/failure signal. Never trade away correctness, safety, contracts, or validation merely to reduce context.
 
 ## Expected inputs
 
@@ -54,85 +74,23 @@ Infer only when low-risk and state material assumptions:
 4. constraints: design system, API contracts, authentication, sensitive data, compliance, team conventions, tests, deployment, and AI tooling;
 5. desired output: recommendation, plan, review, patch guidance, markdown files, scanner report, or validation plan.
 
-## Modes and deterministic routing
+## Reference map and progressive loading
 
-Choose exactly one **primary mode**. Supporting concerns may load extra references, but the primary mode owns the response contract.
+Load only branch-relevant detail. The mode table above is the primary one-level discovery surface. Additional cross-cutting references are direct from this root:
 
-| mode | use when | main output |
-|---|---|---|
-| `framework-selection` | choosing framework or major frontend stack pieces | decision matrix + conditions that would change the choice |
-| `architecture-plan` | structure, boundaries, dependencies, feature ownership, migration | target architecture + minimal migration sequence |
-| `implementation-guidance` | a specific change without directly editing the repo | smallest implementation plan + likely files + validation |
-| `code-review` | diff, PR, component, hook, feature, or repository code review | evidence-backed findings by severity + smallest fixes |
-| `ux-flow-review` | implementation-linked forms, onboarding, empty states, CTAs, friction | findings + hypothesis/metric + smallest adjustment |
-| `runtime-validation` | browser, Playwright, screenshots, traces, logs, interaction behavior | validation plan or interpreted runtime evidence |
-| `security-review` | browser leak/security posture or frontend trust-boundary review | security findings + required controls + validation |
-| `ai-context-docs` | create/review agent-facing repo guidance | minimal files/content tied to actual repo decisions |
-| `repo-scan` | user explicitly wants a lightweight local scanner pass | machine-readable scanner triage + critical reading |
+- [output-contracts](references/output-contracts.md): stable mode-specific response, finding, severity, and evidence shapes.
+- [reproducibility](references/reproducibility.md): evidence labels, exact-source/context budgeting, deterministic ordering, repair/comparison discipline, validation layers, and freeze rules.
+- [review-checklists](references/review-checklists.md): architecture, PR, AI-maintainability, UX, runtime, security, documentation, and reproducibility triage.
+- [activation examples](examples/activation-scenarios.md): positive, negative, and ambiguous selection examples.
+- `evals/activation-scenarios.json`: planned activation coverage; not measured behavior until executed.
+- `evals/reproducibility-scenarios.json`: planned regression scenarios; not measured evidence by itself.
+- `evals/context-efficiency-scenarios.json`: planned context-locality/runtime/auth scenarios; not measured evidence by itself.
 
-Routing precedence when multiple intents overlap:
+A whole-repository read is not the default. Do not infer repository-wide architecture from top-level folders, summaries, generated maps, or scanner output alone. Reopen/read authoritative source when an exact edit or contract conclusion depends on it.
 
-1. an explicit in-scope user request for a mode wins;
-2. browser security/leak risk -> `security-review`;
-3. requested execution/interpretation of browser behavior -> `runtime-validation`;
-4. diff/PR/code defect review -> `code-review`;
-5. structure/dependency/ownership decision -> `architecture-plan`;
-6. concrete change plan -> `implementation-guidance`;
-7. UX/friction question tied to code -> `ux-flow-review`;
-8. repository guidance docs -> `ai-context-docs`;
-9. framework/stack choice -> `framework-selection`;
-10. `repo-scan` is supplemental unless the user explicitly asks for a scan.
+## Context-efficiency evidence
 
-If two modes remain equally primary and would materially change the answer, ask one precise question. Otherwise choose the higher-precedence mode and declare the secondary concern.
-
-## Progressive loading
-
-Read only what the selected mode requires:
-
-- `references/framework-selection.md`: framework and stack selection.
-- `references/architecture.md`: feature structure, dependency direction, duplication, state ownership, and context locality.
-- `references/implementation-patterns.md`: forms, state, API, mappers, design system, testing, accessibility, performance, and observability.
-- `references/ux-quality.md`: implementation-linked UX/CRO, onboarding, forms, visual quality, metrics, and experiments.
-- `references/runtime-validation.md`: browser/Playwright evidence, accessibility, performance, logs, screenshots, and traces.
-- `references/security.md`: frontend leak prevention and browser-side defensive controls.
-- `references/review-checklists.md`: architecture, PR, security, UX, runtime, AI-maintainability, and reproducibility checks.
-- `references/ai-context-docs.md`: concise repo-documentation templates.
-- `references/output-contracts.md`: stable response/finding/evidence schemas.
-- `references/reproducibility.md`: context budgeting, evidence labels, repair loop, comparison, and final freeze.
-- `examples/activation-scenarios.md`: activation and boundary examples.
-- `evals/activation-scenarios.json`: planned activation scenarios; never report metrics without execution.
-- `evals/reproducibility-scenarios.json`: planned behavior/regression scenarios; not measured evidence by itself.
-- `evals/context-efficiency-scenarios.json`: planned research-derived regression scenarios for context locality, runtime contracts, auth, and validation; not measured evidence by itself.
-- `scripts/check_frontend_ai_package.py`: optional deterministic local scanner for common ownership and leak signals.
-
-## Context-budget protocol
-
-For repository work, minimize context deliberately without sacrificing correctness. Use this sequence:
-
-1. **Orient** — establish the target, local repository instructions, framework/runtime, and known acceptance criteria. Do not preload generic docs merely because they exist.
-2. **Localize** — search symbols, routes, imports, tests, configs, or concise maps to identify the smallest plausible owner set. Summaries/maps are navigation aids, not mutation authority.
-3. **Inspect exact source** — read the target plus the exact contracts needed to change or judge it: imported types/schemas, API boundary, nearest tests, route/provider/config, and design-system primitive when materially involved.
-4. **Expand on evidence only** — add context for a concrete reason: `dependency`, `contract-owner`, `cross-boundary`, `security-boundary`, `route-config`, `design-system`, or `failing-validation`. Record the reason when the expansion is material.
-5. **Change or advise, then validate** — use the smallest coherent change/recommendation and validate at the lowest reliable layer. Record inspected surfaces and material uninspected dependencies.
-
-A whole-repository read is not the default. Do not infer repository-wide architecture from top-level folders, summaries, generated maps, or scanner output alone. When an exact edit or contract claim depends on source text, reopen/read the exact source even if a summary already exists.
-
-### Context-efficiency evidence
-
-When context efficiency is material, report the quality gate first and then the available cost signals: files inspected, expansion reasons/rounds, tokens/context size when observable, tool turns, latency, or monetary cost. A lower token count with worse or unvalidated task success is not an improvement.
-
-## Workflow
-
-1. Establish target identity, scope, and requested outcome.
-2. Select one primary mode using the routing rules.
-3. Identify evidence already available versus assumptions/missing contracts.
-4. Build the smallest sufficient context set using the context-budget protocol.
-5. Apply only the references needed for the primary mode and material secondary concerns. Localize before loading exact source broadly.
-6. Produce the smallest coherent recommendation, finding set, or change plan. Prefer causal fixes over broad cleanup and framework-native locality over imposed taxonomy.
-7. Validate at the lowest reliable layer available: parse/type/lint/test -> focused runtime/browser checks -> perceptual/manual review when applicable.
-8. If a gate fails, repair the diagnosed cause, rerun the same gate, then adjacent gates. Stop a repair branch after two consecutive non-improving rounds unless new evidence changes the diagnosis.
-9. Label evidence using `references/reproducibility.md` and `references/output-contracts.md`.
-10. **Freeze after pass:** once the final evidence-backed result is established, treat it as frozen. Any later material edit invalidates the affected validation and requires rerun.
+When context efficiency is material, report the applicable quality gate first, then available cost signals: exact files inspected, orientation sources, expansion reasons/rounds, tokens/context size when observable, tool turns, latency, or monetary cost. Record material uninspected dependencies. A cheaper run that misses required evidence or leaves task success unvalidated is a regression, not an efficiency win.
 
 ## Optional scanner
 
@@ -148,27 +106,21 @@ or:
 python scripts/check_frontend_ai_package.py --target <frontend-root> --format markdown --output <report.md>
 ```
 
-The scanner is deterministic triage, not proof. Its JSON output includes a versioned scan receipt and exact input-byte identity. Confirm high-impact findings by reading the relevant files. It must not be used to claim repository-wide correctness, security assurance, or runtime behavior.
+The scanner is deterministic triage, not proof. Its JSON output includes a versioned scan receipt and exact input-byte identity. Confirm high-impact findings by reading the relevant files. Never use scanner output alone to claim repository-wide correctness, security assurance, or runtime behavior.
 
 ## Output contract
 
-Use `references/output-contracts.md` for mode-specific formats. Unless the user requests a different structure, include:
+Use [output-contracts](references/output-contracts.md) for mode-specific formats. Unless the user requests another structure, include assumptions/scope; recommendation or findings with evidence labels; minimal files/changes or next actions; executed validation separately from planned/recommended validation; and risks, missing evidence, and material uninspected dependencies.
 
-1. assumptions and scope;
-2. recommendation or findings with evidence labels;
-3. minimal files/changes or next actions;
-4. executed validation separately from planned/recommended validation;
-5. risks, missing evidence, and material uninspected dependencies.
-
-For findings, prefer the stable shape:
+For findings, preserve the stable shape:
 
 `severity -> code/category -> subject/location -> evidence -> impact -> smallest fix -> validation`
 
 ## Portability contract
 
-Keep the semantic workflow in portable `SKILL.md` plus package-local references/scripts. Host-specific instruction files or metadata are optional adapters only. For repository guidance, put stable always-on rules in the host-neutral/shared instruction surface supported by the project when practical, and keep task-specific detail in skills or scoped docs. Do not duplicate the same long instruction set across host files; host adapters should contain only real host differences.
+Keep the semantic workflow in portable `SKILL.md` plus package-local references/scripts. Host-specific instruction files or metadata are optional adapters only. For repository guidance, keep stable always-on rules in the project's host-neutral/shared instruction surface when practical and task-specific detail in skills/scoped docs. Do not duplicate the same long instruction set across host files; adapters contain only real host differences.
 
-## Stop conditions
+## Detailed stop conditions
 
 Stop, narrow scope, or report a blocker when:
 

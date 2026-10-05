@@ -1,5 +1,27 @@
 # Output contracts
 
+## At a Glance
+
+- **Purpose:** Define stable response shapes, finding fields, severity semantics, and evidence labels for every primary mode.
+- **Load when:** Producing a final answer, review, plan, security finding set, UX review, runtime plan, or AI-context-doc deliverable where consistent evidence language matters.
+- **Decision impact:** Controls what fields and evidence labels the answer must expose, how findings are ordered, and which validation claims may or may not be made.
+- **Do not load when:** Do not use its templates as evidence that validation was executed; they only define output structure.
+
+## Contents
+
+- Default response
+- Framework selection
+- Architecture plan
+- Implementation guidance
+- Code review
+- UX flow review
+- Runtime validation plan
+- Security review
+- AI-context docs output
+- Stable finding schema
+- Evidence language
+- Evidence layers
+
 Use these formats to keep answers useful, auditable, and compact. Adapt section names when the user requests a specific artifact.
 
 ## Default response
