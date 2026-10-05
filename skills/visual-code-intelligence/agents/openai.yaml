@@ -1,0 +1,3 @@
+interface:
+  display_name: "Visual Code Intelligence"
+  short_description: "Turn code changes and systems into evidence-backed visual explanations."
