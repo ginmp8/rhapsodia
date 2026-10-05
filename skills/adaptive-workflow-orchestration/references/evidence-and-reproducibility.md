@@ -1,5 +1,20 @@
 # Evidence and Reproducibility
 
+## At a Glance
+
+- **Purpose:** Define evidence identity, repeatability, evaluator-freeze, verifier-isolation, freshness, and claim-label rules for orchestration plans and runs.
+- **Load when:** Comparing planners/runs, making repeatability or improvement claims, using independent verification, persisting run evidence, or deciding whether prior evidence is still fresh.
+- **Decision impact:** Separates planning variance from execution variance, prevents evaluator drift from being hidden, constrains independence claims, and requires live-state revalidation before persisted evidence can justify closure.
+
+## Contents
+
+- Identity chain
+- Planning vs execution variance
+- Evaluator freeze
+- Independent verification
+- Evidence labels
+- Live state, memory, and closure
+
 ## Identity chain
 
 Keep these separate when material:

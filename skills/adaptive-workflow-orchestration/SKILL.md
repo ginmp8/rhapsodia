@@ -1,38 +1,38 @@
 ---
 name: adaptive-workflow-orchestration
-description: Design and operate bounded task-specific execution workflows when runtime topology should adapt to an already-authorized objective. Use for runtime-discovered decomposition, classify-route, fan-out/synthesize, pipelines, adversarial verification, generate/filter, tournaments, bounded loops, dependency-aware parallelism, finite budgets, externalized runtime state, and compile-to-workflow execution. Do not use for checkpoint promotion/reference-grounded convergence (use checkpoint-convergence), reusable agent-role design (use agent-design), choosing domain ownership, or simple direct work that does not benefit from orchestration.
+description: Design and operate bounded task-specific execution workflows when runtime topology may adapt inside an already-authorized objective and domain owner. Use for runtime-discovered decomposition, classify-route, fan-out/synthesize, pipelines, adversarial verification, generate/filter, tournaments, bounded loops, dependency-aware parallelism, finite budgets, externalized runtime state, and compile-to-workflow execution. Do not use for checkpoint promotion/reference-grounded convergence (use checkpoint-convergence), reusable agent-role design (use agent-design), choosing domain ownership, skill optimization, or simple direct work that does not benefit from orchestration.
 ---
 
 # Adaptive Workflow Orchestration
 
 ## Activation and Routing
 
-Use this skill only after the task objective and domain owner are already authorized. It owns **runtime orchestration for one task/run**: selecting or compiling the smallest safe execution topology, bounding concurrency/retries/loops, and keeping plan/run evidence explicit.
+Use only after the task objective **and** domain/phase owner are already authorized. This skill owns runtime orchestration for one task/run: choose or compile the smallest safe topology, bound concurrency/retries/loops, coordinate execution state, and keep plan/run evidence explicit.
 
-Use it when runtime evidence may determine work units or topology, or when the task materially benefits from classify-route, fan-out/synthesize, pipeline, adversarial verification, generate/filter, tournament, bounded-loop, or dependency-aware execution.
+Use it when runtime evidence may determine work units/topology or when classify-route, fan-out/synthesize, pipeline, adversarial verification, generate/filter, tournament, bounded-loop, or dependency-aware execution materially improves scale, isolation, or verification.
 
-Do not use it to choose/redefine the domain owner, design reusable agents, optimize skills, bypass host approvals, or manage reference-grounded checkpoint promotion. Route new checkpoint/oracle/gate promotion work to `checkpoint-convergence`; route reusable supervisor/worker or `.agent.md` design to `agent-design`; use direct single/serial execution when orchestration adds no material value.
+Do not use it to choose/redefine the domain owner, design reusable agents, optimize skills, bypass host approvals, or own checkpoint/oracle/gate promotion. New reference-grounded checkpoint progression routes to `checkpoint-convergence`; reusable supervisor/worker or `.agent.md` design routes to `agent-design`; otherwise prefer direct single/serial execution.
 
 ## Ownership Boundary
 
-Own: task-specific strategy selection inside an existing authority envelope; work-unit/dependency/barrier design; read/write sets and isolation; finite worker/parallel/retry/re-entry/loop budgets; semantic capability requirements and safe degradation; plan validation/freeze; centralized run-state discipline; plan/run/evaluator identity separation.
+Own: task-specific strategy selection inside the existing authority envelope; work-unit/dependency/barrier design; read/write sets and isolation; finite worker/parallel/retry/re-entry/loop budgets; semantic capability requirements and safe degradation; plan validation/freeze; centralized runtime state; plan/run/evaluator identity separation.
 
-Never own or broaden another agent/skill's authority, semantic contract, production permission, destructive privilege, identity/access scope, financial authority, or external-communication authority.
+Never broaden another owner/skill's semantic contract, production/destructive privilege, identity/access scope, financial authority, external-communication authority, or write scope.
 
 ## Quick-Start Workflow
 
-1. **Normalize authority and outcome.** Record owner, terminal outcome, success criteria, allowed effects, write scope, and any high-impact side effect. Unresolved authority blocks executable planning.
+1. **Normalize authority and outcome.** Record owner, terminal outcome, success criteria, allowed/forbidden effects, write scope, and high-impact side effects. Unresolved authority blocks executable planning.
 2. **Map work and capabilities.** Identify work source, units, dependencies, shared resources, barriers, read/write sets, isolation needs, required/optional semantic capabilities, and actual host primitives.
-3. **Choose the least-complex strategy.** Default to one bounded worker; add stages or parallelism only when they solve a real dependency, scale, or verification need.
-4. **Choose the contract correctly.** New runtime-adaptive work uses `dynamic-workflow-plan/v1`. Existing material integrations may retain `workflow-plan/v1`. Historical `workflow-plan/v2` is validation/compatibility only; new reference-grounded checkpoint promotion routes to `checkpoint-convergence` and its `convergence-plan/v1`.
-5. **Build the smallest bounded plan.** Include objective, authority, strategy, stages, dependencies, effects, read/write sets, isolation, budgets, termination, capabilities/degradation, and input/planner/evaluator identities.
-6. **Validate before dispatch.** Reject cycles, budget violations, authority/write-scope violations, unresolved concurrent read/write conflicts, invalid verification isolation, or missing required evidence/capability.
-7. **Freeze the accepted plan.** Bind measured/repeatability execution to the validated plan hash; a changed plan is a different comparison subject.
-8. **Compile to native host capabilities.** Prefer the strongest safe native mechanism; optional capability loss may degrade to serial execution only when semantics remain intact. Required unresolved capability is `blocked`.
-9. **Execute centrally.** Keep orchestration state, intermediate-result ownership, budgets, retries, and termination in one parent/controller; workers receive bounded context and authority only.
-10. **Verify and terminate by evidence.** Preserve verifier isolation when claimed, revalidate mutable live state when required, stop on success/blocker/budget exhaustion, and report planned topology separately from actual trace/result.
+3. **Choose the least-complex strategy.** Default to one bounded worker; add stages or parallelism only for a concrete dependency, scale, isolation, or verification need.
+4. **Choose the contract.** New runtime-adaptive work -> `dynamic-workflow-plan/v1`; existing material `workflow-plan/v1` integrations may stay v1; historical `workflow-plan/v2` is validation/compatibility only; new checkpoint promotion -> `checkpoint-convergence` / `convergence-plan/v1`.
+5. **Build the smallest bounded plan.** Include objective, authority, strategy, stages, dependencies, effects, read/write sets, isolation, finite budgets, termination, capabilities/degradation, and input/planner/evaluator identities.
+6. **Validate before dispatch.** Reject cycles, authority/write-scope violations, missing finite budgets, unresolved unordered read/write conflicts, invalid verifier isolation, or missing required evidence/capability.
+7. **Freeze the accepted plan.** Bind measured/repeatability claims to the validated plan hash; a changed plan is a different comparison subject.
+8. **Compile to native capabilities.** Prefer the strongest safe host-native mechanism; optional capability loss may degrade only when semantics stay intact. Missing required capability is `blocked`.
+9. **Execute centrally.** One parent/controller owns orchestration state, intermediate-result integration, budgets, retries, cancellation, and termination; workers receive only bounded context/authority.
+10. **Verify and terminate by evidence.** Preserve verifier isolation when claimed, revalidate mutable state when required, stop on success/blocker/budget exhaustion, and separate planned topology from actual trace/result.
 
-## Core Invariants
+## Non-Negotiable Invariants
 
 1. Authority is resolved before topology; parallelism never expands authority.
 2. The simplest valid strategy wins; single bounded execution is the default.
@@ -40,36 +40,44 @@ Never own or broaden another agent/skill's authority, semantic contract, product
 4. Unknown resource overlap serializes; unordered read/write or write/write conflicts are invalid.
 5. Parallel mutation requires proven non-conflicting resources or explicit ordering; "last answer wins" is forbidden.
 6. Every worker count, branch, loop, retry, and re-entry is finite and budgeted.
-7. Proposed plan generation and accepted plan execution are distinct states.
+7. Proposed-plan generation and accepted-plan execution are distinct states.
 8. Independent verification requires real isolation; isolated contexts are not automatically independent truth sources.
-9. Input/source, planner, accepted-plan, execution-trace, evaluator, and result identities remain distinct when material.
-10. Runtime state/limits belong to deterministic/runtime mechanisms when available; prompts do not prove enforcement.
-11. Native host capabilities are late-bound semantically; vendor/package names do not belong in portable plan capability ids.
-12. Missing required authority, capability, evidence, or safe ordering yields `blocked`/`escalated`, never invented support.
+9. Keep input/source, planner, accepted-plan, execution-trace, evaluator, and result identities distinct when material.
+10. Runtime limits/state belong to deterministic/runtime mechanisms when available; prompts do not prove enforcement.
+11. Capability ids are semantic and late-bound; vendor/package/model names do not belong in portable plan requirements.
+12. Missing authority, capability, evidence, safe ordering, or required finite budget yields `blocked`/`escalated`, never invented support.
 
 ## Strategy Router
 
-| Strategy | Prefer when | Avoid when |
+| Strategy | Use when | Do not use when |
 |---|---|---|
-| `single` | cohesive bounded work; shared context helps | decomposition adds evidence or scale value |
+| `single` | cohesive bounded work; shared context helps | decomposition adds real evidence/scale value |
 | `sequential` | strict order or shared mutation | units are independent/read-mostly |
-| `classify-route` | one bounded classification chooses a known route | routing is open-ended exploration |
+| `classify-route` | one bounded classification selects a known route | routing is open-ended exploration |
 | `fan-out-synthesize` | independent read-mostly units feed one synthesis | branches contend on shared writes |
-| `pipeline` | many units traverse the same ordered stages | every stage needs a global barrier |
+| `pipeline` | many units traverse the same ordered stages | each stage needs a global barrier |
 | `adversarial-verify` | isolated challenge materially reduces false confidence | verifier cannot be isolated |
-| `generate-filter` | candidate diversity plus reliable filtering has value | diversity adds no value |
+| `generate-filter` | candidate diversity plus reliable filtering has value | diversity adds no decision value |
 | `tournament` | alternatives share one frozen evaluator | evaluator is weak or drifts |
-| `bounded-loop` | objective predicate justifies finite iteration | termination is subjective/unbounded |
+| `bounded-loop` | an objective predicate justifies finite iteration | termination is subjective/unbounded |
+
+## Stop-Before-Dispatch Gate
+
+Do not dispatch if owner/authority or a high-impact side effect is unresolved; the work source is missing; resources conflict without safe ordering; mutation exceeds write scope; required isolation/capability/evidence is unavailable; any worker/branch/retry/re-entry/loop budget is unbounded/undefined; or success would require fabricating execution, durability, independence, validation, or host support.
 
 ## Direct Resource Map
 
-- Runtime-adaptive compile/execution: [dynamic workflow runtime](references/dynamic-workflow-runtime.md) and [dynamic plan contract](references/dynamic-workflow-plan-contract.md).
-- Strategy composition/anti-patterns: [orchestration patterns](references/orchestration-patterns.md).
-- Concurrency, mutation, retries, and state: [parallelization and state](references/parallelization-and-state.md).
-- Legacy plan compatibility: [workflow-plan/v1](references/workflow-plan-contract.md) and [workflow-plan/v2](references/workflow-plan-v2-contract.md).
-- Evidence/repeatability: [evidence and reproducibility](references/evidence-and-reproducibility.md).
-- Cross-host capability mapping: [host portability](references/host-portability.md).
-- Checkpoint-convergence compatibility pointer: [reference-grounded convergence](references/reference-grounded-convergence.md).
+- New adaptive-plan semantics and hard ceilings -> [dynamic plan contract](references/dynamic-workflow-plan-contract.md); compile/resume/durability/verification runtime semantics -> [dynamic workflow runtime](references/dynamic-workflow-runtime.md).
+- Strategy choice or anti-pattern uncertainty -> [orchestration patterns](references/orchestration-patterns.md).
+- **Mandatory when more than one stage may run concurrently** -> [parallelization and state](references/parallelization-and-state.md) for conflict, state, retry, cancellation, and merge rules.
+- Existing `workflow-plan/v1` only -> [workflow-plan/v1](references/workflow-plan-contract.md); historical v2 validation only -> [workflow-plan/v2](references/workflow-plan-v2-contract.md).
+- Repeatability, evaluator freeze, verification independence, or comparison claims -> [evidence and reproducibility](references/evidence-and-reproducibility.md).
+- Cross-host execution or degradation decisions -> [host portability](references/host-portability.md).
+- Historical checkpoint-convergence compatibility pointer only -> [reference-grounded convergence](references/reference-grounded-convergence.md).
+
+## Minimum Output Evidence
+
+For substantive orchestration, report objective/owner, least-complex selected strategy, plan contract/version, validation status and plan hash when validated, host capability/degradation mapping, actual execution trace only when execution occurred, and terminal reason/blockers. Structural validity is never runtime-execution evidence.
 
 ## Required Inputs
 

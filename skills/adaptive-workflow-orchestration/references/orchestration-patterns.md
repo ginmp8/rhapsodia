@@ -1,5 +1,18 @@
 # Orchestration Patterns
 
+## At a Glance
+
+- **Purpose:** Define when each supported orchestration strategy is justified and identify anti-patterns that create coordination without decision value.
+- **Load when:** The strategy is not obvious from the Top-100 router, multiple topologies appear plausible, or a proposed fan-out/loop/verification pattern needs a scope check.
+- **Decision impact:** Enforces `single` as the default, ties every topology escalation to a concrete dependency/isolation/evidence/scale need, and routes reference-grounded checkpoint progression away from this skill.
+
+## Contents
+
+- Selection rule
+- Patterns
+- Anti-patterns
+- Reference-grounded gated convergence
+
 ## Selection rule
 
 Start with `single`. Move to a more complex strategy only when a concrete dependency, isolation, evidence, or scale requirement justifies it.

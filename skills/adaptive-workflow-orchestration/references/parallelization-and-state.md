@@ -1,5 +1,20 @@
 # Parallelization and State
 
+## At a Glance
+
+- **Purpose:** Define the safety test for concurrent stages and the single-owner rules for shared runtime state, retries, cancellation, partial results, and convergence.
+- **Load when:** More than one stage may be runnable at once, any stage mutates state, retries/re-entry are possible, or synthesis must reconcile partial results.
+- **Decision impact:** Unknown overlap serializes or blocks; unordered write/write or read/write overlap is invalid; the orchestrator remains the sole workflow-state owner; retries must reconcile current state before non-idempotent work repeats.
+
+## Contents
+
+- Safe concurrency test
+- Resource sets
+- State ownership
+- Failure and partial results
+- Cancellation
+- Fresh-context convergence
+
 ## Safe concurrency test
 
 Before two stages can be runnable together, prove all of the following:
