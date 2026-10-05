@@ -47,6 +47,36 @@ REQUIRED={
 
 def add(errors,code,msg): errors.append({'code':code,'message':msg})
 
+def markdown_h2_headings(lines):
+    headings=[]
+    in_fence=False
+    fence=None
+    for line in lines:
+        stripped=line.lstrip()
+        if stripped.startswith(('```','~~~')):
+            marker=stripped[:3]
+            if not in_fence:
+                in_fence=True; fence=marker
+            elif marker==fence:
+                in_fence=False; fence=None
+            continue
+        if not in_fence and line.startswith('## '):
+            headings.append(line[3:].strip())
+    return headings
+
+def markdown_section_lines(lines, heading):
+    marker=f'## {heading}'
+    try:
+        start=lines.index(marker)+1
+    except ValueError:
+        return []
+    out=[]
+    for line in lines[start:]:
+        if line.startswith('## '):
+            break
+        out.append(line)
+    return out
+
 def main():
     ap=argparse.ArgumentParser(description='Validate Decision Engine package.'); ap.add_argument('target',type=Path); ap.add_argument('--json-output',type=Path); a=ap.parse_args()
     root=a.target.resolve(); errors=[]; warnings=[]
@@ -85,6 +115,24 @@ def main():
         missing_top100=[marker for marker in required_top100 if marker not in first100]
         if missing_top100:
             add(errors,'SK081',f'missing Top-100 control-plane sections: {missing_top100}')
+        critical_top100={
+            'bounded-selection-boundary':'concrete bounded decision surface',
+            'deterministic-control-boundary':'parser, schema, type, test, or validator',
+            'choice-minimum-options':'at least two distinct supplied options',
+            'choice-exhaustiveness':'options_exhaustive',
+            'choice-order-invariance':'option order alone must not determine the winner',
+            'ordinal-index-semantics':'zero-based level indices',
+            'non-decided-null-confidence':'confidence: null',
+            'high-materiality-evidence':'High-materiality `decided` results require explicit evidence refs',
+            'calibration-boundary':'calibrated_probability',
+            'visible-rationale-only':'never expose private chain-of-thought',
+            'portable-core':'Keep the semantic core host-neutral',
+            'english-only':'Keep the package English-only.',
+            'one-level-reference-topology':'Required Markdown must not depend on a reference-to-reference hop'
+        }
+        missing_critical=[name for name,marker in critical_top100.items() if marker not in first100]
+        if missing_critical:
+            add(errors,'SK086',f'missing decision-critical Top-100 knowledge: {missing_critical}')
         direct_markdown=(
             'references/behavior-contract.md','references/control-placement.md',
             'references/decision-contract.md','references/evaluation-protocol.md',
@@ -96,18 +144,50 @@ def main():
         if missing_direct:
             add(errors,'SK082',f'required Markdown must be directly discoverable from SKILL.md: {missing_direct}')
 
-    # Long supporting Markdown needs preview-first navigation so partial reads are useful.
+    # Long supporting Markdown needs a decision-useful semantic preview followed by
+    # a heading-derived navigation map so partial reads can select the right resource.
+    generic_preview_markers=(
+        'read this file when the active workflow needs',
+        'primary topics:',
+        'decision-critical scope and section map are surfaced'
+    )
     for md in sorted(root.rglob('*.md')):
         if md == skill:
             continue
         lines=md.read_text(encoding='utf-8').splitlines()
         if len(lines)>100:
-            preview='\n'.join(lines[:40])
+            preview_lines=lines[:40]
+            preview='\n'.join(preview_lines)
             missing=[]
-            if '## At a Glance' not in preview: missing.append('## At a Glance')
-            if '## Contents' not in preview: missing.append('## Contents')
+            if '## At a Glance' not in preview_lines: missing.append('## At a Glance')
+            if '## Contents' not in preview_lines: missing.append('## Contents')
             if missing:
                 add(errors,'SK083',f'long Markdown lacks preview-first structure {md.relative_to(root)}: {missing}')
+                continue
+            if preview_lines.index('## At a Glance') > preview_lines.index('## Contents'):
+                add(errors,'SK083',f'long Markdown preview must precede Contents: {md.relative_to(root)}')
+                continue
+
+            at_glance='\n'.join(markdown_section_lines(lines,'At a Glance'))
+            required_preview_fields=('Purpose','Load when','Decision impact')
+            missing_fields=[]
+            vague_fields=[]
+            for field in required_preview_fields:
+                match=re.search(rf'(?m)^- \*\*{re.escape(field)}:\*\*\s+(.+)$',at_glance)
+                if not match:
+                    missing_fields.append(field)
+                    continue
+                value=match.group(1).strip()
+                lowered=value.lower()
+                if len(value)<24 or any(marker in lowered for marker in generic_preview_markers):
+                    vague_fields.append(field)
+            if missing_fields or vague_fields:
+                add(errors,'SK084',f'long Markdown semantic preview is missing/vague {md.relative_to(root)}: missing={missing_fields}, vague={vague_fields}')
+
+            headings=[h for h in markdown_h2_headings(lines) if h not in {'At a Glance','Contents'}]
+            contents=[line[2:].strip() for line in markdown_section_lines(lines,'Contents') if line.startswith('- ')]
+            if contents != headings:
+                add(errors,'SK085',f'long Markdown Contents drift in {md.relative_to(root)}: expected={headings}, got={contents}')
 
     # Conservative deterministic guard against Portuguese-language regressions.
     # Semantic review still owns the broader English-only claim.

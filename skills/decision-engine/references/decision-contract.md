@@ -2,11 +2,14 @@
 
 ## At a Glance
 
-Defines the canonical `decision-engine/2` semantics for `binary`, `choice`, and `score`; the four statuses; materiality; result fields; and deterministic tie-breakers. Preserve caller-supplied decision surfaces, use null type-specific values plus `confidence: null` for non-decided outcomes, and never force a winner when evidence or alternatives are insufficient.
+- **Purpose:** Define the authoritative `decision-engine/2` semantics for `binary`, `choice`, and `score`, including statuses, materiality, result fields, scale rules, and deterministic tie-breakers.
+- **Load when:** Normalizing a bounded decision, choosing type/status semantics, interpreting Choice exhaustiveness, defining a Score scale, or checking canonical envelope field meaning.
+- **Decision impact:** Determines which decision values are valid, when non-decided values and confidence must be null, how Choice/Score behave, and when a tie must remain `undetermined` instead of forcing a winner.
+- **Do not load when:** The only open question is evidence quality/calibration or mechanical-vs-semantic control placement; use the dedicated reference for that branch.
 
 ## Contents
 
-- Canonical types: Binary, Choice, Score
+- Canonical types
 - Status
 - Materiality
 - Canonical result fields
