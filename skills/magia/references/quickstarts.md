@@ -1,5 +1,25 @@
 # MAGIA Quickstarts
 
+
+## At a Glance
+
+- **Purpose:** Provide compact onboarding paths for ADHOC, RALPH, ADAPT, validation, recovery, governed examples, and script discovery.
+- **Load when:** Choosing an entry path, finding the first safe action, locating a helper script, or recovering from a blocked/interrupted run.
+- **Decision impact:** Narrows mode and next action quickly while preserving linked mode, risk, validation, state, ownership, and closure contracts as authoritative.
+- **Do not load when:** You already know the mode and exact authoritative reference needed for the active step.
+
+## Contents
+
+- Choose the Entry Point
+- ADHOC: Bug or Small Feature
+- RALPH: Selected Task Execution
+- ADAPT: Legacy Evidence Conversion
+- Validation Selection
+- Recovery and Resume
+- Governed Examples
+- Blocked Handoff Example
+- Script Finder
+
 Load only for onboarding, mode selection, script discovery, or recovery guidance. These quickstarts summarize existing contracts; the linked mode, risk, validation, state, and ownership references remain authoritative.
 
 ## Choose the Entry Point
@@ -7,7 +27,7 @@ Load only for onboarding, mode selection, script discovery, or recovery guidance
 | Situation | Mode | First safe action |
 |---|---|---|
 | Direct bug, feature, refactor, config, test, validator, or developer-doc change | `ADHOC` | Resolve repository scope, inspect current behavior, and define one observable proof |
-| Selected task from a current board/spec package | `RALPH` | Resolve board/spec/task and run readiness before mutation |
+| Selected task or dependency-safe batch from a validated Mago planning contract | `RALPH` | Validate the handoff, resolve task/candidate/proof bindings, then inspect before mutation |
 | Legacy execution notes must become current MAGIA evidence | `ADAPT` | Inspect legacy records and identify which claims have current evidence |
 | Product intent, design, task, sequencing, or validation plan must change | handoff to Mago | Record the technical gap and stop the affected mutation |
 | Owner, priority, date, stakeholder, release, or business-risk decision must change | handoff to nomia | Record evidence and stop the governance mutation |
@@ -32,24 +52,26 @@ Do not convert a small implementation request into broad redesign or cleanup.
 
 ## RALPH: Selected Task Execution
 
-1. Resolve board root, cycle, spec, selected task, repository scope, and allowed writes.
-2. Confirm a concrete PRD objective, acceptance criterion, planned validation action, and expected outcome.
-3. Run the readiness validator before mutation.
+1. Validate the `mago_to_magia` handoff and resolve repository, planning/task, dependency, candidate, proof, and Magia artifact identities.
+2. Confirm current objective/acceptance linkage plus the planned validation action and expected result.
+3. Inspect relevant repository state before mutation; use native readiness/identity checks from [artifact-native operation](artifact-native.md).
 4. Execute only the selected task or an explicit dependency-safe batch.
 5. Use [safe execution waves](safe-parallelism.md) only when dependencies, parallel permission, write scopes, contracts, isolated checks, and reconciliation are explicit.
-6. Record implementation evidence and validation evidence.
-7. Update controlled task, manifest, and registry state only through current evidence and recoverable state scripts.
-8. Validate execution state and board consistency before closure.
+6. Record Magia-owned implementation/validation evidence and publish only after semantic validation.
+7. Revalidate candidate/planning bindings before closure; stale bytes require renewed evidence.
+8. If `legacy-board` was explicitly selected, use Board readiness/state scripts instead of native closure; never mix the two storage profiles.
 
-A task checkbox is never evidence by itself.
+A planning checkbox, receipt, or handoff is never proof of current candidate behavior by itself.
 
 ## ADAPT: Legacy Evidence Conversion
 
-1. Resolve the current board root and spec id.
+1. Resolve the explicit legacy source and current Magia-owned destination.
 2. Inspect legacy notes and validation records without treating prose claims as executed evidence.
 3. Convert only supported execution facts into `implementation-notes.md` and `validation-evidence.md`.
 4. Preserve unsupported claims as gaps, `not-run`, `unknown`, or blocked evidence.
-5. Validate the current execution state; do not rewrite planning artifacts to fit legacy history.
+5. Validate the current destination state; do not rewrite planning/governance artifacts to fit legacy history.
+
+The bundled `adapt_legacy_execution_records.py` helper is specifically for legacy-board records; other legacy sources require a bounded owner-safe adaptation path, not invented compatibility.
 
 ## Validation Selection
 

@@ -1,5 +1,34 @@
 # Changelog
 
+
+## At a Glance
+
+- **Purpose:** Preserve chronological release history, compatibility notes, and migration context for Magia package versions.
+- **Load when:** Checking what changed between releases, why compatibility changed, or whether a historical migration/release note applies.
+- **Decision impact:** Constrains historical and release interpretation only; current execution authority still comes from SKILL.md and active contracts.
+- **Do not load when:** Selecting current execution behavior when no release-history question exists.
+
+## Contents
+
+- [2.0.0] - 2026-10-03
+- Unreleased
+- [1.10.1] - 2026-09-22
+- [1.10.0] - 2026-09-19
+- [1.9.4] - 2026-08-18
+- [1.9.3] - 2026-08-18
+- [1.9.2] - 2026-08-17
+- [1.9.1] - 2026-07-23
+- 1.9.0 - 2026-07-23
+- [1.8.0] - 2026-07-23
+- [1.7.0] - 2026-07-22
+- 1.6.0 - 2026-07-22
+- 1.5.0 - 2026-07-22
+- 1.4.0 - 2026-07-21
+- 1.3.0 - 2026-07-21
+- 1.2.0 - 2026-07-21
+- 1.1.1 - 2026-07-20
+- 1.1.0 - 2026-07-20
+
 ## [2.0.0] - 2026-10-03
 
 ### Breaking
@@ -16,6 +45,11 @@
 
 
 ## Unreleased
+
+- Reorder `SKILL.md` so activation/non-use boundaries, authority, mode selection, required inputs, execution workflow, operating rules, stop conditions, and direct resource routing are available inside the first 100 physical lines.
+- Add decision-useful semantic previews plus synchronized contents maps to long Markdown surfaces used for package context loading.
+- Align direct execution references with artifact-native as the default RALPH profile while preserving explicit `legacy-board` compatibility; no shared schema, ownership, or coordinated release version changes.
+- Align the OpenAI adapter RALPH prompt with the native-default execution contract while preserving the package's existing product declarations required by its coordinated-release validator.
 
 - Add optional gated-checkpoint execution guidance for externally orchestrated `workflow-plan/v2` runs without changing Magia domain ownership or the ecosystem handoff schema.
 - Separate intermediate checkpoint candidate/repair evidence from canonical task/phase completion.
