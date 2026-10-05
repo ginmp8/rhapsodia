@@ -20,6 +20,8 @@ REQUIRED_FILES = [
     "references/change-sequencing.md",
     "references/risk-and-validation-checklist.md",
     "references/upstream-source.md",
+    "references/host-portability.md",
+    "references/parallelization-map.md",
     "assets/templates/context-map.md.template",
     "scripts/generate_context_map_skeleton.py",
     "scripts/context_evidence_snapshot.py",
@@ -39,8 +41,33 @@ REQUIRED_SKILL_LINKS = [
     "references/context-selection-evaluation.md",
     "references/change-sequencing.md",
     "references/risk-and-validation-checklist.md",
+    "references/host-portability.md",
+    "references/parallelization-map.md",
+    "references/upstream-source.md",
     "scripts/context_evidence_snapshot.py",
     "scripts/evaluate_context_selection.py",
+]
+
+TOP100_REQUIRED_MARKERS = [
+    "## Mission and activation boundary",
+    "## Critical invariants",
+    "## Modes",
+    "## Evidence tiers",
+    "## Direct branch map",
+    "## Quick-start workflow",
+    "## Hard stops before editing",
+    "10. Render using the context-map contract",
+]
+
+TOP100_REQUIRED_LINKS = [
+    "references/evidence-and-scope-control.md",
+    "references/dependency-tracing.md",
+    "references/context-map-contract.md",
+    "references/change-sequencing.md",
+    "references/risk-and-validation-checklist.md",
+    "references/context-selection-evaluation.md",
+    "references/parallelization-map.md",
+    "references/host-portability.md",
 ]
 
 FORBIDDEN_MARKERS = [
@@ -98,6 +125,105 @@ def parse_frontmatter(text: str) -> tuple[dict[str, str] | None, str | None]:
         key, value = raw_line.split(":", 1)
         fields[key.strip()] = value.strip().strip('"').strip("'")
     return fields, None
+
+
+def material_h2_headings(text: str) -> list[str]:
+    headings: list[str] = []
+    fence: str | None = None
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            marker = stripped[:3]
+            if fence is None:
+                fence = marker
+            elif fence == marker:
+                fence = None
+            continue
+        if fence is not None:
+            continue
+        match = re.match(r"^##\s+(.+?)\s*$", raw_line)
+        if match:
+            headings.append(match.group(1).strip())
+    return headings
+
+
+def contents_entries(text: str) -> list[str]:
+    lines = text.splitlines()
+    start = next((i for i, line in enumerate(lines) if line.strip() == "## Contents"), None)
+    if start is None:
+        return []
+    entries: list[str] = []
+    for raw_line in lines[start + 1 :]:
+        if raw_line.startswith("## "):
+            break
+        stripped = raw_line.strip()
+        if stripped.startswith("- "):
+            entry = stripped[2:].strip().strip("`").strip()
+            if entry:
+                entries.append(entry)
+    return entries
+
+
+def validate_top100_and_reference_loading(root: Path, skill_text: str, diags: list[dict[str, Any]]) -> None:
+    lines = skill_text.splitlines()
+    if len(lines) <= 100:
+        return
+    top100 = "\n".join(lines[:100])
+    for marker in TOP100_REQUIRED_MARKERS:
+        if marker not in top100:
+            add(diags, "top100_required_marker_missing", "SKILL.md", marker)
+    for link in TOP100_REQUIRED_LINKS:
+        if link not in top100:
+            add(diags, "top100_required_link_missing", "SKILL.md", link)
+
+    for mode in ["context-map-only", "implementation-plan", "review-impact", "apply-after-approved-map"]:
+        if mode not in top100:
+            add(diags, "top100_mode_missing", "SKILL.md", mode)
+    for tier in ["focused", "standard", "extended"]:
+        if f"`{tier}`" not in top100:
+            add(diags, "top100_evidence_tier_missing", "SKILL.md", tier)
+
+    references_dir = root / "references"
+    if references_dir.is_dir():
+        for ref in sorted(references_dir.glob("*.md")):
+            rel = ref.relative_to(root).as_posix()
+            if rel not in skill_text:
+                add(diags, "reference_not_directly_reachable", "SKILL.md", rel)
+
+
+def validate_long_markdown_previews(root: Path, diags: list[dict[str, Any]]) -> None:
+    required_preview_markers = ["## At a Glance", "**Purpose:**", "**Load when:**", "**Decision impact:**", "## Contents"]
+    generic_preview_fragments = ["Read this file when the active workflow needs", "Primary topics:"]
+
+    for path in sorted(root.rglob("*.md")):
+        if path.name == "SKILL.md":
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        lines = text.splitlines()
+        if len(lines) <= 100:
+            continue
+        rel = path.relative_to(root).as_posix()
+        first40 = "\n".join(lines[:40])
+        exception = re.search(r"<!--\s*context-preview-exception:\s*(generated|vendor|unsafe-to-rewrite)\s*-->", first40)
+        if exception:
+            add(diags, "long_markdown_preview_exception", rel, exception.group(1), severity="warning")
+            continue
+        for marker in required_preview_markers:
+            if marker not in first40:
+                add(diags, "long_markdown_preview_missing", rel, marker)
+        for fragment in generic_preview_fragments:
+            if fragment in first40:
+                add(diags, "long_markdown_preview_too_generic", rel, fragment)
+
+        actual = [h for h in material_h2_headings(text) if h not in {"At a Glance", "Contents"}]
+        listed = contents_entries(text)
+        if listed != actual:
+            add(
+                diags,
+                "long_markdown_contents_mismatch",
+                rel,
+                f"contents={listed!r}; headings={actual!r}",
+            )
 
 
 def validate_markdown_links(root: Path, diags: list[dict[str, Any]]) -> None:
@@ -209,6 +335,9 @@ def main() -> int:
                     add(diags, "description_not_lowercase", "SKILL.md", "frontmatter description must be lowercase")
                 if len(description.split()) < 45:
                     add(diags, "description_too_short", "SKILL.md", f"words={len(description.split())}")
+                if "use for" not in description or "do not use" not in description:
+                    add(diags, "description_boundary_missing", "SKILL.md", "description must include explicit use and non-use boundaries")
+            validate_top100_and_reference_loading(root, skill_text, diags)
             if len(skill_text.splitlines()) > 500:
                 add(diags, "skill_control_plane_too_long", "SKILL.md", f"lines={len(skill_text.splitlines())}", severity="warning")
             for required_link in REQUIRED_SKILL_LINKS:
@@ -233,6 +362,7 @@ def main() -> int:
             add(diags, "context_contract_version_missing", contract.relative_to(root).as_posix(), "expected context-map contract version 2.1")
 
         validate_markdown_links(root, diags)
+        validate_long_markdown_previews(root, diags)
         validate_scenarios(root, diags)
         validate_python_sources(root, diags)
 

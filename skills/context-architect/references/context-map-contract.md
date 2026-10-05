@@ -2,6 +2,22 @@
 
 Contract version: **2.1**
 
+## At a Glance
+
+- **Purpose:** Define the versioned output contract for Context Architect maps, including required evidence identity, ordering, confidence, closure, risks, sequence, and compact/full rendering.
+- **Load when:** Rendering, reviewing, or validating a context map or implementation-impact plan after repository evidence has been collected.
+- **Decision impact:** Fixes which sections/fields must appear, how entries are ordered, when confidence may be raised, how context-selection metrics may be reported, and which questions may remain open.
+
+## Contents
+
+- Required properties
+- Canonical ordering
+- Full template
+- Compact template
+- Confidence rules
+- Context-selection metrics
+- Question discipline
+
 Use this file for plans, impact analyses, PR plans, refactor plans, reviews, or multi-file implementation work.
 
 ## Required properties

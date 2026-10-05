@@ -1,5 +1,23 @@
 # Dependency Tracing Guide
 
+## At a Glance
+
+- **Purpose:** Standardize how Context Architect discovers and records repository relationships across semantic, build, syntax, runtime/data-flow, lexical, fuzzy, and historical evidence.
+- **Load when:** Locating owning definitions, consumers, reverse dependents, runtime/build wiring, multi-hop impact, or ecosystem-specific dependency paths.
+- **Decision impact:** Determines evidence-source strength, typed relation direction, canonical search order, reverse-impact anchors, hop-expansion limits, command heuristics, and how each dependency claim is notated.
+
+## Contents
+
+- Evidence source classes
+- Typed relation vocabulary
+- Canonical search sequence
+- Change-set reverse impact
+- Bounded multi-hop traversal
+- Useful local commands
+- Trace dimensions
+- Ecosystem hints
+- Evidence notation
+
 Use this file to build or verify a context map. Search in a stable order so repeated runs do not jump directly to whichever file appears first.
 
 ## Evidence source classes
