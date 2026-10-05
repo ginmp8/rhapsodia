@@ -21,6 +21,7 @@ Use this structure for substantive audit/apply/validation runs.
 ### 3. Baseline evidence
 - target-owned commands and outcomes;
 - inventory/audit paths;
+- context-loading validation status when `SKILL.md` or authored references exceed the preview thresholds;
 - structural maturity before;
 - evaluator freeze status;
 - source snapshot/provenance identity when external evidence is material;
@@ -56,7 +57,7 @@ Separate:
 Include exact commands, pass/fail/not-run, paired comparison metrics, and significance output only when executed. For stochastic claims include trial count, outcome counts, interval, requested `pass^k`, judge/calibration identity when used, and replication status. For multi-stage lineage claims include plan/lineage identities, canonical outputs, and invalidation/replay results.
 
 ### 7. Final gates
-State each applicable hard gate and its evidence. Include source-snapshot verification, environment comparability, stochastic-profile/replication requirements, lineage validation, output-alias preflight, last-good preservation/recovery, and receipt durability when those controls apply. Do not compress missing evidence into a pass.
+State each applicable hard gate and its evidence. Include source-snapshot verification, context-loading Top-100/direct-reference/long-Markdown preview status, environment comparability, stochastic-profile/replication requirements, lineage validation, output-alias preflight, last-good preservation/recovery, and receipt durability when those controls apply. Do not compress missing evidence into a pass.
 
 ### 8. Before/after
 - structural maturity before/after, labeled structural;

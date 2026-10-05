@@ -1,5 +1,18 @@
 # Integrity and Recovery Contract
 
+## At a Glance
+
+Preserve byte identity from evidence intake through delivery. Snapshot mutable sources before analysis, bind pinned evidence to immutable bytes, canonicalize output paths before mutation, commit related outputs recovery-safely, keep complete receipts tied to committed bytes, and preserve last-good artifacts when publication fails.
+
+## Contents
+
+- Snapshot evidence before analysis
+- Immutable pinned repository evidence
+- Canonical output-path preflight
+- Recovery-aware multi-output commit
+- Durable receipts and exact-byte identity
+- Failure/recovery rules
+
 ## Purpose
 
 Make evidence and delivery trustworthy even when files, repositories, paths, or outputs can change underneath the workflow. Reproducibility is weakened if the bytes inspected are not the bytes evaluated, if an output aliases an input, or if a failed commit destroys the last-good artifact.

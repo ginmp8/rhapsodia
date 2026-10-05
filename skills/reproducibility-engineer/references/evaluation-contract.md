@@ -1,5 +1,9 @@
 # Evaluation Contract
 
+## At a Glance
+
+Freeze evaluators and material source identity before mutation. Compare the minimum arms needed for the claim, control environment drift, use repeated trials for stochastic reliability, keep holdouts independent, and separate structural, behavioral, runtime, and subjective evidence.
+
 ## Contents
 
 - Freeze before mutation

@@ -1,5 +1,9 @@
 # Transformation Playbook
 
+## At a Glance
+
+Reduce variance with the smallest mechanism that fixes an observed failure: explicit routing, typed IR where useful, strong defaults, independent validation, causal repair, freeze-after-pass, atomic delivery, versioned contracts, shallow progressive loading, and regression scenarios.
+
 ## Contents
 
 - Core principle
@@ -100,11 +104,13 @@ If schema/layout/output semantics change incompatibly:
 - reject unsupported old forms explicitly;
 - do not silently reinterpret old artifacts.
 
-## Pattern 11: Progressive loading
+## Pattern 11: Progressive loading and Top-100 control surface
 
-Keep `SKILL.md` as the control plane. Move branch-specific rules, schemas, long rubrics, examples, and implementation details to one-level references loaded only when needed.
+Keep `SKILL.md` as the control plane. When it exceeds 100 physical lines, its first 100 lines must still expose purpose/scope, routing or modes, workflow sufficient to start correctly, critical invariants/control model, and direct pointers to branch-specific resources.
 
-This reduces context dilution and accidental rule mixing.
+Move branch-specific rules, schemas, long rubrics, examples, and implementation details to one-level references loaded only when needed. For authored supporting Markdown over 100 lines, put an early `At a Glance` plus `Contents`/index. Avoid a mandatory `SKILL.md -> reference -> reference` chain; reference-to-reference links may aid navigation only when required material is also directly discoverable from `SKILL.md`.
+
+Validate the structure mechanically, but do not confuse keyword/heading presence with semantic correctness. This reduces context dilution, accidental rule mixing, and host-dependent partial-read failures.
 
 ## Pattern 12: Regression from every meaningful failure
 

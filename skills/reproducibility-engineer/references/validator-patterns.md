@@ -1,5 +1,9 @@
 # Validator Patterns
 
+## At a Glance
+
+Design validators as independent gates, not generator self-assertions. Prefer stable machine-readable diagnostics, canonical path preflight, class-specific checks, bounded supported fixes, and receipts that identify the exact validated bytes.
+
 ## Contents
 
 - Receipt shape
