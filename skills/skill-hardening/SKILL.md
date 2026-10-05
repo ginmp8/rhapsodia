@@ -1,108 +1,81 @@
 ---
 name: skill-hardening
-description: Harden existing Agent Skills-compatible packages with evidence-backed validation, trust intake, portability checks, reproducibility controls, traceable changes, and deterministic packaging. Use when an existing skill must be audited, repaired, matured, validated, or packaged; do not use for net-new skills, generic repositories, product planning, ordinary documentation, or benchmark-only scoring.
+description: "Harden one existing Agent Skills-compatible package when the primary goal is package integrity: trust intake, package-level audit/repair, portability, evidence controls, validation/freeze, and deterministic skill.zip delivery. Use for hardening, readiness, bounded repair, or packaging of an existing skill. Do not use for net-new skills or ownership redesign, evidence-led optimization/benchmark/compression as the primary goal, testing/validator work only, or read-only scoring."
 ---
 
 # Skill Hardening
 
-## Purpose
+## Activation and scope
 
-Harden one existing Agent Skills-compatible package without equating package size with maturity. Own package-level audit, bounded repair, validation, freeze, and delivery for `SKILL.md`, optional host adapters, references, scripts, assets/templates, examples/evals, validators, output contracts, and packaging hygiene.
+Harden one existing Agent Skills-compatible package without treating package size as maturity. Own package-level audit, bounded repair, validation, freeze, and delivery for `SKILL.md`, optional host adapters, references, scripts, templates/assets, examples/evals, validators, output contracts, and packaging hygiene.
 
-Keep the open Agent Skills semantic core portable. Host-specific metadata is an optional adapter, never a prerequisite for correctness.
+- Use when the desired end state is a safer, coherent, portable, validated, and optionally packaged existing skill.
+- Route net-new skills or responsibility/architecture redesign to `skill-creator-juiced` when available.
+- Route evidence-led optimization, benchmarking, compression, or multi-candidate search whose primary goal is quality improvement to `skill-booster` when available.
+- Route test/validator/build/lint work only to `skill-testing-and-validation`; route read-only score/review work to the appropriate benchmark/reviewer skill.
+- Keep the open Agent Skills semantic core host-neutral. Host metadata is an optional adapter, never a correctness dependency.
 
-## Required inputs
+## Core invariants
 
-Resolve or infer before mutation:
-
-1. `TARGET_SKILL_PATH`: one folder/extracted ZIP with exactly one root `SKILL.md`.
-2. Mode: `audit-only`, `plan-only`, `apply-hardening`, `validation-only`, or `package`.
-3. `SOURCE_CLASS`: `trusted-owned`, `trusted-local`, or `external-untrusted-skill`; unknown third-party/downloaded skills default to `external-untrusted-skill`.
-4. `TARGET_HOSTS`: always include `portable-core`; add `openai`, `codex`, `claude`, `copilot`, and/or `cursor` when compatibility is requested. Full multi-platform hardening defaults to all six profiles.
-5. Scope: target folder only unless explicitly narrowed/expanded.
-6. Baseline: immutable before-state plus deterministic target identity before material edits.
-7. Protected evidence: `.git`, secrets, credentials, user fixtures, expected outputs, benchmark baselines, frozen evaluators, generated evidence/reports, old packages, escaping symlinks, and user-declared read-only files.
-8. Evidence: target files, failed prompts, prior outputs, benchmark/harness results, domain docs, repository truth, or a bounded research corpus.
-9. Reproducibility ceiling: `objective-artifact`, `tool-action`, `research-analytic`, or `constrained-subjective`.
-10. Evaluation claim: structural repair, behavioral improvement, runtime compatibility, or subjective quality. Require only evidence profiles that the claim actually needs.
-
-Default for “harden it”: trust preflight when needed -> inspect/baseline -> audit -> contract/freeze -> trace research-backed requirements when applicable -> apply one bounded batch -> validate -> freeze -> package only when requested or clearly expected.
-
-## Authority boundary
-
-- **Standalone:** own hardening, validation, freeze, and package delivery within the target skill.
-- **Delegated:** respect frozen evaluators, peer contracts, promotion rules, and protected paths supplied by an upstream orchestrator.
-- Do not silently change peer-facing schemas, CLIs, handoffs, or evaluator thresholds.
-- If a sound fix requires a breaking peer contract, stop independent promotion and report the coordinated change required.
-- Do not add legacy adapters merely to preserve a contract the caller has explicitly retired.
+- Resolve exactly one root `SKILL.md`; preserve an immutable baseline and deterministic identity before material edits.
+- For `external-untrusted-skill`, run static trust intake before any target-owned code, installer, hook, binary, package-manager command, or generated command.
+- Protect `.git`, secrets, credentials, user fixtures, expected outputs, benchmark baselines, frozen evaluators, generated evidence/reports, old packages, escaping symlinks, and user-declared read-only files.
+- When delegated, honor upstream frozen evaluators, peer contracts, promotion rules, and protected paths. Do not silently change peer-facing schemas, CLIs, handoffs, thresholds, or authority; a breaking peer contract blocks independent promotion.
+- Optional resources are never maturity points by presence alone; add, keep, or remove them only from evidence and actual workflow need.
+- For any target `SKILL.md` over 100 physical lines, its first 100 must expose purpose/scope, discriminative activation/non-use boundaries, mode choice, usable workflow, critical rules, and direct resource pointers. Long editable supporting Markdown needs an early decision-useful `Purpose` / `Load when` / `Decision impact` preview. Prefer `SKILL.md -> supporting file`; never hide required instructions behind multi-hop Markdown chains.
+- Freeze only evaluators that decide acceptance. Never weaken validators, tests, thresholds, fixtures, or expected outputs to obtain a pass.
+- Separate structural, semantic-review, behavioral, runtime, perceptual/editorial, portability, and package evidence; a pass in one layer does not prove another.
+- Do not enter multi-candidate search merely because several improvements are possible. Prefer the smallest coherent repair batch.
+- After the final passing validation, freeze the candidate. Any later material edit invalidates affected evidence and requires rerun.
 
 ## Modes
 
-| Intent | Mode | Output | Closure |
-|---|---|---|---|
-| Understand weaknesses | `audit-only` | audit + prioritized findings | structural audit complete |
-| Decide changes/resources | `plan-only` | bounded hardening map | evidence and gates mapped |
-| Improve package | `apply-hardening` | changed target + evidence | applicable gates pass |
-| Check readiness | `validation-only` | pass/fail/blocked gates | exact candidate validated |
-| Deliver package | `package` | validated `skill.zip` + receipt | frozen candidate and archive match |
+| Intent | Mode | Closure |
+|---|---|---|
+| Understand weaknesses | `audit-only` | prioritized structural audit |
+| Decide changes/resources | `plan-only` | bounded hardening map + gates |
+| Improve package | `apply-hardening` | applicable gates pass |
+| Check readiness | `validation-only` | exact candidate pass/fail/blocked |
+| Deliver archive | `package` | frozen candidate and validated archive/receipt match |
 
-Use one primary mode. Do not enter multi-candidate search merely because several improvements are possible.
+Use one primary mode.
 
-## Load only needed resources
+## Default workflow
 
-- [references/mature-skill-patterns.md](references/mature-skill-patterns.md): control plane, progressive loading, truthful closure.
-- [references/resource-hardening-playbook.md](references/resource-hardening-playbook.md): need-aware resource add/integrate/remove rules.
-- [references/evaluator-contract.md](references/evaluator-contract.md): claim layers, frozen evaluators, scenario/evaluation gates.
-- [references/evidence-policy.md](references/evidence-policy.md): evidence order, research traceability, claim vocabulary.
-- [references/scenario-suite.md](references/scenario-suite.md): activation, boundary, coexistence, semantic-collision, regression, adversarial scenarios.
-- [references/reproducibility-controls.md](references/reproducibility-controls.md): baseline identity, variability map, conditional evidence profiles, freeze-after-pass.
-- [references/host-portability.md](references/host-portability.md): portable core and OpenAI/Codex/Claude/Copilot/Cursor profiles.
-- [references/packaging-and-validation.md](references/packaging-and-validation.md): folder/archive validation, deterministic package, provenance-lite receipt.
-- [assets/templates/hardening-contract.json.template](assets/templates/hardening-contract.json.template): v2 machine-readable hardening/reproducibility contract.
-- [assets/templates/hardening-plan.md.template](assets/templates/hardening-plan.md.template), [assets/templates/hardening-report.md.template](assets/templates/hardening-report.md.template), [assets/templates/reference-file.md.template](assets/templates/reference-file.md.template), [assets/templates/scenario-suite.json.template](assets/templates/scenario-suite.json.template): optional reusable shapes.
-- [scripts/trust_intake.py](scripts/trust_intake.py): static trust preflight; never executes target-owned code.
-- [scripts/inventory_skill.py](scripts/inventory_skill.py): deterministic inventory.
-- [scripts/hardening_audit.py](scripts/hardening_audit.py): need-aware structural maturity audit.
-- [scripts/validate_portability.py](scripts/validate_portability.py): structural portable-core/host-profile validation.
-- [scripts/validate_hardened_skill.py](scripts/validate_hardened_skill.py): claim-sensitive readiness gates.
-- [scripts/reproducibility_controls.py](scripts/reproducibility_controls.py): tree identity, v1/v2 contract validation, evaluator freeze/verify.
-- [scripts/package_skill.py](scripts/package_skill.py): deterministic package builder, archive validator, atomic replacement, provenance-lite receipt.
-- [evals/activation-scenarios.json](evals/activation-scenarios.json), [examples/hardening-scenarios.json](examples/hardening-scenarios.json): planned/calibration scenarios; never call them measured until executed.
+1. **Establish trust and baseline.** Resolve target, source class, hosts, writable/protected scope, runtime capabilities, immutable before-state, inventory, and tree identity; run trust intake first when source is external/untrusted.
+2. **Audit without bloat incentives.** Run structural/package audit; treat scores as diagnostic evidence only and inspect existing resources for actual integration/validity.
+3. **Contract and freeze.** Classify reproducibility ceiling as `objective-artifact`, `tool-action`, `research-analytic`, or `constrained-subjective`; map material variance; fill the v2 contract; mark `environment_provenance`, `stochastic_evaluation`, and `execution_lineage` applicable/not-applicable with reasons; freeze deciding evaluators.
+4. **Trace research-backed changes when applicable.** Preserve `source -> finding -> disposition -> requirement -> change -> evaluation`; account for every material finding and semantically review the trace.
+5. **Map and select.** For each change record evidence/hypothesis, affected files, expected effect, evaluator, acceptance gate, rollback, and disposition; absence of an optional resource is not itself a defect.
+6. **Apply diagnostically.** Use deterministic helpers for mechanical rules, explicit defaults for constrained heuristics, and rubrics/review for irreducible judgment. Fix one causal issue at a time; stop a branch after two non-improving rounds unless new evidence changes the hypothesis.
+7. **Validate at the claimed layer.** Run folder/spec validation and requested host profiles; require scenarios only for behavioral claims, including coexistence/semantic-collision when neighboring skills affect routing. Strong stochastic claims need repeated trials and comparable environment evidence.
+8. **Freeze and package.** Verify evaluator/source identities, rerun mandatory tests/validators, compute final identity, then package atomically only when requested/expected, using this skill's packager unless the target owns a required packager contract; preserve last-good output on failure and bind receipt v3 to candidate/archive/builder/profile identities.
 
-Keep `SKILL.md` as router/control plane. Optional directories are not maturity requirements by themselves.
+## Required inputs
 
-## Workflow
+Resolve or infer: `TARGET_SKILL_PATH`; primary mode; `SOURCE_CLASS` (`trusted-owned`, `trusted-local`, `external-untrusted-skill`, with unknown third-party/downloaded skills defaulting to external-untrusted); `TARGET_HOSTS` including `portable-core` plus requested profiles; writable/protected scope; evidence/baseline identity; reproducibility ceiling; claim layer (`structural repair`, `behavioral improvement`, `runtime compatibility`, or `subjective quality`); exact Python launcher when bundled scripts run. Require only evidence profiles the claim needs.
 
-1. **Trust intake before target execution.** For `external-untrusted-skill`, run `scripts/trust_intake.py` against the directory/ZIP before any target-owned script, installer, hook, binary, package-manager command, or generated command. Resolve `block` findings; explicitly review `requires-review` findings. Passing intake is authorization to continue, not a security guarantee.
-2. **Establish portable baseline.** Read target `SKILL.md`, validate the portable core/profile, preserve an immutable before-state, inventory the package, and compute a deterministic tree identity. Only after trust intake may target-owned validators/tests run.
-3. **Audit without bloat incentives.** Run `scripts/hardening_audit.py`. Treat the score as structural evidence only. Do not require or reward scripts, references, templates, examples, scenario counts, or a target-owned package builder solely because they exist. Existing resources must still be integrated and valid.
-4. **Contract and freeze.** Classify the reproducibility ceiling and map variance across `activation -> input normalization -> routing -> references -> decisions -> generation -> validation -> repair -> delivery -> packaging`. Fill the v2 hardening contract. Declare host profiles and explicitly mark environment/provenance, stochastic-evaluation, and execution-lineage profiles applicable or not applicable with reasons. Freeze only evaluators that decide acceptance.
-5. **Trace research-backed changes.** When external research materially drives mutation, preserve a bounded research artifact and maintain the chain `source -> finding -> disposition -> requirement -> change -> evaluation`. Account for every material finding; reject gold plating with no reverse justification. Structural trace coverage does not replace semantic trace review.
-6. **Map and select.** For each proposed change record evidence/hypothesis, affected files, expected effect, evaluator, acceptance gate, rollback, and disposition. Prefer the smallest coherent batch. Absence of an optional resource is not itself a defect.
-7. **Apply and repair diagnostically.** Use scripts/schemas for mechanical rules, explicit defaults for constrained heuristics, and rubrics/review for irreducible judgment. After a failure, fix one causal issue and rerun the same narrow gate. Stop a branch after two non-improving rounds unless new evidence changes the hypothesis. Never weaken frozen evaluators or hard gates to pass.
-8. **Validate claims at the right layer.** Run folder/spec validation and requested host profiles. Require scenario coverage only when the claim needs behavioral evidence; predeclare category/minimum coverage rather than using a universal scenario count. Include coexistence/semantic-collision cases when neighboring skills can affect routing. Strong stochastic claims require repeated trials and comparable environment evidence; ordinary static repairs do not.
-9. **Freeze the passing candidate.** Verify frozen evaluators and material source identities, rerun target-owned mandatory tests/validators, compute final identity, and make no later unvalidated edit.
-10. **Package atomically.** When requested, package the frozen candidate with this skill's packager unless the target already owns a required packager contract. Build privately, validate, hash, atomically replace, preserve last-good output on failure, and emit receipt v3 with candidate/package, builder/profile, and optional baseline identities.
+Full multi-platform hardening defaults to `portable-core,openai,codex,claude,copilot,cursor`. Default for "harden it": trust preflight when needed -> baseline -> audit -> contract/freeze -> trace research when applicable -> one bounded repair batch -> validate -> freeze -> package only when requested or clearly expected.
 
-## Output contract
+## Direct resource map
 
-Report applicable:
+- [references/mature-skill-patterns.md](references/mature-skill-patterns.md): package control-plane patterns, Top-100/progressive loading, authority, and truthful closure.
+- [references/resource-hardening-playbook.md](references/resource-hardening-playbook.md): evidence-based add/integrate/remove decisions for references, scripts, templates, examples, and evals.
+- [references/evaluator-contract.md](references/evaluator-contract.md): frozen evaluator boundaries, claim-sensitive gates, evidence-layer separation, and static-score limits.
+- [references/evidence-policy.md](references/evidence-policy.md): evidence precedence, research traceability, claim vocabulary, freshness, and source identity.
+- [references/scenario-suite.md](references/scenario-suite.md): activation/non-activation, ambiguity, edge, coexistence, semantic-collision, regression, and adversarial coverage.
+- [references/reproducibility-controls.md](references/reproducibility-controls.md): tree/evaluator identities, variability map, conditional evidence profiles, repair/freeze rules.
+- [references/host-portability.md](references/host-portability.md): portable core, host profiles, capability-based execution, and runtime-proof limits.
+- [references/packaging-and-validation.md](references/packaging-and-validation.md): folder/archive gates, deterministic packaging, atomic delivery, and receipt v3 correspondence.
+- [scripts/trust_intake.py](scripts/trust_intake.py), [scripts/inventory_skill.py](scripts/inventory_skill.py), [scripts/hardening_audit.py](scripts/hardening_audit.py): trust preflight, deterministic inventory, and structural maturity audit.
+- [scripts/validate_portability.py](scripts/validate_portability.py), [scripts/validate_hardened_skill.py](scripts/validate_hardened_skill.py), [scripts/reproducibility_controls.py](scripts/reproducibility_controls.py), [scripts/package_skill.py](scripts/package_skill.py): portability/readiness gates, identities/evaluator freeze, and deterministic package delivery.
+- [assets/templates/hardening-contract.json.template](assets/templates/hardening-contract.json.template), [assets/templates/hardening-plan.md.template](assets/templates/hardening-plan.md.template), [assets/templates/hardening-report.md.template](assets/templates/hardening-report.md.template), [assets/templates/reference-file.md.template](assets/templates/reference-file.md.template), [assets/templates/scenario-suite.json.template](assets/templates/scenario-suite.json.template): optional durable run artifacts; use only when needed.
+- [evals/activation-scenarios.json](evals/activation-scenarios.json) and [examples/hardening-scenarios.json](examples/hardening-scenarios.json): planned/calibration coverage only; never call them measured until executed.
 
-1. mode, target, source class, requested hosts, runtime capabilities, and exact Python launcher;
-2. baseline and candidate identities, inventory, structural audit, and non-saturated auxiliary signals;
-3. reproducibility ceiling, variability controls, applicable/non-applicable advanced evidence profiles, and irreducible judgment;
-4. research trace counts/dispositions/coverage and semantic-review status when research drove changes;
-5. accepted/rejected changes with evidence, requirements, files, evaluators, and gates;
-6. commands executed with `pass`/`fail`/`blocked`/`not-run` and evidence labels;
-7. structural, semantic-review, behavioral, runtime, perceptual, portability, and package evidence separately;
-8. protected paths respected and files changed;
-9. remaining risks/uncertainty and unmeasured behavior;
-10. package path, candidate hash, builder/profile identity, and archive hash only when produced and validated.
+## Closure and stop conditions
 
-## Stop conditions
+Report target/mode/source/hosts/runtime/Python; inventory and baseline/candidate/evaluator/source identities; audit plus reproducibility ceiling/variance/profile decisions; accepted/rejected changes with files/evaluators/gates; exact commands with `pass`/`fail`/`blocked`/`not-run`; separated evidence layers; research trace status when applicable; protected paths/files changed; residual risk/unmeasured behavior; and package/candidate/builder/archive identities only when produced and validated.
 
-Stop or return a bounded partial result when the target root is ambiguous; mutation lacks a safe baseline; external trust blockers remain unresolved; protected evidence must be changed without authorization; required facts/evidence are absent; a frozen evaluator changed; a requested improvement claim lacks comparable execution; portability requires a host-private core dependency; passing requires weakening a hard gate; or package/receipt cannot be validated against the frozen candidate.
+Stop or return a bounded partial result when target identity is ambiguous, no safe baseline exists, trust blockers remain, protected evidence must change without authorization, required evidence is missing, frozen evaluator/source identity drifts, claimed improvement lacks comparable execution, portability requires a host-private core dependency, passing requires weakening a hard gate, a breaking peer contract needs coordinated change, or package/receipt cannot be validated against the frozen candidate.
 
-## Finalization checklist
-
-Before claiming hardened status: portable frontmatter passes the requested profile; optional resources were added only for justified needs; external target code was not executed before applicable trust intake; baseline/source/evaluator/candidate identities are recorded; v2 contract profiles are explicit; research-backed changes are traceable and semantically reviewed when applicable; referenced files exist; added/modified scripts ran on representative inputs or blockers are stated; scenario sufficiency matches the claim rather than a universal count; requested host profiles pass structurally; evidence layers remain separate; no measured metric is fabricated; frozen evaluators remain unchanged; no edit occurred after final pass; and package/receipt hashes match the delivered frozen candidate.
+Before claiming hardened status, verify portable frontmatter, direct references, Top-100/reference-depth closure, justified resources, required tests/validators and requested host profiles, unchanged frozen evidence, truthful evidence labels, final candidate freeze, and exact package/receipt correspondence. No unvalidated edit may follow the final pass.

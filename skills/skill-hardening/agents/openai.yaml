@@ -1,7 +1,6 @@
 interface:
   display_name: Skill Hardening
-  short_description: Harden skills beyond SKILL.md with resources, scripts, templates,
-    and validation.
+  short_description: Harden existing skill packages with trust, portability, validation, freeze, and deterministic packaging.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
