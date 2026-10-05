@@ -1,5 +1,24 @@
 # Resource Map
 
+
+## At a Glance
+
+- **Purpose:** Map Magia references, scripts, templates, evaluations, and compatibility resources to the decisions or tasks they support.
+- **Load when:** You know the execution branch or information need and need the correct direct resource without loading the full package.
+- **Decision impact:** Determines which focused reference or helper to load next; it does not grant authority or replace the owning contract.
+- **Do not load when:** The required branch-specific reference is already identified directly from SKILL.md.
+
+## Contents
+
+- Core References
+- Mode References
+- Artifact References
+- Agent Metadata and Assets
+- Examples and Evaluations
+- Templates
+- Scripts
+- Ecosystem coordination
+
 > Storage binding: native operation uses this producer's resolved artifact root and the owner-local commands in `references/artifact-native.md`. Board/registry/cycle paths and Board-specific commands below apply only to explicit `legacy-board` compatibility. All domain quality, authority, privacy and evidence rules remain in force.
 
 
@@ -7,7 +26,8 @@ Use to locate MAGIA resources without loading every file.
 
 ## Core References
 
-- `references/board-contract.md`: self-contained canonical board, registry, identity, dependency, and execution-sync contract.
+- `references/artifact-native.md`: default owner-local storage, native RALPH execution, publication, identity, migration, and closure rules.
+- `references/board-contract.md`: explicit `legacy-board` compatibility contract for board/registry/cycle identity, dependencies, and execution-state sync.
 
 - `references/common-execution.md`: shared execution rules.
 - `references/execution-entry.md`: compact start card, first-safe-action rules, bounded ambiguity handling, and concise completion view.
@@ -35,12 +55,12 @@ Use to locate MAGIA resources without loading every file.
 ## Mode References
 
 - `references/modes/adhoc.md`: direct repository work.
-- `references/modes/ralph.md`: selected board/spec package execution.
+- `references/modes/ralph.md`: selected-task execution from validated Mago planning contracts; Board mechanics are legacy-only.
 - `references/modes/adapt.md`: best-effort conversion of legacy execution records into current MAGIA-owned artifacts.
 
 ## Artifact References
 
-- `references/artifacts/execution-records.md`: controlled state sync.
+- `references/artifacts/execution-records.md`: controlled Magia execution-state/evidence rules, with Board writeback limited to the legacy profile.
 - `references/artifacts/execution-evidence.md`: structured downstream evidence.
 
 ## Agent Metadata and Assets
