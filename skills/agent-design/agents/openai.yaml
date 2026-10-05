@@ -1,6 +1,7 @@
 interface:
   display_name: Agent Design
-  short_description: Design and review portable agents, authority boundaries, control flow, context, and governance.
+  short_description: Design and review portable agents, authority boundaries, control
+    flow, context, and governance.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

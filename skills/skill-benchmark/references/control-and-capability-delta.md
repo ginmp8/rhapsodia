@@ -1,6 +1,23 @@
 # Control Arms and Capability Delta
 
-Use when a benchmark compares versions or asks whether a skill adds value beyond the host/model baseline.
+## At a Glance
+
+- **Purpose:** Define causal roles and comparability rules for `baseline`, `candidate`, `parent`, `without-skill`, and optional `length-control` benchmark arms, plus capability-delta claim semantics.
+- **Load when:** Comparing skill versions/candidates, measuring incremental skill value, evaluating self-improvement provenance, using hidden evaluators, or interpreting capability/efficiency deltas.
+- **Decision impact:** Determines which arm answers regression versus incremental-value questions, when a delta is comparable, how evaluator visibility/provenance constrain claims, and when uncertainty requires `inconclusive` rather than improvement/regression language.
+- **Do not load when:** Running a standalone single-skill maturity benchmark with no cross-arm or capability-delta claim.
+
+## Contents
+
+- Arm roles
+- Comparability contract
+- Self-improvement provenance
+- Evaluator visibility
+- Trace provenance
+- Capability delta
+- Claims
+- Length-matched context control
+- Uncertainty-aware strong claims
 
 ## Arm roles
 

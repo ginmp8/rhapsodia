@@ -2,6 +2,21 @@
 
 Use this reference when agent correctness depends on what context is visible, how work pauses/resumes, or how multiple actors touch shared resources.
 
+## At a Glance
+
+- **Purpose:** Define context trust/provenance, state/interruption/resume, long-running context, and concurrent-mutation contracts.
+- **Load when:** Correctness depends on retrieved/shared context, pausing/resuming, long-running state, multi-agent coordination, or more than one writer.
+- **Decision impact:** Enforces context-as-evidence-not-authority, scoped resume revalidation, observable interrupted/terminal states, and an explicit conflict-control strategy for concurrent mutation.
+
+## Contents
+
+- Context Contract
+- State Contract
+- Resume Contract
+- Long-Running Context
+- Concurrent Mutation Contract
+- Multi-Agent Admission Evidence
+
 ## Context Contract
 
 Declare the smallest context model that can complete the mission.

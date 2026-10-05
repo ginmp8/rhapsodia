@@ -1,156 +1,118 @@
 ---
 name: skill-cleanup-and-simplification
-description: 'use when asked to clean or simplify an existing Agent Skills-compatible package or small supporting project: classify dead or unreferenced resources, detect generated residue and duplicates, remove stale scaffold, consolidate references/templates, apply evidence-backed cleanup with dry-run and rollback, validate package hygiene, or plan cleanup technical debt. do not use as the primary workflow for security review, benchmark scoring, full hardening or consistency repair, prompt redesign, net-new skill creation, ordinary application refactoring, or domain behavior changes.'
+description: 'Use when the primary task is to clean or simplify an existing Agent Skills-compatible package or small supporting project: classify dead or unreferenced resources, remove proven generated residue, consolidate real duplicates, eliminate stale scaffold, or plan cleanup debt without changing domain behavior. Do not use as the primary workflow for security review, benchmark scoring, full hardening, consistency repair, prompt redesign, token-only compression, net-new skill creation, ordinary application refactoring, or domain behavior changes.'
 ---
 
 # Skill Cleanup and Simplification
 
-## Purpose
+## Purpose and routing
 
-Clean and simplify reusable skill packages and small supporting projects without changing domain behavior. Classify before deletion, trace usage before calling anything dead, preserve progressive-loading resources, prefer integration over removal, and validate every mutation.
+Clean skill packages without changing what they own or how they behave. The core job is evidence-backed removal, consolidation, integration, and cleanup planning: classify first, trace consumers before declaring anything dead, preserve progressive-loading resources, and validate every mutation.
 
-Cleanup is not redesign. Preserve functional behavior, activation boundaries, public contracts, evaluator evidence, and host portability unless direct evidence and validation justify a change.
+Use this skill when cleanup/simplification is the primary objective. Route security findings to a security skill, cross-file contradictions or ownership drift to consistency repair, package-wide release/readiness work to hardening, and instruction/token compression whose primary goal is context reduction to a token-efficiency skill.
 
-The portable core uses local files and Python 3.10+ standard-library helpers when command execution is available. `agents/openai.yaml` is an optional OpenAI adapter, not a semantic dependency.
+Cleanup is not redesign. Preserve activation boundaries, public contracts, evaluator evidence, expected behavior, and host portability unless direct evidence plus validation authorize a change. The portable core uses local files and Python 3.10+ standard-library helpers; `agents/openai.yaml` is optional adapter metadata.
 
-## Modes
+## Mode router
 
-Select one primary mode. If the user asks for end-to-end work, stage the run in this order: baseline, audit, classify, plan, dry-run, apply, validate, report.
+Choose one primary mode. For end-to-end mutation use: baseline -> inventory -> classify -> plan -> dry-run -> apply -> validate -> freeze/report.
 
-| Mode | Use for | Mutation allowed | Primary output |
-|---|---|---:|---|
-| `cleanup-audit` | Find generated residue, old archives, scaffold markers, duplicate files, unused support resources, and hygiene risks. | No | Deterministic inventory plus evidence-backed findings |
-| `simplification-plan` | Propose safe simplification with evidence, risk, validation, and rollback. | No | Cleanup plan |
-| `duplicate-consolidation` | Consolidate genuinely duplicated guidance, scripts, templates, or references. | Yes, after classification and reference tracing | Consolidated resources and rationale |
-| `dead-resource-review` | Classify resources as `used`, `integrable`, `duplicate`, `obsolete`, `generated`, `blocked`, or `unknown`. | No by default | Resource classification table |
-| `safe-cleanup-apply` | Apply an explicit evidence-backed cleanup plan with dry-run, identity checks, recovery, and receipt. | Yes | Changed files plus machine-readable receipt |
-| `technical-debt-plan` | Create a prioritized remediation plan for cleanup or simplification debt. | No | Prioritized remediation plan |
-| `post-cleanup-validation` | Validate links, references, scripts, package hygiene, and side effects. | No, except reports outside target | Gate summary |
-| `cleanup-report` | Summarize changed, removed, retained, blocked, and recovered resources. | No | Final cleanup report |
+| Mode | Use for | Mutation |
+|---|---|---:|
+| `cleanup-audit` | Inventory residue, stale scaffold, duplicate candidates, unused support resources, and hygiene debt. | No |
+| `simplification-plan` | Propose bounded cleanup with evidence, risk, validation, and rollback. | No |
+| `duplicate-consolidation` | Merge proven duplicate guidance/scripts/templates while preserving unique semantics and consumers. | Yes |
+| `dead-resource-review` | Classify resources as `used`, `integrable`, `duplicate`, `obsolete`, `generated`, `blocked`, or `unknown`. | No by default |
+| `safe-cleanup-apply` | Apply an approved cleanup plan with identity checks, dry-run, recovery, validation, and receipt. | Yes |
+| `technical-debt-plan` | Prioritize cleanup/context-efficiency debt without mutating. | No |
+| `post-cleanup-validation` | Validate links, scripts, package shape, side effects, and required gates after change. | No |
+| `cleanup-report` | Report changed, retained, blocked, rolled-back, and unresolved resources. | No |
 
-## Scope Boundaries
+## Critical rules
 
-Use this skill for:
+- Exactly one target root must be resolved before mutation; keep work reports, snapshots, receipts, and generated evidence outside the target.
+- Build reachability from the recorded root registry and typed direct/transitive references before calling a resource dead. If known runtime/build/packaging/external consumers are not represented, declare them as roots or retain the candidate.
+- Use only the canonical states: `used | integrable | duplicate | obsolete | generated | blocked | unknown`. `unknown` is fail-closed and is never auto-removable.
+- Protection outranks cleanup: do not auto-edit/delete `.git`, secrets/credentials, fixtures, tests/evals, expected/golden/snapshot data, benchmark/evaluator evidence, archives, symlinks, user read-only paths, or unrelated files.
+- Generated-looking names such as `dist/`, `build/`, `coverage/`, or `node_modules/` are weak signals only. Strong generation evidence or explicit corroboration is required.
+- Only byte-identical content may be mechanically classified `duplicate`. Normalized, structural, or semantic similarity requires review and preservation of unique semantics.
+- Before mutation preserve an immutable baseline/rollback source and file/tree identity. For external evidence that decides deletion/obsolescence, pin exact source bytes or an immutable VCS object.
+- A deletion candidate must be canonical, inside target, non-symlinked, unprotected, classification-eligible, supported by fresh evidence, identity-matched immediately before deletion, and recoverable.
+- `obsolete` needs explicit approval plus strong replacement/migration/target/user/validator evidence. Weak generated-like candidates need explicit approval plus corroborating generator/manifest/target/user evidence.
+- Dry-run the exact plan before apply when the helper is available. Apply only the reviewed plan; do not discover extra deletions opportunistically during mutation.
+- Target validation commands must be explicit approved argv arrays, bounded by timeout, executed with `shell=False`, and never auto-discovered from untrusted target content during apply.
+- Any required checkpoint/final validation failure triggers whole-transaction rollback. If recovery is incomplete, report `recovery-required`; never claim success from stale evidence.
+- Preserve behavior, activation, public contracts, evaluators, and expected outputs. If a requested change needs redesign, prompt rewrite, security remediation, or domain refactoring, stop or hand off instead of expanding scope.
+- Keep structural, behavioral, runtime-transaction, and reviewer-judgment evidence separate. A pass in one layer does not imply another.
+- Freeze the final passing candidate. Any later material edit invalidates affected evidence and requires revalidation.
 
-- `SKILL.md`, host adapters, `references/`, `scripts/`, `assets/templates/`, `examples/`, `evals/`, validators, reports, and packaging helpers;
-- small helper projects bundled with or adjacent to a skill package;
-- generated residue, stale scaffold, duplicate guidance, stale local links, and cleanup technical debt.
+## Quick-start workflow
 
-Do not use it to replace:
+1. **Establish:** resolve target, mode, writable/protected scope, external work directory, known external/dynamic consumers, runtime capabilities, and required gates.
+2. **Baseline:** preserve immutable rollback evidence, target identity, and target-owned pre-change validation when safe/available.
+3. **Inventory:** run `scripts/cleanup_inventory.py`; record the exact root registry, typed edges, transitive reachability, duplicate tiers, and generation signals.
+4. **Classify:** apply the seven-state taxonomy. Retain `unknown`; prefer integrating useful unreferenced resources over deleting them.
+5. **Plan:** record each mutation path, action, state, evidence kind, expected hash, rollback source, checkpoint, validation gate, declared roots, and approved validation commands. Prefer plan v2.
+6. **Dry-run:** execute `scripts/cleanup_apply.py` without `--apply`; reject path/identity/classification/root/protection mismatches before mutation.
+7. **Apply:** rerun the same plan with `--apply`; preserve last-known-good bytes, validate checkpoints/final state, and roll back the whole transaction on required failure.
+8. **Prove:** run `scripts/validate_cleanup_package.py`, target-owned gates, and mechanics regressions when this skill itself changed; freeze exact passing bytes and report retained/blocked resources as explicitly as removals.
 
-- security review or secret scanning;
-- benchmark scoring or general behavioral benchmarking;
-- full package hardening, consistency repair, prompt redesign, or skill creation;
-- application-level refactoring unrelated to a skill package;
-- domain behavior changes without direct evidence and validation.
+## Direct resource map
 
-## Required Inputs and Defaults
+All required Markdown is directly reachable from this file; nested links are navigation only, never the sole route to required rules.
+
+- [`references/safe-cleanup-rules.md`](references/safe-cleanup-rules.md): load before deletion/apply decisions; owns deletion eligibility, protected paths, plan-v2 safety, validation-command rules, transactions, idempotency, rollback, and receipts.
+- [`references/resource-classification.md`](references/resource-classification.md): load when deciding `used/integrable/duplicate/obsolete/generated/blocked/unknown`; owns precedence, evidence strength, generated signals, and duplicate tiers.
+- [`references/reference-graph.md`](references/reference-graph.md): load when reachability may miss runtime/build/packaging/external consumers; owns default/declared roots, typed edges, coverage limits, and root identity.
+- [`references/technical-debt-prioritization.md`](references/technical-debt-prioritization.md): load only for cleanup/context-efficiency debt prioritization; owns scoring and safety-over-score rules.
+- `scripts/cleanup_inventory.py`: deterministic read-only inventory and reference graph.
+- `scripts/cleanup_apply.py`: plan preflight, dry-run/apply, checkpoints, recovery, rollback, and JSON receipt.
+- `scripts/validate_cleanup_package.py`: structural/package/context validator; it does not prove behavioral correctness.
+- `scripts/run_cleanup_regressions.py` + `evals/cleanup-regression-scenarios.json`: deterministic mechanics regression suite.
+- `evals/activation-scenarios.json`: planned routing coverage only; never call it executed evidence unless a live harness runs it.
+- `assets/templates/cleanup-plan.md.template` and `assets/templates/cleanup-report.md.template`: durable human-readable outputs.
+
+## Required inputs and evidence model
 
 Resolve or conservatively infer:
 
 1. `TARGET_PATH`: exactly one skill folder, extracted archive, or small helper project.
-2. Mode: default `cleanup-audit`; use staged end-to-end flow only when mutation was requested.
-3. Allowed mutation scope: target folder only.
-4. External work/report directory for snapshots, receipts, and validation output. Never place generated cleanup evidence inside the target package.
-5. Blocked paths: `.git`, secrets, credentials, fixtures, expected outputs, golden/snapshot data, benchmark reports, generated evidence, existing archives, user-declared read-only paths, and unrelated files.
-6. Evidence policy: target files, the exact root registry and typed reference graph, user instructions, replacement/migration/generator evidence, validators/tests, package metadata, and command output.
-7. Reachability roots: default roots plus any known runtime/build/packaging/external consumers that must be declared explicitly.
-8. Validation gates: no broken local references, no deleted protected resources, no unresolved required scripts, touched scripts parse/run, package hygiene passes, activation-sensitive checks run when metadata changed, rollback remains possible, and receipts are parseable.
+2. Primary mode; default to `cleanup-audit` unless mutation was requested.
+3. Allowed mutation scope; default to the target folder only.
+4. External work/report directory for baselines, receipts, and validation output.
+5. Protected paths and user-declared read-only resources.
+6. Exact root registry: default roots plus known runtime/build/packaging/external consumers.
+7. Evidence available for replacement, migration, generation, duplication, and obsolescence claims.
+8. Required validation gates and safe approved target validation commands, if any.
 
-If evidence is insufficient, classify `unknown`, retain the resource, and report what evidence is missing. `unknown` is never automatically removable.
+If evidence is insufficient, classify `unknown`, keep the resource, and state what evidence is missing. A shallow grep, missing import, old timestamp, fill-marker-looking text, or unreferenced path alone never proves removal safety.
 
-## Progressive Loading
+## Execution details
 
-Load only what the active mode needs:
+### 1. Establish baseline
 
-- `references/safe-cleanup-rules.md`: canonical deletion gate, path safety, dry-run, idempotency, rollback, and last-known-good rules.
-- `references/resource-classification.md`: seven-state taxonomy, classification precedence, generated-evidence tiers, duplication tiers, and evidence requirements.
-- `references/reference-graph.md`: default/declared roots, typed edges, reachability coverage, and dynamic/external consumer handling.
-- `references/technical-debt-prioritization.md`: remediation scoring and context-efficiency debt model.
-- `assets/templates/cleanup-plan.md.template`: human-readable cleanup plan.
-- `assets/templates/cleanup-report.md.template`: final report.
-- `scripts/cleanup_inventory.py`: deterministic read-only inventory with a recorded root registry, typed local-reference edges, transitive reachability, duplicate signals, and generated-evidence strength.
-- `scripts/cleanup_apply.py`: dry-run/apply engine with root replay, hash preconditions, checkpoints, explicit non-shell target validation commands, recovery snapshot, rollback, and JSON receipt.
-- `scripts/validate_cleanup_package.py`: Agent Skills-aware structural/context validator with stable machine-readable diagnostics and optional `skills-ref` integration.
-- `evals/cleanup-regression-scenarios.json`: deterministic mechanics regression inventory.
-- `evals/activation-scenarios.json`: planned activation/non-activation/ambiguous/edge routing coverage; never call it executed activation evidence unless a live harness runs it.
-- `scripts/run_cleanup_regressions.py`: deterministic local regression runner for the bundled mechanics.
+Read the target `SKILL.md` first when present. Record canonical target path, capabilities, protected scope, deterministic identity, and pre-change validation. Do not mutate if a trustworthy rollback source cannot be preserved.
 
-## Workflow
-
-### 1. Establish identity and baseline
-
-Before any mutation:
-
-- resolve exactly one target root;
-- read target `SKILL.md` first when present;
-- record canonical target path and runtime capability profile;
-- preserve an immutable baseline snapshot or equivalent version-control state outside the target;
-- when external/repository evidence materially drives deletion or obsolescence, capture the exact source bytes (or immutable pinned VCS object) before analysis and keep that source snapshot identity separate from the live target;
-- record a deterministic tree/file identity when possible;
-- run target-owned validation before changing files.
-
-Do not mutate if a safe baseline or rollback source cannot be preserved.
-
-### 2. Build deterministic inventory and usage graph
+### 2. Build inventory and usage graph
 
 When Python 3.10+ execution is available:
 
 ```text
 <PYTHON> -S scripts/cleanup_inventory.py --target <TARGET_PATH> --output <REPORT_DIR>/cleanup-inventory.json
-# Add repeated --root kind:relative/path for known consumers that static discovery cannot represent.
+# Add repeated --root kind:relative/path for known consumers static discovery cannot represent.
 ```
 
-The inventory must:
+Inventory must record canonical resources, exact roots, typed edges, transitive reachability, exact-duplicate signals, generated-evidence strength, and only the seven canonical states. Missing declared roots, unsafe symlinks, evaluators/tests/contracts, and protected namespaces fail closed.
 
-- order resources canonically;
-- record the exact root registry used for the analysis;
-- trace direct and transitive local references with typed edges from `SKILL.md`, host adapters, evaluator/test roots, and caller-declared roots;
-- distinguish exact duplicates from normalized/semantic similarity candidates;
-- treat scaffold markers and generated-like namespaces as evidence signals, not deletion authority;
-- fail closed on symlinks, evaluators/tests/contracts, protected namespaces, and missing declared roots;
-- emit only the canonical seven states.
+### 3. Classify and select actions
 
-A shallow grep, absence of imports, or an incomplete root set is not enough to classify a resource as dead. If a known dynamic/build/external consumer is not represented, declare it as a root or retain the candidate.
+Follow [`references/resource-classification.md`](references/resource-classification.md). `used`, `integrable`, `blocked`, and `unknown` are not automatically removable. A scaffold/template can be legitimate and `used`. Protected evaluator/test/contract evidence overrides cleanup convenience.
 
-### 3. Classify before proposing deletion
+### 4. Build plan v2
 
-Use `references/resource-classification.md`.
+For each mutation record canonical path, action, classification, evidence, expected SHA-256 when deleting, behavior risk, rollback source, checkpoint, validation gate, exact declared roots, and any explicitly approved non-shell validation command. The plan declares intent; apply preflight must independently re-check live evidence.
 
-Canonical states:
-
-`used | integrable | duplicate | obsolete | generated | blocked | unknown`
-
-Important invariants:
-
-- `used`, `integrable`, `blocked`, and `unknown` are not automatically removable;
-- `unknown` always remains in place until new evidence changes its classification;
-- partial/normalized/semantic duplication is not `duplicate`; consolidate only after preserving all unique semantics;
-- `dist/`, `build/`, `node_modules/`, and similar names are weak generated signals only; they never authorize removal alone;
-- a scaffold/template can be legitimate and `used`;
-- protected evaluator/test/contract evidence overrides cleanup convenience.
-
-### 4. Create an explicit cleanup plan
-
-For every proposed mutation record:
-
-- canonical relative path;
-- requested action;
-- classification;
-- direct evidence and evidence kind;
-- expected file hash when deleting a file;
-- behavior risk;
-- rollback source;
-- validation gate;
-- checkpoint when multiple actions should be structurally validated in smaller groups;
-- the exact declared roots used for reachability;
-- explicitly approved non-shell target validation commands when those commands are safe to execute.
-
-Prefer plan version 2 for new work. `obsolete` requires explicit approval plus strong evidence such as user instruction, target documentation, verified replacement, validator proof, or completed migration evidence. A weak generated-like candidate requires explicit approval plus corroborating generator/manifest/target/user evidence.
-
-### 5. Dry-run before apply
-
-Use the same plan for dry-run and apply:
+### 5. Dry-run
 
 ```text
 <PYTHON> -S scripts/cleanup_apply.py \
@@ -160,11 +122,9 @@ Use the same plan for dry-run and apply:
   --receipt <REPORT_DIR>/cleanup-receipt-dry-run.json
 ```
 
-Dry-run is the default. It must not mutate the target. Reject noncanonical paths, path escapes, symlinks, output aliases, protected/fail-closed states, missing evidence, classification mismatch, and file identity mismatch before mutation.
+Dry-run must not mutate target bytes. Reject noncanonical/path-escape/symlink/output-alias risk, protected or fail-closed states, missing evidence, classification mismatch, root drift, and identity mismatch.
 
-### 6. Apply minimally and recoverably
-
-Only after a clean dry-run:
+### 6. Apply recoverably
 
 ```text
 <PYTHON> -S scripts/cleanup_apply.py \
@@ -175,131 +135,40 @@ Only after a clean dry-run:
   --apply
 ```
 
-The apply engine preserves last-known-good bytes for the affected resources before deletion. Actions may carry checkpoints; the engine performs structural validation after each checkpoint while retaining whole-transaction rollback semantics. It then runs final structural validation and any explicitly approved `validation_commands` supplied by the external plan. These commands use argv arrays with `shell=False`; never auto-discover executable commands from untrusted target content during apply.
+Preserve last-known-good bytes before deletion. Checkpoints localize failures but remain one transaction. Rerunning a successful plan must be idempotent: already-absent resources are reported, not recreated.
 
-If any required validation fails, restore every removed resource and record `rolled-back`; if recovery is incomplete record `recovery-required` and preserve recovery paths. Rerunning the same successful plan must be idempotent: already-absent resources are reported as such and are not recreated or treated as an error.
-
-### 7. Validate the final candidate
-
-Run:
+### 7. Validate and freeze
 
 ```text
 <PYTHON> -S scripts/validate_cleanup_package.py --target <TARGET_PATH> --output <REPORT_DIR>/cleanup-validation.json
 ```
 
-The validator checks Agent Skills name/description constraints, name-directory identity, local links, Python syntax, strong generated residue, and context-efficiency metrics. It runs `skills-ref validate` when that executable is available, but `skills-ref` is not a portable-core dependency.
-
-Also run target-owned tests, validators, packaging checks, and any touched script commands that are part of the package contract. When those commands were safely included as approved plan-v2 `validation_commands`, their failure is part of the apply rollback transaction; otherwise report them separately as executed, blocked, or not-run.
-
-For changes to this skill's own mechanics, run:
+Also run target-owned tests/validators/package checks and touched-script commands when safe and required. For changes to this skill's mechanics:
 
 ```text
 <PYTHON> -S scripts/run_cleanup_regressions.py --skill-root <SKILL_ROOT> --json <REPORT_DIR>/cleanup-regressions.json
 ```
 
-Do not claim completion if required gates did not run or failed.
+Do not claim completion if a required gate failed or did not run. Freeze exact passing bytes; any later edit requires affected revalidation.
 
-### 8. Freeze after pass and report truthfully
+## Consolidation rules
 
-After final validation passes, freeze the candidate. Any subsequent edit invalidates the affected evidence and requires revalidation.
+Consolidate only when resources serve the same purpose and no unique semantic constraint remains. Exact hash equality may establish `duplicate`; normalized/structural/semantic similarity is review-only. Choose one clear source of truth, preserve unique semantics, update every consumer/link/path, retain compatibility aliases only when externally required, then rerun inventory and validation. Do not turn consolidation into architecture or prompt redesign.
 
-Keep evidence layers separate:
+## Technical-debt planning
 
-- **structural evidence**: inventory, package shape, links, hashes, and validator output;
-- **behavioral evidence**: executed regression scenarios and before/after comparisons;
-- **runtime evidence**: actual dry-run/apply/rollback transaction receipts;
-- **reviewer judgment**: obsolete/integrable/partial-duplicate interpretation that cannot be proven mechanically;
-- blocked/not-run checks.
+For `technical-debt-plan`, score ease, impact, risk, and confidence from 1-5 using [`references/technical-debt-prioritization.md`](references/technical-debt-prioritization.md). Safety gates always override the numeric score. Context-efficiency metrics are diagnostics, never deletion authority.
 
-Do not use one evidence layer to imply another.
+## Stop conditions
 
-Report retained and blocked resources as explicitly as removals.
+Stop or return a bounded result when target identity is ambiguous; no safe baseline exists; protected resources would be edited; deletion depends only on weak/incomplete evidence; an `unknown` resource cannot be reclassified; progressive-loading/external compatibility may be affected without validated replacement; path/symlink/output safety is unprovable; identity changes between plan and apply; required validation fails; rollback cannot restore trust; or the requested work is really security review, benchmark scoring, full hardening, consistency repair, prompt/token redesign, or domain behavior change.
 
-## Canonical Deletion Gate
+## Output contract
 
-A deletion is allowed only when all applicable conditions hold:
+For substantive runs report: mode/target/baseline; capabilities and commands actually executed; seven-state classification summary; exact root registry and consumer evidence; generation/duplication evidence strength; dry-run result; applied/retained/blocked/rolled-back/already-absent resources; checkpoint/structural/activation-sensitive/target-owned/package validation; protected and unresolved `unknown` resources; recovery and receipt state; context-efficiency metrics when relevant; and residual risks, assumptions, coverage gaps, and reviewer judgment.
 
-1. Path is canonical, relative to target, non-symlinked, and resolves inside target.
-2. Resource is not protected or blocked.
-3. Resource is strongly evidenced `generated`, exact `duplicate`, or explicitly approved `obsolete`.
-4. Evidence is recorded and classification agrees with fresh inventory using the same root registry. A weak generated-like candidate may be explicitly reclassified only with an allowed corroborating evidence kind; an `obsolete` reclassification follows its own explicit-evidence rule.
-5. File identity matches the expected hash immediately before deletion.
-6. The resource is not a progressive-loading asset, fixture, expected output, evaluator/golden artifact, public compatibility surface, or reachable dependency unless a validated replacement exists.
-7. Last-known-good bytes are preserved outside target before mutation.
-8. Checkpoint and final structural validation pass, plus any explicitly approved target validation commands required by the plan; otherwise rollback executes.
-9. Machine-readable receipt describes the exact attempted transaction, checkpoint results, validation commands, and recovery state.
+Use `measured` only for executed/supplied evidence. Planned activation scenarios, static inspection, and reviewer interpretation must remain labeled as such.
 
-`unknown` never passes this gate automatically.
+## Finalization checklist
 
-## Consolidation Rules
-
-Consolidation is allowed when duplication is real, not merely similar wording serving distinct modes or audiences. Treat exact hash duplicates separately from normalized, structural, and semantic similarity; only exact duplication receives automatic `duplicate` classification. Preserve the clearest source of truth, preserve unique semantics, update every consumer/reference, keep compatibility aliases only when externally needed, and re-run validation.
-
-Do not turn cleanup into architecture redesign, prompt redesign, or domain refactoring.
-
-## Technical Debt Planning
-
-For `technical-debt-plan`, score each item on 1-5 scales:
-
-- ease: lower implementation difficulty is better;
-- impact: package quality, maintainability, validation, or context-efficiency improvement;
-- risk: consequence of leaving the debt in place;
-- confidence: evidence strength.
-
-Prioritize high impact, high risk, high confidence, and low-to-medium effort. Safety gates override numeric score.
-
-## Stop Conditions
-
-Stop and report a blocker when:
-
-- zero or multiple candidate roots remain ambiguous;
-- no safe baseline/rollback source can be preserved;
-- requested changes touch `.git`, secrets, credentials, fixtures, expected outputs, golden/snapshot evidence, benchmark reports, or unrelated files;
-- deletion relies only on shallow search, an incomplete root registry, inferred lack of use, or a generated-like directory name;
-- a resource is `unknown` and no new evidence reclassifies it;
-- a resource may support progressive loading or external compatibility and has no validated replacement;
-- path canonicalization, symlink resolution, or output alias safety cannot be established;
-- file identity changes between plan and apply;
-- required validation fails and rollback cannot restore a trustworthy last-known-good state;
-- the requested change requires domain redesign rather than cleanup;
-- the user asks this skill to perform security review, benchmark scoring, full hardening, or consistency repair.
-
-## Output Contract
-
-For every substantive run include:
-
-1. Mode, target, canonical target path, and baseline identity.
-2. Capabilities and commands actually executed.
-3. Resource classification summary using the seven canonical states.
-4. Root registry plus typed reference/consumer evidence for deletion and consolidation decisions.
-5. Generated-evidence strength and any explicit reclassification rationale.
-6. Dry-run result when mutation is requested.
-7. Changes applied, retained, blocked, rolled back, or already absent.
-8. Checkpoint, structural, activation-sensitive, target-owned, and packaging validation results with failed/not-run gates separated.
-9. Context-efficiency metrics/warnings when package cleanup includes skill instructions.
-10. Protected paths and unresolved `unknown` resources.
-11. Last-known-good/recovery location when mutation occurred.
-12. Machine-readable receipt path and transaction status.
-13. Remaining risks, assumptions, graph coverage limits, and irreducible judgment.
-
-## Finalization Checklist
-
-Before claiming completion:
-
-- immutable baseline/rollback evidence exists for applied mutation;
-- all resources considered for deletion were classified from current inventory;
-- the exact root registry was recorded and known dynamic/build/external consumers were represented or explicitly reported as gaps;
-- transitive typed usage/reference tracing was checked;
-- every `unknown` candidate was retained;
-- useful unreferenced resources were integrated or explicitly retained;
-- dry-run preceded apply when the apply helper was available;
-- path and symlink preflight passed;
-- no protected resource was changed;
-- local Markdown links, images, reference-style links, and referenced files still resolve;
-- touched scripts parse/run on representative input;
-- checkpoint/final structural validation passed and every required approved target validation command passed, or rollback/recovery was reported instead of success;
-- activation scenarios were reviewed when `name`, `description`, scope boundaries, or activation-related resources changed;
-- context-efficiency warnings were treated as technical debt signals, never deletion authority;
-- rerun is idempotent for the same accepted plan;
-- receipts are parseable and correspond to the attempted transaction;
-- final candidate was not edited after its final validation pass.
+Before claiming completion verify: immutable rollback evidence; fresh classification from the current inventory/root registry; dynamic/build/external consumer coverage or explicit gaps; transitive typed reference tracing; all `unknown` retained; useful unreferenced resources integrated or explicitly retained; dry-run before apply; canonical/symlink/output preflight; protected paths unchanged; local links resolve; touched scripts parse/run on representative input; required validations pass or rollback/recovery is reported; activation-sensitive checks run when routing metadata changed; receipts parse and bind to the attempted transaction; rerun idempotency where applicable; and no target edit occurred after the final passing validation/freeze.

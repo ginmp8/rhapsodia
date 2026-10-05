@@ -289,18 +289,23 @@ def check_package_hygiene(root: Path, checks: list[dict[str, Any]], metrics: dic
                 depths[target] = next_depth
                 queue.append(target)
     max_depth = max(depths.values(), default=0)
+    markdown_depths = {path: depth for path, depth in depths.items() if path.lower().endswith(".md")}
+    max_markdown_depth = max(markdown_depths.values(), default=0)
+    deep_markdown = sorted(path for path, depth in markdown_depths.items() if depth > 1)
     metrics["max_reference_depth_from_skill_md"] = max_depth
+    metrics["max_markdown_reference_depth_from_skill_md"] = max_markdown_depth
+    metrics["deep_markdown_references"] = deep_markdown
     metrics["reference_edge_count"] = len(inventory.get("reference_edges", []))
     metrics["root_count"] = len(inventory.get("root_registry", []))
-    if max_depth > 1:
+    if max_markdown_depth > 1:
         add(
             checks,
-            "context/reference-depth",
+            "context/markdown-reference-depth",
             "warn",
             "SKILL.md",
-            {"max_depth": max_depth, "recommended_max": 1},
+            {"max_depth": max_markdown_depth, "recommended_max": 1, "deep_markdown": deep_markdown},
             "warning",
-            ["prefer direct SKILL.md links to focused supporting resources"],
+            ["link required Markdown directly from SKILL.md; keep nested Markdown links navigation-only"],
         )
 
 

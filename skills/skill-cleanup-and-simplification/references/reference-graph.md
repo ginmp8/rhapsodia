@@ -1,5 +1,11 @@
 # Reachability and Reference Graph
 
+## At a Glance
+
+- **Purpose:** Define what counts as a reachability root, how typed references establish usage, and where static analysis stops proving consumer coverage.
+- **Load when:** A resource appears unreferenced, runtime/build/packaging/external consumers may exist, or inventory/apply must reproduce the same root registry.
+- **Decision impact:** Determines whether "unused" is supported by the evidence model, whether extra roots must be declared, and when a candidate must remain `unknown` or `integrable` instead of being removed.
+
 Use this reference when deciding whether a resource is unused or when the default graph may miss a runtime, packaging, evaluator, or external consumer.
 
 ## Principle

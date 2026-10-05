@@ -4,6 +4,23 @@ Rubric identity: `agent-design-rubric/v3`.
 
 Evaluate critical gates before advisory scoring. A high aggregate score never hides unsafe authority, undefined control flow, unbounded execution, or misleading evidence.
 
+## At a Glance
+
+- **Purpose:** Own `agent-design-rubric/v3`: critical-gate precedence, severity, verdict rules, and advisory quality scoring for agent designs.
+- **Load when:** Reviewing/approving an agent design, comparing alternatives, classifying findings, or deciding whether a prompt/spec is ready.
+- **Decision impact:** Controls `blocked | reject | approve with changes | approve`; critical authority/control-flow/containment/evidence failures override aggregate quality scores.
+
+## Contents
+
+- Skill vs Agent Fit
+- Critical Gates
+- Advisory Quality Score
+- Severity Taxonomy
+- Evidence Labels
+- Prompt Quality Requirements
+- Tool Contract Defaults
+- Common Archetypes
+
 ## Skill vs Agent Fit
 
 Prefer a Skill for standardized competency, fixed validators/templates, or packaged repeatable workflow. Prefer an Agent for mission ownership, state, routing, supervision, governance, controlled execution, or explicit coordination across actors/tools. Use a mixed system when an Agent coordinates reusable Skills without copying them.

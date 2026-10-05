@@ -6,6 +6,8 @@ import argparse
 import ast
 import json
 import os
+import re
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -60,6 +62,117 @@ def atomic_json(path: Path, payload: dict[str, Any]) -> None:
 
 def read(root: Path, rel: str) -> str:
     return (root / rel).read_text(encoding="utf-8")
+
+
+TOP100_SECTIONS = [
+    "## Purpose",
+    "## Activation Contract",
+    "## Core Rules",
+    "## Mode Selection",
+    "## Quick Start",
+    "## Required Intake",
+    "## Multi-Agent Admission Gate",
+    "## Progressive Loading",
+]
+DIRECT_REFERENCE_FILES = [
+    "references/agent-contracts.md",
+    "references/agent-design-rubric.md",
+    "references/agent-governance-patterns.md",
+    "references/routing-and-handoff-patterns.md",
+    "references/context-state-and-concurrency.md",
+    "references/host-adapters.md",
+    "references/agent-validation-scenarios.md",
+]
+PREVIEW_LABELS = ["**Purpose:**", "**Load when:**", "**Decision impact:**"]
+
+
+def h2_headings_outside_fences(text: str) -> list[str]:
+    headings: list[str] = []
+    in_fence = False
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        match = re.match(r"^##\s+(.+?)\s*$", line)
+        if match:
+            heading = match.group(1).strip()
+            if heading not in {"At a Glance", "Contents"}:
+                headings.append(heading)
+    return headings
+
+
+def contents_entries(text: str) -> list[str]:
+    lines = text.splitlines()
+    start = None
+    for i, line in enumerate(lines):
+        if line.strip() == "## Contents":
+            start = i + 1
+            break
+    if start is None:
+        return []
+    entries: list[str] = []
+    for line in lines[start:]:
+        if re.match(r"^##\s+", line):
+            break
+        match = re.match(r"^-\s+(.+?)\s*$", line.strip())
+        if match:
+            entries.append(match.group(1).strip())
+    return entries
+
+
+def validate_context_loading(root: Path, skill: str, checks: list[dict[str, Any]]) -> None:
+    lines = skill.splitlines()
+    top100 = "\n".join(lines[:100])
+
+    top100_lines = set(lines[:100])
+    missing_sections = [section for section in TOP100_SECTIONS if section not in top100_lines]
+    add(checks, "context/top100-sections", not missing_sections, "SKILL.md first 100 lines", {"missing": missing_sections, "line_count": len(lines)})
+
+    top100_lower = top100.lower()
+    activation_markers = ["use when", "do **not** use", "skill package", "downstream repository task", "adaptive runtime workflow"]
+    missing_activation = [marker for marker in activation_markers if marker.lower() not in top100_lower]
+    add(checks, "context/top100-activation-boundary", not missing_activation, "SKILL.md first 100 lines", {"missing": missing_activation})
+
+    critical_markers = [
+        "effective_authority <= declared_authority",
+        "delegation must never amplify authority",
+        "evidence, never permission",
+        "pure routers thin",
+        "parallel writers",
+        "not measured behavioral or runtime validation",
+    ]
+    missing_critical = [marker for marker in critical_markers if marker.lower() not in top100_lower]
+    add(checks, "context/top100-critical-rules", not missing_critical, "SKILL.md first 100 lines", {"missing": missing_critical})
+
+    missing_refs = [rel for rel in DIRECT_REFERENCE_FILES if rel not in top100]
+    add(checks, "context/top100-direct-resources", not missing_refs, "SKILL.md first 100 lines", {"missing": missing_refs})
+
+    desc_line = next((line for line in lines[:8] if line.startswith("description:")), "")
+    desc_lower = desc_line.lower()
+    description_ok = all(term in desc_lower for term in ["design", "agent", "do not use", "skills", "runtime workflow"] )
+    add(checks, "context/discovery-description", description_ok, "SKILL.md frontmatter description")
+
+    preview_failures: list[dict[str, Any]] = []
+    contents_failures: list[dict[str, Any]] = []
+    for path in sorted((root / "references").glob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        if len(text.splitlines()) <= 100:
+            continue
+        first40 = "\n".join(text.splitlines()[:40])
+        missing_preview = [label for label in ["## At a Glance", "## Contents", *PREVIEW_LABELS] if label not in first40]
+        if missing_preview:
+            preview_failures.append({"file": str(path.relative_to(root)), "missing": missing_preview})
+
+        expected = h2_headings_outside_fences(text)
+        actual = contents_entries(text)
+        if actual != expected:
+            contents_failures.append({"file": str(path.relative_to(root)), "expected": expected, "actual": actual})
+
+    add(checks, "context/reference-semantic-previews", not preview_failures, "references/*.md >100 lines", {"failures": preview_failures})
+    add(checks, "context/reference-contents-sync", not contents_failures, "references/*.md >100 lines", {"failures": contents_failures})
 
 
 def validate_scenarios(root: Path, checks: list[dict[str, Any]]) -> None:
@@ -138,6 +251,7 @@ def main() -> int:
         ]
         missing_markers = [marker for marker in required_skill_markers if marker not in skill]
         add(checks, "skill/v2-controls", not missing_markers, "SKILL.md", {"missing": missing_markers})
+        validate_context_loading(root, skill, checks)
         add(checks, "contracts/version", "agent-design-contract/v2" in contracts and "handoff/v2" in contracts, "agent-contracts.md")
         add(checks, "contracts/effective-authority", all(term in contracts.lower() for term in ["exposed capabilities", "downstream authority", "approval scope", "effective authority"]), "agent-contracts.md")
         add(checks, "contracts/context-state", "## 4. Context Contract" in contracts and "interrupted" in contracts and "resume" in contracts, "agent-contracts.md")

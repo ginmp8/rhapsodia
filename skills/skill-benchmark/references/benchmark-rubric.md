@@ -1,6 +1,19 @@
 # Skill Benchmark Rubric
 
-Score reusable Agent Skills packages from 0 to 100. Score the semantic portable core; report host adapters separately.
+## At a Glance
+
+- **Purpose:** Define the 0-100 static maturity score, blocker gates, verdict thresholds, comparability requirements, and behavioral target guidance for reusable Agent Skills packages.
+- **Load when:** Assigning or reviewing a benchmark score/verdict, deciding whether a structural finding is score-bearing versus blocking, or checking whether version deltas are comparable.
+- **Decision impact:** Fixes dimension weights, blocker precedence, approve/reservation/reject thresholds, evidence-identity requirements, and the boundary between static maturity and behavioral/runtime proof.
+- **Do not load when:** The task only validates result-envelope syntax or report formatting and no score/verdict interpretation is needed.
+
+## Contents
+
+- Dimensions
+- Critical gates and verdict
+- Evidence identity rules
+- Behavioral target thresholds
+- Normative conformance and behavioral-health gates
 
 ## Dimensions
 

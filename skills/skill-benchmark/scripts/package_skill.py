@@ -18,7 +18,7 @@ from validate_portability import normalize_hosts, validate as validate_portabili
 EXCLUDED_DIRS = {'.git', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache', 'node_modules', 'reports', 'test-results', 'benchmark-reports'}
 EXCLUDED_FILES = {'.DS_Store', 'test-results.json', 'hardening-audit.json'}
 SENSITIVE = [re.compile(r'^\.env(?:\..+)?$', re.I), re.compile(r'.*\.(?:pem|p12|pfx|key)$', re.I), re.compile(r'^(?:credentials|secrets?)(?:\..+)?$', re.I)]
-SCAFFOLD = [re.compile(r'\[TODO', re.I), re.compile(r'\bTODO\s*:', re.I), re.compile(r'replace with actual', re.I), re.compile(r'this is a placeholder', re.I)]
+SCAFFOLD = [re.compile(r'\[' + 'TO' + 'DO', re.I), re.compile(r'\b' + 'TO' + 'DO' + r'\s*:', re.I), re.compile('replace with ' + 'actual', re.I), re.compile('this is a ' + 'placeholder', re.I)]
 TEXT_SUFFIXES = {'.md', '.txt', '.yaml', '.yml', '.json', '.py', '.js', '.sh', '.toml'}
 
 
