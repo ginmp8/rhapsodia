@@ -1,8 +1,13 @@
 # dynamic-workflow-plan/v1
 
-Use for new runtime-adaptive workflows. The contract separates objective/authority, coverage, stage DAG, runtime semantics, hard budgets, verification policy, termination, semantic capabilities, and evidence identities.
+## At a Glance
 
-Key invariants:
+- **Purpose:** Define the default contract for new runtime-adaptive orchestration plans, including authority, finite coverage, stage DAG semantics, hard runtime budgets, verification policy, termination, semantic capabilities, and evidence identities.
+- **Load when:** Creating, reviewing, or validating a new `dynamic-workflow-plan/v1`, especially when work units or topology are discovered at runtime.
+- **Decision impact:** Determines whether the plan is bounded and executable: authority remains fixed, coverage/DAG/budgets must be finite and valid, durable resume requires real durable state, deterministic-first verification is explicit, and no-progress/budget exhaustion terminates the run.
+- **Do not load when:** Maintaining an existing `workflow-plan/v1`, validating historical `workflow-plan/v2`, or owning checkpoint promotion.
+
+## Key Invariants
 
 - topology remains inside one already-authorized lifecycle phase;
 - runtime-discovered coverage is finite through `coverage.max_items`;

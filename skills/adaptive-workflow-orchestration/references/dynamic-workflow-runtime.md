@@ -1,4 +1,16 @@
-# Dynamic workflow runtime model
+# Dynamic Workflow Runtime Model
+
+## At a Glance
+
+- **Purpose:** Define the portable compile-to-workflow runtime model after a plan is accepted, including state ownership, resumption semantics, verification meaning, and runtime budgets.
+- **Load when:** Compiling or executing an accepted adaptive plan, or deciding whether replay/resume, durability, verification isolation, or budget enforcement claims are valid.
+- **Decision impact:** Keeps planner and runtime responsibilities separate, prevents session replay from being mislabeled durable execution, prevents isolation from being mislabeled independent truth, and requires runtime-enforced ceilings rather than prompt-only hints.
+
+## Contents
+
+- Resumption semantics
+- Verification
+- Budgets
 
 The portable model is **compile-to-workflow**:
 

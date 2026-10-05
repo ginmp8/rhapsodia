@@ -1,5 +1,19 @@
 # Host Portability
 
+## At a Glance
+
+- **Purpose:** Define how portable orchestration requirements map to host-native capabilities without coupling the semantic core to one vendor, model, runtime, or skill package.
+- **Load when:** Executing across OpenAI/ChatGPT, Codex, Claude, Copilot, VS Code, Cursor, Visual Studio, or another host; resolving supporting Agent Skills; or deciding whether optional capability loss can safely degrade.
+- **Decision impact:** Requires semantic capability ids, native-first late binding, unchanged lifecycle authority, explicit degradation, and `blocked` when a required capability cannot be satisfied without changing semantics.
+
+## Contents
+
+- Portable core
+- Native-first mapping
+- Supporting Agent Skill discovery
+- Degradation
+- Host claims
+
 ## Portable core
 
 Describe workflow needs as semantic capabilities. Do not make correctness depend on a vendor API, fixed installation path, specific model, MCP server, or third-party orchestration runtime.

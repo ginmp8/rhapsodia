@@ -1,8 +1,23 @@
 # Workflow Plan v2 Contract
 
-`workflow-plan/v2` is an additive evolution of `workflow-plan/v1`. It preserves the v1 stage, authority, budget, capability, evidence, and conflict semantics and adds a **gated-convergence** control plane for checkpointed work.
+## At a Glance
 
-The v1 contract remains supported. Use v2 only when progression between increments must be conditioned on explicit proof/review gates.
+- **Purpose:** Preserve and validate historical `workflow-plan/v2` gated-convergence integrations without transferring new checkpoint-promotion ownership back into Adaptive Workflow Orchestration.
+- **Load when:** An existing artifact explicitly uses `workflow-plan/v2` and its checkpoint/gate/promotion semantics must be interpreted or validated.
+- **Decision impact:** Preserves v1 authority/budget/capability/evidence rules plus v2 checkpoint promotion invariants: only current passing required-gate evidence for the same candidate may promote a checkpoint, and repairs may invalidate prior evidence.
+- **Do not load when:** Designing new checkpointed convergence; route that work to `checkpoint-convergence` and `convergence-plan/v1`.
+
+## Contents
+
+- Gated-convergence invariant
+- Gates
+- Checkpoints
+- Promotion policy
+- Candidate and evaluator freshness
+- Version compatibility
+- Reference-grounded convergence additions
+
+`workflow-plan/v2` is an additive historical evolution of `workflow-plan/v1`. The v1 contract remains supported; new reference-grounded checkpoint promotion must not be created under v2.
 
 ## Gated-convergence invariant
 
