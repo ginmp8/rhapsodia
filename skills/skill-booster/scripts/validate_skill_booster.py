@@ -29,6 +29,10 @@ SCAFFOLD_MARKERS = ["TO" + "DO", "[" + "TO" + "DO", "replace with" + " actual", 
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 TOP_KEY_RE = re.compile(r"^([A-Za-z0-9_-]+):(?:\s*(.*))?$")
 NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+TOP100_LIMIT = 100
+TOP100_BOUNDARY_TERMS = ("activation", "routing", "scope", "use when", "do not use", "modes", "mode selection")
+TOP100_EXECUTION_TERMS = ("workflow", "quick start", "procedure", "process", "steps", "execution")
+TOP100_RULE_TERMS = ("core rules", "rules", "constraints", "guardrails", "invariants", "requirements")
 
 
 def read_text(path: Path) -> str:
@@ -144,6 +148,21 @@ def check_links(root: Path) -> list[str]:
     return errors
 
 
+def check_top100_control_plane(skill_md: Path) -> list[str]:
+    errors: list[str] = []
+    lines = read_text(skill_md).splitlines()
+    if len(lines) <= TOP100_LIMIT:
+        return errors
+    first = "\n".join(lines[:TOP100_LIMIT]).lower()
+    if not any(term in first for term in TOP100_BOUNDARY_TERMS):
+        errors.append("Top-100 control plane lacks scope/activation/routing guidance")
+    if not any(term in first for term in TOP100_EXECUTION_TERMS):
+        errors.append("Top-100 control plane lacks workflow/quick-start execution guidance")
+    if not any(term in first for term in TOP100_RULE_TERMS):
+        errors.append("Top-100 control plane lacks material rules/constraints/invariants")
+    return errors
+
+
 def check_progressive_disclosure(root: Path, skill_md: Path) -> list[str]:
     warnings: list[str] = []
     skill_text = read_text(skill_md)
@@ -161,6 +180,17 @@ def check_progressive_disclosure(root: Path, skill_md: Path) -> list[str]:
         resolved = (skill_md.parent / link_path).resolve()
         if resolved.is_file():
             direct_targets.add(resolved)
+
+    for md in sorted(root.rglob("*.md")):
+        if md == skill_md or any(part in FORBIDDEN_PACKAGE_PARTS for part in md.relative_to(root).parts):
+            continue
+        md_lines = read_text(md).splitlines()
+        if len(md_lines) > TOP100_LIMIT:
+            first40 = "\n".join(md_lines[:40]).lower()
+            has_summary = any(token in first40 for token in ("## at a glance", "## summary", "## quick reference", "## overview"))
+            has_index = any(token in first40 for token in ("## contents", "## table of contents", "## section map"))
+            if not (has_summary and has_index):
+                warnings.append(f"long markdown lacks an early summary/index for partial preview: {md.relative_to(root)}")
 
     for ref in sorted(direct_targets):
         if ref.suffix.lower() != ".md":
@@ -192,6 +222,8 @@ def diagnostic_from_message(message: str, severity: str) -> dict:
         ("frontmatter", "FRONTMATTER_INVALID", "SKILL.md frontmatter", "repair Agent Skills-compatible YAML frontmatter"),
         ("description may be too short", "ACTIVATION_DESCRIPTION_SHORT", "frontmatter.description", "add specific activation and non-activation context"),
         ("500-line control-plane limit", "PROGRESSIVE_DISCLOSURE_SIZE", "SKILL.md", "move detailed branch logic into focused references"),
+        ("top-100 control plane", "TOP100_CONTROL_PLANE", "SKILL.md", "move activation/routing, workflow, and material rules into the first 100 physical lines"),
+        ("long markdown lacks an early summary/index", "TOP100_SUPPORT_PREVIEW", "markdown references", "add an early At a Glance/summary and Contents/index"),
         ("reference chain is deeper than one level", "PROGRESSIVE_DISCLOSURE_DEPTH", "markdown references", "link needed reference files directly from SKILL.md"),
         ("should visibly include", "CONTROL_PLANE_SECTION_MISSING", "SKILL.md", "add the missing control-plane section"),
         ("forbidden generated or control path", "FORBIDDEN_PATH", "package tree", "remove generated/control artifacts from the target package"),
@@ -308,6 +340,7 @@ def validate(root: Path) -> dict:
         for term in ["workflow", "output contract", "stop condition"]:
             if term not in body:
                 warnings.append(f"SKILL.md should visibly include {term}")
+        errors.extend(check_top100_control_plane(skill_md))
         warnings.extend(check_progressive_disclosure(root, skill_md))
 
     for path in root.rglob("*"):

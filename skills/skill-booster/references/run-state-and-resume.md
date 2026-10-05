@@ -1,5 +1,19 @@
 # Run State and Resume Contract
 
+## At a Glance
+
+Read this file when the active workflow needs **Run State and Resume Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Canonical state, Resume rule, Phase ordering, Budget and stop rules.
+
+## Contents
+
+- Canonical state
+- Resume rule
+- Phase ordering
+- Budget and stop rules
+
+
 Use this contract for long, interrupted, resumed, or multi-context optimization runs. Keep run state outside the target candidate so a candidate cannot rewrite its own history.
 
 ## Canonical state

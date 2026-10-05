@@ -1,5 +1,24 @@
 # Host Compatibility Contract
 
+## At a Glance
+
+Read this file when the active workflow needs **Host Compatibility Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Portable core, Host profiles, Capability model, Python launcher policy, Specialist invocation policy.
+
+## Contents
+
+- Portable core
+- Host profiles
+- Capability model
+- Python launcher policy
+- Specialist invocation policy
+- Host adapter isolation
+- Portability acceptance
+- Sources verified 2026-09-19
+- Progressive-disclosure validation
+
+
 Use this reference whenever the target host matters or a multi-platform claim is requested. The portable core follows the open Agent Skills package model; host-specific files are optional adapters, never prerequisites for the core workflow.
 
 ## Portable core

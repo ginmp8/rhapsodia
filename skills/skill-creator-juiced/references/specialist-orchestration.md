@@ -1,5 +1,21 @@
 # Specialist Orchestration
 
+## At a Glance
+
+Read this file when the active workflow needs **Specialist Orchestration**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Caller Authority, Specialist Map, Default Path, Existing-skill Redesign / Quality Upgrade, Reproducibility Handoff Rules.
+
+## Contents
+
+- Caller Authority
+- Specialist Map
+- Default Path
+- Existing-skill Redesign / Quality Upgrade
+- Reproducibility Handoff Rules
+- General Handoff Rules
+
+
 Use this reference to select and sequence specialist passes. Specialists are owners of bounded concerns, not decorative checklist items.
 
 ## Caller Authority

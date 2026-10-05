@@ -1,5 +1,22 @@
 # Transformation and Safety Policy
 
+## At a Glance
+
+Read this file when the active workflow needs **Transformation and Safety Policy**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Allowed scope, Blocked paths, Transformation discipline, Rollback, freeze, and boundaries, Delivery integrity.
+
+## Contents
+
+- Allowed scope
+- Blocked paths
+- Transformation discipline
+- Rollback, freeze, and boundaries
+- Delivery integrity
+- Security floor
+- Cross-host safety
+
+
 ## Allowed scope
 
 Default writable scope is the target skill folder only. Common allowed files: `SKILL.md`, Markdown under `references/`, deterministic scripts, templates used by the workflow, examples/evals when evaluator design or compatibility is explicitly in scope, and optional host adapters such as `agents/openai.yaml` only when relevant. Portable-core behavior must never depend on a host adapter.

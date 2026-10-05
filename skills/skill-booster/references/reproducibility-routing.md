@@ -1,5 +1,20 @@
 # Reproducibility Routing
 
+## At a Glance
+
+Read this file when the active workflow needs **Reproducibility Routing**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Decision states, Material signals, Skip rules, Mode and ownership rules, Decision record.
+
+## Contents
+
+- Decision states
+- Material signals
+- Skip rules
+- Mode and ownership rules
+- Decision record
+
+
 Use this gate after baseline benchmark/harness evidence and before `skill-hypothesis-discovery`. Its purpose is to decide whether `reproducibility-engineer` adds material value for the current target. The gate is always evaluated; the specialist is conditional.
 
 ## Decision states

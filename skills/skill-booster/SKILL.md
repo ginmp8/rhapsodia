@@ -1,178 +1,137 @@
 ---
 name: skill-booster
-description: "use when optimizing, improving, benchmarking, hardening, compressing, validating, normalizing portability, packaging, or running explicit evidence-guided evolutionary/multi-candidate optimization on an existing agent skills-compatible or skill.md-based skill, including third-party skills downloaded from the internet, across chatgpt/openai, codex, claude, github copilot, cursor, or another compatible host; owns global optimization orchestration, trust intake, specialist routing, bounded transformation/evaluation, optional skill evolution search, final promotion gates, freeze, and atomic packaging; do not use for net-new skill creation, generic repository refactors, or unsupported measured-improvement claims"
+description: Optimize an existing Agent Skills-compatible package with evidence and regression gates. Use for improving, hardening, benchmarking, compressing, validating, portability-normalizing, or packaging an existing skill while preserving its responsibility. Supports explicit multi-candidate/evolutionary search when requested. Do not use for net-new skill creation or major architecture redesign; use Skill Creator Juiced for those.
 ---
 
 # Skill Booster
 
 ## Mission
 
-Optimize one existing skill package end to end with evidence while keeping the workflow host-neutral. Use the open Agent Skills package model as the portable core, isolate host-specific adapters, and never assume a ChatGPT-, Claude-, Copilot-, Cursor-, or vendor-private invocation API. Preserve baseline/frozen evidence, benchmark/harness signals, reproducibility routing, bounded patches, change gates, validation, compression, hardening, final candidate freeze, deterministic packaging, and truthful readiness claims.
+Optimize one existing skill package end to end with evidence while keeping the workflow host-neutral. Preserve the target responsibility unless an authorized handoff says otherwise, isolate host-specific adapters, protect baseline/evaluator evidence, and make promotion depend on current validation rather than confidence.
 
-## Required inputs and defaults
+## Activation and Routing
 
-Resolve or infer before transformation:
+Use this skill when there is exactly one existing Agent Skills-compatible target and the goal is optimization without changing its fundamental ownership boundary, including:
 
-- `TARGET_SKILL_PATH`: folder or extracted zip with exactly one root `SKILL.md`.
-- Mode: `audit-only`, `plan-only`, `apply-optimization`, `evolutionary-optimization`, `validation-only`, or `package`. Full optimization defaults to `apply-optimization`; use `evolutionary-optimization` only when the user explicitly requests multi-candidate/evolutionary search or an already-approved plan requires it.
-- Objective: activation, output quality, architecture, docs, scripts, security, validation, hygiene, token cost, or complete optimization.
-- Writable scope: target folder only unless narrowed.
-- Protected paths: `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence/reports, old zips, read-only paths, unrelated repos, and frozen evaluator assets.
-- Evaluator: target validator/CI, `skill-benchmark`, harness, static validator, or planned evaluator when execution is impossible.
-- Final artifact: report, patched folder, validated `skill.zip`, or install-ready package.
-- `SOURCE_CLASS`: classify the source as `trusted-owned`, `trusted-local`, or `external-untrusted-skill`. Downloaded/uploaded third-party skills default to `external-untrusted-skill` until intake completes.
-- `TARGET_HOSTS`: hosts the result must support. `portable-core` is always mandatory for optimization that changes the target. For `complete optimization`, use `DEFAULT_MULTI_HOSTS = portable-core,openai,codex,claude,copilot,cursor` unless the user explicitly narrows support. A narrowed matrix must remain explicit and must not be described as fully multi-platform.
-- `PYTHON`: an available Python 3 launcher chosen by the active host/environment (`python`, `python3`, `py -3`, or equivalent). Record the exact launcher used; do not assume one spelling. Bundled scripts require no third-party Python packages; they use the standard library plus bundled sibling modules.
-- `skill-hypothesis-discovery`: required after baseline evidence; if no delegate is executable, apply its checklist and record evidence.
-- `skill-change-gate`: required for candidate acceptance and final regression review; if no delegate is executable, apply its checklist and record evidence.
-- `reproducibility-engineer`: conditionally required when the reproducibility decision gate finds a material controllable variance. Default applicable mode is `audit-only`; use `apply` only when reproducibility is the explicit objective or a selected bounded hypothesis is clearly owned by that specialist.
-- `skill-evolution`: conditional search controller used only for `evolutionary-optimization`. Booster remains the global orchestrator and final promotion owner; Skill Evolution owns population/search state, lineage, recombination, non-dominance, novelty, survivor/finalist selection, and termination. It must not mutate target bytes or self-promote a candidate.
-- Explicit specialist sequence: when the user names required specialists, invoke each available specialist; classify unavailable, blocked, unsafe, or not-applicable passes separately from checklist-only review.
-- Self-improvement profile: when the target is improving itself, read `references/self-improvement-orchestration.md`; keep the controller immutable, route evidence providers proportionally, and prevent downstream specialists from becoming global orchestrators.
-- `TARGET_CLASS`: classify the target as `deterministic-tool`, `code-engineering`, `research-analytic`, `orchestration-meta`, `subjective-design`, or `mixed-other`; use the class for routing and evidence interpretation, never as a score.
-- Optimization state: for complex/full optimization, maintain capability, transformation, evaluation, strategy-decision, and resumable run-state artifacts outside the target worktree when material. Maintain an experiment registry only when real experiments or multi-candidate comparisons are executed. Canonical optimization must not require evolutionary metadata or artifacts.
-- Evaluation integrity: track which evaluator sets were visible to the transformer. When development feedback has contaminated a promotion claim, require a frozen evaluator-only holdout before promotion; never relabel an exposed evaluator as independent.
-- Research-backed change: when a bounded research corpus materially determines target changes, freeze/identify the corpus and require bidirectional finding -> requirement -> change -> evaluation accounting. `research-traceability` is preferred when available but is not a runtime dependency.
-- Resume/progression: long or interrupted runs must preserve an external run-state checkpoint tied to baseline/candidate/evaluator/source identities and finite budgets.
+- improve activation/discovery accuracy or instruction quality;
+- harden, benchmark, compress, validate, clean, or package the skill;
+- normalize portability across supported Agent Skills hosts;
+- repair consistency, references, scripts, validators, or package hygiene;
+- run explicit evidence-guided multi-candidate/evolutionary optimization.
 
-## Mode selection
+Do not use for net-new skill creation, workflow-to-skill conversion, or a major redesign that changes activation ownership, package topology, or the capability boundary; route those to `skill-creator-juiced`. Do not use for generic repository refactors or unsupported measured-improvement claims.
 
-- `audit-only`: inspect maturity, risks, and candidate hypotheses; no target transformation or package claim.
-- `plan-only`: produce backlog, sequence, and gates before edits.
-- `apply-optimization`: apply accepted bounded transformations, then validate.
-- `evolutionary-optimization`: keep the canonical optimization strategy as a protected comparator, invoke `skill-evolution` with a validated handoff, generate/evaluate candidates through existing transformation/evaluation owners, then independently prove/promote the selected finalist(s). Do not silently fall back to this expensive mode from ordinary optimization.
+## Top-100 Optimization Contract
+
+Treat discovery and context loading as first-class optimization surfaces. Any accepted candidate with more than 100 lines in `SKILL.md` must expose its primary control plane inside the first 100 physical lines:
+
+1. discriminative frontmatter `description` with use/non-use boundary when overlap is plausible;
+2. purpose/scope and activation/routing boundary;
+3. mode/router choice when branches materially differ;
+4. workflow/quick-start sufficient to begin correctly;
+5. material rules, constraints, or invariants;
+6. direct pointers to branch-specific resources.
+
+Do not move critical instructions below line 100 merely to shorten metadata. Prefer compression, ordering, and progressive disclosure. Long supporting Markdown should place an early summary/`At a Glance` plus contents/index near the top. Prefer one-level discovery: `SKILL.md -> supporting file`; avoid making a Markdown-to-Markdown chain the only route to required instructions.
+
+For optimization, assess four distinct layers instead of conflating them: `metadata selection -> skill activation -> instruction following -> task outcome`. When nearby skills compete semantically, include catalog-competition activation cases rather than evaluating the target in isolation. Read [references/context-loading-contract.md](references/context-loading-contract.md) for the reusable rules.
+
+## Modes
+
+- `audit-only`: inspect maturity, risks, context-loading quality, and candidate hypotheses; no target mutation.
+- `plan-only`: produce backlog, sequence, strategy, and gates before edits.
+- `apply-optimization`: apply accepted bounded transformations, then validate. Default for full optimization.
+- `evolutionary-optimization`: run explicit multi-candidate search through `skill-evolution`; never enter implicitly.
 - `validation-only`: check an already changed target; write reports outside the target only.
 - `package`: build `skill.zip` only from a validated target; repair first only when safe and in scope.
 
-## Resource loading
+## Workflow at a Glance
 
-Load only phase-relevant files:
+1. **Establish**: resolve one target, source trust, host/runtime capabilities, protected scope, baseline/evaluator/source identities, target class, and context-loading topology.
+2. **Diagnose**: inspect activation metadata, Top-100 coverage, reference depth, package quality, and only the evidence-provider surfaces material to the target.
+3. **Select / Strategy gate**: reconcile evidence, classify work as repair/optimization/experiment, choose the least-complex bounded strategy, and freeze acceptance criteria.
+4. **Transform**: mutate one isolated candidate through exactly one declared transformation owner; preserve unrelated behavior.
+5. **Evaluate / Search**: run the staged evidence ladder, include activation/catalog-competition cases when relevant, and use the explicit evolutionary branch only when authorized.
+6. **Prove**: revalidate affected surfaces, require fresh final validation, run change/integration gates, verify Top-100/reference-depth closure, freeze exact bytes, and package atomically.
 
-- [references/optimization-workflow.md](references/optimization-workflow.md): six canonical phases, provider/transformer ordering, strategy gate, and gates.
-- [references/optimization-foundation.md](references/optimization-foundation.md): target classes, capability map, change-intent taxonomy, strategy selection, transformation records, optional experiment records, evaluation ladder, and promotion separation.
-- [references/evolutionary-search-routing.md](references/evolutionary-search-routing.md): optional `skill-evolution` handoff, authority boundary, search inputs/outputs, canonical comparator, and final promotion return path.
-- [references/integration-impact-contract.md](references/integration-impact-contract.md): machine-readable cross-skill contract manifests, producer/consumer version checks, public-surface change detection, and ecosystem-compatibility claims.
-- [references/run-state-and-resume.md](references/run-state-and-resume.md): canonical checkpoint/resume state, stale-evidence rules, legal phase progression, and budgets.
-- [references/research-backed-optimization.md](references/research-backed-optimization.md): optional research-to-skill traceability branch and corpus-bounded completion rules.
-- [references/specialist-passbook.md](references/specialist-passbook.md): required pass sequence, statuses, and skip rules.
-- [references/evaluation-contract.md](references/evaluation-contract.md): freeze rules, metrics, hypothesis records, reproducibility routing evidence, and change-gate integration.
-- [references/reproducibility-routing.md](references/reproducibility-routing.md): material-signal test, optional `reproducibility-engineer` modes, ownership, and decision record.
-- [references/self-improvement-orchestration.md](references/self-improvement-orchestration.md): global provider routing for self-improvement, evidence ownership, sequencing, and anti-coupling rules.
-- [references/adaptive-orchestration.md](references/adaptive-orchestration.md): optional safe read-only provider/evaluator fan-out, fresh-context challenge, barriers, trace rules, and serial fallback without changing six-phase ownership.
-- [references/host-compatibility.md](references/host-compatibility.md): portable Agent Skills core, default host matrix, capability model, installation/discovery notes, Python launcher policy, and optional host adapters.
-- [references/external-skill-intake.md](references/external-skill-intake.md): quarantine/trust preflight for downloaded or otherwise external skill packages before any target-owned executable code is run.
-- [references/transformation-and-safety-policy.md](references/transformation-and-safety-policy.md): allowed edits, blocked paths, rollback, and security floor.
-- [references/integrity-and-recovery.md](references/integrity-and-recovery.md): immutable source snapshots, VCS evidence identity, output alias preflight, last-known-good preservation, recovery, and durable receipts.
-- [references/reporting-contract.md](references/reporting-contract.md): final report sections and evidence language.
-- [scripts/validate_skill_booster.py](scripts/validate_skill_booster.py): dependency-free structural validator and target preflight with stable machine-readable diagnostic codes.
-- [scripts/inspect_external_skill.py](scripts/inspect_external_skill.py): static external-skill trust intake for a directory or ZIP; inventories provenance/security/host-coupling risks without executing target code.
-- [scripts/validate_portability.py](scripts/validate_portability.py): validates the portable core and requested host profiles without requiring vendor-private APIs.
-- [scripts/run_activation_harness.py](scripts/run_activation_harness.py): deterministic activation-scenario schema/coverage check; not live LLM precision evidence.
-- [scripts/validate_specialist_reconciliation.py](scripts/validate_specialist_reconciliation.py): hard gate for user-required specialist sequence reconciliation before final readiness or package claims.
-- [scripts/validate_reproducibility_decision.py](scripts/validate_reproducibility_decision.py): validates the conditional reproducibility routing record before hypothesis discovery.
-- [scripts/validate_optimization_state.py](scripts/validate_optimization_state.py): validates capability-map, transformation-registry, optional experiment-registry, and evaluation-plan artifacts plus cross-artifact references.
-- [scripts/validate_run_state.py](scripts/validate_run_state.py): validates resumable checkpoint state, candidate/source/evaluator identities, stale evidence, phase order, and finite budgets.
-- [scripts/validate_strategy_decision.py](scripts/validate_strategy_decision.py): validates least-complex strategy selection, explicit escalation rationale, budgets, and stop rules.
-- [scripts/validate_consumer_contract_evidence.py](scripts/validate_consumer_contract_evidence.py): validates optional executable peer-contract evidence for ecosystem promotion.
-- [scripts/validate_promotion_attestation.py](scripts/validate_promotion_attestation.py): validates final promotion evidence binding and exact candidate/archive identity.
-- [scripts/validate_evolution_handoff.py](scripts/validate_evolution_handoff.py): validates Booster -> Skill Evolution search handoff and returned finalist/promotion envelope structure.
-- [scripts/build_evolution_contract.py](scripts/build_evolution_contract.py): adapts canonical Booster optimization artifacts into the Skill Evolution v4 search contract without leaking Booster-internal schemas into the search controller.
-- [scripts/analyze_integration_impacts.py](scripts/analyze_integration_impacts.py): validates `contracts/integration-manifest.json`, detects unversioned public-surface changes, and checks known peer consumers/providers before ecosystem-safe finalization.
-- [scripts/build_candidate_evaluation.py](scripts/build_candidate_evaluation.py): normalizes frozen Benchmark/Harness evidence plus hard-gate results into the Skill Evolution candidate-evaluation v2 envelope before returning evidence to the search controller.
-- [assets/templates/evolution-handoff.json.template](assets/templates/evolution-handoff.json.template): portable handoff shape for explicit evolutionary mode.
-- [assets/templates/capability-map.json.template](assets/templates/capability-map.json.template), [assets/templates/transformation-registry.json.template](assets/templates/transformation-registry.json.template), [assets/templates/experiment-registry.json.template](assets/templates/experiment-registry.json.template), and [assets/templates/evaluation-plan.json.template](assets/templates/evaluation-plan.json.template): portable optimization-state templates.
-- [assets/templates/optimization-run-state.json.template](assets/templates/optimization-run-state.json.template), [assets/templates/strategy-decision.json.template](assets/templates/strategy-decision.json.template), [assets/templates/promotion-attestation.json.template](assets/templates/promotion-attestation.json.template), and [assets/templates/consumer-contract-evidence.json.template](assets/templates/consumer-contract-evidence.json.template): resume, escalation, promotion, and optional executable-integration evidence templates.
-- [scripts/freeze_candidate.py](scripts/freeze_candidate.py): freezes or verifies the exact final candidate after the last passing validation.
-- [scripts/snapshot_sources.py](scripts/snapshot_sources.py): captures exact external source bytes before analysis and verifies source/snapshot identity before acceptance.
-- [scripts/package_skill.py](scripts/package_skill.py): validates with the booster validator, can enforce a reconciliation ledger, creates a deterministic temporary archive, verifies it, emits hashes, and atomically replaces `skill.zip` only on success.
-- [assets/templates/optimization-report.md.template](assets/templates/optimization-report.md.template): reusable report template.
-- [examples/sample-optimization-run.md](examples/sample-optimization-run.md): calibrated compact run.
-- [evals/activation-scenarios.json](evals/activation-scenarios.json): planned activation, non-activation, ambiguous, and edge coverage.
+## Core Rules
 
-## Workflow
+- `portable-core` remains mandatory for optimization that changes the target unless the task is explicitly narrower and no portability claim is made.
+- Protect `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old archives, unrelated repos, and frozen evaluator assets.
+- `skill-hypothesis-discovery` follows baseline evidence when a hypothesis is needed; `skill-change-gate` controls candidate acceptance and final regression review.
+- `reproducibility-engineer` is conditional; invoke only when the reproducibility decision finds material controllable variance.
+- Keep canonical optimization strategy-neutral and single-candidate by default; it must remain fully functional without Skill Evolution.
+- Evolutionary readiness is never a completion requirement. Maintain an experiment registry only when real experiments or multi-candidate comparisons are executed.
+- Exactly one owner mutates each transformation batch; read-only providers must not silently co-edit the candidate.
+- A fresh passing `skill-opt.validation-gate-receipt` v1 is required for final promotion when that contract is applicable; do not replace this requirement with a Booster-local parser.
+- Track evaluator visibility/contamination. If promotion evidence was exposed to candidate generation, require an appropriate frozen holdout before claiming promotion quality.
+- When research materially determines changes, freeze/identify the corpus and preserve bidirectional finding -> requirement -> change -> evaluation traceability.
+- For complete optimization, every material finding ends `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`.
+- Never claim benchmark improvement, security review, runtime portability, token reduction, or readiness without matching evidence.
 
-Use `references/optimization-workflow.md` as the detailed contract. The canonical architecture is six phases; the passbook is an execution ledger inside those phases.
+## Resource Loading
 
-When the active host exposes safe subagent/parallel capabilities, `references/adaptive-orchestration.md` may be used for independent read-only providers or evaluators against the same frozen identities. This is an execution optimization, not a change to phase order, transformation ownership, evaluator identity, or promotion gates; serial execution remains the portable fallback.
+Load only phase-relevant files, with required Markdown directly reachable from this root:
 
-1. **Establish**: resolve one target, source trust, host/runtime capabilities, `TARGET_CLASS`, writable/protected scope, portable-core requirements, baseline identity, evaluator/scenario identity, and material external-source snapshots. Run Booster-owned structural/trust/portability preflight before target-owned code when required. Build or consume a capability map when semantic-loss risk is material. For long/resumable runs, initialize external run state and finite budgets. When research drives changes, freeze/identify the bounded corpus before deriving requirements/evaluations. If the target declares `contracts/integration-manifest.json` or exposes machine-readable handoffs/CLIs consumed by peer skills, preserve the baseline manifest and resolve available peer roots/catalog for later impact gating.
-2. **Diagnose**: run the evidence providers needed for the target class and touched surfaces. Initial benchmark/harness and the reproducibility decision happen here. Quality, architecture/context, activation/prompt, consistency, docs, code, security, validation, cleanup, and token specialists are read-only/audit/checklist providers by default in this phase. They emit evidence; they do not independently rewrite the candidate.
-3. **Select / Strategy gate**: reconcile provider evidence by ownership, classify proposed work as `repair`, `optimization`, or `experiment`, run `skill-hypothesis-discovery` when a hypothesis is needed, and select one bounded change/batch. Choose `direct-repair` for a demonstrated defect with a known fix, `single-candidate` for a bounded optimization or experiment with a clear hypothesis, and mark `evolutionary-search` as eligible only for genuine search problems with multiple plausible alternatives. Eligibility never activates evolution by itself; `evolutionary-optimization` still requires explicit user intent or an already-approved plan. Record and validate a strategy decision with the simpler strategy considered, escalation rationale when applicable, finite budget, stop rules, evaluator, acceptance rule, rollback, transformation owner, strategy, and transformation id before editing.
-4. **Transform**: create or use an isolated candidate and allow exactly one declared owner for the transformation batch. Default owner is `skill-improver`; `reproducibility-engineer` may own a bounded `invoke-apply` batch; another specialist may own a batch only when explicitly delegated and within its contract. Never let multiple providers silently co-edit the same batch.
-5. **Evaluate / Search branch**: in canonical mode, use the staged ladder from `references/optimization-foundation.md`: `L0-structural` -> `L1-deterministic` -> `L2-focused` -> optional `L3-harness` -> optional `L4-benchmark` -> optional `L5-holdout`. Record evaluator-set visibility and contamination. If candidate generation has seen promotion-evaluator feedback, require a frozen blind L5 holdout before a promotion claim. Record an experiment only when the selected change is actually an experiment or when multiple candidates are compared. In `evolutionary-optimization`, validate the v4 handoff, adapt canonical optimization artifacts with `scripts/build_evolution_contract.py`, validate the resulting Skill Evolution v4 search contract with the search controller, keep the canonical result/reference in every comparison, service candidate-generation/evaluation requests through the existing owners, and receive finalists without delegating final promotion authority. Fail required lower levels before spending on higher ones. Run `skill-change-gate` independently per material candidate and retain accepted, rejected, reverted, and inconclusive search evidence.
-6. **Prove**: perform hardening and affected revalidation, require a fresh passing `skill-opt.validation-gate-receipt` v1 from `skill-testing-and-validation` for the exact final candidate (including canonical structural/package validation for skill packages), then run final `skill-change-gate`, final benchmark/holdout when the claim requires them, final token/readiness closure, source/evaluator verification, candidate freeze, portability closure, and atomic packaging. A missing, stale, blocked, or failing validation receipt prevents final promotion; do not replace this requirement with a Booster-local parser. Before an ecosystem-safe/package claim, run the integration-impact gate for any declared or discovered cross-skill contract surface against the frozen deployment catalog (installed peers plus candidates promoted in the same install block) with peer-catalog evidence required. When executable consumer-contract receipts exist or are required by policy, validate them against the same catalog fingerprint. Preserve the catalog fingerprint with the proof. A known incompatible consumer/provider is blocking; missing peer evidence means integration compatibility is `not-proven` and blocks an ecosystem-safe claim. Emit a promotion attestation that binds the exact frozen candidate/package to run-state, evaluator/source, validation, change-gate, portability, traceability when applicable, and integration evidence. Separate target-candidate promotion from any future Booster workflow-policy promotion; a single target win never changes canonical policy.
+- [references/context-loading-contract.md](references/context-loading-contract.md): Top-100, preview-first Markdown, discovery metadata, catalog competition, and one-level reference rules.
+- [references/optimization-workflow.md](references/optimization-workflow.md): six canonical phases and gates.
+- [references/optimization-foundation.md](references/optimization-foundation.md): target classes, capability map, strategy, evaluation ladder, and promotion separation.
+- [references/evolutionary-search-routing.md](references/evolutionary-search-routing.md): optional Skill Evolution handoff and authority boundary.
+- [references/integration-impact-contract.md](references/integration-impact-contract.md): cross-skill contract/version impact checks.
+- [references/run-state-and-resume.md](references/run-state-and-resume.md): checkpoint/resume identity and stale-evidence rules.
+- [references/research-backed-optimization.md](references/research-backed-optimization.md): corpus-bounded research traceability branch.
+- [references/specialist-passbook.md](references/specialist-passbook.md): provider sequence, statuses, and skip rules.
+- [references/evaluation-contract.md](references/evaluation-contract.md): freeze rules, metrics, holdouts, hypotheses, and change-gate integration.
+- [references/reproducibility-routing.md](references/reproducibility-routing.md): reproducibility decision and ownership.
+- [references/self-improvement-orchestration.md](references/self-improvement-orchestration.md): immutable-controller self-improvement profile.
+- [references/adaptive-orchestration.md](references/adaptive-orchestration.md): optional safe read-only fan-out with serial fallback.
+- [references/host-compatibility.md](references/host-compatibility.md): portable core, host profiles, capabilities, and adapters.
+- [references/external-skill-intake.md](references/external-skill-intake.md): static trust preflight for external skills.
+- [references/transformation-and-safety-policy.md](references/transformation-and-safety-policy.md): writable/protected paths, rollback, and security floor.
+- [references/integrity-and-recovery.md](references/integrity-and-recovery.md): source snapshots, alias protection, last-good recovery, and receipts.
+- [references/reporting-contract.md](references/reporting-contract.md): evidence language and final report contract.
+- [examples/sample-optimization-run.md](examples/sample-optimization-run.md) and [evals/activation-scenarios.json](evals/activation-scenarios.json): calibration and activation coverage.
+- bundled `scripts/` and `assets/templates/` for deterministic validation, state, promotion, recovery, and packaging.
 
-For `complete` / `full` optimization, every material actionable finding from Diagnose or final closure must end as `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`. Do not report complete optimization while a material finding remains only follow-up/planned/deferred. A material token-efficiency finding therefore opens another bounded transformation batch and affected revalidation rather than being silently deferred.
+## Required Inputs and Defaults
 
-For complete/full optimization, validate the canonical optimization artifacts when produced:
+Resolve or infer before transformation:
 
-```text
-<PYTHON> scripts/validate_optimization_state.py \
-  --capability-map <WORK>/capability-map.json \
-  --transformation-registry <WORK>/transformation-registry.json \
-  --evaluation-plan <WORK>/evaluation-plan.json
-```
+- `TARGET_SKILL_PATH`: folder/extracted zip with exactly one root `SKILL.md`.
+- Objective: activation, output quality, architecture-preserving optimization, docs, scripts, security, validation, hygiene, token cost, portability, or complete optimization.
+- Writable/protected scope and final artifact.
+- `SOURCE_CLASS`: `trusted-owned`, `trusted-local`, or `external-untrusted-skill`; third-party skills default to external-untrusted until intake completes.
+- `TARGET_HOSTS`: `portable-core` plus requested profiles; complete optimization uses `DEFAULT_MULTI_HOSTS = portable-core,openai,codex,claude,copilot,cursor` unless explicitly narrowed.
+- `PYTHON`: actual available Python 3 launcher; record the exact launcher used.
+- Evaluator/baseline identities, target class, material source snapshots, and resume state when needed.
+- Explicit specialist sequence when the user requires one; distinguish invoked, checklist-only, unavailable, blocked, unsafe, and not-applicable.
 
-Add `--experiment-registry <WORK>/experiment-registry.json` only when the run actually executed experiments or multi-candidate comparisons.
+## Detailed Workflow
 
-The canonical workflow remains strategy-neutral and single-candidate by default. It must remain fully functional without Skill Evolution, evolutionary artifacts, lineage metadata, population concepts, or evolutionary fields in downstream specialist contracts. Evolutionary readiness is never a completion requirement for canonical optimization. Evolutionary semantics are implemented only through the explicit `evolutionary-optimization` branch and the separate `skill-evolution` search controller. Never execute population search implicitly for an ordinary optimization request.
-## Output contract
+Use [references/optimization-workflow.md](references/optimization-workflow.md) as the detailed contract. The passbook is an execution ledger inside the six canonical phases; safe subagent/parallel execution may optimize read-only evidence gathering but never changes phase order, mutation ownership, evaluator identity, or promotion authority.
 
-Final reports must include:
+In canonical mode, use the evaluation ladder from [references/optimization-foundation.md](references/optimization-foundation.md): `L0-structural -> L1-deterministic -> L2-focused -> optional L3-harness -> optional L4-benchmark -> optional L5-holdout`. Fail required lower levels before spending on higher ones.
 
-1. target skill path, mode, objective, requested hosts, resolved host capabilities, and exact Python launcher used;
-2. baseline inventory, evaluator, score, gates, warnings, frozen inputs, and protected blocked paths;
-3. required specialist sequence reconciliation, including:
-   - required count;
-   - invoked-skill count;
-   - checklist-only count;
-   - blocked count;
-   - unavailable count;
-   - not-applicable count;
-   - not-run count;
-   - full sequence satisfied: yes/no;
-   - finalization allowed: yes/no;
-4. specialist pass ledger with status, execution_type, and evidence;
-5. reproducibility decision state, material signals, selected mode, specialist invocation status, downstream owner, and decision-validator result;
-6. hypothesis-discovery status, candidate backlog count, selected hypotheses, and deferred hypotheses;
-7. accepted/rejected hypotheses with files, expected effect, validation, change-gate decision, and evidence;
-8. material finding closure ledger with terminal disposition (`fixed`, `rejected`, `accepted-trade-off`, `blocked`, `not-applicable`) and evidence;
-9. required repairs kept without measured improvement;
-10. files changed by phase;
-11. protected paths respected statement;
-12. validation commands and pass/fail/not-run outcomes;
-13. before/after benchmark or static score when measured;
-14. skill-change-gate and final skill-change-gate status;
-15. final benchmark result;
-16. portability matrix for `portable-core`, OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, and Cursor (or the explicitly narrowed target set), including evidence level, optional adapter status, degradation, and blocked/unavailable capabilities;
-17. total/local token deltas, local trade-offs, and final token-efficiency closure;
-18. final candidate manifest identity and freeze verification;
-19. source snapshot/provenance identity and final source verification when material external evidence was used;
-20. package path, candidate hash, archive hash, receipt version/stage, atomic-delivery status, last-known-good preservation, and recovery paths only when `skill.zip` exists and package validation passed;
-21. remaining risks, assumptions, rollback notes, and next hypothesis or no-change recommendation;
-22. for self-improvement, controller/baseline/candidate identities, selected evidence providers with ownership/status, promotion receipt status, and confirmation that no downstream specialist re-owned global orchestration;
-23. target class and capability-map status when material;
-24. repair/optimization/experiment classification for accepted candidate work;
-25. transformation-registry identity/count for work performed, plus experiment-registry identity/count only when experiments or multi-candidate comparisons ran;
-26. highest evaluation-ladder level reached for the accepted candidate and why higher levels were or were not required;
-27. target-promotion status kept separate from any workflow-policy recommendation;
-28. integration-impact status, peer catalog coverage, changed exported contract surfaces, incompatible/unresolved consumers, and whether ecosystem compatibility is proven;
-29. for evolutionary mode: validated search handoff identity, search id/budget, candidate count, canonical comparator identity, search termination reason, Pareto/finalist ids, highest evidence level per finalist, and the Booster-owned final promotion decision.
+In `evolutionary-optimization`, validate the Booster -> Skill Evolution handoff, keep the canonical strategy as protected comparator, service candidate generation/evaluation through existing owners, preserve candidate lineage and hard-gate evidence, and return finalists to Booster for independent final promotion. Evolutionary semantics must not leak into the canonical path.
 
-For resumable or research-backed runs, also report the run-state/checkpoint identity, strategy-decision identity, evaluator contamination/holdout state, and corpus-bounded traceability status. When promotion/package delivery occurs, report the promotion-attestation identity and validation status.
+Before final promotion, perform hardening/affected revalidation, require the fresh validation-gate receipt when applicable, run final change gate, benchmark/holdout when the claim requires it, context-loading closure, portability closure, integration-impact checks for exposed peer contracts, source/evaluator verification, candidate freeze, promotion attestation, and atomic packaging.
 
-Use `measured` only for executed commands, validators, scenario results, package checks, or supplied data.
+## Optimization State and Validation
 
-Use `observed`, `inferred`, `planned`, `checklist-only`, or `blocked` for other evidence.
+For complex/full optimization, maintain capability, transformation, evaluation, strategy-decision, and resumable run-state artifacts outside the target worktree when material. Maintain an experiment registry only when real experiments or multi-candidate comparisons are executed.
 
-Do not claim benchmark improvement, specialist execution, security review, scenario pass rate, package readiness, full specialist sequence satisfaction, token reduction, or final readiness without evidence.
+When produced, validate canonical optimization artifacts with `scripts/validate_optimization_state.py`; validate strategy/run state, reproducibility routing, portability, activation coverage, consumer contracts, promotion attestation, and package integrity with the corresponding bundled scripts. Structural compatibility is not runtime proof.
 
-Manual checklist review must never be described as a specialist invocation.
+## Output Contract
 
-## Stop conditions
+Final reports must identify target/mode/objective/hosts; baseline and protected evidence; specialist reconciliation; reproducibility and hypothesis decisions; finding closure; files changed; validation commands/outcomes; before/after evidence when measured; Top-100/reference-depth status; change and integration gates; portability matrix; token trade-offs; exact frozen candidate/package identities; recovery/receipt state; residual risks; and evolutionary-search identities/results only when that mode actually ran.
 
-Stop before transformation when an `external-untrusted-skill` has not completed the trust preflight; the target has zero/multiple root `SKILL.md` files; a multi-platform claim depends on host-private core instructions that have not been isolated or adapted; a required deterministic gate needs Python 3 or another declared runtime that the active host cannot execute; edits touch protected paths; measured improvement is required but no evaluator can be frozen; material external source evidence cannot be snapshotted or pinned safely; source truth is missing and a patch would invent facts; no evidence-backed hypothesis exists; the reproducibility gate is applicable but required evidence cannot be frozen safely; `skill-change-gate` finds an unfixable blocking regression; validation fails and cannot be fixed in scope; final freeze verification fails; a resumed run has unresolved identity drift or stale evidence; a promotion claim has unresolved evaluator contamination without the required blind holdout; required research-backed traceability has unaccounted findings or broken reverse links; package/report outputs alias protected inputs or each other; packaging would include secrets, caches, generated reports/evidence, old zips, or files outside the final skill folder; or `evolutionary-optimization` was explicitly requested but a valid Skill Evolution handoff/search controller/result cannot be established without fabricating search execution.
+Use `measured` only for executed commands, validators, scenario results, package checks, or supplied data. Use `observed`, `inferred`, `planned`, `checklist-only`, or `blocked` otherwise. Manual checklist review is never a specialist invocation.
 
-## Finalization checklist
+## Stop Conditions
 
-Before completion, confirm: run-state identity and checkpoint are valid when resume semantics apply; strategy escalation and budgets validate; evaluator visibility/contamination is recorded and any required blind holdout passed; research-backed runs have corpus-bounded bidirectional trace closure; when evolutionary mode ran, its handoff/result validates, baseline/canonical references stayed available, candidate lineage is identity-bound, no hard-gate failure was promoted, holdout blindness was preserved when claimed, and final promotion remained Booster-owned; target class is recorded; optimization artifacts used by the run validate when present; capability-loss-sensitive work has an evidence-backed capability map or explicit reason it was unnecessary; every transformation batch has one declared owner and a repair/optimization/experiment classification; rejected/inconclusive experiments are retained rather than rewritten as successes; source trust classification is recorded; external-untrusted intake completed before target code execution; `portable-core` validation passed; complete optimization produced an explicit result for OpenAI, Codex, Claude, Copilot, and Cursor unless the user deliberately narrowed the matrix; every host claimed as validated has matching evidence; the portable core does not require vendor-private tool names or installation paths; optional host adapters are not prerequisites; reproducibility routing was explicitly classified and its decision record validated; required specialist reconciliation passed when supplied; frontmatter is lowercase hyphen-case; activation/non-activation/ambiguous/edge scenarios exist or are planned; local refs resolve; resources are integrated or retained; no scaffold, caches, old packages, secrets, or generated noise remain; modified scripts ran or blockers are stated; discovery precedes improvement claims; material patches have gate decisions; material external evidence was snapshotted/pinned and reverified when applicable; compression was revalidated; local token growth is compressed or accepted as semantic trade-off; final token closure preserves activation, safety, validation, output, stop, routing, and evidence duties; final gate has no blocking regression; final benchmark separates measured from planned checks; final candidate freeze verifies immediately before packaging; package/report alias preflight passed; package validation and committed hash receipt pass before sharing `skill.zip`; promotion attestation matches the exact frozen candidate/package and required evidence; last-known-good/recovery guarantees were preserved; no target edit occurred after the final verified freeze.
+Stop before transformation when external-untrusted intake is incomplete; target identity is ambiguous; a required deterministic gate cannot run; protected paths would be edited; measured improvement is required without a frozen evaluator; material source evidence cannot be pinned; source truth is missing; no evidence-backed hypothesis exists where one is required; reproducibility evidence cannot be frozen; a blocking change-gate regression cannot be fixed in scope; final validation/freeze fails; resume identities drift; evaluator contamination requires a holdout that cannot be established; research traceability is incomplete; package/report paths alias protected inputs; packaging would include secrets/generated noise/old archives; or explicit evolutionary mode cannot establish a valid search contract without fabrication.
+
+## Finalization Checklist
+
+Before completion, confirm source trust; context-loading Top-100 and direct-reference closure; target class; strategy and budgets; evaluator visibility; research traceability when applicable; one transformation owner per batch; rejected/inconclusive evidence preserved; portable-core pass; requested host evidence; specialist reconciliation; activation/non-activation/ambiguous/edge coverage; local links; no scaffold/cache/generated noise; modified scripts tested or blockers stated; material patches gated; compression revalidated; final candidate frozen after the last passing validation; package/report alias preflight passed; package hash/receipt matches committed bytes; recovery guarantees preserved; and no target edit occurred after final verified freeze.

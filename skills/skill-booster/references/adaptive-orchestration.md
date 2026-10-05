@@ -1,5 +1,22 @@
 # Adaptive Orchestration for Optimization Runs
 
+## At a Glance
+
+Read this file when the active workflow needs **Adaptive Orchestration for Optimization Runs**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Purpose, Invariants, Safe fan-out candidates, Evaluation parallelism, Fresh-context challenge.
+
+## Contents
+
+- Purpose
+- Invariants
+- Safe fan-out candidates
+- Evaluation parallelism
+- Fresh-context challenge
+- State and trace
+- Host portability
+
+
 ## Purpose
 
 Allow Skill Booster to reduce wall-clock and context coupling without changing the canonical six-phase optimization architecture or specialist ownership. Parallelism is an execution optimization, not a new evidence or promotion model.

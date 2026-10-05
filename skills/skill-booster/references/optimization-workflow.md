@@ -1,5 +1,24 @@
 # Optimization Workflow
 
+## At a Glance
+
+Read this file when the active workflow needs **Optimization Workflow**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Phase 1: Establish, Phase 2: Diagnose, Phase 3: Select and strategy gate, Phase 4: Transform, Phase 5: Evaluate.
+
+## Contents
+
+- Phase 1: Establish
+- Phase 2: Diagnose
+- Phase 3: Select and strategy gate
+- Phase 4: Transform
+- Phase 5: Evaluate
+- Phase 6: Prove
+- Historical evidence rule
+- Evolutionary mode boundary
+- Run-state, contamination, and promotion closure
+
+
 Use this workflow for every target skill. It is organized into six canonical phases. The specialist passbook is a ledger within these phases, not a second architecture. If a stop condition applies, report the blocker instead of editing the target.
 
 ## Phase 1: Establish

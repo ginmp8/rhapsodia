@@ -1,5 +1,16 @@
 # Skill Creation Scenarios
 
+## At a Glance
+
+Read this file when the active workflow needs **Skill Creation Scenarios**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: the document-specific rules and examples.
+
+## Contents
+
+- Main guidance
+
+
 Planned examples for `skill-creator-juiced`; do not report behavioral metrics unless executed.
 
 - should activate: "create a skill for auditing kafka consumer runbooks with validators and packaging" -> design one cohesive skill package with progressive resources and gates.

@@ -1,5 +1,31 @@
 # Optimization Foundation
 
+## At a Glance
+
+Read this file when the active workflow needs **Optimization Foundation**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: 1. Canonical phase model, 2. Target classes, 3. Capability map, 4. Change-intent taxonomy, 5. Strategy gate.
+
+## Contents
+
+- 1. Canonical phase model
+- 2. Target classes
+- 3. Capability map
+- 4. Change-intent taxonomy
+- 5. Strategy gate
+- 6. Transformation registry
+- 7. Experiment registry is conditional
+- 8. Evaluation ladder
+- 9. Evidence-provider and transformation-owner separation
+- 10. Ablation and attribution
+- 11. Promotion separation
+- 12. Search-strategy isolation invariants
+- 13. Resumable run-state and strategy evidence
+- 14. Evaluation contamination and promotion holdout
+- 15. Promotion attestation
+- 16. Research-backed optimization
+
+
 Use this contract for canonical optimization regardless of search strategy. The core optimizer must stay observable, attributable, comparable, and fully usable without evolutionary search. Evolution is an optional strategy layered on top of this foundation, not a prerequisite for it.
 
 ## 1. Canonical phase model

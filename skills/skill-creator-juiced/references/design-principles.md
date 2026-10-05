@@ -1,5 +1,35 @@
 # Design Principles
 
+## At a Glance
+
+Read this file when the active workflow needs **Design Principles**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: 1. Choose the correct artifact before designing a skill, 2. Start from real work, record creation origin, and reuse established context, 3. Enter at the current lifecycle state, 4. Cohesion beats size, 5. Portable core before host adapters; profiles before surfaces.
+
+## Contents
+
+- 1. Choose the correct artifact before designing a skill
+- 2. Start from real work, record creation origin, and reuse established context
+- 3. Enter at the current lifecycle state
+- 4. Cohesion beats size
+- 5. Portable core before host adapters; profiles before surfaces
+- 6. Progressive loading has an explicit topology
+- 7. Model-neutral minimality
+- 8. Activation quality
+- 9. Match control strength to variability
+- 10. Evaluate against the right comparator
+- 11. Generalize; do not memorize evals
+- 12. Promote repeated work deliberately
+- 13. Output consistency
+- 14. Evidence discipline
+- 15. Explain why, constrain where necessary
+- 16. Lack of surprise
+- 17. Backward compatibility
+- 18. Canonical package before distribution wrappers
+- 19. Simplicity under gates
+- 20. Reproducibility by design, not by retrofit
+
+
 Use this reference when deciding whether a reusable customization should be a skill and, when it should, how to structure the package and its controls.
 
 ## 1. Choose the correct artifact before designing a skill

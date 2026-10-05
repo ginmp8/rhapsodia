@@ -1,5 +1,21 @@
 # Integration Impact Contract
 
+## At a Glance
+
+Read this file when the active workflow needs **Integration Impact Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Contract manifest, Discovery before mutation, Gate, Sequential Booster optimization, Self-optimization.
+
+## Contents
+
+- Contract manifest
+- Discovery before mutation
+- Gate
+- Sequential Booster optimization
+- Self-optimization
+- Optional executable consumer-contract evidence
+
+
 Use this gate when an optimization can change a machine-readable handoff, required input, output envelope, schema, CLI consumed by another skill, or any resource declared in `contracts/integration-manifest.json`.
 
 ## Contract manifest

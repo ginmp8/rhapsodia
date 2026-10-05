@@ -1,5 +1,25 @@
 # Host Portability
 
+## At a Glance
+
+Read this file when the active workflow needs **Host Portability**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Two-dimensional portability model, Canonical portable core, Common-denominator rules, Default profile matrix, Host-extension containment.
+
+## Contents
+
+- Two-dimensional portability model
+- Canonical portable core
+- Common-denominator rules
+- Default profile matrix
+- Host-extension containment
+- Runtime and surface notes
+- Canonical package versus distribution adapters
+- Packaging profiles
+- Current source anchors
+- Validation command
+
+
 Use this reference when creating or updating a skill for more than one semantic runtime, when the target runtime is uncertain, when a client/IDE/distribution surface is named, or when a host-specific feature could leak into the canonical workflow.
 
 ## Two-dimensional portability model
