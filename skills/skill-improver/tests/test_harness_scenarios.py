@@ -10,6 +10,9 @@ def test_activation_scenarios_use_current_harness_shape():
     scenarios=data['scenarios']
     assert isinstance(scenarios,list) and scenarios
     kinds={x['type'] for x in scenarios}
-    assert {'should_activate','should_not_activate','ambiguous','edge_case','regression'} <= kinds
+    categories={x['category'] for x in scenarios}
+    assert {'should_activate','should_not_activate','ambiguous','edge_case'} <= kinds
+    assert 'regression' not in kinds
+    assert {'should_activate','should_not_activate','ambiguous','edge_case','regression'} <= categories
     for item in scenarios:
         assert item['acceptance_criteria']

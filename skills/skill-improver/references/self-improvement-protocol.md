@@ -1,5 +1,24 @@
 # Self-Improvement Protocol
 
+## At a Glance
+
+- **Purpose:** Define the special control plane for skill-improver improving itself while keeping controller, evaluator, candidate, last-known-good state, and promotion authority separated.
+- **Load when:** Load whenever mode is self-improvement or a candidate would otherwise be able to modify the active controller, evaluator, generation state, or promotion decision.
+- **Decision impact:** Fixes generation identity, recursion and isolation rules, bootstrap conformance, external promotion requirements, machine-readable receipt expectations, last-known-good preservation, and self-improvement stop conditions.
+- **Do not load when:** Do not load for ordinary improvement of a different target skill unless self-improvement separation is directly relevant.
+
+## Contents
+
+- Ownership boundary
+- Generation model
+- Required generation identity
+- Required sequence
+- Promotion rules
+- Bootstrap conformance
+- Machine-readable receipt
+- Stop conditions
+
+
 Use this protocol only when the skill being improved is also the workflow/controller performing the improvement. This is a self-hosting safety contract, not a general specialist-orchestration layer.
 
 ## Ownership boundary

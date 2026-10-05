@@ -1,4 +1,27 @@
 # Evidence-Aware Evolution Profile v1
+## At a Glance
+
+- **Purpose:** Add optional evidence-aware selection, eligibility, provenance, diversity, complexity, and semantic-stagnation controls while preserving canonical search-contract/state v4 and candidate-request/evaluation v2 compatibility.
+- **Load when:** The frozen v4 contract contains top-level `evidence_aware`, or when validating/planning evidence-aware candidate requests, evaluations, selection, state, or checkpoints.
+- **Decision impact:** Adds mandatory canonical-plus-extension validation, typed uncertainty/slice/stability/complexity eligibility, optional scenario specialists, behavior-derived diversity, deficit provenance, and semantic-stagnation mechanics without transferring evaluator or mutation authority.
+- **Do not load when:** The search uses only the compatibility profile; canonical v4/v2 behavior remains governed by the direct core references and validators.
+
+## Contents
+
+- Purpose
+- Authority boundary
+- Profile contract
+- Typed stochastic evidence
+- Evaluation slices
+- Stability eligibility
+- Aggregate Pareto plus scenario specialists
+- Behavioral diversity
+- Complexity control
+- Candidate provenance
+- Survivor pool
+- Semantic stagnation
+- Profile scripts
+- Compatibility invariant
 
 ## Purpose
 

@@ -1,5 +1,24 @@
 # Hypothesis Catalog
 
+## At a Glance
+
+- **Purpose:** Provide reusable, falsifiable improvement hypothesis patterns for activation, workflow, output, validation, context efficiency, safety, and reproducibility without turning examples into universal fixes.
+- **Load when:** Load only after baseline evidence/diagnostics exist and a bounded hypothesis still needs to be selected, refined, or compared against a supplied backlog.
+- **Decision impact:** Maps observed failure signals to candidate mechanisms, expected effects, and evidence requirements; prevents cosmetic/random mutation and helps distinguish repair, optimization, simplification, and experiment intents.
+- **Do not load when:** Do not load when a demonstrated defect already has a known bounded correction, or when no baseline evidence exists.
+
+## Contents
+
+- Discovery handoff
+- Trigger and activation
+- Workflow
+- Output
+- Validation
+- Context efficiency
+- Safety and robustness
+- Reproducibility and evidence integrity
+
+
 Use one specific, observed-weakness hypothesis per iteration. Prefer user-supplied hypotheses and `skill-hypothesis-discovery` backlogs over this built-in catalog. Use this catalog only as a fallback or as seed taxonomy for discovery.
 
 
