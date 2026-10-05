@@ -1,5 +1,23 @@
 # Specialist Passbook
 
+## At a Glance
+
+Read this file when the active workflow needs **Specialist Passbook**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Transformation ownership invariant, Ordered pass ledger, Reproducibility pass rules, Provider rules, Pass rules.
+
+## Contents
+
+- Transformation ownership invariant
+- Ordered pass ledger
+- Reproducibility pass rules
+- Provider rules
+- Pass rules
+- Required sequence reconciliation gate
+- Evolutionary mode branch
+- Research traceability branch
+
+
 Every complete Skill Booster run must execute, apply by checklist, or classify each pass below. The ordered ledger is grouped by the six canonical phases. Specialist names identify capabilities, not a vendor-private invocation API.
 
 Status values: `pass`, `fail`, `blocked`, `not-run`, `not-applicable`, `applied-by-checklist`, `planned`.
@@ -94,4 +112,3 @@ Finalization is blocked when a required specialist is unclassified, `not-run`, c
 ## Research traceability branch
 
 `research-traceability` is not an additional canonical numbered pass. When a bounded research corpus materially determines optimization requirements or candidate changes, invoke it as a conditional evidence/traceability branch before accepting research-backed mutation. Its source -> finding -> requirement/change -> evaluation accounting feeds hypothesis selection, transformation, and acceptance evidence. Keep the canonical 25-pass path fully functional when the specialist is unavailable; include it in `required_specialists` only when the user or active research-backed plan explicitly requires it.
-

@@ -1,5 +1,22 @@
 # Evolutionary Search Routing
 
+## At a Glance
+
+Read this file when the active workflow needs **Evolutionary Search Routing**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Authority, Entry conditions, Handoff, Search loop, Self-improvement.
+
+## Contents
+
+- Authority
+- Entry conditions
+- Handoff
+- Search loop
+- Self-improvement
+- Workflow-policy learning
+- Contract evolution
+
+
 Use only for explicit `evolutionary-optimization`. Canonical optimization remains the default and must work without Skill Evolution installed.
 
 ## Authority

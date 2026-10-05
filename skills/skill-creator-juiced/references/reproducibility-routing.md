@@ -1,5 +1,22 @@
 # Reproducibility Routing
 
+## At a Glance
+
+Read this file when the active workflow needs **Reproducibility Routing**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Goal, Decision gate, Mode selection, Ordering, Ownership boundaries.
+
+## Contents
+
+- Goal
+- Decision gate
+- Mode selection
+- Ordering
+- Ownership boundaries
+- Cycle guards
+- Evidence contract
+
+
 Use this reference to decide whether `reproducibility-engineer` should participate and what it owns.
 
 ## Goal

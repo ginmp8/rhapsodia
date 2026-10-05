@@ -1,5 +1,26 @@
 # Reproducibility by Design
 
+## At a Glance
+
+Read this file when the active workflow needs **Reproducibility by Design**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Goal, 1. Classify the skill's reproducibility ceiling, 2. Build a variability map, 3. Choose controls proportionally, 4. Snapshot material evidence before analysis.
+
+## Contents
+
+- Goal
+- 1. Classify the skill's reproducibility ceiling
+- 2. Build a variability map
+- 3. Choose controls proportionally
+- 4. Snapshot material evidence before analysis
+- 5. Design output paths before implementing writes
+- 6. Treat delivery as a transaction when outputs belong together
+- 7. Make receipts evidence, not decoration
+- 8. Keep evaluator identity separate from candidate identity
+- 9. Decide whether specialist reproducibility work is still needed
+- 10. Creation-time acceptance checklist
+
+
 Use this reference while designing or materially updating a skill. This is a lightweight architecture pass owned by Skill Creator Juiced. It does **not** mean `reproducibility-engineer` must be invoked.
 
 ## Goal

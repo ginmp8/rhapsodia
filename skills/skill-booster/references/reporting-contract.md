@@ -1,5 +1,40 @@
 # Reporting Contract
 
+## At a Glance
+
+Read this file when the active workflow needs **Reporting Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Target, Source Trust Intake, Host Compatibility, Baseline, Source Integrity.
+
+## Contents
+
+- Target
+- Source Trust Intake
+- Host Compatibility
+- Baseline
+- Source Integrity
+- Reproducibility Routing
+- Specialist Pass Ledger
+- Required Specialist Sequence Reconciliation
+- Hypothesis Discovery
+- Change Gate
+- Hypotheses
+- Changes Applied
+- Portability Evidence
+- Validation Evidence
+- Final Evaluation
+- Final Freeze
+- Package
+- Remaining Risks
+- Next Recommended Hypothesis
+- Evidence language
+- Pass ledger example
+- Run-state and strategy decision
+- Evaluation integrity
+- Research traceability
+- Promotion attestation
+
+
 Use this final report shape. Omit only sections that are truly not applicable, and state why when omission could be mistaken for an unrun gate.
 
 ```markdown

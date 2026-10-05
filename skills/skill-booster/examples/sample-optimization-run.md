@@ -1,5 +1,18 @@
 # Sample Optimization Run
 
+## At a Glance
+
+Read this file when the active workflow needs **Sample Optimization Run**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Ledger excerpt, Discovery backlog excerpt, Hypothesis shape.
+
+## Contents
+
+- Ledger excerpt
+- Discovery backlog excerpt
+- Hypothesis shape
+
+
 User: “Optimize `<target-skill-root>` completely and return a validated `skill.zip`.”
 
 Response shape:

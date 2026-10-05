@@ -1,5 +1,27 @@
 # Evaluation and Generalization
 
+## At a Glance
+
+Read this file when the active workflow needs **Evaluation and Generalization**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: 1. Enter at the current lifecycle state, 2. Harvest context before asking questions, 3. Select the correct baseline, 4. Build a small realistic seed set, then expand, 5. Separate objective and subjective evaluation.
+
+## Contents
+
+- 1. Enter at the current lifecycle state
+- 2. Harvest context before asking questions
+- 3. Select the correct baseline
+- 4. Build a small realistic seed set, then expand
+- 5. Separate objective and subjective evaluation
+- 6. Generalize from failures; do not patch examples
+- 7. Inspect process, not only final output
+- 8. Promote repeated work into reusable resources
+- 9. Activation evaluation uses difficult boundaries
+- 10. Treat efficiency as supporting evidence
+- 11. Human feedback is evidence, not an instruction to overfit
+- 12. Stop conditions
+
+
 Use this reference when creating or improving a skill that needs behavioral evidence, iterative refinement, activation tuning, or protection against overfitting.
 
 ## 1. Enter at the current lifecycle state

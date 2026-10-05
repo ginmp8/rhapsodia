@@ -1,5 +1,23 @@
 # Self-Improvement Orchestration
 
+## At a Glance
+
+Read this file when the active workflow needs **Self-Improvement Orchestration**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Orchestration boundary, Self-improvement roles, Routing rules, Optimization state ownership, Ordering for a self-improvement cycle.
+
+## Contents
+
+- Orchestration boundary
+- Self-improvement roles
+- Routing rules
+- Optimization state ownership
+- Ordering for a self-improvement cycle
+- Evidence reconciliation
+- Anti-coupling rules
+- Self-improvement resume and evaluator integrity
+
+
 Use this reference when the target skill can modify itself or the user explicitly requests self-improvement. `skill-booster` is the global orchestration owner for improvement specialists; individual specialists keep only local, stable integrations needed by their own contract.
 
 ## Orchestration boundary

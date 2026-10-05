@@ -1,5 +1,27 @@
 # Evaluation Contract
 
+## At a Glance
+
+Read this file when the active workflow needs **Evaluation Contract**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Baseline record, Freeze rules, Reproducibility decision contract, Optimization state contract, Material finding closure contract.
+
+## Contents
+
+- Baseline record
+- Freeze rules
+- Reproducibility decision contract
+- Optimization state contract
+- Material finding closure contract
+- Metrics
+- Skill-hypothesis-discovery contract
+- Hypothesis record
+- Skill-change-gate contract
+- Final delivery contract
+- Evaluator visibility and contamination
+- Resume evidence
+
+
 Use before editing a target skill.
 
 ## Baseline record

@@ -1,5 +1,21 @@
 # External Skill Intake
 
+## At a Glance
+
+Read this file when the active workflow needs **External Skill Intake**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Trust boundary, Deterministic helper, Deterministic intake, Source identity and reruns, Handoff to portability.
+
+## Contents
+
+- Trust boundary
+- Deterministic helper
+- Deterministic intake
+- Source identity and reruns
+- Handoff to portability
+- Exit conditions
+
+
 Use this reference when the target skill came from the internet, a public/private repository outside the user-owned trusted set, an uploaded archive of uncertain provenance, a marketplace, or another third-party source. Treat it as `SOURCE_CLASS=external-untrusted-skill` until this intake passes.
 
 ## Trust boundary

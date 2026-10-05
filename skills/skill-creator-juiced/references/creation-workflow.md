@@ -1,5 +1,27 @@
 # Creation Workflow
 
+## At a Glance
+
+Read this file when the active workflow needs **Creation Workflow**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Phase 1: Lifecycle, context, origin, identity, baseline, and capabilities, Phase 2: Artifact Selection Gate, Phase 3: Skill capability boundary, Phase 4: Portable package architecture, Phase 5: Draft or update and define evaluation.
+
+## Contents
+
+- Phase 1: Lifecycle, context, origin, identity, baseline, and capabilities
+- Phase 2: Artifact Selection Gate
+- Phase 3: Skill capability boundary
+- Phase 4: Portable package architecture
+- Phase 5: Draft or update and define evaluation
+- Phase 6: Reproducibility decision
+- Phase 7: Specialist passes
+- Phase 8: Evaluate and generalize
+- Phase 9: Diagnostic repair
+- Phase 10: Validate
+- Phase 11: Acceptance, freeze, and canonical packaging
+- Phase 12: Report
+
+
 Use this workflow for net-new skills, updates, portability work, and major redesigns. Enter at the target's current lifecycle state rather than restarting completed work. When invoked by Skill Booster on an external skill, consume Booster's trust/intake evidence; Creator Juiced owns portability redesign, not quarantine/security intake.
 
 ## Phase 1: Lifecycle, context, origin, identity, baseline, and capabilities

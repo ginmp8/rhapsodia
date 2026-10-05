@@ -1,5 +1,16 @@
 # Research-Backed Optimization
 
+## At a Glance
+
+Read this file when the active workflow needs **Research-Backed Optimization**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Contract.
+
+## Contents
+
+- Contract
+
+
 Use this branch only when research evidence materially determines what the target skill should gain, remove, or change. It must remain optional: Skill Booster works without a research skill or a web capability.
 
 ## Contract

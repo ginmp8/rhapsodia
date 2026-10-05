@@ -29,6 +29,51 @@ ACTIVATION_ROUTES = {
     "reject-scope-weakening", "reject-fabricated-evidence", "reject-ownership-expansion",
 }
 ACTIVATION_CONTRACT_ID = re.compile(r"^[A-Z]{2,5}-\d{3}$")
+TOP100_LIMIT = 100
+TOP100_BOUNDARY_TERMS = ("activation", "routing", "scope", "use when", "do not use", "modes", "mode selection")
+TOP100_EXECUTION_TERMS = ("workflow", "quick start", "procedure", "process", "steps", "execution")
+TOP100_RULE_TERMS = ("core rules", "rules", "constraints", "guardrails", "invariants", "requirements")
+
+
+def check_top100_contract(target: Path, skill_md: Path) -> tuple[list[str], list[str]]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    lines = read_text(skill_md).splitlines()
+    if len(lines) > TOP100_LIMIT:
+        first = "\n".join(lines[:TOP100_LIMIT]).lower()
+        if not any(term in first for term in TOP100_BOUNDARY_TERMS):
+            errors.append("Top-100 control plane lacks scope/activation/routing guidance")
+        if not any(term in first for term in TOP100_EXECUTION_TERMS):
+            errors.append("Top-100 control plane lacks workflow/quick-start execution guidance")
+        if not any(term in first for term in TOP100_RULE_TERMS):
+            errors.append("Top-100 control plane lacks material rules/constraints/invariants")
+
+    direct_markdown: set[Path] = set()
+    for raw in MARKDOWN_LINK_RE.findall(read_text(skill_md)):
+        ref = raw.split("#", 1)[0].strip()
+        if not ref or "://" in ref or ref.startswith(("#", "/", "mailto:")):
+            continue
+        resolved = (skill_md.parent / ref).resolve()
+        if resolved.is_file() and resolved.suffix.lower() == ".md":
+            direct_markdown.add(resolved)
+
+    for md in sorted(target.rglob("*.md")):
+        if md == skill_md or ".git" in md.parts:
+            continue
+        md_lines = read_text(md).splitlines()
+        if len(md_lines) > TOP100_LIMIT:
+            first40 = "\n".join(md_lines[:40]).lower()
+            has_summary = any(token in first40 for token in ("## at a glance", "## summary", "## quick reference", "## overview"))
+            has_index = any(token in first40 for token in ("## contents", "## table of contents", "## section map"))
+            if not (has_summary and has_index):
+                warnings.append(f"long markdown lacks an early summary/index for partial preview: {md.relative_to(target)}")
+
+        for _source, _link, resolved in local_markdown_links(target, md):
+            if resolved.suffix.lower() == ".md" and resolved != skill_md.resolve() and resolved not in direct_markdown:
+                warnings.append(
+                    f"reference chain is deeper than one level from SKILL.md: {md.relative_to(target)} -> {resolved.relative_to(target)}"
+                )
+    return errors, warnings
 
 
 def validate_activation_suite_file(path: Path) -> list[str]:
@@ -124,6 +169,10 @@ def run_gate(target: Path, profile: str, hosts: str | None = None, surfaces: str
         warnings.append(f"SKILL.md exceeds progressive-disclosure review threshold: {line_count} lines > 500")
     if estimated_tokens > 5000:
         warnings.append(f"SKILL.md exceeds approximate context review threshold: ~{estimated_tokens} tokens > 5000")
+
+    top100_errors, top100_warnings = check_top100_contract(target, skill_md)
+    errors.extend(top100_errors)
+    warnings.extend(top100_warnings)
 
     directly_discoverable: set[str] = set()
     for raw in MARKDOWN_LINK_RE.findall(text):

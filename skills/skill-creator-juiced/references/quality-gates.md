@@ -1,5 +1,26 @@
 # Quality Gates
 
+## At a Glance
+
+Read this file when the active workflow needs **Quality Gates**. The decision-critical scope and section map are surfaced here so a partial preview is useful before deeper reading.
+
+Primary topics: Agent Skills Structural Gates, Portability Gates, Activation Gates, Architecture Gates, Evaluation and Generalization Gates.
+
+## Contents
+
+- Agent Skills Structural Gates
+- Portability Gates
+- Activation Gates
+- Architecture Gates
+- Evaluation and Generalization Gates
+- Reproducibility Gates
+- Research Traceability Gate
+- Change Acceptance Gates
+- Code and Script Gates
+- Evidence Gates
+- Final Package Gate
+
+
 Use these gates before claiming a skill is ready.
 
 ## Agent Skills Structural Gates
