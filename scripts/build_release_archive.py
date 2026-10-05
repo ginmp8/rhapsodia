@@ -10,7 +10,7 @@ def include(p:Path)->bool:
  rel=p.relative_to(ROOT)
  if any(x in EXCLUDED_DIRS for x in rel.parts):return False
  if p.name in EXCLUDED_NAMES or p.suffix.lower() in EXCLUDED_SUFFIXES:return False
- if p.name==".env" or p.name.startswith(".env."):return False
+ if p.name==".env" or (p.name.startswith(".env.") and p.name not in {".env.example",".env.sample",".env.template"}):return False
  return p.is_file() and not p.is_symlink()
 def sha256(p:Path)->str:
  h=hashlib.sha256()
