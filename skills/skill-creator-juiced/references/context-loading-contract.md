@@ -66,7 +66,7 @@ After the semantic preview, put `Contents`, `Table of Contents`, or `Section Map
 - revalidate whenever headings change;
 - keep H3+ entries optional unless a deeper map is intentionally useful.
 
-Missing semantic-preview signals, generic placeholder preview language, missing navigation structure, or contents/heading drift is a structural readiness failure for editable Markdown. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; the validator must surface the exception as a warning.
+Missing semantic-preview signals, generic filler preview language, missing navigation structure, or contents/heading drift is a structural readiness failure for editable Markdown. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; the validator must surface the exception as a warning.
 
 ## Reference Depth
 

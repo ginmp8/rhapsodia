@@ -1,8 +1,7 @@
-name: Validate RhapsodIA 0.5.0 release package
+name: Validate RhapsodIA 0.5.0 Top-100 control surface package
 on:
   push:
-    branches: [main, feature/top-100-control-surface]
-    tags: [v0.5.0]
+    branches: [build/top-100-control-surface-0.5.0]
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +24,17 @@ jobs:
           python skills/adaptive-workflow-orchestration/scripts/validate_dynamic_workflow.py skills/adaptive-workflow-orchestration/assets/templates/dynamic-workflow-plan.json.template
           python -m unittest discover -s skills/checkpoint-convergence/tests -p 'test_*.py' -v
           python skills/checkpoint-convergence/scripts/validate_convergence_plan.py skills/checkpoint-convergence/assets/templates/convergence-plan.json.template
+      - name: Validate Top-100 control-surface contracts
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python skills/decision-engine/tests/test_top100_contract.py
+          python -m unittest discover -s skills/reproducibility-engineer/tests -p 'test_context_loading_contract.py' -v
+          python -m unittest discover -s skills/research-traceability/tests -p 'test_context_loading.py' -v
+          python skills/skill-booster/tests/test_top100_context_contract.py
+          python skills/skill-creator-juiced/tests/test_top100_context_contract.py
+          python skills/skill-evolution/scripts/validate_skill_evolution.py --target skills/skill-evolution
+          python skills/systematic-debugging/scripts/validate_skill.py
       - name: Clean generated Python caches
         run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
       - name: Validate agents and release metadata
@@ -35,19 +45,19 @@ jobs:
           python -m unittest tests.test_validate_agents tests.test_install_agents tests.test_marketplace_manifests tests.test_workspace_agent_contract tests.test_release_versions -v
           python scripts/generate_marketplace_manifests.py --check
           python scripts/generate_agent_manifest.py --check --package-version 0.5.0
-          python scripts/validate_release_versions.py
+          python scripts/validate_release_versions.py --expected-version 0.5.0
           python scripts/prepare_release.py --check
       - name: Build deterministic archives twice
         run: |
           mkdir -p dist/a dist/b
-          python scripts/build_release_archive.py --version 0.5.0 --output dist/a/rhapsodia-0.5.0.zip
-          python scripts/build_release_archive.py --version 0.5.0 --output dist/b/rhapsodia-0.5.0.zip
-          cmp dist/a/rhapsodia-0.5.0.zip dist/b/rhapsodia-0.5.0.zip
-          unzip -t dist/a/rhapsodia-0.5.0.zip
-          sha256sum dist/a/rhapsodia-0.5.0.zip
+          python scripts/build_release_archive.py --version 0.5.0 --output dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
+          python scripts/build_release_archive.py --version 0.5.0 --output dist/b/rhapsodia-0.5.0-top-100-control-surface.zip
+          cmp dist/a/rhapsodia-0.5.0-top-100-control-surface.zip dist/b/rhapsodia-0.5.0-top-100-control-surface.zip
+          unzip -t dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
+          sha256sum dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: rhapsodia-0.5.0
-          path: dist/a/rhapsodia-0.5.0.zip
+          name: rhapsodia-0.5.0-top-100-control-surface
+          path: dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
           if-no-files-found: error
           retention-days: 30

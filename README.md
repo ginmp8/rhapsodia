@@ -1,18 +1,14 @@
 # RhapsodIA
 
-## 0.5.0 — expanded skill catalog and stronger quality contracts
+## 0.5.0 — Top-100 control surfaces and progressive loading
 
-This release adds new specialist skills and improves existing ones with clearer activation and context-loading contracts, validation, evaluation scenarios, and supporting references. It builds on the artifact-native governance, planning, and execution workflows introduced in 0.4.0.
+RhapsodIA 0.5.0 makes skill selection and safe task startup more reliable under partial context. For every long `SKILL.md` touched by this release, the primary control surface is moved into the first 100 physical lines: purpose and boundaries, material modes, a usable workflow, critical invariants, stop/acceptance conditions, and direct pointers to branch-specific resources.
 
-## 0.4.0 — artifact-native workflows and convergent execution
+The release updates **39 existing skills** and adds **three new skills** — `discernment-nudge`, `systematic-debugging`, and `visual-code-intelligence` — bringing the catalog to **48 Agent Skills and seven agent profiles**. Long authored supporting Markdown now follows a semantic-preview-first pattern with decision-useful `Purpose`, `Load when`, and `Decision impact` signals plus synchronized navigation, while one-hop discovery keeps required guidance directly reachable from `SKILL.md`.
 
-This release brings together artifact-native governance, planning, and execution workflows with a **compile-to-workflow + checkpoint-and-gate** model. For risky multi-step work, RhapsodIA prefers small reviewable checkpoints, reference-derived oracle identity, declared gate order, fresh-context verification, explicit evidence memory, live-state revalidation for mutable sources, and immutable checkpoint evidence before dependent work proceeds.
+The control-plane policy is enforced by the skill creation, optimization, reproducibility, traceability, and change-gating surfaces instead of relying on prose convention alone. Internal semantic contract versions remain independently versioned; this package release does not globally rewrite workflow/schema identities merely to match `0.5.0`.
 
-The design incorporates patterns derived from public engineering research into RhapsodIA-specific execution contracts: deterministic code owns invariants and packaging; agents own bounded judgment; memory is evidence rather than truth; and autonomy may increase only inside a predeclared policy and never weakens required gates.
-
-Research provenance and adaptation boundaries are documented in `skills/checkpoint-convergence/references/research-basis.md`.
-
-Packaging is handled by a deterministic full-project release builder and CI validation workflow.
+Packaging remains deterministic and release metadata is validated from the canonical marketplace version before archive creation.
 
 ## Artifact-native workspace (Mags 2.0.0)
 

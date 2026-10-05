@@ -61,7 +61,7 @@ After the semantic preview, place `Contents`, `Table of Contents`, or `Section M
 
 Derive entries from the document's actual material `##` headings outside fenced code. Exclude the document title and preview/navigation headings. Every remaining H2 must appear exactly once, in document order, and the map must not name sections that do not exist. H3+ entries are optional unless a deeper map is intentionally needed. Revalidate the map whenever headings change.
 
-Missing semantic-preview signals, generic placeholder preview language, missing navigation structure, or contents/heading drift is a structural validation failure for editable Markdown. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; record the exception and surface it as a warning rather than silently skipping the file.
+Missing semantic-preview signals, generic filler preview language, missing navigation structure, or contents/heading drift is a structural validation failure for editable Markdown. Generated, vendor, or unsafe-to-rewrite Markdown may declare `<!-- context-preview-exception: generated -->`, `vendor`, or `unsafe-to-rewrite` within the first 40 lines; record the exception and surface it as a warning rather than silently skipping the file.
 
 ## One-Level Reference Topology
 
