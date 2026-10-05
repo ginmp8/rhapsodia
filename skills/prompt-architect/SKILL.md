@@ -1,80 +1,68 @@
 ---
 name: prompt-architect
-description: use when asked to create, rewrite, improve, review, validate, benchmark, harden, or package prompts, system prompts, chat modes, github copilot agent prompts, custom instructions, agent instructions, or reusable skill instructions. especially use for prompt engineering requests that require preserving user intent, choosing the correct control lever, resolving conflicting requirements, integrating sources, defining execution profiles and testable output contracts, separating prompt guidance from runtime enforcement, designing evaluation scenarios, or producing validation evidence. do not use merely to execute a task described by a prompt when the user is not asking to design or assess the prompt itself.
+description: use when asked to create, rewrite, improve, review, validate, benchmark, harden, or package reusable prompts, system prompts, agent prompts, chat modes, custom instructions, or prompt specifications. owns right-lever selection, requirement preservation, execution-profile/context/enforcement contracts, output contracts, scenario design, and evidence-bounded prompt comparisons. do not use merely to execute, summarize, translate, or extract from a prompt, or when the requested guarantee is purely an application/runtime concern with no prompt-design work.
 ---
 
 # Prompt Architect
 
-Turn rough prompt ideas or existing prompt artifacts into bounded, testable behavioral contracts. Preserve legitimate semantic freedom, but make activation, requirements, conflicts, execution assumptions, output shape, enforcement, validation claims, and repair decisions reproducible enough that repeated reviews are materially comparable.
+Turn rough prompt ideas or existing prompt artifacts into bounded, testable behavioral contracts. Preserve legitimate semantic freedom while making requirements, conflicts, execution assumptions, output shape, enforcement, validation claims, and repair decisions reproducible enough for materially comparable reviews.
 
-Treat the reusable semantic contract as the source of truth. Render or adapt that contract to the intended executor only after the execution profile is known well enough to justify host/model-specific guidance.
+Treat the host-neutral semantic contract as the source of truth; adapt it to a provider, host, model, or tool surface only after the material execution profile is known.
 
 ## Reproducibility ceiling
 
-Prompt design is a **constrained-subjective** task. Structure, requirement preservation, evidence handling, scenario shape, execution-profile identity, mechanical lint, and claim rules can be enforced. Wording quality, decomposition, and some trade-offs remain model judgment.
-
-Do not claim byte-identical outputs, universal prompt quality, universal prompting techniques, or behavioral improvement from static inspection alone.
+Prompt design is **constrained-subjective**. Structure, requirement preservation, evidence handling, scenario shape, execution-profile identity, mechanical lint, and claim rules can be enforced; wording quality, decomposition, and some trade-offs remain model judgment. Never claim byte-identical outputs, universal prompt quality, universal prompting techniques, or behavioral improvement from static inspection alone.
 
 ## Activation contract
 
-Activate for requests to:
+Activate when the user wants to create or materially change a reusable prompt artifact; review or score prompt quality without executing the prompt's task; validate prompt behavior, activation, ambiguity, output compliance, runtime assumptions, or safety boundaries; or build reusable prompt contracts, templates, scenarios, execution profiles, or specifications.
 
-- create a reusable prompt, system prompt, agent prompt, chat mode, custom instruction, or prompt template;
-- improve, rewrite, harden, simplify, compress, or restructure an existing prompt;
-- review or score prompt quality without executing the prompt's task;
-- test or validate prompt behavior, activation, ambiguity, output compliance, runtime assumptions, or safety boundaries;
-- build reusable prompt assets, prompt contracts, scenario suites, execution profiles, or prompt specifications.
-
-Do **not** activate merely because a prompt is present when the user asks to execute, summarize, translate, or extract information from it.
-
-When intent is ambiguous, prefer the user's explicit verb. If the target artifact itself is missing and cannot be recovered from context, ask for that artifact rather than inventing it.
+Do **not** activate merely because a prompt is present when the user asks to execute, summarize, translate, or extract information from it. If the target artifact is required but unavailable, recover it from context or ask for it rather than inventing it. When intent is ambiguous, prefer the user's explicit verb.
 
 ## Modes and routing
 
 Choose exactly one primary mode before drafting:
 
-| Mode | Trigger | Primary output |
+| Mode | Use when | Primary output |
 |---|---|---|
-| `create` | create a new prompt from a task or idea | final prompt + optional design/validation notes |
+| `create` | new prompt from a task or idea | final prompt + optional design/validation notes |
 | `improve` | modify an existing prompt | revised prompt + change ledger + validation evidence |
 | `review-only` | evaluate without rewriting | findings + rubric + prioritized fixes |
 | `validation-only` | test an existing prompt | scenario results + defects + evidence label |
 | `package-guidance` | build reusable prompt assets | prompt spec/templates/scenarios |
 
-Routing precedence when multiple intents appear:
-
-1. obey explicit prohibitions such as "review only" or "do not rewrite";
-2. if the user requests both rewrite and validation, use `improve` and include validation;
-3. if the user requests only execution of the prompt's task, do not enter prompt-design mode;
-4. otherwise choose the narrowest mode that satisfies the request.
-
-Never silently switch modes after evidence collection. If a later requirement changes the mode materially, state the switch and why.
+Routing precedence: obey explicit prohibitions first; `rewrite + validate` => `improve`; task execution only => do not enter prompt-design mode; otherwise choose the narrowest sufficient mode. Never silently switch modes after evidence collection.
 
 ## Right-lever gate
 
-Before changing prompt text, identify the smallest control layer that can actually change the failing criterion:
-
-`prompt -> model/configuration -> context/retrieval -> native schema/tool contract -> application/runtime control -> fine-tuning -> architecture`
-
-Use `prompt` or `mixed` only when prompt behavior is genuinely part of the solution. If the requested outcome depends mainly on another layer, say so and either route the work there or limit Prompt Architect to the prompt-controlled portion.
-
-Do not claim that prompt text can enforce authorization, isolation, transactional side effects, secret handling, or other runtime guarantees that require application/runtime controls.
+Before changing prompt text, identify the smallest control layer that can change the failing criterion:
+`prompt -> model/configuration -> context/retrieval -> native schema/tool contract -> application/runtime control -> fine-tuning -> architecture`.
+Use `prompt` or `mixed` only when prompt behavior is genuinely part of the solution. Prompt text cannot enforce authorization, isolation, transactional side effects, secret handling, or other guarantees that require runtime/application controls.
 
 ## Core invariants
 
-Preserve these across all modes:
+Preserve across all modes: user goals and terminology; variables/constants/examples and required style; immutable quoted/protected regions; source-required semantics; safety/privacy/legal/compliance/evidence/validation requirements; actual tool/executor boundaries; downstream output contracts; and a host-neutral semantic core unless host specialization is explicitly requested.
 
-- user-provided goals, domain terminology, variables, constants, examples, language, required style, and explicit constraints unless higher-priority instructions or safety rules require otherwise;
-- protected examples or quoted text exactly when the user marks them immutable;
-- source-required semantics when the prompt is derived from authoritative documentation;
-- safety, privacy, legal, compliance, evidence, and validation requirements;
-- tool availability and execution boundaries of the intended executor;
-- output contracts that downstream consumers rely on;
-- a host-neutral semantic core unless the user explicitly requests a host-specific artifact.
+Do not remove semantic content merely to shorten, beautify, or make a validator pass. Do not expose hidden chain-of-thought; request concise rationale, evidence, checks, calculations, or decision criteria when visible reasoning is needed.
 
-Do not remove semantic content merely to shorten, beautify, or make a validator pass.
+## Quick-start workflow
 
-Do not expose hidden chain-of-thought. When the prompt needs visible reasoning, request concise rationale, evidence, checks, calculations, or decision criteria instead.
+1. **Establish** the target/version, success criterion, execution profile, protected regions, and compatibility commitments; freeze scenarios/evaluator before edits when a behavioral comparison will be claimed.
+2. **Normalize** target, right lever, authority/trust, context, tools, enforcement layer, output contract, safety, validation, and compatibility; ask one focused question only when a missing fact materially changes them.
+3. **Collect evidence** from user files/docs/URLs/repos/examples; record provenance and resolve conflicts by authority instead of silently blending sources.
+4. **Audit before rewriting** in execution order: success criterion/right lever -> objective -> executor/profile -> inputs/context -> authority/trust -> tools/sources -> enforcement -> workflow -> output -> safety/privacy -> validation readiness.
+5. **Design the semantic contract**, then render for the executor: requirements -> execution profile -> authority/trust -> context contract -> enforcement map -> rendered prompt/runtime controls -> evaluation contract.
+6. **Validate proportionally** with deterministic checks and the smallest frozen scenario set that covers the material risk; bind behavioral/runtime claims to the relevant execution profile.
+7. **Repair by diagnosis**: map each failed criterion to one causal defect, apply the smallest fix, rerun the same check, then adjacent regressions; never weaken semantics, safety, evidence, or evaluators to pass.
+8. **Freeze after pass**: later semantic edits or material execution-profile drift invalidate affected evidence; package only the revalidated frozen bytes.
+
+## Direct reference routing
+
+- Complex `create`/`improve`, conflict resolution, compilation, or rewrite scope -> [prompt-architecture-workflow.md](references/prompt-architecture-workflow.md); machine-readable requirements/protected semantics -> [prompt-contract.md](references/prompt-contract.md).
+- External or multiple authoritative sources -> [source-integration.md](references/source-integration.md); `review-only` or scoring -> [prompt-quality-rubric.md](references/prompt-quality-rubric.md).
+- Provider/host/model identity, instruction authority, trust, tool schemas, or enforcement -> [runtime-contract.md](references/runtime-contract.md); long/dynamic/untrusted context -> [context-engineering.md](references/context-engineering.md).
+- Runtime-sensitive paired comparisons -> [environment-provenance.md](references/environment-provenance.md); host-specific instruction surfaces -> [host-adapters.md](references/host-adapters.md).
+- Scenario design/comparison/repair -> [validation-scenarios.md](references/validation-scenarios.md); evaluator bias/holdouts/optimizer search -> [evaluation-integrity.md](references/evaluation-integrity.md); claim strength -> [evidence-and-claims.md](references/evidence-and-claims.md).
 
 ## Input normalization
 

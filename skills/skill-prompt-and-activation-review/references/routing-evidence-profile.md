@@ -4,6 +4,23 @@ Evidence contract version: `2`.
 
 Use this profile only when a review attempts to compare observed activation or routing behavior. Static review does not need a fabricated runtime profile.
 
+## At a Glance
+
+- **Purpose:** Define evidence-version 2 fields that bind observed host-routing results to the environment, catalog, invocation mode, visibility boundary, and trial policy that produced them.
+- **Load when:** A review records, validates, or compares actual host-routing observations; static-only review does not need a fabricated routing profile.
+- **Decision impact:** Determines the routing fingerprint, required evidence fields, negative-case semantics, trial comparability, validator inputs, and whether two routing result sets can be compared.
+
+## Contents
+
+- Purpose
+- Evidence shape
+- Routing profile rules
+- Invocation modes
+- Trial rules
+- Negative routing semantics
+- Validation
+- Versioning and migration
+
 ## Purpose
 
 Bind host-routing evidence to the material environment that can change discovery and selection:

@@ -2,6 +2,26 @@
 
 Use with `references/activation-contract.md`. The contract defines semantics; this rubric defines how to inspect and report evidence.
 
+## At a Glance
+
+- **Purpose:** Define the inspection, severity, evidence, and finding-record rubric used to review discovery descriptions, routing boundaries, scenarios, and activation-text changes.
+- **Load when:** A static or evidence-backed review must judge routing specificity, FP/FN risk, overlap, scenario quality, evidence comparability, severity, or rewrite traceability.
+- **Decision impact:** Determines whether an issue is a risk or confirmed defect, which severity applies, what evidence a rewrite needs, and what must appear in each finding record.
+
+## Contents
+
+- 1. Discovery description
+- 2. Invocation-mode review
+- 3. False-positive risk versus confirmed false positive
+- 4. False-negative risk versus confirmed false negative
+- 5. Negative semantics and overlap
+- 6. Ambiguity, boundary, and activation gaming
+- 7. Scenario quality
+- 8. Evidence comparability
+- 9. Evidence requirements for activation-text changes
+- 10. Stable severity
+- 11. Finding record
+
 ## 1. Discovery description
 
 A strong description is a compact routing surface, not a second instruction manual. Check whether it:

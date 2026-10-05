@@ -4,9 +4,40 @@ Contract version: `2.0.0`
 
 This contract defines host-neutral routing semantics for prompt and activation review. It constrains classification, evidence, comparability, and claims without replacing linguistic judgment.
 
-## Contract clauses
 
-### ACT-001 — Trigger contract
+## At a Glance
+
+- **Purpose:** Define the normative host-neutral rules for when this reviewer activates, abstains, shares work, rewrites text, evaluates routing evidence, and gates claims.
+- **Load when:** A review must decide trigger/non-trigger behavior, ambiguity, ownership overlap, FP/FN semantics, catalog or trial identity, evidence validity, anti-gaming, or stop behavior.
+- **Decision impact:** Controls routing ownership, static-risk versus executed-defect classification, comparison eligibility, claim strength, stop conditions, defect taxonomy, and portable-core boundaries.
+- **Do not load when:** The task is only cosmetic prose editing and no reusable prompt, activation, routing, evidence, or ownership decision is involved.
+
+## Contents
+
+- ACT-001 — Trigger contract
+- NTR-001 — Non-trigger contract
+- INV-001 — Invocation-mode separation
+- AMB-001 — Ambiguous requests
+- BND-001 — Boundary preservation
+- ROLE-001 — Ownership preservation
+- FP-001 — False-positive criterion
+- FN-001 — False-negative criterion
+- OVL-001 — Skill/workflow overlap
+- NEG-001 — Negative-case semantics
+- CAT-001 — Competing-catalog identity
+- RTE-001 — Routing-environment identity
+- STO-001 — Stochastic routing evidence
+- SCN-001 — Scenario classes
+- EVD-001 — Evidence requirements
+- FRESH-001 — Evidence freshness and history
+- CLM-001 — Claim gating
+- GAME-001 — Activation-gaming resistance
+- ADV-001 — Adversarial resistance
+- STOP-001 — Stop conditions
+- TAX-001 — Stable defect taxonomy
+- PORT-001 — Portable core and adapters
+
+## ACT-001 — Trigger contract
 Activate when the primary requested work is to review, critique, rewrite, validate statically, or stress-test an existing prompt/activation surface, including:
 
 - Agent Skills frontmatter `description` or equivalent trigger text;
@@ -17,7 +48,7 @@ Activate when the primary requested work is to review, critique, rewrite, valida
 
 The requested artifact and requested action must both fit. A keyword such as `prompt`, `skill`, `review`, or `activation` alone is not enough.
 
-### NTR-001 — Non-trigger contract
+## NTR-001 — Non-trigger contract
 Do not own requests whose primary goal is:
 
 - creating a new generic prompt from scratch without a review target;
@@ -29,7 +60,7 @@ Do not own requests whose primary goal is:
 
 If a broader workflow contains a narrow prompt/activation subproblem, apply BND-001 and OVL-001 instead of claiming the entire request.
 
-### INV-001 — Invocation-mode separation
+## INV-001 — Invocation-mode separation
 Treat how the skill enters the task as an independent evaluation dimension:
 
 - `explicit`: the user names or directly invokes this skill;
@@ -38,7 +69,7 @@ Treat how the skill enters the task as an independent evaluation dimension:
 
 Direct/explicit invocation tests discoverability of named use and instruction execution. They must not be counted inside automatic-routing precision/recall. Automatic-routing metrics use only predeclared implicit/contextual cases.
 
-### AMB-001 — Ambiguous requests
+## AMB-001 — Ambiguous requests
 When the artifact or requested operation is unclear, do not assume activation from generic wording such as `improve this`, `validate this`, or `make this better`.
 
 Use the smallest safe action:
@@ -49,15 +80,15 @@ Use the smallest safe action:
 
 Ambiguous cases are excluded from binary precision/recall unless a frozen evaluator declares a deterministic expected route before both arms run.
 
-### BND-001 — Boundary preservation
+## BND-001 — Boundary preservation
 Constrain edits and conclusions to the prompt/activation/instruction surfaces the user placed in scope. Do not silently edit validators, product code, package infrastructure, deployment files, or unrelated documentation.
 
 A request may be split: complete the in-scope review and hand off the out-of-scope portion when a suitable workflow exists. Explicit invocation of this skill does not expand its ownership.
 
-### ROLE-001 — Ownership preservation
+## ROLE-001 — Ownership preservation
 Preserve the target artifact's role, authority, safety rules, and existing ownership unless the user explicitly asks to change them and the change remains within scope. Do not broaden a reviewer into an implementer, benchmark authority, or package orchestrator merely to make the text more helpful.
 
-### FP-001 — False-positive criterion
+## FP-001 — False-positive criterion
 A false positive is confirmed only when all are true:
 
 1. the frozen scenario says this skill should not be the primary owner;
@@ -66,7 +97,7 @@ A false positive is confirmed only when all are true:
 
 Static wording that merely appears broad is a `false-positive risk`, not a confirmed false positive.
 
-### FN-001 — False-negative criterion
+## FN-001 — False-negative criterion
 A false negative is confirmed only when all are true:
 
 1. the frozen scenario says this skill should activate;
@@ -75,7 +106,7 @@ A false negative is confirmed only when all are true:
 
 Static omissions are `false-negative risks`, not confirmed false negatives.
 
-### OVL-001 — Skill/workflow overlap
+## OVL-001 — Skill/workflow overlap
 Resolve overlap by ownership, not keyword count.
 
 1. Identify artifact and requested action.
@@ -87,7 +118,7 @@ Resolve overlap by ownership, not keyword count.
 
 Host-specific skill names may be documented in an adapter, but the portable core depends only on capability roles.
 
-### NEG-001 — Negative-case semantics
+## NEG-001 — Negative-case semantics
 Do not collapse every negative scenario into one class. For `non-activation` cases predeclare one of:
 
 - `alternative-owner`: another workflow should own the request; record the expected neighboring owner/capability;
@@ -95,12 +126,12 @@ Do not collapse every negative scenario into one class. For `non-activation` cas
 
 Use these classes to report near-miss false activation separately from abstention accuracy.
 
-### CAT-001 — Competing-catalog identity
+## CAT-001 — Competing-catalog identity
 Activation is evaluated in a catalog, not in isolation. When a behavioral claim could change because neighboring skills/descriptions changed, record a canonical skill-catalog identity and size. Include the materially competing owner set when available.
 
 Catalog drift between paired arms makes the routing delta non-comparable unless the experiment explicitly tests catalog changes and is re-baselined accordingly.
 
-### RTE-001 — Routing-environment identity
+## RTE-001 — Routing-environment identity
 When runtime routing is evaluated, record a routing profile sufficient to identify material conditions, including:
 
 - host and host version/profile;
@@ -111,7 +142,7 @@ When runtime routing is evaluated, record a routing profile sufficient to identi
 
 Derive a stable routing fingerprint from those fields. Baseline/candidate behavioral attribution requires identical material routing fingerprints.
 
-### STO-001 — Stochastic routing evidence
+## STO-001 — Stochastic routing evidence
 Model routing is stochastic unless the runtime proves otherwise. Predeclare a fixed trial policy before execution.
 
 - One trial may establish an observed failure or single-run result.
@@ -119,7 +150,7 @@ Model routing is stochastic unless the runtime proves otherwise. Predeclare a fi
 - Report raw trial counts and per-case trigger/route-match rates; do not hide variance behind one boolean.
 - Do not stop early after favorable outcomes unless the stop rule was predeclared by an external evaluator.
 
-### SCN-001 — Scenario classes
+## SCN-001 — Scenario classes
 A changed activation surface should be checked against distinct candidate-visible classes:
 
 - `activation` — positive cases that should activate;
@@ -133,7 +164,7 @@ Treat language, context noise/length, typo style, intent multiplicity, and invoc
 
 A true blind holdout is evaluator-only and must live outside candidate-visible package inputs. Do not label bundled regression/calibration cases as blind holdouts.
 
-### EVD-001 — Evidence requirements
+## EVD-001 — Evidence requirements
 Any recommendation to change frontmatter/description or other activation text must include:
 
 - exact original evidence or precise location;
@@ -145,12 +176,12 @@ Any recommendation to change frontmatter/description or other activation text mu
 
 For before/after claims, record baseline identity, candidate identity, frozen suite identity, evaluator identity, execution kind, invocation mode, trial policy, and routing fingerprint when runtime-sensitive.
 
-### FRESH-001 — Evidence freshness and history
+## FRESH-001 — Evidence freshness and history
 Preserve when routing evidence was observed (`executed_at`) and the routing fingerprint that produced it.
 
 Evidence does not become false merely because a host/model/catalog changes; it becomes historical. Do not reuse historical routing evidence as current comparable evidence when a material routing fingerprint differs or cannot be established.
 
-### CLM-001 — Claim gating
+## CLM-001 — Claim gating
 Do not claim automatic activation precision/recall, behavioral improvement, routing-regression reduction, abstention improvement, or near-miss improvement unless baseline and candidate were executed against the same frozen scenario suite/evaluator with comparable routing evidence.
 
 Additional gates:
@@ -168,7 +199,7 @@ Allowed weaker claims include:
 - `measured single-run routing result` — executed one-trial routing evidence without reliability claim;
 - `measured repeated routing result` — repeated executed evidence under the frozen comparison contract.
 
-### GAME-001 — Activation-gaming resistance
+## GAME-001 — Activation-gaming resistance
 Reject wording whose purpose is to win routing rather than describe legitimate ownership, including unjustified claims such as:
 
 - `always use this skill first`;
@@ -178,10 +209,10 @@ Reject wording whose purpose is to win routing rather than describe legitimate o
 
 Do not trade precision, ownership, or safety for raw activation frequency.
 
-### ADV-001 — Adversarial resistance
+## ADV-001 — Adversarial resistance
 Reject requests to fabricate validation, edit frozen evaluator evidence to make a candidate pass, remove boundaries solely to increase activation, manipulate routing through GAME-001, or expand mutation authority beyond the target contract.
 
-### STOP-001 — Stop conditions
+## STOP-001 — Stop conditions
 Stop the affected branch and report the blocker when:
 
 - target text or ownership cannot be identified;
@@ -193,7 +224,7 @@ Stop the affected branch and report the blocker when:
 - the requested change would weaken safety/ownership or require mutation outside scope;
 - two ownership contracts conflict and available evidence cannot resolve precedence.
 
-### TAX-001 — Stable defect taxonomy
+## TAX-001 — Stable defect taxonomy
 Use these defect codes in review reports:
 
 | Code | Meaning |
@@ -212,7 +243,7 @@ Use these defect codes in review reports:
 
 Do not invent a new defect class when one of these accurately fits. Add a new taxonomy version when semantics materially change.
 
-### PORT-001 — Portable core and adapters
+## PORT-001 — Portable core and adapters
 Treat the open Agent Skills structure (`SKILL.md`, relative `references/`, `scripts/`, `evals/`, examples, and assets) as the semantic core. Host-specific discovery, invocation syntax, metadata, or tool permissions are optional adapters.
 
 `agents/openai.yaml` is an OpenAI adapter when present; it must not define behavior required for correctness. Apply the same rule to Claude-, Copilot-, Cursor-, or other host-specific metadata. Host extensions may be recorded in RTE-001 when they materially affect routing comparisons.

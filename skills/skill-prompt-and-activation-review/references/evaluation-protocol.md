@@ -4,6 +4,28 @@ Protocol version: `2.0.0`.
 
 Use this protocol when activation/boundary text changes or when the user asks for evidence beyond static review. Keep the protocol host-neutral: a host adapter or external harness may execute routing, but the evidence contract is portable.
 
+## At a Glance
+
+- **Purpose:** Define the frozen before/after protocol for activation or boundary changes when behavioral routing evidence or measured comparison claims are requested.
+- **Load when:** Activation/boundary text changed and the review will execute or compare host-routing evidence, repeated trials, baseline/candidate arms, or freshness-sensitive routing metrics.
+- **Decision impact:** Fixes evaluator and catalog identity, visibility/isolation, trial policy, comparable-arm requirements, metric eligibility, claim vocabulary, gate order, and comparison stop conditions.
+
+## Contents
+
+- Evidence layers
+- Canonical suite
+- Invocation-mode separation
+- Routing environment identity
+- Repeated trials
+- Baseline/candidate pairing
+- Self-generated candidates
+- Result evidence contract
+- Metrics
+- Freshness and historical evidence
+- Claim vocabulary
+- Gate order
+- Stop conditions
+
 ## Evidence layers
 
 Keep these distinct:

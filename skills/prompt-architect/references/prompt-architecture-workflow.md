@@ -1,6 +1,30 @@
 # Prompt Architecture Workflow
 
-Use this reference for `create` and `improve` work that needs more than a narrow wording edit.
+## At a Glance
+
+- **Purpose:** Own the detailed authoring pipeline for complex `create`/`improve` work: choose the correct control lever, preserve semantic requirements, resolve authority/trust, define execution/context/enforcement contracts, choose rewrite scope, render the prompt, and close validation/repair.
+- **Load when:** A prompt change is more than a narrow wording edit, when requirements conflict, when runtime/tool/context assumptions matter, or when a reusable prompt must be compiled from an explicit semantic contract.
+- **Decision impact:** Determines which layer should control the outcome, which requirements are immutable, how conflicts are resolved, what may be enforced by prompt versus runtime, how much of the artifact may change, and what must be validated before acceptance.
+- **Do not load when:** The request is only task execution, translation/summarization, or a trivial wording correction whose requirements and execution assumptions are already unambiguous.
+
+## Contents
+
+- 0. Choose the right lever
+- 1. Build the semantic requirement ledger
+- 2. Separate three authority questions
+- 3. Resolve design conflicts deterministically
+- 4. Establish the execution profile
+- 5. Design the context contract
+- 6. Map enforcement to the lowest reliable layer
+- 7. Audit in execution order
+- 8. Choose rewrite scope
+- 9. Compile the semantic contract into a rendered prompt
+- 10. Control degrees of freedom
+- 11. Tool/source rules
+- 12. Output contract
+- 13. Examples
+- 14. Candidate change ledger
+- 15. Validation and repair
 
 ## 0. Choose the right lever
 
@@ -42,7 +66,7 @@ Do not collapse these into one precedence list:
 - **runtime instruction authority**: which instruction surface the executor treats as authoritative;
 - **data trust**: which content is merely data, quoted/untrusted material, tool output, or trusted instruction input.
 
-Use [runtime-contract.md](../references/runtime-contract.md) when runtime authority or trust is material.
+Use [runtime-contract.md](runtime-contract.md) when runtime authority or trust is material.
 
 ## 3. Resolve design conflicts deterministically
 
@@ -86,7 +110,7 @@ When context is material, classify it before rendering:
 - overflow/trimming/summarization behavior;
 - provenance requirements.
 
-Do not assume that maximum context or one universal placement strategy is optimal. Use [context-engineering.md](../references/context-engineering.md).
+Do not assume that maximum context or one universal placement strategy is optimal. Use [context-engineering.md](context-engineering.md).
 
 ## 6. Map enforcement to the lowest reliable layer
 
