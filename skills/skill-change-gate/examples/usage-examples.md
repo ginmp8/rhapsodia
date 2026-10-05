@@ -59,3 +59,9 @@ Expected: mark the previous decision stale when destination identity is material
 User: "The local package is valid, but an exported contract changed and a known consumer has not been checked."
 
 Expected: local acceptance may pass if its own gates pass, but an `ecosystem-safe` claim is not proven until all known consumers are compatible.
+
+## Fail under strict Top-100 context loading
+
+User: "The candidate keeps all instructions, but moved workflow, decision rules, and resource routing below line 100 of a 240-line SKILL.md. Can it pass strict review?"
+
+Expected: `fail` under `strict` unless the first 100 lines are repaired or equivalent evidence disproves the context-loading regression. Treat the Top-100 rule as portable package policy, not as an Agent Skills specification mandate.
