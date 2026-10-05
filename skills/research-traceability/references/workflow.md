@@ -1,5 +1,28 @@
 # Workflow
 
+## At a Glance
+
+Use this file for the detailed execution order behind the six-phase control plane in `SKILL.md`. Preserve evidence identity before interpretation, convert the frozen corpus into atomic findings and testable requirements, freeze evaluators before related mutation when feasible, apply only reverse-justified changes, validate structure and semantics separately, then freeze/package exact passing bytes.
+
+For Agent Skills over 100 lines, preserve the decision-critical control plane in the first 100 physical lines and keep required Markdown directly reachable from `SKILL.md`. This is a context-loading quality gate, not proof that the content is semantically correct.
+
+## Contents
+
+1. Intake and mode selection
+2. Freeze input identities
+3. Register sources
+4. Extract atomic findings
+5. Disposition every finding
+6. Derive requirements
+7. Map existing coverage and context loading
+8. Define evaluation before candidate mutation
+9. Plan and apply changes
+10. Baseline vs candidate comparison
+11. Mechanical validation
+12. Semantic review
+13. Repair
+14. Freeze and deliver
+
 ## 1. Intake and mode selection
 
 Select `create`, `improve`, `audit`, or `refresh` from the user's requested outcome. Resolve one target and one bounded research corpus.
@@ -45,12 +68,18 @@ A requirement should say what the target skill must achieve, not prematurely dic
 
 ## 7. Map existing coverage
 
-For existing targets, trace current files/instructions/scripts/evals before editing.
+For existing targets, trace current files/instructions/scripts/evals before editing. Also map context-loading topology before mutation:
+- inspect the discovery metadata separately from the loaded body;
+- if `SKILL.md` exceeds 100 lines, identify whether purpose/scope, routing, material modes, usable workflow, critical constraints, and direct resource pointers are visible in the first 100 physical lines;
+- for supporting Markdown over 100 lines, check for an early summary plus contents/index;
+- verify required Markdown is directly reachable from `SKILL.md` rather than hidden behind mandatory multi-hop chains.
 
 If a requirement is already satisfied:
 - mark the finding `already-covered`;
 - create a `C-*` record of kind `existing` pointing to the current target;
 - still create an evaluation link so coverage is verified rather than assumed.
+
+Treat context-loading structure as a quality surface, not as evidence that the underlying instructions are semantically correct.
 
 ## 8. Define evaluation before candidate mutation
 
