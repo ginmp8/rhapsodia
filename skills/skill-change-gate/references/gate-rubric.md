@@ -1,6 +1,20 @@
 # Gate Rubric
 
-Use this rubric to judge one candidate skill change. Separate structural, behavioral, runtime, delivery, and reviewer evidence. Review the candidate change, not the entire package as a redesign exercise.
+## At a Glance
+
+Judge one candidate skill change without redesigning the whole package. Separate structural, context-loading, behavioral, runtime, delivery, and reviewer evidence. Blocking regressions fail; material concerns fail under `strict` unless validly waived; mechanical signals require semantic interpretation.
+
+Top-100/context-loading quality is a first-class gate surface: long `SKILL.md` files must expose the control plane early, long editable supporting Markdown must preview its purpose and real section map, and required instructions should be directly discoverable from `SKILL.md`. Treat these rules as `portable-package-policy`, not as Agent Skills specification claims.
+
+## Contents
+
+- Severity model
+- Finding metadata
+- Gate areas
+- Decision matrix
+- Review discipline
+
+Use this rubric to judge one candidate skill change. Separate structural, context-loading, behavioral, runtime, delivery, and reviewer evidence. Review the candidate change, not the entire package as a redesign exercise.
 
 ## Severity model
 
@@ -55,6 +69,22 @@ Blocking examples:
 - adjacent handoffs become contradictory.
 
 Text length, example count, or wording compression are only signals. When the activation surface changed materially, prefer executed or supplied activation/non-activation/ambiguous-routing evidence over length heuristics.
+
+### 2A. Top-100 control plane and context loading
+
+For any `SKILL.md` over 100 physical lines, inspect the first 100 separately from the full file. Under the portable package policy, those lines should expose purpose/scope, activation/routing, material mode selection, a usable workflow/quick start, critical rules/invariants, and direct branch-resource pointers.
+
+Material concerns include:
+
+- a workflow/mode/rules section exists but is hidden entirely below line 100;
+- the first 100 lines are mostly narrative/background and do not let an agent begin correctly;
+- required branch guidance is available only through a multi-hop Markdown chain;
+- an editable supporting `.md` over 100 lines lacks an early summary plus `Contents`/section map within the first 40 lines;
+- the supporting document's contents map drifts from its real material `##` headings.
+
+Escalate to blocking when context-loading loss makes a required safety, authority, routing, evidence-integrity, or execution condition unreachable or contradicts the deeper source. Otherwise classify the issue as material; under `strict`, unresolved material context-loading regressions fail.
+
+Generated/vendor/unsafe-to-rewrite Markdown may declare an explicit early exception. Do not mistake a local Top-100 policy for a requirement of the Agent Skills specification.
 
 ### 3. Scope, authority, and protected paths
 
@@ -183,7 +213,7 @@ Non-waivable classes remain failures: identity drift, protected evaluator mutati
 
 ### 12. Context efficiency and maintainability
 
-Usually material/non-blocking unless required control-plane behavior becomes hidden. Prefer progressive references over bloating `SKILL.md`. Do not fail merely because a different decomposition is aesthetically cleaner.
+Usually material/non-blocking unless required control-plane behavior becomes hidden. Prefer progressive disclosure over bloating `SKILL.md`, but do not move selection, workflow, invariants, or branch routing out of the first 100 lines merely to reduce token count. Prefer direct `SKILL.md -> supporting file` discovery for required Markdown. Do not fail merely because a different decomposition is aesthetically cleaner.
 
 ## Decision matrix
 

@@ -190,6 +190,119 @@ def test_token_efficiency_filename_is_not_treated_as_secret() -> None:
         assert not any(f["code"] == "safety/sensitive-path" for f in report["findings"])
 
 
+def test_strict_long_skill_fails_when_workflow_and_rules_are_hidden_below_top_100() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = Path(td) / "demo-skill"
+        body = "# Demo\n\n## Mission\nReview changes safely.\n" + "\n".join(f"background {i}" for i in range(110))
+        body += "\n\n## Workflow\n1. Inspect.\n\n## Decision Rules\n- Reject regressions.\n"
+        write_skill(skill, body=body)
+        result = run("--target", str(skill), "--policy", "strict")
+        report = parse(result)
+        codes = {f["code"] for f in report["findings"]}
+        assert result.returncode == 1
+        assert report["status"] == "fail"
+        assert "context/top-100-workflow-hidden" in codes
+        assert "context/top-100-rules-hidden" in codes
+
+
+def test_strict_long_skill_passes_when_control_plane_is_in_top_100() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = Path(td) / "demo-skill"
+        body = """# Demo
+
+## Mission
+Review changes safely.
+
+## Modes
+Use candidate mode by default.
+
+## Workflow
+1. Inspect.
+
+## Core Rules
+- Reject regressions.
+
+## Resources
+- [Guide](references/guide.md)
+
+""" + "\n".join(f"detail {i}" for i in range(110)) + "\n"
+        write_skill(skill, body=body)
+        (skill / "references").mkdir()
+        (skill / "references" / "guide.md").write_text("# Guide\n\nShort guide.\n", encoding="utf-8")
+        result = run("--target", str(skill), "--policy", "strict")
+        report = parse(result)
+        assert result.returncode == 0, report
+        assert report["status"] == "pass"
+
+
+def test_strict_long_supporting_markdown_requires_preview_and_contents() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = Path(td) / "demo-skill"
+        write_skill(skill, body="# Demo\n\n[Guide](references/guide.md)\n")
+        (skill / "references").mkdir()
+        guide = "# Guide\n\n## Details\n" + "\n".join(f"detail {i}" for i in range(120)) + "\n"
+        (skill / "references" / "guide.md").write_text(guide, encoding="utf-8")
+        result = run("--target", str(skill), "--policy", "strict")
+        report = parse(result)
+        assert result.returncode == 1
+        assert any(f["code"] == "context/supporting-preview-missing" for f in report["findings"])
+
+
+def test_strict_long_supporting_markdown_with_matching_preview_passes() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = Path(td) / "demo-skill"
+        write_skill(skill, body="# Demo\n\n[Guide](references/guide.md)\n")
+        (skill / "references").mkdir()
+        guide = """# Guide
+
+## At a Glance
+Use this guide for detailed gate behavior.
+
+## Contents
+- Details
+- More
+
+## Details
+Primary details.
+
+## More
+Additional details.
+
+""" + "\n".join(f"detail {i}" for i in range(110)) + "\n"
+        (skill / "references" / "guide.md").write_text(guide, encoding="utf-8")
+        result = run("--target", str(skill), "--policy", "strict")
+        report = parse(result)
+        assert result.returncode == 0, report
+        assert report["status"] == "pass"
+
+
+def test_strict_long_supporting_markdown_fails_when_contents_drift() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        skill = Path(td) / "demo-skill"
+        write_skill(skill, body="# Demo\n\n[Guide](references/guide.md)\n")
+        (skill / "references").mkdir()
+        guide = """# Guide
+
+## At a Glance
+Use this guide for detailed gate behavior.
+
+## Contents
+- Details
+
+## Details
+Primary details.
+
+## More
+Additional details.
+
+""" + "\n".join(f"detail {i}" for i in range(110)) + "\n"
+        (skill / "references" / "guide.md").write_text(guide, encoding="utf-8")
+        result = run("--target", str(skill), "--policy", "strict")
+        report = parse(result)
+        assert result.returncode == 1
+        assert any(f["code"] == "context/supporting-contents-drift" for f in report["findings"])
+
+
 if __name__ == "__main__":
     tests = [
         test_self_check_emits_stable_tree_hash,
@@ -201,6 +314,11 @@ if __name__ == "__main__":
         test_artifact_receipt_must_match_candidate,
         test_receipt_with_matching_candidate_identity_passes,
         test_token_efficiency_filename_is_not_treated_as_secret,
+        test_strict_long_skill_fails_when_workflow_and_rules_are_hidden_below_top_100,
+        test_strict_long_skill_passes_when_control_plane_is_in_top_100,
+        test_strict_long_supporting_markdown_requires_preview_and_contents,
+        test_strict_long_supporting_markdown_with_matching_preview_passes,
+        test_strict_long_supporting_markdown_fails_when_contents_drift,
         test_report_inside_target_is_rejected_without_mutation,
         test_host_private_core_dependency_warns_normal_and_fails_strict,
     ]

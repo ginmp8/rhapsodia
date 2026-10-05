@@ -13,6 +13,7 @@ import fnmatch
 import hashlib
 import json
 import os
+import posixpath
 import py_compile
 import re
 import subprocess
@@ -40,6 +41,15 @@ NOISE_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cach
 FORBIDDEN_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules"}
 FORBIDDEN_SUFFIXES = {".zip", ".pyc", ".pyo"}
 SENSITIVE_RE = re.compile(r"(?i)(?:^|[/_.-])(secrets?|credentials?|passwords?|api[_-]?keys?|private[_-]?keys?)(?:$|[/_.-])")
+PREVIEW_EXCEPTION_RE = re.compile(r"<!--\s*context-preview-exception:\s*(generated|vendor|unsafe-to-rewrite)\s*-->", re.IGNORECASE)
+SUMMARY_HEADINGS = {"at a glance", "summary", "quick reference", "overview"}
+CONTENTS_HEADINGS = {"contents", "table of contents", "section map"}
+CONTROL_HEADING_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("activation", re.compile(r"(?:mission|purpose|scope|activation|routing)", re.IGNORECASE)),
+    ("modes", re.compile(r"(?:modes?|branch(?:es|ing)?|route selection)", re.IGNORECASE)),
+    ("workflow", re.compile(r"(?:workflow|quick start|process|procedure|how to use)", re.IGNORECASE)),
+    ("rules", re.compile(r"(?:core rules?|decision rules?|invariants?|guardrails?|critical rules?|constraints?)", re.IGNORECASE)),
+)
 
 
 @dataclass
@@ -314,6 +324,145 @@ def check_protected_changes(changes: dict[str, list[str]], patterns: list[str], 
             {"path": rel, "patterns": [p for p in patterns if pattern_matches(rel, p)]},
         ))
     return touched
+
+
+def _headings_outside_fences(text: str, level: int = 2) -> list[tuple[int, str]]:
+    headings: list[tuple[int, str]] = []
+    in_fence = False
+    marker = "#" * level + " "
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if in_fence or not line.startswith(marker):
+            continue
+        heading = line[len(marker):].strip().strip("#").strip()
+        if heading:
+            headings.append((lineno, heading))
+    return headings
+
+
+def _normalize_heading(value: str) -> str:
+    value = re.sub(r"[`*_]", "", value).strip().lower()
+    value = re.sub(r"\s+", " ", value)
+    return value
+
+
+def _contents_entries(lines: list[str], contents_line: int) -> list[str]:
+    entries: list[str] = []
+    for line in lines[contents_line:]:
+        if re.match(r"^#{1,6}\s+", line):
+            break
+        match = re.match(r"^\s*[-*+]\s+(.+?)\s*$", line)
+        if not match:
+            continue
+        item = match.group(1).strip()
+        link = re.fullmatch(r"\[([^]]+)\]\([^)]+\)", item)
+        if link:
+            item = link.group(1)
+        entries.append(_normalize_heading(item))
+    return entries
+
+
+def _local_markdown_links(text: str, base_rel: Path = Path(".")) -> set[str]:
+    result: set[str] = set()
+    for raw in LINK_RE.findall(text):
+        link = raw.split("#", 1)[0].strip().strip("<>")
+        if not link or re.match(r"^[a-z][a-z0-9+.-]*://", link, re.IGNORECASE) or link.startswith("mailto:"):
+            continue
+        if Path(link).suffix.lower() != ".md":
+            continue
+        normalized = posixpath.normpath((base_rel / link).as_posix())
+        result.add(normalized.lstrip("/"))
+    return result
+
+
+def check_context_loading(root: Path, skill_text: str, findings: list[Finding]) -> None:
+    lines = skill_text.splitlines()
+    if len(lines) > 100:
+        early = "\n".join(lines[:100])
+        all_h2 = _headings_outside_fences(skill_text, 2)
+        early_h2 = [(n, h) for n, h in all_h2 if n <= 100]
+        late_h2 = [(n, h) for n, h in all_h2 if n > 100]
+        for group, pattern in CONTROL_HEADING_PATTERNS:
+            has_late = any(pattern.search(h) for _, h in late_h2)
+            has_early = any(pattern.search(h) for _, h in early_h2)
+            if has_late and not has_early:
+                findings.append(Finding(
+                    "material",
+                    "context-loading",
+                    f"context/top-100-{group}-hidden",
+                    f"SKILL.md is over 100 lines and its {group} control section appears only after line 100",
+                    {"line_count": len(lines), "rule_origin": "portable-package-policy"},
+                ))
+        all_md_links = _local_markdown_links(skill_text)
+        early_md_links = _local_markdown_links(early)
+        if all_md_links and not early_md_links:
+            findings.append(Finding(
+                "material",
+                "context-loading",
+                "context/top-100-resource-routing-hidden",
+                "SKILL.md references supporting Markdown, but no direct Markdown resource pointer appears in the first 100 lines",
+                {"line_count": len(lines), "rule_origin": "portable-package-policy", "markdown_links": sorted(all_md_links)},
+            ))
+
+    root_links = _local_markdown_links(skill_text)
+    nested_only: set[str] = set()
+    for path in sorted(root.rglob("*.md")):
+        if path.name == "SKILL.md" or any(part in NOISE_DIRS for part in path.relative_to(root).parts):
+            continue
+        rel = path.relative_to(root)
+        text = read_text(path)
+        doc_lines = text.splitlines()
+        if len(doc_lines) > 100:
+            first40 = "\n".join(doc_lines[:40])
+            if PREVIEW_EXCEPTION_RE.search(first40):
+                pass
+            else:
+                h2 = _headings_outside_fences(text, 2)
+                normalized = [(n, _normalize_heading(h)) for n, h in h2]
+                summary = next(((n, h) for n, h in normalized if n <= 40 and h in SUMMARY_HEADINGS), None)
+                contents = next(((n, h) for n, h in normalized if n <= 40 and h in CONTENTS_HEADINGS), None)
+                if summary is None or contents is None or summary[0] >= contents[0]:
+                    findings.append(Finding(
+                        "material",
+                        "context-loading",
+                        "context/supporting-preview-missing",
+                        f"long supporting Markdown lacks an early summary followed by Contents/section map: {rel.as_posix()}",
+                        {"path": rel.as_posix(), "line_count": len(doc_lines), "rule_origin": "portable-package-policy"},
+                    ))
+                elif contents is not None:
+                    actual = [
+                        heading
+                        for _, heading in normalized
+                        if heading not in SUMMARY_HEADINGS and heading not in CONTENTS_HEADINGS
+                    ]
+                    listed = _contents_entries(doc_lines, contents[0])
+                    if listed != actual:
+                        findings.append(Finding(
+                            "material",
+                            "context-loading",
+                            "context/supporting-contents-drift",
+                            f"supporting Markdown Contents/section map does not match material H2 headings: {rel.as_posix()}",
+                            {"path": rel.as_posix(), "listed": listed, "actual": actual, "rule_origin": "portable-package-policy"},
+                        ))
+
+        base = rel.parent
+        for linked in _local_markdown_links(text, base):
+            if linked != rel.as_posix() and linked not in root_links:
+                candidate = root / linked
+                if candidate.is_file():
+                    nested_only.add(linked)
+
+    for linked in sorted(nested_only):
+        findings.append(Finding(
+            "non-blocking",
+            "context-loading",
+            "context/nested-markdown-only-reference",
+            f"supporting Markdown is discoverable only through another Markdown file, not directly from SKILL.md: {linked}",
+            {"path": linked, "rule_origin": "portable-package-policy"},
+        ))
 
 
 def check_links(root: Path, skill_text: str, findings: list[Finding]) -> None:
@@ -618,6 +767,7 @@ def run(
         skill_text = read_text(skill)
         frontmatter = parse_frontmatter(skill_text, findings)
         check_links(target, skill_text, findings)
+        check_context_loading(target, skill_text, findings)
     check_hygiene(target, findings)
     check_placeholders(target, findings)
     check_python_scripts(target, findings)
