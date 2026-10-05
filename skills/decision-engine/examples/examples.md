@@ -2,7 +2,10 @@
 
 ## At a Glance
 
-These examples calibrate valid `decision-engine/2` envelope shapes and boundary behavior. They are illustrative, candidate-visible material only: they do not prove that a host/model will reproduce the same decision.
+- **Purpose:** Provide concrete, valid `decision-engine/2` envelope examples for Binary, Choice, ordinal/numeric Score, and escalation without redefining the canonical contract.
+- **Load when:** Constructing or reviewing an envelope and a concrete field/nullability example is more useful than prose semantics alone.
+- **Decision impact:** Shows valid shapes for decided and non-decided outcomes, non-exhaustive Choice behavior, ordinal/numeric scale representation, evidence refs, calibration, and `next_action`.
+- **Do not load when:** You need authoritative field meaning or tie-break rules; `references/decision-contract.md` remains source of truth. These examples are candidate-visible calibration material, not behavioral proof.
 
 ## Contents
 
