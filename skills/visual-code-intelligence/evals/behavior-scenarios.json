@@ -1,0 +1,14 @@
+{
+  "suite_version": "1.0",
+  "skill": "visual-code-intelligence",
+  "evidence_status": "planned-not-executed",
+  "notes": "Behavior scenarios are specifications until executed by a compatible harness.",
+  "scenarios": [
+    {"id":"change-review-all-files-lensed","group":"core","input":"A PR with implementation, tests, docs and config changes.","expected":{"hard_gates":["all changed files assigned exactly once","non-implementation classified before responsibility lenses","change map used when multiple meaningful lenses exist"]}},
+    {"id":"diagram-temporal","group":"decision","input":"A service invokes validator, repository and queue over time.","expected":{"primary_visual":"sequence"}},
+    {"id":"diagram-branch","group":"decision","input":"A retry/failure workflow where branching is the dominant relationship.","expected":{"primary_visual":"flowchart"}},
+    {"id":"history-not-current-spec","group":"edge","input":"An old PR says behavior A, current code implements B.","expected":{"hard_gates":["current behavior reported as B","old PR labeled historical","conflict visible"]}},
+    {"id":"missing-lines","group":"edge","input":"Files are readable but precise line locators are unavailable.","expected":{"hard_gates":["no invented line numbers","file/symbol locator used","limitation stated"]}},
+    {"id":"no-renderer","group":"portability","input":"Host has files but no Mermaid renderer or artifact UI.","expected":{"hard_gates":["structured text fallback","semantics preserved","no fake interactive canvas"]}}
+  ]
+}

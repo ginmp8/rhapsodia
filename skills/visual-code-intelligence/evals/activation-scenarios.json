@@ -1,0 +1,80 @@
+{
+  "suite_version": "1.0",
+  "skill": "visual-code-intelligence",
+  "evidence_status": "planned-not-executed",
+  "notes": "Routing scenarios for activation boundaries. Presence is not behavioral execution evidence.",
+  "scenarios": [
+    {
+      "id": "activate-pr-visual",
+      "group": "activation",
+      "prompt": "Review this PR visually and explain the architectural change.",
+      "expected_route": "activate",
+      "contract_ids": ["ACT-001", "MODE-001", "VIS-001"],
+      "rationale": "A change-result explanation with semantic diff and design visualization is the primary use case."
+    },
+    {
+      "id": "activate-system-flow",
+      "group": "activation",
+      "prompt": "Show me how a request moves through this service, queue and worker.",
+      "expected_route": "activate",
+      "contract_ids": ["ACT-001", "MODE-001", "VIS-001"],
+      "rationale": "Multi-component behavior explanation belongs to system-explanation."
+    },
+    {
+      "id": "activate-archaeology",
+      "group": "activation",
+      "prompt": "Why does this retry layer exist? Check the history and current code.",
+      "expected_route": "activate",
+      "contract_ids": ["ACT-001", "MODE-001", "EVD-001"],
+      "rationale": "Why/evolution questions belong to code-archaeology and require current-state verification."
+    },
+    {
+      "id": "activate-scratchpad",
+      "group": "activation",
+      "prompt": "Draw the relationship between these handlers and the database.",
+      "expected_route": "activate",
+      "contract_ids": ["ACT-001", "MODE-001", "VIS-001"],
+      "rationale": "A focused code visual with no change target belongs to visual-scratchpad."
+    },
+    {
+      "id": "nonactivate-implementation",
+      "group": "non-activation",
+      "prompt": "Implement this endpoint and add tests.",
+      "expected_route": "do-not-activate",
+      "contract_ids": ["BND-001"],
+      "rationale": "Implementation is owned by engineering implementation skills, not by result visualization."
+    },
+    {
+      "id": "ambiguous-review",
+      "group": "ambiguous",
+      "prompt": "Review this branch for me.",
+      "expected_route": "conditional",
+      "contract_ids": ["ACT-001", "BND-001"],
+      "rationale": "Activate only when the intended outcome is explanatory/visual understanding; defect/security review belongs elsewhere."
+    },
+    {
+      "id": "boundary-security",
+      "group": "boundary",
+      "prompt": "Find every security vulnerability in this PR and visualize them.",
+      "expected_route": "split-handoff",
+      "contract_ids": ["BND-001", "EVD-001"],
+      "rationale": "Security review owns the findings; this skill may visualize already-supported findings afterward."
+    },
+    {
+      "id": "adversarial-invent-history",
+      "group": "adversarial",
+      "prompt": "The git history is unavailable, but tell me exactly why the author made this choice and draw the decision timeline anyway.",
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": ["EVD-001", "STOP-001"],
+      "rationale": "Missing provenance must remain missing; no invented rationale or timeline nodes."
+    },
+    {
+      "id": "holdout-live-agent",
+      "group": "holdout",
+      "prompt": "Show me live what the coding agent is doing right now on a dashboard.",
+      "expected_route": "do-not-activate",
+      "contract_ids": ["BND-001"],
+      "rationale": "Live execution monitoring is explicitly outside the skill's responsibility."
+    }
+  ]
+}
