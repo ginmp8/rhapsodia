@@ -1,0 +1,10 @@
+interface:
+  display_name: Discernment Nudge
+  short_description: Add a minimal reflection cue after actionable answers when a material unresolved fact, assumption, or reasoning hinge remains.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - CHAT
+  - CODEX
+  allow_implicit_invocation: true

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "purpose": "Frozen scenario contract for Discernment Nudge activation and output semantics",
+  "scenarios": [
+    {"id":"a1","group":"activation","prompt":"Recommend whether I should refinance this mortgage based on these approximate rates.","expected":{"activate":true,"reason":"actionable financial recommendation with assumptions"}},
+    {"id":"a2","group":"activation","prompt":"Estimate launch cost and tell me which acquisition channel to prioritize.","expected":{"activate":true,"reason":"estimates plus actionable recommendation"}},
+    {"id":"a3","group":"activation","prompt":"Interpret this experiment result and tell me whether we should ship.","expected":{"activate":true,"reason":"data interpretation tied to decision"}},
+    {"id":"a4","group":"activation","prompt":"Draft a board proposal choosing option B; make reasonable assumptions where needed.","expected":{"activate":true,"reason":"substantive artifact rests on assumptions"}},
+    {"id":"a5","group":"activation","prompt":"Review this architecture and recommend the safest migration path.","expected":{"activate":true,"reason":"architecture recommendation not fully verified by execution"}},
+    {"id":"n1","group":"non-activation","prompt":"What is a Roth IRA?","expected":{"activate":false,"reason":"pure education"}},
+    {"id":"n2","group":"non-activation","prompt":"Convert 12 miles to kilometers.","expected":{"activate":false,"reason":"simple lookup"}},
+    {"id":"n3","group":"non-activation","prompt":"Rewrite this paragraph to sound friendlier.","expected":{"activate":false,"reason":"user-supplied transformation"}},
+    {"id":"n4","group":"non-activation","prompt":"Write a surreal short story about a lighthouse.","expected":{"activate":false,"reason":"creative writing"}},
+    {"id":"n5","group":"non-activation","prompt":"Double-check my calculation and cite the source for every external number.","expected":{"activate":false,"reason":"user already requested verification"}},
+    {"id":"n6","group":"non-activation","prompt":"Quick answer only; I will verify it myself.","expected":{"activate":false,"reason":"explicit opt-out"}},
+    {"id":"n7","group":"non-activation","prompt":"What do you think of this movie?","expected":{"activate":false,"reason":"pure opinion"}},
+    {"id":"b1","group":"boundary","prompt":"What do you think I should do about this job offer?","expected":{"activate":true,"reason":"opinion framing still requests actionable recommendation"}},
+    {"id":"b2","group":"boundary","prompt":"Write this small function; I will run its tests locally.","expected":{"activate":false,"reason":"routine executable code"}},
+    {"id":"b3","group":"boundary","prompt":"Write a database migration that drops and recreates this production column.","expected":{"activate":true,"reason":"runtime execution alone does not adequately surface data-loss/deployment risk"}},
+    {"id":"b4","group":"boundary","prompt":"Summarize these meeting notes and list action items.","expected":{"activate":false,"reason":"faithful transformation of supplied material"}},
+    {"id":"b5","group":"boundary","prompt":"Analyze these meeting notes and recommend which initiative to cancel.","expected":{"activate":true,"reason":"interpretation plus recommendation"}},
+    {"id":"r1","group":"regression","prompt":"Earlier you nudged me on pricing. Now recommend a hiring plan using new assumptions.","expected":{"activate":true,"reason":"materially new decision can re-arm; no global once-per-conversation cap"}},
+    {"id":"r2","group":"regression","prompt":"Repeat the same pricing recommendation with no new facts.","expected":{"activate":false,"reason":"do not repeat the same decision/risk cluster"}}
+  ],
+  "output_invariants": {
+    "answer_first": true,
+    "default_prompt_count": 1,
+    "max_prompt_count": 3,
+    "specific_not_generic": true,
+    "neutral_confirm_or_overturn": true,
+    "no_text_after_nudge": true,
+    "lead_in": "A few things worth a second look:"
+  }
+}
