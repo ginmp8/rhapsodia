@@ -1,5 +1,23 @@
 # Evidence, Calibration, and Review Identity
 
+## At a Glance
+
+- **Purpose:** Define evidence layers, claim ceilings, evaluator calibration, review identity, repeated-trial policy, and bounded validator challenges.
+- **Load when:** Load when making conformance, readiness, portability, behavioral, reliability, provenance, score-confidence, or evaluator-quality claims.
+- **Decision impact:** Determines which evidence can support each claim, when a result may be called measured, how confidence is bounded, and when identity or calibration gaps block stronger conclusions.
+
+## Contents
+
+- 1. Review layers
+- 2. Specification baseline
+- 3. Evidence and grader strength
+- 4. Stochastic behavioral evidence
+- 5. Weighted score, evidence coverage, and confidence
+- 6. Review evidence manifest
+- 7. Bounded validator challenge
+- 8. Claim ceilings
+
+
 Use this reference when a review makes normative conformance, readiness, portability, behavioral, reliability, evaluator, or provenance claims. These rules are cross-cutting evidence controls; they do not add score dimensions.
 
 ## 1. Review layers

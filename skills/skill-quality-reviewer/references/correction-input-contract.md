@@ -1,5 +1,20 @@
 # Correction Input Contract
 
+## At a Glance
+
+- **Purpose:** Define the downstream remediation instruction contract produced from accepted review findings.
+- **Load when:** Load when converting findings into a correction prompt/input or validating whether remediation instructions are complete and bounded.
+- **Decision impact:** Controls required scope, preserved behavior, non-goals, fix ordering, acceptance criteria, validation, and exclusions so remediation does not invent work or reintroduce obsolete behavior.
+
+## Contents
+
+- Purpose
+- Inclusion rules
+- Required shape
+- Ordering rules
+- Quality checks
+
+
 ## Purpose
 
 Convert the review into a self-contained instruction set that another AI, skill improver, or human maintainer can execute without reading the original conversation.
