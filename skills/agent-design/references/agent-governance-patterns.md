@@ -2,6 +2,24 @@
 
 Use these patterns for effective authority, containment, auditability, escalation, controlled execution, and failure handling. Apply them even when the runtime has no dedicated governance feature.
 
+## At a Glance
+
+- **Purpose:** Define governance patterns for least/effective authority, high-impact containment, downstream authorization, approvals, auditability, stop conditions, and recovery.
+- **Load when:** An agent can write, execute, deploy, mutate access/security/financial state, perform destructive work, or a reviewer must judge those controls.
+- **Decision impact:** Adds fail-closed requirements for authority ambiguity, blast-radius limits, complete mediation, action-time authorization, approvals, validation, rollback/compensation, and audit receipts.
+
+## Contents
+
+- Governance Principles
+- Effective Authority Pattern
+- High-Impact Governance Contract
+- Blast-Radius Pattern
+- Approval Pattern
+- Stop Conditions
+- Audit Trail Pattern
+- Controlled Execution Pattern
+- Governance Review Checklist
+
 ## Governance Principles
 
 1. **Least effective authority**: minimize what the agent can actually do, not only what the prompt says.

@@ -1,39 +1,78 @@
 ---
 name: skill-benchmark
-description: use when asked to benchmark, audit, score, validate, compare, or measure maturity of reusable agent skills-compatible packages for chatgpt/openai, codex, claude, github copilot, cursor, or other compatible hosts. produces evidence-based reports with scorecard, gates, source/evaluator identities, scenario status, risks, improvements, portability findings, and verdict. use for report validation, version comparison, publish readiness, or metrics from validated scenario evidence. do not use for generic code review, skill mutation, prompt advice, or hardening unless the requested deliverable is a reusable skill benchmark.
+description: "use when the requested deliverable is a reusable Agent Skills benchmark: maturity score/report, version or candidate comparison, report validation, behavioral-evidence interpretation, publish-readiness assessment, or portability benchmark across compatible hosts. produces evidence-bound scorecards, gates, source/evaluator identities, scenario status, risks, portability findings, and verdicts. do not use to mutate or harden a skill, perform generic code/prompt review, or choose search/evolution survivors; route those to the owning workflow."
 ---
 
 # Skill Benchmark
 
-## Purpose
+## Mission and boundary
 
-Produce repeatable, host-neutral benchmark reports for reusable Agent Skills packages. Own evidence intake, static scoring, behavioral-result validation, report validation, version comparison, portability assessment, and verdicts. Do not edit/harden benchmark targets; route mutation to the owning workflow.
+Benchmark reusable Agent Skills packages with repeatable, host-neutral evidence. Own evidence intake, static maturity scoring, validation of supplied/executed behavioral results, report validation, version/candidate comparison, portability assessment, and benchmark verdicts. Stay read-only with respect to benchmark targets: never edit or harden the skill being scored.
 
-## Evidence model
+## Activation and routing
 
-Keep these evidence layers separate:
+Use this skill when the user needs one of these benchmark deliverables:
 
-- **static**: inspected package structure/content;
-- **behavioral**: executed or supplied scenario outcomes;
-- **runtime**: host/tool execution evidence;
-- **qualitative**: reviewer judgment that static checks cannot prove;
-- **planned**: scenarios/evals that exist but were not executed;
-- **blocked**: evidence unavailable because a required capability/input is missing.
+- a 0-100 maturity scorecard and verdict for one existing skill;
+- a comparable baseline/candidate or parent/candidate benchmark;
+- validation of an existing benchmark report;
+- interpretation of schema-valid behavioral scenario results;
+- a portability benchmark across requested Agent Skills hosts;
+- a publish/readiness assessment whose conclusion must be tied to inspected evidence.
 
-Never turn planned, missing, stale, or unvalidated evidence into measured claims.
+Do not use for target mutation, iterative repair/hardening, generic code review, prompt advice, benchmark-fixture editing, or survivor/Pareto selection across search candidates. `skill-benchmark` may evaluate multiple candidates under one frozen contract, but the caller/search controller owns selection.
 
-For filesystem benchmarks, prefer an immutable target snapshot and frozen evaluator identity. Strict before/after deltas require comparable target/evaluator/scenario identities. When the benchmark asks whether the skill adds value over the host baseline, use an optional `without-skill` control without replacing the immutable prior-version baseline for regression claims. Keep hidden evaluator assets outside candidate-visible execution inputs when claiming blind evaluation. Read [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md) and [`references/control-and-capability-delta.md`](references/control-and-capability-delta.md).
+## Mode selection
 
-## Modes
-
-| Mode | Use when | Required evidence | Output |
+| Mode | Select when | Minimum evidence | Primary output |
 |---|---|---|---|
-| `single-skill-benchmark` | one target needs maturity scoring | target package/content | scorecard + gates + evidence limits |
-| `comparison-benchmark` | baseline and candidate must be compared, optionally with a no-skill control | separate frozen target identities + same evaluator/scenario identities; optional control arm | comparable deltas + capability delta |
-| `report-validation` | an existing benchmark report must be checked | report file/text | validation findings |
-| `behavioral-evidence-benchmark` | scenario outcomes are supplied/executed | schema-valid result evidence | metrics + provenance status |
-| `portability-benchmark` | target claims multiple hosts | target + requested host profiles | portable-core/adapter findings |
-| `template-only` | no inspectable target exists | missing-input list | report skeleton; no score |
+| `single-skill-benchmark` | one existing target needs maturity scoring | target package/content | scorecard + gates + verdict |
+| `comparison-benchmark` | baseline/candidate or parent/candidate deltas are requested | separately frozen targets + same evaluator/scenario identities | comparable deltas + capability findings |
+| `report-validation` | a benchmark report already exists | report file/text | validation findings |
+| `behavioral-evidence-benchmark` | executed/supplied scenario results must be interpreted | schema-valid result evidence | metrics + provenance/claim limits |
+| `portability-benchmark` | multi-host support is claimed/requested | target + host profiles | portable-core/adapter findings |
+| `template-only` | no inspectable target is available | explicit missing-input state | report skeleton only; no score/readiness claim |
+
+## Quick start
+
+1. Resolve exactly one benchmark target or report, select the mode, and record requested hosts/output destination.
+2. For filesystem targets, read `SKILL.md` first, keep outputs outside the target, and run normative Agent Skills conformance before maturity scoring.
+3. Freeze target bytes and evaluator identity before strict comparison or measured claims; benchmark the frozen snapshot, not a silently changing live tree.
+4. Score static maturity with [`references/benchmark-rubric.md`](references/benchmark-rubric.md); do not treat host adapters or optional resource count as automatic quality points.
+5. Validate behavioral result envelopes before computing metrics; prefer v3 repeated trials for stochastic/model-agent claims and validate benchmark health before strong behavioral promotion claims.
+6. Compare only like-for-like evidence. Changed evaluator/scenario/runtime/host identities make strict deltas `not comparable` unless the benchmark contract explicitly controls the difference.
+7. Validate the generated report, reverify source identity, freeze accepted evidence after the final pass, and deliver report/receipt atomically when writing files.
+
+## Critical evidence and decision rules
+
+- Evidence layers stay distinct: `static`, `behavioral`, `runtime`, `qualitative`, `planned`, and `blocked`.
+- Never turn planned, missing, stale, malformed, contaminated, or unvalidated evidence into measured claims.
+- A static 0-100 score is a maturity score, not behavioral capability proof and not normative Agent Skills conformance.
+- Hard gates run before score-based comparison; a better scalar score never overrides a blocker regression.
+- Existing-skill regression claims keep the immutable prior version as `baseline`; `without-skill` answers incremental value and never replaces that baseline.
+- Direct `parent` is for local transformation attribution; keep candidate-vs-parent separate from candidate-vs-baseline.
+- Hidden/blind evaluation requires evaluator-only assets to remain candidate-invisible; byte identity alone does not prove non-contamination.
+- Do not invent activation precision/recall, robustness, conformance, coverage, quality, rework, cost, or portability/runtime results.
+- If several candidates are non-dominated and no frozen weighting policy exists, report the frontier instead of manufacturing a winner.
+- Portability claims concern the semantic core; host adapters are optional and must not add score merely by existing.
+
+## Required inputs and protected evidence
+
+Required: target content/path/source (or report text for `report-validation`), benchmark mode, and report destination or inline-report choice. Optional: baseline/parent/control arms, scenario results, prior reports, review notes, issue links, requested hosts, and staged-evaluation metadata.
+
+Protect target files, fixtures, expected outputs, secrets, credentials, frozen evaluator/scenario inputs, generated baseline evidence, and read-only paths. Never alter them to make a benchmark pass. If no inspectable target exists, use `template-only` and return missing inputs without a score or readiness verdict.
+
+## Direct resource map
+
+- [`references/benchmark-rubric.md`](references/benchmark-rubric.md): score dimensions, blocker gates, verdict thresholds, evidence-identity rules.
+- [`references/benchmark-workflow.md`](references/benchmark-workflow.md): filesystem sequence, evidence hierarchy, comparison rules, output ownership, final response.
+- [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md): immutable snapshots, evaluator identity, alias safety, atomic delivery, recovery receipts.
+- [`references/test-scenarios.md`](references/test-scenarios.md) and [`references/experimental-evidence.md`](references/experimental-evidence.md): v2/v3 result contracts, repeated trials, runtime identity, uncertainty, grader/length controls.
+- [`references/benchmark-health.md`](references/benchmark-health.md) and [`references/skill-coverage.md`](references/skill-coverage.md): suite-health gate and optional constraint-level behavioral coverage.
+- [`references/control-and-capability-delta.md`](references/control-and-capability-delta.md): baseline/parent/no-skill/length-control roles, visibility, provenance, capability delta.
+- [`references/evaluation-ladder-and-parent-comparison.md`](references/evaluation-ladder-and-parent-comparison.md) and [`references/multi-candidate-evaluation.md`](references/multi-candidate-evaluation.md): staged L0-L5 evidence, parent attribution, multi-candidate comparability without survivor selection.
+- [`references/host-portability.md`](references/host-portability.md): host-neutral semantic core, adapters, capability detection, portability limits.
+- [`references/report-template.md`](references/report-template.md): required report sections and ordering.
 
 ## Host portability
 
@@ -49,18 +88,9 @@ When portability matters, read [`references/host-portability.md`](references/hos
 
 Denote the resolved Python launcher/execution method as `<PYTHON>`; do not assume `python3`, Bash, POSIX utilities, or a specific sandbox path.
 
-## Required inputs and protected evidence
+## Detailed resource catalog
 
-Required: target content/path/source, benchmark mode, and report destination or inline-report choice. Optional: baseline, scenario results, prior reports, review notes, issue links, requested hosts.
-
-Target content may be a skill folder, extracted `skill.zip`, pasted package content, or an already-generated benchmark report for validation. If target content is unavailable, return the [`references/report-template.md`](references/report-template.md) structure with missing inputs and no score/readiness claim.
-
-Protect target files, fixtures, expected outputs, secrets, credentials, frozen evaluator/scenario inputs, generated baseline evidence, and read-only paths. Never alter them to make a benchmark pass.
-
-## Progressive loading
-
-Load only branch-relevant resources:
-
+Load only resources required by the selected mode/claim:
 - [`references/benchmark-workflow.md`](references/benchmark-workflow.md): portable commands, evidence hierarchy, comparison, paths, final response.
 - [`references/benchmark-rubric.md`](references/benchmark-rubric.md): dimensions, weights, gates, verdict rules.
 - [`references/test-scenarios.md`](references/test-scenarios.md): v2 compatibility plus preferred v3 repeated-trial scenario evidence.

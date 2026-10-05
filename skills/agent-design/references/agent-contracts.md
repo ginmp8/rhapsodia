@@ -5,6 +5,29 @@ Canonical structured transition identity: `handoff/v2`.
 
 Use this reference when a design needs stable ownership, authority, context, state, routing, completion, or evidence semantics. Host-specific frontmatter, tool names, SDK types, and UI transitions are adapters around this core.
 
+## At a Glance
+
+- **Purpose:** Own the canonical host-neutral `agent-design-contract/v2` and `handoff/v2` field/invariant semantics for durable agent specifications.
+- **Load when:** Defining or reviewing mission ownership, authority/capabilities, context, state, routing/handoffs, completion, evidence, or portability fields.
+- **Decision impact:** Determines which contract fields are required, how effective authority and handoff ownership are bounded, what completion/evidence claims mean, and which semantics must remain host-neutral.
+
+## Contents
+
+- 1. Design Identity
+- 2. Authority Contract
+- 3. Capability Contract
+- 4. Context Contract
+- 5. Control-Flow Contract
+- 6. State, Interruption, and Termination Contract
+- 7. Handoff Contract
+- 8. Multi-Agent Admission and Concurrency Contract
+- 9. Governance and Containment Contract
+- 10. Routing Ownership Contract
+- 11. Cycle and Re-entry Contract
+- 12. Completion Contract
+- 13. Evidence Contract
+- 14. Portability Boundary
+
 ## 1. Design Identity
 
 A durable design identifies:

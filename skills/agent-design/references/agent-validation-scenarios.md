@@ -4,6 +4,25 @@ Canonical evaluation contract: `agent-eval-contract/v2`.
 
 The bundled suite is `evals/agent-design-scenarios.json`. Its presence is **planned evidence**, not proof that an LLM/agent behavior run occurred.
 
+## At a Glance
+
+- **Purpose:** Own `agent-eval-contract/v2` for planned/executed agent validation, including scenario groups, frozen evaluator identity, outcome/trace checks, trials, and holdouts.
+- **Load when:** Planning validation, comparing baseline/candidate behavior, making reliability claims, or interpreting the bundled scenario suite.
+- **Decision impact:** Determines what can be called measured, when repeated trials/holdouts are required, which scenario groups must be covered, and when evaluator/environment drift invalidates a comparison.
+
+## Contents
+
+- Evaluation Model
+- Scenario Groups
+- Scenario Record
+- Frozen Evaluation Identity
+- Trials and Reliability
+- Evidence Labels
+- Frozen Comparison Rule
+- Default Acceptance Invariants
+- Structural Validator
+- Validation Plan Output
+
 ## Evaluation Model
 
 Separate these concepts:

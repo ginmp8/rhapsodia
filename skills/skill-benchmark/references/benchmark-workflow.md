@@ -1,6 +1,20 @@
 # Benchmark Workflow
 
-Use for filesystem execution, evidence identity, comparison, paths, and finalization.
+## At a Glance
+
+- **Purpose:** Define the canonical filesystem benchmark sequence, evidence precedence, comparison rules, output ownership, and final response requirements.
+- **Load when:** Running any filesystem-backed benchmark, strict version/candidate comparison, or report/package write where source/evaluator identity and recovery semantics matter.
+- **Decision impact:** Determines capability preflight, snapshot/evaluator freeze timing, scenario-validation order, report generation/validation, comparability handling, and where outputs may be written.
+- **Do not load when:** Only validating already-provided report text with no filesystem, comparison, or artifact-write decisions.
+
+## Contents
+
+- Capability preflight
+- Filesystem benchmark sequence
+- Evidence hierarchy
+- Comparison rules
+- Output ownership
+- Final response
 
 ## Capability preflight
 

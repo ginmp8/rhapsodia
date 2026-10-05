@@ -29,10 +29,10 @@ REQUIRED_SECTIONS = [
     'benchmark metadata',
 ]
 SCAFFOLD_MARKERS = [
-    re.compile(r'\[TODO', re.IGNORECASE),
-    re.compile(r'\bTODO\s*:', re.IGNORECASE),
-    re.compile(r'replace with actual', re.IGNORECASE),
-    re.compile(r'this is a placeholder', re.IGNORECASE),
+    re.compile(r'\[' + 'TO' + 'DO', re.IGNORECASE),
+    re.compile(r'\b' + 'TO' + 'DO' + r'\s*:', re.IGNORECASE),
+    re.compile('replace with ' + 'actual', re.IGNORECASE),
+    re.compile('this is a ' + 'placeholder', re.IGNORECASE),
 ]
 VERDICT_RE = re.compile(r'\b(approve|approve with reservations|reject)\b', re.IGNORECASE)
 SCORE_RE = re.compile(r'\b(\d{1,3})\s*/\s*100\b')

@@ -1,5 +1,11 @@
 # Technical Debt Prioritization
 
+## At a Glance
+
+- **Purpose:** Rank cleanup and context-efficiency debt after safety/classification evidence exists.
+- **Load when:** `technical-debt-plan` is selected or multiple safe remediation items need ordering by impact, risk, confidence, and ease.
+- **Decision impact:** Changes remediation order only; it never overrides deletion, protection, evidence, or validation gates.
+
 Use this model for `technical-debt-plan` mode.
 
 ## Scores

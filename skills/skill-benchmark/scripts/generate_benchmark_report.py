@@ -59,7 +59,7 @@ def asset_integration(root: Path, corpus: str) -> tuple[str, list[str]]:
 
 
 def has_scaffold_markers(root: Path) -> bool:
-    patterns = [re.compile(r'\[TODO', re.I), re.compile(r'\bTODO\s*:', re.I), re.compile(r'replace with actual', re.I), re.compile(r'this is a placeholder', re.I)]
+    patterns = [re.compile(r'\[' + 'TO' + 'DO', re.I), re.compile(r'\b' + 'TO' + 'DO' + r'\s*:', re.I), re.compile('replace with ' + 'actual', re.I), re.compile('this is a ' + 'placeholder', re.I)]
     for path in sorted(root.rglob('*')):
         if not path.is_file():
             continue

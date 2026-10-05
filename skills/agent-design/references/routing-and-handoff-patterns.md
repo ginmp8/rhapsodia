@@ -2,6 +2,26 @@
 
 Use for routers, supervisors, manager/worker systems, Skill-Agent coordination, governance handoffs, and repository agentic structures. Portable routing uses `agent-design-contract/v2` and `handoff/v2`.
 
+## At a Glance
+
+- **Purpose:** Define deterministic routing, multi-agent admission, control-flow ownership, `handoff/v2`, cycle/re-entry safety, and concurrency semantics.
+- **Load when:** Designing routers, supervisors/managers, Skill-Agent coordination, delegation/transfer, fallback routing, or repository multi-agent structures.
+- **Decision impact:** Determines target-selection order, whether control returns/transfers/stays with a parent, required handoff fields, escalation behavior, loop bounds, and safe parallel-writer rules.
+
+## Contents
+
+- Routing Principles
+- Multi-Agent Admission Gate
+- Routing Decision Order
+- Control-Flow Kinds
+- Handoff Payload
+- Context Transfer
+- Cycle and Re-entry Safety
+- Concurrency Safety
+- Router Pattern
+- Optional Ecosystem Adapter: nomia / Mago / Magia
+- Repository Structure Pattern
+
 ## Routing Principles
 
 - Route by owned artifact/outcome and effective-authority fit, not persona similarity.

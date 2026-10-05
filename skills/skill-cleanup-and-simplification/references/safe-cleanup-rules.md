@@ -1,5 +1,27 @@
 # Safe Cleanup Rules
 
+## At a Glance
+
+- **Purpose:** Own the mutation-safety contract for cleanup: deletion eligibility, protected resources, plan-v2 preconditions, dry-run/apply behavior, validation command safety, rollback, idempotency, and receipts.
+- **Load when:** Any cleanup plan may delete or consolidate resources, `safe-cleanup-apply` is selected, or a reviewer must decide whether a planned mutation is safe and recoverable.
+- **Decision impact:** Determines whether mutation is permitted at all, what evidence/approval/identity checks are mandatory, when rollback must occur, and what transaction evidence is required before success can be claimed.
+- **Do not load when:** The task is read-only inventory/classification with no mutation decision; use `resource-classification.md` and `reference-graph.md` instead.
+
+## Contents
+
+- Non-negotiable invariants
+- Protected resources
+- Canonical deletion eligibility
+- Cleanup plan v2
+- Validation command safety
+- Dry-run and apply
+- Checkpoints and transaction semantics
+- Idempotency
+- Last-known-good and rollback
+- Receipt contract
+- Consolidation rules
+- Rollback minimum for manual mutations
+
 Use these rules before any cleanup, simplification, consolidation, or deletion.
 
 ## Non-negotiable invariants

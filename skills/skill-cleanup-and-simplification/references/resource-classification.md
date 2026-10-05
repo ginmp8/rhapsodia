@@ -1,5 +1,24 @@
 # Resource Classification
 
+## At a Glance
+
+- **Purpose:** Own the seven-state resource taxonomy and the evidence rules for deciding whether a resource is used, integrable, duplicate, obsolete, generated, blocked, or unknown.
+- **Load when:** Reviewing dead-resource candidates, duplicate/generated signals, scaffold/template status, or any plan whose mutation eligibility depends on classification.
+- **Decision impact:** Fixes fail-closed precedence, defines which evidence can establish `generated`, `duplicate`, or `obsolete`, and prevents weak similarity, naming, or missing-reference signals from becoming deletion authority.
+- **Do not load when:** Classification is already frozen and the remaining question is transaction safety/rollback; use `safe-cleanup-rules.md` instead.
+
+## Contents
+
+- Canonical state taxonomy
+- Classification precedence
+- Reachability evidence
+- Generated evidence
+- Duplicate tiers
+- Scaffold and template guard
+- Protected evidence guard
+- Classification evidence strength
+- Report shape
+
 Classify every candidate before deletion, consolidation, or retention. Classification is evidence, not permission by itself; mutation must also pass the canonical deletion gate.
 
 ## Canonical state taxonomy
