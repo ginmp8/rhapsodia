@@ -1,0 +1,62 @@
+{
+  "skill": "pdf-toolkit",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "act-read-pdf",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Summarize the attached PDF and tell me which pages contain the risk table.",
+      "expected_behavior": "activate; use PDF read/review workflow and preserve page provenance"
+    },
+    {
+      "id": "act-edit-pdf",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Merge these PDFs, rotate pages 3 and 4, and return one PDF.",
+      "expected_behavior": "activate; preflight, edit, then verify page order and rendered output"
+    },
+    {
+      "id": "act-form",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Fill this application PDF with the values I provided.",
+      "expected_behavior": "activate; classify signed/XFA/AcroForm/non-fillable state before mutation"
+    },
+    {
+      "id": "act-ocr",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Make this scanned PDF searchable without unnecessarily flattening digital pages.",
+      "expected_behavior": "activate; use preservation-aware OCR routing"
+    },
+    {
+      "id": "act-redact",
+      "type": "should_activate",
+      "category": "should_activate",
+      "prompt": "Permanently redact the account number from this PDF.",
+      "expected_behavior": "activate; require true content removal and post-redaction verification"
+    },
+    {
+      "id": "non-docx",
+      "type": "should_not_activate",
+      "category": "should_not_activate",
+      "prompt": "Rewrite this Word document and keep tracked changes.",
+      "expected_behavior": "do_not_activate unless PDF conversion or PDF-specific validation becomes the primary task"
+    },
+    {
+      "id": "edge-signed",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Edit this digitally signed PDF but keep the signature valid exactly as-is.",
+      "expected_behavior": "activate and stop/clarify capability conflict; never silently invalidate the signature"
+    },
+    {
+      "id": "edge-xfa",
+      "type": "edge_case",
+      "category": "edge_case",
+      "prompt": "Use pdf-lib to fill this XFA PDF form.",
+      "expected_behavior": "activate but reject that tool route when XFA is detected; preserve the source and use an XFA-capable alternative if available"
+    }
+  ]
+}

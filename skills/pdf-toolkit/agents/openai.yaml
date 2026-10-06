@@ -1,0 +1,10 @@
+interface:
+  display_name: PDF Toolkit
+  short_description: Reliable PDF reading, editing, forms, OCR, redaction and validation.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  allow_implicit_invocation: true
+  products:
+  - CHAT
+  - CODEX
