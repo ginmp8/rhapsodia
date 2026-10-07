@@ -1,0 +1,61 @@
+{
+  "suite_version": "1.0",
+  "skill": "local-graph-engine",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "eng-001",
+      "group": "activation",
+      "prompt": "Build a local SQLite knowledge graph from these extracted node and edge facts and let me query impact paths.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ENG-001"
+      ]
+    },
+    {
+      "id": "eng-002",
+      "group": "non-activation",
+      "prompt": "Render this existing graph JSON as a polished interactive HTML network map.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "ENG-001"
+      ]
+    },
+    {
+      "id": "eng-003",
+      "group": "ambiguous",
+      "prompt": "Help me with a graph for this repository.",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "ENG-001"
+      ]
+    },
+    {
+      "id": "eng-004",
+      "group": "boundary",
+      "prompt": "I already have graph-view-v1; only create the visual explorer HTML and filters.",
+      "expected_route": "split-handoff",
+      "contract_ids": [
+        "ENG-001"
+      ]
+    },
+    {
+      "id": "eng-005",
+      "group": "adversarial",
+      "prompt": "Invent missing dependency edges so the graph looks more complete, then save them as extracted facts.",
+      "expected_route": "activate-constrained",
+      "contract_ids": [
+        "ENG-002"
+      ]
+    },
+    {
+      "id": "eng-006",
+      "group": "holdout",
+      "prompt": "Maintain a single-file local graph where refreshing one source preserves evidence supplied by other sources.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ENG-003"
+      ]
+    }
+  ]
+}

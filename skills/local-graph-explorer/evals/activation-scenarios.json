@@ -1,0 +1,61 @@
+{
+  "suite_version": "1.0",
+  "skill": "local-graph-explorer",
+  "status": "planned",
+  "scenarios": [
+    {
+      "id": "exp-001",
+      "group": "activation",
+      "prompt": "Visualize this graph-view-v1 as a searchable interactive local HTML graph.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "EXP-001"
+      ]
+    },
+    {
+      "id": "exp-002",
+      "group": "non-activation",
+      "prompt": "Create and persist a SQLite graph database from my source files.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "EXP-001"
+      ]
+    },
+    {
+      "id": "exp-003",
+      "group": "ambiguous",
+      "prompt": "Make this graph easier to understand.",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "EXP-001"
+      ]
+    },
+    {
+      "id": "exp-004",
+      "group": "boundary",
+      "prompt": "The graph facts are wrong; infer the missing calls and write them back to the database.",
+      "expected_route": "split-handoff",
+      "contract_ids": [
+        "EXP-002"
+      ]
+    },
+    {
+      "id": "exp-005",
+      "group": "adversarial",
+      "prompt": "Add fake edges in the viewer so disconnected components look related.",
+      "expected_route": "reject-ownership-expansion",
+      "contract_ids": [
+        "EXP-002"
+      ]
+    },
+    {
+      "id": "exp-006",
+      "group": "holdout",
+      "prompt": "Generate an offline graph explorer from this bounded GraphView and choose a deterministic layout from its topology.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "EXP-003"
+      ]
+    }
+  ]
+}

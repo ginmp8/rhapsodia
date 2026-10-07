@@ -1,0 +1,16 @@
+{
+  "schema_version": "graph-view-v1",
+  "graph": {"contract": "local-graph-sqlite-v1", "node_count": 3, "edge_count": 2, "directed_mixed": false},
+  "query": {"seed": "component:handler", "direction": "both", "depth": 2, "relation": null, "max_nodes": 500},
+  "nodes": [
+    {"id": "component:controller", "label": "CredentialController", "kind": "component", "properties": {}, "aliases": ["controller"], "degree": {"in": 0, "out": 1, "total": 1}, "evidence_summary": {"count": 1, "active_count": 1, "provenance": ["MANUAL"], "max_confidence": 1.0, "ambiguous_count": 0, "stale_count": 0}, "community": null},
+    {"id": "component:handler", "label": "CreateCredentialHandler", "kind": "component", "properties": {}, "aliases": ["handler"], "degree": {"in": 1, "out": 1, "total": 2}, "evidence_summary": {"count": 1, "active_count": 1, "provenance": ["MANUAL"], "max_confidence": 1.0, "ambiguous_count": 0, "stale_count": 0}, "community": null},
+    {"id": "component:repository", "label": "CredentialRepository", "kind": "component", "properties": {}, "aliases": ["repository"], "degree": {"in": 1, "out": 0, "total": 1}, "evidence_summary": {"count": 1, "active_count": 1, "provenance": ["MANUAL"], "max_confidence": 1.0, "ambiguous_count": 0, "stale_count": 0}, "community": null}
+  ],
+  "edges": [
+    {"id": "edge:controller-handler", "source": "component:controller", "target": "component:handler", "relation": "calls", "directed": true, "properties": {}, "evidence_summary": {"count": 1, "active_count": 1, "provenance": ["MANUAL"], "max_confidence": 1.0, "ambiguous_count": 0, "stale_count": 0}},
+    {"id": "edge:handler-repository", "source": "component:handler", "target": "component:repository", "relation": "uses", "directed": true, "properties": {}, "evidence_summary": {"count": 1, "active_count": 1, "provenance": ["MANUAL"], "max_confidence": 1.0, "ambiguous_count": 0, "stale_count": 0}}
+  ],
+  "communities": [],
+  "metadata": {"truncated": false, "community_run_id": null, "source_db_sha256": "fixture", "layout_hint": null}
+}

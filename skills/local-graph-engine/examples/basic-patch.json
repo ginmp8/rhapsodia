@@ -1,0 +1,53 @@
+{
+  "schema_version": "graph-patch-v1",
+  "source": {
+    "uri": "example://auth-module",
+    "kind": "example",
+    "content_hash": "sha256:example",
+    "metadata": {"purpose": "portable regression fixture"}
+  },
+  "nodes": [
+    {
+      "id": "component:controller",
+      "kind": "component",
+      "label": "CredentialController",
+      "aliases": ["controller"],
+      "properties": {},
+      "evidence": [{"provenance": "MANUAL", "confidence": 1.0, "locator": "fixture", "status": "accepted", "details": {}}]
+    },
+    {
+      "id": "component:handler",
+      "kind": "component",
+      "label": "CreateCredentialHandler",
+      "aliases": ["handler"],
+      "properties": {},
+      "evidence": [{"provenance": "MANUAL", "confidence": 1.0, "locator": "fixture", "status": "accepted", "details": {}}]
+    },
+    {
+      "id": "component:repository",
+      "kind": "component",
+      "label": "CredentialRepository",
+      "aliases": ["repository"],
+      "properties": {},
+      "evidence": [{"provenance": "MANUAL", "confidence": 1.0, "locator": "fixture", "status": "accepted", "details": {}}]
+    }
+  ],
+  "edges": [
+    {
+      "source": "component:controller",
+      "target": "component:handler",
+      "relation": "calls",
+      "directed": true,
+      "properties": {},
+      "evidence": [{"provenance": "MANUAL", "confidence": 1.0, "locator": "fixture", "status": "accepted", "details": {}}]
+    },
+    {
+      "source": "component:handler",
+      "target": "component:repository",
+      "relation": "uses",
+      "directed": true,
+      "properties": {},
+      "evidence": [{"provenance": "MANUAL", "confidence": 1.0, "locator": "fixture", "status": "accepted", "details": {}}]
+    }
+  ]
+}
