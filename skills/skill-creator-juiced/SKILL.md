@@ -1,6 +1,6 @@
 ---
 name: skill-creator-juiced
-description: Create or substantially redesign portable Agent Skills-compatible packages. Use for net-new skills, workflow-to-skill conversion, skill architecture, major portability redesigns, or coordinated quality upgrades that change package structure. Do not use for ordinary optimization of an existing skill whose responsibility stays the same; use Skill Booster for that.
+description: Creates or substantially redesigns portable Agent Skills-compatible packages. Use for net-new skills, workflow-to-skill conversion, skill architecture, major portability redesigns, or coordinated quality upgrades that change package structure. Do not use for ordinary optimization of an existing skill whose responsibility stays the same; use Skill Booster for that.
 ---
 
 # Skill Creator Juiced
@@ -29,7 +29,7 @@ Every skill created or substantially redesigned here must make its primary decis
 
 Within those first 100 lines, expose the smallest complete control plane needed to act correctly:
 
-1. frontmatter `name` and a discriminative `description` that states what the skill does, when to use it, and a material non-use boundary when overlap is plausible;
+1. frontmatter `name` and a discriminative, declarative `description` that states what the skill does, when to use it, and a material non-use boundary when overlap is plausible; avoid first-person assistant promises;
 2. purpose/scope and activation or routing boundary;
 3. mode/router decision when the skill has materially different branches;
 4. workflow, quick start, or execution sequence sufficient to begin correctly;
@@ -73,12 +73,12 @@ Supporting Markdown follows a semantic-preview-first contract. Every editable `.
 - Prefer one cohesive portable capability over duplicated host-specific variants.
 - Keep `SKILL.md` as a compact control plane; keep its main decision/execution surface in the first 100 lines and detailed branch material in directly linked resources.
 - Prefer one-level Markdown discovery. A reference may use anchors or external sources, but do not make another Markdown file the only route to required instructions.
-- Apply model-neutral minimality: isolate host/model workarounds in adapters or scoped references with provenance.
+- Apply model-neutral minimality and a freedom budget: use high freedom for intentional judgment, medium freedom for bounded rubrics/templates, and low freedom for objective or invariant behavior; isolate host/model workarounds in adapters or scoped references with provenance.
 - Use scripts for deterministic, fragile, repetitive, validation-heavy, or packaging work; do not fake determinism for subjective judgment.
 - Treat examples and evals as calibration or planned evidence until executed.
 - Generalize from failures instead of hard-coding eval prompts, filenames, fixtures, or wording.
 - Never fabricate validation, benchmark scores, portability, package readiness, or security status.
-- Prefer the lowest reliable control layer: `runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`.
+- Prefer the lowest reliable control layer: `runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`; do not leave a must-always-hold invariant dependent on prose when a stronger portable control is available.
 - Preserve backward compatibility unless a breaking change is explicitly authorized and migration evidence exists.
 - After final passing validation, freeze the candidate; any later content change requires affected gates to rerun.
 

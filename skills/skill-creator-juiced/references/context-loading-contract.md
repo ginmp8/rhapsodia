@@ -26,7 +26,7 @@ Include:
 - concrete trigger contexts or user intents;
 - a meaningful non-use boundary when nearby skills overlap.
 
-Prefer discriminative language over long specialist/host lists. Validate ambiguous and negative cases against neighboring skill descriptions when catalog competition is material.
+Prefer discriminative language over long specialist/host lists. Write descriptions as declarative capability statements rather than first-person assistant promises such as `I can` or `I will`. Validate ambiguous and negative cases against neighboring skill descriptions when catalog competition is material.
 
 ## Top-100 Control Surface
 

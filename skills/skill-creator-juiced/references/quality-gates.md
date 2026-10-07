@@ -86,7 +86,8 @@ When behavioral quality is part of the claim:
 - held-out cases support improvement/generalization claims when execution infrastructure allows;
 - repeated work is promoted to reusable scripts/references/assets only when repetition is material across runs;
 - process traces are considered when they reveal repeated waste, inconsistent routing, or hidden host dependency;
-- efficiency metrics, when measured, remain secondary to correctness and semantic quality.
+- efficiency metrics, when measured, remain secondary to correctness and semantic quality;
+- when behavior materially depends on model capability, representative capability tiers are calibrated with equivalent scenarios, constrained models are checked for under-guidance, high-capability models are checked for over-prescription, and unavailable runtimes are recorded as `not-run` rather than inferred from host portability.
 
 If these behavioral checks cannot run, mark them `not-run` and limit claims to structural hardening.
 

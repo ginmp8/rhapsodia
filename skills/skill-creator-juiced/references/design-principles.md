@@ -96,7 +96,7 @@ Do not use post-hoc token compression as a substitute for good initial instructi
 
 ## 8. Activation quality
 
-The description is the primary discovery surface. State what the skill does and when to use it with common user language. Include important adjacent exclusions without turning the description into a catalog.
+The description is the primary discovery surface. State what the skill does and when to use it with common user language. Use declarative capability language rather than first-person assistant promises. Include important adjacent exclusions without turning the description into a catalog.
 
 When optimizing activation, test realistic explicit positives, implicit positives, competing-skill cases, lexical near-misses, adjacent-domain negatives, ambiguous cases, and adversarial boundary pressure. Prefer held-out cases for final claims; do not tune against the holdout set.
 
@@ -107,6 +107,14 @@ Prefer the lowest reliable control layer:
 `runtime/script > schema/type > validator/gate > reference/rubric > free-form prompt`.
 
 Move only objective or repetitive behavior downward. Preserve bounded model judgment for research, editorial, perceptual, and ambiguous tasks where code would create false certainty.
+
+Use an explicit freedom budget when authoring or redesigning instructions:
+
+- `high`: open-ended exploration, synthesis, taste, or expert judgment; constrain outcomes and safety, not the path;
+- `medium`: bounded judgment with rubrics, templates, examples, tie-breakers, or parameterized helpers;
+- `low`: objective, fragile, repetitive, security-sensitive, or must-always-hold behavior; prefer executable/schema/gate enforcement over prose.
+
+Do not lower freedom merely to make outputs more uniform when variability is intentional. Do not leave a low-freedom invariant to prompt compliance when a stronger portable control is available.
 
 Portable mechanical controls should not change semantics merely because an optional third-party parser or runtime library happens to be installed. Either bundle/declare the dependency as a real requirement or use one deterministic package-local/standard-library path.
 

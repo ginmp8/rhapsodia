@@ -118,6 +118,17 @@ For `complete` / `full` optimization, every material actionable finding produced
 
 Prefer multiple signals: structure validity, requested-host portability, host capability resolution, reproducibility decision/result, `skill-hypothesis-discovery` backlog quality, `skill-change-gate` status, activation coverage, output-contract adherence, local-link integrity, script smoke status, security findings, contradiction count, package status, final candidate hash, archive hash, total/local token deltas, and benchmark score. Treat saturated scores as gates; add auxiliary metrics such as unresolved risks, local token regressions, scenario coverage, unreferenced resources, or package gates.
 
+### Model capability calibration
+
+When the candidate changes instruction density, branching, heuristics, examples, or other behavior that may materially vary by model capability, evaluate representative capability tiers actually in scope instead of treating host portability as model portability. Use a small abstract set such as `constrained`, `balanced`, and `high-capability`; map to exact deployed model identities only in run evidence or host adapters.
+
+- Hold prompts, files, acceptance criteria, and evaluator rules equivalent across tiers.
+- Check constrained models for under-guidance, missed steps, invalid branching, and excessive implicit assumptions.
+- Check high-capability models for over-prescription, redundant steps, unnecessary context, and constraints that suppress useful judgment.
+- Record exact provider/model/version when known and keep those identities separate from the portable semantic contract.
+- If a material tier cannot be executed, mark that evidence `not-run` or `blocked`; do not infer cross-model compatibility from static validation or from another tier.
+- Skip multi-model calibration when model capability is not material to the selected change or target deployment.
+
 ## Skill-hypothesis-discovery contract
 
 Use `skill-hypothesis-discovery` after initial benchmark/harness and reproducibility-routing evidence when possible. It must generate evidence-backed hypotheses, not random edits. A normal full-optimization pass should produce 5-10 candidate hypotheses, dedupe and rank them, and recommend the next 1-3 for the current cycle. Reproducibility audit findings, when present, are candidate evidence rather than automatically accepted patches. If no useful change is justified, record `no-mutation-recommended` and avoid experimental patches unless the user supplies a concrete hypothesis or a required repair exists.
