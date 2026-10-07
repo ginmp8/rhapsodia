@@ -192,13 +192,14 @@ class ExtendedTests(unittest.TestCase):
         p=subprocess.run([sys.executable,'-B',str(ROOT/'scripts'/'graph.py'),'--db',str(self.db),'mcp'],input='\n'.join(map(json.dumps,messages))+'\n',text=True,capture_output=True)
         self.assertEqual(p.returncode,0,p.stderr);responses=[json.loads(x) for x in p.stdout.splitlines()];self.assertEqual(len(responses),2);self.assertEqual(responses[-1]['result']['structuredContent']['nodes'],3)
     def test_local_http_authority(self):
-        self.put();page=self.root/'viewer.html';page.write_text('<html><head></head><body>test</body></html>');server=make_server(self.db,page,0)
+        from test_live_security import fixture
+        self.put();page=self.root/'viewer.html';page.write_text(fixture());server=make_server(self.db,page,0)
         t=threading.Thread(target=server.serve_forever,daemon=True);t.start()
         try:
             client=http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=3)
             client.request('GET','/');initial=client.getresponse();bootstrap=initial.read().decode('utf-8')
             import re
-            token=json.loads(re.search(r'window.LOCAL_GRAPH_SESSION=(\{.*?\});',bootstrap).group(1))['token']
+            token=json.loads(re.search(r'<script id="local-graph-session" type="application/json">(\{.*?\})</script>',bootstrap).group(1))['token']
             client.request('POST','/api/query',json.dumps({'operation':'stats'}),{'X-Local-Graph-Token':token,'Content-Type':'application/json'});r=client.getresponse();data=r.read();self.assertEqual(r.status,200,data);self.assertEqual(json.loads(data)['nodes'],3)
             client.request('POST','/api/query','{}',{'Origin':'http://evil.invalid','X-Local-Graph-Token':token});r=client.getresponse();r.read();self.assertEqual(r.status,403);client.close()
         finally:server.shutdown();server.server_close();t.join()

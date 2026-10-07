@@ -16,3 +16,15 @@ Source preserves identifiers, zero/false, duplicates and original assertions. Fa
 
 ## Added regression surface
 `test_walkthrough_browser.py`, `test_walkthrough_hardening.py` and `test_traversal.cjs` cover bounded layers/paths/cycles, motion guards, drag coexistence, mobile containment, semantic relationship labels and export isolation. Required optional tools must be present for the matching runtime claim; skips are reported.
+
+## Security profiles
+`test_explorer_security.py` checks profile separation, receipt honesty, pinned
+extension bytes, restrictive CSP, parser-safe source JSON and output preservation.
+`test_security_browser.py` executes synthetic injection/network-block probes and
+all five export formats with CSP active; no bypass-CSP setting is used.
+`test_live_client.cjs` executes the production client block with a fake DOM and
+transport to check URL/options, byte budgets, timeout, cancellation and concurrency.
+Its Node wrapper skips when Node is unavailable. This is not real-browser HTTP
+integration proof. `file://` and actual browser loopback navigation remain separate
+environment-dependent checks. Existing DOM waits use locator assertions rather
+than eval-based polling, without weakening the production CSP.

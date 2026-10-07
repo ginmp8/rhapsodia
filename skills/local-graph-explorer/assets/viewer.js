@@ -445,15 +445,43 @@
   addEventListener('keydown',event=>{if(event.key==='Escape'&&drag){event.preventDefault();finishDrag(null,true);}});
   addEventListener('resize',()=>{if(currentView==='graph')fit();});
   matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if($('theme').value==='system'){applyTheme();refresh(false);}});
-  if(window.LOCAL_GRAPH_SESSION?.token){
+  const profile=VIEWER_CONFIG.security_profile||'offline';
+  $('offline-badge').textContent=profile==='extended'?'Custom code / unverified':profile==='local-live'?'Local query profile':'Offline snapshot';
+  // The session slot is data, not a dynamically authorized inline program.
+  // Remove the token from the DOM after reading; exports never include it.
+  const sessionSlot=$('local-graph-session');
+  let session=null;
+  try{session=JSON.parse(sessionSlot?.textContent||'{}');}catch{/* Invalid session means no live authority. */}
+  if(sessionSlot)sessionSlot.textContent='{}';
+  const localOrigin=location.protocol==='http:'&&location.hostname==='127.0.0.1';
+  if(profile==='local-live'&&localOrigin&&typeof session?.token==='string'&&/^[A-Za-z0-9_-]{43}$/.test(session.token)){
+    const token=session.token;session=null;let pending=null;
     $('live-panel').hidden=false;$('offline-badge').textContent='Local, read-only';$('live-query').value=JSON.stringify({operation:'subgraph',max_nodes:500},null,2);
-    $('live-button').onclick=async()=>{try{
-      if(location.hostname!=='127.0.0.1')throw Error('Live access is restricted to the local Engine server.');
-      const request=JSON.parse($('live-query').value);$('live-button').disabled=true;
-      const response=await fetch('/api/query',{method:'POST',headers:{'Content-Type':'application/json','X-Local-Graph-Token':window.LOCAL_GRAPH_SESSION.token},body:JSON.stringify(request)});
-      const result=await response.json();if(!response.ok||result.status!=='pass')throw Error(result.error||'Local query failed.');if(result.view)load(result.view);$('live-result').textContent=JSON.stringify(result.view?{status:result.status,nodes:result.view.nodes.length,edges:result.view.edges.length}:result,null,2);message('Local read-only query complete.');
-    }catch(error){message(error.message);}finally{$('live-button').disabled=false;}};
+    addEventListener('pagehide',()=>pending?.abort());
+    $('live-button').onclick=async()=>{
+      if(pending)return;
+      const controller=new AbortController();pending=controller;
+      const timer=setTimeout(()=>controller.abort(),10000);
+      try{
+        // Resolve against the origin, never document.baseURI or a data-provided URL.
+        const endpoint=new URL('/api/query',location.origin);
+        if(location.protocol!=='http:'||endpoint.hostname!=='127.0.0.1'||endpoint.origin!==location.origin)throw Error('Live access requires the same local Engine origin.');
+        const request=JSON.parse($('live-query').value),body=JSON.stringify(request);
+        if(new TextEncoder().encode(body).length>65536)throw Error('Local query exceeds the 64 KiB request budget.');
+        $('live-button').disabled=true;
+        const response=await fetch(endpoint.href,{method:'POST',mode:'same-origin',credentials:'omit',redirect:'error',referrerPolicy:'no-referrer',cache:'no-store',signal:controller.signal,headers:{'Content-Type':'application/json','X-Local-Graph-Token':token},body});
+        const reader=response.body?.getReader();if(!reader)throw Error('Streaming response support is required for bounded local queries.');
+        const decoder=new TextDecoder('utf-8',{fatal:true});let total=0,content='';
+        while(true){const {done,value}=await reader.read();if(done)break;total+=value.byteLength;if(total>8*1024*1024){await reader.cancel();throw Error('Local response exceeds the 8 MiB budget.');}content+=decoder.decode(value,{stream:true});}
+        content+=decoder.decode();const result=JSON.parse(content);
+        if(!response.ok||result.status!=='pass')throw Error(result.error||'Local query failed.');
+        if(result.view)load(result.view);
+        $('live-result').textContent=JSON.stringify(result.view?{status:result.status,nodes:result.view.nodes.length,edges:result.view.edges.length}:result,null,2);message('Local read-only query complete.');
+      }catch(error){message(error.name==='AbortError'?'Local query canceled or timed out.':error.message);}
+      finally{clearTimeout(timer);pending=null;$('live-button').disabled=false;}
+    };
   }
+  session=null;
   if(window.LocalGraphJourney&&$('walk-prepare'))journey=LocalGraphJourney.create({
     identity,positions:()=>positions,nodeElements:()=>nodeElements,
     edgeRecords:()=>[...new Map([...incidentEdges.values()].flat().map(r=>[r.edge.id,r])).values()],

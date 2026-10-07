@@ -1,7 +1,5 @@
 """Read-only SQL, loopback HTTP and local stdio MCP access surfaces."""
 from __future__ import annotations
-import argparse
-import html
 import json
 import secrets
 import sqlite3
@@ -9,10 +7,10 @@ import sys
 import time
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
 from graph_common import canonical,parse_json,integer
 from graph_store import readonly
 from graph_query import query
+from graph_viewer_security import SESSION_SLOT, validate_live_viewer
 
 
 def execute_query(db,request):
@@ -43,50 +41,130 @@ def sql_read(db,statement,limit=100):
         return result
     finally:con.close()
 
-def make_server(db:Path,viewer:Path,port:int=0):
-    if not viewer.is_file():raise ValueError('viewer HTML does not exist')
-    if viewer.stat().st_size>64*1024*1024:raise ValueError('viewer exceeds byte budget')
-    token=secrets.token_urlsafe(32);page=viewer.read_text(encoding='utf-8')
+def make_server(db: Path, viewer: Path, port: int = 0, *, viewer_sha256: str | None = None):
+    integer(port, 'port', 0, 65535)
+    # Validate the exact selected bytes before creating a listener or capability.
+    page, policy, identity = validate_live_viewer(viewer, viewer_sha256)
+    connection = readonly(db)
+    connection.close()
+    token = secrets.token_urlsafe(32)
+    session = '<script id="local-graph-session" type="application/json">' + canonical({'token': token}) + '</script>'
+    response_page = page.replace(SESSION_SLOT, session, 1).encode('utf-8')
+
     class Handler(BaseHTTPRequestHandler):
-        server_version='LocalGraph/2'
+        server_version = 'LocalGraph/2'
+
         def setup(self):
-            super().setup();self.connection.settimeout(5)
-        def log_message(self,*args):pass
-        def send_json(self,status,value):
-            data=canonical(value).encode('utf-8')
-            if len(data)>8*1024*1024:status=413;data=b'{"status":"fail","error":"response budget exceeded"}'
-            self.send_response(status);self.send_header('Content-Type','application/json; charset=utf-8');self.send_header('Content-Length',str(len(data)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.end_headers();self.wfile.write(data)
+            super().setup()
+            self.connection.settimeout(5)
+
+        def log_message(self, *args):
+            pass  # Never log query data, session tokens or headers.
+
+        def single_header(self, name):
+            values = self.headers.get_all(name, [])
+            if len(values) > 1:
+                raise ValueError('Duplicate request header')
+            return values[0] if values else None
+
+        def security_headers(self):
+            self.send_header('Cache-Control', 'no-store')
+            self.send_header('X-Content-Type-Options', 'nosniff')
+            self.send_header('Referrer-Policy', 'no-referrer')
+            self.send_header('Cross-Origin-Resource-Policy', 'same-origin')
+            self.send_header('X-Frame-Options', 'DENY')
+            self.send_header('X-DNS-Prefetch-Control', 'off')
+
+        def send_json(self, status, value):
+            data = canonical(value).encode('utf-8')
+            if len(data) > 8 * 1024 * 1024:
+                status, data = 413, b'{"status":"fail","error":"response budget exceeded"}'
+            self.send_response(status)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(data)))
+            self.security_headers()
+            self.end_headers()
+            self.wfile.write(data)
+
         def allowed(self):
-            expected=f'127.0.0.1:{self.server.server_port}'
-            if self.headers.get('Host')!=expected:return False
-            origin=self.headers.get('Origin')
-            return origin is None or origin=='http://'+expected
-        def do_GET(self):
-            if not self.allowed():self.send_json(403,{'status':'fail','error':'origin/host denied'});return
-            if self.path!='/':self.send_json(404,{'status':'fail','error':'not found'});return
-            bootstrap='<script>window.LOCAL_GRAPH_SESSION='+canonical({'token':token})+';</script>'
-            data=page.replace('<head>','<head>'+bootstrap,1).encode('utf-8')
-            self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(data)));self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Content-Security-Policy',"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'self'; font-src 'none'; object-src 'none'; frame-ancestors 'none'");self.end_headers();self.wfile.write(data)
-        def do_POST(self):
-            if not self.allowed() or not secrets.compare_digest(self.headers.get('X-Local-Graph-Token',''),token):self.send_json(403,{'status':'fail','error':'denied'});return
-            if self.path!='/api/query':self.send_json(404,{'status':'fail','error':'not found'});return
+            expected = f'127.0.0.1:{self.server.server_port}'
             try:
-                length=int(self.headers.get('Content-Length','0'))
-                if not 0<length<=65536:raise ValueError('request byte budget exceeded')
-                request=parse_json(self.rfile.read(length).decode('utf-8'))
-                self.send_json(200,execute_query(db,request))
-            except (ValueError,KeyError,sqlite3.Error,UnicodeError) as exc:self.send_json(400,{'status':'fail','error':str(exc)})
-        def do_OPTIONS(self):self.send_json(403,{'status':'fail','error':'cross-origin access is not enabled'})
-    server=ThreadingHTTPServer(('127.0.0.1',port),Handler);server.daemon_threads=True
+                return (self.single_header('Host') == expected
+                        and self.single_header('Origin') in (None, 'http://' + expected)
+                        and self.single_header('Sec-Fetch-Site') in (None, 'none', 'same-origin'))
+            except ValueError:
+                return False
+
+        def authorized(self):
+            try:
+                supplied = self.single_header('X-Local-Graph-Token') or ''
+                return len(supplied) == len(token) and supplied.isascii() and secrets.compare_digest(supplied, token)
+            except ValueError:
+                return False
+
+        def do_GET(self):
+            if not self.allowed():
+                self.send_json(403, {'status': 'fail', 'error': 'origin/host denied'})
+                return
+            if self.path != '/':
+                self.send_json(404, {'status': 'fail', 'error': 'not found'})
+                return
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Content-Length', str(len(response_page)))
+            self.security_headers()
+            # Reuse the validated hash policy; never authorize all inline scripts.
+            self.send_header('Content-Security-Policy', policy + "; frame-ancestors 'none'")
+            self.end_headers()
+            self.wfile.write(response_page)
+
+        def do_POST(self):
+            if not self.allowed() or not self.authorized():
+                self.send_json(403, {'status': 'fail', 'error': 'denied'})
+                return
+            if self.path != '/api/query':
+                self.send_json(404, {'status': 'fail', 'error': 'not found'})
+                return
+            try:
+                if self.single_header('Transfer-Encoding') is not None:
+                    raise ValueError('Transfer-Encoding is not supported')
+                content_type = (self.single_header('Content-Type') or '').split(';', 1)[0].strip().lower()
+                if content_type != 'application/json':
+                    self.send_json(415, {'status': 'fail', 'error': 'application/json is required'})
+                    return
+                raw_length = self.single_header('Content-Length') or ''
+                if not raw_length.isascii() or not raw_length.isdecimal() or len(raw_length) > 5:
+                    raise ValueError('A bounded Content-Length is required')
+                length = int(raw_length)
+                if not 0 < length <= 65536:
+                    raise ValueError('request byte budget exceeded')
+                raw = self.rfile.read(length)
+                if len(raw) != length:
+                    raise ValueError('incomplete request body')
+                request = parse_json(raw.decode('utf-8'))
+                self.send_json(200, execute_query(db, request))
+            except (ValueError, KeyError, sqlite3.Error, UnicodeError, TimeoutError) as exc:
+                self.send_json(400, {'status': 'fail', 'error': str(exc)})
+
+        def do_OPTIONS(self):
+            self.send_json(403, {'status': 'fail', 'error': 'cross-origin access is not enabled'})
+
+    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    server.daemon_threads = True
+    server.viewer_sha256 = identity
     return server
 
 
-def serve(db,viewer,port):
-    server=make_server(db,viewer,port)
-    print(canonical({'status':'listening','url':f'http://127.0.0.1:{server.server_port}','read_only':True}),flush=True)
-    try:server.serve_forever()
-    except KeyboardInterrupt:pass
-    finally:server.server_close()
+def serve(db, viewer, port, *, viewer_sha256=None):
+    server = make_server(db, viewer, port, viewer_sha256=viewer_sha256)
+    print(canonical({'status': 'listening', 'url': f'http://127.0.0.1:{server.server_port}', 'read_only': True,
+                     'security_profile': 'local-live', 'viewer_sha256': server.viewer_sha256}), flush=True)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
 
 
 QUERY_SCHEMA=json.loads((Path(__file__).resolve().parents[1]/'contracts/graph-query-v1.schema.json').read_text(encoding='utf-8'))

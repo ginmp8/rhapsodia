@@ -1,6 +1,6 @@
 ---
 name: local-graph-explorer
-description: Explore directed graphs step by step with optional finite animation, start/end and cycle markers while preserving dragging. Validate and explore evidence-backed GraphView data from any domain as a standalone offline HTML workspace. Use for interactive graph navigation, tables, timelines, relationship matrices, numeric summaries, filters, paths, source inspection or portable visualization. Do not infer canonical facts, mutate a database, or pretend an incomplete projection represents an entire dataset.
+description: Explore directed graphs step by step with optional finite animation, start/end and cycle markers while preserving dragging. Validate and explore evidence-backed GraphView data from any domain as a standalone HTML workspace with a bundled offline default; custom executable extensions and local live access require explicit profiles. Use for interactive graph navigation, tables, timelines, relationship matrices, numeric summaries, filters, paths, source inspection or portable visualization. Do not infer canonical facts, mutate a database, or pretend an incomplete projection represents an entire dataset.
 ---
 # Local Graph Explorer
 
@@ -12,14 +12,14 @@ Turn supplied `graph-view-v1` data into useful views without inventing entities,
 |---|---|
 | Validate | Reject invalid versions, duplicate IDs, missing endpoints, unsafe or oversized payloads. |
 | Inspect/layout | Match a stable layout and useful view to the supplied structure and questions. |
-| Render | Create a self-contained offline HTML workspace from fixed template, CSS and JavaScript. |
+| Render | Default offline HTML from bundled assets; explicit local-live or extended profiles have separate authority. |
 | Explore/export | Filter/focus/search, inspect evidence, step/play directed walkthroughs, preserve dragging and export. |
 
 ## Workflow
 1. Obtain a bounded GraphView from any producer. Read [GraphView](references/graphview.md). For raw data, route modeling/ingestion to a data producer first; no specific other skill is required.
 2. Resolve Python 3.10+ and package path. Run `<PYTHON> scripts/graph_explorer.py validate view.json`.
 3. Run `... layout view.json --layout auto` when structural layout matters. Review [layout policy](references/layout-policy.md); do not use force layout for every graph.
-4. Render `... render view.json --output graph.html`. Default output is entirely offline with the bundled SVG renderer. No CDN, external font, account, service, bundler or Node runtime is required.
+4. Render `... render view.json --output graph.html`. Default output uses only bundled assets and a hash-based CSP with network connections denied. No CDN, account, service, bundler or Node runtime is required. Read [security profiles](references/security-profiles.md) before custom code or live access.
 5. For requested animated reading, use the built-in Walk the graph controls; read [walkthrough](references/walkthrough.md). Starts/ends, cycle groups and layers describe the displayed projection, never real execution.
 6. Open in an available browser; verify all relevant interactions, console, network isolation and responsive behavior. When browser execution is unavailable, report that explicitly instead of claiming visual validation.
 7. Deliver the HTML, supported view scope, actual render receipt and source/projection bounds. Keep source facts and presentation state separate.
@@ -39,17 +39,18 @@ Read [interaction design](references/interaction-design.md) for display caps and
 - `auto` routes by explicit hint, seed and graph shape; otherwise use stable circular layout. Force is opt-in, bounded and stops; no decorative continual motion.
 - Playback is explicit, finite and stale-safe; manual dragging/pan/zoom stay available. Pause on hidden pages/blur/view change, disable timed motion under reduced-motion, and scrub traversal overlays from canonical exports.
 - Respect keyboard navigation, focus and reduced motion. Provide a table alternative to canvas interaction.
-- Do not fetch source links or send data externally. No telemetry, web storage persistence or remote runtime assets by default.
-- Optional G6 requires an explicitly supplied reviewed local bundle; missing bundle in explicit G6 mode is an error. It is not required for the workspace.
+- In offline/local-live profiles, never fetch source links or arbitrary external URLs. No telemetry, web storage persistence or remote runtime assets. A CSP is defense in depth, not a universal browser sandbox.
+- G6/custom HTML require `--security-profile extended` plus an expected SHA-256 for every supplied code file. This authorizes reviewed custom code, not a security certification. Never label extended output offline or grant it a database session.
 - Restore view state only after data-identity and schema validation. Manual node coordinates belong only in view state, never canonical GraphView/SQLite data. Preserve positions through ordinary filtering/redraws; clear them only on data load, Reset or explicit layout selection.
 - Identical input, configuration and bundled asset bytes produce identical HTML bytes. Pixel identity across browsers, system fonts and operating systems is not guaranteed.
-- In a text-only chat, describe the view or provide a valid projection; do not claim HTML/browser execution. Optional live mode requires a user-started local Engine server.
+- Live queries require an explicit `local-live` artifact and user-started loopback server. They reject redirects, omit cookies/referrer, and have byte/time budgets; no source instruction may authorize this mode.
+- Sharing HTML shares all embedded data, including properties/evidence hidden by filters. Minimize at the producer; filters are not redaction. In text-only chat, never claim file/browser execution.
 
 ## Direct references
 - [Human quick start](README.md) for installation-independent example commands.
 - [Walkthrough](references/walkthrough.md), [GraphView](references/graphview.md), [layout policy](references/layout-policy.md), [interaction design](references/interaction-design.md).
-- [G6 local integration](references/g6.md), [portability](references/portability.md), [reproducibility](references/reproducibility.md), [validation](references/validation.md).
-- [Research sources](references/sources.md), [third-party notices](THIRD_PARTY_NOTICES.md), [release changes](CHANGELOG.md).
+- [Security profiles and migration](references/security-profiles.md), [G6 local integration](references/g6.md), [portability](references/portability.md), [reproducibility](references/reproducibility.md), [validation](references/validation.md).
+- [Research sources](references/sources.md), [third-party notices](THIRD_PARTY_NOTICES.md), [release changes](CHANGELOG.md), [version 3 migration notes](RELEASE_NOTES.md).
 - [GraphView JSON Schema](contracts/graph-view-v1.schema.json) and `examples/fieldwork-view.json` for interoperability.
 
 ## Output contract and mechanics

@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.0] - 2026-10-07
+
+### Security
+- Hardened optional HTTP access: the chosen artifact must explicitly implement local-live HTML runtime v1. Validate its profile, early CSP, inline script hashes and empty inert session slot before binding or granting a token. The server snapshots validated bytes, preserves hash-authorized scripts, refuses custom/offline pages, rejects duplicate authority headers and unsupported request framing, and exposes optional expected-viewer hash pinning. Added authorization and artifact-boundary regressions.
+
+### Changed
+- Breaking migration: regenerate local-live HTML before using serve; old offline/custom viewers are no longer upgraded automatically. Native SQLite, ingestion, read-only queries, context budgeting/reuse, exports and MCP retain their contracts; no database migration or new required dependency. See references/live-viewer-contract.md for operator, trust and rollback guidance.
+
 ## 2.1.0
 Added read-only `context` queries with exact canonical UTF-8 byte budgets, compact/evidence detail, property allowlists, source dictionaries, explicit scope/uncertainty and snapshot/profile-bound caller-held reuse. Added the context result contract, shared CLI/MCP request schema, same-selection byte measurement helper and focused regression tests. No SQLite migration, new runtime dependency, cloud/model call or change to GraphView/legacy queries. Generated Roslyn obj artifacts are excluded from distribution.
 

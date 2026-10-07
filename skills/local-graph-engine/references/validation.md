@@ -13,3 +13,11 @@ Source preserves identifiers, zero/false, duplicates and original assertions. Fa
 
 ## Added regression surface
 `test_context.py` and `test_context_integration.py` cover byte accounting, filtered evidence, caller-held reuse/invalidation, canonical-schema compatibility, CLI/MCP and same-selection measurement. Required optional tools must be present for the matching runtime claim; skips are reported.
+
+## Local HTTP security
+`tests/test_live_security.py` uses an independent runtime-v1 HTML fixture and real
+loopback HTTP to test explicit live authority, script/CSP identity, unsafe page
+rejection, origin/token/Host/metadata checks, JSON/size/transport controls and
+read-only byte preservation. The shared HTML contract is tested without importing
+a viewer package. Real browser-to-server navigation is a separate optional check;
+HTTP tests alone are not end-to-end browser integration evidence.

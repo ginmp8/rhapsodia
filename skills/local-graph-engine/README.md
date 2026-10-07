@@ -1,4 +1,4 @@
-# Local Graph Engine 2.1.0
+# Local Graph Engine 3.0.0
 
 A local, domain-neutral data workbench: inspect sources, choose a data model,
 produce evidence-backed entities and relationships, store them in SQLite, and
@@ -60,3 +60,20 @@ optional libraries cause only their tests to skip; a skip is not runtime proof.
 This package is MIT-licensed. See LICENSE and THIRD_PARTY_NOTICES.md.
 The same package can be consumed by capable Agent Skills hosts. A text-only chat
 cannot execute local Python or persist a database without a filesystem/tool.
+
+## Version 3 local-access migration
+
+Offline database/query/context operations keep their commands and data formats.
+For HTTP, regenerate a native **local-live HTML runtime v1** artifact; an old
+offline or custom HTML is not automatically granted database access. A compatible
+Explorer uses `render view.json --output live.html --security-profile local-live`.
+Then start the foreground server explicitly:
+
+```text
+python scripts/graph.py --db graph.db serve --viewer live.html --port 8765 --viewer-sha256 <SHA256_FROM_RENDER_RECEIPT>
+```
+
+The expected hash is optional but recommended for binding the reviewed artifact.
+A matching hash alone does not prove trust. See [local access](references/access.md)
+and the [HTML trust contract](references/live-viewer-contract.md). No database,
+GraphView or context migration and no new required library is introduced.

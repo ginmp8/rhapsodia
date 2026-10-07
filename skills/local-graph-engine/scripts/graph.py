@@ -63,7 +63,7 @@ def parser():
     q=sub.add_parser('restore-source');q.add_argument('source_uri');q.add_argument('revision');q.add_argument('--confirm',action='store_true')
     q=sub.add_parser('remember');q.add_argument('question');q.add_argument('--nodes',nargs='+',required=True);q.add_argument('--outcome',choices=['useful','dead_end','corrected'],required=True);q.add_argument('--note',default='')
     sub.add_parser('reflect')
-    q=sub.add_parser('serve');q.add_argument('--viewer',required=True);q.add_argument('--port',type=int,default=8765)
+    q=sub.add_parser('serve');q.add_argument('--viewer',required=True,help='Reviewed local-live HTML runtime v1, not an offline/custom page');q.add_argument('--port',type=int,default=8765);q.add_argument('--viewer-sha256',help='Optional expected hash from the render receipt')
     sub.add_parser('mcp')
     return p
 
@@ -174,7 +174,7 @@ def execute(args):
         return apply_patches(db,[source_revision(db,args.source_uri,args.revision)])
     if cmd=='remember':return remember(db,args.question,args.nodes,args.outcome,args.note)
     if cmd=='reflect':return reflect(db)
-    if cmd=='serve':serve(db,Path(args.viewer).resolve(),args.port);return None
+    if cmd=='serve':serve(db,Path(args.viewer).expanduser().absolute(),args.port,viewer_sha256=args.viewer_sha256);return None
     if cmd=='mcp':mcp_stdio(db);return None
     raise ValueError('unknown command')
 
