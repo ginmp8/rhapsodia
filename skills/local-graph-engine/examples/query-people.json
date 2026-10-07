@@ -1,0 +1,7 @@
+{
+  "operation": "subgraph",
+  "kinds": [
+    "person"
+  ],
+  "max_nodes": 500
+}

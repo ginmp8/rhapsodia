@@ -1,3 +1,3 @@
 interface:
   display_name: "Local Graph Explorer"
-  short_description: "Render GraphView data as a deterministic interactive graph HTML."
+  short_description: "Explore local data with offline graphs, tables, timelines and matrices."

@@ -1,0 +1,6 @@
+{
+  "operation": "aggregate",
+  "property": "budget",
+  "metric": "sum",
+  "group_by": "kind"
+}

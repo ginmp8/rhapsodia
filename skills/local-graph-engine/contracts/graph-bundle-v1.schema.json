@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:local-graph:graph-bundle-v1",
+  "title": "graph-bundle-v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "patches"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "graph-bundle-v1"
+    },
+    "graph_hash": {
+      "type": "string"
+    },
+    "patches": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:local-graph:graph-patch-v1",
+        "title": "graph-patch-v1",
+        "type": "object",
+        "required": [
+          "schema_version",
+          "source",
+          "nodes",
+          "edges"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "graph-patch-v1"
+          },
+          "source": {
+            "type": "object",
+            "required": [
+              "uri",
+              "kind"
+            ],
+            "properties": {
+              "uri": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "content_hash": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            }
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "kind",
+                "label",
+                "evidence"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "kind": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "properties": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "aliases": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S"
+                  }
+                },
+                "evidence": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "provenance",
+                      "confidence",
+                      "status"
+                    ],
+                    "properties": {
+                      "provenance": {
+                        "enum": [
+                          "EXTRACTED",
+                          "DERIVED",
+                          "INFERRED",
+                          "MANUAL"
+                        ]
+                      },
+                      "confidence": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "status": {
+                        "enum": [
+                          "accepted",
+                          "ambiguous",
+                          "stale",
+                          "rejected"
+                        ]
+                      },
+                      "locator": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "details": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "maxItems": 100000
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "source",
+                "target",
+                "relation",
+                "evidence"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "target": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "relation": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "directed": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "properties": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "evidence": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "provenance",
+                      "confidence",
+                      "status"
+                    ],
+                    "properties": {
+                      "provenance": {
+                        "enum": [
+                          "EXTRACTED",
+                          "DERIVED",
+                          "INFERRED",
+                          "MANUAL"
+                        ]
+                      },
+                      "confidence": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "status": {
+                        "enum": [
+                          "accepted",
+                          "ambiguous",
+                          "stale",
+                          "rejected"
+                        ]
+                      },
+                      "locator": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "details": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "maxItems": 100000
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

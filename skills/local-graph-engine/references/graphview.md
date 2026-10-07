@@ -1,25 +1,14 @@
-# GraphView v1
-
-## At a Glance
-- **Purpose:** Define the stable read projection consumed by graph explorers and other renderers.
-- **Load when:** Exporting a subgraph, integrating another visualization tool, or validating engine/explorer compatibility.
-- **Decision impact:** Keeps visualization independent of SQLite tables and prevents UI code from becoming a second source of graph truth.
+# GraphView v1 public projection
 
 ## Contract
-Top level:
-- `schema_version`: exactly `graph-view-v1`.
-- `graph`: counts and producer contract metadata.
-- `query`: seed/direction/depth/relation/max-node projection parameters.
-- `nodes[]`: `id`, `label`, `kind`, `properties`, aliases, degree, evidence summary, optional community.
-- `edges[]`: `id`, `source`, `target`, `relation`, `directed`, `properties`, evidence summary.
-- `communities[]`: optional analytics projection.
-- `metadata`: truncation, source DB hash, analysis identity, optional layout hint.
+A `graph-view-v1` object contains `nodes` and `edges`; optional `graph`, `query`, `communities`, and `metadata` describe context. Nodes require unique nonempty `id`, `label`, `kind`. Edges require unique nonempty `id`, `source`, `target`, `relation`; endpoints must be present in the same view. Direction defaults to true. See `contracts/graph-view-v1.schema.json` plus the runtime semantic validator.
+Node properties, aliases, metrics, community, evidence_summary, evidence and claims are additive. Edge properties/evidence/claims are additive. Producers may preserve compatible unknown metadata; consumers must not execute it. This contract does not expose SQLite tables.
 
-## Consumer invariants
-- Node IDs are unique.
-- Every edge endpoint resolves to a node in the same view.
-- Consumers may hide/filter/aggregate data but must not create canonical nodes or edges and present them as source facts.
-- `metadata.truncated=true` means the view is intentionally bounded and must not be described as complete.
-- Layout positions are presentation state, not graph truth, and therefore are intentionally absent from this contract.
+## Evidence and bounds
+`query` identifies seed/depth/filter/pagination scope. `metadata.truncated` discloses a capped projection; `eligible_nodes/eligible_edges`, `complete_database`, `evidence_policy`, `source_graph_sha256` and `producer_version` may add context. A non-truncated subgraph is still not necessarily the full dataset. Missing metadata does not establish completeness.
+Evidence contains source URI, locator, provenance, confidence, status and details. Evidence summaries support scanning, not verification. Claims preserve differing assertions from sources. `evidence_truncated` marks a bounded inspector payload where supplied.
+Communities and metrics are derived analysis, not facts inherent in the source. Data source identities/locators remain available separately from presentation grouping.
 
-The engine emits pretty, sorted JSON so unchanged database bytes and export options produce stable output.
+## Presentation separation
+`metadata.layout_hint` may suggest dagre/radial/circular/grid/community/force. Coordinates, zoom, themes, filters and selection belong to separate view state. Re-exporting a filtered view must recompute its counts and visibly mark scope; it must not replace the producer's canonical database.
+A producer can be any local tool or capable chat, not necessarily Local Graph Engine. A consumer can be the Explorer or any program implementing this contract. Original v1 fixtures and their commands remain regression cases.

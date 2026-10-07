@@ -17,6 +17,7 @@ from collections import deque
 from pathlib import Path
 from typing import Any, Iterable
 
+PACKAGE_VERSION = "2.0.0"
 SCHEMA_VERSION = 1
 PATCH_VERSION = "graph-patch-v1"
 VIEW_VERSION = "graph-view-v1"
@@ -206,13 +207,30 @@ def connect(db_path: Path, *, create: bool = False) -> sqlite3.Connection:
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA foreign_keys=ON")
     con.execute("PRAGMA busy_timeout=5000")
+    try:
+        from graph_journal import guard_writer
+        guard_writer(con)
+    except Exception:
+        con.close()
+        raise
     return con
 
 
 def init_db(db_path: Path) -> dict[str, Any]:
+    if db_path.exists():
+        probe = sqlite3.connect(str(db_path))
+        try:
+            version = probe.execute("PRAGMA user_version").fetchone()[0]
+            tables = probe.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+            if (tables and version != SCHEMA_VERSION) or version not in (0, SCHEMA_VERSION):
+                raise ValueError("refusing to initialize an unrelated or newer database")
+            if tables and not probe.execute("SELECT 1 FROM sqlite_master WHERE name='graph_meta'").fetchone():
+                raise ValueError("refusing to initialize a non-graph database")
+        finally:
+            probe.close()
     con = connect(db_path, create=True)
     try:
-        mode = con.execute("PRAGMA journal_mode=WAL").fetchone()[0]
+        mode = con.execute("PRAGMA journal_mode").fetchone()[0]
         con.executescript(SCHEMA_SQL)
         con.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
         con.execute(
@@ -291,6 +309,11 @@ def validate_evidence(value: Any, path: str, errors: list[str]) -> None:
 
 def validate_patch_data(data: Any, existing_node_ids: set[str] | None = None) -> list[str]:
     errors: list[str] = []
+    from graph_common import finite_tree
+    try:
+        finite_tree(data)
+    except ValueError as exc:
+        return [str(exc)]
     if not isinstance(data, dict):
         return ["root: expected object"]
     if data.get("schema_version") != PATCH_VERSION:
@@ -342,6 +365,7 @@ def validate_patch_data(data: Any, existing_node_ids: set[str] | None = None) ->
         if not isinstance(edge, dict):
             errors.append(f"{p}: expected object")
             continue
+        if "id" in edge: require_nonempty_str(edge.get("id"), f"{p}.id", errors)
         require_nonempty_str(edge.get("source"), f"{p}.source", errors)
         require_nonempty_str(edge.get("target"), f"{p}.target", errors)
         require_nonempty_str(edge.get("relation"), f"{p}.relation", errors)
@@ -357,7 +381,8 @@ def validate_patch_data(data: Any, existing_node_ids: set[str] | None = None) ->
         if isinstance(t, str) and t not in known:
             errors.append(f"{p}.target: unknown node {t!r}")
         if isinstance(s, str) and isinstance(t, str) and isinstance(rel, str) and isinstance(directed, bool):
-            key = (s, t, rel, directed)
+            a, b = (s, t) if directed else tuple(sorted((s, t)))
+            key = (a, b, rel, directed)
             if key in edge_keys:
                 errors.append(f"{p}: duplicate canonical edge {key!r}")
             edge_keys.add(key)
@@ -365,8 +390,8 @@ def validate_patch_data(data: Any, existing_node_ids: set[str] | None = None) ->
 
 
 def load_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as fh:
-        return json.load(fh)
+    from graph_common import read_json
+    return read_json(path)
 
 
 def validate_patch_file(db_path: Path | None, patch_path: Path) -> dict[str, Any]:
@@ -383,142 +408,12 @@ def validate_patch_file(db_path: Path | None, patch_path: Path) -> dict[str, Any
 
 
 def apply_patch(db_path: Path, patch_path: Path, *, prune_orphans: bool = True) -> dict[str, Any]:
-    data = load_json(patch_path)
-    con = connect(db_path)
+    from graph_store import apply_patches
+    from graph_common import read_json
     try:
-        existing = {r[0] for r in con.execute("SELECT id FROM nodes")}
-        errors = validate_patch_data(data, existing)
-        if errors:
-            return {"status": "fail", "errors": errors, "mutated": False}
-
-        src = data["source"]
-        sid = source_id(src["uri"])
-        with con:
-            con.execute(
-                """
-                INSERT INTO sources(id,uri,kind,content_hash,metadata_json,indexed_at)
-                VALUES(?,?,?,?,?,?)
-                ON CONFLICT(uri) DO UPDATE SET
-                  kind=excluded.kind,
-                  content_hash=excluded.content_hash,
-                  metadata_json=excluded.metadata_json,
-                  indexed_at=excluded.indexed_at
-                """,
-                (
-                    sid,
-                    src["uri"],
-                    src["kind"],
-                    src.get("content_hash"),
-                    canonical_json(src.get("metadata", {})),
-                    normalized_indexed_at(src),
-                ),
-            )
-            # Source-scoped replacement: remove only prior assertions owned by this source.
-            con.execute("DELETE FROM node_aliases WHERE source_id=?", (sid,))
-            con.execute("DELETE FROM node_evidence WHERE source_id=?", (sid,))
-            con.execute("DELETE FROM edge_evidence WHERE source_id=?", (sid,))
-
-            for node in sorted(data["nodes"], key=lambda n: n["id"]):
-                con.execute(
-                    """
-                    INSERT INTO nodes(id,kind,label,properties_json) VALUES(?,?,?,?)
-                    ON CONFLICT(id) DO UPDATE SET
-                      kind=excluded.kind,
-                      label=excluded.label,
-                      properties_json=excluded.properties_json
-                    """,
-                    (node["id"], node["kind"], node["label"], canonical_json(node.get("properties", {}))),
-                )
-                for alias in sorted(set(node.get("aliases", []))):
-                    con.execute(
-                        "INSERT OR IGNORE INTO node_aliases(alias,node_id,source_id) VALUES(?,?,?)",
-                        (alias, node["id"], sid),
-                    )
-                for ev in sorted(node["evidence"], key=evidence_sort_key):
-                    eid = evidence_id("node", node["id"], sid, ev)
-                    con.execute(
-                        """
-                        INSERT OR REPLACE INTO node_evidence
-                        (id,node_id,source_id,provenance,confidence,locator,status,details_json)
-                        VALUES(?,?,?,?,?,?,?,?)
-                        """,
-                        (
-                            eid,
-                            node["id"],
-                            sid,
-                            ev["provenance"],
-                            float(ev["confidence"]),
-                            ev.get("locator"),
-                            ev["status"],
-                            canonical_json(ev.get("details", {})),
-                        ),
-                    )
-
-            for edge in sorted(data["edges"], key=lambda e: (e["source"], e["target"], e["relation"], bool(e.get("directed", True)))):
-                directed = bool(edge.get("directed", True))
-                eid = edge.get("id") or edge_id(edge["source"], edge["target"], edge["relation"], directed)
-                con.execute(
-                    """
-                    INSERT INTO edges(id,source_node_id,target_node_id,relation,directed,properties_json)
-                    VALUES(?,?,?,?,?,?)
-                    ON CONFLICT(source_node_id,target_node_id,relation,directed) DO UPDATE SET
-                      properties_json=excluded.properties_json
-                    """,
-                    (
-                        eid,
-                        edge["source"],
-                        edge["target"],
-                        edge["relation"],
-                        1 if directed else 0,
-                        canonical_json(edge.get("properties", {})),
-                    ),
-                )
-                canonical_edge = con.execute(
-                    "SELECT id FROM edges WHERE source_node_id=? AND target_node_id=? AND relation=? AND directed=?",
-                    (edge["source"], edge["target"], edge["relation"], 1 if directed else 0),
-                ).fetchone()["id"]
-                for ev in sorted(edge["evidence"], key=evidence_sort_key):
-                    evid = evidence_id("edge", canonical_edge, sid, ev)
-                    con.execute(
-                        """
-                        INSERT OR REPLACE INTO edge_evidence
-                        (id,edge_id,source_id,provenance,confidence,locator,status,details_json)
-                        VALUES(?,?,?,?,?,?,?,?)
-                        """,
-                        (
-                            evid,
-                            canonical_edge,
-                            sid,
-                            ev["provenance"],
-                            float(ev["confidence"]),
-                            ev.get("locator"),
-                            ev["status"],
-                            canonical_json(ev.get("details", {})),
-                        ),
-                    )
-
-            if prune_orphans:
-                con.execute("DELETE FROM edges WHERE NOT EXISTS (SELECT 1 FROM edge_evidence ee WHERE ee.edge_id=edges.id)")
-                con.execute(
-                    """
-                    DELETE FROM nodes
-                    WHERE NOT EXISTS (SELECT 1 FROM node_evidence ne WHERE ne.node_id=nodes.id)
-                      AND NOT EXISTS (SELECT 1 FROM edges e WHERE e.source_node_id=nodes.id OR e.target_node_id=nodes.id)
-                    """
-                )
-            fts = rebuild_fts(con)
-
-        counts = db_stats(con)
-        return {
-            "status": "pass",
-            "mutated": True,
-            "source_id": sid,
-            "source_uri": src["uri"],
-            "fts5": fts,
-            "counts": counts,
-        }
-    finally:
-        con.close()
+        return apply_patches(db_path, [read_json(patch_path)], prune=prune_orphans)
+    except (ValueError, TypeError, KeyError, sqlite3.Error) as exc:
+        return {"status": "fail", "errors": [str(exc)], "mutated": False}
 
 
 def evidence_sort_key(ev: dict[str, Any]) -> tuple[str, str, str, float, str]:
@@ -753,14 +648,14 @@ def collect_subgraph(
 
 
 def latest_community_map(con: sqlite3.Connection, node_ids: set[str]) -> tuple[str | None, dict[str, str], list[dict[str, Any]]]:
-    row = con.execute(
-        """
-        SELECT run_id FROM community_members GROUP BY run_id ORDER BY run_id DESC LIMIT 1
-        """
-    ).fetchone()
+    from graph_store import logical_hash
+    pointer = con.execute("SELECT value FROM graph_meta WHERE key='current_analysis'").fetchone()
+    if not pointer:
+        return None, {}, []
+    row = con.execute("SELECT id FROM analysis_runs WHERE id=? AND status='pass' AND input_hash=?", (pointer[0], logical_hash(con))).fetchone()
     if not row:
         return None, {}, []
-    run_id = row["run_id"]
+    run_id = row[0]
     members = con.execute(
         """
         SELECT cm.node_id,cm.community_id,c.label
@@ -792,6 +687,9 @@ def export_view(
     max_nodes: int,
     layout_hint: str | None,
 ) -> dict[str, Any]:
+    from graph_common import integer
+    integer(depth, "depth", 0, 100)
+    integer(max_nodes, "max_nodes", 1, 100000)
     seed = resolve_node(con, seed_token) if seed_token else None
     node_ids, rows, truncated = collect_subgraph(con, seed, direction, depth, relation, max_nodes)
     node_set = set(node_ids)
@@ -823,12 +721,12 @@ def export_view(
         "metadata": {
             "truncated": truncated,
             "community_run_id": run_id,
-            "source_db_sha256": sha256_file(db_path),
+            "source_graph_sha256": __import__("graph_store").logical_hash(con),
             "layout_hint": layout_hint,
         },
     }
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    from graph_common import write_json
+    write_json(output, payload, inputs=[db_path])
     return {"status": "pass", "output": str(output), "sha256": sha256_file(output), "nodes": len(nodes), "edges": len(edges), "truncated": truncated}
 
 

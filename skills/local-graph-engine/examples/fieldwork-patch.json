@@ -1,0 +1,791 @@
+{
+  "edges": [
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:1",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "operates",
+      "source": "team:field",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:2",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "operates",
+      "source": "team:field",
+      "target": "project:forest"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:3",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "coordinates",
+      "source": "team:research",
+      "target": "project:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:4",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "supports",
+      "source": "team:lab",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:5",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "member_of",
+      "source": "person:ana",
+      "target": "team:research"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:6",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "member_of",
+      "source": "person:bruno",
+      "target": "team:field"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:7",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "member_of",
+      "source": "person:carol",
+      "target": "team:lab"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:8",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "works_on",
+      "source": "person:ana",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:9",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "works_on",
+      "source": "person:bruno",
+      "target": "project:forest"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:10",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "works_on",
+      "source": "person:carol",
+      "target": "project:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:11",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "studies",
+      "source": "project:river",
+      "target": "site:r01"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:12",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "studies",
+      "source": "project:forest",
+      "target": "site:f02"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:13",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "studies",
+      "source": "project:coast",
+      "target": "site:c03"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:14",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "produces",
+      "source": "site:r01",
+      "target": "dataset:water"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:15",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "produces",
+      "source": "site:f02",
+      "target": "dataset:forest"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:16",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "produces",
+      "source": "site:c03",
+      "target": "dataset:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:17",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "guides",
+      "source": "document:protocol",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:18",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "guides",
+      "source": "document:protocol",
+      "target": "project:forest"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:19",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "guides",
+      "source": "document:protocol",
+      "target": "project:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:20",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "summarized_in",
+      "source": "dataset:water",
+      "target": "document:report"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:21",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "summarized_in",
+      "source": "dataset:forest",
+      "target": "document:report"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:22",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "summarized_in",
+      "source": "dataset:coast",
+      "target": "document:report"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:23",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "concerns",
+      "source": "finding:quality",
+      "target": "dataset:water"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:24",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "properties": {},
+      "relation": "proposes_comparison",
+      "source": "finding:review",
+      "target": "document:report"
+    }
+  ],
+  "nodes": [
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:1",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "project:river",
+      "kind": "project",
+      "label": "River water study",
+      "properties": {
+        "budget": 24000,
+        "status": "active",
+        "timestamp": "2026-01-12T09:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:2",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "project:forest",
+      "kind": "project",
+      "label": "Forest field survey",
+      "properties": {
+        "budget": 18000,
+        "status": "active",
+        "timestamp": "2026-02-03T10:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:3",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "project:coast",
+      "kind": "project",
+      "label": "Coastal restoration",
+      "properties": {
+        "budget": 32000,
+        "status": "review",
+        "timestamp": "2026-03-05T10:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:4",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "team:field",
+      "kind": "team",
+      "label": "Field operations",
+      "properties": {
+        "region": "north"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:5",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "team:lab",
+      "kind": "team",
+      "label": "Water laboratory",
+      "properties": {
+        "region": "central"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:6",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "team:research",
+      "kind": "team",
+      "label": "Research office",
+      "properties": {
+        "region": "central"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:7",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "person:ana",
+      "kind": "person",
+      "label": "Ana Silva",
+      "properties": {
+        "role": "researcher"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:8",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "person:bruno",
+      "kind": "person",
+      "label": "Bruno Lima",
+      "properties": {
+        "role": "technician"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:9",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "person:carol",
+      "kind": "person",
+      "label": "Carol Santos",
+      "properties": {
+        "role": "coordinator"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:10",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "site:r01",
+      "kind": "site",
+      "label": "River station 01",
+      "properties": {
+        "region": "north"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:11",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "site:f02",
+      "kind": "site",
+      "label": "Forest station 02",
+      "properties": {
+        "region": "west"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:12",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "site:c03",
+      "kind": "site",
+      "label": "Coast station 03",
+      "properties": {
+        "region": "east"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:13",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "dataset:water",
+      "kind": "dataset",
+      "label": "Water samples",
+      "properties": {
+        "records": 245,
+        "timestamp": "2026-03-10T12:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:14",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "dataset:forest",
+      "kind": "dataset",
+      "label": "Species observations",
+      "properties": {
+        "records": 180,
+        "timestamp": "2026-03-12T11:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:15",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "dataset:coast",
+      "kind": "dataset",
+      "label": "Coastal measurements",
+      "properties": {
+        "records": 126,
+        "timestamp": "2026-03-19T13:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:16",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "document:protocol",
+      "kind": "document",
+      "label": "Sampling protocol",
+      "properties": {
+        "revision": 2,
+        "timestamp": "2026-01-08T08:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:17",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "document:report",
+      "kind": "document",
+      "label": "March field report",
+      "properties": {
+        "status": "draft",
+        "timestamp": "2026-03-25T16:00:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:18",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "finding:quality",
+      "kind": "finding",
+      "label": "Quality review required",
+      "properties": {
+        "status": "open",
+        "timestamp": "2026-03-21T09:30:00Z"
+      }
+    },
+    {
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:19",
+          "provenance": "MANUAL",
+          "status": "accepted"
+        }
+      ],
+      "id": "finding:review",
+      "kind": "finding",
+      "label": "Cross-site comparison",
+      "properties": {
+        "status": "proposed",
+        "timestamp": "2026-03-24T14:00:00Z"
+      }
+    }
+  ],
+  "schema_version": "graph-patch-v1",
+  "source": {
+    "kind": "example",
+    "metadata": {
+      "synthetic": true
+    },
+    "uri": "example://fieldwork/synthetic"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": "graph-mapping-v1",
+  "namespace": "people-demo",
+  "normalization": "none",
+  "entities": [
+    {
+      "key": "person",
+      "kind": "person",
+      "id_columns": [
+        "person_id"
+      ],
+      "label_column": "person_name",
+      "properties": [
+        "budget",
+        "active"
+      ],
+      "types": {
+        "budget": "number",
+        "active": "boolean"
+      }
+    },
+    {
+      "key": "team",
+      "kind": "team",
+      "id_columns": [
+        "team_id"
+      ],
+      "label_column": "team_name",
+      "properties": []
+    },
+    {
+      "key": "manager",
+      "kind": "person",
+      "id_columns": [
+        "manager_id"
+      ],
+      "properties": []
+    }
+  ],
+  "relations": [
+    {
+      "from": "person",
+      "to": "team",
+      "relation": "member_of"
+    },
+    {
+      "from": "person",
+      "to": "manager",
+      "relation": "reports_to"
+    }
+  ]
+}

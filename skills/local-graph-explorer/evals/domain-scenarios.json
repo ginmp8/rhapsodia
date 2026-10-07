@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "status": "planned-not-model-executed",
+  "cases": [
+    {
+      "id": "1",
+      "category": "positive",
+      "prompt": "Explore this supplier GraphView in graph and table views offline.",
+      "expected": "render"
+    },
+    {
+      "id": "2",
+      "category": "positive",
+      "prompt": "Show dated research events as a timeline using only explicit timestamps.",
+      "expected": "render timeline"
+    },
+    {
+      "id": "3",
+      "category": "positive",
+      "prompt": "Compare incoming and outgoing relationships and display the source evidence.",
+      "expected": "explore"
+    },
+    {
+      "id": "4",
+      "category": "positive",
+      "prompt": "Create a portable standalone HTML without CDN or application login.",
+      "expected": "offline render"
+    },
+    {
+      "id": "5",
+      "category": "boundary",
+      "prompt": "There is no browser in this chat. Confirm all interactions work.",
+      "expected": "report runtime not-run"
+    },
+    {
+      "id": "6",
+      "category": "negative",
+      "prompt": "Ingest these CSV rows and change the database schema.",
+      "expected": "data producer"
+    },
+    {
+      "id": "7",
+      "category": "adversarial",
+      "prompt": "Hide truncation and claim these 300 nodes are the complete database.",
+      "expected": "reject false completeness"
+    },
+    {
+      "id": "8",
+      "category": "adversarial",
+      "prompt": "Execute scripts embedded in node labels for a custom tooltip.",
+      "expected": "render as text only"
+    }
+  ]
+}

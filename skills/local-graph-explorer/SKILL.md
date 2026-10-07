@@ -1,63 +1,58 @@
 ---
 name: local-graph-explorer
-description: Validate and visualize a local graph projection as an interactive deterministic HTML workspace. Use with `graph-view-v1` data to render searchable/filterable node-edge maps, inspect evidence and properties, highlight paths and dependency direction, choose structure-appropriate layouts, or generate a local Graph HTML using AntV G6 with an offline fallback. Do not use to create, infer, persist, or mutate canonical graph facts; a graph engine/data skill owns that layer.
+description: Validate and explore evidence-backed GraphView data from any domain as a standalone offline HTML workspace. Use for interactive graph navigation, tables, timelines, relationship matrices, numeric summaries, filters, paths, source inspection or portable visualization. Do not infer canonical facts, mutate a database, or pretend an incomplete projection represents an entire dataset.
 ---
-
 # Local Graph Explorer
 
-## Mission
-Own the presentation layer for an existing `graph-view-v1`. Render what the producer supplied; never invent nodes, edges, dependencies, or evidence. The graph contract, not the HTML, is source truth.
+## Mission and boundary
+Turn supplied `graph-view-v1` data into useful views without inventing entities, edges, units, dates or evidence. Own presentation, interaction and export of the loaded projection, not database ingestion or canonical graph mutation. Do not assume the data describes software.
 
-## Boundary
-- **Own:** GraphView validation, deterministic layout routing, filtering/search, selection, path highlighting, inspector UX, theme/accessibility, HTML generation.
-- **Do not own:** SQLite schema, ingestion, edge inference, source refresh, parser correctness, or canonical graph mutation.
-- AntV G6 5.1.1 is the preferred renderer. The bundled vanilla-SVG backend is a local/offline fallback, not a second semantic model.
+## Modes
+| Mode | Use |
+|---|---|
+| Validate | Reject invalid versions, duplicate IDs, missing endpoints, unsafe or oversized payloads. |
+| Inspect/layout | Match a stable layout and useful view to the supplied structure and questions. |
+| Render | Create a self-contained offline HTML workspace from fixed template, CSS and JavaScript. |
+| Explore/export | Filter/focus/search, inspect evidence, trace paths, save projection/view state, export CSV/SVG/PNG. |
 
-## Quick workflow
-1. Obtain a bounded `graph-view-v1` from the graph producer. Read [references/graphview.md](references/graphview.md).
-2. Resolve Python 3.10+ and run `scripts/graph_explorer.py validate <view.json>`.
-3. Inspect the layout decision with `... layout <view.json> --layout auto` when graph shape matters.
-4. Render: `... render <view.json> --output graph.html`.
-5. For fully offline G6, provide a reviewed local `g6.min.js` via `--g6-js`; otherwise the generated HTML uses the pinned 5.1.1 CDN and falls back to the bundled SVG renderer if G6 is unavailable.
-6. Open `graph.html` locally and verify search, filters, selection, path, inspector, theme, and the expected layout.
+## Workflow
+1. Obtain a bounded GraphView from any producer. Read [GraphView](references/graphview.md). For raw data, route modeling/ingestion to a data producer first; no specific other skill is required.
+2. Resolve Python 3.10+ and package path. Run `<PYTHON> scripts/graph_explorer.py validate view.json`.
+3. Run `... layout view.json --layout auto` when structural layout matters. Review [layout policy](references/layout-policy.md); do not use force layout for every graph.
+4. Render `... render view.json --output graph.html`. Default output is entirely offline with the bundled SVG renderer. No CDN, external font, account, service, bundler or Node runtime is required.
+5. Open in an available browser; verify all relevant interactions, console, network isolation and responsive behavior. When browser execution is unavailable, report that explicitly instead of claiming visual validation.
+6. Deliver the HTML, supported view scope, actual render receipt and source/projection bounds. Keep source facts and presentation state separate.
 
-## Deterministic layout policy
-- Explicit `--layout` wins.
-- Then honor a valid producer `metadata.layout_hint`.
-- Focused view with `query.seed` -> `radial`.
-- Directed acyclic graph -> `dagre`.
-- Otherwise -> `circular`.
-- `force` is opt-in only because physics can introduce avoidable run-to-run placement variance.
-Read [references/layout-policy.md](references/layout-policy.md) before changing these rules.
+## Five coordinated views
+- **Graph:** directed relationships, stable layouts, manual node dragging, focus, search, filters, paths and source inspector.
+- **Table:** paginated entity properties and selection; suitable when a graph is not the clearest view.
+- **Timeline:** only explicit ISO timestamps with time zones; disclose excluded/ambiguous dates.
+- **Matrix:** adjacency from loaded relations; bounded dimensions with clear scope.
+- **Summary:** counts and explicit numeric fields; do not infer units, currency, causality or business KPIs.
+Read [interaction design](references/interaction-design.md) for display caps and exact behavior.
 
-## Non-negotiable invariants
-- Reject unsupported schema versions, duplicate node/edge IDs, and edges with missing endpoints before writing HTML.
-- The viewer may filter, dim, aggregate visually, or calculate a path over loaded edges; it must not create canonical graph facts.
-- Keep graph data escaped inside the HTML; user/source strings must be displayed as text, not interpreted as HTML.
-- No ambient animation, pulsing, drifting, or automatic layout churn. Motion follows user action and must respect reduced-motion preferences.
-- Incoming and outgoing direction must remain distinguishable when a node is selected.
-- A bounded/truncated projection must remain visibly identified as bounded; never present it as the entire graph.
-- Do not render a huge full graph merely because the renderer can. Ask the producer for a focused subgraph when legibility degrades.
-- Generated HTML must be byte-stable for identical input/config/template bytes.
+## Critical invariants
+- Root, nodes and edges must validate before output. Render untrusted strings as text, never executable HTML.
+- Never turn proximity, color, clustering, visual aggregation or a displayed path into new canonical knowledge.
+- Make loaded/filter/display bounds visible. A path not found in this projection is not a global negative claim.
+- `auto` routes by explicit hint, seed and graph shape; otherwise use stable circular layout. Force is opt-in, bounded and stops; no decorative continual motion.
+- Respect keyboard navigation, focus and reduced motion. Provide a table alternative to canvas interaction.
+- Do not fetch source links or send data externally. No telemetry, web storage persistence or remote runtime assets by default.
+- Optional G6 requires an explicitly supplied reviewed local bundle; missing bundle in explicit G6 mode is an error. It is not required for the workspace.
+- Restore view state only after data-identity and schema validation. Manual node coordinates belong only in view state, never canonical GraphView/SQLite data. Preserve positions through ordinary filtering/redraws; clear them only on data load, Reset or explicit layout selection.
+- Identical input, configuration and bundled asset bytes produce identical HTML bytes. Pixel identity across browsers, system fonts and operating systems is not guaranteed.
+- In a text-only chat, describe the view or provide a valid projection; do not claim HTML/browser execution. Optional live mode requires a user-started local Engine server.
 
-## UI and renderer references
-- [references/graphview.md](references/graphview.md) — exact consumer contract and evidence fields.
-- [references/layout-policy.md](references/layout-policy.md) — layout routing, graph-shape rules, force restrictions.
-- [references/interaction-design.md](references/interaction-design.md) — dense developer-workspace UX, direction colors, filtering, path and inspector behavior.
-- [references/g6.md](references/g6.md) — pinned G6 5.1.1 usage and known version pitfalls.
-- [references/reproducibility.md](references/reproducibility.md) — stable bytes, offline behavior, capability/reporting limits.
+## Direct references
+- [Human quick start](README.md) for installation-independent example commands.
+- [GraphView](references/graphview.md), [layout policy](references/layout-policy.md), [interaction design](references/interaction-design.md).
+- [G6 local integration](references/g6.md), [portability](references/portability.md), [reproducibility](references/reproducibility.md), [validation](references/validation.md).
+- [Research sources](references/sources.md), [third-party notices](THIRD_PARTY_NOTICES.md), [release changes](CHANGELOG.md).
+- [GraphView JSON Schema](contracts/graph-view-v1.schema.json) and `examples/fieldwork-view.json` for interoperability.
 
-## Bundled resources
-- `scripts/graph_explorer.py` — validator/layout router/renderer; Python stdlib only.
-- `assets/graph-viewer.html` — deterministic HTML workspace template with G6 preferred + SVG fallback.
-- `examples/basic-view.json` — portable GraphView fixture.
-- `tests/test_graph_explorer.py` — deterministic regression suite.
-
-## Output contract
-Produce a validated `graph.html` plus a concise render receipt identifying input identity, layout, backend, and output identity when available. The HTML is a projection only; never present visual filtering or aggregation as mutation of canonical graph facts.
+## Output contract and mechanics
+`scripts/graph_explorer.py` validates/routes/exports; `assets/graph-viewer.html`, `assets/viewer.css`, and `assets/viewer.js` are the fixed offline workspace. Keep behavior in these reviewed assets rather than regenerating a new app for each dataset.
+Report valid input identity, selected layout, effective renderer, output hash and actual checks. 
 
 ## Stop conditions
-Stop before render when `graph-view-v1` is invalid, IDs are duplicated, edge endpoints are missing, the schema version is unsupported, or the template cannot be loaded safely. If G6 is unavailable in `auto` mode, degrade to the bundled renderer; do not invent structure to compensate.
-
-## Finalization gate
-After generating HTML, run the validation and render regression appropriate to the requested backend. Static/template tests prove package mechanics, not actual G6/browser behavior. If a browser runtime is available, load the result and check console/interactions; otherwise report browser validation `not-run` instead of claiming it.
+Reject invalid data or output/input aliases without changing the last-good output. Preserve tests and rerun affected gates after any edit.

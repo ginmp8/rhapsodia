@@ -1,18 +1,12 @@
-# Layout policy
+# Stable layout policy
 
-## At a Glance
-- **Purpose:** Route graph shape to a legible, reproducible layout.
-- **Load when:** Changing auto-layout behavior or handling a new graph topology.
-- **Decision impact:** Prevents "force everywhere", reduces edge hairballs, and preserves deterministic defaults.
+## Routing
+Explicit layout wins; then a valid producer layout_hint; then a focused query seed -> radial; then a directed acyclic graph -> dagre; otherwise circular. Explicit options also include grid, community and force. The bundled renderer's dagre option is a deterministic layered layout, not a bundled Dagre dependency.
+Layered/circular/radial positions are derived from stable node ordering. Community arrangement uses supplied memberships; it does not infer or aggregate canonical entities. Force runs a bounded deterministic local solver (small graphs only), stops and is never a required dependency or ambient animation.
 
-## Router
-1. Explicit user layout.
-2. Valid producer `metadata.layout_hint`.
-3. `query.seed` present -> radial focus.
-4. All edges directed and the projection is acyclic -> DAG layout (`dagre`).
-5. Otherwise -> circular.
+## Readability
+Start with an overview appropriate to structure, then filter/focus. Keep direction and relationship labels visible. Large projections are not automatically useful diagrams; select a smaller subgraph when density hides evidence. Graph rendering currently caps 500 nodes/4,000 edges and reports the cap; tables still offer the loaded entity projection. No silent full-database claim.
+Parent/child layout is not proof of an organizational hierarchy; repeated IDs or cycles cannot be rewritten merely to fit a tree. Temporal views require actual dated properties, not topological ordering disguised as time.
 
-Grid is available as an explicit compact alternative. Force maps to G6 `d3-force` and is opt-in only. The builtin fallback intentionally substitutes deterministic circular placement when force is requested and G6 is unavailable.
-
-## Scale
-A renderer limit is not a usability target. When a projection becomes a hairball, request a bounded subgraph from the producer by seed/depth/relation/community rather than sampling arbitrary nodes in the browser.
+## Layout state
+Pan, zoom, selection and layout choice are user presentation state. Export/restore it against the loaded data identity. Do not save mutable positions as database facts. Respect reduced motion and keyboard alternatives; default transitions do not continuously move the information being read.

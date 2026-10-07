@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:local-graph:graph-query-v1",
+  "title": "graph-query-v1",
+  "type": "object",
+  "required": [],
+  "properties": {
+    "operation": {
+      "enum": [
+        "search",
+        "find",
+        "node",
+        "neighbors",
+        "path",
+        "impact",
+        "subgraph",
+        "stats",
+        "aggregate",
+        "timeline",
+        "quality"
+      ]
+    },
+    "direction": {
+      "enum": [
+        "outgoing",
+        "incoming",
+        "both",
+        "dependencies",
+        "dependents"
+      ]
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "max_nodes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "accepted",
+          "ambiguous",
+          "stale"
+        ]
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "EXTRACTED",
+          "DERIVED",
+          "INFERRED",
+          "MANUAL"
+        ]
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    },
+    "kinds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    },
+    "min_confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "node": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "seed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "target": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "property": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "group_by": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "metric": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "time_property": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "from": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "to": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "weight": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    }
+  },
+  "additionalProperties": false
+}

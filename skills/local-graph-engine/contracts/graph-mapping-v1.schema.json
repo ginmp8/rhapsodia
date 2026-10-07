@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:local-graph:graph-mapping-v1",
+  "title": "graph-mapping-v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "namespace",
+    "entities"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "graph-mapping-v1"
+    },
+    "namespace": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "normalization": {
+      "enum": [
+        "none",
+        "trim",
+        "casefold"
+      ]
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "key",
+          "kind"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "id_columns": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "label_column": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "types": {
+            "type": "object",
+            "additionalProperties": {
+              "enum": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "json",
+                "datetime"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "relation"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "to": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "relation": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "directed": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}
