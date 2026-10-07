@@ -90,6 +90,17 @@ Use the strongest valid evaluator for each property:
 
 Do not manufacture numeric assertions for qualities that cannot be meaningfully reduced to them. Keep structural, behavioral, runtime, and perceptual evidence separate.
 
+### Model capability calibration
+
+When instruction sufficiency or constraint level may materially depend on model capability, evaluate representative capability tiers actually in scope rather than assuming one model generalizes to all. Use a small set such as `constrained`, `balanced`, and `high-capability` only when the deployment surface materially spans those tiers.
+
+- Keep prompts, files, acceptance criteria, and evaluator rules equivalent across tiers.
+- Check constrained models for under-guidance, missed sequencing, and ambiguous branching.
+- Check high-capability models for over-prescription, unnecessary steps, and instructions that suppress useful judgment.
+- Record exact model/provider/version when known as runtime evidence, but keep vendor/model names out of the portable semantic contract unless they are an explicit target requirement.
+- If relevant model runtime access is unavailable, mark the calibration `not-run`; do not infer cross-model compatibility from structural portability.
+- Do not require multi-model execution when model capability is immaterial to the changed behavior.
+
 ## 6. Generalize from failures; do not patch examples
 
 Treat an eval failure as evidence of a missing general rule, not as permission to hard-code the example.

@@ -33,6 +33,8 @@ When `reproducibility-engineer` runs in `audit-only`, it does not own target cha
 
 Use the strategy gate before editing. A known repair should normally use direct repair, not experimental or evolutionary machinery. Search-specific concepts must not become prerequisites for canonical target changes.
 
+For each must-always-hold invariant touched by the change, decide whether prompt text is an adequate control. Prefer the strongest portable layer that preserves semantics: runtime/policy/hook or deterministic script for lifecycle enforcement, schema/type for shape constraints, validator/gate for acceptance, and prose/rubric only when stronger enforcement is unavailable or would incorrectly eliminate legitimate judgment. If a required invariant remains prompt-dependent, record that residual reliance instead of presenting it as deterministic enforcement.
+
 ## Rollback, freeze, and boundaries
 
 Preserve enough state to revert, record changed files, reject failed gates, and keep rejected notes. When optimization depends on external files or repository evidence, snapshot/pin the exact source bytes before analysis and verify their identity before acceptance. Use connectors/source truth when optimization depends on repository or Drive facts; otherwise mark assumptions or stop. After final acceptance, freeze the candidate. Any later target edit invalidates the freeze and requires affected validation plus a new manifest.

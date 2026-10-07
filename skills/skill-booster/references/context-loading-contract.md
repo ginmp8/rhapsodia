@@ -26,6 +26,7 @@ Check:
 - trigger contexts are discriminative;
 - plausible non-use boundaries are stated when neighboring skills overlap;
 - descriptions are not inflated with implementation detail that reduces routing clarity;
+- descriptions use declarative capability language rather than first-person assistant promises such as `I can` or `I will`;
 - activation tests include positive, negative, ambiguous, boundary, and catalog-competition cases when relevant.
 
 Do not infer discovery quality from an instruction-following benchmark that assumes the skill is already loaded.

@@ -1,6 +1,6 @@
 ---
 name: skill-booster
-description: Optimize an existing Agent Skills-compatible package with evidence and regression gates. Use for improving, hardening, benchmarking, compressing, validating, portability-normalizing, or packaging an existing skill while preserving its responsibility. Supports explicit multi-candidate/evolutionary search when requested. Do not use for net-new skill creation or major architecture redesign; use Skill Creator Juiced for those.
+description: Optimizes an existing Agent Skills-compatible package with evidence and regression gates. Use for improving, hardening, benchmarking, compressing, validating, portability-normalizing, or packaging an existing skill while preserving its responsibility. Supports explicit multi-candidate/evolutionary search when requested. Do not use for net-new skill creation or major architecture redesign; use Skill Creator Juiced for those.
 ---
 
 # Skill Booster
@@ -25,7 +25,7 @@ Do not use for net-new skill creation, workflow-to-skill conversion, or a major 
 
 Treat discovery and context loading as first-class optimization surfaces. Any accepted candidate with more than 100 lines in `SKILL.md` must expose its primary control plane inside the first 100 physical lines:
 
-1. discriminative frontmatter `description` with use/non-use boundary when overlap is plausible;
+1. discriminative, declarative frontmatter `description` with use/non-use boundary when overlap is plausible; avoid first-person assistant promises;
 2. purpose/scope and activation/routing boundary;
 3. mode/router choice when branches materially differ;
 4. workflow/quick-start sufficient to begin correctly;
@@ -51,7 +51,7 @@ For optimization, assess four distinct layers instead of conflating them: `metad
 2. **Diagnose**: inspect activation metadata, Top-100 coverage, reference depth, package quality, and only the evidence-provider surfaces material to the target.
 3. **Select / Strategy gate**: reconcile evidence, classify work as repair/optimization/experiment, choose the least-complex bounded strategy, and freeze acceptance criteria.
 4. **Transform**: mutate one isolated candidate through exactly one declared transformation owner; preserve unrelated behavior.
-5. **Evaluate / Search**: run the staged evidence ladder, include activation/catalog-competition cases when relevant, and use the explicit evolutionary branch only when authorized.
+5. **Evaluate / Search**: run the staged evidence ladder, include activation/catalog-competition cases when relevant, calibrate representative model-capability tiers when behavior is materially model-sensitive, and use the explicit evolutionary branch only when authorized.
 6. **Prove**: revalidate affected surfaces, require fresh final validation, run change/integration gates, verify Top-100/reference-depth closure, freeze exact bytes, and package atomically.
 
 ## Core Rules
@@ -60,14 +60,14 @@ For optimization, assess four distinct layers instead of conflating them: `metad
 - Protect `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old archives, unrelated repos, and frozen evaluator assets.
 - `skill-hypothesis-discovery` follows baseline evidence when a hypothesis is needed; `skill-change-gate` controls candidate acceptance and final regression review.
 - `reproducibility-engineer` is conditional; invoke only when the reproducibility decision finds material controllable variance.
-- Keep canonical optimization strategy-neutral and single-candidate by default; it must remain fully functional without Skill Evolution.
+- Keep canonical optimization strategy-neutral and single-candidate by default; it must remain fully functional without Skill Evolution. Match instruction freedom to the behavior: high for intentional judgment, medium for bounded rubrics/templates, low for objective or invariant mechanics.
 - Evolutionary readiness is never a completion requirement. Maintain an experiment registry only when real experiments or multi-candidate comparisons are executed.
 - Exactly one owner mutates each transformation batch; read-only providers must not silently co-edit the candidate.
 - A fresh passing `skill-opt.validation-gate-receipt` v1 is required for final promotion when that contract is applicable; do not replace this requirement with a Booster-local parser.
 - Track evaluator visibility/contamination. If promotion evidence was exposed to candidate generation, require an appropriate frozen holdout before claiming promotion quality.
 - When research materially determines changes, freeze/identify the corpus and preserve bidirectional finding -> requirement -> change -> evaluation traceability.
 - For complete optimization, every material finding ends `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`.
-- Never claim benchmark improvement, security review, runtime portability, token reduction, or readiness without matching evidence.
+- Never claim benchmark improvement, security review, runtime or cross-model portability, token reduction, or readiness without matching evidence. For must-always-hold invariants, prefer enforceable runtime/policy/hook/schema/validator controls over prompt-only compliance when a portable stronger layer is available.
 
 ## Resource Loading
 

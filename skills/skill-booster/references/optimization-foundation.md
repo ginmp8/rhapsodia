@@ -95,6 +95,16 @@ Choose the least complex strategy that can answer the problem:
 
 Repairs should normally use `direct-repair`; do not create populations, search state, or lineage merely to fix a known defect.
 
+### Instruction/control freedom budget
+
+When instruction design is part of the selected change, classify the affected behavior before adding constraints:
+
+- `high`: intentional exploration, synthesis, taste, or expert judgment; constrain objectives, evidence, safety, and output contracts without prescribing the reasoning path;
+- `medium`: bounded judgment; prefer rubrics, templates, examples, tie-breakers, schemas with flexible fields, or parameterized helpers;
+- `low`: objective, fragile, repetitive, security-sensitive, or must-always-hold behavior; prefer executable/schema/gate enforcement and minimize model discretion.
+
+Do not reduce freedom merely to increase superficial consistency. Do not preserve high prompt freedom where failures are objective and a stronger portable control layer can remove them.
+
 ## 6. Transformation registry
 
 Represent accepted/planned target changes as semantic transformations rather than only diffs. Record one transformation entry per bounded causal change or inseparable batch:
