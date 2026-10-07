@@ -1,6 +1,18 @@
 # RhapsodIA
 
-## 0.5.0 — Top-100 control surfaces and progressive loading
+## 0.6.0 — Local graph workbench, interactive exploration, and PDF workbench
+
+RhapsodIA 0.6.0 expands the catalog with three portable skills: `local-graph-engine`, `local-graph-explorer`, and `pdf-workbench`. The catalog now contains **51 Agent Skills and seven agent profiles**.
+
+- `local-graph-engine` models, ingests, queries, analyzes, and exports evidence-backed local graphs in SQLite, including bounded context extraction and portable `GraphView` output.
+- `local-graph-explorer` consumes the shared `graph-view-v1` contract and provides an offline interactive viewer with graph/table/timeline/matrix/summary views, node dragging, and finite directed walkthroughs.
+- `pdf-workbench` provides capability-routed PDF inspection, extraction, editing, forms, OCR, redaction, rendering, and conformance-oriented validation with explicit safeguards for signed, XFA, encrypted, tagged, damaged, and untrusted PDFs.
+
+This release also refines `skill-booster`, `skill-creator-juiced`, and `reproducibility-engineer` around eval-first evidence, catalog coexistence, runtime trust/authority boundaries, and model-neutral reproducibility. Package release metadata is `0.6.0`; skill-local semantic or implementation versions remain independently versioned.
+
+Release validation now covers the three added skills, verifies their packaging, keeps the shared graph-view contract byte-identical across producer and viewer, and retains the existing agent/marketplace/version gates.
+
+## 0.5.0 (historical) — Top-100 control surfaces and progressive loading
 
 RhapsodIA 0.5.0 makes skill selection and safe task startup more reliable under partial context. For every long `SKILL.md` touched by this release, the primary control surface is moved into the first 100 physical lines: purpose and boundaries, material modes, a usable workflow, critical invariants, stop/acceptance conditions, and direct pointers to branch-specific resources.
 

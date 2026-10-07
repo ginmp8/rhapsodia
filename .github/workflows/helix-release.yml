@@ -1,7 +1,7 @@
-name: Validate RhapsodIA 0.6.0 Top-100 control surface package
+name: Validate RhapsodIA 0.6.0 release
 on:
   push:
-    branches: [build/top-100-control-surface-0.6.0]
+    branches: [main, "release/**", "build/**"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,7 +24,7 @@ jobs:
           python skills/adaptive-workflow-orchestration/scripts/validate_dynamic_workflow.py skills/adaptive-workflow-orchestration/assets/templates/dynamic-workflow-plan.json.template
           python -m unittest discover -s skills/checkpoint-convergence/tests -p 'test_*.py' -v
           python skills/checkpoint-convergence/scripts/validate_convergence_plan.py skills/checkpoint-convergence/assets/templates/convergence-plan.json.template
-      - name: Validate Top-100 control-surface contracts
+      - name: Validate retained control-surface contracts
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
@@ -35,6 +35,19 @@ jobs:
           python skills/skill-creator-juiced/tests/test_top100_context_contract.py
           python skills/skill-evolution/scripts/validate_skill_evolution.py --target skills/skill-evolution
           python skills/systematic-debugging/scripts/validate_skill.py
+          python skills/skill-booster/tests/test_operational_quality_contracts.py
+          python skills/skill-creator-juiced/tests/test_operational_quality_contracts.py
+      - name: Validate 0.6.0 added skills
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m unittest discover -s skills/local-graph-engine/tests -p 'test_*.py' -v
+          for test_file in skills/local-graph-explorer/tests/test_*.py; do
+            python -m unittest discover -s skills/local-graph-explorer/tests -p "$(basename "$test_file")" -v
+          done
+          python -m unittest discover -s skills/pdf-workbench/tests -p 'test_*.py' -v
+          python skills/pdf-workbench/scripts/validate_docs.py
+          python skills/pdf-workbench/scripts/validate_capability_coverage.py
       - name: Clean generated Python caches
         run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
       - name: Validate agents and release metadata
@@ -50,14 +63,14 @@ jobs:
       - name: Build deterministic archives twice
         run: |
           mkdir -p dist/a dist/b
-          python scripts/build_release_archive.py --version 0.6.0 --output dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
-          python scripts/build_release_archive.py --version 0.6.0 --output dist/b/rhapsodia-0.6.0-top-100-control-surface.zip
-          cmp dist/a/rhapsodia-0.6.0-top-100-control-surface.zip dist/b/rhapsodia-0.6.0-top-100-control-surface.zip
-          unzip -t dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
-          sha256sum dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
+          python scripts/build_release_archive.py --version 0.6.0 --output dist/a/rhapsodia-0.6.0.zip
+          python scripts/build_release_archive.py --version 0.6.0 --output dist/b/rhapsodia-0.6.0.zip
+          cmp dist/a/rhapsodia-0.6.0.zip dist/b/rhapsodia-0.6.0.zip
+          unzip -t dist/a/rhapsodia-0.6.0.zip
+          sha256sum dist/a/rhapsodia-0.6.0.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: rhapsodia-0.6.0-top-100-control-surface
-          path: dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
+          name: rhapsodia-0.6.0
+          path: dist/a/rhapsodia-0.6.0.zip
           if-no-files-found: error
           retention-days: 30
