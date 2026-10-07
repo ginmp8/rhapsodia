@@ -1,19 +1,13 @@
-# Reproducibility and portability
+# Reproducibility contract
 
-## At a Glance
-- **Purpose:** Define controls that reduce avoidable run-to-run and cross-host variance.
-- **Load when:** Comparing outputs, designing tests, packaging, or using optional analytics.
-- **Decision impact:** Fixes ordering/ID/timestamp behavior and limits portability claims to executed evidence.
+## What is deterministic
+Given the same normalized source assertions, mapping, namespace and executable versions, identity, source replacement, typed query ordering, fixed stdlib analytics and exported JSON/text are stable. Conflicts have an explicit source-rank tie-break. Transaction failures preserve last-good state; identical source revisions are no-ops.
+Use a logical graph SHA-256 over canonical current data. Physical SQLite bytes are not an equivalence oracle: page order, history insertion order, journals, vacuum and storage layout may differ without changing knowledge. Do not compare raw DB hashes as proof that an ingestion result changed.
 
-## Controls
-- Canonical JSON uses sorted keys and compact separators for IDs/hashes.
-- Query traversals sort candidates before visiting them.
-- Edge/source/evidence IDs are content-derived when caller IDs are absent.
-- `graph-view-v1` contains no wall-clock generation timestamp by default.
-- Source `indexed_at` is persisted only when supplied or `SOURCE_DATE_EPOCH` is set.
-- Python stdlib + SQLite is the required baseline; optional packages cannot silently change baseline query semantics.
-- NetworkX analytics are explicit, write a run identity, and record the installed NetworkX version.
-- Keep all package paths relative; resolve a Python 3.10+ launcher by capability rather than assuming its executable name.
+## What is not guaranteed
+LLM/vision/speech interpretation, compiler coverage under different reference sets, optional-library algorithm output, OS fonts and cross-browser pixels can vary. Preserve versions/model identity, extraction settings, input hashes and uncertainty. Never relabel these as deterministic because a seed or confidence exists.
+Optional analytics must be explicitly selected; an ambient installed library cannot silently change a stdlib algorithm. A changed mapping/extractor invalidates source extraction even if file bytes did not change.
 
-## Evidence ceilings
-A passing package/CLI test is structural/deterministic evidence, not proof that an external parser extracted a real repository correctly. Runtime behavior on ChatGPT, Codex, Claude, Copilot, Cursor, or an IDE must be reported separately unless actually executed there.
+## Validation
+Freeze source corpus, accepted requirements and test oracles before the related candidate change. Preserve old regression fixtures. Record every relevant fail/repair/rerun, not only the last pass. Test idempotency, rollback, cross-source preservation, direction, finite limits, outputs/aliases and offline behavior. Re-run final gates after any edit; package only the frozen candidate.
+Trace research source -> finding -> requirement -> implementation/test externally. Trace coverage proves accounting, not truth, model accuracy or universal completeness. Keep behavioral, structural, browser and host evidence separate.

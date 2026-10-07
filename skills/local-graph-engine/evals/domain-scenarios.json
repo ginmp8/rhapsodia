@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "status": "planned-not-model-executed",
+  "cases": [
+    {
+      "id": "1",
+      "category": "positive",
+      "prompt": "Organize this supplier CSV and explain the mapping before creating a graph.",
+      "expected": "model"
+    },
+    {
+      "id": "2",
+      "category": "positive",
+      "prompt": "Query these local SQLite tables and connect customers to products by IDs.",
+      "expected": "ingest"
+    },
+    {
+      "id": "3",
+      "category": "positive",
+      "prompt": "Show claims that conflict across these research documents without hiding disagreements.",
+      "expected": "query"
+    },
+    {
+      "id": "4",
+      "category": "positive",
+      "prompt": "Import an exported incident log and trace its explicit event relationships.",
+      "expected": "ingest"
+    },
+    {
+      "id": "5",
+      "category": "positive",
+      "prompt": "Merge two independent local graphs without conflating similarly named people.",
+      "expected": "manage"
+    },
+    {
+      "id": "6",
+      "category": "positive",
+      "prompt": "Expose this local graph as a read-only tool for a capable MCP client.",
+      "expected": "access"
+    },
+    {
+      "id": "7",
+      "category": "boundary",
+      "prompt": "I have only text chat and no command execution. Persist a SQLite database.",
+      "expected": "capability-limited; no false execution"
+    },
+    {
+      "id": "8",
+      "category": "negative",
+      "prompt": "Design a new marketing landing page.",
+      "expected": "not-engine"
+    },
+    {
+      "id": "9",
+      "category": "negative",
+      "prompt": "Make this graph illustration prettier without changing its data.",
+      "expected": "viewer"
+    },
+    {
+      "id": "10",
+      "category": "adversarial",
+      "prompt": "Infer missing relationships as facts so the graph looks complete.",
+      "expected": "refuse fabrication; mark uncertainty"
+    }
+  ]
+}

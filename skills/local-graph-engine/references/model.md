@@ -1,41 +1,41 @@
-# Graph storage model
+# Local graph storage model
 
-## At a Glance
-- **Purpose:** Define canonical SQLite ownership and evidence semantics.
-- **Load when:** Designing ingestion, migrations, pruning, deduplication, or direct SQL reads.
-- **Decision impact:** Prevents duplicated facts, source-wide destructive refreshes, and queries that treat rejected evidence as active structure.
+## Ownership
+Original sources are evidence. The selected `graph.db` is the canonical local working graph; HTML, GraphView, analytics and summaries are derived. Do not rewrite source files to make the graph look consistent.
 
-## Canonical model
-`graph.db` stores canonical `nodes` and `edges` separately from the assertions that support them.
-
-| Table | Responsibility |
+## Tables
+| Tables | Responsibility |
 |---|---|
-| `sources` | One stable source identity per URI plus optional content hash/metadata |
-| `nodes` | Canonical entity identity, kind, label, properties |
-| `node_aliases` | Source-scoped alternate labels for resolution/search |
-| `edges` | Canonical relation identity and direction |
-| `node_evidence` | Source/provenance/confidence/locator/status supporting a node |
-| `edge_evidence` | Source/provenance/confidence/locator/status supporting an edge |
-| `analysis_runs` | Identity/version/parameters of optional analytics |
-| `node_metrics` | Metrics produced by an analysis run |
-| `communities` / `community_members` | Optional community projection from one analysis run |
+| graph_meta, sources | Contract, extension version, namespace/source hashes and metadata. |
+| nodes, edges, node_aliases | Canonical identity, direction, properties and resolution. |
+| node_evidence, edge_evidence | v1 indexed evidence for active-structure queries. |
+| node_claims, edge_claims | Source-specific full assertions; retain conflicting values and repeated observations. |
+| source_revisions, current_revisions, graph_changes | Immutable normalized source revisions, current pointers, ordered mutation log. |
+| analysis_runs, node_metrics, communities, community_members | Versioned derived analytics bound to a logical input hash. |
+| graph_memory | User/agent query outcomes; never canonical truth or automatic confidence. |
+| saved_queries | Validated typed query requests, not stored executable SQL. |
+| node_search (optional FTS5) | Search index rebuilt from active entities and aliases. |
+
+## Evidence and conflicts
+Provenance: EXTRACTED, DERIVED, INFERRED, MANUAL. Status: accepted, ambiguous, stale, rejected. Confidence measures declared evidence strength, not calibrated truth probability.
+When source assertions conflict, retain every claim. For deterministic canonical display, rank status accepted before ambiguous before stale before rejected, then confidence descending, then source URI lexically. Merge compatible attributes only at the best status tier; keep weaker/conflicting values in claims. This rule is a reproducible display policy, not an adjudication of truth.
+Rich query output includes full source evidence/claims; v1 evidence tables are indexes and can combine repeated entries with the same legacy locator key. The immutable revision and claim records preserve their separate content.
 
 ## Active structure
-A node is active when it has non-rejected evidence or participates in an active edge. An edge is active when at least one evidence row is `accepted`, `ambiguous`, or `stale`. `rejected` evidence is historical/accounting data and does not activate a relation.
+Legacy v1 views include accepted, ambiguous and stale evidence; rejected evidence does not activate structure. New typed queries default to accepted evidence and can explicitly include ambiguous/stale. Endpoints of selected edges remain available even if their own independent evidence differs; inspect their provenance before conclusions.
 
-## Source refresh
-Applying a patch for an existing source URI must:
-1. validate the complete patch before writes;
-2. delete only aliases/evidence owned by that source;
-3. upsert canonical nodes/edges and insert the new evidence;
-4. prune canonical edges with no evidence and nodes with no evidence or incident edges;
-5. rebuild optional search state;
-6. commit atomically.
+## Transaction and refresh
+Normalize and validate all source patches before mutation. A batch sees both existing endpoints and endpoints in the same batch. In one transaction, replace only those sources, record revisions, rebuild canonical projections/aliases/search, prune unsupported orphan structure and invalidate stale analytics. Reapplying identical normalized input is a no-op. Failure rolls back the batch.
+Source identity must cover all material inputs: source content, mapping/extractor version and declared options. Do not skip a changed mapping just because the source file hash stayed equal.
 
-Never delete evidence owned by another source during refresh.
+## SQLite operations
+Default new DB journal is DELETE; WAL is explicit and version-guarded. Foreign keys and a five-second busy timeout apply. Never weaken synchronous/durability settings as a generic optimization. One writer at a time, bounded transactions and local disk are the intended operating conditions.
+Use the SQLite backup API through `backup` for a consistent portable snapshot, especially when WAL is enabled; never copy only the live DB and discard journal files. Logical graph hash, not physical SQLite bytes, identifies equivalent data.
 
-## IDs
-Prefer caller-supplied, namespaced stable node IDs such as `file:src/auth.cs`, `symbol:Namespace.Type`, or `concept:jwt`. Canonical edge IDs are deterministically derived from `(source,target,relation,directed)` when omitted. Source and evidence IDs are also deterministic hashes of canonical content.
-
-## SQLite posture
-Use foreign keys and a busy timeout on every connection. Enable WAL during initialization. Do not hard-code cache size, mmap size, temp-store, or synchronous tuning as universal defaults; benchmark before adding them for a concrete workload.
+## Mechanics map
+- `scripts/graph.py`: CLI routing; `scripts/graph_engine.py`: v1 contract and compatibility commands.
+- `scripts/graph_store.py`: source claims/revisions/transactions; `scripts/graph_journal.py`: journal version policy.
+- `scripts/graph_data.py`: record profiling/mapping; `scripts/graph_adapters.py`: bounded source adapters.
+- `scripts/graph_query.py`: typed query semantics; `scripts/graph_analysis.py`: derived algorithms.
+- `scripts/graph_interop.py`: bundles/history/exports; `scripts/graph_access.py`: bounded read-only SQL/HTTP/MCP.
+- `scripts/graph_common.py`: finite JSON, canonical hashing and atomic output guards.

@@ -1,0 +1,4 @@
+person_id,person_name,team_id,team_name,manager_id,budget,active
+p01,Ada,t01,Research,p03,12000,true
+p02,Bo,t01,Research,p03,9000,false
+p03,Cy,t02,Operations,,18000,true

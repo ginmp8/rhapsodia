@@ -1,0 +1,1486 @@
+{
+  "communities": [],
+  "edges": [
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:22",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:1392cc4c5d1ebc3c52fac6e0",
+      "properties": {},
+      "relation": "summarized_in",
+      "source": "dataset:coast",
+      "target": "document:report"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:16",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:1ac16676409bc75a4fe62e0a",
+      "properties": {},
+      "relation": "produces",
+      "source": "site:c03",
+      "target": "dataset:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:21",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:1d3509bb0ca5ab96dbabee0e",
+      "properties": {},
+      "relation": "summarized_in",
+      "source": "dataset:forest",
+      "target": "document:report"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:23",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:2bd6180b4c2fd4759dfa340d",
+      "properties": {},
+      "relation": "concerns",
+      "source": "finding:quality",
+      "target": "dataset:water"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:20",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:2d32428262a3fbf36c2447bc",
+      "properties": {},
+      "relation": "summarized_in",
+      "source": "dataset:water",
+      "target": "document:report"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:6",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:2f0be81d38bef331d8b2ae05",
+      "properties": {},
+      "relation": "member_of",
+      "source": "person:bruno",
+      "target": "team:field"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:18",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:35c37a658e8940d17fda41d4",
+      "properties": {},
+      "relation": "guides",
+      "source": "document:protocol",
+      "target": "project:forest"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:4",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:61a588aa1b07dc993e6117c9",
+      "properties": {},
+      "relation": "supports",
+      "source": "team:lab",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:8",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:62d9c30aa195590c71f0a5ff",
+      "properties": {},
+      "relation": "works_on",
+      "source": "person:ana",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:15",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:7a1d52e6daf494bfa1693066",
+      "properties": {},
+      "relation": "produces",
+      "source": "site:f02",
+      "target": "dataset:forest"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:17",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:8681818a276667f7eb0c5393",
+      "properties": {},
+      "relation": "guides",
+      "source": "document:protocol",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:13",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:872cb92ba04b4bd32b1f5ca5",
+      "properties": {},
+      "relation": "studies",
+      "source": "project:coast",
+      "target": "site:c03"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:3",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:88235d3f01d6ee4748036e24",
+      "properties": {},
+      "relation": "coordinates",
+      "source": "team:research",
+      "target": "project:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:5",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:923942925c758d2e05f64e04",
+      "properties": {},
+      "relation": "member_of",
+      "source": "person:ana",
+      "target": "team:research"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:19",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:a13439b3f1e1773a492f424e",
+      "properties": {},
+      "relation": "guides",
+      "source": "document:protocol",
+      "target": "project:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:7",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:b1c29fbf649ce942ab8c10e5",
+      "properties": {},
+      "relation": "member_of",
+      "source": "person:carol",
+      "target": "team:lab"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:2",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:b335d16ab0b35aca8f5f1b64",
+      "properties": {},
+      "relation": "operates",
+      "source": "team:field",
+      "target": "project:forest"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:14",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:b59d4c5c8af3fbbd8f2d9d1d",
+      "properties": {},
+      "relation": "produces",
+      "source": "site:r01",
+      "target": "dataset:water"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:10",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:b65706ede44f88185a3ff243",
+      "properties": {},
+      "relation": "works_on",
+      "source": "person:carol",
+      "target": "project:coast"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:24",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:c3ae00179731d67de4383ee9",
+      "properties": {},
+      "relation": "proposes_comparison",
+      "source": "finding:review",
+      "target": "document:report"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:1",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:c56aa697f9382105a6c7bed0",
+      "properties": {},
+      "relation": "operates",
+      "source": "team:field",
+      "target": "project:river"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:12",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:c9a658fa4c615a49eae07d5e",
+      "properties": {},
+      "relation": "studies",
+      "source": "project:forest",
+      "target": "site:f02"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:11",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:cb60df40d8cdf97e8be162a0",
+      "properties": {},
+      "relation": "studies",
+      "source": "project:river",
+      "target": "site:r01"
+    },
+    {
+      "directed": true,
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {},
+          "locator": "synthetic-link:9",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "edge:f328e9418be7d50e08cbfb5f",
+      "properties": {},
+      "relation": "works_on",
+      "source": "person:bruno",
+      "target": "project:forest"
+    }
+  ],
+  "graph": {
+    "contract": "local-graph-sqlite-v1",
+    "edge_count": 24,
+    "label": "Fieldwork network / synthetic demonstration",
+    "node_count": 19
+  },
+  "metadata": {
+    "community_run_id": null,
+    "complete_database": false,
+    "eligible_edges": 24,
+    "eligible_nodes": 19,
+    "evidence_policy": [
+      "accepted"
+    ],
+    "producer_version": "2.0.0",
+    "source_graph_sha256": "2b4490e2d77774e96de57daf16fdbbe98215720b3b31b223e1d442dabc3fdf41",
+    "truncated": false
+  },
+  "nodes": [
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:15",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "dataset:coast",
+      "kind": "dataset",
+      "label": "Coastal measurements",
+      "properties": {
+        "records": 126,
+        "timestamp": "2026-03-19T13:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:14",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "dataset:forest",
+      "kind": "dataset",
+      "label": "Species observations",
+      "properties": {
+        "records": 180,
+        "timestamp": "2026-03-12T11:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 2,
+        "out": 1,
+        "total": 3
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:13",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "dataset:water",
+      "kind": "dataset",
+      "label": "Water samples",
+      "properties": {
+        "records": 245,
+        "timestamp": "2026-03-10T12:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 0,
+        "out": 3,
+        "total": 3
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:16",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "document:protocol",
+      "kind": "document",
+      "label": "Sampling protocol",
+      "properties": {
+        "revision": 2,
+        "timestamp": "2026-01-08T08:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 4,
+        "out": 0,
+        "total": 4
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:17",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "document:report",
+      "kind": "document",
+      "label": "March field report",
+      "properties": {
+        "status": "draft",
+        "timestamp": "2026-03-25T16:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 0,
+        "out": 1,
+        "total": 1
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:18",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "finding:quality",
+      "kind": "finding",
+      "label": "Quality review required",
+      "properties": {
+        "status": "open",
+        "timestamp": "2026-03-21T09:30:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 0,
+        "out": 1,
+        "total": 1
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:19",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "finding:review",
+      "kind": "finding",
+      "label": "Cross-site comparison",
+      "properties": {
+        "status": "proposed",
+        "timestamp": "2026-03-24T14:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 0,
+        "out": 2,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:7",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "person:ana",
+      "kind": "person",
+      "label": "Ana Silva",
+      "properties": {
+        "role": "researcher"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 0,
+        "out": 2,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:8",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "person:bruno",
+      "kind": "person",
+      "label": "Bruno Lima",
+      "properties": {
+        "role": "technician"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 0,
+        "out": 2,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:9",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "person:carol",
+      "kind": "person",
+      "label": "Carol Santos",
+      "properties": {
+        "role": "coordinator"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 3,
+        "out": 1,
+        "total": 4
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:3",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "project:coast",
+      "kind": "project",
+      "label": "Coastal restoration",
+      "properties": {
+        "budget": 32000,
+        "status": "review",
+        "timestamp": "2026-03-05T10:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 3,
+        "out": 1,
+        "total": 4
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:2",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "project:forest",
+      "kind": "project",
+      "label": "Forest field survey",
+      "properties": {
+        "budget": 18000,
+        "status": "active",
+        "timestamp": "2026-02-03T10:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 4,
+        "out": 1,
+        "total": 5
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:1",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "project:river",
+      "kind": "project",
+      "label": "River water study",
+      "properties": {
+        "budget": 24000,
+        "status": "active",
+        "timestamp": "2026-01-12T09:00:00Z"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:12",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "site:c03",
+      "kind": "site",
+      "label": "Coast station 03",
+      "properties": {
+        "region": "east"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:11",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "site:f02",
+      "kind": "site",
+      "label": "Forest station 02",
+      "properties": {
+        "region": "west"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:10",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "site:r01",
+      "kind": "site",
+      "label": "River station 01",
+      "properties": {
+        "region": "north"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 2,
+        "total": 3
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:4",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "team:field",
+      "kind": "team",
+      "label": "Field operations",
+      "properties": {
+        "region": "north"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:5",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "team:lab",
+      "kind": "team",
+      "label": "Water laboratory",
+      "properties": {
+        "region": "central"
+      }
+    },
+    {
+      "aliases": [],
+      "community": null,
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "details": {
+            "fixture": true,
+            "purpose": "demonstration only"
+          },
+          "locator": "synthetic-row:6",
+          "provenance": "MANUAL",
+          "source_uri": "example://fieldwork/synthetic",
+          "status": "accepted"
+        }
+      ],
+      "evidence_summary": {
+        "active_count": 1,
+        "ambiguous_count": 0,
+        "count": 1,
+        "max_confidence": 1.0,
+        "provenance": [
+          "MANUAL"
+        ],
+        "stale_count": 0
+      },
+      "evidence_truncated": false,
+      "id": "team:research",
+      "kind": "team",
+      "label": "Research office",
+      "properties": {
+        "region": "central"
+      }
+    }
+  ],
+  "query": {
+    "depth": 2,
+    "limit": 100,
+    "max_nodes": 100,
+    "offset": 0,
+    "operation": "subgraph",
+    "statuses": [
+      "accepted"
+    ]
+  },
+  "schema_version": "graph-view-v1"
+}

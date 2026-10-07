@@ -10,3 +10,7 @@ __pycache__/
 
 # Generated local workspace projections
 /.rhapsodia/
+
+**/bin/**
+**/obj/**
+

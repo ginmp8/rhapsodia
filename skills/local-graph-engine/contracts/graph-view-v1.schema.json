@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:local-graph:graph-view-v1",
+  "title": "graph-view-v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "graph-view-v1"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "label"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "properties": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "evidence": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object"
+            }
+          },
+          "claims": {
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "metrics": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "evidence_summary": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "community": {
+            "type": [
+              "string",
+              "integer",
+              "null"
+            ]
+          }
+        }
+      },
+      "maxItems": 10000
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "target",
+          "relation"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "relation": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "directed": {
+            "type": "boolean",
+            "default": true
+          },
+          "properties": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "evidence": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object"
+            }
+          },
+          "claims": {
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        }
+      },
+      "maxItems": 50000
+    },
+    "graph": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "query": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "communities": {
+      "type": [
+        "array",
+        "null"
+      ]
+    }
+  }
+}
