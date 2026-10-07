@@ -1,0 +1,394 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "const": "pass"
+    },
+    "schema_version": {
+      "const": "graph-context-v1"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "matched_seeds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eligible_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eligible_edges": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selected_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selected_edges": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "omitted_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "omitted_edges": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "depth_boundary": {
+          "type": "boolean"
+        },
+        "node_boundary": {
+          "type": "boolean"
+        },
+        "edge_boundary": {
+          "type": "boolean"
+        },
+        "byte_boundary": {
+          "type": "boolean"
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "complete_database": {
+          "const": false
+        },
+        "statuses": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "accepted",
+              "ambiguous",
+              "stale"
+            ]
+          }
+        }
+      },
+      "required": [
+        "matched_seeds",
+        "eligible_nodes",
+        "eligible_edges",
+        "selected_nodes",
+        "selected_edges",
+        "omitted_nodes",
+        "omitted_edges",
+        "depth_boundary",
+        "node_boundary",
+        "edge_boundary",
+        "byte_boundary",
+        "truncated",
+        "complete_database",
+        "statuses"
+      ],
+      "additionalProperties": false
+    },
+    "nodes": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "locator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "accepted",
+                    "ambiguous",
+                    "stale"
+                  ]
+                },
+                "provenance": {
+                  "enum": [
+                    "EXTRACTED",
+                    "DERIVED",
+                    "INFERRED",
+                    "MANUAL"
+                  ]
+                },
+                "confidence": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "details": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "status",
+                "provenance",
+                "confidence"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "properties": {
+            "type": "object"
+          },
+          "evidence_truncated": {
+            "type": "boolean"
+          },
+          "evidence_missing": {
+            "type": "boolean"
+          },
+          "attribute_conflict": {
+            "type": "boolean"
+          },
+          "claim_check_truncated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "label",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "relation": {
+            "type": "string"
+          },
+          "directed": {
+            "type": "boolean"
+          },
+          "evidence": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "locator": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "accepted",
+                    "ambiguous",
+                    "stale"
+                  ]
+                },
+                "provenance": {
+                  "enum": [
+                    "EXTRACTED",
+                    "DERIVED",
+                    "INFERRED",
+                    "MANUAL"
+                  ]
+                },
+                "confidence": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "details": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "status",
+                "provenance",
+                "confidence"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "properties": {
+            "type": "object"
+          },
+          "evidence_truncated": {
+            "type": "boolean"
+          },
+          "evidence_missing": {
+            "type": "boolean"
+          },
+          "attribute_conflict": {
+            "type": "boolean"
+          },
+          "claim_check_truncated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "target",
+          "relation",
+          "directed",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "uri": {
+            "type": "string"
+          },
+          "content_hash": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "uri",
+          "content_hash"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "reused": {
+      "type": "array",
+      "maxItems": 2500,
+      "items": {
+        "type": "string",
+        "pattern": "^(n:|e:)"
+      }
+    },
+    "reuse_status": {
+      "enum": [
+        "not_requested",
+        "reused",
+        "invalidated"
+      ]
+    },
+    "receipt": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "graph_sha256",
+        "profile_sha256",
+        "items"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "graph-context-receipt-v1"
+        },
+        "graph_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "items": {
+          "type": "object",
+          "maxProperties": 2500,
+          "propertyNames": {
+            "pattern": "^(n:|e:)",
+            "maxLength": 8192
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimated_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimator": {
+          "type": "string"
+        },
+        "transport_overhead_included": {
+          "const": false
+        }
+      },
+      "required": [
+        "max_bytes",
+        "output_bytes",
+        "estimated_tokens",
+        "estimator",
+        "transport_overhead_included"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "status",
+    "schema_version",
+    "scope",
+    "nodes",
+    "edges",
+    "sources",
+    "reused",
+    "reuse_status",
+    "receipt",
+    "budget"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:local-graph:graph-context-v1",
+  "title": "graph-context-v1"
+}

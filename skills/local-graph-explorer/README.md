@@ -1,4 +1,4 @@
-# Local Graph Explorer 2.1
+# Local Graph Explorer 2.2.0
 
 An offline, data-led workspace for GraphView: graph, table, timeline, adjacency
 matrix and summary. It never requires G6, a CDN, an application account or a
@@ -47,6 +47,13 @@ without a bundle fails rather than contacting a CDN. Native SVG remains the
 fully functional default. See `references/g6.md` for version/coverage limits.
 A separately started Engine local HTTP server enables live read-only queries.
 A server is never needed for a snapshot and is never started by rendering HTML.
+
+
+## Follow the graph
+
+Choose Downstream, Upstream or Directed path in **Walk the graph**, select endpoints as needed, then **Prepare**. Use **Next/Previous** for inspection or **Play/Pause** for finite playback. Entry/end members, cycles, current/visited layers and exact relationships remain explicit. Dragging, panning and zooming continue to work during playback. The minimap provides orientation; Follow camera is opt-in and yields to manual gestures. See [walkthrough](references/walkthrough.md) for semantics and limits.
+
+Animation is a reading aid, not a claim that a workflow executed. Reduced motion keeps manual steps and disables autoplay; hidden pages and view changes pause. Canonical exports omit transient overlays. The new controls run in the bundled SVG viewer, including when an optional G6 view explicitly switches to SVG on Prepare.
 
 ## Validation and license
 

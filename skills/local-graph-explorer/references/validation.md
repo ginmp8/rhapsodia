@@ -13,3 +13,6 @@ Source preserves identifiers, zero/false, duplicates and original assertions. Fa
 
 ## Node gesture regression
 `tests/test_node_drag.py` exercises mouse drag, zoom/pan/CSS coordinate transforms, live incident/parallel/self-loop edges, background pan, click jitter, pointer capture outside the canvas, Escape cancellation, secondary-button rejection, emulated touch, keyboard movement, retention across filters/views, validated state save/restore, legacy state compatibility, reset/layout changes, data immutability and SVG export. These are browser tests, not evidence that every physical input device or optional G6 bundle has been tested.
+
+## Added regression surface
+`test_walkthrough_browser.py`, `test_walkthrough_hardening.py` and `test_traversal.cjs` cover bounded layers/paths/cycles, motion guards, drag coexistence, mobile containment, semantic relationship labels and export isolation. Required optional tools must be present for the matching runtime claim; skips are reported.

@@ -1,0 +1,11 @@
+{
+  "operation": "context",
+  "query": "Ada",
+  "depth": 0,
+  "detail": "evidence",
+  "properties": [
+    "budget",
+    "active"
+  ],
+  "budget_bytes": 12000
+}

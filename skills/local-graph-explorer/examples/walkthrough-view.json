@@ -1,0 +1,672 @@
+{
+  "schema_version": "graph-view-v1",
+  "graph": {
+    "contract": "local-graph-sqlite-v1",
+    "node_count": 7,
+    "edge_count": 6,
+    "label": "Local Graph | contexto e dependencias"
+  },
+  "nodes": [
+    {
+      "id": "demo:agent",
+      "kind": "consumer",
+      "label": "Agente com evidencias",
+      "properties": {
+        "responsabilidade": "Ler evidencias relevantes; solicitar detalhes quando necessario."
+      },
+      "aliases": [],
+      "degree": {
+        "in": 1,
+        "out": 0,
+        "total": 1
+      },
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "id": "demo:agent",
+            "kind": "consumer",
+            "label": "Agente com evidencias",
+            "properties": {
+              "responsabilidade": "Ler evidencias relevantes; solicitar detalhes quando necessario."
+            }
+          }
+        }
+      ],
+      "community": null
+    },
+    {
+      "id": "demo:context",
+      "kind": "context",
+      "label": "Contexto compacto",
+      "properties": {
+        "responsabilidade": "Selecionar contexto com limite de bytes e referencias reutilizaveis."
+      },
+      "aliases": [],
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "id": "demo:context",
+            "kind": "context",
+            "label": "Contexto compacto",
+            "properties": {
+              "responsabilidade": "Selecionar contexto com limite de bytes e referencias reutilizaveis."
+            }
+          }
+        }
+      ],
+      "community": null
+    },
+    {
+      "id": "demo:db",
+      "kind": "storage",
+      "label": "SQLite com evidencias",
+      "properties": {
+        "responsabilidade": "Grafo local e evidencias; fontes originais permanecem autoritativas."
+      },
+      "aliases": [],
+      "degree": {
+        "in": 1,
+        "out": 2,
+        "total": 3
+      },
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "id": "demo:db",
+            "kind": "storage",
+            "label": "SQLite com evidencias",
+            "properties": {
+              "responsabilidade": "Grafo local e evidencias; fontes originais permanecem autoritativas."
+            }
+          }
+        }
+      ],
+      "community": null
+    },
+    {
+      "id": "demo:engine",
+      "kind": "process",
+      "label": "Local Graph Engine",
+      "properties": {
+        "responsabilidade": "Modelagem, ingestao e consulta; sem renderizar a interface."
+      },
+      "aliases": [],
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "id": "demo:engine",
+            "kind": "process",
+            "label": "Local Graph Engine",
+            "properties": {
+              "responsabilidade": "Modelagem, ingestao e consulta; sem renderizar a interface."
+            }
+          }
+        }
+      ],
+      "community": null
+    },
+    {
+      "id": "demo:explorer",
+      "kind": "consumer",
+      "label": "Local Graph Explorer",
+      "properties": {
+        "responsabilidade": "Navegar por etapas, mover nos e inspecionar as relacoes; nao executar processos."
+      },
+      "aliases": [],
+      "degree": {
+        "in": 1,
+        "out": 0,
+        "total": 1
+      },
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "id": "demo:explorer",
+            "kind": "consumer",
+            "label": "Local Graph Explorer",
+            "properties": {
+              "responsabilidade": "Navegar por etapas, mover nos e inspecionar as relacoes; nao executar processos."
+            }
+          }
+        }
+      ],
+      "community": null
+    },
+    {
+      "id": "demo:source",
+      "kind": "source",
+      "label": "Dados locais",
+      "properties": {
+        "escopo": "Dados de qualquer dominio; exemplo sintetico."
+      },
+      "aliases": [],
+      "degree": {
+        "in": 0,
+        "out": 1,
+        "total": 1
+      },
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "id": "demo:source",
+            "kind": "source",
+            "label": "Dados locais",
+            "properties": {
+              "escopo": "Dados de qualquer dominio; exemplo sintetico."
+            }
+          }
+        }
+      ],
+      "community": null
+    },
+    {
+      "id": "demo:view",
+      "kind": "projection",
+      "label": "GraphView",
+      "properties": {
+        "responsabilidade": "Projecao portavel para apresentacao; nao e o envelope de contexto."
+      },
+      "aliases": [],
+      "degree": {
+        "in": 1,
+        "out": 1,
+        "total": 2
+      },
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "id": "demo:view",
+            "kind": "projection",
+            "label": "GraphView",
+            "properties": {
+              "responsabilidade": "Projecao portavel para apresentacao; nao e o envelope de contexto."
+            }
+          }
+        }
+      ],
+      "community": null
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:23a15c93534ee8a87bf07195",
+      "source": "demo:db",
+      "target": "demo:view",
+      "relation": "projeta",
+      "directed": true,
+      "properties": {},
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "directed": true,
+            "id": "edge:23a15c93534ee8a87bf07195",
+            "properties": {},
+            "relation": "projeta",
+            "source": "demo:db",
+            "target": "demo:view"
+          }
+        }
+      ]
+    },
+    {
+      "id": "edge:6b724964782df04fc17be751",
+      "source": "demo:engine",
+      "target": "demo:db",
+      "relation": "persiste",
+      "directed": true,
+      "properties": {},
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "directed": true,
+            "id": "edge:6b724964782df04fc17be751",
+            "properties": {},
+            "relation": "persiste",
+            "source": "demo:engine",
+            "target": "demo:db"
+          }
+        }
+      ]
+    },
+    {
+      "id": "edge:7a3ac1588484520c31c7f50f",
+      "source": "demo:context",
+      "target": "demo:agent",
+      "relation": "informa",
+      "directed": true,
+      "properties": {},
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "directed": true,
+            "id": "edge:7a3ac1588484520c31c7f50f",
+            "properties": {},
+            "relation": "informa",
+            "source": "demo:context",
+            "target": "demo:agent"
+          }
+        }
+      ]
+    },
+    {
+      "id": "edge:96d92b038e611b3e91e5fdc2",
+      "source": "demo:source",
+      "target": "demo:engine",
+      "relation": "alimenta",
+      "directed": true,
+      "properties": {},
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "directed": true,
+            "id": "edge:96d92b038e611b3e91e5fdc2",
+            "properties": {},
+            "relation": "alimenta",
+            "source": "demo:source",
+            "target": "demo:engine"
+          }
+        }
+      ]
+    },
+    {
+      "id": "edge:975f8adc2270456c4be514dd",
+      "source": "demo:view",
+      "target": "demo:explorer",
+      "relation": "visualiza",
+      "directed": true,
+      "properties": {},
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "directed": true,
+            "id": "edge:975f8adc2270456c4be514dd",
+            "properties": {},
+            "relation": "visualiza",
+            "source": "demo:view",
+            "target": "demo:explorer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "edge:9a366608b685b987ad0ebc40",
+      "source": "demo:db",
+      "target": "demo:context",
+      "relation": "seleciona",
+      "directed": true,
+      "properties": {},
+      "evidence_summary": {
+        "count": 1,
+        "active_count": 1,
+        "provenance": [
+          "MANUAL"
+        ],
+        "max_confidence": 1.0,
+        "ambiguous_count": 0,
+        "stale_count": 0
+      },
+      "evidence": [
+        {
+          "confidence": 1,
+          "details": {
+            "purpose": "Design demonstration, not a recorded execution.",
+            "synthetic": true
+          },
+          "locator": "example:local-graph-demo",
+          "provenance": "MANUAL",
+          "status": "accepted",
+          "source_uri": "example://local-graph/independent-tools"
+        }
+      ],
+      "evidence_truncated": false,
+      "claims": [
+        {
+          "source_uri": "example://local-graph/independent-tools",
+          "assertion": {
+            "directed": true,
+            "id": "edge:9a366608b685b987ad0ebc40",
+            "properties": {},
+            "relation": "seleciona",
+            "source": "demo:db",
+            "target": "demo:context"
+          }
+        }
+      ]
+    }
+  ],
+  "communities": [],
+  "query": {
+    "operation": "subgraph",
+    "max_nodes": 30,
+    "depth": 2,
+    "limit": 100,
+    "offset": 0,
+    "statuses": [
+      "accepted"
+    ]
+  },
+  "metadata": {
+    "truncated": false,
+    "source_graph_sha256": "e5c36e793606cd3a971d2b56dab6fb43f560a26600142dc1e0b3c085cb86231e",
+    "eligible_nodes": 7,
+    "eligible_edges": 6,
+    "complete_database": false,
+    "community_run_id": null,
+    "evidence_policy": [
+      "accepted"
+    ],
+    "producer_version": "2.1.0",
+    "layout_hint": "dagre",
+    "synthetic": true
+  }
+}

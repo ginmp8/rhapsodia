@@ -1,0 +1,268 @@
+{
+  "schema_version": "graph-patch-v1",
+  "source": {
+    "uri": "example://local-graph/independent-tools",
+    "kind": "example",
+    "metadata": {
+      "synthetic": true
+    }
+  },
+  "nodes": [
+    {
+      "id": "demo:source",
+      "kind": "source",
+      "label": "Dados locais",
+      "properties": {
+        "escopo": "Dados de qualquer dominio; exemplo sintetico."
+      },
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo:engine",
+      "kind": "process",
+      "label": "Local Graph Engine",
+      "properties": {
+        "responsabilidade": "Modelagem, ingestao e consulta; sem renderizar a interface."
+      },
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo:db",
+      "kind": "storage",
+      "label": "SQLite com evidencias",
+      "properties": {
+        "responsabilidade": "Grafo local e evidencias; fontes originais permanecem autoritativas."
+      },
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo:context",
+      "kind": "context",
+      "label": "Contexto compacto",
+      "properties": {
+        "responsabilidade": "Selecionar contexto com limite de bytes e referencias reutilizaveis."
+      },
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo:view",
+      "kind": "projection",
+      "label": "GraphView",
+      "properties": {
+        "responsabilidade": "Projecao portavel para apresentacao; nao e o envelope de contexto."
+      },
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo:agent",
+      "kind": "consumer",
+      "label": "Agente com evidencias",
+      "properties": {
+        "responsabilidade": "Ler evidencias relevantes; solicitar detalhes quando necessario."
+      },
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo:explorer",
+      "kind": "consumer",
+      "label": "Local Graph Explorer",
+      "properties": {
+        "responsabilidade": "Navegar por etapas, mover nos e inspecionar as relacoes; nao executar processos."
+      },
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "demo:source",
+      "target": "demo:engine",
+      "relation": "alimenta",
+      "directed": true,
+      "properties": {},
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "source": "demo:engine",
+      "target": "demo:db",
+      "relation": "persiste",
+      "directed": true,
+      "properties": {},
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "source": "demo:db",
+      "target": "demo:context",
+      "relation": "seleciona",
+      "directed": true,
+      "properties": {},
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "source": "demo:db",
+      "target": "demo:view",
+      "relation": "projeta",
+      "directed": true,
+      "properties": {},
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "source": "demo:context",
+      "target": "demo:agent",
+      "relation": "informa",
+      "directed": true,
+      "properties": {},
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    },
+    {
+      "source": "demo:view",
+      "target": "demo:explorer",
+      "relation": "visualiza",
+      "directed": true,
+      "properties": {},
+      "evidence": [
+        {
+          "provenance": "MANUAL",
+          "confidence": 1,
+          "status": "accepted",
+          "locator": "example:local-graph-demo",
+          "details": {
+            "synthetic": true,
+            "purpose": "Design demonstration, not a recorded execution."
+          }
+        }
+      ]
+    }
+  ]
+}

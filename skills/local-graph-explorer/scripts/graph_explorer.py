@@ -208,12 +208,13 @@ def render(input_path: Path, output_path: Path, template_path: Path, backend: st
     selected_layout = choose_layout(data,layout)
     assets=Path(__file__).resolve().parents[1]/"assets"
     css=assets/"viewer.css";js=assets/"viewer.js"
+    traversal=assets/"graph-traversal.js";journey=assets/"journey.js"
     version_path=assets.parent/"VERSION"
     viewer_version=version_path.read_text(encoding="utf-8").strip()
     raw_output=Path(output_path).expanduser().absolute()
     if raw_output.is_symlink(): raise ValueError("output must not be a symbolic link")
     output_path=raw_output.resolve()
-    protected=[input_path,template_path,css,js,version_path]+([g6_js] if g6_js else [])
+    protected=[input_path,template_path,css,js,traversal,journey,version_path]+([g6_js] if g6_js else [])
     for source in protected:
         source=Path(source).resolve()
         if output_path==source or (output_path.exists() and source.exists() and os.path.samefile(output_path,source)):
@@ -227,6 +228,8 @@ def render(input_path: Path, output_path: Path, template_path: Path, backend: st
     if missing: raise ValueError(f"viewer template missing placeholders: {missing}")
     if "__VIEWER_STYLES__" in template: replacements["__VIEWER_STYLES__"]=css.read_text(encoding="utf-8")
     if "__VIEWER_SCRIPT__" in template: replacements["__VIEWER_SCRIPT__"]=js.read_text(encoding="utf-8")
+    for token,asset in [("__TRAVERSAL_SCRIPT__",traversal),("__JOURNEY_SCRIPT__",journey)]:
+        if token in template: replacements[token]=asset.read_text(encoding="utf-8")
     # A single substitution pass prevents placeholder-looking source strings from
     # being interpreted as another template token.
     html=re.sub("|".join(map(re.escape,replacements)),lambda m:replacements[m.group()],template)

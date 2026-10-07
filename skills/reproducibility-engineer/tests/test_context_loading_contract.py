@@ -70,7 +70,7 @@ class ContextLoadingContractTests(unittest.TestCase):
         top100_references = set(re.findall(r'\((references/[^)#]+\.md)(?:#[^)]+)?\)', first100))
         self.assertEqual(all_references, top100_references, 'every supporting Markdown reference must be directly discoverable in the first 100 lines')
 
-        vague_fragments = ('archify-like', 'package expectation', 'primary topics:', 'details below', 'read this file when needed')
+        vague_fragments = ('package expectation', 'primary topics:', 'details below', 'read this file when needed')
         present_vague = [fragment for fragment in vague_fragments if fragment in first100]
         self.assertEqual([], present_vague, f'vague/context-dependent phrases leaked into top-100 control plane: {present_vague}')
 

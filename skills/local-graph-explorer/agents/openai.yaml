@@ -1,3 +1,8 @@
 interface:
-  display_name: "Local Graph Explorer"
-  short_description: "Explore local data with offline graphs, tables, timelines and matrices."
+  display_name: Local Graph Explorer
+  short_description: Explore local data with offline graphs, tables, timelines and
+    matrices.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  allow_implicit_invocation: true

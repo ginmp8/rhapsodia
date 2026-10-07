@@ -16,4 +16,4 @@ Do not mistake a parser's literal extraction for verification of real-world trut
 
 ## Batch and producer interface
 `apply-batch file.json` accepts a JSON array of patches or an object containing `patches`. At most 10,000 patches in one batch. `graph_store.apply_patches` additionally supports an expected-revision map for optimistic concurrency; callers using this Python API must inspect its signature and pass the accepted current revision.
-Parsers, another agent, a chat attachment, an export or a standalone tool can produce the same contract. No Graphify dependency or host-specific protocol is required. Source content must be present and actually inspected before claiming extraction.
+Parsers, another agent, a chat attachment, an export or a standalone tool can produce the same contract. No dependency or host-specific protocol is required. Source content must be present and actually inspected before claiming extraction.

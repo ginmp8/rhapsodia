@@ -20,7 +20,7 @@
     ['x','y'].every(key=>Number.isFinite(p[key]) && Math.abs(p[key])<=MAX_POSITION);
   let kinds=new Set(), relations=new Set(), statuses=new Set(['accepted','ambiguous','stale','rejected','unknown']);
   const allStatuses=['accepted','ambiguous','stale','rejected','unknown'];
-  let currentVisible={nodes:[],edges:[]};
+  let currentVisible={nodes:[],edges:[]},journey=null;
   function validate(data){
     if(!data||data.schema_version!=='graph-view-v1'||!Array.isArray(data.nodes)||!Array.isArray(data.edges))throw Error('Expected graph-view-v1 with node and edge arrays.');
     if(data.nodes.length>10000||data.edges.length>50000)throw Error('View exceeds the 10,000 node / 50,000 edge loading budget. Export a focused view.');
@@ -100,7 +100,7 @@
     for(const key of keys)if(graph.nodes.some(n=>typeof n.properties?.[key]==='number'))$('numeric-property').add(new Option(key,key));
   }
   function load(data){
-    validate(data);finishDrag(null,true);destroyG6();
+    validate(data);journey?.reset();finishDrag(null,true);destroyG6();
     graph=data;byId=new Map(data.nodes.map(n=>[n.id,n]));selected=null;focus=null;highlighted.clear();page=0;positions.clear();
     manualPositions.clear();graphLayoutKey=null;suppressedClick=null;
     kinds=new Set(data.nodes.map(n=>n.kind));relations=new Set(data.edges.map(e=>e.relation));statuses=new Set(allStatuses);
@@ -112,7 +112,7 @@
   }
   function switchView(view){
     if(!['graph','table','timeline','matrix','summary'].includes(view))return;
-    currentView=view;for(const tab of document.querySelectorAll('.tab')){const active=tab.dataset.view===view;tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
+    journey?.viewChanged(view);currentView=view;for(const tab of document.querySelectorAll('.tab')){const active=tab.dataset.view===view;tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
     for(const pane of document.querySelectorAll('.view'))pane.classList.toggle('active',pane.id===view+'-view');refresh(false);
   }
   function refresh(resetPage=true){
@@ -186,7 +186,8 @@
     for(const node of nodes)if(manualPositions.has(node.id))positions.set(node.id,{...manualPositions.get(node.id)});
     graphSelection={nodes,edges};drawSVG(nodes,edges);updateLayoutLabel();
     if(needsFit)fit();else updateTransform();
-    if(VIEWER_CONFIG.backend!=='builtin'&&window.G6?.Graph){
+    journey?.setScope(nodes,edges);
+    if(VIEWER_CONFIG.backend!=='builtin'&&window.G6?.Graph&&!journey?.isActive()){
       $('g6-canvas').hidden=false;
       try{
         g6=new window.G6.Graph({container:$('g6-canvas'),data:{nodes:nodes.map(n=>({id:n.id,data:{label:n.label},style:{...positions.get(n.id),labelText:n.label,size:24,fill:color(n.kind)}})),edges:edges.map(e=>({id:e.id,source:e.source,target:e.target,style:{endArrow:e.directed!==false,stroke:getStyle('--edge')}}))},node:{type:'circle'},edge:{type:'line'},behaviors:['drag-canvas','zoom-canvas','click-select',{type:'drag-element',trigger:[],animation:false,dropEffect:'none',hideEdge:'none'}],animation:false,autoFit:'view'});
@@ -263,6 +264,7 @@
     const normalize=v=>Math.round(Math.max(-MAX_POSITION,Math.min(MAX_POSITION,v))*100)/100;
     const p={x:normalize(point.x),y:normalize(point.y)};
     positions.set(id,p);manualPositions.set(id,{...p});updateNodeGeometry(id);updateLayoutLabel();
+      journey?.positionsChanged();
   }
   function syncG6Positions(){
     if(!g6?.getNodeData)return;
@@ -276,6 +278,7 @@
     const p=$('graph-svg').createSVGPoint();p.x=event.clientX;p.y=event.clientY;return p.matrixTransform(inverse);
   }
   function startDrag(event){
+    if(event.button===0)journey?.manualGesture();
     if(drag||event.button!==0||event.isPrimary===false)return;
     const node=event.target.closest('.node'),svg=$('graph-svg');
     if(!node&&event.target.closest('.edge-hit'))return;
@@ -307,7 +310,7 @@
     }else if(cancel&&active.kind==='canvas'){viewport=active.v;updateTransform();}
     if(active.target.hasPointerCapture(active.pointerId))active.target.releasePointerCapture(active.pointerId);
   }
-  function updateTransform(){const world=$('graph-world');if(world)world.setAttribute('transform',`translate(${viewport.x},${viewport.y}) scale(${viewport.k})`);}
+  function updateTransform(){const world=$('graph-world');if(world)world.setAttribute('transform',`translate(${viewport.x},${viewport.y}) scale(${viewport.k})`);journey?.cameraChanged();}
   function fit(){
     if(!positions.size)return;const rect=$('graph-svg').getBoundingClientRect(),xs=[...positions.values()].map(p=>p.x),ys=[...positions.values()].map(p=>p.y),minx=Math.min(...xs)-100,maxx=Math.max(...xs)+100,miny=Math.min(...ys)-100,maxy=Math.max(...ys)+100;
     viewport.k=Math.min(1.25,Math.max(.04,Math.min((rect.width-70)/(maxx-minx),(rect.height-80)/(maxy-miny))));viewport.x=rect.width/2-(minx+maxx)/2*viewport.k;viewport.y=rect.height/2-(miny+maxy)/2*viewport.k;updateTransform();
@@ -397,11 +400,11 @@
     const points=s.node_positions===undefined?{}:s.node_positions;
     if(points===null||typeof points!=='object'||Array.isArray(points)||Object.keys(points).length>graph.nodes.length)throw Error('Invalid node positions.');
     for(const [id,p] of Object.entries(points))if(!byId.has(id)||!validPosition(p))throw Error('Invalid node position or unknown entity.');
-    finishDrag(null,true);destroyG6();manualPositions=new Map(Object.entries(points).map(([id,p])=>[id,{x:p.x,y:p.y}]));graphLayoutKey=null;
+    journey?.reset();finishDrag(null,true);destroyG6();manualPositions=new Map(Object.entries(points).map(([id,p])=>[id,{x:p.x,y:p.y}]));graphLayoutKey=null;
     kinds=new Set(s.kinds);relations=new Set(s.relations);statuses=new Set(s.statuses);selected=s.selected;focus=s.focus;$('layout').value=s.layout;$('theme').value=s.theme;$('search').value=s.search;$('depth').value=s.depth;$('direction').value=s.direction;$('confidence').value=s.confidence;$('source-filter').value=s.source;$('property-key').value=s.property;$('property-value').value=s.value;controls();applyTheme();switchView(s.view);viewport={...s.viewport};updateTransform();
   }
   function svgText(){
-    if(!graphSelection)drawGraph();syncG6Positions();const copy=$('graph-svg').cloneNode(true),rect=$('graph-svg').getBoundingClientRect();copy.setAttribute('xmlns',NS);copy.setAttribute('width',Math.round(rect.width)||1000);copy.setAttribute('height',Math.round(rect.height)||700);return new XMLSerializer().serializeToString(copy);
+    if(!graphSelection)drawGraph();syncG6Positions();const copy=$('graph-svg').cloneNode(true),rect=$('graph-svg').getBoundingClientRect();copy.setAttribute('xmlns',NS);copy.setAttribute('width',Math.round(rect.width)||1000);copy.setAttribute('height',Math.round(rect.height)||700);copy.querySelectorAll('[data-journey-overlay]').forEach(e=>e.remove());for(const el of copy.querySelectorAll('[data-walk-state],[data-walk-edge],[data-boundary],[data-cycle]'))for(const key of ['data-walk-state','data-walk-edge','data-boundary','data-cycle'])el.removeAttribute(key);return new XMLSerializer().serializeToString(copy);
   }
   function exportData(){
     const fmt=$('export-format').value;
@@ -431,8 +434,8 @@
   $('focus-button').onclick=()=>{if(!selected){message('Select an entity first.');return;}focus=selected;refresh();};$('unfocus-button').onclick=()=>{focus=null;highlighted.clear();refresh();};
   $('path-button').onclick=path;$('clear-selection').onclick=()=>{selected=null;highlighted.clear();refresh(false);};
   $('page-prev').onclick=()=>{page=Math.max(0,page-1);drawTable();};$('page-next').onclick=()=>{page++;drawTable();};
-  $('zoom-in').onclick=()=>zoom(1.25);$('zoom-out').onclick=()=>zoom(.8);
-  $('graph-svg').addEventListener('wheel',event=>{event.preventDefault();const r=$('graph-svg').getBoundingClientRect();zoom(event.deltaY<0?1.12:1/1.12,event.clientX-r.left,event.clientY-r.top);},{passive:false});
+  $('zoom-in').onclick=()=>{journey?.manualGesture();zoom(1.25);};$('zoom-out').onclick=()=>{journey?.manualGesture();zoom(.8);};
+  $('graph-svg').addEventListener('wheel',event=>{event.preventDefault();journey?.manualGesture();const r=$('graph-svg').getBoundingClientRect();zoom(event.deltaY<0?1.12:1/1.12,event.clientX-r.left,event.clientY-r.top);},{passive:false});
   $('graph-svg').addEventListener('pointerdown',startDrag);
   $('graph-svg').addEventListener('pointermove',moveDrag);
   $('graph-svg').addEventListener('pointerup',event=>finishDrag(event));
@@ -451,7 +454,16 @@
       const result=await response.json();if(!response.ok||result.status!=='pass')throw Error(result.error||'Local query failed.');if(result.view)load(result.view);$('live-result').textContent=JSON.stringify(result.view?{status:result.status,nodes:result.view.nodes.length,edges:result.view.edges.length}:result,null,2);message('Local read-only query complete.');
     }catch(error){message(error.message);}finally{$('live-button').disabled=false;}};
   }
+  if(window.LocalGraphJourney&&$('walk-prepare'))journey=LocalGraphJourney.create({
+    identity,positions:()=>positions,nodeElements:()=>nodeElements,
+    edgeRecords:()=>[...new Map([...incidentEdges.values()].flat().map(r=>[r.edge.id,r])).values()],
+    viewport:()=>viewport,rect:()=>$('graph-svg').getBoundingClientRect(),dragging:()=>!!drag,isGraph:()=>currentView==='graph',
+    prepare:()=>{if(g6){destroyG6();message('Guided walkthrough uses the bundled SVG renderer.');}},
+    inspect:id=>{if(byId?.has(id)){selected=id;inspect();$('selection-status').textContent=byId.get(id).label;}},
+    panTo:(x,y)=>{const r=$('graph-svg').getBoundingClientRect();viewport.x=r.width/2-x*viewport.k;viewport.y=r.height/2-y*viewport.k;updateTransform();},
+    fit,message
+  });
   // A small read-only testing/debug surface; it cannot mutate the SQLite database.
-  window.LocalGraphView={getSnapshot:()=>JSON.parse(JSON.stringify(snapshot())),getState:savedState,restoreState,validate,getPositions:()=>Object.fromEntries(positions)};
+  window.LocalGraphView={getSnapshot:()=>JSON.parse(JSON.stringify(snapshot())),getState:savedState,restoreState,validate,getPositions:()=>Object.fromEntries(positions),getWalkthrough:()=>journey?.getState()||{status:'unavailable'}};
   try{applyTheme();load(INITIAL_GRAPH);}catch(error){message('Could not load GraphView: '+error.message);}
 })();
