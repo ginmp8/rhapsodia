@@ -12,13 +12,14 @@ This is a quick way to learn:
 Examples:
   python pdf_inspect.py input.pdf
   python pdf_inspect.py input.pdf --json > info.json
-  python pdf_inspect.py input.pdf --password "secret"
+  python pdf_inspect.py input.pdf --password-file password.txt
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, asdict
@@ -28,19 +29,23 @@ from typing import Any, Dict, List, Optional, Tuple
 from pypdf import PdfReader
 
 
-def _run_cli(cmd: List[str]) -> Tuple[int, str]:
-    """Run a CLI tool and return (returncode, combined_output)."""
+def _run_cli(cmd: List[str], timeout_seconds: float) -> Tuple[int, str]:
+    """Run an allowlisted local CLI tool with a finite timeout."""
+    executable = shutil.which(cmd[0])
+    if executable is None:
+        return 127, f"[missing] {cmd[0]} not found\n"
     try:
         proc = subprocess.run(
-            cmd,
+            [executable, *cmd[1:]],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             check=False,
+            timeout=timeout_seconds,
         )
         return proc.returncode, proc.stdout
-    except FileNotFoundError:
-        return 127, f"[missing] {cmd[0]} not found\n"
+    except subprocess.TimeoutExpired:
+        return 124, f"[timeout] {cmd[0]} exceeded {timeout_seconds:g}s\n"
 
 
 def _outline_count(outline_obj: Any) -> int:
@@ -83,7 +88,7 @@ class PdfSummary:
     poppler_pdffonts: Optional[str] = None
 
 
-def inspect_pdf(path: Path, password: Optional[str] = None) -> PdfSummary:
+def inspect_pdf(path: Path, password: Optional[str] = None, subprocess_timeout: float = 30.0) -> PdfSummary:
     reader = PdfReader(str(path))
     encrypted = bool(getattr(reader, "is_encrypted", False))
 
@@ -146,8 +151,8 @@ def inspect_pdf(path: Path, password: Optional[str] = None) -> PdfSummary:
         annots = 0
 
     # Poppler summaries (nice for quick font + doc info)
-    rc_info, pdfinfo_out = _run_cli(["pdfinfo", str(path)])
-    rc_fonts, pdffonts_out = _run_cli(["pdffonts", str(path)])
+    rc_info, pdfinfo_out = _run_cli(["pdfinfo", str(path)], subprocess_timeout)
+    rc_fonts, pdffonts_out = _run_cli(["pdffonts", str(path)], subprocess_timeout)
 
     return PdfSummary(
         path=str(path),
@@ -162,6 +167,15 @@ def inspect_pdf(path: Path, password: Optional[str] = None) -> PdfSummary:
         poppler_pdfinfo=pdfinfo_out.strip() if rc_info == 0 else None,
         poppler_pdffonts=pdffonts_out.strip() if rc_fonts == 0 else None,
     )
+
+
+def _read_password_file(path: Optional[Path]) -> Optional[str]:
+    if path is None:
+        return None
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if not lines or not lines[0]:
+        raise ValueError("password file is empty")
+    return lines[0]
 
 
 def _print_human(summary: PdfSummary) -> None:
@@ -193,7 +207,8 @@ def _print_human(summary: PdfSummary) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Inspect a PDF")
     ap.add_argument("input_pdf", type=Path)
-    ap.add_argument("--password", default=None, help="Password for encrypted PDFs")
+    ap.add_argument("--password-file", type=Path, help="Read the PDF password from the first line of this file")
+    ap.add_argument("--subprocess-timeout", type=float, default=30.0, help="Timeout in seconds for optional local Poppler helpers")
     ap.add_argument("--json", action="store_true", help="Print JSON")
     args = ap.parse_args()
 
@@ -201,7 +216,16 @@ def main() -> int:
         print(f"ERROR: not found: {args.input_pdf}", file=sys.stderr)
         return 2
 
-    summary = inspect_pdf(args.input_pdf, password=args.password)
+    if args.subprocess_timeout <= 0:
+        print("ERROR: --subprocess-timeout must be > 0", file=sys.stderr)
+        return 2
+    try:
+        password = _read_password_file(args.password_file)
+    except (OSError, ValueError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+
+    summary = inspect_pdf(args.input_pdf, password=password, subprocess_timeout=args.subprocess_timeout)
 
     if args.json:
         print(json.dumps(asdict(summary), indent=2, ensure_ascii=True))

@@ -1,5 +1,5 @@
 ---
-name: pdf-toolkit
+name: pdf-workbench
 description: Work with PDF files reliably across reading/review, text or table extraction, merge/split/rotate/crop/watermark, creation/conversion, forms, OCR, redaction, encryption, images, repair, and PDF/A or PDF/UA validation. Use when PDF is the primary input or output, including scanned, fillable, signed, encrypted, tagged, or damaged PDFs. Do not use for ordinary DOCX/PPTX/XLSX work unless PDF conversion or PDF-specific validation is the actual goal.
 ---
 
@@ -43,7 +43,8 @@ Choose the smallest branch that satisfies the request:
 - **OCR:** do not rasterize a born-digital or tagged PDF by default. Select OCR mode based on whether existing text, forms, links, annotations, signatures, or structure must survive.
 - **Tagged PDF:** when a structure tree exists, prefer explicit reading order/semantics before coordinate heuristics or OCR.
 - **Untrusted/damaged PDF:** keep parser/resource safety limits enabled. Do not disable conservative limits merely to force success on a malformed file.
-- **Passwords:** do not place secrets in logs, source files, or reusable examples. Prefer password-file/stdin mechanisms when supported.
+- **External tools:** resolve only the documented local executable by capability, pass structured argument arrays, use finite subprocess timeouts, and never install or download a dependency automatically.
+- **Passwords:** do not place secret values in command arguments, logs, source files, or reusable examples. Bundled helpers use password-file inputs; keep password files ephemeral, permission-restricted where possible, and out of deliverables.
 - **Coordinates:** explicitly track whether coordinates are PDF points (origin usually bottom-left) or rendered-image pixels (origin top-left). Never mix them without conversion.
 - **Creation quality:** no clipped text, overlaps, broken glyphs, missing pages, or accidental font substitution in the final render.
 - **Claims:** structural validation, visual inspection, OCR accuracy, accessibility, archival conformance, and signature validity are distinct claims; do not substitute one for another.

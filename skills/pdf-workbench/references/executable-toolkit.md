@@ -1,4 +1,4 @@
-# Executable PDF Toolkit
+# Executable PDF Workbench
 
 ## At a glance
 
@@ -29,8 +29,8 @@ python scripts/pdf_edit.py rotate input.pdf --angle 90 --pages 2,4 -o rotated.pd
 python scripts/pdf_edit.py crop input.pdf --inset 10pt --pages all -o cropped.pdf
 python scripts/pdf_edit.py watermark input.pdf --watermark watermark.pdf -o watermarked.pdf
 python scripts/pdf_edit.py paginate input.pdf -o numbered.pdf --format "{page}/{total}"
-python scripts/pdf_edit.py encrypt input.pdf -o encrypted.pdf --user_password '<secret>'
-python scripts/pdf_edit.py decrypt input.pdf -o decrypted.pdf --password '<secret>'
+python scripts/pdf_edit.py encrypt input.pdf -o encrypted.pdf --user-password-file user-password.txt
+python scripts/pdf_edit.py decrypt input.pdf -o decrypted.pdf --password-file password.txt
 python scripts/pdf_edit.py repair input.pdf -o repaired.pdf
 python scripts/pdf_edit.py optimize input.pdf -o optimized.pdf
 
@@ -50,7 +50,7 @@ python scripts/compare_renders.py before.pdf after.pdf --out_dir diff
 - Prefer `pdf_edit.py` for ordinary structural edits and `pdf_extract.py` for extraction; do not regenerate equivalent Python unless the helper cannot express the requested operation.
 - Prefer `ocr_pdf.py` over hand-written raster/OCR loops. It uses OCRmyPDF when available and an explicit `pdftoppm + tesseract` fallback when requested.
 - Prefer `pdf_redact.py` for true redaction. A visual overlay is not a substitute.
-- For passwords, avoid reusable literal secrets; use ephemeral values and prefer external password-file/stdin mechanisms when the selected backend supports them.
+- For passwords, never put secret values in command arguments. Bundled helpers use password files so the secret itself is not exposed through process arguments; keep those files ephemeral and outside deliverables.
 - After geometry/content edits, render and inspect. For edits expected to be visually identical, use `compare_renders.py`.
 
 ## Lower-level fallback

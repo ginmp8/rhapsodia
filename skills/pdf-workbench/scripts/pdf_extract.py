@@ -30,7 +30,9 @@ import csv
 import json
 import os
 import re
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -80,11 +82,17 @@ def _ensure_dir(path: str) -> Path:
     return p
 
 
-def _read_pdf_text_pdftotext(input_pdf: str, pages: Optional[List[Tuple[int, int]]]) -> str:
+def _read_pdf_text_pdftotext(input_pdf: str, pages: Optional[List[Tuple[int, int]]], timeout_seconds: float) -> str:
     # pdftotext does not support disjoint ranges directly, so we extract all and slice at paragraph boundaries.
     # For large files, prefer python methods (pdfplumber/pymupdf) with page control.
-    cmd = ["pdftotext", input_pdf, "-"]
-    proc = subprocess.run(cmd, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    executable = shutil.which("pdftotext")
+    if executable is None:
+        raise RuntimeError("pdftotext is not available")
+    cmd = [executable, input_pdf, "-"]
+    try:
+        proc = subprocess.run(cmd, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout_seconds)
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(f"pdftotext exceeded {timeout_seconds:g}s") from exc
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.decode("utf-8", "ignore").strip() or "pdftotext failed")
     text = proc.stdout.decode("utf-8", "ignore")
@@ -99,7 +107,7 @@ def cmd_text(args: argparse.Namespace) -> int:
     ranges = _parse_page_ranges(args.pages)
 
     if method == "pdftotext":
-        text = _read_pdf_text_pdftotext(args.input_pdf, ranges)
+        text = _read_pdf_text_pdftotext(args.input_pdf, ranges, args.subprocess_timeout)
     elif method == "pypdf":
         from pypdf import PdfReader
         from pypdf.generic import DictionaryObject, StreamObject
@@ -318,8 +326,14 @@ def cmd_images(args: argparse.Namespace) -> int:
 
     if args.method == "pdfimages":
         # Uses poppler to dump images
-        cmd = ["pdfimages", "-all", args.input_pdf, str(out_dir / "img")]
-        proc = subprocess.run(cmd, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        executable = shutil.which("pdfimages")
+        if executable is None:
+            raise RuntimeError("pdfimages is not available")
+        cmd = [executable, "-all", args.input_pdf, str(out_dir / "img")]
+        try:
+            proc = subprocess.run(cmd, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=args.subprocess_timeout)
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError(f"pdfimages exceeded {args.subprocess_timeout:g}s") from exc
         if proc.returncode != 0:
             raise RuntimeError(proc.stderr.strip() or "pdfimages failed")
         print(f"Extracted images to: {out_dir}")
@@ -548,13 +562,15 @@ def main() -> int:
     p_info = sub.add_parser("info", help="inspect pdf")
     p_info.add_argument("input_pdf")
     p_info.add_argument("--json", action="store_true")
-    p_info.add_argument("--password", default=None)
+    p_info.add_argument("--password-file", default=None)
+    p_info.add_argument("--subprocess-timeout", type=float, default=30.0)
 
     p_text = sub.add_parser("text", help="extract plain text")
     p_text.add_argument("input_pdf")
     p_text.add_argument("--method", choices=["pdfplumber", "pymupdf", "pypdf", "pdftotext"], default="pdfplumber")
     p_text.add_argument("--pages", default=None, help="e.g. 1-3,5")
     p_text.add_argument("--out", "--output", dest="out", default=None)
+    p_text.add_argument("--subprocess-timeout", type=float, default=120.0)
 
     p_words = sub.add_parser("words", help="extract word boxes")
     p_words.add_argument("input_pdf")
@@ -578,6 +594,7 @@ def main() -> int:
     p_images.add_argument("--pages", default=None)
     p_images.add_argument("--out_dir", required=True)
     p_images.add_argument("--method", choices=["pymupdf", "pdfimages"], default="pymupdf")
+    p_images.add_argument("--subprocess-timeout", type=float, default=120.0)
 
     p_att = sub.add_parser("attachments", help="extract embedded attachments")
     p_att.add_argument("input_pdf")
@@ -597,14 +614,21 @@ def main() -> int:
 
     if args.cmd == "info":
         # Delegate to pdf_inspect for consistency
-        cmd = ["python", str(Path(__file__).with_name("pdf_inspect.py")), args.input_pdf]
-        if args.password:
-            cmd += ["--password", args.password]
+        if args.subprocess_timeout <= 0:
+            raise ValueError("--subprocess-timeout must be > 0")
+        cmd = [sys.executable, str(Path(__file__).with_name("pdf_inspect.py")), args.input_pdf, "--subprocess-timeout", str(args.subprocess_timeout)]
+        if args.password_file:
+            cmd += ["--password-file", args.password_file]
         if args.json:
             cmd += ["--json"]
-        return subprocess.call(cmd)
+        try:
+            return subprocess.run(cmd, check=False, timeout=args.subprocess_timeout + 5.0).returncode
+        except subprocess.TimeoutExpired:
+            return 124
 
     if args.cmd == "text":
+        if args.subprocess_timeout <= 0:
+            raise ValueError("--subprocess-timeout must be > 0")
         return cmd_text(args)
     if args.cmd == "words":
         return cmd_words(args)
@@ -613,6 +637,8 @@ def main() -> int:
     if args.cmd == "tables":
         return cmd_tables(args)
     if args.cmd == "images":
+        if args.subprocess_timeout <= 0:
+            raise ValueError("--subprocess-timeout must be > 0")
         return cmd_images(args)
     if args.cmd == "attachments":
         return cmd_attachments(args)

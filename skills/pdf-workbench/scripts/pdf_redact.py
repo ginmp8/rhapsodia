@@ -35,6 +35,15 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 import fitz  # PyMuPDF
 
 
+def _read_password_file(path: Optional[str]) -> Optional[str]:
+    if path is None:
+        return None
+    lines = Path(path).read_text(encoding="utf-8").splitlines()
+    if not lines or not lines[0]:
+        raise ValueError("password file is empty")
+    return lines[0]
+
+
 def parse_page_range(spec: Optional[str], num_pages: int) -> List[int]:
     """Parse a 1-indexed page range string like "1-3,5,7-" into 0-indexed pages."""
     if not spec:
@@ -276,7 +285,7 @@ def main() -> int:
     p_text.add_argument("--whole_word", action="store_true", help="Best-effort whole-word match (strips punctuation)")
     p_text.add_argument("--fill", default="black", help="Fill color for redaction box: black|white|#RRGGBB")
     p_text.add_argument("--image_mode", choices=["remove", "pixels", "none"], default="remove")
-    p_text.add_argument("--password", default=None)
+    p_text.add_argument("--password-file", default=None, help="Read the PDF password from the first line of this file")
 
     p_boxes = sub.add_parser("boxes", help="redact by rectangle(s) in a JSON file (PDF points)")
     p_boxes.add_argument("input_pdf", type=Path)
@@ -285,7 +294,7 @@ def main() -> int:
     p_boxes.add_argument("--pages", default=None, help='Optional page filter like "1-3,5"')
     p_boxes.add_argument("--fill", default="black")
     p_boxes.add_argument("--image_mode", choices=["remove", "pixels", "none"], default="remove")
-    p_boxes.add_argument("--password", default=None)
+    p_boxes.add_argument("--password-file", default=None, help="Read the PDF password from the first line of this file")
 
     args = p.parse_args()
 
@@ -296,8 +305,9 @@ def main() -> int:
             return 2
         fill = _parse_fill(args.fill)
         doc = fitz.open(str(args.input_pdf))
-        if doc.is_encrypted and args.password:
-            doc.authenticate(args.password)
+        password = _read_password_file(args.password_file)
+        if doc.is_encrypted and password:
+            doc.authenticate(password)
         pages = parse_page_range(args.pages, doc.page_count)
         n = _add_redactions_for_text(
             doc,
@@ -317,8 +327,9 @@ def main() -> int:
         fill = _parse_fill(args.fill)
         boxes = _load_boxes(Path(args.boxes_json))
         doc = fitz.open(str(args.input_pdf))
-        if doc.is_encrypted and args.password:
-            doc.authenticate(args.password)
+        password = _read_password_file(args.password_file)
+        if doc.is_encrypted and password:
+            doc.authenticate(password)
         pages = parse_page_range(args.pages, doc.page_count)
         n = _add_redactions_for_boxes(doc, pages=pages, boxes=boxes, fill_rgb=fill)
         if n == 0:
