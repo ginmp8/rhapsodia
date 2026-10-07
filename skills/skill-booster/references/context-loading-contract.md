@@ -8,12 +8,12 @@
 
 ## Contents
 
-- Discovery quality
-- Top-100 control-plane quality
-- Semantic preview contract
-- Navigation map contract
-- One-level reference topology
-- Optimization/evaluation rules
+- Discovery Quality
+- Top-100 Control-Plane Quality
+- Semantic Preview Contract
+- Navigation Map Contract
+- One-Level Reference Topology
+- Optimization and Evaluation Rules
 - Exceptions
 
 ## Discovery Quality
@@ -27,7 +27,12 @@ Check:
 - plausible non-use boundaries are stated when neighboring skills overlap;
 - descriptions are not inflated with implementation detail that reduces routing clarity;
 - descriptions use declarative capability language rather than first-person assistant promises such as `I can` or `I will`;
-- activation tests include positive, negative, ambiguous, boundary, and catalog-competition cases when relevant.
+- activation tests include positive, negative, ambiguous, boundary, and catalog-competition cases when relevant;
+- when catalog size or metadata compression can affect routing, include representative coexistence pressure rather than testing only the nearest semantic competitor.
+
+### Catalog pressure and coexistence
+
+Evaluate discovery at increasing pressure when material: `isolated -> nearest competitors -> representative catalog -> large/saturation catalog`. Track available signals such as activation recall/precision, wrong-skill rate, no-skill rate, competitor-steal rate, ambiguous-routing rate, and sensitivity to metadata truncation/compression. A failure that appears only under catalog pressure is not automatically a target-skill defect; diagnose catalog-level density/overlap before inflating the target description.
 
 Do not infer discovery quality from an instruction-following benchmark that assumes the skill is already loaded.
 
@@ -42,7 +47,7 @@ When `SKILL.md` exceeds 100 lines, require the first 100 physical lines to expos
 5. critical constraints, rules, guardrails, or invariants;
 6. direct pointers to branch-specific details.
 
-Optimize by reordering, compressing, and moving branch detail outward. Do not delete semantics merely to satisfy the line budget.
+Optimize by reordering, compressing, and moving branch detail outward. Do not delete semantics merely to satisfy the line budget. When several equivalent paths exist, prefer one canonical default plus explicit conditional escape hatches over an unranked menu of co-equal alternatives; preserve genuine user choice when no default is justified.
 
 ## Semantic Preview Contract
 
@@ -89,7 +94,8 @@ When context-loading changes are made:
 - review semantic specificity rather than treating mechanical labels as proof of quality;
 - rerun affected activation/instruction tests;
 - use holdout/catalog-competition cases for promotion claims when metadata was tuned against visible prompts;
-- reject changes that improve routing by erasing legitimate scope.
+- use representative catalog-pressure cases when real deployment includes many discoverable skills;
+- reject changes that improve routing by erasing legitimate scope or merely by bloating metadata to compensate for catalog-level saturation.
 
 ## Exceptions
 

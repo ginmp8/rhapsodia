@@ -42,7 +42,7 @@ Preserve an immutable baseline and freeze evaluator/scenario/expected-output/met
 
 ## Phase 2: Diagnose
 
-Run evidence providers against the frozen baseline. Providers are read-only/audit/checklist by default in this phase.
+Run evidence providers against the frozen baseline. Providers are read-only/audit/checklist by default in this phase. When available and relevant, include field failure clusters, production/user traces, catalog coexistence context, evaluator calibration evidence, temporal/version-bound instructions, and authority/trust-boundary findings; classify them before proposing edits.
 
 Required early evidence normally includes initial `skill-benchmark`, `skill-harness`, and the reproducibility-routing decision. Then select the additional providers material to the target class and surfaces: capability/quality review, package architecture, context impact, activation/prompt, consistency, documentation, code, security, testing, cleanup, and token/context analysis.
 
@@ -101,6 +101,8 @@ Evaluate the candidate against the same frozen evidence using the staged ladder:
 4. `L3-harness` - broader regression/adversarial execution when warranted.
 5. `L4-benchmark` - full comparable baseline/control/candidate benchmark when an improvement claim warrants it.
 6. `L5-holdout` - independent/evaluator-only holdout for promotion claims exposed to overfitting risk.
+
+Add catalog-pressure/coexistence arms, agentic trace checks, representative model-capability calibration, and LLM-judge calibration only when the target or selected change materially depends on those surfaces. Keep these conditional so the evaluation ladder does not become ceremony for simple deterministic repairs.
 
 A required lower-level failure blocks escalation. `skill-change-gate` is required for material candidate acceptance. Record an experiment only when the selected change is actually experimental or the run compares multiple alternatives. Use ablation only for a real attribution question.
 

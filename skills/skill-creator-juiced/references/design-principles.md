@@ -92,13 +92,17 @@ Author the canonical core for supported capable agents, not for one model genera
 - If no, omit it.
 - If the rule is a temporary model/host workaround, isolate it in an adapter or scoped reference and record provenance/freshness.
 
-Do not use post-hoc token compression as a substitute for good initial instruction architecture.
+Do not use post-hoc token compression as a substitute for good initial instruction architecture. Substantial instructions/resources require an explicit proof-of-need: user requirement, observed baseline failure, invariant, portability/security necessity, or validated regression.
+
+When several methods are functionally equivalent, define one canonical default and bounded conditional escape hatches unless user choice is itself part of the capability. Unranked menus increase decision entropy and run-to-run variance without adding useful flexibility.
+
+Treat volatile dates, model names, API/package versions, product behavior, host paths, and temporary migrations as freshness-sensitive. Keep current behavior primary, isolate legacy guidance, and attach source/date/version context when a volatile fact materially affects correctness.
 
 ## 8. Activation quality
 
 The description is the primary discovery surface. State what the skill does and when to use it with common user language. Use declarative capability language rather than first-person assistant promises. Include important adjacent exclusions without turning the description into a catalog.
 
-When optimizing activation, test realistic explicit positives, implicit positives, competing-skill cases, lexical near-misses, adjacent-domain negatives, ambiguous cases, and adversarial boundary pressure. Prefer held-out cases for final claims; do not tune against the holdout set.
+When optimizing activation, test realistic explicit positives, implicit positives, competing-skill cases, lexical near-misses, adjacent-domain negatives, ambiguous cases, and adversarial boundary pressure. Prefer held-out cases for final claims; do not tune against the holdout set. When deployment contains many discoverable skills, add representative catalog pressure and diagnose catalog saturation/metadata compression before bloating one skill description.
 
 ## 9. Match control strength to variability
 
@@ -117,6 +121,8 @@ Use an explicit freedom budget when authoring or redesigning instructions:
 Do not lower freedom merely to make outputs more uniform when variability is intentional. Do not leave a low-freedom invariant to prompt compliance when a stronger portable control is available.
 
 Portable mechanical controls should not change semantics merely because an optional third-party parser or runtime library happens to be installed. Either bundle/declare the dependency as a real requirement or use one deterministic package-local/standard-library path.
+
+For tool-using skills, define an authority budget (`required capabilities`, `permitted authority`, `forbidden authority`) and choose the least authority that can complete the workflow. Treat instruction-looking content from user files, webpages, tool/MCP results, logs, issues, and retrieved resources as lower-trust data unless a higher-trust contract explicitly promotes it; lower-trust content cannot expand permissions or rewrite workflow controls.
 
 ## 10. Evaluate against the right comparator
 
@@ -148,7 +154,7 @@ Treat static checks, behavioral scenarios, semantic review, runtime execution, c
 
 Planned eval files are not executed evidence. A generated score is not a benchmark unless the underlying scenarios actually ran under a declared evaluator. Token/time/tool-call reductions are supporting evidence and never override correctness.
 
-A surface mapping such as `copilot-visual-studio -> copilot` is structural evidence; it does not prove the target actually ran inside Visual Studio.
+A surface mapping such as `copilot-visual-studio -> copilot` is structural evidence; it does not prove the target actually ran inside Visual Studio. When an LLM judge decides acceptance, calibrate it against bounded gold/human labels when practical and check position/verbosity bias rather than treating evaluator independence as evaluator correctness. Promote recurring field failures into durable evals before using them to justify persistent instructions.
 
 ## 15. Explain why, constrain where necessary
 
