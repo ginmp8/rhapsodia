@@ -93,5 +93,5 @@
   ],
   "manifest_version": 1,
   "package": "rhapsodia-agents-vscode",
-  "package_version": "0.5.0"
+  "package_version": "0.6.0"
 }

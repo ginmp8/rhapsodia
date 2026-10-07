@@ -40,7 +40,7 @@ copilot plugin marketplace add ginmp8/rhapsodia#main
 Pin to a specific release:
 
 ```bash
-copilot plugin marketplace add ginmp8/rhapsodia#v0.5.0
+copilot plugin marketplace add ginmp8/rhapsodia#v0.6.0
 ```
 
 ### List registered marketplaces
@@ -167,7 +167,7 @@ codex plugin marketplace add ginmp8/rhapsodia --ref main
 Pin to a release:
 
 ```bash
-codex plugin marketplace add ginmp8/rhapsodia --ref v0.5.0
+codex plugin marketplace add ginmp8/rhapsodia --ref v0.6.0
 ```
 
 A full Git URL can also be used:
@@ -263,7 +263,7 @@ claude plugin marketplace add ginmp8/rhapsodia#main
 Pin to a release:
 
 ```bash
-claude plugin marketplace add ginmp8/rhapsodia#v0.5.0
+claude plugin marketplace add ginmp8/rhapsodia#v0.6.0
 ```
 
 A full Git URL can also be used:
@@ -416,7 +416,7 @@ agent plugin marketplace add --git-ref main https://github.com/ginmp8/rhapsodia
 Pin to a release:
 
 ```bash
-agent plugin marketplace add --git-ref v0.5.0 https://github.com/ginmp8/rhapsodia
+agent plugin marketplace add --git-ref v0.6.0 https://github.com/ginmp8/rhapsodia
 ```
 
 ### List marketplaces
@@ -581,25 +581,25 @@ Use release pinning when reproducibility is more important than automatically fo
 ### Copilot
 
 ```bash
-copilot plugin marketplace add ginmp8/rhapsodia#v0.5.0
+copilot plugin marketplace add ginmp8/rhapsodia#v0.6.0
 ```
 
 ### Codex
 
 ```bash
-codex plugin marketplace add ginmp8/rhapsodia --ref v0.5.0
+codex plugin marketplace add ginmp8/rhapsodia --ref v0.6.0
 ```
 
 ### Claude Code
 
 ```bash
-claude plugin marketplace add ginmp8/rhapsodia#v0.5.0
+claude plugin marketplace add ginmp8/rhapsodia#v0.6.0
 ```
 
 ### Cursor
 
 ```bash
-agent plugin marketplace add --git-ref v0.5.0 https://github.com/ginmp8/rhapsodia
+agent plugin marketplace add --git-ref v0.6.0 https://github.com/ginmp8/rhapsodia
 ```
 
 For normal installations that should follow the latest RhapsodIA release, track the default branch instead of pinning a release tag.
