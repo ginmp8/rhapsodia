@@ -3,17 +3,6 @@
   "status": "planned",
   "scenarios": [
     {
-      "id": "activate-archify-like",
-      "type": "should_activate",
-      "category": "should_activate",
-      "prompt": "Take this existing skill and make it as reproducible as Archify, including validators and regression gates.",
-      "expected_behavior": "activate",
-      "acceptance_criteria": [
-        "Activate for the reproducibility-engineering request.",
-        "Preserve the semantic, safety, evidence, and portability boundaries declared by the skill."
-      ]
-    },
-    {
       "id": "activate-determinism",
       "type": "should_activate",
       "category": "should_activate",

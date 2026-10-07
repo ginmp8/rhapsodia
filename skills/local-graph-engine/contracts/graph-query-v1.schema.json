@@ -17,7 +17,8 @@
         "stats",
         "aggregate",
         "timeline",
-        "quality"
+        "quality",
+        "context"
       ]
     },
     "direction": {
@@ -168,7 +169,130 @@
         "null"
       ],
       "maxLength": 2048
+    },
+    "detail": {
+      "enum": [
+        "compact",
+        "evidence"
+      ]
+    },
+    "budget_bytes": {
+      "type": "integer",
+      "minimum": 2048,
+      "maximum": 1048576
+    },
+    "token_budget": {
+      "type": "integer",
+      "minimum": 512,
+      "maximum": 262144
+    },
+    "max_edges": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2000
+    },
+    "properties": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "\\S"
+      }
+    },
+    "previous": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "graph_sha256",
+        "profile_sha256",
+        "items"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "graph-context-receipt-v1"
+        },
+        "graph_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "items": {
+          "type": "object",
+          "maxProperties": 2500,
+          "propertyNames": {
+            "pattern": "^(n:|e:)",
+            "maxLength": 8192
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "context"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "max_nodes": {
+            "maximum": 500
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "detail"
+              ]
+            },
+            {
+              "required": [
+                "budget_bytes"
+              ]
+            },
+            {
+              "required": [
+                "token_budget"
+              ]
+            },
+            {
+              "required": [
+                "max_edges"
+              ]
+            },
+            {
+              "required": [
+                "properties"
+              ]
+            },
+            {
+              "required": [
+                "previous"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

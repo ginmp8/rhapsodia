@@ -1,0 +1,9 @@
+{
+  "operation": "context",
+  "query": "Ada",
+  "depth": 2,
+  "direction": "both",
+  "budget_bytes": 12000,
+  "max_nodes": 30,
+  "max_edges": 100
+}

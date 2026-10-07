@@ -17,7 +17,7 @@ from collections import deque
 from pathlib import Path
 from typing import Any, Iterable
 
-PACKAGE_VERSION = "2.0.0"
+PACKAGE_VERSION = "2.1.0"
 SCHEMA_VERSION = 1
 PATCH_VERSION = "graph-patch-v1"
 VIEW_VERSION = "graph-view-v1"

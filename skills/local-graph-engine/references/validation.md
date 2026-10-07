@@ -10,3 +10,6 @@ The delivery report lists exact counts, versions, optional skips and checks. No 
 
 ## Relevant oracles
 Source preserves identifiers, zero/false, duplicates and original assertions. Failed patches roll back; other sources survive refresh; replay is idempotent; graph direction and bounded path results match fixtures; private writes and output aliases are rejected; offline UI has no unexpected requests; tables/matrix/timeline use the supplied values; malicious labels are text; generated HTML and ZIP bytes replay identically.
+
+## Added regression surface
+`test_context.py` and `test_context_integration.py` cover byte accounting, filtered evidence, caller-held reuse/invalidation, canonical-schema compatibility, CLI/MCP and same-selection measurement. Required optional tools must be present for the matching runtime claim; skips are reported.

@@ -184,7 +184,8 @@ def main(argv=None):
     args=parser().parse_args(argv)
     try:
         result=execute(args)
-        if result is not None:print(json.dumps(result,ensure_ascii=False,sort_keys=True,indent=2,allow_nan=False))
+        if result is not None:
+            print(canonical(result) if result.get('schema_version') == 'graph-context-v1' else json.dumps(result,ensure_ascii=False,sort_keys=True,indent=2,allow_nan=False))
         return 0 if result is None or result.get('status')=='pass' else 1
     except (ValueError,KeyError,TypeError,OSError,RuntimeError,sqlite3.Error) as exc:
         result={'status':'fail','error':str(exc)}

@@ -187,7 +187,6 @@ Use `references/transformation-playbook.md`. Prefer transformations in this orde
 15. make multi-output commits recovery-aware so last-good artifacts and rollback evidence survive failures;
 16. make receipts complete, durable, stage-aware, and tied to the exact committed bytes.
 
-Do not add machinery merely because Archify has it. Every added mechanism must eliminate an observed source of variance or create useful evidence.
 
 ### 6. Repair by diagnosis, not by taste
 
@@ -299,7 +298,7 @@ Read target `SKILL.md` first. Then load only the references needed for the activ
 - [`references/reproducibility-model.md`](references/reproducibility-model.md): ceilings, maturity levels, and variability taxonomy.
 - [`references/workflow-reproducibility.md`](references/workflow-reproducibility.md): planner/accepted-plan/execution-trace identity separation, planning versus execution variance, fresh-context evidence, and adaptive-workflow comparison rules.
 - [`references/execution-lineage.md`](references/execution-lineage.md): persistent DAG lineage, canonical outputs, invalidation, and replay rules for material multi-stage workflows.
-- [`references/transformation-playbook.md`](references/transformation-playbook.md): concrete Archify-style transformation patterns and repair order.
+- [`references/transformation-playbook.md`](references/transformation-playbook.md): concrete Transformation patterns and repair order.
 - [`references/evaluation-contract.md`](references/evaluation-contract.md): frozen evaluators, comparison arms, metrics, acceptance, and claim rules.
 - [`references/stochastic-evaluation.md`](references/stochastic-evaluation.md): repeated-trial evidence, uncertainty, `pass^k`, LLM-judge calibration, and replication rules for stochastic claims.
 - [`references/validator-patterns.md`](references/validator-patterns.md): validator design by output/workflow class and receipt contract.

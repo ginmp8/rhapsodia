@@ -1,0 +1,73 @@
+{
+  "schema_version": "graph-view-v1",
+  "graph": {
+    "label": "Cycle group / synthetic example"
+  },
+  "nodes": [
+    {
+      "id": "start",
+      "kind": "stage",
+      "label": "Start"
+    },
+    {
+      "id": "analysis",
+      "kind": "stage",
+      "label": "Analysis"
+    },
+    {
+      "id": "review",
+      "kind": "stage",
+      "label": "Review"
+    },
+    {
+      "id": "rework",
+      "kind": "stage",
+      "label": "Rework"
+    },
+    {
+      "id": "finish",
+      "kind": "stage",
+      "label": "Finish"
+    }
+  ],
+  "edges": [
+    {
+      "id": "0",
+      "source": "start",
+      "target": "analysis",
+      "relation": "precedes",
+      "directed": true
+    },
+    {
+      "id": "1",
+      "source": "analysis",
+      "target": "review",
+      "relation": "precedes",
+      "directed": true
+    },
+    {
+      "id": "2",
+      "source": "review",
+      "target": "rework",
+      "relation": "precedes",
+      "directed": true
+    },
+    {
+      "id": "3",
+      "source": "rework",
+      "target": "review",
+      "relation": "precedes",
+      "directed": true
+    },
+    {
+      "id": "4",
+      "source": "review",
+      "target": "finish",
+      "relation": "precedes",
+      "directed": true
+    }
+  ],
+  "metadata": {
+    "complete_database": false
+  }
+}

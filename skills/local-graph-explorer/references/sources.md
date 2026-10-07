@@ -1,8 +1,5 @@
 # Research and design provenance
 
-## Evidence use
-This package was redesigned from a bounded user-approved corpus: the prior Local Graph packages, supplied Graphify/Cartograph/SQLite/NetworkX/AntV references, and official documentation checked during development. Reference ideas were evaluated, not copied wholesale as an external runtime. Stars/install counts were not used as correctness evidence.
-
 ## Official anchors
 - Agent Skills package contract: https://agentskills.io/specification
 - SQLite WAL, backups and WAL-reset fix: https://www.sqlite.org/wal.html

@@ -11,8 +11,8 @@ import graph_engine as ge
 from graph_common import canonical, digest, integer
 from graph_store import logical_hash
 
-OPERATIONS={'search','find','node','neighbors','path','impact','subgraph','stats','aggregate','timeline','quality'}
-FIELDS={'operation','query','node','seed','target','direction','depth','relations','kinds','statuses','provenance','min_confidence','max_nodes','limit','offset','property','group_by','metric','time_property','from','to','weight'}
+OPERATIONS={'context','search','find','node','neighbors','path','impact','subgraph','stats','aggregate','timeline','quality'}
+FIELDS={'detail','budget_bytes','token_budget','properties','previous','max_edges','operation','query','node','seed','target','direction','depth','relations','kinds','statuses','provenance','min_confidence','max_nodes','limit','offset','property','group_by','metric','time_property','from','to','weight'}
 
 def validate_request(request: dict) -> dict:
     if not isinstance(request,dict):raise ValueError('query must be an object')
@@ -20,6 +20,11 @@ def validate_request(request: dict) -> dict:
     out=dict(request)
     if out.get('operation','subgraph') not in OPERATIONS:raise ValueError('unsupported operation')
     out.setdefault('operation','subgraph')
+    from graph_context import CONTEXT_FIELDS
+    if out['operation'] != 'context' and set(out) & CONTEXT_FIELDS:
+        raise ValueError('context-only fields require operation=context')
+    if out['operation'] == 'context':
+        out.setdefault('max_nodes', 30)
     for key,default,low,high in [('depth',2,0,100),('max_nodes',500,1,10000),('limit',100,1,10000),('offset',0,0,1000000)]:
         out.setdefault(key,default);integer(out[key],key,low,high)
     out.setdefault('statuses',['accepted'])
@@ -32,6 +37,9 @@ def validate_request(request: dict) -> dict:
     if out.get('direction','outgoing') not in ('outgoing','incoming','both','dependents','dependencies'):raise ValueError('invalid direction')
     for k in ['query','node','seed','target','property','group_by','metric','time_property','from','to','weight']:
         if k in out and out[k] is not None and (not isinstance(out[k],str) or len(out[k])>2048):raise ValueError(k+' must be a bounded string')
+    if out['operation'] == 'context':
+        from graph_context import validate_context
+        out = validate_context(out)
     return out
 
 def filtered_graph(con,request):
@@ -150,6 +158,9 @@ def timestamp(value):
 
 def query(con:sqlite3.Connection,request:dict)->dict:
     request=validate_request(request);op=request['operation'];nodes,rows=filtered_graph(con,request)
+    if op=='context':
+        from graph_context import context
+        return context(con,request,nodes,rows)
     if op=='subgraph':return {'status':'pass','view':subgraph(con,request,nodes,rows)}
     if op=='stats':return {'status':'pass','nodes':len(nodes),'edges':len(rows),'kinds':dict(sorted(Counter(n['kind'] for n in nodes.values()).items())),'relations':dict(sorted(Counter(r['relation'] for r in rows).items())),'graph_hash':logical_hash(con)}
     if op=='search':

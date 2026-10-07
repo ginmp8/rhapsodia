@@ -43,7 +43,7 @@ Invoke `reproducibility-engineer` when one or more **material** signals are pres
 - output destinations can alias inputs, protected files, evaluators, or receipts;
 - a failed write/rollback can destroy the last-known-good artifact or recovery evidence;
 - package identity, validated state, or delivery artifact cannot be traced with durable hashes/receipts tied to exact committed bytes;
-- the user explicitly asks for deterministic, repeatable, reproducible, Archify-like, cross-agent-consistent, or regression-controlled behavior.
+- the user explicitly asks for deterministic, repeatable, reproducible, cross-agent-consistent, or regression-controlled behavior.
 
 Mark `not-applicable` when:
 

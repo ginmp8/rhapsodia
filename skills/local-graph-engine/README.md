@@ -1,4 +1,4 @@
-# Local Graph Engine 2.0
+# Local Graph Engine 2.1.0
 
 A local, domain-neutral data workbench: inspect sources, choose a data model,
 produce evidence-backed entities and relationships, store them in SQLite, and
@@ -40,6 +40,18 @@ Read `references/capabilities.md` for native versus optional features and exact
 runtime limitations. `references/queries.md` covers typed queries. Local HTTP
 and stdio MCP are opt-in; they are not required by CLI or HTML exports.
 Run `python scripts/graph.py --help` for all commands.
+
+
+## Budget the agent context
+
+Use `query examples/query-context.json` after the people import for compact evidence; use `query-context-evidence.json` only when details/properties matter. The additive `context` operation supports exact UTF-8 budgets, deterministic neighborhoods and explicit caller-held receipt reuse. See [context efficiency](references/context-efficiency.md) for fields, scope and the difference between bytes and estimated tokens.
+
+```text
+python scripts/graph.py --db demo/graph.db query examples/query-context.json
+python scripts/measure_context.py --db demo/graph.db --request examples/query-context.json
+```
+
+No LLM, tokenizer download, hidden cache or reference-project dependency is introduced. The compact envelope is not GraphView; export GraphView separately for visualization.
 
 ## Validation and license
 

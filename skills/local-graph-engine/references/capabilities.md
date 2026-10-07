@@ -20,5 +20,8 @@ These are implemented local mechanics. Semantic interpretation of arbitrary docu
 No optional dependency is silently installed. Use `doctor` to discover available capabilities. The tested environment is an evidence record, not a recommendation to pin outdated versions forever. Freeze and validate a compatible dependency set when distributing optional features.
 
 ## Intentionally no required external application
-No Graphify, Neo4j, FalkorDB, SaaS, vector server, login, cloud LLM, external API key, Docker or 21st.dev runtime. Data exports from another system are valid inputs; accessing live authenticated systems still requires their authorization/tooling. Local libraries and general-purpose Python/browser/compiler runtimes are not application accounts.
+No Neo4j, FalkorDB, SaaS, vector server, login, cloud LLM, external API key, Docker or 21st.dev runtime. Data exports from another system are valid inputs; accessing live authenticated systems still requires their authorization/tooling. Local libraries and general-purpose Python/browser/compiler runtimes are not application accounts.
 PR dashboards, enterprise auth, continuous hosted monitoring, arbitrary image OCR and universal source execution are not disguised as completed native capabilities. Their supplied data can be modeled/imported, or a capability adapter can produce GraphPatch. User-controlled extension is possible without weakening the evidence boundary.
+
+## Agent context (2.1)
+Compact/evidence contexts, exact serialized-byte limits, deterministic bounded neighborhoods, deduplicated source locators, explicit caller-held reuse and same-selection byte comparison are standard-library mechanics. Real tokenizer counts, retrieval relevance/answer-quality evaluation and implicit persistent caches are not claimed. Existing HTTP/MCP surfaces expose context without granting write authority.
