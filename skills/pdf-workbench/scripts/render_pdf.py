@@ -23,13 +23,13 @@ def _render_pdfium(pdf: Path, out_dir: Path, dpi: int, first: int, last: int | N
     return files
 
 
-def _render_pdftoppm(pdf: Path, out_dir: Path, dpi: int, first: int, last: int | None) -> list[str]:
+def _render_pdftoppm(pdf: Path, out_dir: Path, dpi: int, first: int, last: int | None, executable: str, timeout_seconds: float) -> list[str]:
     prefix = out_dir / "page"
-    cmd = ["pdftoppm", "-png", "-r", str(dpi), "-f", str(first)]
+    cmd = [executable, "-png", "-r", str(dpi), "-f", str(first)]
     if last is not None:
         cmd += ["-l", str(last)]
     cmd += [str(pdf), str(prefix)]
-    proc = subprocess.run(cmd, text=True, capture_output=True)
+    proc = subprocess.run(cmd, text=True, capture_output=True, timeout=timeout_seconds)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or "pdftoppm failed")
     files = sorted(str(p) for p in out_dir.glob("page-*.png"))
@@ -46,6 +46,7 @@ def main() -> int:
     parser.add_argument("--first", type=int, default=1)
     parser.add_argument("--last", type=int)
     parser.add_argument("--backend", choices=["auto", "pdfium", "pdftoppm"], default="auto")
+    parser.add_argument("--subprocess-timeout", type=float, default=120.0, help="Timeout in seconds for the pdftoppm backend")
     args = parser.parse_args()
     pdf = Path(args.pdf)
     out_dir = Path(args.out_dir)
@@ -57,23 +58,28 @@ def main() -> int:
         print(json.dumps({"status":"error","error":"invalid page range"}, indent=2))
         return 2
 
+    if args.subprocess_timeout <= 0:
+        print(json.dumps({"status":"error","error":"--subprocess-timeout must be > 0"}, indent=2))
+        return 2
+
     pdfium_available = importlib.util.find_spec("pypdfium2") is not None
-    poppler_available = shutil.which("pdftoppm") is not None
+    pdftoppm = shutil.which("pdftoppm")
+    poppler_available = pdftoppm is not None
     backend = args.backend
     if backend == "auto":
         backend = "pdfium" if pdfium_available else "pdftoppm" if poppler_available else ""
     if backend == "pdfium" and not pdfium_available:
-        print(json.dumps({"status":"blocked","error":"pypdfium2 is not installed"}, indent=2))
+        print(json.dumps({"status":"blocked","error":"pypdfium2 is not available"}, indent=2))
         return 2
     if backend == "pdftoppm" and not poppler_available:
-        print(json.dumps({"status":"blocked","error":"pdftoppm is not installed"}, indent=2))
+        print(json.dumps({"status":"blocked","error":"pdftoppm is not available"}, indent=2))
         return 2
     if not backend:
-        print(json.dumps({"status":"blocked","error":"no supported renderer found; install pypdfium2 or Poppler pdftoppm"}, indent=2))
+        print(json.dumps({"status":"blocked","error":"no supported renderer is available; this helper does not install or download dependencies automatically"}, indent=2))
         return 2
 
     try:
-        files = _render_pdfium(pdf, out_dir, args.dpi, args.first, args.last) if backend == "pdfium" else _render_pdftoppm(pdf, out_dir, args.dpi, args.first, args.last)
+        files = _render_pdfium(pdf, out_dir, args.dpi, args.first, args.last) if backend == "pdfium" else _render_pdftoppm(pdf, out_dir, args.dpi, args.first, args.last, pdftoppm, args.subprocess_timeout)
     except Exception as exc:
         print(json.dumps({"status":"error","backend":backend,"error":f"{type(exc).__name__}: {exc}"}, indent=2))
         return 1

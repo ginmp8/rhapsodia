@@ -37,12 +37,20 @@ from __future__ import annotations
 
 import argparse
 import re
-import subprocess
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import BooleanObject, NameObject, RectangleObject
+
+
+def _read_password_file(path: str | None, label: str) -> str | None:
+    if path is None:
+        return None
+    value = Path(path).read_text(encoding="utf-8").splitlines()
+    if not value or not value[0]:
+        raise ValueError(f"{label} password file is empty")
+    return value[0]
 
 
 def _parse_pages(spec: Optional[str], num_pages: int) -> List[int]:
@@ -338,9 +346,11 @@ def cmd_encrypt(args: argparse.Namespace) -> int:
     writer = PdfWriter()
     writer.append_pages_from_reader(reader)
 
+    user_password = _read_password_file(args.user_password_file, "user")
+    owner_password = _read_password_file(args.owner_password_file, "owner")
     writer.encrypt(
-        user_password=args.user_password,
-        owner_password=args.owner_password,
+        user_password=user_password,
+        owner_password=owner_password,
         algorithm=args.algorithm,
     )
 
@@ -353,8 +363,9 @@ def cmd_encrypt(args: argparse.Namespace) -> int:
 
 def cmd_decrypt(args: argparse.Namespace) -> int:
     reader = PdfReader(args.input_pdf)
+    password = _read_password_file(args.password_file, "PDF")
     if reader.is_encrypted:
-        if reader.decrypt(args.password) == 0:
+        if reader.decrypt(password or "") == 0:
             raise RuntimeError("Bad password")
 
     writer = PdfWriter()
@@ -526,15 +537,15 @@ def main() -> int:
     p_enc = sub.add_parser("encrypt", help="encrypt PDF")
     p_enc.add_argument("input_pdf")
     p_enc.add_argument("-o", "--output", required=True)
-    p_enc.add_argument("--user_password", "--user-pass", dest="user_password", required=True)
-    p_enc.add_argument("--owner_password", "--owner-pass", dest="owner_password", default=None)
+    p_enc.add_argument("--user-password-file", "--user_password_file", dest="user_password_file", required=True, help="Read the user password from the first line of this file")
+    p_enc.add_argument("--owner-password-file", "--owner_password_file", dest="owner_password_file", default=None, help="Read the optional owner password from the first line of this file")
     p_enc.add_argument("--algorithm", default="AES-256")
     p_enc.set_defaults(func=cmd_encrypt)
 
     p_dec = sub.add_parser("decrypt", help="decrypt PDF")
     p_dec.add_argument("input_pdf")
     p_dec.add_argument("-o", "--output", required=True)
-    p_dec.add_argument("--password", required=True)
+    p_dec.add_argument("--password-file", required=True, help="Read the PDF password from the first line of this file")
     p_dec.set_defaults(func=cmd_decrypt)
 
     p_opt = sub.add_parser("optimize", help="optimize/clean up by rewriting via PyMuPDF")

@@ -56,9 +56,11 @@ def _run_ocrmypdf(
     deskew: bool,
     optimize: int,
     jobs: int,
+    executable: str,
+    timeout_seconds: float,
 ) -> None:
     cmd: List[str] = [
-        "ocrmypdf",
+        executable,
         "--language",
         lang,
         "--jobs",
@@ -72,7 +74,7 @@ def _run_ocrmypdf(
         cmd.append("--skip-text")
     cmd.extend([str(input_pdf), str(output_pdf)])
     print(" ".join(cmd))
-    subprocess.check_call(cmd)
+    subprocess.run(cmd, check=True, timeout=timeout_seconds)
 
 
 def _page_num_from_name(p: Path) -> int:
@@ -87,22 +89,25 @@ def _run_tesseract_fallback(
     force: bool,
     dpi: int,
     keep_tmp: bool,
+    timeout_seconds: float,
 ) -> None:
     if not force and _has_meaningful_text(input_pdf):
         shutil.copyfile(input_pdf, output_pdf)
         print(f"[OK] Input already contains text; copied to {output_pdf} (use --force to OCR anyway)")
         return
 
-    if _which("pdftoppm") is None:
+    pdftoppm = _which("pdftoppm")
+    tesseract = _which("tesseract")
+    if pdftoppm is None:
         raise SystemExit("pdftoppm not found (poppler-utils missing); cannot run fallback OCR")
-    if _which("tesseract") is None:
+    if tesseract is None:
         raise SystemExit("tesseract not found; cannot run fallback OCR")
 
     tmp = Path(tempfile.mkdtemp(prefix="ocr_fallback_", dir=str(output_pdf.parent)))
     try:
         prefix = tmp / "page"
         # Render images
-        subprocess.check_call(["pdftoppm", "-png", "-r", str(dpi), str(input_pdf), str(prefix)])
+        subprocess.run([pdftoppm, "-png", "-r", str(dpi), str(input_pdf), str(prefix)], check=True, timeout=timeout_seconds)
         images = sorted(tmp.glob("page-*.png"), key=_page_num_from_name)
         if not images:
             raise SystemExit("Fallback OCR: no rendered images produced (is the PDF empty/protected?)")
@@ -111,8 +116,8 @@ def _run_tesseract_fallback(
         for img in images:
             n = _page_num_from_name(img)
             outbase = tmp / f"ocr_{n:04d}"
-            cmd = ["tesseract", str(img), str(outbase), "-l", lang, "pdf"]
-            subprocess.check_call(cmd)
+            cmd = [tesseract, str(img), str(outbase), "-l", lang, "pdf"]
+            subprocess.run(cmd, check=True, timeout=timeout_seconds)
             per_page_pdfs.append(outbase.with_suffix(".pdf"))
 
         writer = PdfWriter()
@@ -167,6 +172,7 @@ def main() -> int:
     )
     p.add_argument("--dpi", type=int, default=300, help="DPI for fallback renderer (pdftoppm+tesseract)")
     p.add_argument("--keep_tmp", action="store_true", help="Keep temporary files for debugging (fallback)")
+    p.add_argument("--subprocess-timeout", type=float, default=900.0, help="Timeout in seconds for each external OCR/render process")
     args = p.parse_args()
 
     input_pdf = Path(args.input_pdf)
@@ -176,6 +182,9 @@ def main() -> int:
     if not input_pdf.exists():
         raise SystemExit(f"Input not found: {input_pdf}")
 
+    if args.subprocess_timeout <= 0:
+        raise SystemExit("--subprocess-timeout must be > 0")
+
     if bool(args.fallback):
         _run_tesseract_fallback(
             input_pdf=input_pdf,
@@ -184,13 +193,15 @@ def main() -> int:
             force=bool(args.force),
             dpi=int(args.dpi),
             keep_tmp=bool(args.keep_tmp),
+            timeout_seconds=float(args.subprocess_timeout),
         )
         return 0
 
-    if _which("ocrmypdf") is None:
+    ocrmypdf = _which("ocrmypdf")
+    if ocrmypdf is None:
         raise SystemExit(
-            "ocrmypdf not found. Install it with: python -m pip install ocrmypdf\n"
-            "Or re-run with --fallback to use pdftoppm+tesseract."
+            "ocrmypdf not found. This helper does not install or download dependencies automatically.\n"
+            "Re-run with --fallback to use an already-available pdftoppm+tesseract toolchain."
         )
 
     _run_ocrmypdf(
@@ -201,6 +212,8 @@ def main() -> int:
         deskew=bool(getattr(args, "deskew", True)),
         optimize=int(args.optimize),
         jobs=int(args.jobs),
+        executable=ocrmypdf,
+        timeout_seconds=float(args.subprocess_timeout),
     )
     return 0
 

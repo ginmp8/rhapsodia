@@ -1,4 +1,6 @@
+import ast
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -18,7 +20,7 @@ SCRIPTS = ROOT / "scripts"
 
 def run_script(name, *args, cwd=None):
     cmd = [sys.executable, str(SCRIPTS / name), *map(str, args)]
-    return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
+    return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, timeout=180)
 
 
 def make_pdf(path: Path, texts):
@@ -120,11 +122,13 @@ class PdfEditTests(unittest.TestCase):
         enc = self.d / "encrypted.pdf"
         dec = self.d / "decrypted.pdf"
         make_pdf(src, ["SECRET DOC"])
-        r1 = run_script("pdf_edit.py", "encrypt", src, "-o", enc, "--user_password", "test-pass")
+        password_file = self.d / "password.txt"
+        password_file.write_text("test-pass\n", encoding="utf-8")
+        r1 = run_script("pdf_edit.py", "encrypt", src, "-o", enc, "--user-password-file", password_file)
         self.assertEqual(r1.returncode, 0, r1.stderr)
         encrypted = PdfReader(str(enc))
         self.assertTrue(encrypted.is_encrypted)
-        r2 = run_script("pdf_edit.py", "decrypt", enc, "-o", dec, "--password", "test-pass")
+        r2 = run_script("pdf_edit.py", "decrypt", enc, "-o", dec, "--password-file", password_file)
         self.assertEqual(r2.returncode, 0, r2.stderr)
         reader = PdfReader(str(dec))
         self.assertFalse(reader.is_encrypted)
@@ -231,6 +235,32 @@ class CapabilityCoverageTests(unittest.TestCase):
         self.assertEqual(payload["status"], "pass")
         required = {"merge", "split", "rotate", "crop", "watermark", "ocr", "text", "tables", "images", "redaction"}
         self.assertTrue(required.issubset(set(payload["covered_operations"])))
+
+
+class SecurityRegressionTests(unittest.TestCase):
+    def test_subprocess_calls_are_bounded_and_never_use_shell(self):
+        for path in SCRIPTS.glob("*.py"):
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+                    continue
+                if not isinstance(node.func.value, ast.Name) or node.func.value.id != "subprocess":
+                    continue
+                if node.func.attr not in {"run", "call", "check_call", "check_output"}:
+                    continue
+                keywords = {kw.arg: kw.value for kw in node.keywords if kw.arg}
+                self.assertIn("timeout", keywords, f"unbounded subprocess call in {path}:{node.lineno}")
+                shell = keywords.get("shell")
+                if isinstance(shell, ast.Constant):
+                    self.assertFalse(shell.value, f"shell=True in {path}:{node.lineno}")
+
+    def test_no_literal_password_cli_or_auto_install_instruction(self):
+        inspected = list(SCRIPTS.glob("*.py")) + [ROOT / "SKILL.md"] + list((ROOT / "references").glob("*.md"))
+        unsafe_flag = re.compile(r"--(?:user_|owner_)?password(?=[\s'\"=]|$)")
+        for path in inspected:
+            text = path.read_text(encoding="utf-8")
+            self.assertIsNone(unsafe_flag.search(text), f"literal password CLI flag remains in {path}")
+            self.assertNotIn("python -m pip install", text, f"automatic-install suggestion remains in {path}")
 
 
 if __name__ == "__main__":

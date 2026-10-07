@@ -7,9 +7,14 @@ import tempfile
 from pathlib import Path
 
 
-def render(pdf: str, out_dir: Path, dpi: int) -> dict:
+def render(pdf: str, out_dir: Path, dpi: int, timeout_seconds: float) -> dict:
     script = Path(__file__).with_name("render_pdf.py")
-    proc = subprocess.run([sys.executable, str(script), pdf, str(out_dir), "--dpi", str(dpi)], text=True, capture_output=True)
+    proc = subprocess.run(
+        [sys.executable, str(script), pdf, str(out_dir), "--dpi", str(dpi), "--subprocess-timeout", str(timeout_seconds)],
+        text=True,
+        capture_output=True,
+        timeout=timeout_seconds + 30.0,
+    )
     if proc.returncode != 0:
         raise RuntimeError(proc.stdout.strip() or proc.stderr.strip() or "render failed")
     return json.loads(proc.stdout)
@@ -22,7 +27,11 @@ def main() -> int:
     parser.add_argument("--dpi", type=int, default=160)
     parser.add_argument("--max-component-change-ratio", type=float, default=0.0)
     parser.add_argument("--json-output")
+    parser.add_argument("--subprocess-timeout", type=float, default=120.0, help="Timeout in seconds for each renderer process")
     args = parser.parse_args()
+    if args.subprocess_timeout <= 0:
+        print(json.dumps({"status":"error","error":"--subprocess-timeout must be > 0"}, indent=2))
+        return 2
     try:
         from PIL import Image, ImageChops
     except ImportError:
@@ -32,8 +41,8 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="pdf-compare-") as tmp:
         root = Path(tmp)
         try:
-            a = render(args.before, root / "a", args.dpi)
-            b = render(args.after, root / "b", args.dpi)
+            a = render(args.before, root / "a", args.dpi, args.subprocess_timeout)
+            b = render(args.after, root / "b", args.dpi, args.subprocess_timeout)
         except Exception as exc:
             print(json.dumps({"status":"error","error":str(exc)}, indent=2))
             return 1

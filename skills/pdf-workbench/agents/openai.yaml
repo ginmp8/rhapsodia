@@ -1,5 +1,5 @@
 interface:
-  display_name: PDF Toolkit
+  display_name: PDF Workbench
   short_description: Reliable PDF reading, editing, forms, OCR, redaction and validation.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
