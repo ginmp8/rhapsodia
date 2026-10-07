@@ -13,3 +13,12 @@ Output destinations must not alias inputs or protected files. Scan patch outputs
 
 ## Limits
 Resource limits reduce accidents; they are not a complete isolation boundary for a hostile operating-system user, malicious native library, intentionally pathological document parser or compromised optional bundle. Optional libraries and model weights need their own version/license/security review. Local HTTP is single-user development access, not public deployment.
+
+## Selected viewer authority
+Serving HTML grants its reviewed code a read-only capability to the selected DB.
+The local-live artifact validator checks policy/profile/hash consistency, not
+software authorship or freedom from malicious intent. Never serve an unknown HTML
+merely because its metadata claims local-live. Pin the selected artifact when a
+receipt is available. Offline/custom pages are rejected rather than implicitly
+receiving a session. Sharing a generated HTML shares its complete embedded data,
+including properties and evidence hidden by filters; minimize before rendering.

@@ -6,6 +6,8 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+if importlib.util.find_spec('playwright'):
+    from playwright.sync_api import expect
 ROOT=Path(os.environ.get('GRAPH_TARGET',Path(__file__).resolve().parents[1]))
 spec=importlib.util.spec_from_file_location('walk_viewer',ROOT/'scripts/graph_explorer.py');V=importlib.util.module_from_spec(spec);spec.loader.exec_module(V)
 DATA={'schema_version':'graph-view-v1','graph':{'label':'Walkthrough regression fixture'},'nodes':[{'id':k,'kind':'stage','label':label} for k,label in [('a','Start'),('b','Check B'),('c','Check C'),('d','Finish'),('x','Isolated')]],'edges':[{'id':i,'source':s,'target':t,'relation':'precedes','directed':True} for i,s,t in [('ab','a','b'),('ac','a','c'),('bd','b','d'),('cd','c','d')]],'metadata':{'complete_database':False,'layout_hint':'dagre'}}
@@ -40,7 +42,7 @@ class WalkthroughBrowserTests(unittest.TestCase):
         before=self.positions();self.prepare();self.page.locator('#walk-next').click();self.page.locator('#walk-prev').click();self.assertEqual(self.state()['step'],0)
         self.page.locator('#walk-progress').fill('2');self.assertEqual(self.state()['step'],2);self.assertEqual(before,self.positions())
     def test_finite_playback_and_replay(self):
-        self.prepare();self.page.select_option('#walk-speed','2');self.page.locator('#walk-play').click();self.page.wait_for_function("LocalGraphView.getWalkthrough().status==='ended'",timeout=5000)
+        self.prepare();self.page.select_option('#walk-speed','2');self.page.locator('#walk-play').click();expect(self.page.locator('#walk-play')).to_have_text('Replay',timeout=5000);self.assertEqual(self.state()['status'],'ended')
         self.assertEqual(self.state()['step'],2);self.page.locator('#walk-play').click();self.assertEqual(self.state()['status'],'playing');self.page.locator('#walk-play').click();self.assertEqual(self.state()['status'],'paused')
     def test_pause_cancels_scheduled_step(self):
         self.prepare();self.page.locator('#walk-play').click();self.page.locator('#walk-play').click();step=self.state()['step'];self.page.wait_for_timeout(1150);self.assertEqual(self.state()['step'],step)

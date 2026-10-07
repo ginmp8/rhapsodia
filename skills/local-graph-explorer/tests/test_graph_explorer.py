@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import subprocess
 import sys
@@ -96,14 +97,15 @@ class ExplorerTests(unittest.TestCase):
         html = out.read_text(encoding="utf-8")
         self.assertNotIn("unpkg.com", html)
         self.assertNotIn("</script><script>alert(1)</script>", html)
-        self.assertIn("<\\/script><script>alert(1)<\\/script>", html)
+        self.assertIn("\\u003c/script>\\u003cscript>alert(1)\\u003c/script>", html)
 
     def test_local_g6_bundle_can_be_inlined(self) -> None:
         fake = self.dir / "g6.min.js"
         fake.write_text("window.G6={Graph:function(){}};", encoding="utf-8")
         out = self.dir / "inlined.html"
-        result = run("render", str(EXAMPLE), "--output", str(out), "--backend", "g6", "--g6-js", str(fake))
-        self.assertTrue(result["offline"])
+        result = run("render", str(EXAMPLE), "--output", str(out), "--backend", "g6", "--g6-js", str(fake), "--security-profile", "extended", "--g6-sha256", hashlib.sha256(fake.read_bytes()).hexdigest())
+        self.assertFalse(result["offline"])
+        self.assertEqual(result["network_policy"], "unverified")
         html = out.read_text(encoding="utf-8")
         self.assertIn("window.G6={Graph:function(){}};", html)
         self.assertNotIn("unpkg.com", html)

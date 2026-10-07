@@ -12,6 +12,8 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+if importlib.util.find_spec('playwright'):
+    from playwright.sync_api import expect
 
 ROOT = Path(os.environ.get('LOCAL_GRAPH_TEST_ROOT', Path(__file__).resolve().parents[1]))
 SPEC = importlib.util.spec_from_file_location('drag_viewer', ROOT / 'scripts/graph_explorer.py')
@@ -160,9 +162,9 @@ class NodeDragTests(unittest.TestCase):
             self.page.locator('[data-view="' + view + '"]').click()
         self.assertEqual(self.positions()['a'], manual)
         self.page.locator('#search').fill('Beta')
-        self.page.wait_for_function('document.querySelectorAll(".node").length===1')
+        expect(self.page.locator('.node')).to_have_count(1)
         self.page.locator('#search').fill('')
-        self.page.wait_for_function('document.querySelectorAll(".node").length===4')
+        expect(self.page.locator('.node')).to_have_count(4)
         self.assertEqual(self.positions()['a'], manual)
 
     def test_state_download_restore_and_reset(self):
@@ -179,7 +181,7 @@ class NodeDragTests(unittest.TestCase):
         self.page.locator('#reset-button').click()
         self.assertEqual(self.positions(), automatic)
         self.page.locator('#state-file').set_input_files(target)
-        self.page.wait_for_function('document.querySelector("#message").textContent.includes("View state restored")')
+        expect(self.page.locator('#message')).to_contain_text('View state restored')
         self.assertEqual(self.positions()['a'], manual)
 
     def test_legacy_state_without_coordinates_still_loads(self):

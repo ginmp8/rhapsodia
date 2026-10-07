@@ -2,12 +2,13 @@
 """Deterministic GraphView v1 validator and HTML renderer.
 
 The renderer never creates graph facts. It projects an existing graph-view-v1 into
-an interactive workspace. The built-in SVG renderer is fully offline; a reviewed local G6 bundle
-can be supplied explicitly. No CDN is requested by default.
+an interactive workspace. The default profile uses bundled assets and a restrictive CSP. Custom code is an
+explicit, hash-bound extended trust decision, never an offline assurance.
 """
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import math
@@ -20,9 +21,9 @@ from typing import Any
 
 VIEW_VERSION = "graph-view-v1"
 G6_VERSION = "5.1.1"
-G6_CDN = f"https://unpkg.com/@antv/g6@{G6_VERSION}/dist/g6.min.js"
 LAYOUTS = {"auto", "dagre", "radial", "circular", "grid", "community", "force"}
 BACKENDS = {"auto", "g6", "builtin"}
+SECURITY_PROFILES = {"offline", "local-live", "extended"}
 
 
 def sha256_file(path: Path) -> str:
@@ -185,23 +186,80 @@ def choose_layout(data: dict[str, Any], requested: str) -> str:
 
 
 def safe_script_json(data: Any) -> str:
-    return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")).replace("</", "<\\/")
+    # Escape HTML parser delimiters, not only closing tags. This also prevents
+    # script double-escaped states caused by data such as <!--<script>.
+    return (json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+            .replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
 
 
-def g6_loader(g6_js: Path | None, backend: str) -> str:
-    if backend == "builtin": return ""
-    if g6_js is not None:
-        if g6_js.stat().st_size>16*1024*1024: raise ValueError("G6 bundle exceeds 16 MB")
-        source = g6_js.read_text(encoding="utf-8")
-        source = re.sub(r"</script", lambda m: "<\\/"+m.group()[2:], source, flags=re.I)
+def checked_extension(path: Path, expected: str | None, limit: int, kind: str) -> tuple[str, dict[str, Any]]:
+    if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", expected):
+        raise ValueError(f"{kind} requires its explicit SHA-256; review the code before authorizing it")
+    if path.is_symlink() or not path.is_file():
+        raise ValueError(f"{kind} must be a regular local file, not a symbolic link")
+    with path.open("rb") as source:
+        raw = source.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError(f"{kind} exceeds byte budget")
+    digest = hashlib.sha256(raw).hexdigest()
+    if digest != expected.lower():
+        raise ValueError(f"{kind} SHA-256 mismatch; no output was written")
+    # HTML normalizes line endings before checking inline script hashes.
+    text = raw.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    return text, {"kind": kind, "sha256": digest, "bytes": len(raw)}
+
+
+def g6_loader(source: str | None, backend: str) -> str:
+    if source is not None:
+        if re.search(r"</script", source, flags=re.I):
+            raise ValueError("G6 bundle contains an HTML script terminator; supply a browser-safe bundle")
         return f"<script>\n{source}\n</script>"
-    if backend == "g6": raise ValueError("G6 requires a reviewed local bundle via --g6-js; automatic downloads are disabled")
-    # Retain the documented optional integration identity, not a network loader.
+    if backend == "g6":
+        raise ValueError("G6 requires --security-profile extended, --g6-js and --g6-sha256; no downloads")
+    if backend == "builtin":
+        return ""
     return f"<!-- Optional adapter identity: @antv/g6@{G6_VERSION}/dist/g6.min.js; not loaded or downloaded. -->"
 
 
-def render(input_path: Path, output_path: Path, template_path: Path, backend: str, layout: str, g6_js: Path | None) -> dict[str, Any]:
+def content_policy(page: str, profile: str) -> str:
+    hashes = []
+    for body in re.findall(r"<script>([\s\S]*?)</script>", page):
+        value = base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode("ascii")
+        hashes.append("'sha256-" + value + "'")
+    scripts = " ".join(sorted(set(hashes))) or "'none'"
+    connect = "'self'" if profile == "local-live" else "'none'"
+    return ("default-src 'none'; base-uri 'none'; script-src " + scripts +
+            "; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data: blob:; "
+            "font-src 'none'; connect-src " + connect +
+            "; object-src 'none'; frame-src 'none'; worker-src 'none'; media-src 'none'; form-action 'none'")
+
+
+def render(input_path: Path, output_path: Path, template_path: Path, backend: str, layout: str,
+           g6_js: Path | None, *, security_profile: str = "offline", g6_sha256: str | None = None,
+           template_sha256: str | None = None) -> dict[str, Any]:
     if backend not in BACKENDS: raise ValueError(f"unsupported backend: {backend}")
+    if security_profile not in SECURITY_PROFILES:
+        raise ValueError(f"unsupported security profile: {security_profile}")
+    assets = Path(__file__).resolve().parents[1] / "assets"
+    custom_template = Path(template_path).resolve() != (assets / "graph-viewer.html").resolve()
+    if (g6_js is not None or custom_template) and security_profile != "extended":
+        raise ValueError("Custom code/templates require --security-profile extended and their SHA-256; offline/local-live use bundled assets only")
+    if g6_js is not None and backend == "builtin":
+        raise ValueError("--g6-js conflicts with --backend builtin")
+    if g6_sha256 is not None and g6_js is None:
+        raise ValueError("--g6-sha256 requires --g6-js")
+    if template_sha256 is not None and not custom_template:
+        raise ValueError("--template-sha256 is only for a custom template")
+    extensions = []
+    bundle_source = None
+    if g6_js is not None:
+        bundle_source, record = checked_extension(Path(g6_js), g6_sha256, 16 * 1024 * 1024, "g6-js")
+        extensions.append(record)
+    if custom_template:
+        template, record = checked_extension(Path(template_path), template_sha256, 4 * 1024 * 1024, "template")
+        extensions.append(record)
+    else:
+        template = Path(template_path).read_text(encoding="utf-8")
     data = load_json(input_path)
     errors = validate_graphview(data)
     if errors: return {"status":"fail","errors":errors,"mutated":False}
@@ -220,9 +278,9 @@ def render(input_path: Path, output_path: Path, template_path: Path, backend: st
         if output_path==source or (output_path.exists() and source.exists() and os.path.samefile(output_path,source)):
             raise ValueError("output aliases a protected input/template/asset")
     if output_path.exists() and not output_path.is_file(): raise ValueError("output is not a regular file")
-    config={"backend":backend,"layout":selected_layout,"g6_version":G6_VERSION,"source_sha256":sha256_file(input_path),"viewer_version":viewer_version,"network_required":False}
-    template=template_path.read_text(encoding="utf-8")
-    replacements={"__GRAPH_DATA__":safe_script_json(data),"__VIEWER_CONFIG__":safe_script_json(config),"__G6_SCRIPT__":g6_loader(g6_js,backend)}
+    network_required = None if security_profile == "extended" else security_profile == "local-live"
+    config={"backend":backend,"layout":selected_layout,"g6_version":G6_VERSION,"source_sha256":sha256_file(input_path),"viewer_version":viewer_version,"network_required":network_required,"security_profile":security_profile,"extensions":extensions}
+    replacements={"__GRAPH_DATA__":safe_script_json(data),"__VIEWER_CONFIG__":safe_script_json(config),"__G6_SCRIPT__":g6_loader(bundle_source,backend)}
     required=list(replacements)
     missing=[token for token in required if token not in template]
     if missing: raise ValueError(f"viewer template missing placeholders: {missing}")
@@ -230,9 +288,19 @@ def render(input_path: Path, output_path: Path, template_path: Path, backend: st
     if "__VIEWER_SCRIPT__" in template: replacements["__VIEWER_SCRIPT__"]=js.read_text(encoding="utf-8")
     for token,asset in [("__TRAVERSAL_SCRIPT__",traversal),("__JOURNEY_SCRIPT__",journey)]:
         if token in template: replacements[token]=asset.read_text(encoding="utf-8")
+    # A dedicated policy token is replaced only at its original template site;
+    # placeholder-looking graph labels/custom code can never become directives.
+    if security_profile != "extended" and template.count("__SECURITY_POLICY__") != 1:
+        raise ValueError("Bundled template must contain exactly one security policy slot")
+    csp_present = template.count("__SECURITY_POLICY__") == 1
+    replacements["__SECURITY_PROFILE__"] = security_profile
     # A single substitution pass prevents placeholder-looking source strings from
     # being interpreted as another template token.
-    html=re.sub("|".join(map(re.escape,replacements)),lambda m:replacements[m.group()],template)
+    expression = "|".join(map(re.escape, replacements))
+    provisional = re.sub(expression, lambda m: replacements[m.group()], template)
+    policy = content_policy(provisional, security_profile)
+    replacements["__SECURITY_POLICY__"] = policy
+    html = re.sub("|".join(map(re.escape, replacements)), lambda m: replacements[m.group()], template)
     output_path.parent.mkdir(parents=True,exist_ok=True)
     fd,temporary=tempfile.mkstemp(prefix=".graph-view-",dir=output_path.parent)
     try:
@@ -241,7 +309,7 @@ def render(input_path: Path, output_path: Path, template_path: Path, backend: st
         os.replace(temporary,output_path)
     finally:
         if os.path.exists(temporary):os.unlink(temporary)
-    return {"status":"pass","output":str(output_path),"sha256":sha256_file(output_path),"input_sha256":config["source_sha256"],"backend":backend,"effective_backend":"g6-local" if g6_js and backend!="builtin" else "builtin-svg","layout":selected_layout,"g6_version":G6_VERSION if backend!="builtin" else None,"offline":True,"views":["graph","table","timeline","matrix","summary"],"viewer_version":viewer_version}
+    return {"status":"pass","output":str(output_path),"sha256":sha256_file(output_path),"input_sha256":config["source_sha256"],"backend":backend,"effective_backend":"g6-local" if g6_js and backend!="builtin" else "builtin-svg","layout":selected_layout,"g6_version":G6_VERSION if backend!="builtin" else None,"offline":security_profile=="offline","security_profile":security_profile,"network_required":network_required,"network_policy":"unverified" if security_profile=="extended" else "same-origin-loopback" if security_profile=="local-live" else "none","csp_present":csp_present,"live_enabled":security_profile=="local-live","extensions":extensions,"embedded_snapshot":"full-input-including-hidden-properties-and-evidence","views":["graph","table","timeline","matrix","summary"],"viewer_version":viewer_version}
 
 
 def parser() -> argparse.ArgumentParser:
@@ -257,8 +325,11 @@ def parser() -> argparse.ArgumentParser:
     re.add_argument("--output", default="graph.html")
     re.add_argument("--backend", choices=sorted(BACKENDS), default="auto")
     re.add_argument("--layout", choices=sorted(LAYOUTS), default="auto")
-    re.add_argument("--g6-js", help="Optional local g6.min.js to inline for fully offline G6 rendering")
-    re.add_argument("--template", help="Override bundled viewer template")
+    re.add_argument("--security-profile", choices=sorted(SECURITY_PROFILES), default="offline", help="offline (default), local-live (explicit loopback queries), or extended (authorize custom executable code; no offline guarantee)")
+    re.add_argument("--g6-js", help="Reviewed local G6 code; requires extended profile and --g6-sha256")
+    re.add_argument("--g6-sha256", help="Expected SHA-256 of the reviewed G6 file; identity is not a security review")
+    re.add_argument("--template", help="Reviewed custom HTML; requires extended profile and --template-sha256")
+    re.add_argument("--template-sha256", help="Expected SHA-256 of the reviewed custom template")
     return p
 
 
@@ -281,15 +352,15 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(result, indent=2, sort_keys=True))
             return 0
         if args.command == "render":
-            template = Path(args.template).expanduser().resolve() if args.template else root / "assets" / "graph-viewer.html"
-            g6_js = Path(args.g6_js).expanduser().resolve() if args.g6_js else None
+            template = Path(args.template).expanduser().absolute() if args.template else root / "assets" / "graph-viewer.html"
+            g6_js = Path(args.g6_js).expanduser().absolute() if args.g6_js else None
             if g6_js and not g6_js.is_file():
                 raise FileNotFoundError(f"G6 bundle not found: {g6_js}")
-            result = render(input_path, Path(args.output).expanduser().absolute(), template, args.backend, args.layout, g6_js)
+            result = render(input_path, Path(args.output).expanduser().absolute(), template, args.backend, args.layout, g6_js, security_profile=args.security_profile, g6_sha256=args.g6_sha256, template_sha256=args.template_sha256)
             print(json.dumps(result, indent=2, sort_keys=True))
             return 0 if result["status"] == "pass" else 1
         raise ValueError(f"unsupported command: {args.command}")
-    except (ValueError, FileNotFoundError, json.JSONDecodeError, OSError, RecursionError) as exc:
+    except (ValueError, UnicodeError, FileNotFoundError, json.JSONDecodeError, OSError, RecursionError) as exc:
         print(json.dumps({"status": "fail", "error": str(exc)}, indent=2, sort_keys=True))
         return 1
 

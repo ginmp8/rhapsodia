@@ -10,6 +10,8 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+if importlib.util.find_spec('playwright'):
+    from playwright.sync_api import expect
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('browser_viewer',ROOT/'scripts/graph_explorer.py');viewer=importlib.util.module_from_spec(spec);spec.loader.exec_module(viewer)
 HAS_BROWSER=bool(importlib.util.find_spec('playwright'))
@@ -36,7 +38,7 @@ class BrowserTests(unittest.TestCase):
     def test_offline_actual_render(self):
         self.assertEqual(self.page.locator('.node').count(),19);self.assertIn('24 / 24',self.page.locator('#counts').inner_text())
     def test_search_filter(self):
-        self.page.locator('#search').fill('Water');self.page.wait_for_function("document.querySelectorAll('.node').length===3")
+        self.page.locator('#search').fill('Water');expect(self.page.locator('.node')).to_have_count(3)
         self.assertIn('3 / 19',self.page.locator('#counts').inner_text())
     def test_select_and_evidence(self):
         self.page.locator('.node[data-node="project:river"]').click();self.assertIn('River water study',self.page.locator('#inspector').inner_text());self.assertIn('example://fieldwork/synthetic',self.page.locator('#inspector').inner_text())
@@ -64,7 +66,7 @@ class BrowserTests(unittest.TestCase):
         a=self.page.evaluate('LocalGraphView.getPositions()');self.page.locator('#reset-button').click();self.assertEqual(a,self.page.evaluate('LocalGraphView.getPositions()'))
     def test_hostile_label_is_text(self):
         data=json.loads((ROOT/'examples/fieldwork-view.json').read_text());data['nodes'][0]['label']='</script><script>window.XSS=1</script>'
-        self.page.locator('#import-file').set_input_files({'name':'hostile.json','mimeType':'application/json','buffer':json.dumps(data).encode()});self.page.wait_for_function("document.getElementById('message').textContent.includes('Local GraphView loaded')")
+        self.page.locator('#import-file').set_input_files({'name':'hostile.json','mimeType':'application/json','buffer':json.dumps(data).encode()});expect(self.page.locator('#message')).to_contain_text('Local GraphView loaded')
         self.assertIsNone(self.page.evaluate('window.XSS'));self.assertEqual(self.page.locator('.node').count(),19)
 
 if __name__=='__main__':unittest.main()

@@ -1,4 +1,4 @@
-# Local Graph Explorer 2.2.0
+# Local Graph Explorer 3.0.0
 
 An offline, data-led workspace for GraphView: graph, table, timeline, adjacency
 matrix and summary. It never requires G6, a CDN, an application account or a
@@ -42,11 +42,21 @@ current visual positions; GraphView JSON remains data-only.
 
 ## Optional integration
 
-A reviewed local G6 bundle can be embedded with `--g6-js`; explicit G6 mode
-without a bundle fails rather than contacting a CDN. Native SVG remains the
-fully functional default. See `references/g6.md` for version/coverage limits.
-A separately started Engine local HTTP server enables live read-only queries.
-A server is never needed for a snapshot and is never started by rendering HTML.
+Version 3 deliberately separates three security profiles:
+- `offline` (default): bundled native assets, hash-authorized scripts, no live session or network connections.
+- `local-live`: opt-in native viewer for same-origin loopback queries; a separately started local server is required for queries, not for viewing the snapshot.
+- `extended`: explicitly reviewed custom G6 code or templates, with caller-provided file hashes. The receipt never claims offline isolation for this profile.
+
+Existing custom-code commands must add the extended profile and expected hashes.
+Existing offline HTML is never silently upgraded by a server: regenerate live HTML
+with `--security-profile local-live`. Native rendering, all five views, walkthrough,
+dragging and local exports keep their existing commands. See
+[security profiles and migration](references/security-profiles.md) and
+[G6 limits](references/g6.md). No dependencies are installed automatically.
+
+**Sharing HTML shares the entire embedded snapshot**, even fields hidden by the
+current filters. Redact/minimize confidential properties and evidence before
+rendering; the interface is not a redaction tool.
 
 
 ## Follow the graph

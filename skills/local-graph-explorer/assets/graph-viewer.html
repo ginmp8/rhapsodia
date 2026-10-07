@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="__SECURITY_POLICY__">
+<meta name="local-graph-security-profile" content="__SECURITY_PROFILE__">
+<meta name="local-graph-runtime-version" content="1">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>Local Graph Explorer</title>
@@ -33,6 +36,7 @@ __G6_SCRIPT__
   <details><summary>Evidence policy</summary><div id="status-filters" class="check-list"></div><label class="field">Minimum confidence <input id="confidence" type="number" min="0" max="1" step="0.05" value="0"></label><p class="hint">Scores describe recorded evidence, not calibrated truth probabilities.</p></details>
   <details><summary>Source and properties</summary><label class="field">Source contains <input id="source-filter" placeholder="URI or filename"></label><label class="field">Property name <input id="property-key" placeholder="status"></label><label class="field">Property value contains <input id="property-value" placeholder="active"></label></details>
   <details open><summary>Focus and paths</summary><label class="field">Neighborhood depth <input id="depth" type="number" min="0" max="10" value="2"></label><label class="field">Direction <select id="direction"><option value="both">Both directions</option><option value="outgoing">Outgoing</option><option value="incoming">Incoming</option></select></label><button id="focus-button">Focus selected</button><button id="unfocus-button">Show all loaded</button><label class="field">Path from <select id="path-from"><option value="">Choose entity</option></select></label><label class="field">Path to <select id="path-to"><option value="">Choose entity</option></select></label><button id="path-button">Find directed path</button><p class="hint">Paths use loaded, filtered edges only. No path here does not prove no path in the database.</p></details>
+  <details><summary>Sharing and data</summary><p id="sharing-notice" class="hint">Sharing this HTML shares the entire embedded graph, including hidden properties and evidence. Filters are not redaction. Minimize sensitive data before rendering or sharing.</p></details>
   <details id="live-panel" hidden><summary>Read-only database query</summary><label class="field">Typed query JSON <textarea id="live-query" rows="6" spellcheck="false"></textarea></label><button id="live-button">Run local query</button><pre id="live-result"></pre></details>
 </aside>
 <main id="workspace" tabindex="-1" aria-label="Data workspace">
@@ -51,6 +55,7 @@ __G6_SCRIPT__
 <aside id="inspector" aria-label="Selection inspector"><div class="section-heading"><h2>Inspector</h2><button id="clear-selection" aria-label="Clear selection">Clear</button></div><div id="inspector-content"><div class="empty"><strong>Select an entity</strong><p>Inspect its sources, evidence and relationships without changing the graph database.</p></div></div></aside>
 </div>
 <footer><span id="counts"></span><span id="selection-status">Nothing selected</span><span id="identity"></span></footer>
+<script id="local-graph-session" type="application/json">{}</script>
 <script>const INITIAL_GRAPH=__GRAPH_DATA__;const VIEWER_CONFIG=__VIEWER_CONFIG__;</script>
 <script>__TRAVERSAL_SCRIPT__</script>
 <script>__JOURNEY_SCRIPT__</script>
