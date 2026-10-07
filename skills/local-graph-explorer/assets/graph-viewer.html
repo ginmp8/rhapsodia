@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Local Graph Explorer</title>
+<style>
+:root {
+  --bg:#f7f7f5; --panel:#ffffff; --panel-2:#f1f2f0; --text:#161817; --muted:#6b716d;
+  --line:#d9ddd9; --accent:#2463eb; --incoming:#16855b; --outgoing:#b56a00; --danger:#b42318;
+  --shadow:0 1px 2px rgba(0,0,0,.05); --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] { --bg:#0e100f; --panel:#141715; --panel-2:#1b1e1c; --text:#eef1ef; --muted:#9aa19d; --line:#2b302d; --accent:#6d9cff; --incoming:#53c995; --outgoing:#f0ad4e; --danger:#ff8a80; --shadow:none; }
+}
+html[data-theme="dark"] { --bg:#0e100f; --panel:#141715; --panel-2:#1b1e1c; --text:#eef1ef; --muted:#9aa19d; --line:#2b302d; --accent:#6d9cff; --incoming:#53c995; --outgoing:#f0ad4e; --danger:#ff8a80; --shadow:none; }
+html[data-theme="light"] { --bg:#f7f7f5; --panel:#fff; --panel-2:#f1f2f0; --text:#161817; --muted:#6b716d; --line:#d9ddd9; --accent:#2463eb; --incoming:#16855b; --outgoing:#b56a00; --danger:#b42318; --shadow:0 1px 2px rgba(0,0,0,.05); }
+* { box-sizing:border-box; }
+html,body { height:100%; margin:0; }
+body { background:var(--bg); color:var(--text); font:13px/1.4 var(--sans); overflow:hidden; }
+button,input,select { font:inherit; color:inherit; }
+button,select,input { border:1px solid var(--line); background:var(--panel); border-radius:6px; min-height:32px; }
+button { padding:0 10px; cursor:pointer; }
+button:hover { border-color:color-mix(in srgb,var(--line),var(--text) 20%); }
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+input { padding:0 9px; min-width:0; }
+select { padding:0 28px 0 9px; }
+#app { height:100%; display:grid; grid-template-rows:44px minmax(0,1fr) 26px; }
+.toolbar { display:flex; align-items:center; gap:8px; padding:6px 10px; border-bottom:1px solid var(--line); background:var(--panel); box-shadow:var(--shadow); z-index:3; }
+.brand { font-weight:650; margin-right:8px; white-space:nowrap; }
+.brand small { color:var(--muted); font-weight:500; margin-left:6px; }
+.toolbar .grow { flex:1; }
+.search { width:min(360px,30vw); }
+.workspace { min-height:0; display:grid; grid-template-columns:220px minmax(0,1fr) 290px; }
+.panel { min-height:0; overflow:auto; background:var(--panel); }
+.left { border-right:1px solid var(--line); }
+.right { border-left:1px solid var(--line); }
+.section { padding:12px; border-bottom:1px solid var(--line); }
+.section h2 { font-size:12px; margin:0 0 8px; font-weight:650; }
+.filter-list { display:grid; gap:5px; }
+.filter-row { display:flex; align-items:center; gap:7px; min-height:24px; }
+.filter-row input { min-height:auto; }
+.count { margin-left:auto; color:var(--muted); font-variant-numeric:tabular-nums; }
+.canvas-wrap { position:relative; min-width:0; min-height:0; background:var(--bg); overflow:hidden; }
+#graph { position:absolute; inset:0; }
+#builtin { position:absolute; inset:0; width:100%; height:100%; display:none; }
+#empty { position:absolute; inset:0; display:none; place-items:center; color:var(--muted); }
+.inspector-title { font-weight:650; font-size:14px; overflow-wrap:anywhere; }
+.muted { color:var(--muted); }
+.kv { display:grid; grid-template-columns:82px 1fr; gap:5px 8px; margin-top:10px; }
+.kv dt { color:var(--muted); }
+.kv dd { margin:0; min-width:0; overflow-wrap:anywhere; }
+.code { font-family:var(--mono); font-size:11.5px; }
+pre { font:11.5px/1.45 var(--mono); background:var(--panel-2); border:1px solid var(--line); padding:8px; border-radius:6px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; }
+.legend { display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); }
+.swatch { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; }
+.status { display:flex; align-items:center; gap:10px; padding:0 10px; border-top:1px solid var(--line); color:var(--muted); background:var(--panel); font-size:11px; }
+.status .grow { flex:1; }
+.badge { display:inline-flex; align-items:center; min-height:20px; padding:0 6px; border:1px solid var(--line); border-radius:999px; background:var(--panel-2); }
+.path-controls { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.path-controls button { grid-column:1/-1; }
+.path-result { margin-top:8px; }
+.svg-node text { font:11px var(--sans); fill:var(--text); pointer-events:none; }
+.svg-node circle { stroke:var(--panel); stroke-width:2; }
+.svg-node { cursor:pointer; }
+.svg-edge { stroke:color-mix(in srgb,var(--muted),transparent 40%); stroke-width:1.2; fill:none; }
+.svg-edge.incoming { stroke:var(--incoming); stroke-width:2.2; }
+.svg-edge.outgoing { stroke:var(--outgoing); stroke-width:2.2; }
+.svg-edge.path { stroke:var(--accent); stroke-width:2.8; }
+.svg-node.dim, .svg-edge.dim { opacity:.16; }
+.svg-node.selected circle { stroke:var(--accent); stroke-width:3; }
+@media (max-width:900px) { .workspace { grid-template-columns:180px minmax(0,1fr); } .right { display:none; } .search { width:180px; } }
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
+</style>
+__G6_SCRIPT__
+</head>
+<body>
+<div id="app">
+  <header class="toolbar">
+    <div class="brand">Local Graph <small id="backend-label"></small></div>
+    <input id="search" class="search" type="search" placeholder="Search nodes by id or label" aria-label="Search nodes">
+    <select id="layout" aria-label="Graph layout">
+      <option value="dagre">DAG</option><option value="radial">Radial</option><option value="circular">Circular</option><option value="grid">Grid</option><option value="force">Force (opt-in)</option>
+    </select>
+    <button id="reset" type="button">Reset view</button>
+    <div class="grow"></div>
+    <select id="theme" aria-label="Theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+  </header>
+  <main class="workspace">
+    <aside class="panel left" aria-label="Graph filters">
+      <div class="section"><h2>Node kinds</h2><div id="kind-filters" class="filter-list"></div></div>
+      <div class="section"><h2>Relations</h2><div id="relation-filters" class="filter-list"></div></div>
+      <div class="section">
+        <h2>Path</h2>
+        <div class="path-controls"><input id="path-a" placeholder="From"><input id="path-b" placeholder="To"><button id="path-button" type="button">Highlight shortest path</button></div>
+        <div id="path-result" class="path-result muted"></div>
+      </div>
+      <div class="section legend"><span><i class="swatch" style="background:var(--incoming)"></i>incoming</span><span><i class="swatch" style="background:var(--outgoing)"></i>outgoing</span></div>
+    </aside>
+    <section class="canvas-wrap" aria-label="Graph canvas"><div id="graph"></div><svg id="builtin" role="img" aria-label="Graph visualization"></svg><div id="empty">No nodes match the current filters.</div></section>
+    <aside class="panel right" aria-label="Inspector">
+      <div class="section"><h2>Inspector</h2><div id="inspector"><span class="muted">Select a node.</span></div></div>
+      <div class="section"><h2>Projection</h2><div id="projection"></div></div>
+    </aside>
+  </main>
+  <footer class="status"><span id="status"></span><span class="grow"></span><span id="stats"></span></footer>
+</div>
+<script id="graph-data" type="application/json">__GRAPH_DATA__</script>
+<script id="viewer-config" type="application/json">__VIEWER_CONFIG__</script>
+<script>
+(() => {
+  "use strict";
+  const original = JSON.parse(document.getElementById("graph-data").textContent);
+  const config = JSON.parse(document.getElementById("viewer-config").textContent);
+  const byId = new Map(original.nodes.map(n => [n.id, n]));
+  const edgeById = new Map(original.edges.map(e => [e.id, e]));
+  const state = {
+    selected: null,
+    pathNodes: new Set(),
+    pathEdges: new Set(),
+    kinds: new Set(original.nodes.map(n => n.kind)),
+    relations: new Set(original.edges.map(e => e.relation)),
+    layout: config.layout,
+    graph: null,
+    backend: null,
+    builtinTransform: {x:0,y:0,k:1}
+  };
+  const palette = ["#2463eb","#7c5ce7","#0d8a77","#b65d2e","#a33b73","#62742c","#25739a","#8b5e34"];
+  const el = id => document.getElementById(id);
+  const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const escText = value => String(value ?? "");
+  function colorFor(value) { let h=2166136261; for (const ch of String(value)) h=Math.imul(h^ch.charCodeAt(0),16777619); return palette[(h>>>0)%palette.length]; }
+  function visibleData() {
+    const nodes = original.nodes.filter(n => state.kinds.has(n.kind));
+    const ids = new Set(nodes.map(n => n.id));
+    const edges = original.edges.filter(e => ids.has(e.source) && ids.has(e.target) && state.relations.has(e.relation));
+    return {nodes,edges};
+  }
+  function truncate(s,n=32) { s=String(s); return s.length>n ? s.slice(0,n-1)+"…" : s; }
+  function degreeSize(n) { const d=n.degree?.total ?? 0; return Math.max(20,Math.min(42,20+Math.log2(d+1)*5)); }
+  function isAdjacent(id, edge) { return edge.source===id || edge.target===id; }
+  function edgeTone(edge) {
+    if (state.pathEdges.has(edge.id)) return {stroke:css("--accent"),width:3,opacity:1};
+    if (!state.selected) return {stroke:css("--muted"),width:1.2,opacity:.45};
+    if (edge.target===state.selected) return {stroke:css("--incoming"),width:2.3,opacity:1};
+    if (edge.source===state.selected) return {stroke:css("--outgoing"),width:2.3,opacity:1};
+    if (!edge.directed && isAdjacent(state.selected,edge)) return {stroke:css("--outgoing"),width:2.3,opacity:1};
+    return {stroke:css("--muted"),width:1,opacity:.12};
+  }
+  function nodeOpacity(node, edges) {
+    if (!state.selected && !state.pathNodes.size) return 1;
+    if (state.pathNodes.has(node.id)) return 1;
+    if (node.id===state.selected) return 1;
+    if (state.selected && edges.some(e => isAdjacent(state.selected,e) && isAdjacent(node.id,e))) return 1;
+    return .18;
+  }
+  function setStatus(text) { el("status").textContent=text; }
+  function renderFilters() {
+    const kindCounts = new Map(); original.nodes.forEach(n => kindCounts.set(n.kind,(kindCounts.get(n.kind)||0)+1));
+    const relCounts = new Map(); original.edges.forEach(e => relCounts.set(e.relation,(relCounts.get(e.relation)||0)+1));
+    fillChecks(el("kind-filters"),kindCounts,state.kinds,"kind");
+    fillChecks(el("relation-filters"),relCounts,state.relations,"relation");
+  }
+  function fillChecks(root, counts, selected, type) {
+    root.replaceChildren();
+    [...counts].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([name,count]) => {
+      const label=document.createElement("label"); label.className="filter-row";
+      const input=document.createElement("input"); input.type="checkbox"; input.checked=selected.has(name); input.dataset.type=type; input.value=name;
+      input.addEventListener("change",()=>{ if(input.checked) selected.add(name); else selected.delete(name); clearPath(); renderCurrent(); });
+      const text=document.createElement("span"); text.textContent=name;
+      const c=document.createElement("span"); c.className="count"; c.textContent=count;
+      label.append(input,text,c); root.append(label);
+    });
+  }
+  function renderInspector() {
+    const root=el("inspector"); root.replaceChildren();
+    const node=state.selected ? byId.get(state.selected) : null;
+    if(!node){ const m=document.createElement("span");m.className="muted";m.textContent="Select a node.";root.append(m);return; }
+    const title=document.createElement("div"); title.className="inspector-title"; title.textContent=node.label;
+    const id=document.createElement("div"); id.className="muted code"; id.textContent=node.id; root.append(title,id);
+    const dl=document.createElement("dl"); dl.className="kv";
+    const pairs=[
+      ["Kind",node.kind],["Community",node.community ?? "—"],["Degree",String(node.degree?.total ?? 0)],
+      ["Evidence",String(node.evidence_summary?.active_count ?? node.evidence_summary?.count ?? 0)],
+      ["Confidence",node.evidence_summary?.max_confidence ?? "—"],
+      ["Aliases",(node.aliases||[]).join(", ") || "—"]
+    ];
+    for(const [k,v] of pairs){const dt=document.createElement("dt"),dd=document.createElement("dd");dt.textContent=k;dd.textContent=String(v);dl.append(dt,dd);} root.append(dl);
+    const pre=document.createElement("pre"); pre.textContent=JSON.stringify(node.properties||{},null,2); root.append(pre);
+  }
+  function renderProjection() {
+    const q=original.query||{}, m=original.metadata||{}, root=el("projection"); root.replaceChildren();
+    const pre=document.createElement("pre"); pre.textContent=JSON.stringify({query:q,truncated:!!m.truncated,source_db_sha256:m.source_db_sha256||null,input_sha256:config.source_sha256},null,2); root.append(pre);
+  }
+  function selectNode(id, focus=true) {
+    if(!byId.has(id)) return;
+    state.selected=id; renderInspector(); renderCurrent(false);
+    if(focus && state.backend==="g6" && state.graph && typeof state.graph.focusElement==="function") { Promise.resolve(state.graph.focusElement(id)).catch(()=>{}); }
+  }
+  function resolveToken(token) {
+    token=token.trim().toLowerCase(); if(!token) return null;
+    const exact=original.nodes.filter(n=>n.id.toLowerCase()===token || n.label.toLowerCase()===token || (n.aliases||[]).some(a=>String(a).toLowerCase()===token));
+    if(exact.length===1) return exact[0].id;
+    const partial=original.nodes.filter(n=>n.id.toLowerCase().includes(token)||n.label.toLowerCase().includes(token));
+    return partial.length===1 ? partial[0].id : null;
+  }
+  function shortestPath(a,b) {
+    const data=visibleData(), out=new Map();
+    for(const n of data.nodes) out.set(n.id,[]);
+    for(const e of data.edges){ out.get(e.source)?.push([e.target,e.id]); if(!e.directed) out.get(e.target)?.push([e.source,e.id]); }
+    for(const list of out.values()) list.sort((x,y)=>x[0].localeCompare(y[0])||x[1].localeCompare(y[1]));
+    const q=[[a,[a],[]]], seen=new Set([a]);
+    while(q.length){const [n,pn,pe]=q.shift(); if(n===b)return {nodes:pn,edges:pe}; for(const [next,eid] of out.get(n)||[]){if(seen.has(next))continue;seen.add(next);q.push([next,[...pn,next],[...pe,eid]]);} }
+    return null;
+  }
+  function clearPath(){state.pathNodes.clear();state.pathEdges.clear();el("path-result").textContent="";}
+  function doPath(){ const a=resolveToken(el("path-a").value),b=resolveToken(el("path-b").value); clearPath(); if(!a||!b){el("path-result").textContent="Resolve both endpoints to one visible node.";renderCurrent();return;} const p=shortestPath(a,b); if(!p){el("path-result").textContent="No directed path in the current filtered view.";renderCurrent();return;} state.pathNodes=new Set(p.nodes);state.pathEdges=new Set(p.edges);el("path-result").textContent=`${p.edges.length} hop${p.edges.length===1?"":"s"}`;renderCurrent(); }
+  function g6Layout(type){
+    if(type==="force") return {type:"d3-force",animation:false};
+    if(type==="dagre") return {type:"dagre",rankdir:"LR",nodesep:24,ranksep:80,animation:false};
+    if(type==="radial") return {type:"radial",animation:false};
+    if(type==="grid") return {type:"grid",animation:false};
+    return {type:"circular",animation:false};
+  }
+  function renderG6(data, preserve=true) {
+    if(!window.G6 || !window.G6.Graph) return false;
+    el("builtin").style.display="none"; el("graph").style.display="block";
+    if(state.graph){ try{state.graph.destroy();}catch{} state.graph=null; }
+    const {Graph}=window.G6;
+    const graphData={
+      nodes:data.nodes.map(n=>({id:n.id,data:n,style:{labelText:truncate(n.label),size:degreeSize(n),fill:colorFor(n.kind),stroke:n.id===state.selected?css("--accent"):css("--panel"),lineWidth:n.id===state.selected?3:2,opacity:nodeOpacity(n,data.edges),labelFill:css("--text"),labelFontSize:11}})),
+      edges:data.edges.map(e=>{const t=edgeTone(e);return {id:e.id,source:e.source,target:e.target,data:e,style:{stroke:t.stroke,lineWidth:t.width,opacity:t.opacity,endArrow:!!e.directed,labelText:data.edges.length<=80?truncate(e.relation,18):"",labelFill:css("--muted"),labelFontSize:9}};})
+    };
+    const graph=new Graph({container:"graph",autoFit:"view",data:graphData,layout:g6Layout(state.layout),behaviors:["drag-canvas","zoom-canvas","drag-element"]});
+    graph.on("node:click",evt=>{const id=evt?.target?.id;if(id)selectNode(id,false);});
+    graph.render(); state.graph=graph; state.backend="g6"; el("backend-label").textContent=`G6 ${config.g6_version}`; return true;
+  }
+  function dagPositions(nodes,edges,w,h) {
+    const ids=nodes.map(n=>n.id).sort(), indeg=new Map(ids.map(id=>[id,0])), out=new Map(ids.map(id=>[id,[]]));
+    for(const e of edges){if(!e.directed)continue;out.get(e.source)?.push(e.target);indeg.set(e.target,(indeg.get(e.target)||0)+1);} for(const a of out.values())a.sort();
+    const ready=ids.filter(id=>indeg.get(id)===0), level=new Map(ready.map(id=>[id,0])), seen=[];
+    while(ready.length){ready.sort();const n=ready.shift();seen.push(n);for(const t of out.get(n)||[]){level.set(t,Math.max(level.get(t)||0,(level.get(n)||0)+1));indeg.set(t,indeg.get(t)-1);if(indeg.get(t)===0)ready.push(t);}}
+    if(seen.length!==ids.length) return null;
+    const groups=new Map(); for(const id of ids){const l=level.get(id)||0; if(!groups.has(l))groups.set(l,[]);groups.get(l).push(id);} const max=Math.max(0,...groups.keys()), pos=new Map();
+    for(const [l,list] of [...groups].sort((a,b)=>a[0]-b[0])) list.sort().forEach((id,i)=>pos.set(id,{x:70+(w-140)*(max?l/max:.5),y:60+(h-120)*(i+1)/(list.length+1)}));
+    return pos;
+  }
+  function builtinPositions(data,w,h) {
+    const nodes=[...data.nodes].sort((a,b)=>a.id.localeCompare(b.id)),pos=new Map();
+    if(state.layout==="dagre"){const p=dagPositions(nodes,data.edges,w,h);if(p)return p;}
+    if(state.layout==="grid"){const cols=Math.ceil(Math.sqrt(nodes.length));nodes.forEach((n,i)=>pos.set(n.id,{x:70+(i%cols)*Math.max(110,(w-140)/Math.max(1,cols-1)),y:70+Math.floor(i/cols)*90}));return pos;}
+    if(state.layout==="radial" && original.query?.seed && byId.has(original.query.seed)){
+      const seed=original.query.seed;pos.set(seed,{x:w/2,y:h/2});const rest=nodes.filter(n=>n.id!==seed);const r=Math.max(90,Math.min(w,h)*.35);rest.forEach((n,i)=>{const a=-Math.PI/2+2*Math.PI*i/Math.max(1,rest.length);pos.set(n.id,{x:w/2+r*Math.cos(a),y:h/2+r*Math.sin(a)});});return pos;
+    }
+    const r=Math.max(80,Math.min(w,h)*.38);nodes.forEach((n,i)=>{const a=-Math.PI/2+2*Math.PI*i/Math.max(1,nodes.length);pos.set(n.id,{x:w/2+r*Math.cos(a),y:h/2+r*Math.sin(a)});});return pos;
+  }
+  function renderBuiltin(data) {
+    if(state.graph){try{state.graph.destroy();}catch{}state.graph=null;} state.backend="builtin";el("backend-label").textContent="builtin SVG";el("graph").style.display="none";const svg=el("builtin");svg.style.display="block";svg.replaceChildren();
+    const rect=svg.getBoundingClientRect(),w=Math.max(600,rect.width||900),h=Math.max(400,rect.height||600);svg.setAttribute("viewBox",`0 0 ${w} ${h}`);
+    const defs=document.createElementNS("http://www.w3.org/2000/svg","defs"),marker=document.createElementNS(defs.namespaceURI,"marker");marker.setAttribute("id","arrow");marker.setAttribute("viewBox","0 0 10 10");marker.setAttribute("refX","8");marker.setAttribute("refY","5");marker.setAttribute("markerWidth","6");marker.setAttribute("markerHeight","6");marker.setAttribute("orient","auto-start-reverse");const path=document.createElementNS(defs.namespaceURI,"path");path.setAttribute("d","M 0 0 L 10 5 L 0 10 z");path.setAttribute("fill",css("--muted"));marker.append(path);defs.append(marker);svg.append(defs);
+    const viewport=document.createElementNS(svg.namespaceURI,"g");viewport.setAttribute("id","viewport");svg.append(viewport);const pos=builtinPositions(data,w,h);
+    for(const e of data.edges){const s=pos.get(e.source),t=pos.get(e.target);if(!s||!t)continue;const line=document.createElementNS(svg.namespaceURI,"line");line.setAttribute("x1",s.x);line.setAttribute("y1",s.y);line.setAttribute("x2",t.x);line.setAttribute("y2",t.y);line.setAttribute("class","svg-edge"+(state.pathEdges.has(e.id)?" path":state.selected?(e.target===state.selected?" incoming":e.source===state.selected?" outgoing":" dim"):""));if(e.directed)line.setAttribute("marker-end","url(#arrow)");viewport.append(line);}
+    for(const n of data.nodes){const p=pos.get(n.id);if(!p)continue;const g=document.createElementNS(svg.namespaceURI,"g");g.setAttribute("class","svg-node"+(n.id===state.selected?" selected":"")+(nodeOpacity(n,data.edges)<1?" dim":""));g.setAttribute("transform",`translate(${p.x} ${p.y})`);g.setAttribute("tabindex","0");g.setAttribute("role","button");g.setAttribute("aria-label",n.label);const c=document.createElementNS(svg.namespaceURI,"circle");c.setAttribute("r",Math.max(10,degreeSize(n)/2));c.setAttribute("fill",colorFor(n.kind));const text=document.createElementNS(svg.namespaceURI,"text");text.setAttribute("x",Math.max(10,degreeSize(n)/2)+5);text.setAttribute("y","4");text.textContent=truncate(n.label,26);g.append(c,text);g.addEventListener("click",()=>selectNode(n.id,false));g.addEventListener("keydown",evt=>{if(evt.key==="Enter"||evt.key===" "){evt.preventDefault();selectNode(n.id,false);}});viewport.append(g);}
+    installBuiltinPanZoom(svg,viewport); if(state.layout==="force")setStatus("Force is not implemented in the offline fallback; deterministic circular placement is used.");
+  }
+  function installBuiltinPanZoom(svg,viewport){let tr=state.builtinTransform,drag=null;const apply=()=>viewport.setAttribute("transform",`translate(${tr.x} ${tr.y}) scale(${tr.k})`);apply();svg.onwheel=e=>{e.preventDefault();tr.k=Math.max(.25,Math.min(4,tr.k*(e.deltaY<0?1.12:.89)));apply();};svg.onpointerdown=e=>{if(e.target===svg||e.target===viewport){drag={x:e.clientX-tr.x,y:e.clientY-tr.y};svg.setPointerCapture(e.pointerId);}};svg.onpointermove=e=>{if(drag){tr.x=e.clientX-drag.x;tr.y=e.clientY-drag.y;apply();}};svg.onpointerup=()=>{drag=null;};}
+  function renderCurrent(preserve=true) {
+    const data=visibleData(); el("empty").style.display=data.nodes.length?"none":"grid"; el("stats").textContent=`${data.nodes.length} nodes · ${data.edges.length} edges${original.metadata?.truncated?" · bounded view":""}`;
+    if(!data.nodes.length){if(state.graph){try{state.graph.destroy();}catch{}state.graph=null;}el("graph").replaceChildren();el("builtin").replaceChildren();return;}
+    const wantsG6=config.backend!=="builtin"; const ok=wantsG6 && renderG6(data,preserve); if(!ok){renderBuiltin(data); if(wantsG6)setStatus("G6 unavailable; using the built-in offline renderer."); else setStatus("Built-in offline renderer.");}
+  }
+  function reset(){state.selected=null;clearPath();state.builtinTransform={x:0,y:0,k:1};renderInspector();renderCurrent(false);setStatus("View reset.");}
+  function setupTheme(){let saved="system";try{saved=localStorage.getItem("local-graph-theme")||"system";}catch(_e){}el("theme").value=saved;document.documentElement.dataset.theme=saved;el("theme").addEventListener("change",()=>{document.documentElement.dataset.theme=el("theme").value;try{localStorage.setItem("local-graph-theme",el("theme").value);}catch(_e){}renderCurrent(false);});}
+  function setupEvents(){el("layout").value=state.layout;el("layout").addEventListener("change",()=>{state.layout=el("layout").value;renderCurrent(false);});el("reset").addEventListener("click",reset);el("path-button").addEventListener("click",doPath);el("search").addEventListener("input",()=>{const q=el("search").value.trim().toLowerCase();if(!q)return;const matches=original.nodes.filter(n=>n.id.toLowerCase().includes(q)||n.label.toLowerCase().includes(q)||(n.aliases||[]).some(a=>String(a).toLowerCase().includes(q))).sort((a,b)=>a.label.localeCompare(b.label)||a.id.localeCompare(b.id));if(matches.length)selectNode(matches[0].id);});}
+  renderFilters();renderProjection();renderInspector();setupTheme();setupEvents();setStatus(`Input ${config.source_sha256.slice(0,12)} · layout ${state.layout}`);renderCurrent(false);
+})();
+</script>
+</body>
+</html>
