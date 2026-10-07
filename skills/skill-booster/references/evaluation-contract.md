@@ -129,6 +129,37 @@ When the candidate changes instruction density, branching, heuristics, examples,
 - If a material tier cannot be executed, mark that evidence `not-run` or `blocked`; do not infer cross-model compatibility from static validation or from another tier.
 - Skip multi-model calibration when model capability is not material to the selected change or target deployment.
 
+
+### Catalog pressure and coexistence
+
+When the target is deployed among many discoverable skills, evaluate routing at more than one catalog pressure level. Keep the target bytes fixed while varying only the surrounding catalog when possible so attribution remains clear.
+
+- Start isolated only as a diagnostic baseline, not as sufficient routing proof.
+- Add nearest semantic competitors, then a representative production-like catalog; add a saturation/large-catalog arm only when deployment scale makes it relevant.
+- Record wrong-skill, no-skill, competitor-steal, ambiguous-routing, and activation recall/precision signals when the harness can observe them.
+- If failure appears only under large-catalog pressure, test catalog overlap/metadata compression before rewriting the target.
+- Do not claim catalog robustness from isolated activation tests.
+
+### Agentic trace evaluation
+
+When the skill uses tools, resources, handoffs, retries, mutable operations, or multi-step routing, inspect execution traces in addition to final outputs. A correct answer may still hide a fragile or over-authorized process.
+
+Evaluate applicable trace stages separately: skill selection, resource selection, tool selection, tool-argument correctness, tool-result interpretation, handoff correctness, retry behavior, authority escalation, stop behavior, and final output. Treat unnecessary high-authority calls, repeated dead ends, invalid argument repair loops, or ignored stop conditions as process regressions even when the final answer is acceptable.
+
+### LLM-judge calibration
+
+When an LLM evaluator materially decides acceptance, treat evaluator identity as insufficient by itself: calibrate evaluator behavior against a bounded gold/human-labeled set when practical.
+
+- Use an explicit rubric tied to observable evidence.
+- Prefer pass/fail or pairwise judgments over invented fine-grained scores when the property supports them.
+- For pairwise comparisons, randomize or reverse candidate order (`A vs B`, `B vs A`) when position bias could change the decision.
+- Check verbosity/style bias when longer outputs could be favored without being better.
+- Record calibration failures as evaluator limitations; do not repair the candidate to satisfy a demonstrably unstable judge.
+
+### Continuous field-evidence loop
+
+Treat real-use traces, user corrections, incidents, and recurring failures as evidence sources, not direct edit instructions. Cluster repeated failures, preserve provenance, and promote durable classes into the frozen evaluation suite before using them to justify a candidate change. Distinguish `real-world recurring failure`, `historical regression`, `synthetic/adversarial case`, and `one-off preference`; do not weight them identically without rationale.
+
 ## Skill-hypothesis-discovery contract
 
 Use `skill-hypothesis-discovery` after initial benchmark/harness and reproducibility-routing evidence when possible. It must generate evidence-backed hypotheses, not random edits. A normal full-optimization pass should produce 5-10 candidate hypotheses, dedupe and rank them, and recommend the next 1-3 for the current cycle. Reproducibility audit findings, when present, are candidate evidence rather than automatically accepted patches. If no useful change is justified, record `no-mutation-recommended` and avoid experimental patches unless the user supplies a concrete hypothesis or a required repair exists.

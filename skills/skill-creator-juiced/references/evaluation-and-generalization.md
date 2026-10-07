@@ -64,7 +64,7 @@ Run equivalent prompts, files, environment assumptions, and evaluators across co
 
 ## 4. Build a small realistic seed set, then expand
 
-Start with a small set of realistic prompts that cover the core behavior. Prefer real user phrasing over synthetic keyword tests. After the first candidate stabilizes, expand with held-out scenarios that were not used to shape the change.
+Define the first small set of realistic prompts before substantial candidate authoring whenever behavior can be exercised. Prefer real user phrasing over synthetic keyword tests. Use the seed set to expose baseline gaps and justify the minimum candidate; after the first candidate stabilizes, expand with held-out scenarios that were not used to shape the change. A substantial instruction/resource without a requirement, invariant, observed gap, or regression rationale is a candidate for removal.
 
 Cover applicable classes:
 
@@ -89,6 +89,10 @@ Use the strongest valid evaluator for each property:
 - writing, design, taste, or perceptual quality -> blind or human/image-capable review when practical.
 
 Do not manufacture numeric assertions for qualities that cannot be meaningfully reduced to them. Keep structural, behavioral, runtime, and perceptual evidence separate.
+
+### LLM-judge calibration
+
+When an LLM evaluator materially decides acceptance, use an explicit evidence-bound rubric and calibrate against a bounded gold/human-labeled set when practical. Prefer pass/fail or pairwise comparison to arbitrary granular scoring when possible. Reverse/randomize pair order when position bias can matter, check whether verbosity/style is being rewarded independently of quality, and treat unstable calibration as an evaluator limitation rather than a candidate defect.
 
 ### Model capability calibration
 
@@ -118,15 +122,17 @@ Reject or reformulate changes that merely memorize the observed eval. Reproducib
 
 When execution traces or transcripts are available, inspect them for:
 
-- repeated dead-end reasoning;
-- redundant tool calls;
-- repeated rediscovery of the same rules;
-- unnecessary context loading;
-- inconsistent routing;
-- repeated helper generation;
+- skill/resource selection;
+- tool selection and argument correctness;
+- tool-result interpretation;
+- handoff/delegation correctness;
+- retry and stop behavior;
+- repeated dead-end reasoning or redundant tool calls;
+- unnecessary context loading or repeated helper generation;
+- authority escalation beyond the declared budget;
 - hidden dependence on host-specific behavior.
 
-A final output can pass while the workflow remains expensive, fragile, or non-portable. Use process evidence to improve the skill only when it exposes a generalizable issue.
+A final output can pass while the workflow remains expensive, fragile, over-authorized, or non-portable. Treat unnecessary privileged calls, repeated repair loops, ignored stop conditions, or unsafe interpretation of lower-trust content as process regressions even when the final answer is acceptable. Use process evidence to improve the skill only when it exposes a generalizable issue.
 
 ## 8. Promote repeated work into reusable resources
 
@@ -153,7 +159,7 @@ When activation quality matters, evaluate the description against realistic prom
 - ambiguous cases;
 - adversarial attempts to broaden ownership.
 
-Prefer held-out evaluation for final activation claims. If activation is stochastic, repeat scenarios enough to distinguish a stable improvement from one lucky run. Do not optimize description wording against the final holdout set.
+Prefer held-out evaluation for final activation claims. If activation is stochastic, repeat scenarios enough to distinguish a stable improvement from one lucky run. Do not optimize description wording against the final holdout set. When deployment exposes many skills, add increasing catalog pressure (`isolated -> nearest competitors -> representative catalog -> large/saturation catalog` when relevant) and track wrong-skill/no-skill/competitor-steal behavior where observable. Do not rewrite one description to compensate for a failure proven to be catalog-level saturation.
 
 ## 10. Treat efficiency as supporting evidence
 
@@ -162,6 +168,8 @@ When available, record token/context use, duration, tool-call count, or repeated
 ## 11. Human feedback is evidence, not an instruction to overfit
 
 Use user feedback to identify the underlying quality gap. Preserve specific feedback as evidence, then convert it into the smallest generalizable rule or resource change. For subjective outputs, user or independent reviewer preference can be primary perceptual evidence, but it must remain separate from mechanical pass/fail claims.
+
+Maintain a field-evidence loop when real usage is available: `traces/corrections/incidents -> failure clusters -> durable eval cases -> candidate change -> regression suite`. Distinguish recurring real-world failures, historical regressions, synthetic/adversarial cases, and one-off preferences; promote recurring classes into evals before persistent skill instructions whenever practical.
 
 ## 12. Stop conditions
 

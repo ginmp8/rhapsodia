@@ -59,6 +59,7 @@ Run `../scripts/validate_portability.py <target> --hosts portable-core,openai,co
 - the description resists common false positives and false negatives;
 - activation optimization uses realistic near-misses and adjacent-domain negatives rather than trivial irrelevant prompts;
 - held-out activation cases remain uninvolved in tuning when final activation-improvement claims are made;
+- representative catalog-pressure/coexistence cases are included when deployment exposes many skills, and catalog-level saturation is distinguished from target-description defects;
 - boundaries and stop conditions are explicit.
 
 ## Architecture Gates
@@ -70,6 +71,9 @@ Run `../scripts/validate_portability.py <target> --hosts portable-core,openai,co
 - branch-specific detail lives outside the control plane;
 - every important resource has a declared consumer;
 - scripts are used for deterministic work, not ornamental complexity;
+- substantial instructions/resources have proof-of-need from a requirement, observed baseline gap, invariant, portability/security necessity, or validated regression;
+- a canonical default plus bounded exceptions replaces unranked equivalent choices when a default is justified;
+- tool-using skills declare required/permitted/forbidden authority at the level needed for safe execution, and lower-trust runtime content cannot expand that authority;
 - non-invariant instructions pass the model-neutral minimality test; temporary model/host workarounds are isolated with provenance instead of leaking into the portable core;
 - existing cohesion/modes/router/split rules are preserved unless evidence shows a distinct activation, ownership, capability, evidence, or validation lifecycle.
 
@@ -85,7 +89,9 @@ When behavioral quality is part of the claim:
 - fixes target a general failure class rather than exact eval wording, filenames, fixtures, or examples;
 - held-out cases support improvement/generalization claims when execution infrastructure allows;
 - repeated work is promoted to reusable scripts/references/assets only when repetition is material across runs;
-- process traces are considered when they reveal repeated waste, inconsistent routing, or hidden host dependency;
+- process traces evaluate applicable skill/resource/tool selection, tool arguments/results, handoffs, retries/stops, and authority use rather than checking only the final output;
+- LLM judges that materially decide acceptance use an explicit rubric and are calibrated for position/verbosity instability against bounded gold/human labels when practical;
+- recurring field failures are converted into durable regression cases before persistent instructions when practical;
 - efficiency metrics, when measured, remain secondary to correctness and semantic quality;
 - when behavior materially depends on model capability, representative capability tiers are calibrated with equivalent scenarios, constrained models are checked for under-guidance, high-capability models are checked for over-prescription, and unavailable runtimes are recorded as `not-run` rather than inferred from host portability.
 
@@ -105,6 +111,7 @@ For substantive creation, redesign, quality-upgrade, or explicit reproducibility
 - frozen evaluator assets and protected evidence are unchanged;
 - material source evidence is snapshotted or immutably identified before analysis when acceptance depends on exact bytes;
 - source, evaluator, candidate, artifact, and receipt identities remain distinct when those evidence layers exist;
+- volatile platform/model/API/version guidance has explicit freshness/version provenance or is excluded from timeless core instructions;
 - output paths are canonicalized and aliases with inputs/protected files/sibling receipts are rejected before mutation when applicable;
 - last-known-good outputs survive failed validation/commit and incomplete rollback preserves explicit recovery paths;
 - delivery identity is traceable through durable receipts/hashes tied to the exact committed bytes when package reproducibility matters;

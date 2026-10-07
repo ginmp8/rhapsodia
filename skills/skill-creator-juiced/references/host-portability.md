@@ -80,6 +80,8 @@ The portable core must not depend semantically on a single vendor's UI metadata,
 9. Keep validation claims capability-aware. Missing shell, Python, browser, network, subagents, or connectors means the affected gate is `not-run`, not passed.
 10. Keep install/discovery locations outside the semantic contract. A skill folder should be movable without rewriting its instructions.
 11. Do not duplicate the skill merely because clients use different discovery directories.
+12. For tool-using skills, keep a host-neutral authority budget (`required capabilities`, `permitted authority`, `forbidden authority`); host-specific allowlists/permission metadata may narrow an adapter but are not the portable core's only safety boundary.
+13. Treat platform/spec facts as freshness-sensitive. When host-specific semantics materially affect correctness, record/recheck the authoritative source, date/version, and whether the field is standard, experimental, or host extension before claiming portability.
 
 ## Default profile matrix
 
@@ -187,7 +189,7 @@ Rules in this reference were aligned on 2026-10-04 with:
 - Cursor Agent Skills: `https://cursor.com/docs/skills`
 - Claude Code Skills: `https://code.claude.com/docs/en/skills`
 
-Host behavior can change. Recheck authoritative documentation when a platform-specific feature is material to correctness.
+Host behavior and the open Agent Skills specification can change. Recheck authoritative documentation when a platform-specific or experimental feature is material to correctness; do not promote stale adapter knowledge into canonical semantics. Treat `allowed-tools` and other experimental/host-extension fields as capability hints or adapter constraints unless the current authoritative spec establishes stronger portable semantics.
 
 ## Validation command
 

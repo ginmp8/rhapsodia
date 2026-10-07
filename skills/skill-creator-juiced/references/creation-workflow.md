@@ -97,6 +97,8 @@ Keep required workflow resources directly discoverable from `SKILL.md` or one de
 
 Read `references/host-portability.md` when more than one semantic profile is requested, a client/distribution surface is named, or host behavior is material. Keep semantic/runtime compatibility separate from client/distribution discovery. Keep install paths outside the semantic contract. For evidence-driven or mutating skills, decide now whether exact source snapshots, immutable VCS provenance, canonical output preflight, recovery-aware delivery, or durable receipts are justified; do not bolt them on only after failures.
 
+Before substantial drafting, define a small realistic seed evaluation whenever the intended behavior can be exercised. For net-new skills, run or at least specify the `without-skill` baseline; for existing skills, use the immutable prior version. Freeze expected properties/evaluator rules before using observed failures to author extensive instructions. If runtime execution is unavailable, record the seed plan as `not-run` and limit claims accordingly.
+
 ## Phase 5: Draft or update and define evaluation
 
 Write in this order:
@@ -109,7 +111,7 @@ Write in this order:
 6. deterministic scripts and validators;
 7. examples and evals.
 
-For existing skills, make the smallest coherent update that satisfies the requested capability. Preserve unrelated behavior.
+For existing skills, make the smallest coherent update that satisfies the requested capability. Preserve unrelated behavior. For net-new or redesigned skills, require a proof-of-need for every substantial instruction, reference, script, asset, or adapter: explicit user requirement, observed baseline failure, domain/safety invariant, portability/security necessity, or previously validated regression. Remove resources justified only by imagined completeness.
 
 Apply model-neutral minimality while drafting. For every non-invariant instruction, ask whether supported agents materially fail, drift, or violate the contract without it. Keep the instruction when evidence or a credible failure mode justifies it; otherwise omit it. Model- or host-specific workarounds require provenance/freshness and belong in an adapter or scoped host reference, not in the portable core.
 
@@ -117,7 +119,7 @@ Treat approximately 500 lines or 5,000 tokens in `SKILL.md` as a review threshol
 
 Apply the local `references/reproducibility-by-design.md` checklist before specialist routing. Record material variance as mechanical, constrained heuristic, model judgment, or external nondeterminism. Move only objective/fragile behavior downward; preserve judgment where it is the point of the skill.
 
-Read `references/evaluation-and-generalization.md` when behavioral quality matters. Define a small realistic seed set and the evaluator type appropriate to each property. Keep objective assertions for objectively checkable behavior and use independent/human/perceptual review for subjective properties. Do not force subjective quality into artificial numeric checks.
+Read `references/evaluation-and-generalization.md` when behavioral quality matters. Refine the already-defined seed set rather than inventing the evaluator after seeing the candidate. Keep objective assertions for objectively checkable behavior and use independent/human/perceptual review for subjective properties. Add trace, catalog-pressure, model-capability, or judge-calibration arms only when the skill materially depends on them. Do not force subjective quality into artificial numeric checks.
 
 ## Phase 6: Reproducibility decision
 
