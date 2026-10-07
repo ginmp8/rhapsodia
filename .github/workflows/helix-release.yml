@@ -1,7 +1,7 @@
-name: Validate RhapsodIA 0.5.0 Top-100 control surface package
+name: Validate RhapsodIA 0.6.0 Top-100 control surface package
 on:
   push:
-    branches: [build/top-100-control-surface-0.5.0]
+    branches: [build/top-100-control-surface-0.6.0]
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,7 +17,7 @@ jobs:
       - name: Generate manifests
         run: |
           python scripts/generate_marketplace_manifests.py
-          python scripts/generate_agent_manifest.py --package-version 0.5.0
+          python scripts/generate_agent_manifest.py --package-version 0.6.0
       - name: Validate workflow control planes
         run: |
           python -m unittest discover -s skills/adaptive-workflow-orchestration/tests -p 'test_*.py' -v
@@ -44,20 +44,20 @@ jobs:
           python scripts/validate_agents.py --target .
           python -m unittest tests.test_validate_agents tests.test_install_agents tests.test_marketplace_manifests tests.test_workspace_agent_contract tests.test_release_versions -v
           python scripts/generate_marketplace_manifests.py --check
-          python scripts/generate_agent_manifest.py --check --package-version 0.5.0
-          python scripts/validate_release_versions.py --expected-version 0.5.0
+          python scripts/generate_agent_manifest.py --check --package-version 0.6.0
+          python scripts/validate_release_versions.py --expected-version 0.6.0
           python scripts/prepare_release.py --check
       - name: Build deterministic archives twice
         run: |
           mkdir -p dist/a dist/b
-          python scripts/build_release_archive.py --version 0.5.0 --output dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
-          python scripts/build_release_archive.py --version 0.5.0 --output dist/b/rhapsodia-0.5.0-top-100-control-surface.zip
-          cmp dist/a/rhapsodia-0.5.0-top-100-control-surface.zip dist/b/rhapsodia-0.5.0-top-100-control-surface.zip
-          unzip -t dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
-          sha256sum dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
+          python scripts/build_release_archive.py --version 0.6.0 --output dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
+          python scripts/build_release_archive.py --version 0.6.0 --output dist/b/rhapsodia-0.6.0-top-100-control-surface.zip
+          cmp dist/a/rhapsodia-0.6.0-top-100-control-surface.zip dist/b/rhapsodia-0.6.0-top-100-control-surface.zip
+          unzip -t dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
+          sha256sum dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: rhapsodia-0.5.0-top-100-control-surface
-          path: dist/a/rhapsodia-0.5.0-top-100-control-surface.zip
+          name: rhapsodia-0.6.0-top-100-control-surface
+          path: dist/a/rhapsodia-0.6.0-top-100-control-surface.zip
           if-no-files-found: error
           retention-days: 30

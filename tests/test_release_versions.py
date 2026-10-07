@@ -1,7 +1,7 @@
 import json,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-RELEASE="0.5.0"
+RELEASE="0.6.0"
 class Tests(unittest.TestCase):
  def test_catalog_release_is_050(self):
   d=json.loads((ROOT/"marketplace/catalog.json").read_text());self.assertEqual(d["plugin"]["version"],RELEASE);self.assertEqual(d["marketplace"]["version"],RELEASE)

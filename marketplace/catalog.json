@@ -10,7 +10,7 @@
     "owner": {
       "name": "ginmp8"
     },
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "platforms": {
     "agent_plugins": {
@@ -72,7 +72,7 @@
     "name": "rhapsodia",
     "repository": "https://github.com/ginmp8/rhapsodia",
     "repository_git": "https://github.com/ginmp8/rhapsodia.git",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "schema_version": 1
 }
