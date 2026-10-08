@@ -1,4 +1,5 @@
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -106,6 +107,40 @@ class MarketplaceManifestTests(unittest.TestCase):
             self.assertTrue((output / "skills").is_dir())
             self.assertFalse((output / "agents").exists())
             self.assertFalse((output / "com.github.copilot").exists())
+
+    def test_git_checkout_preserves_release_inputs_with_autocrlf(self):
+        if shutil.which("git") is None:
+            self.skipTest("Git executable unavailable")
+        tracked = (
+            ".github/plugin/marketplace.json",
+            "agents/magia.agent.md",
+            "README.md",
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            attributes = ROOT / ".gitattributes"
+            self.assertTrue(attributes.is_file(), "Missing LF checkout contract")
+            shutil.copyfile(attributes, repo / ".gitattributes")
+            for relative in tracked:
+                target = repo / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, target)
+            for args in (
+                ("init", "-q"),
+                ("config", "core.autocrlf", "true"),
+                ("add", "."),
+            ):
+                subprocess.run(("git", *args), cwd=repo, check=True,
+                               capture_output=True, text=True)
+            for relative in tracked:
+                (repo / relative).unlink()
+            subprocess.run(("git", "checkout-index", "--force", "--all"),
+                           cwd=repo, check=True, capture_output=True, text=True)
+            for relative in tracked:
+                with self.subTest(path=relative):
+                    self.assertEqual((ROOT / relative).read_bytes(),
+                                     (repo / relative).read_bytes(),
+                                     "Git checkout modified release bytes")
 
     def test_generated_marketplace_files_are_in_sync(self):
         script = ROOT / "scripts" / "generate_marketplace_manifests.py"

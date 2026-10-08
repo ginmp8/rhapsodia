@@ -1,0 +1,3 @@
+# Cross-platform release inputs must have identical working-tree bytes.
+# Generated manifests and agent manifest hashes are byte-sensitive.
+* text=auto eol=lf
