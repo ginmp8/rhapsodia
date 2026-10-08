@@ -24,13 +24,17 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Stdlib runtime and protocol tests
         run: python -I -S -B -m unittest discover -s skills/runtime-harness/tests -p "test_*.py" -v
+      - name: Operational context behavior and package contract
+        run: |
+          python -I -S -B -m unittest discover -s skills/operational-context/tests -p "test_*.py" -v
+          python -I -S -B skills/operational-context/scripts/validate_package.py
       - name: Release integration tests
         run: python -S -B -m unittest tests.test_runtime_integration -v
       - name: Manifest and version checks
         run: python -B scripts/prepare_release.py --check
       - name: Build once on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.7.0 --output dist/a/rhapsodia-0.7.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.8.0 --output dist/a/rhapsodia-0.8.0.zip
       - name: Build again on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.7.0 --output dist/b/rhapsodia-0.7.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.8.0 --output dist/b/rhapsodia-0.8.0.zip
       - name: Compare exact archive bytes and inspect integrity
-        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.7.0.zip'); b=Path('dist/b/rhapsodia-0.7.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"
+        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.8.0.zip'); b=Path('dist/b/rhapsodia-0.8.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"

@@ -1,0 +1,96 @@
+{
+  "schema": "final-evaluator-freeze/v1",
+  "timing": "Frozen before final acceptance, after development; early seed identities are recorded separately.",
+  "held_out": false,
+  "files": [
+    {
+      "path": "docs/releases/host-validation-plan-0.8.0.json",
+      "sha256": "e49835b35caeadc54d471f97a79e54bb63c3e6fa1f679097558fac5b645c84b6"
+    },
+    {
+      "path": "docs/releases/review-policy-0.8.0.json",
+      "sha256": "9cf5e5dacb7d44244afdf547bcd3429cfb181672c36b8a9d64d844dd7e85a81b"
+    },
+    {
+      "path": "skills/operational-context/tests/test_boundaries.py",
+      "sha256": "fabb99753f88077bd86158eb7205d001e2f1690c9a476d3090c468414296257c"
+    },
+    {
+      "path": "skills/operational-context/tests/test_operational.py",
+      "sha256": "6c742a53e1fe4df5f049636be44c0d75071e41010ded36c13afd8bce5b63f5b9"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_contracts.py",
+      "sha256": "849e2192ae69ad4c098ef7762903a2eaf63a5b724a1135f3ffa10905da831db9"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_delivery.py",
+      "sha256": "20fd423461d9f6989d62c5d4a149a5c7f700c1235fb7367b4cec6d35fd1a0082"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_incremental_discovery.py",
+      "sha256": "c1711da15d7eaef8be376ba7906ec00948d14b1da3be6618489e8ef9132b597f"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_mcp.py",
+      "sha256": "e555391b69af5ac386b6b17b8f4afc51eaed545786114f086ec62ceb5fe5ce52"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_modern_stdio.py",
+      "sha256": "9bbcae8fd7bc912deeb829c33ca16ca79263aab70568b59baf3ec8f16df5e112"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_runtime.py",
+      "sha256": "9235df635c42b8a4528c8fd5188d05f97f0e9ee24201ab81e2f8c390cee6d09d"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_runtime_080.py",
+      "sha256": "e8c0ef59e633a4bcce74f2f74b0657c557e50d557b8e8dda862bf8bbe48b5445"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_safety_performance.py",
+      "sha256": "a1579ebb9b1da9b7f5534e39613ed437f0c87e9d143e104ac7ad63ea6378ed60"
+    },
+    {
+      "path": "tests/test_artifact_native_e2e.py",
+      "sha256": "6ccec5e7c784c7b63141558413d01808834c8c5d65d7a4d184c2ab1b04af8a1d"
+    },
+    {
+      "path": "tests/test_install_agents.py",
+      "sha256": "5a25e4f0c8cf9df0b79fdfb5e5e2bd450c732c1c5bad3f29f02b389580ede26a"
+    },
+    {
+      "path": "tests/test_marketplace_manifests.py",
+      "sha256": "6f0aa4ad53946ddc802e6a08a39bbf804432d7f69f6785f4ef2c0275ed9df59b"
+    },
+    {
+      "path": "tests/test_native_artifacts.py",
+      "sha256": "d86fa5cba685c0e9cd3238a39485e0cb44287049ea26c720a026862f20b04b81"
+    },
+    {
+      "path": "tests/test_native_execution.py",
+      "sha256": "84b22650dd3db0903873ce2cfa539e5505eb9f22d7eaa3d9ad1eca64efb86d9e"
+    },
+    {
+      "path": "tests/test_native_migration.py",
+      "sha256": "e792de470cd3dbb36b2dc6636eb42881cdf6a8a85930306e51b995bf4ee4f477"
+    },
+    {
+      "path": "tests/test_release_versions.py",
+      "sha256": "f3fbf7e907f8cdbcab464edc9d9a62e86ceee30f2a5df317975735e5b2a5f492"
+    },
+    {
+      "path": "tests/test_runtime_integration.py",
+      "sha256": "dff45536be8f3c1a1a065b1947f977a288189dfdcfa9bf56c0ae6a8e6bf90746"
+    },
+    {
+      "path": "tests/test_validate_agents.py",
+      "sha256": "50250ffb7815ae7465c81d4cae6c1e93a86c09cbb9b193763edebe11cbe6db34"
+    },
+    {
+      "path": "tests/test_workspace_agent_contract.py",
+      "sha256": "2459462bb1356a20931cf241e588b90b630068b7b98314812b3493123cdcd542"
+    }
+  ],
+  "sha256": "c95398c0f498cf01762f19096bc3bd10c291f233c720c20e47a773b63ed2902e"
+}

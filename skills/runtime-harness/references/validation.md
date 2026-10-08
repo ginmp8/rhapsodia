@@ -32,3 +32,7 @@ The important behavioral properties are separately tested:
 
 For real benefit claims, run paired native agent tasks with frozen correctness gates and
 measure time/tool calls/tokens to first productive action plus complete task latency.
+
+The 1.2.0 suite also exercises observed capability/proof invalidation, bounded typed
+attempts, full/delta round trips and modern stateless stdio alongside legacy regression.
+No local pass certifies native IDE integration or paid-model token efficiency.

@@ -1,0 +1,19 @@
+{
+  "schema": "unexecuted-host-plan/v1",
+  "status": "not-run",
+  "surfaces": [
+    "chatgpt",
+    "openai-api",
+    "codex",
+    "claude-code",
+    "copilot-vscode",
+    "copilot-visual-studio",
+    "cursor"
+  ],
+  "checks": [
+    "Run identical input/evaluator/model/configuration cold and warm repeated paired samples.",
+    "Record provider counters or null; retain quality gates and report latency distributions.",
+    "Run native discovery/delegation and legacy/modern MCP client exchanges where supported."
+  ],
+  "limit": "No unavailable host or paid-model result may be represented as a pass."
+}

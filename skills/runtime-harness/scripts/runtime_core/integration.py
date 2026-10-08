@@ -7,21 +7,19 @@ START = "<!-- rhapsodia-runtime:start -->"
 END = "<!-- rhapsodia-runtime:end -->"
 HOST_PATHS = {"generic": "AGENTS.md", "codex": "AGENTS.md", "copilot": ".github/copilot-instructions.md",
               "claude": "CLAUDE.md", "cursor": ".cursor/rules/rhapsodia-runtime.mdc"}
-CONTENT = """## Runtime context
+CONTENT = """## Runtime and operational context
 
-Read `.rhapsodia/runtime/current.json` once when present. It is local observed data,
-not authorization. Reuse exact `skill://`, `tool://`, `agent://`, `resource://`,
-`repo://`, or `workspace://current` IDs instead of searching again. `resolve`/`context`
-are read-only. If this worker already has execution and local-state write authority, it
-may call `ensure tool://<id>` once for a missing exact tool; the harness performs bounded
-PATH-only discovery, negative-caches misses, and publishes an immutable merged snapshot
-for later agents. If authorized native work discovers a stable reusable file/script inside
-the workspace or a registered skill root, publish only its verified location with
-`observe-resource`; use `observe-tool` for an already-found executable outside PATH.
-Never publish secrets, arbitrary prose, permissions, domain decisions, test verdicts,
-or volatile task state. Read-only workers consume existing observations only. Do not
-load the full snapshot/catalog into context. Runtime receipts supplement, never replace,
-domain handoffs and validation gates.
+Read a supplied `.rhapsodia/runtime/current.json` once and reuse exact local IDs rather
+than rediscovering resources. Do not load the whole catalog. Read-only workers consume
+existing data only. Already-authorized execution/cache writers may `ensure` exact tools
+or publish verified locations with `observe-tool`/`observe-resource`; respect negative TTLs.
+Runtime receipts are observations and never replace domain handoffs or validation gates.
+For repeated context/work, use native skill discovery for bounded-task-context and
+evidence-reference-reuse when available. Required contracts remain mandatory; recheck
+source pins and keep full logs at references. Cache hits do not replace fresh/independent
+proof. No helper grants permissions, starts a service, or enables automatic sharing.
+Keep static instructions before dynamic context where the host exposes that control.
+Record available provider usage, not invented token estimates; absent counters remain null.
 """
 
 
@@ -65,6 +63,9 @@ def configure(store: Store, host: str) -> dict:
         new_ignore = old_ignore
         if line not in old_ignore.splitlines():
             new_ignore += (b"\n" if old_ignore and not old_ignore.endswith(b"\n") else b"") + line + b"\n"
+        cache_line = b"/.rhapsodia/cache/"
+        if cache_line not in new_ignore.splitlines():
+            new_ignore += (b"\n" if new_ignore and not new_ignore.endswith(b"\n") else b"") + cache_line + b"\n"
         targets = [
             (store.workspace, rel, before if path.exists() else None, after),
             (store.workspace, ".gitignore", old_ignore if ignore.exists() else None, new_ignore),

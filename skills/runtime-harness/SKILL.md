@@ -1,6 +1,6 @@
 ---
 name: runtime-harness
-description: Discover, verify, publish, and reuse local runtime capabilities and reusable resource locations through lazy incremental immutable snapshots, exact logical URI queries, byte-bounded context, and content-pinned handoffs. Use for repeated interpreter/tool/resource discovery, shared cross-agent environment knowledge, session bootstrap, freshness, compact handoffs, or optional read-only stdio MCP and GraphPatch export. Do not use as workflow owner, installer, credentials store, general search engine, arbitrary memory, or replacement for domain handoffs and validation evidence.
+description: Discover, verify, publish, and reuse local runtime capabilities and reusable resource locations through lazy incremental immutable snapshots, exact logical URI queries, byte-bounded context, content-pinned full/delta handoffs, observed capabilities, and typed discovery outcomes. Use for repeated interpreter/tool/resource discovery, shared cross-agent environment knowledge, session bootstrap, freshness, compact handoffs, or optional read-only stdio MCP and GraphPatch export. Do not use as workflow owner, installer, credentials store, general search engine, arbitrary memory, or replacement for domain handoffs and validation evidence.
 ---
 
 # Runtime Harness
@@ -49,8 +49,10 @@ PowerShell, or SDK is mandatory.
 | Prepare/start session | `init`, `session-start`; [commands](references/commands.md) |
 | Read existing observations | `resolve`, `context`, `query`, `status`; [contracts](references/contracts.md) |
 | Discover missing exact tool | `ensure tool://...`; [commands](references/commands.md) |
+| Capabilities and typed attempts | `publish-capability`, `observe-attempt`, `discovery-history`; [observations](references/operational-observations.md) |
 | Share verified location | `observe-tool`, `observe-resource`; [contracts](references/contracts.md) |
 | Transfer bounded context | `handoff-create`, `handoff-resume`; [handoffs](references/handoffs.md) |
+| Incremental transport | `handoff-delta`, `handoff-apply`; [delta handoffs](references/delta-handoffs.md) |
 | Configure native instructions | Explicit `configure --host ...`; [host adapters](references/hosts.md) |
 | Read-only MCP | Explicit `mcp-config`, `mcp`; [MCP profile](references/mcp.md) |
 | Optional relationship projection | `export-graph`; [graph boundary](references/graph.md) |
@@ -72,6 +74,8 @@ PowerShell, or SDK is mandatory.
   roots and are content-hashed. Runtime knowledge is transport data, not domain truth.
 - No peer skill imports, arbitrary write SQL, remote search, background watcher, hidden
   process execution, credential collection, or mandatory MCP/graph runtime.
+- Capability receipts pin existing tools and local observation files; no probe is executed.
+  Typed failures and strategy statistics remain scoped observations, never permission.
 - Runtime receipts supplement domain handoffs, acceptance and independent verification;
   they never transfer authority or prove tests/behavior.
 - Local state is private/disposable and excluded from release packages. Freeze validated

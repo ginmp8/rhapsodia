@@ -20,9 +20,10 @@ def load(name):
     return module
 
 class RuntimeIntegrationTests(unittest.TestCase):
-    def test_new_skill_is_complete_and_catalog_has_52_skills(self):
+    def test_new_skill_is_complete_and_catalog_has_53_skills(self):
         skills = sorted(ROOT.glob('skills/*/SKILL.md'))
-        self.assertEqual(len(skills), 52)
+        self.assertEqual(len(skills), 53)
+        self.assertTrue((ROOT / 'skills/operational-context/SKILL.md').is_file())
         for rel in ('SKILL.md', 'README.md', 'VERSION', 'agents/openai.yaml', 'contracts/runtime-query-v1.schema.json', 'contracts/runtime-handoff-v1.schema.json', 'scripts/runtime.py'):
             self.assertTrue((ROOT / 'skills/runtime-harness' / rel).is_file(), rel)
 

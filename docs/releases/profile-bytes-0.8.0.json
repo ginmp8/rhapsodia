@@ -1,0 +1,42 @@
+{
+  "scope": "Static file bytes only; not tokens, API billing, prompt injection volume or measured agent latency.",
+  "profiles": [
+    {
+      "agent": "magia.agent.md",
+      "baseline_bytes": 9786,
+      "candidate_bytes": 9577
+    },
+    {
+      "agent": "mago.agent.md",
+      "baseline_bytes": 7471,
+      "candidate_bytes": 7262
+    },
+    {
+      "agent": "nomia.agent.md",
+      "baseline_bytes": 7351,
+      "candidate_bytes": 7142
+    },
+    {
+      "agent": "rhapsodia-analyst.agent.md",
+      "baseline_bytes": 7867,
+      "candidate_bytes": 7658
+    },
+    {
+      "agent": "rhapsodia-supervisor.agent.md",
+      "baseline_bytes": 22292,
+      "candidate_bytes": 22913
+    },
+    {
+      "agent": "rhapsodia-verifier.agent.md",
+      "baseline_bytes": 8229,
+      "candidate_bytes": 8020
+    },
+    {
+      "agent": "rhapsodia-workspace.agent.md",
+      "baseline_bytes": 4771,
+      "candidate_bytes": 4562
+    }
+  ],
+  "baseline_bytes": 67767,
+  "candidate_bytes": 67134
+}

@@ -1,0 +1,141 @@
+{
+  "decision_contract_version": "1",
+  "rubric_version": "2026-09-19.1",
+  "artifact": {
+    "name": "RhapsodIA",
+    "type": "plugin"
+  },
+  "baseline": {
+    "previous_version": "0.7.0",
+    "stable_contract_promised": false
+  },
+  "candidate": {
+    "version": "0.8.0"
+  },
+  "evidence": {
+    "previous_release": {
+      "id": "user-supplied-rhapsodia-0.7.0",
+      "sha256": "47c340cfacebc47b1e91f820ef775112264bf1a6fbc0dc8a09f7ee12602e13f2"
+    },
+    "candidate": {
+      "id": "rhapsodia-0.8.0-execution-surface",
+      "sha256": "bc6c957934ebf1a06a8537b87483e273cd50363f04974bae35419cdba443b5d2"
+    },
+    "source_snapshot": {
+      "id": "source-manifest-0.8.0.json",
+      "sha256": "bc6c957934ebf1a06a8537b87483e273cd50363f04974bae35419cdba443b5d2"
+    },
+    "public_contract": {
+      "id": "Existing agent/domain contracts; additive Operational Context 1.0.0 and Runtime Harness 1.2.0 CLI/MCP"
+    },
+    "consumer_impact": [
+      "Local CLI/stdio compatibility, source-preservation and root integration tests. Native IDE/model behavior not measured."
+    ]
+  },
+  "changes": [
+    {
+      "id": "change-001",
+      "summary": "Add opt-in standalone operational context commands and reference caches",
+      "affected_contract": "Operational Context 1.0.0 local CLI and Agent Skills discovery",
+      "dimension": "api",
+      "compatibility": "compatible_addition",
+      "evidence": [
+        "49 local target tests; 11 frozen seed tests; Juiced structural/portability gates"
+      ]
+    },
+    {
+      "id": "change-002",
+      "summary": "Add observed capabilities, delta transport and modern stdio profile without removing legacy APIs",
+      "affected_contract": "Runtime Harness 1.2.0 public local CLI/MCP and old 1.1 snapshot reads",
+      "dimension": "api",
+      "compatibility": "compatible_addition",
+      "evidence": [
+        "108 local runtime tests, including legacy regressions and actual modern stdio exchanges; one PowerShell-only skip"
+      ]
+    },
+    {
+      "id": "change-003",
+      "summary": "Add bounded optional capability guidance to seven agents without changing tool allowlists or domain handoff contracts",
+      "affected_contract": "Agent-layer owner/tool/gate contracts and host manifest discovery",
+      "dimension": "activation",
+      "compatibility": "compatible_addition",
+      "evidence": [
+        "95 root tests; exact unchanged canonical agent-system contract and all 51 unrelated skills; native model routing remains unmeasured"
+      ]
+    }
+  ],
+  "decision": {
+    "status": "final",
+    "release_type": "minor",
+    "base_bump": "minor",
+    "target_core_version": "0.8.0",
+    "compatibility_claim": "compatible",
+    "highest_impact_change_id": "change-001",
+    "change_consequences": [
+      {
+        "change_id": "change-001",
+        "affected_contract": "Operational Context 1.0.0 local CLI and Agent Skills discovery",
+        "compatibility_impact": "compatible_addition",
+        "required_bump": "minor",
+        "required_documentation": [
+          "changelog",
+          "release-notes"
+        ],
+        "required_validation": [
+          "consumer-compatibility",
+          "contract-validation"
+        ]
+      },
+      {
+        "change_id": "change-002",
+        "affected_contract": "Runtime Harness 1.2.0 public local CLI/MCP and old 1.1 snapshot reads",
+        "compatibility_impact": "compatible_addition",
+        "required_bump": "minor",
+        "required_documentation": [
+          "changelog",
+          "release-notes"
+        ],
+        "required_validation": [
+          "consumer-compatibility",
+          "contract-validation"
+        ]
+      },
+      {
+        "change_id": "change-003",
+        "affected_contract": "Agent-layer owner/tool/gate contracts and host manifest discovery",
+        "compatibility_impact": "compatible_addition",
+        "required_bump": "minor",
+        "required_documentation": [
+          "changelog",
+          "release-notes"
+        ],
+        "required_validation": [
+          "consumer-compatibility",
+          "contract-validation"
+        ]
+      }
+    ],
+    "required_documentation": [
+      "changelog",
+      "release-notes"
+    ],
+    "required_validation": [
+      "consumer-compatibility",
+      "contract-validation"
+    ],
+    "migration_required": false,
+    "reason_codes": [],
+    "channel": "stable"
+  },
+  "validation": {
+    "executed": [
+      "contract-validation",
+      "consumer-compatibility"
+    ],
+    "planned": [
+      "native-IDE/model-matrix",
+      "paid-token-and-agent-latency-experiment"
+    ],
+    "release_readiness": "not-claimed"
+  }
+}

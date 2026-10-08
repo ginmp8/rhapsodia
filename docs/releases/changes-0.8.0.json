@@ -1,0 +1,582 @@
+{
+  "schema": "release-file-delta/v1",
+  "baseline": "0.7.0",
+  "candidate": "0.8.0",
+  "exclusions": [
+    "MANIFEST.json",
+    "docs/releases/changes-0.8.0.json"
+  ],
+  "files": [
+    {
+      "path": ".claude-plugin/marketplace.json",
+      "change": "modified",
+      "before_sha256": "a29c09694315302ad46b9b6328c91d47a9266d6c204f0458a335cfb175dcbd0f",
+      "after_sha256": "63adedf580fcb50713aecec9979ece13b646976a1e3abc839bc0922275346475"
+    },
+    {
+      "path": ".claude-plugin/plugin.json",
+      "change": "modified",
+      "before_sha256": "ead4a691a2792edbe0ac6dbafe21ae7652fad3795e6cfac148f71fccdd999c3f",
+      "after_sha256": "ff4afca72b6df9449985e2cb6531b57cb23f1c4ba1076a3919be6044c4224160"
+    },
+    {
+      "path": ".codex-plugin/plugin.json",
+      "change": "modified",
+      "before_sha256": "3dda4e68267667d700c145ac81f61123ca4f256a958e0cc576ab63e06eb9dbec",
+      "after_sha256": "fc80d40a7f8a09e3783ebe73bbf4fcba40273e22b56a3b841a6c2136570d8e03"
+    },
+    {
+      "path": ".cursor-plugin/marketplace.json",
+      "change": "modified",
+      "before_sha256": "f36d02b71a8477f8853a0761ca65bd6853acf3f4a8e4cbeb6ec22c911e8ab9c5",
+      "after_sha256": "430d88c72d4b514799c1c6a79e6d2c42c5c83908662e3aa17374bd0a07545cb0"
+    },
+    {
+      "path": ".cursor-plugin/plugin.json",
+      "change": "modified",
+      "before_sha256": "56f7d04ab84c37e7e3dec520afdae9909c3147b56a649e569729d12c0ba7e96e",
+      "after_sha256": "6b57cc85fd14415edc09d7929e40e229d9e6d08500c241c9eb839f9db9b0c5c4"
+    },
+    {
+      "path": ".github/plugin/marketplace.json",
+      "change": "modified",
+      "before_sha256": "f36d02b71a8477f8853a0761ca65bd6853acf3f4a8e4cbeb6ec22c911e8ab9c5",
+      "after_sha256": "430d88c72d4b514799c1c6a79e6d2c42c5c83908662e3aa17374bd0a07545cb0"
+    },
+    {
+      "path": ".github/plugin/plugin.json",
+      "change": "modified",
+      "before_sha256": "56f7d04ab84c37e7e3dec520afdae9909c3147b56a649e569729d12c0ba7e96e",
+      "after_sha256": "6b57cc85fd14415edc09d7929e40e229d9e6d08500c241c9eb839f9db9b0c5c4"
+    },
+    {
+      "path": ".github/workflows/runtime-portability.yml",
+      "change": "modified",
+      "before_sha256": "c5f0ce0aea59a4c3b013bee005d30ecdc767631bb11ffdd5e4eb10deec8c6d04",
+      "after_sha256": "6de8c83846405ac62f1f87984702c876cc398e8127337c609344b0e2486d1eee"
+    },
+    {
+      "path": "README.md",
+      "change": "modified",
+      "before_sha256": "a3718458ac0004ed6fc07c540779fef9fd7395795369c90cb87c0cba701f8132",
+      "after_sha256": "40659edbfbec902272883d170f7feff8eb106eb679b6f799afc66ace78131278"
+    },
+    {
+      "path": "agents/magia.agent.md",
+      "change": "modified",
+      "before_sha256": "4c4263ac04a4612f5fa9a3c79fdf3bfefdb15e0d80145eefb693acaf489485d8",
+      "after_sha256": "4471aa6ddb8168d361f7abde88a6bd74e5ffeaead5885cdc1be1bc906fcd2289"
+    },
+    {
+      "path": "agents/mago.agent.md",
+      "change": "modified",
+      "before_sha256": "9d9eb65cd45b9cda884515b74d0c24cb96139aa4b8d2d9739fab56e00cc296fd",
+      "after_sha256": "923a5030f6a238afb855845fb3c88c996ad4e1fd95aa17bd40226033476312fd"
+    },
+    {
+      "path": "agents/nomia.agent.md",
+      "change": "modified",
+      "before_sha256": "fa5aeec5c89f3792b25b35dbb37f2c5142bdfa6d33a7d32619ccdae688adc179",
+      "after_sha256": "c140ae764462be4c7806a1282904ea56b396a1116dbfbe03330daf62ea037594"
+    },
+    {
+      "path": "agents/rhapsodia-analyst.agent.md",
+      "change": "modified",
+      "before_sha256": "e75ceb0f2eb766bfc663c8f58dbdcc0dac4cde5c596af02575898c8b7f2470a1",
+      "after_sha256": "d3aa3fc9238ed0513df8459446b8ca346461458f633e3705e92f6c73c7413e71"
+    },
+    {
+      "path": "agents/rhapsodia-supervisor.agent.md",
+      "change": "modified",
+      "before_sha256": "ff79efb520a7824a84f3f1cefcfb9d9afe78c48dc5995d804d4142cc3cab0ddd",
+      "after_sha256": "660e1f6f07ea3780bcd36beb2fd751e4823f0847f12eb55ac2ad2e8a0a447ffd"
+    },
+    {
+      "path": "agents/rhapsodia-verifier.agent.md",
+      "change": "modified",
+      "before_sha256": "369e890e30a4548f726da03c0819da4f48354f0f08631ecb437a8704c500cc72",
+      "after_sha256": "a5b6a02dcf73e0ca3d6321820d3bfaf99ebe49b9c6d9dd3c4b6b1e9b9051c869"
+    },
+    {
+      "path": "agents/rhapsodia-workspace.agent.md",
+      "change": "modified",
+      "before_sha256": "fdba2d9a9a1451b20399fe2240a70dbf1cf2ee82c06a00907a4f25fe32eb2a43",
+      "after_sha256": "6c045a976193ba5de18287460d77d004ffe85fe550183f57a3e40bf3d30d0bae"
+    },
+    {
+      "path": "docs/VERSIONING.md",
+      "change": "modified",
+      "before_sha256": "52007dfe34c01883bd8115b3fcbf5e181ef8b29488a67be146da9cbda15a8dc7",
+      "after_sha256": "1af97582b4a963b8b1603e777fccfb8658e77dba01c4b6783fca8de16141bfb4"
+    },
+    {
+      "path": "docs/releases/0.8.0.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "5fbc353d080b767ea1754fa3e8ed15d0db41d4678cfa8ed0327b9ef67971a457"
+    },
+    {
+      "path": "docs/releases/changelog-0.8.0.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "8413b58070ff572f22cef045b497ded5881375611c60c721db74a52a8f70c293"
+    },
+    {
+      "path": "docs/releases/decision-0.8.0.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "5a12c12e842abf60ea1d4fe01122c56e7494ab3c194f3a7a127708829b95d481"
+    },
+    {
+      "path": "docs/releases/evaluator-manifest-0.8.0.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "72865bd2e4614b80aab09ed94e23e7ec96c3a4df8e1cc860121ebc0398883a95"
+    },
+    {
+      "path": "docs/releases/host-validation-plan-0.8.0.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "e49835b35caeadc54d471f97a79e54bb63c3e6fa1f679097558fac5b645c84b6"
+    },
+    {
+      "path": "docs/releases/profile-bytes-0.8.0.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "4566bec1de6680310f0009d8bbe7cf52d6a99d4463720269988732970c39c560"
+    },
+    {
+      "path": "docs/releases/review-policy-0.8.0.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "9cf5e5dacb7d44244afdf547bcd3429cfb181672c36b8a9d64d844dd7e85a81b"
+    },
+    {
+      "path": "docs/releases/source-manifest-0.8.0.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "6e27cdd35cc8e347c15fe17831f7392ea8206a108c1c810c1faa4d14983aa941"
+    },
+    {
+      "path": "docs/releases/validation-0.8.0.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "8e5447a0502b260b1e2ba2c6b243e5e4a756e04436032d9934e21e6a63eaa502"
+    },
+    {
+      "path": "docs/research/README.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "dc094a860001ae66e1db56dca4404ff34cd8367afd8f94a1cc7b5bba13c89bd2"
+    },
+    {
+      "path": "docs/research/efficiency-0.8.0.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "bdbeefa6de01c565c4d55ea72efcb2683180cb95438e8f9eecdf598856109316"
+    },
+    {
+      "path": "docs/research/efficiency-source-2026-10-08.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "023e725d57cd37989b21556442f7ba297c40b01da888410559145232cb44dc8e"
+    },
+    {
+      "path": "docs/research/operational-context-traceability.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "ba5cc574ab5bd66b2b0c349714ad920d5e28cc5db8975c7c77f2b1f5f7d4783d"
+    },
+    {
+      "path": "docs/research/runtime-harness-traceability.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "4a2d4501a64bfe6a807aeb775f224776b63db246faf2b6b262a1b6a65d0218ba"
+    },
+    {
+      "path": "docs/runtime/MIGRATION-0.8.0.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "ea829d6561073af904f74a0c358f619e54267d92929e409763cecffa4dd9126f"
+    },
+    {
+      "path": "docs/runtime/OPERATIONAL-CONTEXT.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "72d8861c0213a59189f6a5e3c0fbcac0ca5c1bb12d4d6621affacae5b33f7995"
+    },
+    {
+      "path": "marketplace/catalog.json",
+      "change": "modified",
+      "before_sha256": "cee31bb457f767c2e3f025df4d6c3e2b983d27790278f7743d1888229575535c",
+      "after_sha256": "a2591a473b4ac15dbee2de950be15af4c77e6538ac6091e5c3eb260b13d24cd5"
+    },
+    {
+      "path": "scripts/operational.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "3b533f5e04167aba83c1171ade1cbc0d05cbfa4bd6f1d47ecc5cf27038828527"
+    },
+    {
+      "path": "skills/operational-context/CHANGELOG.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "8846920a5fa406d8f8c85462a8cbc2c4dd183cb6e1b8e53f39b5924f99402fda"
+    },
+    {
+      "path": "skills/operational-context/LICENSE",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "3209218a8853c72ae5124b6911449a3486bcd61e361ca38a7ec7036c68ada1f0"
+    },
+    {
+      "path": "skills/operational-context/SKILL.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "f6ef47c0985fe7ef00269692c34970ce30a40468970a786fa4b1f76058448e6b"
+    },
+    {
+      "path": "skills/operational-context/VERSION",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "path": "skills/operational-context/agents/openai.yaml",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "e68ea79067ec05f73e2afba33e5d40052cfeda2042ac391e1fbffd42f245e708"
+    },
+    {
+      "path": "skills/operational-context/contracts/action-result-v1.schema.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "f6b90bc2550099a5b5c4def2862d3a512c05781ebcc87ce3a53ee9a8c097ba61"
+    },
+    {
+      "path": "skills/operational-context/contracts/commands.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "0608f6f8ee47ffe16d3ab488090fcba46538163fa0fee047136eef023f73046e"
+    },
+    {
+      "path": "skills/operational-context/contracts/task-context-v1.schema.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "88eab0dd6d62201fe87e4085f238384e7df9a3d04480bc7d19622c480e9cd6ab"
+    },
+    {
+      "path": "skills/operational-context/evals/activation-scenarios.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "9bfda50a85e81d3446bc0855c24c671c9206921c7f51e585cb26d8495b5e72fb"
+    },
+    {
+      "path": "skills/operational-context/evals/creation-record.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "22ed1a61aa3c32b8b242a65649f2b60efdfa641bd833a65b25802fc2a338296c"
+    },
+    {
+      "path": "skills/operational-context/examples/requests.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "1c70cf2d6e2bf39af01b9833170a4779927c084ad84e3f3097fd28385e928744"
+    },
+    {
+      "path": "skills/operational-context/references/commands.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "1b6f535a04e1eb2054c4e4107877c4e8bf929c78bc720922cd1f13a004ccac80"
+    },
+    {
+      "path": "skills/operational-context/references/context.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "5721e7a1fef6dc27b6117beba6a749d476563c3430d90f26b433ef97265c6ca6"
+    },
+    {
+      "path": "skills/operational-context/references/evidence-cache.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "a121d70c7813690fa69eab0030b81b651d8b95668b46cf60b121716f512c0ea5"
+    },
+    {
+      "path": "skills/operational-context/references/metrics-policy.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "da7c6da7a20aef01ef133a80ea378d04f3ad52b38a1409bbbfd87acc5fdad75e"
+    },
+    {
+      "path": "skills/operational-context/references/portability.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "d0459fbb84e43893ae6c0976a16a6008095993c3bab5c5ab6709087aa082c037"
+    },
+    {
+      "path": "skills/operational-context/references/sharing-security.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "28e3450329000d9479893bd8bc6b987ff5ce036f8110d6e42e73f2b6ffcf35ae"
+    },
+    {
+      "path": "skills/operational-context/references/sources.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "ce0abbab940539e844f96fa3d3b137feb5abbf2b992b09baf7180a1e95140a8d"
+    },
+    {
+      "path": "skills/operational-context/references/validation.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "690506fcc163a64de68cd35370167190820f3f0395d0a1c061d6af9fe423ab94"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/__init__.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "fb1024771e73c91121f0a848cff334f9df719251f022330e5bd432046577ef4a"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/actions.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "26452f7ee3f63aa3f82c59288fd05a95843bed92cbccda55cf2b1b4275582f5a"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/cli.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "8681548310647f31689324bea618c7cff044119c76f50c570b99abbcb3c2d240"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/common.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "de36ecaee161af080a9e8afdf65c561a97e76fdd324d4b391d94a202b175fab9"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/context.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "e1e3bfec0ac689f6473c92a2be06d81abeaaedc69a0712c433db527d6b0094be"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/describe.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "f00c9c531e31cb144eaad31b2a84f1b273d0d768cf0f2e6f15096c7a077a21ee"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/metrics.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "2efe1fb29428ceefd1dddbbf3e229c9c01aa861df2e9d91d263e2e66ff6a35a5"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/output.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "6c3caaa4a309375565414cc425fa990054d81bdbc1bbe05872ea5f243d270b8c"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/policy.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "283abb93983b85c5a0997d7f5cb2b56b26bf7bc973dd54b2e7731fe62b507ab2"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/registry.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "76e0b6c62ee8a85cd9e162643455c7fd2a03de3c4a2b4b9e3d162b912dfa08a5"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/sharing.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "a6260f97d9a035be8b7b814f0d954b317b1124a18a5874bdf90c30f612f32684"
+    },
+    {
+      "path": "skills/operational-context/scripts/oc_core/store.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "ce31dac055d5e02cdf75321742d198b0e41ac8caf650ba0f3110d144fde3b53b"
+    },
+    {
+      "path": "skills/operational-context/scripts/operational.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "426a3ed8a65edcd1773ddee7270333880b35cffca5e3c89fcfe800fb105eadfd"
+    },
+    {
+      "path": "skills/operational-context/scripts/validate_package.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "6c859a0fb3d609339fb4b87f92db8455c06b562f8e338f432af96d5fab99e651"
+    },
+    {
+      "path": "skills/operational-context/tests/test_boundaries.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "fabb99753f88077bd86158eb7205d001e2f1690c9a476d3090c468414296257c"
+    },
+    {
+      "path": "skills/operational-context/tests/test_operational.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "6c742a53e1fe4df5f049636be44c0d75071e41010ded36c13afd8bce5b63f5b9"
+    },
+    {
+      "path": "skills/runtime-harness/CHANGELOG.md",
+      "change": "modified",
+      "before_sha256": "5f863e83fdeafce89513708a5668b754f612d664c7cd415f47f3dfa397b97b41",
+      "after_sha256": "d50237db95bacc23e543d1521070051bb9a14eb61c7a341f14f8ad7ed001d835"
+    },
+    {
+      "path": "skills/runtime-harness/SKILL.md",
+      "change": "modified",
+      "before_sha256": "5b4a43b3efc5da9ac7d2cc1da3db114613434ee39733d4cc7286c6df73fa2951",
+      "after_sha256": "ea07e487d5a78b6ed6921fcd8a707316e60f842c1a4bf8d6524837990a98d7ca"
+    },
+    {
+      "path": "skills/runtime-harness/VERSION",
+      "change": "modified",
+      "before_sha256": "1575e1af4a95f12f70b4ee6a6adce8160953d93ea17dc2611b90883ccc3ad3b8",
+      "after_sha256": "1e5b51cde515396a9fa762909cf8ca6584ccc564b325d2eebeea76175fe95c4d"
+    },
+    {
+      "path": "skills/runtime-harness/contracts/runtime-snapshot-v1.schema.json",
+      "change": "modified",
+      "before_sha256": "7e5efbe3683674eb2813d954056c871882fb0d8ae7ae153873ffaa43f5431ea6",
+      "after_sha256": "221c43c2b5d9027a9cbaea98707956ccc2f89bfca2bd0cf66b9a2e36ba3c888c"
+    },
+    {
+      "path": "skills/runtime-harness/evals/activation-contract-1.2.json",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "33da2c79cbf317dfbb104c5bf0d5fe7e848099991043e9b99b265a97957a27df"
+    },
+    {
+      "path": "skills/runtime-harness/references/delta-handoffs.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "b459f73e4f0e9ebe58274c2c128c6469fe44b8488b689c922a3f0f2ccdff00ab"
+    },
+    {
+      "path": "skills/runtime-harness/references/mcp.md",
+      "change": "modified",
+      "before_sha256": "c0b580e7c7b3a164b7655888367c605cfc205e7e85fe8f8189a3b54234d06c22",
+      "after_sha256": "6edab381e497e8c6673c0b417d0de2fb9253072d85e2ef4802dca03b28d28985"
+    },
+    {
+      "path": "skills/runtime-harness/references/operational-observations.md",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "ed840dfd6e1cbd1fecbaec680e24ec6d9589da45ae968ed9947c18ff0dd24097"
+    },
+    {
+      "path": "skills/runtime-harness/references/sources.md",
+      "change": "modified",
+      "before_sha256": "747359206824a5d4296be92f15480ca5439714bed9068c51af5e8328bfb970b2",
+      "after_sha256": "72d6a93ce84cebbb33a674ae852470055107d324621537746f548faafca5c2ef"
+    },
+    {
+      "path": "skills/runtime-harness/references/validation.md",
+      "change": "modified",
+      "before_sha256": "1bba51e2d7e930b6c7a9279bcd417f0d2117afe20ae149d9cd7997a0af850294",
+      "after_sha256": "5f1e95417b0afc998ed922a3c082d07564618f3b5257f0733d5bc4f7e522c78c"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/__init__.py",
+      "change": "modified",
+      "before_sha256": "4ea188d15b04eb7e871397de1c4e44740f74679595efd337f5e71e12492fec15",
+      "after_sha256": "a034c1f3240def9c34362ddf6522f36b46bb50477f78558c76cf5aa84f38c133"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/capabilities.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "2490b8b40a91582f04b90fb131d23d2374e1187b283bc110bd4d307bcf5d2aac"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/cli.py",
+      "change": "modified",
+      "before_sha256": "5ece038359d108df4ce2dc0a0ed9426cc4042ac69224f43649f85094e0b91ddb",
+      "after_sha256": "40e15ef28f38eb5212697daa47d0cfc6b00bb46267b794c655dfb4c77e33671b"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/common.py",
+      "change": "modified",
+      "before_sha256": "adfcf038a73964075e281dff04387cd2a86c84c1d520fb5a78606a1d8f0e19cb",
+      "after_sha256": "cac23bbbeae370dc76b3e21353e219b6a265fef54a44c15660c14cf84ec9e363"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/delta.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "e83cce84ea530cd772de9da1c44c5ffb84dcfd0478e9c620ac5698c927b83872"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/graph.py",
+      "change": "modified",
+      "before_sha256": "2645611fe08e6e4f0bb8fd747cd6d0e5cfa400b8ce17b3a2b7d3ee44283131c0",
+      "after_sha256": "12fa27418b17836640e3701c6874045b743aff13b0c1b5da68aedb4831c34378"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/integration.py",
+      "change": "modified",
+      "before_sha256": "68f834d171544dfc6cd68afaa4944e1883168dc29601d43d33a7a961edecbfbb",
+      "after_sha256": "b263c1150aa1bbe550586f6340978fffb484361016a93c06db830962d808447e"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/mcp.py",
+      "change": "modified",
+      "before_sha256": "f8a3c540ea77c11f9b1b6477cb385d2fb0606ab22f975106cb7b189c89fd57d0",
+      "after_sha256": "eab34b5f4704ea8ec0ed1c47ff3b5c262f56a047c9e669675aa8dd551496f196"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/mcp_modern.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "3457c708f02d7d53053d6548fd6972ceb181ca341cf310cd78f885b996497db6"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/query.py",
+      "change": "modified",
+      "before_sha256": "82ef7e85b200cb66cb839a6320d7baa42c5a304b48d2286201d0060b00023548",
+      "after_sha256": "38834948fb5bcddf598803dd220f643f13b4c3c338841b8678ecafd1b1c9ca11"
+    },
+    {
+      "path": "skills/runtime-harness/scripts/runtime_core/store.py",
+      "change": "modified",
+      "before_sha256": "d52271a542cd8ed3555be6375246437b704cafcc58d05f16d165fe6167ef8a71",
+      "after_sha256": "439f22f5790cecec871aab6fc58c6772a8cc6fda2300ec60caaaf51fe5cc88ea"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_modern_stdio.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "9bbcae8fd7bc912deeb829c33ca16ca79263aab70568b59baf3ec8f16df5e112"
+    },
+    {
+      "path": "skills/runtime-harness/tests/test_runtime_080.py",
+      "change": "added",
+      "before_sha256": null,
+      "after_sha256": "e8c0ef59e633a4bcce74f2f74b0657c557e50d557b8e8dda862bf8bbe48b5445"
+    },
+    {
+      "path": "tests/test_release_versions.py",
+      "change": "modified",
+      "before_sha256": "b0826dea3dce42de4be342e75cc39fec2b37d6664d071934b18c6b9ef03b9f77",
+      "after_sha256": "f3fbf7e907f8cdbcab464edc9d9a62e86ceee30f2a5df317975735e5b2a5f492"
+    },
+    {
+      "path": "tests/test_runtime_integration.py",
+      "change": "modified",
+      "before_sha256": "6ad93aea3182aaf4cc38cbe31ebf8d7ca30f7a3dc4311fb07c50b6ca0ccc9094",
+      "after_sha256": "dff45536be8f3c1a1a065b1947f977a288189dfdcfa9bf56c0ae6a8e6bf90746"
+    }
+  ],
+  "note": "Root MANIFEST.json is regenerated by the existing release script; it is excluded to avoid circular metadata hashes."
+}

@@ -1,6 +1,28 @@
 # RhapsodIA
 
-## 0.7.0 - Lazy shared runtime knowledge and compact agent handoffs
+## 0.8.0 - Bounded operational context and evidence reuse
+
+RhapsodIA 0.8.0 includes **53 Agent Skills and seven native agent profiles**. It adds
+**Operational Context 1.0.0** and extends **Runtime Harness to 1.2.0**, without replacing
+Nomia/Mago/Magia/Verifier ownership or requiring another orchestration runtime.
+
+- Reference-first task packs, mandatory-context guards, stable-prefix composition and bounded log cards.
+- Current artifact/evidence references; conservative hermetic action-result lookup without executing/restoring commands or skipping fresh proof.
+- Reported usage normalization, strict paired comparisons, single/serial-first delegation and selective graph retrieval.
+- Tool/proof-pinned capabilities, typed discovery failures, scoped strategy statistics and full/delta handoffs.
+- Modern 2026-07-28 read-only stdio MCP discovery/catalog caching alongside preserved legacy clients.
+- Explicit quarantined cross-workspace pointer exchange and cooperative work leases, never automatic trust or workflow transfer.
+
+Read [release notes](docs/releases/0.8.0.md), [upgrade instructions](docs/runtime/MIGRATION-0.8.0.md),
+[operational architecture](docs/runtime/OPERATIONAL-CONTEXT.md) and [validation evidence](docs/releases/validation-0.8.0.json).
+The standalone [Operational Context skill](skills/operational-context/SKILL.md) provides
+progressive command/schema discovery. Existing work remains valid with optional helpers absent.
+
+These mechanisms are implemented and locally tested. Native IDE/model sessions and paid-token
+or end-to-end agent-speed gains are not asserted; missing usage remains null and platform CI
+must run before claiming its environments passed. No network service or hidden hook is started.
+
+## 0.7.0 (historical) - Lazy shared runtime knowledge and compact agent handoffs
 
 RhapsodIA 0.7.0 adds **Runtime Harness**, a portable Python-standard-library layer
 that lets agents reuse environment knowledge instead of repeatedly searching for tools,
@@ -86,7 +108,7 @@ The design goal is not to create one universal agent. It is to preserve clear ow
 
 ## Distribution scope
 
-The repository contains the complete RhapsodIA distribution: the canonical Skill catalog, Agent layer, documentation, validators, tests, and marketplace manifests. Release archives are built from this source tree; generated validation evidence is intentionally kept outside the versioned source.
+The repository contains the complete RhapsodIA distribution: the canonical Skill catalog, Agent layer, documentation, validators, tests, and marketplace manifests. Release archives are built from this source tree; raw run evidence stays outside the source; the 0.8.0 release includes a portable validation summary and research trace records.
 
 The root `MANIFEST.json` remains the deterministic manifest for the **Agent-layer distribution surface** (README, agent profiles, agent docs, installer/validator, and agent tests). Individual Skills own their own package/integration validation contracts. A full-project ZIP is therefore broader than the root Agent manifest by design.
 

@@ -1,0 +1,1914 @@
+{
+  "schema": "operational-command-catalog/v1",
+  "version": "1.0.0",
+  "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "commands": {
+    "describe": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      }
+    },
+    "pack": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "goal",
+          "required"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "goal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "required": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "role": {
+                  "enum": [
+                    "source",
+                    "contract",
+                    "evidence",
+                    "blocker",
+                    "instruction",
+                    "tool-schema"
+                  ]
+                },
+                "start_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "end_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                }
+              },
+              "dependentRequired": {
+                "start_line": [
+                  "end_line"
+                ],
+                "end_line": [
+                  "start_line"
+                ]
+              }
+            },
+            "minItems": 1,
+            "maxItems": 64
+          },
+          "optional": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "role": {
+                  "enum": [
+                    "source",
+                    "contract",
+                    "evidence",
+                    "blocker",
+                    "instruction",
+                    "tool-schema"
+                  ]
+                },
+                "start_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "end_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                }
+              },
+              "dependentRequired": {
+                "start_line": [
+                  "end_line"
+                ],
+                "end_line": [
+                  "start_line"
+                ]
+              }
+            },
+            "minItems": 0,
+            "maxItems": 128
+          },
+          "budget_bytes": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 65536
+          },
+          "include_text": {
+            "type": "boolean"
+          },
+          "approved_content": {
+            "type": "boolean"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "include_text"
+              ],
+              "properties": {
+                "include_text": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "approved_content"
+              ],
+              "properties": {
+                "approved_content": {
+                  "const": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "pack-save": {
+      "effect": "write-derived",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "goal",
+          "required"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "goal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "required": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "role": {
+                  "enum": [
+                    "source",
+                    "contract",
+                    "evidence",
+                    "blocker",
+                    "instruction",
+                    "tool-schema"
+                  ]
+                },
+                "start_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "end_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                }
+              },
+              "dependentRequired": {
+                "start_line": [
+                  "end_line"
+                ],
+                "end_line": [
+                  "start_line"
+                ]
+              }
+            },
+            "minItems": 1,
+            "maxItems": 64
+          },
+          "optional": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "role": {
+                  "enum": [
+                    "source",
+                    "contract",
+                    "evidence",
+                    "blocker",
+                    "instruction",
+                    "tool-schema"
+                  ]
+                },
+                "start_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "end_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                }
+              },
+              "dependentRequired": {
+                "start_line": [
+                  "end_line"
+                ],
+                "end_line": [
+                  "start_line"
+                ]
+              }
+            },
+            "minItems": 0,
+            "maxItems": 128
+          },
+          "budget_bytes": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 65536
+          },
+          "include_text": {
+            "type": "boolean"
+          },
+          "approved_content": {
+            "type": "boolean"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "include_text"
+              ],
+              "properties": {
+                "include_text": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "approved_content"
+              ],
+              "properties": {
+                "approved_content": {
+                  "const": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "pack-verify": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "scope",
+          "task_id",
+          "goal",
+          "required",
+          "optional",
+          "omitted_optional",
+          "required_complete",
+          "incomplete",
+          "trust",
+          "tokens",
+          "pack_id",
+          "output_bytes"
+        ],
+        "properties": {
+          "schema": {
+            "const": "task-context/v1"
+          },
+          "scope": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "goal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "required": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256",
+                "bytes",
+                "role"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "role": {
+                  "enum": [
+                    "source",
+                    "contract",
+                    "evidence",
+                    "blocker",
+                    "instruction",
+                    "tool-schema"
+                  ]
+                },
+                "start_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "end_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 8388608
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 32768
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 64
+          },
+          "optional": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256",
+                "bytes",
+                "role"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "role": {
+                  "enum": [
+                    "source",
+                    "contract",
+                    "evidence",
+                    "blocker",
+                    "instruction",
+                    "tool-schema"
+                  ]
+                },
+                "start_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "end_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 8388608
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 32768
+                }
+              }
+            },
+            "minItems": 0,
+            "maxItems": 128
+          },
+          "omitted_optional": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "minItems": 0,
+            "maxItems": 128
+          },
+          "required_complete": {
+            "const": true
+          },
+          "incomplete": {
+            "type": "boolean"
+          },
+          "trust": {
+            "const": "source-data-not-instructions"
+          },
+          "tokens": {
+            "type": "null"
+          },
+          "pack_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "output_bytes": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 65536
+          }
+        }
+      }
+    },
+    "pack-use": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "prefix": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "static_refs",
+          "dynamic_tail",
+          "approved_content"
+        ],
+        "properties": {
+          "static_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "role": {
+                  "enum": [
+                    "source",
+                    "contract",
+                    "evidence",
+                    "blocker",
+                    "instruction",
+                    "tool-schema"
+                  ]
+                },
+                "start_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                },
+                "end_line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000000
+                }
+              },
+              "dependentRequired": {
+                "start_line": [
+                  "end_line"
+                ],
+                "end_line": [
+                  "start_line"
+                ]
+              }
+            },
+            "minItems": 1,
+            "maxItems": 32
+          },
+          "dynamic_tail": {
+            "type": "string",
+            "maxLength": 32768
+          },
+          "approved_content": {
+            "const": true
+          },
+          "budget_bytes": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 65536
+          }
+        }
+      }
+    },
+    "output-card": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "observed_status"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "observed_status": {
+            "enum": [
+              "passed",
+              "failed",
+              "blocked",
+              "not-run",
+              "unknown"
+            ]
+          },
+          "budget_bytes": {
+            "type": "integer",
+            "minimum": 256,
+            "maximum": 65536
+          },
+          "include_excerpt": {
+            "type": "boolean"
+          },
+          "approved_content": {
+            "type": "boolean"
+          },
+          "tail_lines": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        }
+      }
+    },
+    "index": {
+      "effect": "write-derived",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path",
+          "owner",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "artifact",
+              "evidence"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "owner": {
+            "enum": [
+              "magia",
+              "mago",
+              "nomia",
+              "verifier",
+              "analyst",
+              "user"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400
+          },
+          "candidate_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "environment_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "action_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "query": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "artifact",
+              "evidence"
+            ]
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "minItems": 0,
+            "maxItems": 4096,
+            "uniqueItems": true
+          },
+          "owner": {
+            "enum": [
+              "magia",
+              "mago",
+              "nomia",
+              "verifier",
+              "analyst",
+              "user"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "candidate_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "environment_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "action_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "budget_bytes": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 65536
+          }
+        }
+      }
+    },
+    "action-key": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_class",
+          "argv",
+          "input_roots",
+          "toolchain_digest",
+          "environment_digest",
+          "config_digest",
+          "policy_digest",
+          "closure_complete",
+          "hermetic",
+          "network",
+          "requires_fresh",
+          "requires_independent"
+        ],
+        "properties": {
+          "task_class": {
+            "enum": [
+              "build",
+              "codegen",
+              "lint",
+              "test",
+              "read"
+            ]
+          },
+          "argv": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "minItems": 1,
+            "maxItems": 128
+          },
+          "input_roots": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "minItems": 1,
+            "maxItems": 32,
+            "uniqueItems": true
+          },
+          "toolchain_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "environment_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "config_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "policy_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "closure_complete": {
+            "type": "boolean"
+          },
+          "hermetic": {
+            "type": "boolean"
+          },
+          "network": {
+            "type": "boolean"
+          },
+          "requires_fresh": {
+            "type": "boolean"
+          },
+          "requires_independent": {
+            "type": "boolean"
+          },
+          "cwd": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        }
+      }
+    },
+    "action-store": {
+      "effect": "write-derived",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "receipt_path"
+        ],
+        "properties": {
+          "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "task_class",
+              "argv",
+              "input_roots",
+              "toolchain_digest",
+              "environment_digest",
+              "config_digest",
+              "policy_digest",
+              "closure_complete",
+              "hermetic",
+              "network",
+              "requires_fresh",
+              "requires_independent"
+            ],
+            "properties": {
+              "task_class": {
+                "enum": [
+                  "build",
+                  "codegen",
+                  "lint",
+                  "test",
+                  "read"
+                ]
+              },
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "minItems": 1,
+                "maxItems": 128
+              },
+              "input_roots": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "minItems": 1,
+                "maxItems": 32,
+                "uniqueItems": true
+              },
+              "toolchain_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "environment_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "config_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "policy_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "closure_complete": {
+                "type": "boolean"
+              },
+              "hermetic": {
+                "type": "boolean"
+              },
+              "network": {
+                "type": "boolean"
+              },
+              "requires_fresh": {
+                "type": "boolean"
+              },
+              "requires_independent": {
+                "type": "boolean"
+              },
+              "cwd": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              }
+            }
+          },
+          "receipt_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        }
+      }
+    },
+    "action-lookup": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "task_class",
+              "argv",
+              "input_roots",
+              "toolchain_digest",
+              "environment_digest",
+              "config_digest",
+              "policy_digest",
+              "closure_complete",
+              "hermetic",
+              "network",
+              "requires_fresh",
+              "requires_independent"
+            ],
+            "properties": {
+              "task_class": {
+                "enum": [
+                  "build",
+                  "codegen",
+                  "lint",
+                  "test",
+                  "read"
+                ]
+              },
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "minItems": 1,
+                "maxItems": 128
+              },
+              "input_roots": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "minItems": 1,
+                "maxItems": 32,
+                "uniqueItems": true
+              },
+              "toolchain_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "environment_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "config_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "policy_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "closure_complete": {
+                "type": "boolean"
+              },
+              "hermetic": {
+                "type": "boolean"
+              },
+              "network": {
+                "type": "boolean"
+              },
+              "requires_fresh": {
+                "type": "boolean"
+              },
+              "requires_independent": {
+                "type": "boolean"
+              },
+              "cwd": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              }
+            }
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "usage": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "usage"
+        ],
+        "properties": {
+          "provider": {
+            "enum": [
+              "generic",
+              "openai",
+              "anthropic"
+            ]
+          },
+          "usage": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "metric-record": {
+      "effect": "write-derived",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "run_id",
+          "event_id",
+          "scenario_id",
+          "host",
+          "model",
+          "config_digest",
+          "input_digest",
+          "evaluator_digest",
+          "cache_state",
+          "sample",
+          "phase",
+          "arm",
+          "duration_ms",
+          "quality_pass",
+          "provider",
+          "usage"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "event_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "scenario_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "config_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "input_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "evaluator_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "cache_state": {
+            "enum": [
+              "cold",
+              "warm",
+              "unspecified"
+            ]
+          },
+          "sample": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "phase": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "arm": {
+            "enum": [
+              "baseline",
+              "candidate"
+            ]
+          },
+          "duration_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "quality_pass": {
+            "type": "boolean"
+          },
+          "provider": {
+            "enum": [
+              "generic",
+              "openai",
+              "anthropic"
+            ]
+          },
+          "usage": {
+            "type": "object"
+          },
+          "context_bytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1000000000000
+          },
+          "tool_calls": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1000000000000
+          },
+          "agent_spawns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1000000000000
+          },
+          "cache_hit": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "ttft_ms": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "cost_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "metric-summary": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      }
+    },
+    "metrics-compare": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "baseline",
+          "candidate"
+        ],
+        "properties": {
+          "baseline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "run_id",
+                "event_id",
+                "scenario_id",
+                "host",
+                "model",
+                "config_digest",
+                "input_digest",
+                "evaluator_digest",
+                "cache_state",
+                "sample",
+                "phase",
+                "arm",
+                "duration_ms",
+                "quality_pass",
+                "provider",
+                "usage"
+              ],
+              "properties": {
+                "run_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "event_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "scenario_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "host": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "model": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "config_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "input_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "evaluator_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "cache_state": {
+                  "enum": [
+                    "cold",
+                    "warm",
+                    "unspecified"
+                  ]
+                },
+                "sample": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "phase": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "arm": {
+                  "enum": [
+                    "baseline",
+                    "candidate"
+                  ]
+                },
+                "duration_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "quality_pass": {
+                  "type": "boolean"
+                },
+                "provider": {
+                  "enum": [
+                    "generic",
+                    "openai",
+                    "anthropic"
+                  ]
+                },
+                "usage": {
+                  "type": "object"
+                },
+                "context_bytes": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1000000000000
+                },
+                "tool_calls": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1000000000000
+                },
+                "agent_spawns": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1000000000000
+                },
+                "cache_hit": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "ttft_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "cost_usd": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 4096
+          },
+          "candidate": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "run_id",
+                "event_id",
+                "scenario_id",
+                "host",
+                "model",
+                "config_digest",
+                "input_digest",
+                "evaluator_digest",
+                "cache_state",
+                "sample",
+                "phase",
+                "arm",
+                "duration_ms",
+                "quality_pass",
+                "provider",
+                "usage"
+              ],
+              "properties": {
+                "run_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "event_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "scenario_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "host": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "model": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "config_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "input_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "evaluator_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "cache_state": {
+                  "enum": [
+                    "cold",
+                    "warm",
+                    "unspecified"
+                  ]
+                },
+                "sample": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000000
+                },
+                "phase": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "arm": {
+                  "enum": [
+                    "baseline",
+                    "candidate"
+                  ]
+                },
+                "duration_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "quality_pass": {
+                  "type": "boolean"
+                },
+                "provider": {
+                  "enum": [
+                    "generic",
+                    "openai",
+                    "anthropic"
+                  ]
+                },
+                "usage": {
+                  "type": "object"
+                },
+                "context_bytes": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1000000000000
+                },
+                "tool_calls": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1000000000000
+                },
+                "agent_spawns": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1000000000000
+                },
+                "cache_hit": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "ttft_ms": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "cost_usd": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 4096
+          }
+        }
+      }
+    },
+    "delegate": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "units"
+        ],
+        "properties": {
+          "units": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "effect"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96
+                },
+                "effect": {
+                  "enum": [
+                    "read",
+                    "write",
+                    "verify"
+                  ]
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 96
+                },
+                "estimated_ms": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "independent": {
+                  "type": "boolean"
+                },
+                "depends_on": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96
+                  },
+                  "minItems": 0,
+                  "maxItems": 4
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 4
+          },
+          "host_parallel": {
+            "type": "boolean"
+          },
+          "spawn_ms": {
+            "type": "number",
+            "minimum": 0
+          },
+          "synthesis_ms": {
+            "type": "number",
+            "minimum": 0
+          },
+          "max_parallel": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "remaining_delegations": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 24
+          },
+          "required_verifier": {
+            "type": "boolean"
+          },
+          "token_budget": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "estimated_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          }
+        }
+      }
+    },
+    "retrieval": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "has_exact_refs",
+          "relationship_question",
+          "repeated_query",
+          "graph_available"
+        ],
+        "properties": {
+          "has_exact_refs": {
+            "type": "boolean"
+          },
+          "relationship_question": {
+            "type": "boolean"
+          },
+          "repeated_query": {
+            "type": "boolean"
+          },
+          "graph_available": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "lease": {
+      "effect": "conditional-write-derived",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operation",
+          "resource",
+          "holder"
+        ],
+        "properties": {
+          "operation": {
+            "enum": [
+              "acquire",
+              "renew",
+              "release",
+              "check"
+            ]
+          },
+          "resource": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "holder": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 300
+          },
+          "token": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000000
+          }
+        }
+      }
+    },
+    "federation-export": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "ids",
+          "approved"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "artifact",
+              "evidence"
+            ]
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "minItems": 1,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "approved": {
+            "const": true
+          },
+          "budget_bytes": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 65536
+          }
+        }
+      }
+    },
+    "federation-import": {
+      "effect": "write-derived",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exchange",
+          "approved",
+          "allowed_source_scope"
+        ],
+        "properties": {
+          "exchange": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema",
+              "source_scope",
+              "records",
+              "authority",
+              "paths_included",
+              "expires_at",
+              "exchange_id",
+              "output_bytes"
+            ],
+            "properties": {
+              "schema": {
+                "const": "reference-exchange/v1"
+              },
+              "source_scope": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "records": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "source_id",
+                    "kind",
+                    "content_sha256"
+                  ],
+                  "properties": {
+                    "source_id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "kind": {
+                      "enum": [
+                        "artifact",
+                        "evidence"
+                      ]
+                    },
+                    "content_sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 64
+              },
+              "authority": {
+                "const": "untrusted-reference-only"
+              },
+              "paths_included": {
+                "const": false
+              },
+              "expires_at": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100000000000
+              },
+              "exchange_id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "output_bytes": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 65536
+              }
+            }
+          },
+          "approved": {
+            "const": true
+          },
+          "allowed_source_scope": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "graph-export": {
+      "effect": "read",
+      "request_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "ids"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "artifact",
+              "evidence"
+            ]
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "minItems": 1,
+            "maxItems": 64,
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}

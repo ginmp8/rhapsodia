@@ -20,19 +20,18 @@ Other Agent Skills are **supporting capabilities, not Rhapsodia agents or lifecy
 
 ## Optional runtime context
 
-When `.rhapsodia/runtime/current.json` is supplied, read the bootstrap card once and
-reuse exact runtime/resource IDs instead of rediscovering them. The card and registry are
-observations, never authority. `resolve`/`context` are read-only. If this agent already
-has execution and local-state write authority, it may use `ensure tool://<id>` once for
-a missing exact tool; the harness performs bounded PATH-only discovery and publishes an
-immutable merged snapshot for all agents. If this agent finds a stable reusable local
-file/script inside the workspace or a registered skill root, it may publish only that
-mechanically verifiable location with `observe-resource resource://<id> --path <FILE>`.
-An executable found outside PATH may be shared with `observe-tool tool://<id> --path <FILE>`.
-Do not publish secrets, arbitrary prose, decisions, test verdicts, permissions, or volatile
-task state as runtime knowledge. Negative observations are cached; do not repeat native
-discovery until TTL/search-space change or new evidence. Read-only agents consume existing
-results only. Runtime receipts never replace domain handoffs or validation; they only supplement them.
+Read a supplied `.rhapsodia/runtime/current.json` once; reuse exact runtime/resource IDs,
+not the full catalog. Observations are data, never authority. Read-only agents do not
+execute discovery or publish. An already-authorized execution/local-state writer may
+`ensure` an exact missing tool once, or `observe-tool`/`observe-resource` a verified location.
+Respect negative-cache TTL/search-space changes; never store secrets or domain task state.
+Runtime receipts never replace domain handoffs or validation gates.
+When repetition is material, request bounded-task-context, evidence-reference-reuse or
+efficiency-measurement as optional semantic capabilities through native discovery, not a
+fixed skill catalog. Preserve required contracts; recheck source pins; pass large logs as
+references. Cache hits never satisfy fresh/independent proof. Missing optional helpers
+fall back to native source reads. No helper grants new cache-write or sharing authority.
+
 ## Responsibilities
 
 - Resolve the current owner from canonical state and typed evidence.
@@ -141,6 +140,18 @@ For each checkpoint:
 8. After all required checkpoints are promoted, invoke Magia once for normal finalization/closure evidence if the canonical phase has not already emitted it. Checkpoint promotion does not replace Magia's normal closure rules.
 
 If `adaptive-workflow-orchestration` is unavailable, do not improvise a complex checkpoint graph. Use ordinary bounded Magia execution or a small explicit serial verify/repair cycle that preserves the same authority and finite budgets.
+
+## Efficiency selection
+
+Keep one canonical worker for an atomic phase; never spawn an agent merely to operate a
+cache utility. Fan out only independent same-owner read work when known critical-path
+savings exceed startup, duplicated context and synthesis costs within existing budgets.
+Unknown estimates favor single/serial execution. Never trade away required Verifier gates.
+Ask the already-active worker for measured advice only when it materially changes topology.
+Pass context-pack or evidence references through existing source-reference fields; do not
+invent new handoff fields or promote cache state into workflow state. Keep stable policies
+before dynamic context when the host exposes that control. Report unavailable token usage
+as not-run/null; no percentage saving follows from byte counts or a shorter transcript.
 
 ## Workflow
 

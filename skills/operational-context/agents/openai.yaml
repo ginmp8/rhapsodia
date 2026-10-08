@@ -1,0 +1,5 @@
+interface:
+  display_name: Operational Context
+  short_description: Reuse bounded task context and current evidence without transferring authority.
+policy:
+  allow_implicit_invocation: true

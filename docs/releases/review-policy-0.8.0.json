@@ -1,0 +1,14 @@
+{
+  "schema": "local-review-policy/v1",
+  "scope": "Same-session local acceptance, not independent ecosystem certification",
+  "checks": [
+    "Required contracts, old CLI/MCP handoffs and canonical ownership remain intact.",
+    "Helpers never grant execution, skip fresh or independent gates, authenticate hashes, or treat foreign pointers as local evidence.",
+    "Paths, source hashes, TTL, payload sizes and cooperative lease generations fail closed.",
+    "Skills remain standalone stdlib packages; native APIs/model controls are optional.",
+    "No measured token, time, routing or native-host claim without executed relevant evidence.",
+    "Full distribution preserves unrelated skills, documentation/history and canonical manifests."
+  ],
+  "held_out": false,
+  "timing": "Frozen at final acceptance after development; not a pre-implementation blind evaluator."
+}

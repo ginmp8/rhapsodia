@@ -30,6 +30,8 @@ def validate_snapshot(data: dict) -> None:
     for key in ("created_at", "updated_at"):
         if not isinstance(data.get(key), (int, float)) or isinstance(data.get(key), bool):
             raise ValueError("invalid timestamp")
+    from .capabilities import validate_catalogs
+    validate_catalogs(data)
     roots = data.get("skill_roots")
     if not isinstance(roots, list) or len(roots) > 16 or any(not isinstance(p, str) or not Path(p).is_absolute() for p in roots):
         raise ValueError("invalid roots")
@@ -157,7 +159,7 @@ class Store:
             if pointer["snapshot_file"] != rel:
                 raise ValueError("invalid pointer")
             snapshot = strict_json(read_bytes(confined(self.root, rel)), MAX_STATE)
-            if sha(snapshot) != key or snapshot["schema"] != "runtime-snapshot-v1" or snapshot["runtime_version"] != VERSION:
+            if sha(snapshot) != key or snapshot["schema"] != "runtime-snapshot-v1" or snapshot["runtime_version"] not in {"1.1.0", VERSION}:
                 raise ValueError("invalid snapshot")
             validate_snapshot(snapshot)
             runtime = Path(__file__).resolve().parents[1] / "runtime.py"
@@ -246,6 +248,7 @@ class Store:
             if not changed:
                 return current_id, snapshot, False
             data = dict(snapshot)
+            data["runtime_version"] = VERSION
             data["tools"] = merged_tools
             data["resources"] = merged_resources
             data["updated_at"] = time.time()

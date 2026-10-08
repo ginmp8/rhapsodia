@@ -23,3 +23,14 @@ The supported MCP profile deliberately does not claim a speculative 2026 protoco
 upgrade. VS Code Local hooks are a host-specific, preview surface; the portable
 runtime is independent of hook availability. No host runtime is considered validated
 merely because its instruction filename is generated.
+
+## Additive 1.2.0 verification (2026-10-08)
+
+- https://modelcontextprotocol.io/specification/2026-07-28/server/discover
+- https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning
+- https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio
+- https://modelcontextprotocol.io/specification/2026-07-28/server/tools
+- https://modelcontextprotocol.io/specification/2026-07-28/server/utilities/caching
+
+Modern per-request metadata and private discovery/list caching are implemented only in
+the selected stdio profile. Legacy initialization behavior remains separately supported.

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rhapsodia:action-result-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "producer",
+    "action_digest",
+    "status",
+    "output_files"
+  ],
+  "properties": {
+    "schema": {
+      "const": "action-result/v1"
+    },
+    "producer": {
+      "enum": [
+        "magia",
+        "user"
+      ]
+    },
+    "action_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "const": "passed"
+    },
+    "output_files": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 128,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    }
+  }
+}

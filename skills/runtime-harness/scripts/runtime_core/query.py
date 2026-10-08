@@ -54,8 +54,11 @@ def resolve(snapshot: dict, uri: str) -> dict:
     if "://" not in uri:
         raise RuntimeFault("UNSAFE_PATH", "Expected a local logical URI.")
     scheme, tail = uri.split("://", 1)
-    if scheme not in {"tool", "skill", "repo", "agent", "workspace", "resource"}:
+    if scheme not in {"tool", "skill", "repo", "agent", "workspace", "resource", "capability"}:
         raise RuntimeFault("UNSAFE_PATH", "Remote and unsupported URI schemes are not allowed.")
+    if scheme == "capability":
+        from .capabilities import resolve_capability
+        return resolve_capability(snapshot, uri)
     if scheme == "resource":
         return _resolve_resource(snapshot, uri)
     parts = relative_parts(tail)

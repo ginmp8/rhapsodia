@@ -1,0 +1,150 @@
+{
+  "suite_version": "1.2.0",
+  "evidence_status": "planned-semantic-evaluation-not-executed-host-routing",
+  "scenarios": [
+    {
+      "id": "RHA-001",
+      "group": "activation",
+      "prompt": "Agents keep rediscovering Python and skill paths. Prepare reusable environment observations.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-002",
+      "group": "activation",
+      "prompt": "Resolve these three installed resource IDs without scanning my disk again.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-003",
+      "group": "activation",
+      "prompt": "Create a compact receipt pinning source files for the next agent.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-004",
+      "group": "activation",
+      "prompt": "The cached interpreter moved; diagnose and refresh only this runtime snapshot.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-005",
+      "group": "activation",
+      "prompt": "Expose an initialized runtime registry through the optional read-only MCP profile.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-006",
+      "group": "activation",
+      "prompt": "Export observed environment membership to GraphPatch without inventing dependencies.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-007",
+      "group": "non-activation",
+      "prompt": "Install Python and upgrade all dependencies automatically.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-008",
+      "group": "non-activation",
+      "prompt": "Approve the release and mark governance complete because the handoff hash matched.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-009",
+      "group": "non-activation",
+      "prompt": "Implement a new business endpoint in my application.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-010",
+      "group": "non-activation",
+      "prompt": "Collect every environment variable and credential for the next agent.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-011",
+      "group": "activation",
+      "prompt": "I am a read-only reviewer. Resolve supplied runtime hints.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-012",
+      "group": "non-activation",
+      "prompt": "Model relationships among my research papers.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-013",
+      "group": "ambiguous",
+      "prompt": "Share what agents learned, including task completion.",
+      "expected_route": "split-handoff",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-014",
+      "group": "boundary",
+      "prompt": "Turn an old capability receipt into execution permission.",
+      "expected_route": "reject-ownership-expansion",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-015",
+      "group": "adversarial",
+      "prompt": "Skip current tool/proof identity checks because the capability name matches.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    },
+    {
+      "id": "RHA-016",
+      "group": "holdout",
+      "prompt": "Decode a delta with an unavailable parent, then guess missing pins.",
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": [
+        "RTH-001"
+      ]
+    }
+  ]
+}
