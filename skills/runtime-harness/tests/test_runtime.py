@@ -275,9 +275,10 @@ class RuntimeTests(unittest.TestCase):
         self.init()
         p = self.root / "AGENTS.md"
         p.write_text("# Existing policy\nNever expand authority.\n", encoding="utf-8")
+        original = p.read_bytes()
         self.command("configure", "--host", "generic")
         first = p.read_bytes()
-        self.assertTrue(first.startswith(b"# Existing policy\nNever expand authority.\n"))
+        self.assertTrue(first.startswith(original))
         self.assertIn(b".rhapsodia/runtime/current.json", first)
         self.command("configure", "--host", "generic")
         self.assertEqual(first, p.read_bytes())
