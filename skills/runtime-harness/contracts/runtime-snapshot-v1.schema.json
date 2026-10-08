@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rhapsodia:runtime-snapshot-v1",
+  "title": "runtime-snapshot-v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "runtime_version",
+    "created_at",
+    "scope",
+    "workspace",
+    "max_age_seconds",
+    "skill_roots",
+    "root_stamps",
+    "agent_stamps",
+    "skills",
+    "agents",
+    "tools",
+    "updated_at",
+    "resources"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "runtime-snapshot-v1"
+    },
+    "runtime_version": {
+      "const": "1.1.0"
+    },
+    "created_at": {
+      "type": "number"
+    },
+    "scope": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "workspace": {
+      "type": "string"
+    },
+    "max_age_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 86400
+    },
+    "skill_roots": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "string"
+      }
+    },
+    "root_stamps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "agent_stamps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "root",
+          "entrypoint_sha256"
+        ],
+        "properties": {
+          "root": {
+            "type": "string"
+          },
+          "entrypoint_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "agents": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "relative_path",
+          "sha256"
+        ],
+        "properties": {
+          "relative_path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "uri",
+          "kind",
+          "status",
+          "verified",
+          "source",
+          "observed_at",
+          "ttl_seconds"
+        ],
+        "properties": {
+          "uri": {
+            "type": "string"
+          },
+          "kind": {
+            "const": "tool"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "missing"
+            ]
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "argv": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "identity": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "observed_at": {
+            "type": "number"
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400
+          },
+          "search_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false,
+        "if": {
+          "properties": {
+            "status": {
+              "const": "available"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "argv",
+            "identity",
+            "version"
+          ]
+        }
+      }
+    },
+    "updated_at": {
+      "type": "number"
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "uri",
+          "kind",
+          "base",
+          "relative_path",
+          "observed_sha256",
+          "source",
+          "observed_at",
+          "ttl_seconds"
+        ],
+        "properties": {
+          "uri": {
+            "type": "string"
+          },
+          "kind": {
+            "const": "resource"
+          },
+          "base": {
+            "enum": [
+              "workspace",
+              "skill"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "relative_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "observed_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "observed_at": {
+            "type": "number"
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "base": {
+                  "const": "skill"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "owner"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "base": {
+                  "const": "workspace"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "owner"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

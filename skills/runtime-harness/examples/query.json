@@ -1,0 +1,8 @@
+{
+  "operation": "context",
+  "refs": [
+    "tool://python",
+    "skill://runtime-harness"
+  ],
+  "budget_bytes": 4096
+}

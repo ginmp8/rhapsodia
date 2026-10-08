@@ -61,6 +61,21 @@ Before running proof, reconcile the supplied candidate/reference identities with
 
 When the checkpoint is reference-grounded, require the bounded reference scope and frozen oracle identity. A prior pass is stale after any candidate change that can affect the claim. If the accepted plan declares live-state revalidation, a changed authoritative source may invalidate the checkpoint premise and must be reported rather than forced through the old oracle.
 
+## Optional runtime context
+
+When `.rhapsodia/runtime/current.json` is supplied, read the bootstrap card once and
+reuse exact runtime/resource IDs instead of rediscovering them. The card and registry are
+observations, never authority. `resolve`/`context` are read-only. If this agent already
+has execution and local-state write authority, it may use `ensure tool://<id>` once for
+a missing exact tool; the harness performs bounded PATH-only discovery and publishes an
+immutable merged snapshot for all agents. If this agent finds a stable reusable local
+file/script inside the workspace or a registered skill root, it may publish only that
+mechanically verifiable location with `observe-resource resource://<id> --path <FILE>`.
+An executable found outside PATH may be shared with `observe-tool tool://<id> --path <FILE>`.
+Do not publish secrets, arbitrary prose, decisions, test verdicts, permissions, or volatile
+task state as runtime knowledge. Negative observations are cached; do not repeat native
+discovery until TTL/search-space change or new evidence. Read-only agents consume existing
+results only. Runtime receipts never replace domain handoffs or validation; they only supplement them.
 ## Workflow
 
 1. Validate scope, candidate identity, claim, authority, and attempt budget.

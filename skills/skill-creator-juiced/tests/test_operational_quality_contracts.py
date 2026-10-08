@@ -35,3 +35,9 @@ def test_design_and_portability_contracts_cover_proof_authority_and_freshness() 
     assert "open Agent Skills specification can change" in portability
     assert "permitted authority" in portability
     assert "forbidden authority" in portability
+
+if __name__ == "__main__":
+    test_control_plane_is_eval_first_and_trust_aware()
+    test_evaluation_contract_covers_judge_trace_catalog_and_field_evidence()
+    test_design_and_portability_contracts_cover_proof_authority_and_freshness()
+    print("ok")

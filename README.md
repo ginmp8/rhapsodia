@@ -1,6 +1,28 @@
 # RhapsodIA
 
-## 0.6.0 — Local graph workbench, interactive exploration, and PDF workbench
+## 0.7.0 - Lazy shared runtime knowledge and compact agent handoffs
+
+RhapsodIA 0.7.0 adds **Runtime Harness**, a portable Python-standard-library layer
+that lets agents reuse environment knowledge instead of repeatedly searching for tools,
+skills, scripts and local resources. The catalog contains **52 Agent Skills and seven
+agent profiles**.
+
+- Minimal bootstrap: running Python + bounded skill/agent catalogs only.
+- Lazy `ensure tool://<id>` discovery for exactly the dependency an authorized agent needs.
+- Cross-agent immutable snapshot sharing with atomic merge; agents never edit runtime state directly.
+- Negative missing-tool cache bound to TTL and PATH/PATHEXT fingerprint.
+- `observe-tool` and `observe-resource` for mechanically verifiable reusable locations.
+- Exact `tool://`, `skill://`, `agent://`, `resource://`, `repo://` and workspace lookups.
+- Compact content-pinned handoffs; resource changes invalidate old pins without forcing full rediscovery.
+- Read-only `resolve/context` and MCP; publication never expands an agent's existing authority.
+- No mandatory database, graph service, shell, cloud, model provider or third-party Python package.
+- All seven agents know how to reuse, discover and share bounded runtime observations while preserving domain ownership.
+
+Start with [Runtime Harness](skills/runtime-harness/README.md). Read the complete
+[0.7.0 release notes](docs/releases/0.7.0.md) and [migration guide](docs/runtime/MIGRATION-0.7.0.md).
+Host configuration remains opt-in; installing the ZIP alone does not start hooks/services.
+
+## 0.6.0 (historical) — Local graph workbench, interactive exploration, and PDF workbench
 
 RhapsodIA 0.6.0 expands the catalog with three portable skills: `local-graph-engine`, `local-graph-explorer`, and `pdf-workbench`. The catalog now contains **51 Agent Skills and seven agent profiles**.
 

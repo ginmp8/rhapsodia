@@ -1,0 +1,7 @@
+interface:
+  display_name: Runtime Harness
+  short_description: Reuse and share verified local runtime/resource observations with compact handoffs.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  allow_implicit_invocation: true

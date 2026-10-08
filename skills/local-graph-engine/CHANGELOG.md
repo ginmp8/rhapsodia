@@ -2,6 +2,9 @@
 
 ## [3.0.0] - 2026-10-07
 
+### Fixed
+- Package/runtime metadata now derives `PACKAGE_VERSION` from the canonical `VERSION` file, preventing `doctor`, typed GraphView `producer_version`, and GraphBundle metadata from reporting the stale 2.1.0 value.
+
 ### Security
 - Hardened optional HTTP access: the chosen artifact must explicitly implement local-live HTML runtime v1. Validate its profile, early CSP, inline script hashes and empty inert session slot before binding or granting a token. The server snapshots validated bytes, preserves hash-authorized scripts, refuses custom/offline pages, rejects duplicate authority headers and unsupported request framing, and exposes optional expected-viewer hash pinning. Added authorization and artifact-boundary regressions.
 

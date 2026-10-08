@@ -1,10 +1,10 @@
 import json,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-RELEASE="0.6.0"
-NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench")
+RELEASE="0.7.0"
+NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness")
 class Tests(unittest.TestCase):
- def test_catalog_release_is_060(self):
+ def test_catalog_release_is_070(self):
   d=json.loads((ROOT/"marketplace/catalog.json").read_text());self.assertEqual(d["plugin"]["version"],RELEASE);self.assertEqual(d["marketplace"]["version"],RELEASE)
  def test_readme_declares_current_release(self):
   first=(ROOT/"README.md").read_text(encoding="utf-8").splitlines()[:20];self.assertTrue(any(line.startswith(f"## {RELEASE}") for line in first),first)

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rhapsodia:runtime-result-v1",
+  "title": "runtime-result-v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "status",
+    "snapshot_id",
+    "etag",
+    "output_bytes"
+  ],
+  "properties": {
+    "schema": {
+      "const": "runtime-result-v1"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "partial",
+        "not_modified",
+        "stored"
+      ]
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "etag": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "output_bytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "required": [
+          "uri",
+          "kind",
+          "status"
+        ]
+      }
+    },
+    "skill_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "agent_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tool_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_age_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 86400
+    },
+    "resource_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "discovery_performed": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

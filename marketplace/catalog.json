@@ -10,7 +10,7 @@
     "owner": {
       "name": "ginmp8"
     },
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "platforms": {
     "agent_plugins": {
@@ -57,7 +57,7 @@
       "name": "ginmp8",
       "url": "https://github.com/ginmp8"
     },
-    "description": "Portable RhapsodIA Agent Skills and host-specific adapters for software engineering, governance, planning, validation, and agent-system workflows.",
+    "description": "Portable RhapsodIA Agent Skills and host-specific adapters for software engineering, governance, validation, runtime context reuse, and agent-system workflows.",
     "homepage": "https://github.com/ginmp8/rhapsodia",
     "keywords": [
       "agent-skills",
@@ -72,7 +72,7 @@
     "name": "rhapsodia",
     "repository": "https://github.com/ginmp8/rhapsodia",
     "repository_git": "https://github.com/ginmp8/rhapsodia.git",
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "schema_version": 1
 }

@@ -5,6 +5,9 @@ This release hardens the explicitly started local HTTP server. SQLite ingestion,
 read-only queries, compact context/reuse, GraphView and MCP formats are unchanged.
 No database migration, external service or new required library is introduced.
 
+## Metadata correction
+The runtime package version is derived from the canonical `VERSION` file. This prevents `doctor`, typed GraphView exports, and GraphBundle metadata from reporting a stale earlier package version.
+
 ## Breaking changes
 Users of serve must supply a reviewed local-live HTML runtime v1. The server no
 longer inserts authority into arbitrary, custom or offline HTML. It checks the

@@ -18,6 +18,21 @@ This profile is validated against the portable agent-system contract shipped wit
 
 Other Agent Skills are **supporting capabilities, not Rhapsodia agents or lifecycle owners**. The Supervisor expresses needs as semantic capability ids in delegation/workflow packets and lets the receiving worker resolve matching skills through the host's native Agent Skills mechanism. Never maintain an external-skill allowlist/catalog in this profile and never add supporting skills to the `agents:` subagent allowlist.
 
+## Optional runtime context
+
+When `.rhapsodia/runtime/current.json` is supplied, read the bootstrap card once and
+reuse exact runtime/resource IDs instead of rediscovering them. The card and registry are
+observations, never authority. `resolve`/`context` are read-only. If this agent already
+has execution and local-state write authority, it may use `ensure tool://<id>` once for
+a missing exact tool; the harness performs bounded PATH-only discovery and publishes an
+immutable merged snapshot for all agents. If this agent finds a stable reusable local
+file/script inside the workspace or a registered skill root, it may publish only that
+mechanically verifiable location with `observe-resource resource://<id> --path <FILE>`.
+An executable found outside PATH may be shared with `observe-tool tool://<id> --path <FILE>`.
+Do not publish secrets, arbitrary prose, decisions, test verdicts, permissions, or volatile
+task state as runtime knowledge. Negative observations are cached; do not repeat native
+discovery until TTL/search-space change or new evidence. Read-only agents consume existing
+results only. Runtime receipts never replace domain handoffs or validation; they only supplement them.
 ## Responsibilities
 
 - Resolve the current owner from canonical state and typed evidence.
