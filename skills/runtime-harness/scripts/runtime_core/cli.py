@@ -38,6 +38,8 @@ def parser() -> argparse.ArgumentParser:
     observe_resource.add_argument("ref")
     observe_resource.add_argument("--path", type=Path, required=True)
     observe_resource.add_argument("--ttl-seconds", type=int, default=86400)
+    for name in ("publish-capability", "observe-attempt", "discovery-history", "handoff-delta", "handoff-apply"):
+        commands.add_parser(name).add_argument("--input", type=Path)
     commands.add_parser("status")
     create = commands.add_parser("handoff-create")
     create.add_argument("--input", type=Path)
@@ -68,6 +70,12 @@ def dispatch(store: Store, args) -> dict:
     if args.command in {"session-start", "mcp-config"}:
         from .session import session_start, mcp_config
         return session_start(store, args.skills_root, args.format) if args.command == "session-start" else mcp_config(store)
+    if args.command in {"publish-capability", "observe-attempt", "discovery-history"}:
+        from .capabilities import publish, attempt, history
+        return {"publish-capability": publish, "observe-attempt": attempt, "discovery-history": history}[args.command](store, request(args.input))
+    if args.command in {"handoff-delta", "handoff-apply"}:
+        from .delta import make, apply
+        return (make if args.command == "handoff-delta" else apply)(store, request(args.input))
     if args.command == "init":
         return store.initialize(args.skills_root, refresh=args.refresh, max_age=args.max_age_seconds)
     if args.command in {"query", "status", "resolve", "context"}:

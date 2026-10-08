@@ -7,43 +7,43 @@
     },
     {
       "path": "README.md",
-      "sha256": "a3718458ac0004ed6fc07c540779fef9fd7395795369c90cb87c0cba701f8132",
-      "size": 32007
+      "sha256": "40659edbfbec902272883d170f7feff8eb106eb679b6f799afc66ace78131278",
+      "size": 33798
     },
     {
       "path": "agents/magia.agent.md",
-      "sha256": "4c4263ac04a4612f5fa9a3c79fdf3bfefdb15e0d80145eefb693acaf489485d8",
-      "size": 9786
+      "sha256": "4471aa6ddb8168d361f7abde88a6bd74e5ffeaead5885cdc1be1bc906fcd2289",
+      "size": 9577
     },
     {
       "path": "agents/mago.agent.md",
-      "sha256": "9d9eb65cd45b9cda884515b74d0c24cb96139aa4b8d2d9739fab56e00cc296fd",
-      "size": 7471
+      "sha256": "923a5030f6a238afb855845fb3c88c996ad4e1fd95aa17bd40226033476312fd",
+      "size": 7262
     },
     {
       "path": "agents/nomia.agent.md",
-      "sha256": "fa5aeec5c89f3792b25b35dbb37f2c5142bdfa6d33a7d32619ccdae688adc179",
-      "size": 7351
+      "sha256": "c140ae764462be4c7806a1282904ea56b396a1116dbfbe03330daf62ea037594",
+      "size": 7142
     },
     {
       "path": "agents/rhapsodia-analyst.agent.md",
-      "sha256": "e75ceb0f2eb766bfc663c8f58dbdcc0dac4cde5c596af02575898c8b7f2470a1",
-      "size": 7867
+      "sha256": "d3aa3fc9238ed0513df8459446b8ca346461458f633e3705e92f6c73c7413e71",
+      "size": 7658
     },
     {
       "path": "agents/rhapsodia-supervisor.agent.md",
-      "sha256": "ff79efb520a7824a84f3f1cefcfb9d9afe78c48dc5995d804d4142cc3cab0ddd",
-      "size": 22292
+      "sha256": "660e1f6f07ea3780bcd36beb2fd751e4823f0847f12eb55ac2ad2e8a0a447ffd",
+      "size": 22913
     },
     {
       "path": "agents/rhapsodia-verifier.agent.md",
-      "sha256": "369e890e30a4548f726da03c0819da4f48354f0f08631ecb437a8704c500cc72",
-      "size": 8229
+      "sha256": "a5b6a02dcf73e0ca3d6321820d3bfaf99ebe49b9c6d9dd3c4b6b1e9b9051c869",
+      "size": 8020
     },
     {
       "path": "agents/rhapsodia-workspace.agent.md",
-      "sha256": "fdba2d9a9a1451b20399fe2240a70dbf1cf2ee82c06a00907a4f25fe32eb2a43",
-      "size": 4771
+      "sha256": "6c045a976193ba5de18287460d77d004ffe85fe550183f57a3e40bf3d30d0bae",
+      "size": 4562
     },
     {
       "path": "docs/agents/ARCHITECTURE.md",
@@ -93,5 +93,5 @@
   ],
   "manifest_version": 1,
   "package": "rhapsodia-agents-vscode",
-  "package_version": "0.7.0"
+  "package_version": "0.8.0"
 }

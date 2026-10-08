@@ -1,0 +1,95 @@
+{
+  "examples_only": true,
+  "replace_paths_and_digest_values_with_observed_inputs": true,
+  "requests": {
+    "pack": {
+      "task_id": "review-1",
+      "goal": "Review a bounded change",
+      "required": [
+        {
+          "path": "docs/contract.md",
+          "role": "contract"
+        }
+      ],
+      "optional": [
+        {
+          "path": "src/module.py",
+          "start_line": 1,
+          "end_line": 40
+        }
+      ],
+      "budget_bytes": 8192
+    },
+    "prefix": {
+      "static_refs": [
+        {
+          "path": "docs/agent-policy.md",
+          "role": "instruction"
+        }
+      ],
+      "dynamic_tail": "Review unit-1",
+      "approved_content": true
+    },
+    "output-card": {
+      "path": "artifacts/build.log",
+      "observed_status": "failed",
+      "budget_bytes": 4096
+    },
+    "index": {
+      "kind": "evidence",
+      "path": "artifacts/execution.json",
+      "owner": "magia",
+      "label": "unit-tests"
+    },
+    "query": {
+      "kind": "evidence",
+      "owner": "magia",
+      "budget_bytes": 8192
+    },
+    "action-key": {
+      "task_class": "codegen",
+      "argv": [
+        "generator",
+        "--offline"
+      ],
+      "input_roots": [
+        "src"
+      ],
+      "toolchain_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "environment_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "config_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "policy_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "closure_complete": true,
+      "hermetic": true,
+      "network": false,
+      "requires_fresh": false,
+      "requires_independent": false
+    },
+    "usage": {
+      "provider": "generic",
+      "usage": {}
+    },
+    "delegate": {
+      "units": [
+        {
+          "id": "unit-1",
+          "effect": "write",
+          "owner": "magia"
+        }
+      ],
+      "required_verifier": true
+    },
+    "retrieval": {
+      "has_exact_refs": true,
+      "relationship_question": false,
+      "repeated_query": false,
+      "graph_available": false
+    },
+    "lease": {
+      "operation": "acquire",
+      "resource": "canonical-unit-1",
+      "holder": "writer-1",
+      "ttl_seconds": 60
+    }
+  }
+}

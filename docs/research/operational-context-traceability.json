@@ -1,0 +1,480 @@
+{
+  "schema_version": "1.0",
+  "mode": "create",
+  "scope": {
+    "research_question": "Implement the bounded 2026-10-08 efficiency findings within this skill owner for RhapsodIA 0.8.0.",
+    "target": "skills/operational-context",
+    "completeness_boundary": "corpus-bounded"
+  },
+  "identities": {
+    "research": {
+      "kind": "sha256",
+      "value": "023e725d57cd37989b21556442f7ba297c40b01da888410559145232cb44dc8e"
+    },
+    "target_baseline": {
+      "kind": "none",
+      "value": ""
+    },
+    "evaluators": {
+      "kind": "sha256",
+      "value": "32b1bad4183f4f9d95263a523c4b1c631804e0e3dcda06cd6b0c46f1013aa8a8"
+    }
+  },
+  "sources": [
+    {
+      "id": "S-001",
+      "title": "RhapsodIA token and latency research, 2026-10-08",
+      "locator": "efficiency-source-2026-10-08.md",
+      "authority": "user-provided",
+      "evidence_state": "pinned",
+      "identity": "023e725d57cd37989b21556442f7ba297c40b01da888410559145232cb44dc8e",
+      "notes": "Frozen bounded research; source/vendor numbers are not project benchmark results."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "statement": "Task context packs and stable prompt prefixes: required refs cannot be omitted; bounded UTF-8; verify content pins; deterministic prefix",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Reference packs, approved stable prefixes and output-card command with bounded payloads",
+      "requirement_ids": [
+        "R-001"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-002",
+      "statement": "Evidence and artifact reference indexes: stale/tampered/foreign scope never qualifies; source owner remains explicit",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Scope/owner/hash/TTL-bound artifact and evidence pointers",
+      "requirement_ids": [
+        "R-002"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-003",
+      "statement": "Deterministic action-result reference cache: input closure, command, environment, toolchain, policy and output changes miss; fresh/independent gates bypass cache",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Conservative action-result references with complete keys and fresh/independent bypass",
+      "requirement_ids": [
+        "R-003"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-004",
+      "statement": "Portable usage, telemetry and paired comparison: unknown metrics stay null; no prompt/log/secret collection; confounds rejected; no speedup claim from bytes",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Reported usage and strict paired measurement without invented counters",
+      "requirement_ids": [
+        "R-004"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-005",
+      "statement": "Cost-aware delegation and selective retrieval: one canonical writer; no fanout with unknown estimates/dependencies; mandatory verifier never removed",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Same-owner independent reader advice, serial defaults and selective retrieval",
+      "requirement_ids": [
+        "R-005"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-006",
+      "statement": "Runtime capabilities and typed failure observations: resolution never executes; validity bound to tool/source/TTL; transient failures expire",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-007",
+      "statement": "Incremental runtime handoffs: exact-parent acknowledgement, round-trip identity, bounded chain, full fallback; v1 preserved",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-008",
+      "statement": "Negotiated modern stdio MCP profile: 2025 profile unchanged; explicit 2026 stateless profile uses verified spec; no write tool",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-009",
+      "statement": "Optional graph projections and safe cross-workspace reference exchange: no graph dependency; explicit export/import; no local paths or authority transfer",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Selected path-free pointer exchange and observed reference graph patches",
+      "requirement_ids": [
+        "R-009"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-010",
+      "statement": "Cooperative leases and bounded discovery strategy statistics: TTL, token and generation checks; no stale lock stealing, no new execution authority",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Cooperative lease nonce/generation/expiry fencing, never writer authority",
+      "requirement_ids": [
+        "R-010"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-011",
+      "statement": "Agent integration, migration, synchronized full release: catalog/manifests/installers/regression tests; no loss of existing 52 skills or Local Graph v3",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Standalone compact control plane, progressive command schemas, portable resources and tests",
+      "requirement_ids": [
+        "R-011"
+      ],
+      "conflict_ids": []
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-001",
+      "statement": "Reference packs, approved stable prefixes and output-card command with bounded payloads. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-001"
+      ],
+      "change_ids": [
+        "C-001"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-002",
+      "statement": "Scope/owner/hash/TTL-bound artifact and evidence pointers. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-002"
+      ],
+      "change_ids": [
+        "C-002"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-003",
+      "statement": "Conservative action-result references with complete keys and fresh/independent bypass. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-003"
+      ],
+      "change_ids": [
+        "C-003"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-004",
+      "statement": "Reported usage and strict paired measurement without invented counters. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-004"
+      ],
+      "change_ids": [
+        "C-004"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-005",
+      "statement": "Same-owner independent reader advice, serial defaults and selective retrieval. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-005"
+      ],
+      "change_ids": [
+        "C-005"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-009",
+      "statement": "Selected path-free pointer exchange and observed reference graph patches. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-009"
+      ],
+      "change_ids": [
+        "C-009"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-010",
+      "statement": "Cooperative lease nonce/generation/expiry fencing, never writer authority. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-010"
+      ],
+      "change_ids": [
+        "C-010"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-011",
+      "statement": "Standalone compact control plane, progressive command schemas, portable resources and tests. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-011"
+      ],
+      "change_ids": [
+        "C-011"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "C-001",
+      "kind": "add",
+      "target": "skills/operational-context/scripts/oc_core/context.py",
+      "summary": "Reference packs, approved stable prefixes and output-card command with bounded payloads",
+      "status": "applied",
+      "satisfies": [
+        "R-001"
+      ]
+    },
+    {
+      "id": "C-002",
+      "kind": "add",
+      "target": "skills/operational-context/scripts/oc_core/registry.py",
+      "summary": "Scope/owner/hash/TTL-bound artifact and evidence pointers",
+      "status": "applied",
+      "satisfies": [
+        "R-002"
+      ]
+    },
+    {
+      "id": "C-003",
+      "kind": "add",
+      "target": "skills/operational-context/scripts/oc_core/actions.py",
+      "summary": "Conservative action-result references with complete keys and fresh/independent bypass",
+      "status": "applied",
+      "satisfies": [
+        "R-003"
+      ]
+    },
+    {
+      "id": "C-004",
+      "kind": "add",
+      "target": "skills/operational-context/scripts/oc_core/metrics.py",
+      "summary": "Reported usage and strict paired measurement without invented counters",
+      "status": "applied",
+      "satisfies": [
+        "R-004"
+      ]
+    },
+    {
+      "id": "C-005",
+      "kind": "add",
+      "target": "skills/operational-context/scripts/oc_core/policy.py",
+      "summary": "Same-owner independent reader advice, serial defaults and selective retrieval",
+      "status": "applied",
+      "satisfies": [
+        "R-005"
+      ]
+    },
+    {
+      "id": "C-009",
+      "kind": "add",
+      "target": "skills/operational-context/scripts/oc_core/sharing.py",
+      "summary": "Selected path-free pointer exchange and observed reference graph patches",
+      "status": "applied",
+      "satisfies": [
+        "R-009"
+      ]
+    },
+    {
+      "id": "C-010",
+      "kind": "add",
+      "target": "skills/operational-context/scripts/oc_core/sharing.py",
+      "summary": "Cooperative lease nonce/generation/expiry fencing, never writer authority",
+      "status": "applied",
+      "satisfies": [
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-011",
+      "kind": "add",
+      "target": "skills/operational-context/SKILL.md",
+      "summary": "Standalone compact control plane, progressive command schemas, portable resources and tests",
+      "status": "applied",
+      "satisfies": [
+        "R-011"
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "E-001",
+      "kind": "deterministic",
+      "description": "Frozen additive/seed checks run against the final implementation; original bytes preserved.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-009",
+        "R-010",
+        "R-011"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "validation-0.8.0.json: operational-context seed tests plus frozen identities",
+      "limitation": "Seed checks are not a held-out native-model evaluation and do not alone cover all requirements."
+    },
+    {
+      "id": "E-002",
+      "kind": "runtime",
+      "description": "Full target-owned local regression suite, including public CLI, freshness, invalid inputs and authority boundaries.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-009",
+        "R-010",
+        "R-011"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "python -I -S -B -m unittest discover -s skills/operational-context/tests -v; see validation-0.8.0.json Final evaluator identity: ../releases/evaluator-manifest-0.8.0.json (c95398c0f498cf01762f19096bc3bd10c291f233c720c20e47a773b63ed2902e).",
+      "limitation": "Linux/Python runtime only; Windows-specific PowerShell bootstrap is skipped where unavailable. Frozen for release acceptance after development; not a blind holdout."
+    },
+    {
+      "id": "E-003",
+      "kind": "review",
+      "description": "Manual ownership, direct-reference, trust, degradation and source-to-requirement review, supported by structural gates.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-009",
+        "R-010",
+        "R-011"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "efficiency-0.8.0.md and target SKILL.md/references; Juiced gate for new skill or static change gate for runtime. Final evaluator identity: ../releases/evaluator-manifest-0.8.0.json (c95398c0f498cf01762f19096bc3bd10c291f233c720c20e47a773b63ed2902e).",
+      "limitation": "Same-session review, not independent reviewer execution or measured behavioral improvement. Frozen for release acceptance after development; not a blind holdout."
+    },
+    {
+      "id": "E-004",
+      "kind": "runtime",
+      "description": "Native IDE/model execution and paid-token/end-to-end agent benchmark.",
+      "verifies": [
+        "R-011"
+      ],
+      "status": "not-run",
+      "frozen": true,
+      "evidence": "No provider credentials/native IDE execution capability was used. Final evaluator identity: ../releases/evaluator-manifest-0.8.0.json (c95398c0f498cf01762f19096bc3bd10c291f233c720c20e47a773b63ed2902e).",
+      "limitation": "Unavailable runtime; no speedup, token reduction or native-host compatibility proof is claimed. Frozen for release acceptance after development; not a blind holdout."
+    }
+  ],
+  "conflicts": []
+}

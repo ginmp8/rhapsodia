@@ -1,0 +1,418 @@
+{
+  "schema_version": "1.0",
+  "mode": "improve",
+  "scope": {
+    "research_question": "Implement the bounded 2026-10-08 efficiency findings within this skill owner for RhapsodIA 0.8.0.",
+    "target": "skills/runtime-harness",
+    "completeness_boundary": "corpus-bounded"
+  },
+  "identities": {
+    "research": {
+      "kind": "sha256",
+      "value": "023e725d57cd37989b21556442f7ba297c40b01da888410559145232cb44dc8e"
+    },
+    "target_baseline": {
+      "kind": "sha256",
+      "value": "7130c45c85bc51177efe5715349c31dbbdd338356ef9659ed360646cc7b2c5cf"
+    },
+    "evaluators": {
+      "kind": "sha256",
+      "value": "32b1bad4183f4f9d95263a523c4b1c631804e0e3dcda06cd6b0c46f1013aa8a8"
+    }
+  },
+  "sources": [
+    {
+      "id": "S-001",
+      "title": "RhapsodIA token and latency research, 2026-10-08",
+      "locator": "efficiency-source-2026-10-08.md",
+      "authority": "user-provided",
+      "evidence_state": "pinned",
+      "identity": "023e725d57cd37989b21556442f7ba297c40b01da888410559145232cb44dc8e",
+      "notes": "Frozen bounded research; source/vendor numbers are not project benchmark results."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "statement": "Task context packs and stable prompt prefixes: required refs cannot be omitted; bounded UTF-8; verify content pins; deterministic prefix",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-002",
+      "statement": "Evidence and artifact reference indexes: stale/tampered/foreign scope never qualifies; source owner remains explicit",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-003",
+      "statement": "Deterministic action-result reference cache: input closure, command, environment, toolchain, policy and output changes miss; fresh/independent gates bypass cache",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-004",
+      "statement": "Portable usage, telemetry and paired comparison: unknown metrics stay null; no prompt/log/secret collection; confounds rejected; no speedup claim from bytes",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-005",
+      "statement": "Cost-aware delegation and selective retrieval: one canonical writer; no fanout with unknown estimates/dependencies; mandatory verifier never removed",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Outside this skill owner; accounted in the companion skill trace and coordinated release map.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-006",
+      "statement": "Runtime capabilities and typed failure observations: resolution never executes; validity bound to tool/source/TTL; transient failures expire",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Receipt/tool-pinned capabilities and expiring typed discovery outcomes",
+      "requirement_ids": [
+        "R-006"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-007",
+      "statement": "Incremental runtime handoffs: exact-parent acknowledgement, round-trip identity, bounded chain, full fallback; v1 preserved",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Exact-parent acknowledged transport with immutable reconstruction and full fallback",
+      "requirement_ids": [
+        "R-007"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-008",
+      "statement": "Negotiated modern stdio MCP profile: 2025 profile unchanged; explicit 2026 stateless profile uses verified spec; no write tool",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Modern per-request read-only stdio profile alongside unchanged legacy behavior",
+      "requirement_ids": [
+        "R-008"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-009",
+      "statement": "Optional graph projections and safe cross-workspace reference exchange: no graph dependency; explicit export/import; no local paths or authority transfer",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Optional data-only observed capability relations with existing graph-patch contract",
+      "requirement_ids": [
+        "R-009"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-010",
+      "statement": "Cooperative leases and bounded discovery strategy statistics: TTL, token and generation checks; no stale lock stealing, no new execution authority",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Scope/target/PATH/TTL-bound discovery strategy statistics",
+      "requirement_ids": [
+        "R-010"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-011",
+      "statement": "Agent integration, migration, synchronized full release: catalog/manifests/installers/regression tests; no loss of existing 52 skills or Local Graph v3",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Idempotent opt-in host guidance and cache ignore rule without hidden hooks",
+      "requirement_ids": [
+        "R-011"
+      ],
+      "conflict_ids": []
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-006",
+      "statement": "Receipt/tool-pinned capabilities and expiring typed discovery outcomes. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-006"
+      ],
+      "change_ids": [
+        "C-006"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-007",
+      "statement": "Exact-parent acknowledged transport with immutable reconstruction and full fallback. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-007"
+      ],
+      "change_ids": [
+        "C-007"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-008",
+      "statement": "Modern per-request read-only stdio profile alongside unchanged legacy behavior. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-008"
+      ],
+      "change_ids": [
+        "C-008"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-009",
+      "statement": "Optional data-only observed capability relations with existing graph-patch contract. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-009"
+      ],
+      "change_ids": [
+        "C-009"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-010",
+      "statement": "Scope/target/PATH/TTL-bound discovery strategy statistics. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-010"
+      ],
+      "change_ids": [
+        "C-010"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003"
+      ]
+    },
+    {
+      "id": "R-011",
+      "statement": "Idempotent opt-in host guidance and cache ignore rule without hidden hooks. Preserve the existing owner and proof boundaries.",
+      "priority": "must",
+      "derived_from": [
+        "F-011"
+      ],
+      "change_ids": [
+        "C-011"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "C-006",
+      "kind": "add",
+      "target": "skills/runtime-harness/scripts/runtime_core/capabilities.py",
+      "summary": "Receipt/tool-pinned capabilities and expiring typed discovery outcomes",
+      "status": "applied",
+      "satisfies": [
+        "R-006"
+      ]
+    },
+    {
+      "id": "C-007",
+      "kind": "add",
+      "target": "skills/runtime-harness/scripts/runtime_core/delta.py",
+      "summary": "Exact-parent acknowledged transport with immutable reconstruction and full fallback",
+      "status": "applied",
+      "satisfies": [
+        "R-007"
+      ]
+    },
+    {
+      "id": "C-008",
+      "kind": "add",
+      "target": "skills/runtime-harness/scripts/runtime_core/mcp_modern.py",
+      "summary": "Modern per-request read-only stdio profile alongside unchanged legacy behavior",
+      "status": "applied",
+      "satisfies": [
+        "R-008"
+      ]
+    },
+    {
+      "id": "C-009",
+      "kind": "modify",
+      "target": "skills/runtime-harness/scripts/runtime_core/graph.py",
+      "summary": "Optional data-only observed capability relations with existing graph-patch contract",
+      "status": "applied",
+      "satisfies": [
+        "R-009"
+      ]
+    },
+    {
+      "id": "C-010",
+      "kind": "add",
+      "target": "skills/runtime-harness/scripts/runtime_core/capabilities.py",
+      "summary": "Scope/target/PATH/TTL-bound discovery strategy statistics",
+      "status": "applied",
+      "satisfies": [
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-011",
+      "kind": "modify",
+      "target": "skills/runtime-harness/scripts/runtime_core/integration.py",
+      "summary": "Idempotent opt-in host guidance and cache ignore rule without hidden hooks",
+      "status": "applied",
+      "satisfies": [
+        "R-011"
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "E-001",
+      "kind": "deterministic",
+      "description": "Frozen additive/seed checks run against the final implementation; original bytes preserved.",
+      "verifies": [
+        "R-006",
+        "R-007",
+        "R-008",
+        "R-009",
+        "R-010",
+        "R-011"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "validation-0.8.0.json: runtime-harness seed tests plus frozen identities",
+      "limitation": "Seed checks are not a held-out native-model evaluation and do not alone cover all requirements."
+    },
+    {
+      "id": "E-002",
+      "kind": "runtime",
+      "description": "Full target-owned local regression suite, including public CLI, freshness, invalid inputs and authority boundaries.",
+      "verifies": [
+        "R-006",
+        "R-007",
+        "R-008",
+        "R-009",
+        "R-010",
+        "R-011"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "python -I -S -B -m unittest discover -s skills/runtime-harness/tests -v; see validation-0.8.0.json Final evaluator identity: ../releases/evaluator-manifest-0.8.0.json (c95398c0f498cf01762f19096bc3bd10c291f233c720c20e47a773b63ed2902e).",
+      "limitation": "Linux/Python runtime only; Windows-specific PowerShell bootstrap is skipped where unavailable. Frozen for release acceptance after development; not a blind holdout."
+    },
+    {
+      "id": "E-003",
+      "kind": "review",
+      "description": "Manual ownership, direct-reference, trust, degradation and source-to-requirement review, supported by structural gates.",
+      "verifies": [
+        "R-006",
+        "R-007",
+        "R-008",
+        "R-009",
+        "R-010",
+        "R-011"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "efficiency-0.8.0.md and target SKILL.md/references; Juiced gate for new skill or static change gate for runtime. Final evaluator identity: ../releases/evaluator-manifest-0.8.0.json (c95398c0f498cf01762f19096bc3bd10c291f233c720c20e47a773b63ed2902e).",
+      "limitation": "Same-session review, not independent reviewer execution or measured behavioral improvement. Frozen for release acceptance after development; not a blind holdout."
+    },
+    {
+      "id": "E-004",
+      "kind": "runtime",
+      "description": "Native IDE/model execution and paid-token/end-to-end agent benchmark.",
+      "verifies": [
+        "R-011"
+      ],
+      "status": "not-run",
+      "frozen": true,
+      "evidence": "No provider credentials/native IDE execution capability was used. Final evaluator identity: ../releases/evaluator-manifest-0.8.0.json (c95398c0f498cf01762f19096bc3bd10c291f233c720c20e47a773b63ed2902e).",
+      "limitation": "Unavailable runtime; no speedup, token reduction or native-host compatibility proof is claimed. Frozen for release acceptance after development; not a blind holdout."
+    }
+  ],
+  "conflicts": []
+}

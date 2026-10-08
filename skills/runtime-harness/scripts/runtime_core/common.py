@@ -73,7 +73,7 @@ def safe_text(value, limit: int = 200) -> str:
 
 
 def relative_parts(value: str) -> list[str]:
-    if not value or any(c in value for c in "\\:%?#\x00") or any(ord(c) < 32 for c in value):
+    if not isinstance(value, str) or not value or any(c in value for c in "\\:%?#\x00") or any(ord(c) < 32 for c in value):
         raise RuntimeFault("UNSAFE_PATH", "Only canonical local relative resource paths are allowed.")
     parts = value.split("/")
     for part in parts:

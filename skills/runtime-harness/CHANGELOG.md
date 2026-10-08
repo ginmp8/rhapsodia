@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 - RhapsodIA 0.8.0
+
+Add tool/proof-pinned capability observations, typed discovery attempts and bounded
+strategy statistics, content-bound delta handoffs with complete fallback, and the
+2026-07-28 read-only stdio MCP profile with private discovery/list cache hints.
+Preserve 1.1.0 snapshot reading, v1 queries/full handoffs, legacy MCP initialization,
+local-only operation and all domain/verification authority boundaries.
+
+
 ## 1.1.0 - RhapsodIA 0.7.0
 
 - Make bootstrap minimal: eagerly record only the running Python plus bounded skill/agent catalogs.

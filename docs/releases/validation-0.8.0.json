@@ -1,0 +1,263 @@
+{
+  "schema": "rhapsodia-local-validation/v1",
+  "release": "0.8.0",
+  "date": "2026-10-08",
+  "status": "local-gates-pass-with-explicit-runtime-limitations",
+  "versions": {
+    "rhapsodia": "0.8.0",
+    "runtime-harness": "1.2.0",
+    "operational-context": "1.0.0"
+  },
+  "catalog": {
+    "skills": 53,
+    "agents": 7
+  },
+  "source_identity": {
+    "path": "source-manifest-0.8.0.json",
+    "sha256": "bc6c957934ebf1a06a8537b87483e273cd50363f04974bae35419cdba443b5d2",
+    "note": "Explicitly scoped non-report source identity; archive digest is recorded externally after packaging."
+  },
+  "environment": {
+    "os": "Linux",
+    "python": "3.13.5",
+    "third_party_packages_required_for_new_runtime": false
+  },
+  "test_totals": {
+    "collected": 252,
+    "passed": 251,
+    "skipped": 1,
+    "failed": 0
+  },
+  "suites": [
+    {
+      "name": "operational-context",
+      "status": "pass",
+      "collected": 49,
+      "passed": 49,
+      "skipped": 0,
+      "duration_seconds": 1.457,
+      "command": "python -I -S -B -m unittest discover -s skills/operational-context/tests -v",
+      "log_sha256": "5f3fff1a03831c47f63b90dc92f7203d052a91ed16a569600b763fd8ad62d2dc",
+      "skip_reason": null
+    },
+    {
+      "name": "runtime-harness",
+      "status": "pass-with-skip",
+      "collected": 108,
+      "passed": 107,
+      "skipped": 1,
+      "duration_seconds": 7.131,
+      "command": "python -I -S -B -m unittest discover -s skills/runtime-harness/tests -v",
+      "log_sha256": "8b29bffbd85c6f4d3c472613da0d79bfb0cfa4b8d93aeb1532563e8529ede672",
+      "skip_reason": "PowerShell unavailable on this Linux host"
+    },
+    {
+      "name": "root-integration",
+      "status": "pass",
+      "collected": 95,
+      "passed": 95,
+      "skipped": 0,
+      "modules": [
+        {
+          "module": "test_artifact_native_e2e.py",
+          "tests": 1,
+          "status": "pass",
+          "duration_seconds": 12.745,
+          "log_sha256": "9ed10ed858e5bad894e974351f14e4754aaf4fdd591222d3ed79fa75f9735004",
+          "command": "python -B -m unittest discover -s tests -p test_artifact_native_e2e.py -v"
+        },
+        {
+          "module": "test_install_agents.py",
+          "tests": 5,
+          "status": "pass",
+          "duration_seconds": 5.878,
+          "log_sha256": "7976f5452fb543948759880fdf3b65937801fe9c87ba8d1c26092fc08daff2bb",
+          "command": "python -B -m unittest discover -s tests -p test_install_agents.py -v"
+        },
+        {
+          "module": "test_marketplace_manifests.py",
+          "tests": 9,
+          "status": "pass",
+          "duration_seconds": 2.103,
+          "log_sha256": "a944ec8d852c822b2ebf24d05585e1b47cdcebd007d19c435104e9eae038e04b",
+          "command": "python -B -m unittest discover -s tests -p test_marketplace_manifests.py -v"
+        },
+        {
+          "module": "test_native_artifacts.py",
+          "tests": 13,
+          "status": "pass",
+          "duration_seconds": 23.32,
+          "log_sha256": "a7de5ce63ee5a084611fdcb9c52a9e94b1b91596430e6456cfb607064ebb2f34",
+          "command": "python -B -m unittest discover -s tests -p test_native_artifacts.py -v"
+        },
+        {
+          "module": "test_native_execution.py",
+          "tests": 15,
+          "status": "pass",
+          "duration_seconds": 24.835,
+          "log_sha256": "03092b3b55665e519c28f70e4b7856350b7b0bdec194e42cd00dfc46f32275b8",
+          "command": "python -B -m unittest discover -s tests -p test_native_execution.py -v"
+        },
+        {
+          "module": "test_native_migration.py",
+          "tests": 14,
+          "status": "pass",
+          "duration_seconds": 25.329,
+          "log_sha256": "1ca7558e723e50725c6a1408974faadb7101cb2ee4dcb13556029f2a964c3b42",
+          "command": "python -B -m unittest discover -s tests -p test_native_migration.py -v"
+        },
+        {
+          "module": "test_release_versions.py",
+          "tests": 5,
+          "status": "pass",
+          "duration_seconds": 1.897,
+          "log_sha256": "e37a25bb4b6adaf6e2030c0d242db6badc7af9fa5ff8f9d0e5cd15932fb424c1",
+          "command": "python -B -m unittest discover -s tests -p test_release_versions.py -v"
+        },
+        {
+          "module": "test_runtime_integration.py",
+          "tests": 11,
+          "status": "pass",
+          "duration_seconds": 0.127,
+          "log_sha256": "53e5fbdc6bef47a84133e9f34913849d16bbe61cd4bc62a4a4e95b5da28dc01f",
+          "command": "python -B -m unittest discover -s tests -p test_runtime_integration.py -v"
+        },
+        {
+          "module": "test_validate_agents.py",
+          "tests": 17,
+          "status": "pass",
+          "duration_seconds": 14.214,
+          "log_sha256": "2a800dc8e930a36f6caa33d835dd393fb5d30f3d0742361f1a980389f40af3c6",
+          "command": "python -B -m unittest discover -s tests -p test_validate_agents.py -v"
+        },
+        {
+          "module": "test_workspace_agent_contract.py",
+          "tests": 5,
+          "status": "pass",
+          "duration_seconds": 0.003,
+          "log_sha256": "ca27937a34a99e8434c55bb2ec9fac021d4e07b1b47ebddf9f3d1eb3a9b40c72",
+          "command": "python -B -m unittest discover -s tests -p test_workspace_agent_contract.py -v"
+        }
+      ],
+      "execution_note": "All modules completed independently; earlier aggregate invocations exceeded tool execution limits and are not counted as passes."
+    }
+  ],
+  "frozen_seed_runs": {
+    "operational_seed": {
+      "tests": 11,
+      "status": "pass",
+      "log_sha256": "6e2c2e2d0c5d4f2445feb5005937a4d47635379f8adf4113de6f692d171b2766"
+    },
+    "runtime_additive_seed": {
+      "tests": 14,
+      "status": "pass",
+      "log_sha256": "f2985e54ed7498e534ca07a638a380f94819d7ef07a591c42b4d610e91704378"
+    },
+    "note": "Not added to the main total; runtime seed cases also appear in target regression coverage."
+  },
+  "checks": [
+    {
+      "name": "Skill Creator Juiced new-skill structural/portability gate",
+      "status": "pass",
+      "report_sha256": "98b3f8365c3f4763be58f28452444dce34d8096ea2f898985fc596a14dfca81f",
+      "limitation": null
+    },
+    {
+      "name": "New skill standalone package validator",
+      "status": "pass",
+      "report_sha256": "7a7b946122e27189e76e0a2129ccd3db880f4c2a44b92a07ce25a46dfb256a75",
+      "limitation": null
+    },
+    {
+      "name": "Skill Creator Juiced validated package commit",
+      "status": "pass",
+      "report_sha256": "9acd5f364aebf9dccb57a0f71f62749c7d899fac9b06dc35caa35615d167790c",
+      "limitation": null
+    },
+    {
+      "name": "Runtime additive static change gate",
+      "status": "pass",
+      "report_sha256": "8bcffbade19c4c5f5c627cf384aec57f8acad4d884039417ac461ffd470527ae",
+      "limitation": null
+    },
+    {
+      "name": "Operational Context research trace accounting",
+      "status": "warn",
+      "report_sha256": "92da2c6c49b21c93dfdaff48932e7332e4150c0230c307ced378791285883c57",
+      "limitation": "Trace warn means unavailable native-host/model execution, not a failed local check."
+    },
+    {
+      "name": "Runtime Harness research trace accounting",
+      "status": "warn",
+      "report_sha256": "f7279941d058b3816e10f7bf071a1f3bae3be4cc06eae03194dd1f776cde727a",
+      "limitation": "Trace warn means unavailable native-host/model execution, not a failed local check."
+    },
+    {
+      "name": "Version Release Governance decision validator",
+      "status": "pass",
+      "report_sha256": "d90981f26892befd628367396c57c9338be77e649a16545903fbd3df7e4da591",
+      "limitation": null
+    },
+    {
+      "name": "Release bundle/changelog/notes consistency",
+      "status": "pass",
+      "report_sha256": "e82c474114138f83e2c88a903e351dc04c339f3eda5439263fc3f7ccab4b17ea",
+      "limitation": null
+    }
+  ],
+  "preservation": {
+    "status": "pass",
+    "baseline_archive_unchanged": true,
+    "unrelated_skill_directories_unchanged": 51,
+    "frozen_evaluators": {
+      "acceptance.json": "32b1bad4183f4f9d95263a523c4b1c631804e0e3dcda06cd6b0c46f1013aa8a8",
+      "test_operational_seed.py": "b102c5c5d82b5f365658c0b55ed9e2ceff61a77c3bcb39e7cf24484d10784872",
+      "test_runtime_080.py": "a7766691076f024d0d0f3fd0d8c2522caa810bbd23f57d8f430e7896d24b3c33"
+    }
+  },
+  "new_skill_package": {
+    "excluded": [],
+    "file_count": 35,
+    "sha256": "ae1127287a46732d64b7935ab02f4409260825e90da905f9b74cfcce639105c7",
+    "size_bytes": 59929,
+    "source_tree_sha256": "ebbc76271eee47584766faf52bf1f772a28108e35a454f0eebfd01f709cdee52"
+  },
+  "semantic_acceptance": {
+    "scope": "local-acceptance",
+    "reviewer": "same-session author review",
+    "status": "pass-with-warnings",
+    "rules": "review-policy-0.8.0.json",
+    "not_independent": true,
+    "notes": [
+      "Runtime script surface expanded by explicit requested features; no new shell/write MCP tool or mandatory dependency.",
+      "Juiced heuristic orphan/external-import warnings refer to bundled oc_core modules; isolated CLI/package tests pass.",
+      "General cross-workspace trust and test-result approval are intentionally not implemented; their safe bounded substitutes are documented."
+    ]
+  },
+  "not_run": [
+    {
+      "check": "Native IDE/model distribution surfaces",
+      "reason": "No native host/model integration execution in this run; structural mappings do not prove routing behavior."
+    },
+    {
+      "check": "Windows/macOS execution",
+      "reason": "CI matrix is configured but not executed here; one PowerShell bootstrap test skipped."
+    },
+    {
+      "check": "Paid-token and end-to-end agent latency benchmark",
+      "reason": "No paired real-model experiment or billing data; no percentage-saving or speedup claim."
+    },
+    {
+      "check": "All tests in all 51 unchanged skills",
+      "reason": "Their source bytes are identical; root ecosystem integration and the changed skills were tested, not every unrelated skill suite."
+    }
+  ],
+  "claim_limits": {
+    "token_reduction_measured": false,
+    "agent_speedup_measured": false,
+    "independent_review_executed": false,
+    "native_host_matrix_executed": false,
+    "local_graph_version_preserved": true
+  },
+  "adoption": "../runtime/MIGRATION-0.8.0.md"
+}

@@ -1,0 +1,42 @@
+{
+  "workflow": "skill-creator-juiced",
+  "mode": "create",
+  "origin": "synthesize-from-artifacts",
+  "artifact_selection": {
+    "selected": "one-skill-with-modes",
+    "reason": "Reusable task-scoped derived context and reference workflows; no always-on service or new agent authority."
+  },
+  "alternative_rejected": "A second workflow engine or a global canonical memory store.",
+  "baseline": "without-skill CLI unavailable; frozen deterministic seed demonstrated missing implementation before authoring it.",
+  "seed_scenarios": 11,
+  "top100_control_plane_required": true,
+  "dependency_model": "Python standard library; no peer runtime imports",
+  "reproducibility": {
+    "routing": "checklist-only",
+    "mechanical": "Canonical JSON, source hashes, exact fields, bounded paths/locks, immutable objects and frozen seed.",
+    "heuristic": "Declared reference ordering and conservative delegation margin.",
+    "judgment": "Owner selection, true relevance, hermeticity completeness, authorization and canonical gate acceptance remain with owner.",
+    "external": "Provider usage/model outcomes/host capabilities unavailable unless explicitly supplied; null/not-run."
+  },
+  "protected": "Original source ZIP, baseline, frozen seed evaluator expectations, unrelated skills and canonical domain contracts.",
+  "semantic_profiles": [
+    "portable-core",
+    "openai",
+    "codex",
+    "claude",
+    "copilot",
+    "cursor"
+  ],
+  "surfaces": [
+    "chatgpt",
+    "openai-api",
+    "codex",
+    "claude-code",
+    "copilot-vscode",
+    "copilot-visual-studio",
+    "cursor"
+  ],
+  "native_host_routing": "not-run",
+  "real_model_efficiency_benchmark": "not-run",
+  "reasons": "No paid/native model sessions; local CLI/behavior checks are separate evidence."
+}

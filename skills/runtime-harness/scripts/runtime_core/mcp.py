@@ -44,6 +44,9 @@ class Session:
             return None
         if not isinstance(params, dict):
             return failure(id, -32602, "Parameters must be an object")
+        from .mcp_modern import selected, handle
+        if selected(method, params):
+            return handle(self.store, id, method, params, TOOL, PROTOCOLS)
         if method == "ping":
             return {"jsonrpc": "2.0", "id": id, "result": {}}
         if method == "initialize":

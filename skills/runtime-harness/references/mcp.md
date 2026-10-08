@@ -1,28 +1,41 @@
-# Bounded read-only MCP profile
+# Bounded read-only, dual-era MCP profile
 
-Explicitly start `<PYTHON> -I -S -B scripts/runtime.py --workspace <ROOT> mcp` only after
-initialization. The process uses newline-delimited UTF-8 JSON-RPC on stdio, no HTTP or
-listener. EOF ends it. Diagnostics/errors remain protocol-safe. Request frames are
-bounded to 64 KiB; oversized frames fail and terminate instead of buffering indefinitely.
+Start `<PYTHON> -I -S -B scripts/runtime.py --workspace <ROOT> mcp` after initialization.
+Newline-delimited UTF-8 JSON-RPC over stdio only; no HTTP/listener. EOF terminates. Frames
+are at most 64 KiB and stdout remains protocol-only. The one tool is `runtime_query`.
 
-Supported negotiated versions: `2025-11-25`, `2025-06-18`. An unsupported client version
-receives the server's preferred supported version; the client must decide compatibility.
-This is an explicitly bounded profile, not a latest-version or full-conformance claim.
+## Modern 2026-07-28
 
-Supported methods: `initialize`, `notifications/initialized`, `ping`, `tools/list`,
-`tools/call`. Calls require the initialization handshake. There is exactly one tool,
-`runtime_query`, with the same schema and read-only resolver as the CLI. No mutation,
-bootstrap, command execution, arbitrary SQL, sampling, tasks, resources, OAuth or
-network capability is advertised. Tool pagination is unnecessary for this fixed surface.
+Each request includes `params._meta` with `io.modelcontextprotocol/protocolVersion` set
+to `2026-07-28` and `io.modelcontextprotocol/clientCapabilities` as an object. No handshake
+is required and modern requests do not modify legacy session state. `server/discover`
+returns supported versions, tool capability and self-reported server information.
 
-Tool results include `structuredContent` and backward-compatible text. Therefore the
-query's `output_bytes` measures the canonical application JSON, not the larger MCP
-message, duplicate text representation, client prompt, or billed tokens. Count those
-at the host boundary for an end-to-end performance claim. No unsupported cache TTL or
-stateless-HTTP extension has been added based on speculative protocol changes.
+`server/discover` and `tools/list` return resultType complete, ttlMs 60000 and cacheScope
+private. This caches stable discovery/catalog metadata, not live tool results. `tools/call`
+and ping include resultType complete; tool calls have no cacheability hint. Missing modern
+metadata is -32602; unsupported versions are -32022 with supported/requested data.
+Modern methods: server/discover, ping, tools/list, tools/call. No unimplemented extension
+or capability is advertised. This remains a narrow stdio profile, not a full-conformance
+claim across every protocol method, transport, SDK or IDE.
 
-The MCP process does not refresh state implicitly. Missing/stale state returns a
-structured tool error; the authorized bootstrap owner refreshes once and retries.
-`mcp-config` prints argv only and never edits a client configuration or starts a server.
-The local stdio profile assumes an already authorized client launched it; it is not a
-multi-user authentication service. Primary specifications: [sources](sources.md).
+## Legacy preserved
+
+2025-11-25 and 2025-06-18 retain initialize plus notifications/initialized before tool calls.
+Unknown initialize versions receive the preferred legacy supported version and the client
+must decide compatibility. Modern calls can coexist without implicitly initializing legacy.
+Older handoff/query formats are unchanged. No speculative stateless HTTP adapter is added.
+
+## Authority and measurement
+
+Query paths never discover, write state, execute processes or authorize work. Missing or
+stale state produces an error; an already-authorized worker refreshes explicitly. The
+process assumes an authorized local client, not a multi-user authentication service.
+
+Tool results include structuredContent and backward-compatible text. Application output_bytes
+is not transport frame size or billed tokens. Whether a client places both representations
+in the prompt must be measured there; this adapter does not silently remove compatibility.
+No native IDE/client certification or actual token saving follows from local stdio tests.
+
+Specifications: 2026-07-28 server/discover, basic/versioning, basic/transports/stdio,
+server/tools and server/utilities/caching. URLs and retrieval date are recorded in sources.
