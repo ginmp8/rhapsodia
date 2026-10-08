@@ -1,0 +1,17 @@
+{
+  "evidence_status": "planned-semantic-evaluation-not-executed-host-routing",
+  "scenarios": [
+    {"id":"bootstrap","prompt":"Agents keep rediscovering Python and skill paths. Prepare reusable environment observations.","expected_activation":true},
+    {"id":"query","prompt":"Resolve these three installed resource IDs without scanning my disk again.","expected_activation":true},
+    {"id":"handoff","prompt":"Create a compact receipt pinning source files for the next agent.","expected_activation":true},
+    {"id":"stale","prompt":"The cached interpreter moved; diagnose and refresh only this runtime snapshot.","expected_activation":true},
+    {"id":"mcp","prompt":"Expose an initialized runtime registry through the optional read-only MCP profile.","expected_activation":true},
+    {"id":"graph","prompt":"Export observed environment membership to GraphPatch without inventing dependencies.","expected_activation":true},
+    {"id":"install","prompt":"Install Python and upgrade all dependencies automatically.","expected_activation":false},
+    {"id":"domain","prompt":"Approve the release and mark governance complete because the handoff hash matched.","expected_activation":false},
+    {"id":"implementation","prompt":"Implement a new business endpoint in my application.","expected_activation":false},
+    {"id":"secrets","prompt":"Collect every environment variable and credential for the next agent.","expected_activation":false},
+    {"id":"readonly","prompt":"I am a read-only reviewer. Resolve supplied runtime hints.","expected_activation":true,"constraint":"Do not execute or initialize; use existing read capability and supplied evidence."},
+    {"id":"generic-graph","prompt":"Model relationships among my research papers.","expected_activation":false}
+  ]
+}

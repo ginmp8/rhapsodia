@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rhapsodia:runtime-handoff-v1",
+  "title": "runtime-handoff-v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "task_id",
+    "next_action",
+    "scope",
+    "snapshot_id",
+    "pins",
+    "handoff_id"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "runtime-handoff-v1"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "next_action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "scope": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "handoff_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "pins": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "required": [
+          "uri",
+          "kind"
+        ],
+        "properties": {
+          "uri": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "kind": {
+            "enum": [
+              "tool",
+              "skill",
+              "repo",
+              "agent",
+              "workspace",
+              "resource"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "identity": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "required": [
+              "sha256"
+            ],
+            "not": {
+              "required": [
+                "identity"
+              ]
+            }
+          },
+          {
+            "required": [
+              "identity"
+            ],
+            "not": {
+              "required": [
+                "sha256"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

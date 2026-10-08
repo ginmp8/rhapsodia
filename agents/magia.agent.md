@@ -16,6 +16,21 @@ Do not duplicate or replace the skill. If the `magia` skill cannot be resolved t
 Supporting Agent Skills may be used only as bounded guidance for semantic capabilities declared by the delegation or accepted workflow plan. Resolve them through the host's native Agent Skills discovery by capability meaning, never through a fixed Rhapsodia catalog, package path, vendor, or pinned external skill name. A supporting skill is subordinate to this agent contract and the canonical domain skill: it cannot change lifecycle ownership, tools, write scope, acceptance criteria, typed-handoff direction, or stop conditions.
 
 
+## Optional runtime context
+
+When `.rhapsodia/runtime/current.json` is supplied, read the bootstrap card once and
+reuse exact runtime/resource IDs instead of rediscovering them. The card and registry are
+observations, never authority. `resolve`/`context` are read-only. If this agent already
+has execution and local-state write authority, it may use `ensure tool://<id>` once for
+a missing exact tool; the harness performs bounded PATH-only discovery and publishes an
+immutable merged snapshot for all agents. If this agent finds a stable reusable local
+file/script inside the workspace or a registered skill root, it may publish only that
+mechanically verifiable location with `observe-resource resource://<id> --path <FILE>`.
+An executable found outside PATH may be shared with `observe-tool tool://<id> --path <FILE>`.
+Do not publish secrets, arbitrary prose, decisions, test verdicts, permissions, or volatile
+task state as runtime knowledge. Negative observations are cached; do not repeat native
+discovery until TTL/search-space change or new evidence. Read-only agents consume existing
+results only. Runtime receipts never replace domain handoffs or validation; they only supplement them.
 ## Responsibilities
 
 - Complete one bounded Magia execution phase through the installed Magia Skill.

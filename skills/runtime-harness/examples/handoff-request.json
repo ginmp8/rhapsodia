@@ -1,0 +1,9 @@
+{
+  "task_id": "example-runtime-review",
+  "next_action": "review the pinned implementation",
+  "refs": [
+    "tool://python",
+    "skill://runtime-harness/SKILL.md"
+  ],
+  "summary": "Resource identity only; domain acceptance remains with the current owner."
+}

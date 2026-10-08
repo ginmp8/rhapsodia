@@ -129,7 +129,7 @@ def main():
             for error in errors:
                 print(f"ERROR: {error}", file=sys.stderr)
             return 1
-        print("PASS: six agent profiles match the package source and required nomia/mago/magia/test-oracle-engineering skills are discoverable.")
+        print(f"PASS: {len(AGENT_FILES)} agent profiles match the package source and required nomia/mago/magia/test-oracle-engineering skills are discoverable.")
         return 0
 
     errors, plan = install(target, dry_run=args.dry_run, force=args.force)
@@ -143,7 +143,7 @@ def main():
     if args.dry_run:
         print("PASS: dry-run only; target was not modified.")
     else:
-        print("PASS: six agent profiles installed to .github/agents/. Required skills were verified but not copied.")
+        print(f"PASS: {len(AGENT_FILES)} agent profiles installed to .github/agents/. Required skills were verified but not copied.")
     return 0
 
 

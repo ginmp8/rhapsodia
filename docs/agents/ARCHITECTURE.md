@@ -326,3 +326,14 @@ authorized objective
 The first control plane is compile-to-workflow: an LLM/planner may synthesize topology, while a bounded runtime owns execution state and hard limits. The second is reference-grounded convergence: a frozen oracle and ordered gates decide whether an increment may advance.
 
 Composition has one invariant: **one progression owner at a time**. Nested subflows return evidence; they do not acquire the caller's promotion authority. This prevents two controllers from independently deciding that the same work may advance.
+
+## Optional runtime context (0.7.0)
+
+Agents may consume the compact Runtime Harness card and exact shared observations without
+changing canonical domain ownership. Read-only agents only reuse existing observations.
+An agent that already has execution/local-state write authority may lazily `ensure` one
+missing exact tool and publish stable mechanically verifiable resource locations; each
+publication merges into a new immutable snapshot for later agents. Arbitrary prose,
+permissions, domain decisions and validation verdicts are not runtime knowledge. Runtime
+receipts supplement handoff/v1 and ecosystem handoff v3; they never replace them. See
+[Runtime Harness](../../skills/runtime-harness/README.md).

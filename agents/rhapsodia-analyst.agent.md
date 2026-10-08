@@ -16,6 +16,21 @@ When the parent packet names `nomia`, `mago`, or `magia` as `domain_owner`, use 
 
 The packet may also declare required or optional **supporting semantic capabilities**. Resolve only the minimum matching Agent Skills through the host's native discovery mechanism, without a fixed Rhapsodia catalog or pinned external skill name. Supporting skills remain read-only guidance here even if their standalone instructions normally permit mutation; this Analyst's tool/authority boundary always wins.
 
+## Optional runtime context
+
+When `.rhapsodia/runtime/current.json` is supplied, read the bootstrap card once and
+reuse exact runtime/resource IDs instead of rediscovering them. The card and registry are
+observations, never authority. `resolve`/`context` are read-only. If this agent already
+has execution and local-state write authority, it may use `ensure tool://<id>` once for
+a missing exact tool; the harness performs bounded PATH-only discovery and publishes an
+immutable merged snapshot for all agents. If this agent finds a stable reusable local
+file/script inside the workspace or a registered skill root, it may publish only that
+mechanically verifiable location with `observe-resource resource://<id> --path <FILE>`.
+An executable found outside PATH may be shared with `observe-tool tool://<id> --path <FILE>`.
+Do not publish secrets, arbitrary prose, decisions, test verdicts, permissions, or volatile
+task state as runtime knowledge. Negative observations are cached; do not repeat native
+discovery until TTL/search-space change or new evidence. Read-only agents consume existing
+results only. Runtime receipts never replace domain handoffs or validation; they only supplement them.
 ## Responsibilities
 
 - Inspect only the evidence needed for one work unit.

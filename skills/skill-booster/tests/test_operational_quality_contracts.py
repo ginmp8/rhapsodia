@@ -33,3 +33,9 @@ def test_safety_contract_separates_runtime_trust_and_authority() -> None:
     assert "permitted authority" in policy
     assert "forbidden authority" in policy
     assert "time/version-bound guidance" in policy
+
+if __name__ == "__main__":
+    test_control_plane_exposes_trace_and_runtime_trust()
+    test_evaluation_contract_covers_catalog_trace_judge_and_field_evidence()
+    test_safety_contract_separates_runtime_trust_and_authority()
+    print("ok")
