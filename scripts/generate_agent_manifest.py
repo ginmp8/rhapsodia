@@ -28,10 +28,10 @@ def render(version:str)->dict:
 def main()->int:
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument("--package-version");ap.add_argument("--check",action="store_true");a=ap.parse_args()
  version=a.package_version or catalog_version()
- expected=json.dumps(render(version),indent=2,ensure_ascii=False)+"\n"
+ expected=(json.dumps(render(version),indent=2,ensure_ascii=False)+"\n").encode("utf-8")
  if a.check:
-  if not MANIFEST.is_file() or MANIFEST.read_text(encoding="utf-8")!=expected:
+  if not MANIFEST.is_file() or MANIFEST.read_bytes()!=expected:
    print("MANIFEST.json is out of sync");return 1
   print("MANIFEST.json is in sync");return 0
- MANIFEST.write_text(expected,encoding="utf-8");print("generated MANIFEST.json");return 0
+ MANIFEST.write_bytes(expected);print("generated MANIFEST.json");return 0
 if __name__=="__main__":raise SystemExit(main())

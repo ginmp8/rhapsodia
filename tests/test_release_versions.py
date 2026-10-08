@@ -1,4 +1,4 @@
-import json,subprocess,sys,tempfile,unittest,zipfile
+import importlib.util,json,shutil,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 RELEASE="0.8.0"
@@ -18,6 +18,26 @@ class Tests(unittest.TestCase):
   engine=(ROOT/"skills/local-graph-engine/contracts/graph-view-v1.schema.json").read_bytes();viewer=(ROOT/"skills/local-graph-explorer/contracts/graph-view-v1.schema.json").read_bytes();self.assertEqual(engine,viewer)
  def test_release_validator(self):
   r=subprocess.run([sys.executable,str(ROOT/"scripts"/"validate_release_versions.py"),"--expected-version",RELEASE],cwd=ROOT);self.assertEqual(r.returncode,0)
+ def test_agent_manifest_check_detects_line_ending_drift(self):
+  src=ROOT/"scripts/generate_agent_manifest.py"
+  spec=importlib.util.spec_from_file_location("agent_manifest_generator",src)
+  generator=importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(generator)
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp)
+   for relative in (*generator.AGENT_SURFACE,"marketplace/catalog.json","scripts/generate_agent_manifest.py"):
+    target=root/relative;target.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copyfile(ROOT/relative,target)
+   runner=[sys.executable,"-I","-S","-B",str(root/"scripts/generate_agent_manifest.py")]
+   result=subprocess.run(runner,cwd=root,capture_output=True,text=True)
+   self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+   manifest=root/"MANIFEST.json"
+   original=manifest.read_bytes()
+   self.assertNotIn(b"\r\n",original,"Generator must emit LF on every platform")
+   manifest.write_bytes(original.replace(b"\n",b"\r\n"))
+   check=subprocess.run([*runner,"--check"],cwd=root,capture_output=True,text=True)
+   self.assertNotEqual(check.returncode,0,"Check must catch byte-level EOL drift")
+
  def test_release_archive_contains_expected_files(self):
   with tempfile.TemporaryDirectory() as td:
    out=Path(td)/"release.zip"
