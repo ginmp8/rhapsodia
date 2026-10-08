@@ -274,14 +274,20 @@ class RuntimeTests(unittest.TestCase):
     def test_configure_preserves_existing_host_instructions(self):
         self.init()
         p = self.root / "AGENTS.md"
-        p.write_text("# Existing policy\nNever expand authority.\n", encoding="utf-8")
-        original = p.read_bytes()
-        self.command("configure", "--host", "generic")
-        first = p.read_bytes()
-        self.assertTrue(first.startswith(original))
-        self.assertIn(b".rhapsodia/runtime/current.json", first)
-        self.command("configure", "--host", "generic")
-        self.assertEqual(first, p.read_bytes())
+        # Exercise both newline encodings on every OS, without text-mode translation.
+        for newline in (b"\n", b"\r\n"):
+            with self.subTest(newline=repr(newline)):
+                original = newline.join((b"# Existing policy", b"Never expand authority.", b""))
+                p.write_bytes(original)
+                self.command("configure", "--host", "generic")
+                first = p.read_bytes()
+                self.assertTrue(first.startswith(original),
+                                f"Existing instructions were not preserved: expected prefix={original!r}, "
+                                f"actual prefix={first[:len(original)]!r}")
+                self.assertEqual(first.count(b"<!-- rhapsodia-runtime:start -->"), 1)
+                self.assertIn(b".rhapsodia/runtime/current.json", first)
+                self.command("configure", "--host", "generic")
+                self.assertEqual(first, p.read_bytes())
 
     def test_configure_all_hosts_is_opt_in_and_idempotent(self):
         self.init()
