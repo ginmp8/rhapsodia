@@ -149,6 +149,7 @@ class SafetyPerformanceTests(unittest.TestCase):
         self.assertIn("-S", current["runtime_argv"])
         self.assertNotIn("-S", current["python_argv"])
 
+    @unittest.skipIf(os.name == "nt", "Native Windows Python uses the PowerShell launcher; Git Bash sh is not a POSIX Python environment")
     @unittest.skipUnless(shutil.which("sh"), "POSIX shell not available; PowerShell adapter is tested separately")
     def test_posix_launcher_avoids_sitecustomize(self):
         marker = self.root / "site-was-loaded"

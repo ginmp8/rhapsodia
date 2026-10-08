@@ -62,29 +62,28 @@ def _resource_descriptor(snapshot: dict, path: Path) -> tuple[str, str | None, s
     absolute = Path(os.path.abspath(path))
     if absolute.is_symlink() or not absolute.is_file():
         raise RuntimeFault("INVALID_INPUT", "Shared resources must be existing nonsymlink files.")
-    # Prefer a registered skill base when applicable so another workspace can rebind it.
+    # Match the *ancestor* that denotes an approved root, not the entire resolved
+    # file path. Windows 8.3 names (RUNNER~1) and long names may identify the
+    # same directory; resolving the file first would erase descendant symlinks.
+    ancestors = {parent.resolve(): parent for parent in absolute.parents}
     candidates = []
-    for name, skill in snapshot["skills"].items():
-        root = Path(skill["root"])
-        try:
-            rel = absolute.relative_to(root)
-        except ValueError:
+    approved = [("workspace", None, Path(snapshot["workspace"]))]
+    approved.extend(("skill", name, Path(skill["root"])) for name, skill in snapshot["skills"].items())
+    for base, owner, root in approved:
+        parent = ancestors.get(root.resolve())
+        if parent is None:
             continue
-        candidates.append((len(root.parts), "skill", name, root, rel))
-    workspace = Path(snapshot["workspace"])
-    try:
-        rel = absolute.relative_to(workspace)
-    except ValueError:
-        pass
-    else:
-        candidates.append((len(workspace.parts), "workspace", None, workspace, rel))
+        rel = absolute.relative_to(parent)
+        # Check *every* approved enclosing root, not only the deepest one:
+        # a symlink inside the workspace cannot bypass the check by pointing
+        # at a registered skill root deeper in the same workspace.
+        safe = confined(root, rel.as_posix())
+        if not safe.is_file() or not safe.samefile(absolute):
+            raise RuntimeFault("UNSAFE_PATH", "Resource path did not resolve inside its approved root.")
+        candidates.append((len(root.parts), base, owner, rel.as_posix()))
     if not candidates:
         raise RuntimeFault("UNSAFE_PATH", "Shared resources must be inside the workspace or a registered skill root.")
-    _, base, owner, root, rel = max(candidates, key=lambda item: item[0])
-    rel_text = rel.as_posix()
-    safe = confined(root, rel_text)
-    if safe != absolute:
-        raise RuntimeFault("UNSAFE_PATH", "Resource path did not resolve inside its approved root.")
+    _, base, owner, rel_text = max(candidates, key=lambda item: item[0])
     return base, owner, rel_text
 
 

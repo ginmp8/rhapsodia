@@ -120,7 +120,7 @@ class IncrementalDiscoveryTests(unittest.TestCase):
         resolved = self.call("resolve", "resource://build/validator")
         record = resolved["records"][0]
         self.assertEqual(record["status"], "available")
-        self.assertEqual(Path(record["path"]), validator)
+        self.assertTrue(Path(record["path"]).samefile(validator))
         self.assertEqual(record["kind"], "resource")
 
     def test_resource_observations_merge_instead_of_overwriting_each_other(self):
@@ -137,6 +137,36 @@ class IncrementalDiscoveryTests(unittest.TestCase):
         self.assertEqual(set(snapshot["resources"]), {"shared/one", "shared/two"})
         resolved = self.call("resolve", "resource://shared/one", "resource://shared/two")
         self.assertTrue(all(r["status"] == "available" for r in resolved["records"]))
+
+    def test_resource_observation_accepts_alias_to_the_approved_workspace_root(self):
+        # Reproduces a lexical root mismatch (like Windows RUNNER~1 vs runneradmin).
+        # The alias refers to the approved root; descendant symlinks remain forbidden.
+        self.init()
+        file = self.root / "verified.txt"
+        file.write_text("verified", encoding="utf-8")
+        alias = Path(self.temp.name) / "workspace-alias"
+        try:
+            alias.symlink_to(self.root, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("workspace aliases unavailable on this host")
+        observed = self.call("observe-resource", "resource://shared/alias", "--path", alias / file.name)
+        self.assertEqual(observed["status"], "stored")
+        record = self.call("resolve", "resource://shared/alias")["records"][0]
+        self.assertEqual(record["status"], "available")
+        self.assertTrue(Path(record["path"]).samefile(file))
+
+    def test_resource_observation_rejects_descendant_symlink_inside_workspace(self):
+        self.init()
+        actual = self.root / "real"
+        actual.mkdir()
+        (actual / "verified.txt").write_text("verified", encoding="utf-8")
+        link = self.root / "linked"
+        try:
+            link.symlink_to(actual, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks unavailable on this host")
+        rejected = self.call("observe-resource", "resource://shared/alias", "--path", link / "verified.txt", expected=2)
+        self.assertEqual(rejected["error"]["code"], "UNSAFE_PATH")
 
     def test_resource_observation_is_confined_to_approved_roots(self):
         self.init()
