@@ -8,6 +8,12 @@ class Tests(unittest.TestCase):
   d=json.loads((ROOT/"marketplace/catalog.json").read_text());self.assertEqual(d["plugin"]["version"],RELEASE);self.assertEqual(d["marketplace"]["version"],RELEASE)
  def test_readme_declares_current_release(self):
   first=(ROOT/"README.md").read_text(encoding="utf-8").splitlines()[:20];self.assertTrue(any(line.startswith(f"## {RELEASE}") for line in first),first)
+ def test_github_release_workflows_use_current_version(self):
+  for name in ("helix-release.yml", "runtime-portability.yml"):
+   body=(ROOT/".github/workflows"/name).read_text(encoding="utf-8")
+   self.assertIn(f"--version {RELEASE}",body,name)
+   self.assertIn(f"rhapsodia-{RELEASE}.zip",body,name)
+   self.assertNotIn("0.7.0",body,name)
  def test_graph_view_contract_is_shared_exactly(self):
   engine=(ROOT/"skills/local-graph-engine/contracts/graph-view-v1.schema.json").read_bytes();viewer=(ROOT/"skills/local-graph-explorer/contracts/graph-view-v1.schema.json").read_bytes();self.assertEqual(engine,viewer)
  def test_release_validator(self):

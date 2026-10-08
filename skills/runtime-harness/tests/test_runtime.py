@@ -87,7 +87,7 @@ class RuntimeTests(unittest.TestCase):
         r = self.query({"operation": "resolve", "refs": ["skill://alpha", "skill://alpha/scripts/check.py"]})
         self.assertEqual(len(r["records"]), 2)
         self.assertEqual(r["records"][1]["sha256"], digest(self.skills / "alpha/scripts/check.py"))
-        self.assertEqual(r["records"][1]["path"], str(self.skills / "alpha/scripts/check.py"))
+        self.assertTrue(Path(r["records"][1]["path"]).samefile(self.skills / "alpha/scripts/check.py"))
 
     def test_unknown_skill_does_not_trigger_discovery(self):
         self.init()
@@ -259,7 +259,8 @@ class RuntimeTests(unittest.TestCase):
         r = self.command("handoff-resume", "--input", hp, "--rebind", root=other)
         self.assertEqual(r["status"], "ready")
         self.assertTrue(r["rebound"])
-        self.assertTrue(any(v.get("path") == str(other / "task.txt") for v in r["records"]))
+        self.assertTrue(any(Path(v["path"]).samefile(other / "task.txt")
+                            for v in r["records"] if "path" in v))
 
     def test_graph_export_is_data_only_and_has_evidence(self):
         self.init()
