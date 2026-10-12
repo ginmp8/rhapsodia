@@ -1,0 +1,4 @@
+{"id":"ordinary","kind":"positive","input":{"a":2,"b":3},"observation":{"output":5}}
+{"id":"zero","kind":"boundary","input":{"a":0,"b":1},"observation":{"output":1}}
+{"id":"bad-type","kind":"negative","input":{"a":"x","b":1},"observation":{"error":{"kind":"validation","code":"NOT_NUMBER"}}}
+{"id":"state-reset","kind":"stateful","input":{"actions":[{"op":"add","value":"x"},{"op":"clear"}]},"observation":{"output":[],"state":{"count":0},"events":["added","cleared"]}}
