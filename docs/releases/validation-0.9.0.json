@@ -1,0 +1,244 @@
+{
+  "schema": "rhapsodia-local-validation/v1",
+  "release": "0.9.0",
+  "date": "2026-10-14",
+  "status": "scoped-local-gates-pass-with-explicit-incomplete-suites-and-host-limits",
+  "input_baseline": {
+    "version": "0.8.0",
+    "archive_sha256": "ccbad4a97754496f0fd2da2795684924a53c8779dddb148499ba0a6a93ace3ae",
+    "source_manifest_0_8_0_reproducible_from_supplied_archive": false,
+    "source_manifest_drift": {
+      "changed_file_hashes": 7,
+      "omitted_source_files": 1,
+      "history_unmodified": true
+    }
+  },
+  "input_feature": {
+    "archive_sha256": "57c8ed316089eda62f58faca76aeffcdd7127f2e577bf89dd8cbf3dd396f9555",
+    "source_changes": {
+      "added": 135,
+      "removed": 0,
+      "modified": 32,
+      "unchanged": 2173
+    }
+  },
+  "versions": {
+    "rhapsodia": "0.9.0",
+    "runtime-harness": "1.2.0",
+    "operational-context": "1.0.0",
+    "reverse-engineering": "0.1.0",
+    "deep-research-suite": "0.2.0",
+    "skill-booster": "0.2.0",
+    "skill-creator-juiced": "0.2.0",
+    "skill-token-efficient": "0.1.1",
+    "skill-benchmark": "0.1.0"
+  },
+  "catalog": {
+    "skills": 55,
+    "agents": 7
+  },
+  "source_identity": {
+    "path": "source-manifest-0.9.0.json",
+    "sha256": "4317a38ac46dc6ea51b9f1c5f2beb9c217c27455b4c3383a77c956ce8e0e5924",
+    "file_count": 2326,
+    "method": "release-source-manifest/v1; current source bytes compared with an independent generator",
+    "scope_note": "archive and separately-scoped release/research/agent receipts are excluded from this source identity"
+  },
+  "environment": {
+    "os": "Linux",
+    "python": "3.13.5",
+    "runner": "container-local",
+    "native_ides_executed": false,
+    "windows_macos_executed": false,
+    "pytest_version": "9.0.2"
+  },
+  "test_totals": {
+    "collected": 420,
+    "passed": 419,
+    "skipped": 1,
+    "failed": 0
+  },
+  "suites": [
+    {
+      "name": "reverse-engineering-unit",
+      "status": "pass",
+      "collected": 173,
+      "passed": 173,
+      "skipped": 0,
+      "command": "python -I -S -B -m unittest discover -s skills/reverse-engineering/tests -p test_*.py -q",
+      "log_sha256": "c84ec5a8fdbd2a7154ce4bf9bd2b5ce412a321ace2441c314b6f2b757fc566da",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "deep-research-suite-unit",
+      "status": "pass",
+      "collected": 34,
+      "passed": 34,
+      "skipped": 0,
+      "command": "python -I -S -B -m unittest discover -s skills/deep-research-suite/tests -p test_*.py -q",
+      "log_sha256": "08f70458b031a398a88392fb6a75f32959d81f3c189c26c85a140cf4267eb011",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "skill-token-efficient-unit",
+      "status": "pass",
+      "collected": 11,
+      "passed": 11,
+      "skipped": 0,
+      "command": "python -I -S -B -m unittest discover -s skills/skill-token-efficient/tests -p test_*.py -q",
+      "log_sha256": "7315eb9d3c2d0f8ca64b257d166aed755d4020e8ef60823b57d58545b13535ba",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "runtime-harness-unit",
+      "status": "pass-with-skip",
+      "collected": 110,
+      "passed": 109,
+      "skipped": 1,
+      "command": "python -I -S -B -m unittest discover -s skills/runtime-harness/tests -p test_*.py -q",
+      "log_sha256": "9c4b486823049d29b3a04f6308342a6ff8be38c1e1bf5ea8ad978f4362a342e2",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "operational-context-unit",
+      "status": "pass",
+      "collected": 49,
+      "passed": 49,
+      "skipped": 0,
+      "command": "python -I -S -B -m unittest discover -s skills/operational-context/tests -p test_*.py -q",
+      "log_sha256": "43a9d0220b7959a2ecb73c172d60a8293593b21d39ff12bc14377eb5c2c527c3",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "booster-version-contracts",
+      "status": "pass",
+      "collected": 9,
+      "passed": 9,
+      "skipped": 0,
+      "command": "python -m pytest -q --import-mode=importlib skills/skill-booster/tests/test_skill_version.py",
+      "log_sha256": "3a13578d4e3b9e8c9e5364e256202151da2da71fa1c4a13fa97ce116d10dbcd8",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "creator-version-contracts",
+      "status": "pass",
+      "collected": 9,
+      "passed": 9,
+      "skipped": 0,
+      "command": "python -m pytest -q --import-mode=importlib skills/skill-creator-juiced/tests/test_skill_version.py",
+      "log_sha256": "a10543314ecaeaf1826755c671a0c3318ec5e3b1d13ac778bdd1a2f2d9930cd5",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "benchmark-control-contracts",
+      "status": "pass",
+      "collected": 6,
+      "passed": 6,
+      "skipped": 0,
+      "command": "python -m pytest -q --import-mode=importlib skills/skill-benchmark/tests/test_control_and_capability_delta.py",
+      "log_sha256": "61e433ac9088f8bd5436423c61ad9e70251583d4b41d07796421ea256eee91e7",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "root-marketplace-tests",
+      "status": "pass",
+      "collected": 10,
+      "passed": 10,
+      "skipped": 0,
+      "command": "python -B -m unittest discover -s tests -p test_marketplace_manifests.py -q",
+      "log_sha256": "9800c8bd06d2699eb2d70660c24276f9c586a55eb33498e8ed70c3a0e3cab130",
+      "evidence_location": "external-local-only"
+    },
+    {
+      "name": "root-release-tests",
+      "status": "pass",
+      "collected": 9,
+      "passed": 9,
+      "skipped": 0,
+      "command": "python -B -m unittest discover -s tests -p test_release_versions.py -q",
+      "log_sha256": "a5a77964f4c0f0673d7d611a02df5863f7d807523f3e49923215f77d3047ad1d",
+      "evidence_location": "external-local-only"
+    }
+  ],
+  "structural_gates": [
+    {
+      "name": "release manifests",
+      "status": "pass",
+      "command": "python scripts/prepare_release.py --check"
+    },
+    {
+      "name": "version consistency",
+      "status": "pass",
+      "command": "python scripts/validate_release_versions.py --expected-version 0.9.0"
+    },
+    {
+      "name": "source manifest consistency",
+      "status": "pass",
+      "command": "python scripts/validate_release_source_manifest.py --version 0.9.0 --check"
+    },
+    {
+      "name": "native agent validation",
+      "status": "pass",
+      "command": "python scripts/validate_agents.py --target ."
+    },
+    {
+      "name": "skill-booster package gate",
+      "status": "pass",
+      "command": "python skills/skill-booster/scripts/validate_skill_booster.py --target skills/skill-booster"
+    },
+    {
+      "name": "skill-creator-juiced package gate",
+      "status": "pass",
+      "command": "python skills/skill-creator-juiced/scripts/juiced_quality_gate.py skills/skill-creator-juiced"
+    },
+    {
+      "name": "skill-benchmark portability gate",
+      "status": "pass",
+      "command": "python skills/skill-benchmark/scripts/validate_portability.py --target skills/skill-benchmark --hosts all"
+    },
+    {
+      "name": "reverse-engineering package gate",
+      "status": "pass-with-warnings",
+      "command": "python skills/skill-creator-juiced/scripts/juiced_quality_gate.py skills/reverse-engineering --hosts all"
+    },
+    {
+      "name": "reverse-engineering SemVer/changelog",
+      "status": "pass",
+      "command": "python skills/skill-booster/scripts/validate_skill_version.py --target skills/reverse-engineering"
+    },
+    {
+      "name": "deep-research-suite SemVer/changelog",
+      "status": "pass",
+      "command": "python skills/skill-creator-juiced/scripts/validate_skill_version.py --target skills/deep-research-suite"
+    }
+  ],
+  "incomplete_or_not_run": [
+    {
+      "name": "complete root integration suite",
+      "status": "not-run-to-completion",
+      "reason": "local all-in-one run exceeded available execution window; release/marketplace portions separately passed"
+    },
+    {
+      "name": "complete combined pytest suites for Booster, Creator Juiced and Benchmark",
+      "status": "not-run-to-completion",
+      "reason": "combined local attempt exceeded execution window; critical version/benchmark subsets passed"
+    },
+    {
+      "name": "generic Creator Juiced evaluator dialect applied to pre-existing activation corpora",
+      "status": "incompatible-input-contract",
+      "reason": "Deep Research Suite, Skill Token Efficient and Skill Benchmark retain independently-defined evaluator scenario schemas; no fixtures were rewritten to manufacture a passing generic assessment"
+    },
+    {
+      "name": "cross-platform CI matrix",
+      "status": "not-run",
+      "reason": "the workflow was updated but no Windows/macOS/GitHub Actions runs were observed"
+    },
+    {
+      "name": "real optional toolchains, paid tokens, native IDE routing",
+      "status": "not-run",
+      "reason": "not exercised in this local artifact validation"
+    }
+  ],
+  "claim_boundary": "Scoped passing Linux/Python structural and behavioral fixture checks; not proof of full regression coverage, security review, production use, external tool support, or native host certification.",
+  "release_archive_identity": "external SHA-256 receipt, generated after final zip; intentionally not embedded to avoid circular self-hash"
+}
