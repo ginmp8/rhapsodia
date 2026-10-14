@@ -1,0 +1,15 @@
+topic: AI coding assistants
+output_language: en
+research:
+  time_range: since 2024
+  geography: global
+  scope_notes: Publicly verifiable capabilities only
+items:
+  - name: Example Assistant
+    id: example_assistant
+    category: Product
+    description: Representative item for the research corpus
+execution:
+  batch_size: 4
+  items_per_agent: 1
+  output_dir: ./results

@@ -1,0 +1,5 @@
+interface:
+  display_name: Deep Research Suite
+  short_description: Plan, execute, validate, and report deep research
+policy:
+  allow_implicit_invocation: true
