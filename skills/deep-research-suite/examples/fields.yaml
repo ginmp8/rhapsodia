@@ -1,0 +1,15 @@
+fields:
+  Basic Info:
+    - name: name
+      description: Canonical item name
+      detail_level: brief
+    - name: release_date
+      description: First public release date
+      detail_level: moderate
+      required: false
+  Technical Features:
+    - name: architecture
+      description: Important technical architecture details
+      detail_level: detailed
+      required: true
+uncertain: []

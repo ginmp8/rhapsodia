@@ -1,0 +1,8 @@
+{
+  "name": "Example Assistant",
+  "release_date": "[uncertain]",
+  "technical_features": {"architecture": "Example architecture"},
+  "uncertain": ["release_date"],
+  "_sources": [{"id":"S-001", "title":"Example source", "url":"https://example.com", "accessed":"2026-10-14"}],
+  "_claims": [{"id":"C-001", "text":"The architecture is described in the example source", "status":"supported", "source_ids":["S-001"], "locator":"Architecture"}]
+}
