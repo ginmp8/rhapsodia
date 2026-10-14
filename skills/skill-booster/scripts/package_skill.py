@@ -14,6 +14,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+
 BLOCKED_PARTS = {
     ".git",
     "__pycache__",
@@ -190,6 +191,22 @@ def candidate_identity(target: Path, files: list[Path]) -> tuple[str, dict[str, 
     return combined.hexdigest(), mapping
 
 
+def validate_skill_version(target: Path, baseline: Path | None = None) -> dict:
+    validator = Path(__file__).resolve().with_name("validate_skill_version.py")
+    args = [sys.executable, "-B", str(validator), "--target", str(target)]
+    if baseline is not None:
+        args.extend(["--baseline", str(baseline)])
+    proc = subprocess.run(args, capture_output=True, text=True, check=False)
+    try:
+        report = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return {"status": "fail", "version": None, "errors": ["version validator returned invalid JSON"], "stderr": proc.stderr}
+    if proc.returncode != 0 and report.get("status") == "pass":
+        report["status"] = "fail"
+        report.setdefault("errors", []).append("version validator exited unsuccessfully")
+    return report
+
+
 def validate(target: Path) -> tuple[int, dict]:
     validator = Path(__file__).resolve().with_name("validate_skill_booster.py")
     if not validator.exists():
@@ -291,6 +308,8 @@ def verify_archive(archive: Path, root_name: str) -> list[str]:
         errors.append(f"expected one top-level directory {root_name!r}, found {top_levels}")
     if f"{root_name}/SKILL.md" not in names:
         errors.append(f"archive missing {root_name}/SKILL.md")
+    if f"{root_name}/VERSION" not in names or f"{root_name}/CHANGELOG.md" not in names:
+        errors.append("archive missing VERSION or CHANGELOG.md")
     return errors
 
 
@@ -354,6 +373,7 @@ def package(
     report: Path | None = None,
     reconciliation_ledger: Path | None = None,
     portability_hosts: str | None = None,
+    baseline: Path | None = None,
 ) -> dict:
     checked = preflight(target, output, report)
     if isinstance(checked, dict):
@@ -366,6 +386,9 @@ def package(
     code, validation = validate(target)
     if code != 0 or validation.get("status") != "pass":
         return failure("validate", validation=validation, atomic_replace=False)
+    version_result = validate_skill_version(target, baseline)
+    if version_result["status"] != "pass":
+        return failure("version-validation", version_validation=version_result, atomic_replace=False)
 
     portability = None
     if portability_hosts:
@@ -430,6 +453,8 @@ def package(
             "size_bytes": size_bytes,
             "candidate_sha256": candidate_before,
             "archive_sha256": archive_sha256,
+            "skill_version": version_result["version"],
+            "version_validation": version_result,
             "atomic_replace": True,
             "last_good_preserved_on_failure": True,
             "validation": validation,
@@ -491,12 +516,13 @@ def main() -> int:
     parser.add_argument("--report", help="Optional JSON package receipt path; committed transactionally with the archive")
     parser.add_argument("--reconciliation-ledger", help="Optional specialist reconciliation JSON; packaging fails unless finalization_allowed is true")
     parser.add_argument("--portability-hosts", help="Optional comma-separated host profiles; packaging fails unless portability validation passes")
+    parser.add_argument("--baseline", help="Immutable extracted prior skill folder; enforce a higher version on changed package bytes")
     args = parser.parse_args()
 
     try:
         ledger = Path(args.reconciliation_ledger) if args.reconciliation_ledger else None
         report_path = Path(args.report) if args.report else None
-        result = package(Path(args.target), Path(args.output), report_path, ledger, args.portability_hosts)
+        result = package(Path(args.target), Path(args.output), report_path, ledger, args.portability_hosts, Path(args.baseline) if args.baseline else None)
     except Exception as exc:
         result = failure("exception", errors=[str(exc)], atomic_replace=False)
 

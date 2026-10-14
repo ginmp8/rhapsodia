@@ -136,6 +136,9 @@ Allowed terminal dispositions for material actionable findings: `fixed`, `reject
 - Edited after freeze: {{edited_after_freeze}}
 
 ## Package
+- Candidate VERSION: {{candidate_version}}
+- Previous release / first-tracked adoption: {{previous_version}}
+- Bump rationale and CHANGELOG validation: {{version_decision}}
 - Archive: {{archive_path}}
 - Size: {{archive_size}}
 - Candidate SHA-256: {{candidate_sha256}}

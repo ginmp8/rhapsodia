@@ -9,6 +9,7 @@
 ## Contents
 
 - Agent Skills Structural Gates
+- Skill Release Version Gate
 - Portability Gates
 - Activation Gates
 - Architecture Gates
@@ -35,6 +36,14 @@ Use these gates before claiming a skill is ready.
 - every editable supporting `.md` over 100 physical lines has an early semantic preview with explicit `Purpose`, `Load when`, and `Decision impact` signals plus a heading-derived Contents/section map; generic title/topic boilerplate, missing semantic signals, or missing/invented/omitted/reordered/stale navigation entries fail structural readiness;
 - generated/vendor/unsafe-to-rewrite Markdown may use only the explicit `context-preview-exception` marker defined by the context-loading contract, and the exception remains visible as a warning;
 - no scaffold markers, caches, generated reports, old archives, or secrets are packaged.
+
+## Skill Release Version Gate
+
+- root `VERSION` is one valid SemVer 2.0.0 value (not nonstandard `SKILL.md` frontmatter);
+- root `CHANGELOG.md` has one entry matching the canonical version; optional `release.json` and `RELEASE_NOTES.md`, when present, identify the same version;
+- modified candidate bytes must advance the version compared with an available immutable versioned release baseline; record unknown historical versions as first-tracked adoption, not as proven patch compatibility;
+- semantic increment is justified by affected consumer contracts rather than diff size; missing evidence means a provisional release classification, never fabricated proof;
+- run `scripts/validate_skill_version.py --target <candidate>` and pass `--baseline <prior-skill>` when the prior extracted package is available; a failed applicable version gate blocks delivery.
 
 ## Portability Gates
 

@@ -31,6 +31,8 @@ def make_skill(base: Path, *, valid: bool = True) -> Path:
         f"---\nname: demo-skill\ndescription: {description}\n---\n\n# Demo\n\n## Workflow\nRun.\n\n## Output contract\nReturn.\n\n## Stop conditions\nStop on error.\n",
         encoding="utf-8",
     )
+    ((skill) / "VERSION").write_text("1.0.0\n", encoding="ascii")
+    ((skill) / "CHANGELOG.md").write_text("# Changelog\n\n## [1.0.0]\n\n- Initial tracked test release.\n", encoding="utf-8")
     return skill
 
 
@@ -168,3 +170,33 @@ if __name__ == "__main__":
     test_success_receipt_matches_committed_archive()
     test_commit_failure_restores_last_good_and_preserves_recovery()
     print("ok")
+
+
+def test_version_is_required_before_packaging() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        base = Path(td)
+        skill = make_skill(base)
+        (skill / "VERSION").unlink()
+        output = base / "skill.zip"
+        result = run("--target", str(skill), "--output", str(output))
+        assert result.returncode != 0
+        assert json.loads(result.stdout)["stage"] == "validate"
+        assert not output.exists()
+
+
+def test_packager_rejects_modified_contents_without_version_bump() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        base = Path(td)
+        old_root = base / "old"
+        new_root = base / "new"
+        old_root.mkdir()
+        new_root.mkdir()
+        old = make_skill(old_root)
+        candidate = make_skill(new_root)
+        (candidate / "SKILL.md").write_text((candidate / "SKILL.md").read_text() + "\nChanged behavior.\n", encoding="utf-8")
+        result = run("--target", str(candidate), "--output", str(base / "skill.zip"), "--baseline", str(old))
+        assert result.returncode != 0
+        payload = json.loads(result.stdout)
+        assert payload["stage"] == "version-validation"
+        assert "did not advance" in str(payload["version_validation"]["errors"])
+        assert not (base / "skill.zip").exists()

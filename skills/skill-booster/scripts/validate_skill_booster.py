@@ -10,6 +10,8 @@ import re
 import sys
 from pathlib import Path
 
+from validate_skill_version import validate as validate_skill_version
+
 FORBIDDEN_PACKAGE_PARTS = {
     ".git",
     "__pycache__",
@@ -507,6 +509,9 @@ def validate(root: Path) -> dict:
                         errors.append(f"scaffold marker found in {rel}: {marker}")
                         break
 
+    version_result = validate_skill_version(root)
+    errors.extend(version_result["errors"])
+    warnings.extend(version_result["warnings"])
     errors.extend(check_links(root))
     errors.extend(check_booster_strategy_isolation(root, fm))
     unique_errors = sorted(set(errors))
@@ -519,6 +524,7 @@ def validate(root: Path) -> dict:
         "warnings": unique_warnings,
         "diagnostics": diagnostics,
         "files": sorted(files),
+        "version_validation": version_result,
         "frontmatter_parser": "portable-minimal",
         "frontmatter": {k: fm[k] for k in ("name", "description", "compatibility") if k in fm},
     }

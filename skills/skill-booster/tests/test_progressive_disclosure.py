@@ -22,6 +22,8 @@ def make_skill(base: Path, body: str) -> Path:
         "---\nname: demo-skill\ndescription: Demo skill with enough activation context for validation coverage.\n---\n\n" + body,
         encoding="utf-8",
     )
+    ((root) / "VERSION").write_text("1.0.0\n", encoding="ascii")
+    ((root) / "CHANGELOG.md").write_text("# Changelog\n\n## [1.0.0]\n\n- Initial tracked test release.\n", encoding="utf-8")
     return root
 
 

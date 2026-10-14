@@ -23,7 +23,7 @@ Use this workflow for every target skill. It is organized into six canonical pha
 
 ## Phase 1: Establish
 
-Capture target path/archive, source class, target class, mode, objective, final artifact, writable/protected scope, evaluator, requested hosts, runtime capabilities, and user-declared read-only files.
+Capture target path/archive, source class, target class, mode, objective, final artifact, writable/protected scope, evaluator, requested hosts, runtime capabilities, and user-declared read-only files. Preserve the previous release `VERSION` (or authoritative release evidence) before mutation; follow [the versioning contract](versioning-contract.md).
 
 For `external-untrusted-skill`, run the Booster-owned static intake before executing target code:
 
@@ -89,6 +89,8 @@ Use an isolated candidate when material risk warrants it. Exactly one owner chan
 
 Default owner is `skill-improver`. `reproducibility-engineer` owns an `invoke-apply` reproducibility batch only for that selected bounded transformation. Another specialist may own a batch only when the caller explicitly delegates it and the specialist contract allows target changes.
 
+Ensure the accepted candidate has a root `VERSION`, a matching current `CHANGELOG.md` entry, and an impact-justified release increment when publishing changed bytes. An unversioned baseline is a first-tracked adoption with uncertain historical releases; never silently reset an established version.
+
 Evidence providers must not silently apply unrelated fixes after selection. New findings discovered during transformation become new evidence/hypotheses unless they are necessary to make the selected batch valid.
 
 ## Phase 5: Evaluate
@@ -119,7 +121,7 @@ Add `--experiment-registry <WORK>/experiment-registry.json` only when experiment
 
 ## Phase 6: Prove
 
-After candidate acceptance, run affected hardening/validation, then require a fresh passing `skill-opt.validation-gate-receipt` v1 from `skill-testing-and-validation` for the exact final candidate before final `skill-change-gate`. The receipt must cover the canonical Agent Skills structural/package validation when the target is a skill package; a missing, stale, blocked, or failing receipt prevents final promotion. Then run final benchmark and holdout only at the evidence level required by the claim, token/readiness closure, source/evaluator identity verification, and portability closure.
+After candidate acceptance, run `<PYTHON> scripts/validate_skill_version.py --target <TARGET_SKILL_PATH> --baseline <IMMUTABLE_PRIOR_SKILL>` (omit `--baseline` only for genuinely new skills or when none exists and disclose the limitation). A missing/mismatched release identity or changed contents under an unchanged prior version blocks promotion. Then run affected hardening/validation, then require a fresh passing `skill-opt.validation-gate-receipt` v1 from `skill-testing-and-validation` for the exact final candidate before final `skill-change-gate`. The receipt must cover the canonical Agent Skills structural/package validation when the target is a skill package; a missing, stale, blocked, or failing receipt prevents final promotion. Then run final benchmark and holdout only at the evidence level required by the claim, token/readiness closure, source/evaluator identity verification, and portability closure.
 
 For `complete` / `full` optimization, completion also requires terminal disposition of every material actionable finding from Diagnose and final closure: `fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`. Material findings may not remain only `follow-up`, `planned`, `deferred`, or otherwise unclassified while the run is reported complete. If final token-efficiency closure finds material avoidable context waste, open another bounded transformation batch with one owner, rerun affected gates, and continue until that finding has a terminal disposition.
 

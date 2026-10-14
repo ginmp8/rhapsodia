@@ -27,6 +27,8 @@ def make_skill(base: Path, *, valid: bool = True) -> Path:
         f"---\nname: {name}\ndescription: {description}\n---\n\n# Demo\n\n## Workflow\n\nDo the deterministic thing.\n\n## Output Contract\n\nReturn the result.\n\n## Stop Conditions\n\nStop on invalid input.\n",
         encoding="utf-8",
     )
+    ((skill) / "VERSION").write_text("1.0.0\n", encoding="ascii")
+    ((skill) / "CHANGELOG.md").write_text("# Changelog\n\n## [1.0.0]\n\n- Initial tracked test release.\n", encoding="utf-8")
     return skill
 
 
@@ -225,3 +227,30 @@ if __name__ == "__main__":
     test_distribution_surfaces_are_recorded_without_changing_canonical_package_semantics()
     test_commit_failure_restores_last_good_and_reports_recovery()
     print("ok")
+
+
+def test_version_is_required_even_without_optional_full_validation() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        base = Path(td)
+        skill = make_skill(base)
+        (skill / "VERSION").unlink()
+        result = run("--target", str(skill), "--output", str(base / "skill.zip"))
+        assert result.returncode != 0
+        assert parse_stdout(result)["stage"] == "version-validation"
+        assert not (base / "skill.zip").exists()
+
+
+def test_packager_rejects_modified_bytes_at_same_baseline_version() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        base = Path(td)
+        baseline_dir = base / "baseline"
+        baseline_dir.mkdir()
+        old = make_skill(baseline_dir)
+        candidate_dir = base / "candidate"
+        candidate_dir.mkdir()
+        candidate = make_skill(candidate_dir)
+        (candidate / "SKILL.md").write_text((candidate / "SKILL.md").read_text() + "\nChanged outcome.\n", encoding="utf-8")
+        result = run("--target", str(candidate), "--output", str(base / "skill.zip"), "--baseline", str(old), "--validate")
+        assert result.returncode != 0
+        assert parse_stdout(result)["stage"] == "version-validation"
+        assert not (base / "skill.zip").exists()

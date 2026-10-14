@@ -39,6 +39,8 @@ def make_skill(base: Path) -> Path:
         "---\nname: demo-skill\ndescription: Portable demo used to validate multi-host profiles.\n---\n\n# Demo\n",
         encoding="utf-8",
     )
+    ((skill) / "VERSION").write_text("1.0.0\n", encoding="ascii")
+    ((skill) / "CHANGELOG.md").write_text("# Changelog\n\n## [1.0.0]\n\n- Initial tracked test release.\n", encoding="utf-8")
     return skill
 
 

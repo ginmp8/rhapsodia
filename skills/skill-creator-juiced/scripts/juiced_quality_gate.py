@@ -11,6 +11,7 @@ from pathlib import Path
 
 from skill_spec import read_text, validate_agent_skill
 from validate_portability import normalize_hosts, normalize_surfaces, validate_portability
+from validate_skill_version import validate as validate_skill_version
 
 PLACEHOLDER_PATTERNS = [
     "TO" + "DO",
@@ -379,8 +380,13 @@ def run_gate(target: Path, profile: str, hosts: str | None = None, surfaces: str
             if rel not in referenced and file_path.name != "skill_spec.py":
                 warnings.append(f"support file may be unreferenced: {rel}")
 
+    version_result = validate_skill_version(target)
+    errors.extend(version_result["errors"])
+    warnings.extend(version_result["warnings"])
+
     return {
         "status": "pass" if not errors else "fail",
+        "version_validation": version_result,
         "profile": profile,
         "errors": sorted(set(errors)),
         "warnings": sorted(set(warnings)),

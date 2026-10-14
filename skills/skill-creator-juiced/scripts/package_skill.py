@@ -18,6 +18,7 @@ from typing import Any
 
 from skill_spec import read_text, validate_agent_skill
 from validate_portability import normalize_hosts, normalize_surfaces, validate_portability
+from validate_skill_version import validate as validate_skill_version, parse_semver
 
 TEXT_SUFFIXES = {".md", ".txt", ".yaml", ".yml", ".json", ".py", ".sh", ".template"}
 EXCLUDED_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "reports", "benchmark-reports", "test-results", "tmp"}
@@ -156,6 +157,9 @@ def source_tree_sha256(target: Path, files: list[Path]) -> str:
 def validate_folder(target: Path, profile: str, portability_hosts: str | None = None, distribution_surfaces: str | None = None) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
+    release_version = validate_skill_version(target)
+    errors.extend(release_version["errors"])
+    warnings.extend(release_version["warnings"])
     portability = validate_agent_skill(target, profile)
     errors.extend(portability["errors"])
     warnings.extend(portability["warnings"])
@@ -179,7 +183,7 @@ def validate_folder(target: Path, profile: str, portability_hosts: str | None = 
             for no, line in enumerate(read_text(path).splitlines(), 1):
                 if "MARKER_RE" not in line and MARKER_RE.search(line):
                     errors.append(f"residual scaffold marker: {rel}:{no}")
-    return {"status": "pass" if not errors else "fail", "errors": sorted(set(errors)), "warnings": sorted(set(warnings)), "portability": portability, "host_portability": host_portability}
+    return {"status": "pass" if not errors else "fail", "errors": sorted(set(errors)), "warnings": sorted(set(warnings)), "version_validation": release_version, "portability": portability, "host_portability": host_portability}
 
 
 def stage_zip(target: Path, output: Path) -> tuple[Path, dict[str, Any]]:
@@ -224,6 +228,20 @@ def validate_archive(zip_path: Path) -> dict[str, Any]:
                 errors.append(f"archive must contain one top-level directory, found {sorted(roots)}")
             if not root or f"{root}/SKILL.md" not in entries:
                 errors.append("archive missing root SKILL.md")
+            if root:
+                version_member, change_member = f"{root}/VERSION", f"{root}/CHANGELOG.md"
+                if version_member not in entries or change_member not in entries:
+                    errors.append("archive missing root VERSION or CHANGELOG.md")
+                else:
+                    raw = zf.read(version_member)
+                    try:
+                        release = raw.decode("ascii").strip()
+                        changelog = zf.read(change_member).decode("utf-8")
+                        heading = re.compile(r"^## \[" + re.escape(release) + r"\](?:\s+-\s+\d{4}-\d{2}-\d{2})?\s*$", re.MULTILINE)
+                        if parse_semver(release) is None or raw not in {release.encode("ascii"), (release + "\n").encode("ascii"), (release + "\r\n").encode("ascii")} or len(heading.findall(changelog)) != 1:
+                            errors.append("archive VERSION invalid or current CHANGELOG.md entry missing")
+                    except (UnicodeDecodeError, ValueError):
+                        errors.append("archive VERSION/CHANGELOG.md has invalid encoding")
             for entry in entries:
                 rel = entry.split("/", 1)[1] if "/" in entry else entry
                 if entry.startswith("/") or ".." in Path(entry).parts:
@@ -355,6 +373,7 @@ def main() -> int:
     parser.add_argument("--distribution-surfaces", help="Optional client/distribution surfaces recorded and structurally mapped during package acceptance")
     parser.add_argument("--validate-only")
     parser.add_argument("--json-output")
+    parser.add_argument("--baseline", help="Immutable extracted previous skill folder; enforce monotonic version when contents changed")
     args = parser.parse_args()
 
     if args.validate_only:
@@ -375,6 +394,11 @@ def main() -> int:
         emit_result(result, None)
         return 1
 
+    version_result = validate_skill_version(target, Path(args.baseline) if args.baseline else None)
+    if version_result["status"] != "pass":
+        result = {"receipt_version": 2, "mode": "package", "stage": "version-validation", "status": "fail", "target": str(target), "version_validation": version_result, "output_preserved": target_exists(output), "receipt_preserved": bool(receipt and target_exists(receipt))}
+        emit_result(result, None)
+        return 1
     folder = validate_folder(target, args.profile, args.portability_hosts, args.distribution_surfaces) if args.validate else {"status": "not-run", "errors": [], "warnings": [], "host_portability": None}
     if folder["status"] == "fail":
         result = {"receipt_version": 2, "mode": "package", "stage": "validation", "profile": args.profile, "status": "fail", "target": str(target), "output": str(output), "folder": folder, "output_preserved": target_exists(output), "receipt_preserved": bool(receipt and target_exists(receipt))}
@@ -399,6 +423,8 @@ def main() -> int:
             "profile": args.profile,
             "status": "pass",
             "target": str(target),
+            "skill_version": version_result["version"],
+            "version_validation": version_result,
             "folder": folder,
             "distribution": {
                 "semantic_profiles": normalize_hosts(args.portability_hosts) if args.portability_hosts else [],
