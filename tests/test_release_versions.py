@@ -1,10 +1,10 @@
 import importlib.util,json,shutil,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-RELEASE="0.8.0"
-NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness","operational-context")
+RELEASE="0.9.0"
+NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness","operational-context","reverse-engineering","deep-research-suite")
 class Tests(unittest.TestCase):
- def test_catalog_release_is_080(self):
+ def test_catalog_release_is_090(self):
   d=json.loads((ROOT/"marketplace/catalog.json").read_text());self.assertEqual(d["plugin"]["version"],RELEASE);self.assertEqual(d["marketplace"]["version"],RELEASE)
  def test_readme_declares_current_release(self):
   first=(ROOT/"README.md").read_text(encoding="utf-8").splitlines()[:20];self.assertTrue(any(line.startswith(f"## {RELEASE}") for line in first),first)
@@ -14,6 +14,15 @@ class Tests(unittest.TestCase):
    self.assertIn(f"--version {RELEASE}",body,name)
    self.assertIn(f"rhapsodia-{RELEASE}.zip",body,name)
    self.assertNotIn("0.7.0",body,name)
+ def test_current_release_source_manifest_is_verified(self):
+  result=subprocess.run([sys.executable,str(ROOT/"scripts/validate_release_source_manifest.py"),"--version",RELEASE,"--check"],cwd=ROOT,capture_output=True,text=True)
+  self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+ def test_every_09_feature_skill_has_explicit_semver(self):
+  for skill in ("reverse-engineering","deep-research-suite","skill-booster","skill-creator-juiced","skill-token-efficient","skill-benchmark"):
+   path=ROOT/"skills"/skill
+   version=(path/"VERSION").read_text(encoding="ascii").strip()
+   self.assertRegex(version,r"^[0-9]+\.[0-9]+\.[0-9]+$")
+   self.assertIn(f"## [{version}]",(path/"CHANGELOG.md").read_text(encoding="utf-8"))
  def test_graph_view_contract_is_shared_exactly(self):
   engine=(ROOT/"skills/local-graph-engine/contracts/graph-view-v1.schema.json").read_bytes();viewer=(ROOT/"skills/local-graph-explorer/contracts/graph-view-v1.schema.json").read_bytes();self.assertEqual(engine,viewer)
  def test_release_validator(self):
