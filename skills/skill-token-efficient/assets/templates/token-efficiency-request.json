@@ -1,0 +1,27 @@
+{
+  "contract_id": "skill-opt.token-efficiency",
+  "contract_version": 1,
+  "consumer": "skill-creator-juiced",
+  "operation": "format-advice",
+  "mode": "plan",
+  "target_skill": "./staged-draft-skill",
+  "mutation_authorized": false,
+  "format_context": {
+    "role": "skill-instructions",
+    "supported_formats": [
+      "markdown",
+      "yaml",
+      "json-compact"
+    ],
+    "requires_machine_parse": false,
+    "requires_type_fidelity": false,
+    "schema_available": false,
+    "has_typed_decoder": false,
+    "allow_nonstandard_codec": false,
+    "human_editable": true
+  },
+  "tokenization": {
+    "primary_method": "estimator-v1",
+    "scope": "instructions"
+  }
+}

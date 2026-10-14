@@ -1,0 +1,18 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-token-efficient",
+  "exports": [
+    {
+      "contract_id": "skill-opt.token-efficiency",
+      "version": 1,
+      "role": "owner-producer",
+      "surface_paths": [
+        "contracts/token-efficiency-request.schema.json",
+        "references/integration-protocol.md",
+        "scripts/validate_integration.py",
+        "scripts/recommend_format.py"
+      ]
+    }
+  ],
+  "imports": []
+}

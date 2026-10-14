@@ -1,0 +1,16 @@
+{
+  "contract_id": "skill-opt.token-efficiency",
+  "contract_version": 1,
+  "consumer": "skill-benchmark",
+  "operation": "compare-existing",
+  "mode": "validate",
+  "target_skill": "./target-skill",
+  "mutation_authorized": false,
+  "baseline_path": "./baseline",
+  "candidate_path": "./working-copy/candidate",
+  "format_context": null,
+  "tokenization": {
+    "primary_method": "estimator-v1",
+    "scope": "instructions"
+  }
+}
