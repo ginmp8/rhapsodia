@@ -1,0 +1,857 @@
+{
+  "trace_version": "1.0.0",
+  "skill_version": "0.1.0",
+  "research_window": {
+    "access_date": "2026-10-14",
+    "scope": "bounded narrative review; primary research and official method references",
+    "full_source_bytes_archived": false,
+    "claims": "corpus-bounded trace coverage, not a systematic literature review"
+  },
+  "sources": [
+    {
+      "id": "S-01",
+      "title": "Mitchell, Russo & Pennington 1989",
+      "locator": "https://doi.org/10.1002/bdm.3960020103",
+      "access_level": "publisher-abstract",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-01",
+        "F-12"
+      ]
+    },
+    {
+      "id": "S-02",
+      "title": "Gary Klein 2007",
+      "locator": "https://hbr.org/2007/09/performing-a-project-premortem",
+      "access_level": "publisher-summary",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-02",
+        "F-12"
+      ]
+    },
+    {
+      "id": "S-03",
+      "title": "AHRQ Premortem Tool",
+      "locator": "https://www.ahrq.gov/hai/tools/mvp/modules/cusp/premortem-tool.html",
+      "access_level": "government-guide-opened",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-02",
+        "F-03"
+      ]
+    },
+    {
+      "id": "S-04",
+      "title": "Gallop, Willy & Bischoff 2016",
+      "locator": "https://doi.org/10.1080/19488289.2016.1240118",
+      "access_level": "publisher-abstract",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-04",
+        "F-08"
+      ]
+    },
+    {
+      "id": "S-05",
+      "title": "Gandhi, Duke & Schweitzer 2022",
+      "locator": "https://doi.org/10.5465/AMBPP.2022.12186abstract",
+      "access_level": "conference-abstract-from-index",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-05",
+        "F-08"
+      ]
+    },
+    {
+      "id": "S-06",
+      "title": "Roose, Lehman & Veinott 2023",
+      "locator": "https://doi.org/10.1177/21695067231193680",
+      "access_level": "publisher-abstract",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-06",
+        "F-08"
+      ]
+    },
+    {
+      "id": "S-07",
+      "title": "Wippold et al. 2025",
+      "locator": "https://doi.org/10.1186/s43058-025-00768-z",
+      "access_level": "open-access-full-page",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-07",
+        "F-08",
+        "F-11"
+      ]
+    },
+    {
+      "id": "S-08",
+      "title": "User specification in current conversation",
+      "locator": "conversation:2026-10-14-premortem-skill-request",
+      "access_level": "user-provided",
+      "accessed_on": "2026-10-14",
+      "finding_ids": [
+        "F-09",
+        "F-10",
+        "F-11"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-01",
+      "claim": "Prospective hindsight changes how explanations for a future-but-assumed-certain event are generated.",
+      "source_ids": [
+        "S-01"
+      ],
+      "disposition": "implement",
+      "rationale": "Original method anchor; avoid success uplift overclaim.",
+      "requirement_ids": [
+        "R-02",
+        "R-04"
+      ]
+    },
+    {
+      "id": "F-02",
+      "claim": "Premortem explicitly assumes planned work failed and elicits concerns before launch.",
+      "source_ids": [
+        "S-02",
+        "S-03"
+      ],
+      "disposition": "implement",
+      "rationale": "Central distinctive activation and procedure.",
+      "requirement_ids": [
+        "R-01",
+        "R-02"
+      ]
+    },
+    {
+      "id": "F-03",
+      "claim": "AHRQ prescribes independent ideation, equitable sharing, prioritization and mitigation planning for groups.",
+      "source_ids": [
+        "S-03"
+      ],
+      "disposition": "implement",
+      "rationale": "Preserve independent contribution when actual humans participate.",
+      "requirement_ids": [
+        "R-03"
+      ]
+    },
+    {
+      "id": "F-04",
+      "claim": "One published study reports improved risk identification and plan changes versus brainstorming in its tested setting.",
+      "source_ids": [
+        "S-04"
+      ],
+      "disposition": "implement",
+      "rationale": "Value rationale only within studied scope; no guarantee.",
+      "requirement_ids": [
+        "R-04"
+      ]
+    },
+    {
+      "id": "F-05",
+      "claim": "A 2022 conference abstract reports premortem risks may overemphasize factors outside participants’ control.",
+      "source_ids": [
+        "S-05"
+      ],
+      "disposition": "implement",
+      "rationale": "Guard attribution bias; evidence is abstract-only.",
+      "requirement_ids": [
+        "R-06",
+        "R-09"
+      ]
+    },
+    {
+      "id": "F-06",
+      "claim": "Game development teams identified many risks and mitigations but rarely reduced planned complexity.",
+      "source_ids": [
+        "S-06"
+      ],
+      "disposition": "implement",
+      "rationale": "Require explicit plan delta/disposition rather than output-only lists.",
+      "requirement_ids": [
+        "R-07"
+      ]
+    },
+    {
+      "id": "F-07",
+      "claim": "Implementation premortems benefit from context-sensitive stakeholders and complement other planning tools.",
+      "source_ids": [
+        "S-07"
+      ],
+      "disposition": "implement",
+      "rationale": "Account for context/owner and avoid replacing specialist tools.",
+      "requirement_ids": [
+        "R-08"
+      ]
+    },
+    {
+      "id": "F-08",
+      "claim": "The reviewed studies do not substantiate a universal failure-rate reduction for all projects.",
+      "source_ids": [
+        "S-04",
+        "S-05",
+        "S-06",
+        "S-07"
+      ],
+      "disposition": "implement",
+      "rationale": "Scope efficacy claims as limited/corpus-bounded.",
+      "requirement_ids": [
+        "R-05",
+        "R-09",
+        "R-18"
+      ]
+    },
+    {
+      "id": "F-09",
+      "claim": "User requires portable activation, self-sufficient first 100 lines, shallow refs and no lost material constraints.",
+      "source_ids": [
+        "S-08"
+      ],
+      "disposition": "implement",
+      "rationale": "Direct explicit acceptance contract.",
+      "requirement_ids": [
+        "R-01",
+        "R-08",
+        "R-10",
+        "R-11",
+        "R-14",
+        "R-16"
+      ]
+    },
+    {
+      "id": "F-10",
+      "claim": "User requires reproducibility, research traceability, token efficiency and complete deliverable validation.",
+      "source_ids": [
+        "S-08"
+      ],
+      "disposition": "implement",
+      "rationale": "Use bounded schemas, trace links, tests, versioning and packaging.",
+      "requirement_ids": [
+        "R-12",
+        "R-13",
+        "R-14",
+        "R-15",
+        "R-16"
+      ]
+    },
+    {
+      "id": "F-11",
+      "claim": "Interoperability with multiple skill owners should not transfer authority for execution or approval.",
+      "source_ids": [
+        "S-08",
+        "S-07"
+      ],
+      "disposition": "implement",
+      "rationale": "Minimize risk of overreach when integrating with decision/planning owners.",
+      "requirement_ids": [
+        "R-12",
+        "R-17"
+      ]
+    },
+    {
+      "id": "F-12",
+      "claim": "The claim that premortem raises project success rates by 30% is not established by the cited 1989 explanation study.",
+      "source_ids": [
+        "S-01",
+        "S-02"
+      ],
+      "disposition": "rejected",
+      "rationale": "Some retellings conflate reason identification with project success; exclude that numerical success claim.",
+      "requirement_ids": []
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-01",
+      "text": "Select only before a material future plan; reject actual incident/debugging/factual comparisons.",
+      "priority": "must",
+      "finding_ids": [
+        "F-02",
+        "F-09"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-05"
+      ],
+      "evaluation_ids": [
+        "E-01",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-02",
+      "text": "Label future failed scenario as fictional; require goal, failure criterion and horizon/unknowns.",
+      "priority": "must",
+      "finding_ids": [
+        "F-01",
+        "F-02"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-02",
+        "C-10"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-03",
+      "text": "Capture independent ideas before ranking; no fake human/multi-model corroboration.",
+      "priority": "must",
+      "finding_ids": [
+        "F-03"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-02"
+      ],
+      "evaluation_ids": [
+        "E-05",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-04",
+      "text": "Produce condition-mechanism-consequence chains and falsifiers.",
+      "priority": "must",
+      "finding_ids": [
+        "F-01",
+        "F-04"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-02",
+        "C-10"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-05",
+      "text": "Preserve source provenance, explicit confidence/evidence classes and limited efficacy claims.",
+      "priority": "must",
+      "finding_ids": [
+        "F-08"
+      ],
+      "change_ids": [
+        "C-03",
+        "C-07",
+        "C-10"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-06",
+      "text": "Check attribution to external factors and inspect controllable or simpler alternatives.",
+      "priority": "must",
+      "finding_ids": [
+        "F-05"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-02",
+        "C-03"
+      ],
+      "evaluation_ids": [
+        "E-05",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-07",
+      "text": "Separate generated prevention from accepted plan changes, and preserve owner decisions.",
+      "priority": "must",
+      "finding_ids": [
+        "F-06"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-02",
+        "C-04",
+        "C-10"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-05",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-08",
+      "text": "Use stakes-based quick/standard/governed modes with governance stop/approval gates.",
+      "priority": "must",
+      "finding_ids": [
+        "F-07",
+        "F-09"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-02",
+        "C-04",
+        "C-05",
+        "C-10"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-05",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-09",
+      "text": "Never invent probabilities, risk arithmetic, approval, empirical tests or project facts.",
+      "priority": "must",
+      "finding_ids": [
+        "F-05",
+        "F-08"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-03",
+        "C-04",
+        "C-08",
+        "C-10"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-04",
+        "E-05"
+      ]
+    },
+    {
+      "id": "R-10",
+      "text": "Expose the actionable activation, procedure, constraints and resources inside line 100.",
+      "priority": "must",
+      "finding_ids": [
+        "F-09"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-08"
+      ],
+      "evaluation_ids": [
+        "E-01"
+      ]
+    },
+    {
+      "id": "R-11",
+      "text": "Keep one portable skill with optional tooling and no host-private dependencies.",
+      "priority": "must",
+      "finding_ids": [
+        "F-09"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-06",
+        "C-08",
+        "C-09"
+      ],
+      "evaluation_ids": [
+        "E-01",
+        "E-04"
+      ]
+    },
+    {
+      "id": "R-12",
+      "text": "Support a validated machine-readable risk and plan-change contract.",
+      "priority": "should",
+      "finding_ids": [
+        "F-10",
+        "F-11"
+      ],
+      "change_ids": [
+        "C-04",
+        "C-08",
+        "C-10"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-04"
+      ]
+    },
+    {
+      "id": "R-13",
+      "text": "Preserve research-to-finding-to-requirement-to-change/evaluation traceability.",
+      "priority": "must",
+      "finding_ids": [
+        "F-10"
+      ],
+      "change_ids": [
+        "C-07",
+        "C-08"
+      ],
+      "evaluation_ids": [
+        "E-03"
+      ]
+    },
+    {
+      "id": "R-14",
+      "text": "Provide testable activation boundaries including ambiguous/negative cases.",
+      "priority": "must",
+      "finding_ids": [
+        "F-09",
+        "F-10"
+      ],
+      "change_ids": [
+        "C-05",
+        "C-08"
+      ],
+      "evaluation_ids": [
+        "E-01",
+        "E-04",
+        "E-06"
+      ]
+    },
+    {
+      "id": "R-15",
+      "text": "Provide valid SemVer, changelog, tests, verifiable deterministic ZIP and release identity.",
+      "priority": "must",
+      "finding_ids": [
+        "F-10"
+      ],
+      "change_ids": [
+        "C-09"
+      ],
+      "evaluation_ids": [
+        "E-01",
+        "E-04"
+      ]
+    },
+    {
+      "id": "R-16",
+      "text": "Keep concise Markdown core and shallow, demand-loaded references without deleting safeguards.",
+      "priority": "must",
+      "finding_ids": [
+        "F-09",
+        "F-10"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-06",
+        "C-08",
+        "C-09"
+      ],
+      "evaluation_ids": [
+        "E-01",
+        "E-04"
+      ]
+    },
+    {
+      "id": "R-17",
+      "text": "Keep Mago/Booster/Decision Engine execution and risk acceptance under their owners.",
+      "priority": "must",
+      "finding_ids": [
+        "F-11"
+      ],
+      "change_ids": [
+        "C-01",
+        "C-04",
+        "C-06"
+      ],
+      "evaluation_ids": [
+        "E-02",
+        "E-05"
+      ]
+    },
+    {
+      "id": "R-18",
+      "text": "Declare sources access limits and do not claim a 30 percent success uplift.",
+      "priority": "must",
+      "finding_ids": [
+        "F-08"
+      ],
+      "change_ids": [
+        "C-03",
+        "C-07"
+      ],
+      "evaluation_ids": [
+        "E-03",
+        "E-05"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "C-01",
+      "kind": "add",
+      "files": [
+        "SKILL.md"
+      ],
+      "requirement_ids": [
+        "R-01",
+        "R-02",
+        "R-03",
+        "R-04",
+        "R-06",
+        "R-07",
+        "R-08",
+        "R-09",
+        "R-10",
+        "R-11",
+        "R-16",
+        "R-17"
+      ]
+    },
+    {
+      "id": "C-02",
+      "kind": "add",
+      "files": [
+        "references/method.md"
+      ],
+      "requirement_ids": [
+        "R-02",
+        "R-03",
+        "R-04",
+        "R-06",
+        "R-07",
+        "R-08"
+      ]
+    },
+    {
+      "id": "C-03",
+      "kind": "add",
+      "files": [
+        "references/evidence-and-bias.md"
+      ],
+      "requirement_ids": [
+        "R-05",
+        "R-06",
+        "R-09",
+        "R-18"
+      ]
+    },
+    {
+      "id": "C-04",
+      "kind": "add",
+      "files": [
+        "references/output-contract.md",
+        "assets/premortem-report.schema.json",
+        "scripts/validate_report.py"
+      ],
+      "requirement_ids": [
+        "R-07",
+        "R-08",
+        "R-09",
+        "R-12",
+        "R-17"
+      ]
+    },
+    {
+      "id": "C-05",
+      "kind": "add",
+      "files": [
+        "references/activation.md",
+        "evals/activation-scenarios.json",
+        "evals/behavior-scenarios.json"
+      ],
+      "requirement_ids": [
+        "R-01",
+        "R-08",
+        "R-14"
+      ]
+    },
+    {
+      "id": "C-06",
+      "kind": "add",
+      "files": [
+        "references/portability.md"
+      ],
+      "requirement_ids": [
+        "R-11",
+        "R-16",
+        "R-17"
+      ]
+    },
+    {
+      "id": "C-07",
+      "kind": "add",
+      "files": [
+        "references/research-basis.md",
+        "evidence/traceability.json",
+        "scripts/validate_traceability.py"
+      ],
+      "requirement_ids": [
+        "R-05",
+        "R-13",
+        "R-18"
+      ]
+    },
+    {
+      "id": "C-08",
+      "kind": "add",
+      "files": [
+        "scripts/validate_package.py",
+        "tests/test_skill.py"
+      ],
+      "requirement_ids": [
+        "R-09",
+        "R-10",
+        "R-11",
+        "R-12",
+        "R-13",
+        "R-14",
+        "R-16"
+      ]
+    },
+    {
+      "id": "C-09",
+      "kind": "add",
+      "files": [
+        "VERSION",
+        "CHANGELOG.md",
+        "README.md",
+        "LICENSE",
+        "scripts/package.py"
+      ],
+      "requirement_ids": [
+        "R-11",
+        "R-15",
+        "R-16"
+      ]
+    },
+    {
+      "id": "C-10",
+      "kind": "add",
+      "files": [
+        "examples/messaging-migration.json"
+      ],
+      "requirement_ids": [
+        "R-02",
+        "R-04",
+        "R-05",
+        "R-07",
+        "R-08",
+        "R-09",
+        "R-12"
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "E-01",
+      "kind": "deterministic",
+      "artifact": "scripts/validate_package.py",
+      "status": "pass",
+      "requirement_ids": [
+        "R-01",
+        "R-10",
+        "R-11",
+        "R-14",
+        "R-15",
+        "R-16"
+      ],
+      "evidence_note": "Status reflects validation plan; confirm after executing final checks.",
+      "artifacts": [
+        "scripts/validate_package.py"
+      ]
+    },
+    {
+      "id": "E-02",
+      "kind": "deterministic",
+      "artifact": "scripts/validate_report.py + examples/messaging-migration.json",
+      "status": "pass",
+      "requirement_ids": [
+        "R-02",
+        "R-04",
+        "R-05",
+        "R-07",
+        "R-08",
+        "R-09",
+        "R-12",
+        "R-17"
+      ],
+      "evidence_note": "Status reflects validation plan; confirm after executing final checks.",
+      "artifacts": [
+        "scripts/validate_report.py",
+        "examples/messaging-migration.json"
+      ]
+    },
+    {
+      "id": "E-03",
+      "kind": "deterministic",
+      "artifact": "scripts/validate_traceability.py",
+      "status": "pass",
+      "requirement_ids": [
+        "R-13",
+        "R-18"
+      ],
+      "evidence_note": "Status reflects validation plan; confirm after executing final checks.",
+      "artifacts": [
+        "scripts/validate_traceability.py",
+        "evidence/traceability.json"
+      ]
+    },
+    {
+      "id": "E-04",
+      "kind": "deterministic",
+      "artifact": "tests/test_skill.py",
+      "status": "pass",
+      "requirement_ids": [
+        "R-09",
+        "R-11",
+        "R-12",
+        "R-14",
+        "R-15",
+        "R-16"
+      ],
+      "evidence_note": "Status reflects validation plan; confirm after executing final checks.",
+      "artifacts": [
+        "tests/test_skill.py"
+      ]
+    },
+    {
+      "id": "E-05",
+      "kind": "review",
+      "artifact": "references/method.md + references/evidence-and-bias.md",
+      "status": "pass-with-limitations",
+      "requirement_ids": [
+        "R-03",
+        "R-06",
+        "R-07",
+        "R-08",
+        "R-09",
+        "R-17",
+        "R-18"
+      ],
+      "evidence_note": "Status reflects validation plan; confirm after executing final checks.",
+      "artifacts": [
+        "references/method.md",
+        "references/evidence-and-bias.md"
+      ]
+    },
+    {
+      "id": "E-06",
+      "kind": "runtime",
+      "artifact": "evals/activation-scenarios.json + evals/behavior-scenarios.json",
+      "status": "not-run",
+      "requirement_ids": [
+        "R-01",
+        "R-02",
+        "R-03",
+        "R-04",
+        "R-05",
+        "R-06",
+        "R-07",
+        "R-08",
+        "R-14"
+      ],
+      "evidence_note": "LLM/host runtime trial not executed.",
+      "artifacts": [
+        "evals/activation-scenarios.json",
+        "evals/behavior-scenarios.json"
+      ]
+    }
+  ],
+  "conflicts": []
+}

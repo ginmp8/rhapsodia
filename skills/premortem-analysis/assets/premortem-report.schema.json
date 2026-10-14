@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:premortem-analysis:report:1.0.0",
+  "title": "Premortem Analysis Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "subject", "mode", "status", "hypothetical", "failure_scenario", "goal", "failure_criterion", "horizon", "evidence_access", "assumptions", "unknowns", "sources", "risks", "plan_changes", "residual_risks", "approval_gates", "limitations"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "subject": {"$ref": "#/$defs/nonempty"},
+    "mode": {"enum": ["quick", "standard", "governed"]},
+    "status": {"enum": ["complete", "partial", "blocked"]},
+    "hypothetical": {"const": true},
+    "failure_scenario": {"$ref": "#/$defs/nonempty"},
+    "goal": {"$ref": "#/$defs/nonempty"},
+    "failure_criterion": {"$ref": "#/$defs/nonempty"},
+    "horizon": {"type": ["string", "null"]},
+    "evidence_access": {"enum": ["checked", "provided-only", "not-run"]},
+    "assumptions": {"$ref": "#/$defs/strings"},
+    "unknowns": {"$ref": "#/$defs/strings"},
+    "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+    "risks": {"type": "array", "items": {"$ref": "#/$defs/risk"}},
+    "plan_changes": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+    "residual_risks": {"type": "array", "items": {"$ref": "#/$defs/nonempty"}, "uniqueItems": true},
+    "approval_gates": {"type": "array", "items": {"$ref": "#/$defs/gate"}},
+    "limitations": {"$ref": "#/$defs/strings"}
+  },
+  "$defs": {
+    "nonempty": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "strings": {"type": "array", "items": {"$ref": "#/$defs/nonempty"}},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "title", "locator", "access_level"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^SRC-[0-9]{3,}$"},
+        "title": {"$ref": "#/$defs/nonempty"},
+        "locator": {"$ref": "#/$defs/nonempty"},
+        "access_level": {"enum": ["provided", "retrieved", "observed", "abstract-only"]}
+      }
+    },
+    "risk": {
+      "type": "object", "additionalProperties": false,
+      "required": ["risk_id", "claim", "causal_chain", "objective_affected", "evidence_status", "source_ids", "counterevidence", "falsifier", "controllability", "impact", "controls"],
+      "properties": {
+        "risk_id": {"type": "string", "pattern": "^RISK-[0-9]{3,}$"},
+        "claim": {"$ref": "#/$defs/nonempty"},
+        "causal_chain": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/nonempty"}},
+        "objective_affected": {"$ref": "#/$defs/nonempty"},
+        "evidence_status": {"enum": ["supported", "contradicted", "uncertain", "unverified"]},
+        "source_ids": {"type": "array", "items": {"type": "string", "pattern": "^SRC-[0-9]{3,}$"}, "uniqueItems": true},
+        "counterevidence": {"$ref": "#/$defs/nonempty"},
+        "falsifier": {"$ref": "#/$defs/nonempty"},
+        "controllability": {"enum": ["internal", "external", "shared"]},
+        "impact": {
+          "type": "object", "additionalProperties": false,
+          "required": ["level", "rationale"],
+          "properties": {"level": {"enum": ["low", "medium", "high", "unknown"]}, "rationale": {"$ref": "#/$defs/nonempty"}}
+        },
+        "controls": {
+          "type": "object", "additionalProperties": false,
+          "required": ["prevention", "detection", "response", "verification", "owner"],
+          "properties": {
+            "prevention": {"$ref": "#/$defs/nonempty"},
+            "detection": {"$ref": "#/$defs/nonempty"},
+            "response": {"$ref": "#/$defs/nonempty"},
+            "verification": {"$ref": "#/$defs/nonempty"},
+            "owner": {"$ref": "#/$defs/nonempty"}
+          }
+        }
+      }
+    },
+    "change": {
+      "type": "object", "additionalProperties": false,
+      "required": ["change_id", "related_risk_ids", "description", "disposition", "decision_owner", "decision_evidence"],
+      "properties": {
+        "change_id": {"type": "string", "pattern": "^CHANGE-[0-9]{3,}$"},
+        "related_risk_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^RISK-[0-9]{3,}$"}},
+        "description": {"$ref": "#/$defs/nonempty"},
+        "disposition": {"enum": ["proposed", "accepted", "rejected", "deferred"]},
+        "decision_owner": {"$ref": "#/$defs/nonempty"},
+        "decision_evidence": {"type": ["string", "null"]}
+      }
+    },
+    "gate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate", "status", "owner", "evidence"],
+      "properties": {
+        "gate": {"$ref": "#/$defs/nonempty"},
+        "status": {"enum": ["pending", "satisfied", "not-applicable"]},
+        "owner": {"$ref": "#/$defs/nonempty"},
+        "evidence": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

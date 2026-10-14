@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0.0",
+  "subject": "Example: event-processing platform migration",
+  "mode": "governed",
+  "status": "partial",
+  "hypothetical": true,
+  "failure_scenario": "Hypothetical: three months after the new messaging service launch, customer updates have gone missing and recovery exceeds the accepted outage window.",
+  "goal": "Move event processing to a new broker without missing business updates.",
+  "failure_criterion": "A business update is permanently lost or an incident exceeds the rollback window.",
+  "horizon": "Three months after proposed launch; example horizon, not an actual timeline",
+  "evidence_access": "provided-only",
+  "assumptions": [
+    "Illustrative only: assume the system acknowledges messages and then applies a state transition.",
+    "No actual architecture, logs, throughput, or guarantees were supplied for this example."
+  ],
+  "unknowns": [
+    "Message acknowledgment timing and persistence behavior are unknown.",
+    "Actual recovery point objectives, traffic, and retry semantics are unknown."
+  ],
+  "sources": [
+    {
+      "source_id": "SRC-001",
+      "title": "Explicitly fictional example assumptions",
+      "locator": "examples/messaging-migration.json:assumptions",
+      "access_level": "provided"
+    }
+  ],
+  "risks": [
+    {
+      "risk_id": "RISK-001",
+      "claim": "An acknowledgment before durable state change could prevent recovery of an update after a crash.",
+      "causal_chain": [
+        "Application acknowledges an event before committing required business state.",
+        "A process termination occurs before the state commit and the broker does not redeliver the acknowledged event.",
+        "A requested customer update remains unapplied and cannot be recovered by ordinary redelivery."
+      ],
+      "objective_affected": "No lost business updates after migration.",
+      "evidence_status": "unverified",
+      "source_ids": ["SRC-001"],
+      "counterevidence": "No broker acknowledgment configuration or persistence code was inspected; transactional processing may already prevent this path.",
+      "falsifier": "Inspect acknowledgment/commit ordering and run an authorized fault-injection test around the commit boundary.",
+      "controllability": "internal",
+      "impact": {
+        "level": "high",
+        "rationale": "Permanent loss of a required business update would violate the stated example acceptance criterion; likelihood is unknown."
+      },
+      "controls": {
+        "prevention": "Propose committing durable state or inbox record before acknowledging the event.",
+        "detection": "Track pending versus completed event IDs and alert on irreconcilable gaps in reconciliation reports.",
+        "response": "Pause consumer rollout and invoke an owner-approved replay/reconciliation runbook where recoverable.",
+        "verification": "With authorization, inject termination between state commit and acknowledgment; validate no missing updates across retries.",
+        "owner": "unknown"
+      }
+    },
+    {
+      "risk_id": "RISK-002",
+      "claim": "A rollback may be infeasible if old and new message contracts become incompatible.",
+      "causal_chain": [
+        "Deployment introduces an event shape only the new consumers can parse.",
+        "The new broker path is disabled after a defect while old consumers cannot process newly produced events.",
+        "Fallback processing stops and the stated rollback window is breached."
+      ],
+      "objective_affected": "Recover within the planned rollback window.",
+      "evidence_status": "unverified",
+      "source_ids": ["SRC-001"],
+      "counterevidence": "This example contains no real event schema or compatibility test results; formats may already be backward compatible.",
+      "falsifier": "Compare the actual versioned producer/consumer contracts and execute an authorized rollback rehearsal.",
+      "controllability": "shared",
+      "impact": {
+        "level": "high",
+        "rationale": "Rollback failure directly violates the stated recovery objective; probability is not estimated."
+      },
+      "controls": {
+        "prevention": "Propose a backward-compatible contract window with dual-reader acceptance before switching traffic.",
+        "detection": "Monitor consumer deserialization errors and compatibility-validation failures during staged rollout.",
+        "response": "Freeze incompatible schema publication and switch to the tested recovery pathway with approved operational owners.",
+        "verification": "Run contract matrix tests and a rehearsal restoring the old consumer against example new-version messages.",
+        "owner": "unknown"
+      }
+    }
+  ],
+  "plan_changes": [
+    {
+      "change_id": "CHANGE-001",
+      "related_risk_ids": ["RISK-001"],
+      "description": "Add commit/acknowledgment-order verification before release approval.",
+      "disposition": "proposed",
+      "decision_owner": "unknown",
+      "decision_evidence": null
+    },
+    {
+      "change_id": "CHANGE-002",
+      "related_risk_ids": ["RISK-002"],
+      "description": "Make a versioned-contract rollback rehearsal a release criterion.",
+      "disposition": "proposed",
+      "decision_owner": "unknown",
+      "decision_evidence": null
+    }
+  ],
+  "residual_risks": ["RISK-001", "RISK-002"],
+  "approval_gates": [
+    {
+      "gate": "System owner approves an actual deployment after fault tests and documented rollback evidence.",
+      "status": "pending",
+      "owner": "unknown",
+      "evidence": null
+    }
+  ],
+  "limitations": [
+    "No migration files, execution logs, deployed system, or real acceptance criteria were inspected.",
+    "This example is not an approval or certification, and tests have not run."
+  ]
+}
