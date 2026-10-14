@@ -2,7 +2,7 @@ import importlib.util,json,shutil,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 RELEASE="0.9.0"
-NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness","operational-context","reverse-engineering","deep-research-suite")
+NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness","operational-context","reverse-engineering","deep-research-suite","premortem-analysis")
 class Tests(unittest.TestCase):
  def test_catalog_release_is_090(self):
   d=json.loads((ROOT/"marketplace/catalog.json").read_text());self.assertEqual(d["plugin"]["version"],RELEASE);self.assertEqual(d["marketplace"]["version"],RELEASE)
@@ -18,7 +18,7 @@ class Tests(unittest.TestCase):
   result=subprocess.run([sys.executable,str(ROOT/"scripts/validate_release_source_manifest.py"),"--version",RELEASE,"--check"],cwd=ROOT,capture_output=True,text=True)
   self.assertEqual(result.returncode,0,result.stdout+result.stderr)
  def test_every_09_feature_skill_has_explicit_semver(self):
-  for skill in ("reverse-engineering","deep-research-suite","skill-booster","skill-creator-juiced","skill-token-efficient","skill-benchmark"):
+  for skill in ("reverse-engineering","deep-research-suite","skill-booster","skill-creator-juiced","skill-token-efficient","skill-benchmark","premortem-analysis"):
    path=ROOT/"skills"/skill
    version=(path/"VERSION").read_text(encoding="ascii").strip()
    self.assertRegex(version,r"^[0-9]+\.[0-9]+\.[0-9]+$")

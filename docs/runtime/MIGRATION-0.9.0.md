@@ -1,6 +1,6 @@
 # Upgrade from RhapsodIA 0.8.0 to 0.9.0
 
-Install the full 0.9.0 source distribution together: 55 skills, seven canonical native agents, and synchronized marketplace metadata. Preserve any independently customized host instruction blocks; configuration remains opt-in.
+Install the full 0.9.0 source distribution together: 56 skills, seven canonical native agents, and synchronized marketplace metadata. Preserve any independently customized host instruction blocks; configuration remains opt-in.
 
 ## Existing state and ownership
 
@@ -14,7 +14,7 @@ The Deep Research Suite 0.2.0 has stricter source/claim readiness, field-require
 
 ## Skill lifecycle
 
-New and newly optimized skills require root `VERSION` (SemVer) and a matching `CHANGELOG.md` current-version entry. Legacy unchanged skills are not silently bulk-versioned. `Reverse Engineering` is first explicitly tracked as 0.1.0. The Golden Source interface remains `skill-opt.token-efficiency` v1; no consumer may write its owner contract or lower independent acceptance gates.
+New and newly optimized skills require root `VERSION` (SemVer) and a matching `CHANGELOG.md` current-version entry. Legacy unchanged skills are not silently bulk-versioned. `Reverse Engineering` and `Premortem Analysis` are both first tracked as 0.1.0. Premortem analyses remain advisory and cannot approve or mutate a plan. The Golden Source interface remains `skill-opt.token-efficiency` v1; no consumer may write its owner contract or lower independent acceptance gates.
 
 ## Host portability
 

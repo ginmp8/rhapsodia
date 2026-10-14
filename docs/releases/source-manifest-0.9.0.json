@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "4317a38ac46dc6ea51b9f1c5f2beb9c217c27455b4c3383a77c956ce8e0e5924",
+  "sha256": "8d30e4e3e1d6750eb6496ad53ae98886afac718bab840a1901a9bd490f3b2b81",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -50,11 +50,11 @@
     },
     {
       "path": ".github/workflows/helix-release.yml",
-      "sha256": "c59fa854970fe359a2dee751b0c636443052779f23bbd29ff733cfdca50309f0"
+      "sha256": "e649b0f761b19494575e285a922094e33e70fedc3f62abf4d2d7c631aa0c7dd4"
     },
     {
       "path": ".github/workflows/runtime-portability.yml",
-      "sha256": "14a2dda36739e0282c1cbe9baa5f5999144403986dca44bc5ec6fcb62472400e"
+      "sha256": "d0ea953c41e17ee0ee6994fea11a6d63b24217bab8f2bd12821c23cc72b4eea1"
     },
     {
       "path": ".gitignore",
@@ -70,7 +70,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "31c140ceb12bd981a21207a530410268a5e67fdb27658f04b91884113a253e5c"
+      "sha256": "fbc9750098480167e31250d3aa2a2be5e0c7896c8e1d6a1be54d02e23a184911"
     },
     {
       "path": "agents/magia.agent.md",
@@ -142,7 +142,7 @@
     },
     {
       "path": "docs/runtime/MIGRATION-0.9.0.md",
-      "sha256": "f760f34677bb821555f0e3d6539079af8c27edf1b927cf3c9db89573fa3b766b"
+      "sha256": "665159b277ed202e14e84e2a715cbc4a81ccd2c94ec4ace68998db7a62aad29c"
     },
     {
       "path": "docs/runtime/OPERATIONAL-CONTEXT.md",
@@ -5093,6 +5093,90 @@
       "sha256": "ff6d47f288b35f318436a3e7e7ca0d8d5502c48e2c7789a434eb7b7b1c60d309"
     },
     {
+      "path": "skills/premortem-analysis/CHANGELOG.md",
+      "sha256": "fdc9a59832603d0b848e3af13b9434682be368afc9214bf075bb17ae3b5127e2"
+    },
+    {
+      "path": "skills/premortem-analysis/LICENSE",
+      "sha256": "3850e952a9ea33e70b121922e9a2186cb28cc47023e45b3c5833b541e9c161c2"
+    },
+    {
+      "path": "skills/premortem-analysis/README.md",
+      "sha256": "752ef965279cdbf5568744c13b152ad38dee20061e9ab0382456b6ded86540be"
+    },
+    {
+      "path": "skills/premortem-analysis/SKILL.md",
+      "sha256": "214d3dd5371b83162be017b832fceed218c8a93be9c045b082b067dde5910424"
+    },
+    {
+      "path": "skills/premortem-analysis/VERSION",
+      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
+    },
+    {
+      "path": "skills/premortem-analysis/assets/premortem-report.schema.json",
+      "sha256": "1febe27d0ee04d211793912e1e0e673d3dfc2a656773fc202c9339dfa7751d58"
+    },
+    {
+      "path": "skills/premortem-analysis/evals/activation-scenarios.json",
+      "sha256": "7477d1fda5249e09e08fee7abb6f197d261c806fd98e92113874fd1c45c862e3"
+    },
+    {
+      "path": "skills/premortem-analysis/evals/behavior-scenarios.json",
+      "sha256": "29347130908ca1d89454b6a26604b0cbbe03df59319f5b7439d17f4d644341f5"
+    },
+    {
+      "path": "skills/premortem-analysis/evidence/traceability.json",
+      "sha256": "cb8c0a3e84c6a9e7a1ba12de9b0e080d7142f5fdc996475d5e4df60b5a92f9f6"
+    },
+    {
+      "path": "skills/premortem-analysis/examples/messaging-migration.json",
+      "sha256": "d366e830f0ef1549dac65454e80534db856775c7d8bf5ceb56844a0080e04804"
+    },
+    {
+      "path": "skills/premortem-analysis/references/activation.md",
+      "sha256": "ff4fc67ee79a2c200d8152b8f2432c664905b07f932a7c6c08de928f193f2a69"
+    },
+    {
+      "path": "skills/premortem-analysis/references/evidence-and-bias.md",
+      "sha256": "a60f5960f4d5bd4bc7044cf59fed5381296e8ae913f7e0459f0d28b8151363e4"
+    },
+    {
+      "path": "skills/premortem-analysis/references/method.md",
+      "sha256": "46bd7064da4109fa67fb84b6572eb5bde919fcd8959ec33fdab2058eb5ba939f"
+    },
+    {
+      "path": "skills/premortem-analysis/references/output-contract.md",
+      "sha256": "a262ba0a50b484a5aeeb96f6c5e5b50de5b8d9b15dbf84fb49c0d3f793e9dcbb"
+    },
+    {
+      "path": "skills/premortem-analysis/references/portability.md",
+      "sha256": "52ff3cac54d22f83afdc1ea0fb2968f78fcd1acf0b328f273ffac92af165953e"
+    },
+    {
+      "path": "skills/premortem-analysis/references/research-basis.md",
+      "sha256": "832e1062a1f2e205d723c574a1cf1028dc4c4078fb7fd152ccdc9292c0cb3108"
+    },
+    {
+      "path": "skills/premortem-analysis/scripts/package.py",
+      "sha256": "0d4e822999309e9f08fe95890b4b8ef352875c43f34c25641c4df4cfb8f7fe2a"
+    },
+    {
+      "path": "skills/premortem-analysis/scripts/validate_package.py",
+      "sha256": "5291d1db67b85395cfa2a89d2a9852f049c8dd449b034a85f1ae951669ff6ace"
+    },
+    {
+      "path": "skills/premortem-analysis/scripts/validate_report.py",
+      "sha256": "b5d3aba0cbc7dc2545de9c861780194ccb41a78e4eb33e9be1beace01198c256"
+    },
+    {
+      "path": "skills/premortem-analysis/scripts/validate_traceability.py",
+      "sha256": "69cd3c7c5e19047b29e451c27d2b7ee9ab39c0bae2a0b68e1c7260c8a9455587"
+    },
+    {
+      "path": "skills/premortem-analysis/tests/test_skill.py",
+      "sha256": "a3e6c704dc0b602d88a87743c2750df33d0d59df64b131868cc187223b477bd8"
+    },
+    {
       "path": "skills/prompt-architect/SKILL.md",
       "sha256": "c3cfe2a3380ac5ca220d411495bf0f8326f42b42bd8449f76fb182880c72f2fb"
     },
@@ -9294,7 +9378,7 @@
     },
     {
       "path": "tests/test_release_versions.py",
-      "sha256": "ccb1cd0a61d03bcc3772c1d45820cb826157a37d3fb3bb624fe7a0417bdfe0ec"
+      "sha256": "3b94c6899c363b6a65d72304f4015c3c6773393e9c9c656bc9ea8962da9779dc"
     },
     {
       "path": "tests/test_runtime_integration.py",

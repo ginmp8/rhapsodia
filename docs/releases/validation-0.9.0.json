@@ -5,16 +5,14 @@
   "status": "scoped-local-gates-pass-with-explicit-incomplete-suites-and-host-limits",
   "input_baseline": {
     "version": "0.8.0",
-    "archive_sha256": "ccbad4a97754496f0fd2da2795684924a53c8779dddb148499ba0a6a93ace3ae",
-    "source_manifest_0_8_0_reproducible_from_supplied_archive": false,
     "source_manifest_drift": {
       "changed_file_hashes": 7,
       "omitted_source_files": 1,
       "history_unmodified": true
-    }
+    },
+    "source_manifest_0_8_0_reproducible_from_supplied_input": false
   },
   "input_feature": {
-    "archive_sha256": "57c8ed316089eda62f58faca76aeffcdd7127f2e577bf89dd8cbf3dd396f9555",
     "source_changes": {
       "added": 135,
       "removed": 0,
@@ -31,18 +29,19 @@
     "skill-booster": "0.2.0",
     "skill-creator-juiced": "0.2.0",
     "skill-token-efficient": "0.1.1",
-    "skill-benchmark": "0.1.0"
+    "skill-benchmark": "0.1.0",
+    "premortem-analysis": "0.1.0"
   },
   "catalog": {
-    "skills": 55,
+    "skills": 56,
     "agents": 7
   },
   "source_identity": {
     "path": "source-manifest-0.9.0.json",
-    "sha256": "4317a38ac46dc6ea51b9f1c5f2beb9c217c27455b4c3383a77c956ce8e0e5924",
-    "file_count": 2326,
+    "sha256": "8d30e4e3e1d6750eb6496ad53ae98886afac718bab840a1901a9bd490f3b2b81",
+    "file_count": 2347,
     "method": "release-source-manifest/v1; current source bytes compared with an independent generator",
-    "scope_note": "archive and separately-scoped release/research/agent receipts are excluded from this source identity"
+    "scope_note": "Separately scoped release/research/agent receipts are excluded from this source identity."
   },
   "environment": {
     "os": "Linux",
@@ -240,5 +239,97 @@
     }
   ],
   "claim_boundary": "Scoped passing Linux/Python structural and behavioral fixture checks; not proof of full regression coverage, security review, production use, external tool support, or native host certification.",
-  "release_archive_identity": "external SHA-256 receipt, generated after final zip; intentionally not embedded to avoid circular self-hash"
+  "test_totals_scope": "Original 55-skill 0.9.0 candidate, retained as historical scoped evidence; not a full rerun of this expanded 56-skill source.",
+  "incremental_input": {
+    "change_vs_prior_0_9_0_distribution": {
+      "added_files": 21,
+      "removed_files": 1,
+      "modified_files": 2
+    },
+    "source_note": "The latest input adds Premortem Analysis; the historical original input_feature block is preserved for auditability."
+  },
+  "incremental_56_skill_validation": {
+    "scope": "Local checks of the updated 56-skill source; does not replace the original 420-test evidence or certify full cross-host integration.",
+    "premortem_unit_tests": {
+      "collected": 28,
+      "passed": 28,
+      "skipped": 0,
+      "failed": 0
+    },
+    "gates": [
+      {
+        "name": "premortem-unit",
+        "status": "pass",
+        "command": "python -I -S -B -m unittest discover -s skills/premortem-analysis/tests -p test_*.py -q",
+        "log_sha256": "4770335a20bfdeb64e85bfd68a3a99d5fac42ded84c88ac40b148e86fb449be0",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "premortem-package",
+        "status": "pass",
+        "command": "python -B skills/premortem-analysis/scripts/validate_package.py skills/premortem-analysis",
+        "log_sha256": "d182ac01945d82159b25cd01f72e7273bf7aad8ac953ad0e14ccbe5843e6deca",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "premortem-trace",
+        "status": "pass",
+        "command": "python -B skills/premortem-analysis/scripts/validate_traceability.py skills/premortem-analysis/evidence/traceability.json --root skills/premortem-analysis",
+        "log_sha256": "b3a8a427f3fc908082bf4724aaee89eb6c126b86401edd1efe84a2ffd7c26772",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "premortem-example",
+        "status": "pass",
+        "command": "python -B skills/premortem-analysis/scripts/validate_report.py skills/premortem-analysis/examples/messaging-migration.json",
+        "log_sha256": "71bae5f7594561bebfd866bced6f47773c80491486acfe4818b90bb6c344ea61",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "release-tests",
+        "status": "pass",
+        "command": "python -B -m unittest tests.test_release_versions -v",
+        "log_sha256": "8dfff595a06c5c3748b2731f34054a9c8348523b9a55d57a2f021578b067139a",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "marketplace-tests",
+        "status": "pass",
+        "command": "python -B -m unittest tests.test_marketplace_manifests -v",
+        "log_sha256": "f0d5e92a002783e3c1bca8202a40b5852b5d96cfa61978b8f5ecef51e32db1f5",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "prepare-release",
+        "status": "pass",
+        "command": "python -B scripts/prepare_release.py --check",
+        "log_sha256": "2949d2774e9b337e6324b55f439b234cbdee3baa55537aee9e9e96bff0e76283",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "version-consistency",
+        "status": "pass",
+        "command": "python -B scripts/validate_release_versions.py --expected-version 0.9.0",
+        "log_sha256": "b18e54c90e8105312853a546850adfe3968af92e8bee01e91ed0d87f1bcad06d",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "source-manifest",
+        "status": "pass",
+        "command": "python -B scripts/validate_release_source_manifest.py --version 0.9.0 --check",
+        "log_sha256": "6beaea57da4e5b4dfe4a0db639c65ea67d9bdd28333a9fb429d1f679bb58bfdc",
+        "evidence_location": "external-local-only"
+      },
+      {
+        "name": "native-agents",
+        "status": "pass",
+        "command": "python -B scripts/validate_agents.py --target .",
+        "log_sha256": "96e7b5ab52d89937332bd2a7075886fc8a9a1a9a34a3e37a9a238bb16f62125d",
+        "evidence_location": "external-local-only"
+      }
+    ],
+    "source_manifest_status": "pass",
+    "host_ci_execution": "not-run",
+    "full_original_suites_rerun": "not-run"
+  }
 }
