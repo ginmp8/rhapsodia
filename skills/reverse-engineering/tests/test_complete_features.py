@@ -156,7 +156,7 @@ class TestFullCapabilities(unittest.TestCase):
             return 0
         with patch('tool_adapters.bounded_process',side_effect=emulate):
             report=tool_adapters.run('ilspy',target,self.root/'decompiled',authorized=True,
-                                     environment_approved=True,tool_override=Path(sys.executable))
+                                     environment_approved=True,tool_override=Path(sys.executable).resolve())
         self.assertTrue((self.root/'decompiled'/'Demo.cs').exists())
         self.assertEqual(report['provider'],'ilspy')
         bad=self.file('roslyn.json',json.dumps({'symbols':[{'name':'N.C.M','kind':'method'}]}))

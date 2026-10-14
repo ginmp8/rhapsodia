@@ -5,14 +5,16 @@
   "status": "scoped-local-gates-pass-with-explicit-incomplete-suites-and-host-limits",
   "input_baseline": {
     "version": "0.8.0",
+    "archive_sha256": "ccbad4a97754496f0fd2da2795684924a53c8779dddb148499ba0a6a93ace3ae",
+    "source_manifest_0_8_0_reproducible_from_supplied_archive": false,
     "source_manifest_drift": {
       "changed_file_hashes": 7,
       "omitted_source_files": 1,
       "history_unmodified": true
-    },
-    "source_manifest_0_8_0_reproducible_from_supplied_input": false
+    }
   },
   "input_feature": {
+    "archive_sha256": "57c8ed316089eda62f58faca76aeffcdd7127f2e577bf89dd8cbf3dd396f9555",
     "source_changes": {
       "added": 135,
       "removed": 0,
@@ -38,10 +40,10 @@
   },
   "source_identity": {
     "path": "source-manifest-0.9.0.json",
-    "sha256": "8d30e4e3e1d6750eb6496ad53ae98886afac718bab840a1901a9bd490f3b2b81",
+    "sha256": "5ec2b483636424834ae5d36e7806dc2c4eb1c3e2ddc137c17b704391f9c03c03",
     "file_count": 2347,
     "method": "release-source-manifest/v1; current source bytes compared with an independent generator",
-    "scope_note": "Separately scoped release/research/agent receipts are excluded from this source identity."
+    "scope_note": "archive and separately-scoped release/research/agent receipts are excluded from this source identity"
   },
   "environment": {
     "os": "Linux",
@@ -239,14 +241,17 @@
     }
   ],
   "claim_boundary": "Scoped passing Linux/Python structural and behavioral fixture checks; not proof of full regression coverage, security review, production use, external tool support, or native host certification.",
+  "release_archive_identity": "external SHA-256 receipt, generated after final zip; intentionally not embedded to avoid circular self-hash",
   "test_totals_scope": "Original 55-skill 0.9.0 candidate, retained as historical scoped evidence; not a full rerun of this expanded 56-skill source.",
   "incremental_input": {
+    "file": "rhapsodia-feature-re(1).zip",
+    "archive_sha256": "2025d3d15821052e71758f7781d4e6244562f1be7f2d09831ef75def07f5b6cc",
     "change_vs_prior_0_9_0_distribution": {
       "added_files": 21,
       "removed_files": 1,
       "modified_files": 2
     },
-    "source_note": "The latest input adds Premortem Analysis; the historical original input_feature block is preserved for auditability."
+    "source_note": "New archive adds Premortem Analysis; the historical original input_feature block is preserved for auditability."
   },
   "incremental_56_skill_validation": {
     "scope": "Local checks of the updated 56-skill source; does not replace the original 420-test evidence or certify full cross-host integration.",
@@ -331,5 +336,26 @@
     "source_manifest_status": "pass",
     "host_ci_execution": "not-run",
     "full_original_suites_rerun": "not-run"
+  },
+  "ci_interpreter_symlink_fix": {
+    "scope": "Linux local reproduction of GitHub Actions failure; GitHub-hosted CI and other native hosts not executed",
+    "changed_file": "skills/reverse-engineering/tests/test_complete_features.py",
+    "reason": "The test fixture passed symlinked sys.executable to an override that intentionally rejects symlinks; resolving the fixture path preserves the safety check",
+    "command": "python -I -S -B -m unittest discover -s skills/reverse-engineering/tests -p test_*.py -q",
+    "environment": "Python executable invoked via absolute symlink",
+    "baseline": {
+      "state": "fail",
+      "collected": 173,
+      "errors": 1
+    },
+    "repaired": {
+      "state": "pass",
+      "collected": 173,
+      "passed": 173,
+      "failed": 0,
+      "skipped": 0
+    },
+    "host_ci_execution": "not-run",
+    "log_sha256": "fd7b8527354f0d5a69271ad625006e994ed103539c87dc3d017e27f26ac3d3b1"
   }
 }
