@@ -86,6 +86,7 @@ Use `references/design-principles.md`. Preserve one skill across runtimes/client
 Design the host-neutral core first. During this phase also read `references/reproducibility-by-design.md` and classify the skill's reproducibility ceiling before selecting deterministic resources:
 
 - `SKILL.md`: compact control plane and Agent Skills frontmatter;
+- root `VERSION` and `CHANGELOG.md`: required portable release identity/history; choose the version using [the versioning contract](versioning-contract.md), never nonstandard frontmatter;
 - `references/`: detailed rules, contracts, schemas, host notes, workflow branches;
 - `scripts/`: deterministic helpers, validators, converters, report generators;
 - `assets/`: output templates and static resources;
@@ -116,6 +117,8 @@ For existing skills, make the smallest coherent update that satisfies the reques
 Apply model-neutral minimality while drafting. For every non-invariant instruction, ask whether supported agents materially fail, drift, or violate the contract without it. Keep the instruction when evidence or a credible failure mode justifies it; otherwise omit it. Model- or host-specific workarounds require provenance/freshness and belong in an adapter or scoped host reference, not in the portable core.
 
 Treat approximately 500 lines or 5,000 tokens in `SKILL.md` as a review threshold, not an automatic split rule. When the threshold is exceeded, first move branch-specific detail to direct references; preserve cohesion when one operational responsibility still explains the package.
+
+Before validating or publishing, require `scripts/validate_skill_version.py --target <candidate-skill>`; when an immutable baseline exists, add `--baseline <prior-skill>` and block unchanged version for changed package bytes. Preserve release-history uncertainty for previously unversioned skills.
 
 Apply the local `references/reproducibility-by-design.md` checklist before specialist routing. Record material variance as mechanical, constrained heuristic, model judgment, or external nondeterminism. Move only objective/fragile behavior downward; preserve judgment where it is the point of the skill.
 

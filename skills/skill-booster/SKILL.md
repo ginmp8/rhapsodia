@@ -47,15 +47,16 @@ For optimization, assess four distinct layers instead of conflating them: `metad
 
 ## Workflow at a Glance
 
-1. **Establish**: resolve one target, source trust, host/runtime capabilities, protected scope, baseline/evaluator/source identities, target class, and context-loading topology.
+1. **Establish**: resolve one target, its prior release version (`VERSION` or authoritative evidence), source trust, host/runtime capabilities, protected scope, baseline/evaluator/source identities, target class, and context-loading topology.
 2. **Diagnose**: inspect activation metadata, Top-100 coverage, reference depth, package quality, supplied field/trace evidence, runtime trust boundaries, and only the evidence-provider surfaces material to the target.
 3. **Select / Strategy gate**: reconcile evidence, classify work as repair/optimization/experiment, choose the least-complex bounded strategy, and freeze acceptance criteria.
 4. **Transform**: mutate one isolated candidate through exactly one declared transformation owner; preserve unrelated behavior.
 5. **Evaluate / Search**: run the staged evidence ladder, include catalog-pressure/coexistence and trace-level cases when material, calibrate representative model-capability tiers when behavior is materially model-sensitive, and use the explicit evolutionary branch only when authorized.
-6. **Prove**: revalidate affected surfaces, require fresh final validation, run change/integration gates, verify Top-100/reference-depth closure, freeze exact bytes, and package atomically.
+6. **Prove**: require root `VERSION` + current `CHANGELOG.md` entry, verify release bump against the immutable baseline, revalidate affected surfaces, run change/integration gates, freeze exact bytes, and package atomically.
 
 ## Core Rules
 
+- Every optimized/published skill requires root `VERSION` (SemVer) and matching `CHANGELOG.md`; unchanged release versions cannot publish changed bytes. Determine bump from consumer impact, preserve history, and treat unversioned baselines as first-tracked adoption, not invented prior releases. Read [versioning contract](references/versioning-contract.md).
 - `portable-core` remains mandatory for optimization that changes the target unless the task is explicitly narrower and no portability claim is made.
 - Protect `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old archives, unrelated repos, and frozen evaluator assets.
 - `skill-hypothesis-discovery` follows baseline evidence when a hypothesis is needed; `skill-change-gate` controls candidate acceptance and final regression review.
@@ -73,6 +74,7 @@ For optimization, assess four distinct layers instead of conflating them: `metad
 
 Load only phase-relevant files, with required Markdown directly reachable from this root:
 
+- [references/versioning-contract.md](references/versioning-contract.md): required SemVer release identity, changelog, immutable baseline comparison, and hard delivery gate.
 - [references/context-loading-contract.md](references/context-loading-contract.md): Top-100, preview-first Markdown, discovery metadata, catalog competition, and one-level reference rules.
 - [references/optimization-workflow.md](references/optimization-workflow.md): six canonical phases and gates.
 - [references/optimization-foundation.md](references/optimization-foundation.md): target classes, capability map, strategy, evaluation ladder, and promotion separation.
@@ -124,7 +126,7 @@ When produced, validate canonical optimization artifacts with `scripts/validate_
 
 ## Output Contract
 
-Final reports must identify target/mode/objective/hosts; baseline and protected evidence; specialist reconciliation; reproducibility and hypothesis decisions; finding closure; files changed; validation commands/outcomes; before/after evidence when measured; Top-100/reference-depth status; change and integration gates; portability matrix; token trade-offs; exact frozen candidate/package identities; recovery/receipt state; residual risks; and evolutionary-search identities/results only when that mode actually ran.
+Final reports must identify candidate `VERSION`, prior release version or first-tracked adoption, bump impact rationale, changelog match; target/mode/objective/hosts; baseline and protected evidence; specialist reconciliation; reproducibility and hypothesis decisions; finding closure; files changed; validation commands/outcomes; before/after evidence when measured; Top-100/reference-depth status; change and integration gates; portability matrix; token trade-offs; exact frozen candidate/package identities; recovery/receipt state; residual risks; and evolutionary-search identities/results only when that mode actually ran.
 
 Use `measured` only for executed commands, validators, scenario results, package checks, or supplied data. Use `observed`, `inferred`, `planned`, `checklist-only`, or `blocked` otherwise. Manual checklist review is never a specialist invocation.
 
@@ -134,4 +136,4 @@ Stop before transformation when external-untrusted intake is incomplete; target 
 
 ## Finalization Checklist
 
-Before completion, confirm source trust; context-loading Top-100 and direct-reference closure; target class; strategy and budgets; evaluator visibility; research traceability when applicable; one transformation owner per batch; rejected/inconclusive evidence preserved; portable-core pass; requested host evidence; specialist reconciliation; activation/non-activation/ambiguous/edge coverage; local links; no scaffold/cache/generated noise; modified scripts tested or blockers stated; material patches gated; compression revalidated; final candidate frozen after the last passing validation; package/report alias preflight passed; package hash/receipt matches committed bytes; recovery guarantees preserved; and no target edit occurred after final verified freeze.
+Before completion, confirm `VERSION`/`CHANGELOG.md` and unchanged-version baseline guard; source trust; context-loading Top-100 and direct-reference closure; target class; strategy and budgets; evaluator visibility; research traceability when applicable; one transformation owner per batch; rejected/inconclusive evidence preserved; portable-core pass; requested host evidence; specialist reconciliation; activation/non-activation/ambiguous/edge coverage; local links; no scaffold/cache/generated noise; modified scripts tested or blockers stated; material patches gated; compression revalidated; final candidate frozen after the last passing validation; package/report alias preflight passed; package hash/receipt matches committed bytes; recovery guarantees preserved; and no target edit occurred after final verified freeze.

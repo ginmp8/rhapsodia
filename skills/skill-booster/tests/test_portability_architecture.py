@@ -29,6 +29,8 @@ def make_skill(base: Path) -> Path:
         "---\nname: demo-skill\ndescription: Portable demo used to validate multi-host profiles.\n---\n\n# Demo\n",
         encoding="utf-8",
     )
+    (skill / "VERSION").write_text("1.0.0\n", encoding="ascii")
+    (skill / "CHANGELOG.md").write_text("# Changelog\n\n## [1.0.0]\n\n- Initial tracked test release.\n", encoding="utf-8")
     return skill
 
 
@@ -105,3 +107,10 @@ def test_openai_policy_products_use_current_values() -> None:
         bad = run_validator(skill, "openai")
         assert bad.returncode != 0
         assert "OPENAI_ADAPTER_PRODUCTS" in bad.stdout
+
+
+def test_bundled_validator_import_is_not_external_dependency() -> None:
+    result = run_validator(ROOT, "portable-core,codex,claude,copilot,cursor")
+    assert result.returncode == 0, result.stdout
+    report = json.loads(result.stdout)
+    assert not any(item["code"] == "PYTHON_EXTERNAL_DEPENDENCY" for item in report["warnings"])

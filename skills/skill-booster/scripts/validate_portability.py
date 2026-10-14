@@ -128,6 +128,7 @@ def validate_openai_adapter(root: Path) -> tuple[str, list[dict]]:
 def scan_python_dependencies(root: Path) -> list[dict]:
     findings: list[dict] = []
     stdlib = set(getattr(sys, "stdlib_module_names", ()))
+    local_modules = {path.stem for path in (root / "scripts").glob("*.py")} if (root / "scripts").exists() else set()
     for script in sorted((root / "scripts").glob("*.py")) if (root / "scripts").exists() else []:
         try:
             tree = ast.parse(script.read_text(encoding="utf-8"), filename=str(script))
@@ -141,7 +142,7 @@ def scan_python_dependencies(root: Path) -> list[dict]:
             elif isinstance(node, ast.ImportFrom) and node.module:
                 imports.add(node.module.split(".", 1)[0])
         if stdlib:
-            external = sorted(name for name in imports if name not in stdlib and name != "validate_skill_booster")
+            external = sorted(name for name in imports if name not in stdlib and name not in local_modules)
             for name in external:
                 findings.append({"code": "PYTHON_EXTERNAL_DEPENDENCY", "severity": "warning", "evidence": f"{script.name}: {name}", "reason": "external Python dependency may not exist on every host"})
     return findings
