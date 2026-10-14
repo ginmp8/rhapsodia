@@ -1,3 +1,15 @@
+# Skill Creator Juiced 0.2.0
+
+## Compatibility and behavior
+
+Added an optional Token Efficient v1 advisory import for an already-staged new or redesigned skill. Creator Juiced still owns creation and final acceptance; it never authorizes the provider to mutate its draft through the read-only advice contract. Existing workflows continue when the provider is unavailable, with evidence status made explicit.
+
+## Validation
+
+Static contract, version, package and portability checks are required before promotion; they do not prove identical behavior on each host.
+
+---
+
 # Skill Creator Juiced 0.1.0
 
 ## Release identity

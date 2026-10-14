@@ -1,0 +1,17 @@
+{
+  "manifest_version": 1,
+  "skill": "skill-creator-juiced",
+  "exports": [],
+  "imports": [
+    {
+      "contract_id": "skill-opt.token-efficiency",
+      "accepted_versions": [
+        1
+      ],
+      "required_for": [
+        "creation:staged-draft-format-advice",
+        "redesign:staged-candidate-format-advice"
+      ]
+    }
+  ]
+}

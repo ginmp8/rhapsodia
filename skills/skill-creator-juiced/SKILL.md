@@ -68,6 +68,7 @@ Supporting Markdown follows a semantic-preview-first contract. Every editable `.
 
 ## Core Rules
 
+- For a stabilized staged draft whose representation affects context cost, consult `skill-token-efficient` via `skill-opt.token-efficiency` v1 `format-advice` (read-only) through [specialist orchestration](references/specialist-orchestration.md). The provider does not create/redesign the skill; Creator owns its draft, portable Markdown entrypoint and final gates. If unavailable, label advice unavailable and retain the native safe format. Do not reproduce format ranking rules.
 - Preserve purpose, constraints, safety boundaries, examples, and expected outputs unless the authorized redesign intentionally changes them.
 - Do not assume every reusable customization belongs in a skill; route always-on rules, custom agents, tools/MCP, hooks, plugins, or prompt/document assets to their proper owner.
 - Prefer one cohesive portable capability over duplicated host-specific variants.
@@ -97,6 +98,7 @@ Load only what the active branch needs, and keep required Markdown directly reac
 - [references/reproducibility-routing.md](references/reproducibility-routing.md) for the `Reproducibility Engineer` decision gate.
 - [references/evaluation-and-generalization.md](references/evaluation-and-generalization.md) for eval-first baselines, catalog pressure, trace evaluation, judge calibration, field-evidence loops, activation cases, and anti-overfitting.
 - [references/specialist-orchestration.md](references/specialist-orchestration.md) for specialist ownership and sequencing.
+- [contracts/integration-manifest.json](contracts/integration-manifest.json) for the optional Token Efficient v1 consumer import; provider definitions stay in the canonical skill.
 - [references/quality-gates.md](references/quality-gates.md) before readiness or delivery claims.
 - [evals/activation-scenarios.json](evals/activation-scenarios.json) and [evals/portability-scenarios.json](evals/portability-scenarios.json) for frozen scenario coverage.
 - [examples/creation-scenarios.md](examples/creation-scenarios.md) for compact calibration examples.

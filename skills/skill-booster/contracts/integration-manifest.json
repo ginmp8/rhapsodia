@@ -105,6 +105,17 @@
       "required_for": [
         "evolutionary-optimization"
       ]
+    },
+    {
+      "contract_id": "skill-opt.token-efficiency",
+      "accepted_versions": [
+        1
+      ],
+      "required_for": [
+        "token-efficiency:format-advice",
+        "token-efficiency:staged-optimization",
+        "token-efficiency:final-comparison"
+      ]
     }
   ]
 }

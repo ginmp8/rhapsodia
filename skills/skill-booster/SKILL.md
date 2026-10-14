@@ -57,6 +57,7 @@ For optimization, assess four distinct layers instead of conflating them: `metad
 ## Core Rules
 
 - Every optimized/published skill requires root `VERSION` (SemVer) and matching `CHANGELOG.md`; unchanged release versions cannot publish changed bytes. Determine bump from consumer impact, preserve history, and treat unversioned baselines as first-tracked adoption, not invented prior releases. Read [versioning contract](references/versioning-contract.md).
+- When format selection or staged token optimization is delegated, import `skill-opt.token-efficiency` v1 from `skill-token-efficient` through [specialist passbook](references/specialist-passbook.md). Do not copy its format rules: provider advises/optimizes only its delegated scope; Booster keeps acceptance, change gates, and packaging. If unavailable, record the pass as unavailable and do not claim Golden Source validation.
 - `portable-core` remains mandatory for optimization that changes the target unless the task is explicitly narrower and no portability claim is made.
 - Protect `.git`, secrets, credentials, fixtures, expected outputs, benchmark baselines, generated evidence, old archives, unrelated repos, and frozen evaluator assets.
 - `skill-hypothesis-discovery` follows baseline evidence when a hypothesis is needed; `skill-change-gate` controls candidate acceptance and final regression review.

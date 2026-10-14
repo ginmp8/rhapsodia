@@ -68,6 +68,7 @@ During `diagnose`, specialists are evidence providers by default. They may inspe
 ## Provider rules
 
 - A provider may return findings, capability refs, evidence gaps, candidate hypotheses, and validation requirements.
+- For token efficiency, discover `skill-token-efficient` via the host skill catalog and negotiate `skill-opt.token-efficiency` v1. Use its `format-advice` request only for representation choices; use `optimize-existing` only for a specifically authorized isolated candidate batch; use `compare-existing` only for read-only checks. Validate the provider request against its owned schema/CLI. Keep orchestration, safety, evaluator and final promotion gates in Booster; if unavailable, mark the delegated pass `unavailable` or `checklist-only` as actually performed, never `invoked-skill`.
 - A provider does not gain transformation authority merely because it found a defect.
 - Findings produced after pass 17 that are outside the selected transformation become follow-up hypotheses unless required for candidate validity/safety. For `complete`/`full` optimization, any such finding that is material and actionable must later receive a terminal disposition (`fixed`, `rejected`, `accepted-trade-off`, `blocked`, or `not-applicable`) before completion; a mere follow-up entry is not closure.
 - When a provider is explicitly delegated as transformation owner, record that delegation in the transformation registry and rerun affected gates afterward.

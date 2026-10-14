@@ -38,7 +38,7 @@ When an upstream orchestrator delegates a bounded task, the caller remains the g
 | security | `security-and-governance-review` | scripts, tool authority, data, dependencies, or governance risk | security/governance findings |
 | consistency | `skill-consistency-repair` | contradictions, broken links, orphaned resources, ownership drift | package consistency |
 | cleanup | `skill-cleanup-and-simplification` | stale scaffold, duplicate guidance, caches, obsolete files | package hygiene |
-| token efficiency | `skill-token-efficient` | stabilized instructions remain bloated/repetitive | context reduction with semantics preserved |
+| token efficiency | `skill-token-efficient` | stabilized instructions remain bloated/repetitive or a supported format choice affects context | advisory format choice on staged drafts; separate bounded transformation only under the existing skill optimization owner |
 | harness | `skill-harness` | repeatable scenario execution, baseline arms, holdouts, or evidence capture are needed | harness and evidence capture |
 | benchmark | `skill-benchmark` | scorecard, baseline comparison, generalization evidence, or readiness measurement is requested | benchmark report and evidence classification |
 | hypothesis discovery | `skill-hypothesis-discovery` | multiple candidate improvements compete | non-mutating prioritized hypothesis backlog |
@@ -60,6 +60,8 @@ For ordinary new skills:
 8. documentation, testing, security, consistency, cleanup, and token efficiency only as applicable;
 9. expand to held-out scenarios before strong behavioral or activation-improvement claims;
 10. advisory change gate only when useful for a net-new package.
+
+When invoking token advice, discover the provider through host capabilities, negotiate `skill-opt.token-efficiency` v1, use `format-advice` on a staged draft with `mutation_authorized=false`, and validate against its request schema. Creator retains creation, source, evaluator, safety, version and delivery authority. Missing provider means unavailable advice, not permission to duplicate its policy.
 
 Do not run `reproducibility-engineer` automatically on every new skill.
 
