@@ -28,6 +28,8 @@ Behavioral claims are scoped to the tested `runtime_profile_sha256` and material
 
 ## Efficiency
 
+When the optional `skill-token-efficient` provider is discoverable and a token-format comparison is in scope, negotiate `skill-opt.token-efficiency` v1 `compare-existing` with `mutation_authorized=false`, equal tokenizer identity/scope, and immutable baseline/candidate paths. Validate the request using the provider-owned schema/CLI, then use its comparison counts as only one efficiency evidence component. The benchmark still owns frozen scenarios, uncertainty, behavioral scoring and verdict. If provider is absent, report canonical provider status `unavailable` and separately label any local/runtime token counts actually observed. This cannot authorize target mutation or imply equivalent behavior.
+
 When trials expose them, report mean `input_tokens`, `output_tokens`, `total_tokens`, `latency_ms`, `tool_calls`, and `cost_usd`. Keep efficiency separate from capability metrics. Never synthesize one overall score unless a weighting policy and directions were frozen before execution.
 
 ## Grader calibration

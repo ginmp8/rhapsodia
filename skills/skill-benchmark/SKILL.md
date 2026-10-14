@@ -45,6 +45,7 @@ Do not use for target mutation, iterative repair/hardening, generic code review,
 
 ## Critical evidence and decision rules
 
+- For token/format baseline-vs-candidate comparisons, import `skill-opt.token-efficiency` v1 from `skill-token-efficient` in `compare-existing` read-only mode through [experimental evidence](references/experimental-evidence.md). The provider supplies pinned-tokenizer/scope counts and preservation diagnostics, not behavior, scores, verdicts or write authority. Without provider, mark canonical measurement unavailable and keep independently evidenced metrics separate.
 - Evidence layers stay distinct: `static`, `behavioral`, `runtime`, `qualitative`, `planned`, and `blocked`.
 - Never turn planned, missing, stale, malformed, contaminated, or unvalidated evidence into measured claims.
 - A static 0-100 score is a maturity score, not behavioral capability proof and not normative Agent Skills conformance.

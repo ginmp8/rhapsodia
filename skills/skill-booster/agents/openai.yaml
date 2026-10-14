@@ -8,8 +8,3 @@ interface:
   brand_color: '#6D5DF7'
 policy:
   allow_implicit_invocation: true
-  products:
-  - chatgpt
-  - codex
-  - api
-  - atlas

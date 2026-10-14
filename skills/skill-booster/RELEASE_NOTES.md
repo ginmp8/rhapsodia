@@ -1,3 +1,15 @@
+# Skill Booster 0.2.0
+
+## Compatibility and behavior
+
+Added a versioned optional `skill-opt.token-efficiency` v1 import. Delegated format choices and isolated optimizations are owned by the Token Efficient provider, while Booster retains single-writer orchestration, independent promotion and versioning gates. A missing provider is reported, not silently approximated; other workflows remain valid. This additive import does not change the provider contract.
+
+## Validation
+
+Static contract, version, package and portability checks are required before promotion; they do not prove identical behavior on each host.
+
+---
+
 # Skill Booster 0.1.0
 
 ## Release identity

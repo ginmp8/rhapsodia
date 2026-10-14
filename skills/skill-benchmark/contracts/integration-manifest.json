@@ -13,5 +13,16 @@
       ]
     }
   ],
-  "imports": []
+  "imports": [
+    {
+      "contract_id": "skill-opt.token-efficiency",
+      "accepted_versions": [
+        1
+      ],
+      "required_for": [
+        "comparison-benchmark:token-efficiency",
+        "behavioral-evidence-benchmark:token-efficiency"
+      ]
+    }
+  ]
 }
