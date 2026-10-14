@@ -6,13 +6,14 @@ Date: 2026-10-14. Previous full-source release: 0.8.0.
 
 - Reverse Engineering skill (first explicit package version 0.1.0), with offline format inspection, evidence and behavioral characterization plus separately authorized optional adapters.
 - Deep Research Suite skill (0.2.0), with provenance-aware research validation, resume identity and strict/explicitly partial reporting.
+- Premortem Analysis skill (0.1.0), with evidence-graded hypothetical failure chains, quick/standard/governed modes and owner-controlled plan changes.
 
 ## Changed
 
 - Skill Token Efficient 0.1.1: the optional `skill-opt.token-efficiency` v1 Golden Source with deterministic format eligibility advice and explicit uncertainty on token savings.
 - Skill Booster 0.2.0 and Skill Creator Juiced 0.2.0: optional v1 consumer integration, mandatory SemVer/CHANGELOG on newly created or optimized skills, and retained independent acceptance gates.
 - Skill Benchmark 0.1.0: optional read-only token-efficiency evidence in independent comparisons.
-- Synchronized 0.9.0 release manifests, release test assertions, README, upgrade docs and both CI workflows; fixed an older 0.7.0 pin in the release workflow and formerly unexecuted pytest-style checks.
+- Synchronized 0.9.0 release manifests, release test assertions, README, upgrade docs and both CI workflows; included Premortem Analysis in release checks and fixed an older 0.7.0 pin and formerly unexecuted pytest-style checks.
 
 ## Compatibility and known limits
 

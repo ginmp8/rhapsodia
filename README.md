@@ -1,14 +1,16 @@
 # RhapsodIA
 
-## 0.9.0 - Reverse engineering, deep research and portable skill lifecycle contracts
+## 0.9.0 - Reverse engineering, deep research, premortems and portable skill lifecycle contracts
 
-RhapsodIA 0.9.0 contains **55 Agent Skills and seven native agent profiles**. It adds
-[Reverse Engineering](skills/reverse-engineering/SKILL.md) and
-[Deep Research Suite](skills/deep-research-suite/SKILL.md), and updates the
+RhapsodIA 0.9.0 contains **56 Agent Skills and seven native agent profiles**. It adds
+[Reverse Engineering](skills/reverse-engineering/SKILL.md),
+[Deep Research Suite](skills/deep-research-suite/SKILL.md), and
+[Premortem Analysis](skills/premortem-analysis/SKILL.md), and updates the
 Skill Token Efficient, Skill Booster, Skill Creator Juiced, and Skill Benchmark packages.
 
 - Reverse Engineering provides offline multi-format inspection, traceable behavioral characterization and bounded, explicitly authorized runtime probes; external tools remain optional.
 - Deep Research Suite validates source-linked results, enforces safer resume/freshness identity and distinguishes complete from partial reporting. Some legacy results require revalidation.
+- Premortem Analysis 0.1.0 examines plausible future failure chains in proposed plans using evidence-aware quick, standard and governed modes; recommendations remain advisory and require owner approval.
 - Token-efficiency knowledge has a single owner (`skill-opt.token-efficiency` v1); Booster and Creator are consumers, Benchmark is an independent validator, and all can operate without the optional provider.
 - Skill packages being created or optimized now require an explicit root `VERSION` and matching `CHANGELOG.md`; this release includes those identities for newly added and modified packages without rewriting legacy untouched skills.
 - Marketplace, agent manifests, release checks and both CI release workflows are aligned with 0.9.0.

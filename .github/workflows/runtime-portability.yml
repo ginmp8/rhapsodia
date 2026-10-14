@@ -32,6 +32,9 @@ jobs:
         run: |
           python -I -S -B -m unittest discover -s skills/reverse-engineering/tests -p 'test_*.py' -q
           python -I -S -B -m unittest discover -s skills/deep-research-suite/tests -p 'test_*.py' -q
+          python -I -S -B -m unittest discover -s skills/premortem-analysis/tests -p 'test_*.py' -q
+          python -B skills/premortem-analysis/scripts/validate_package.py skills/premortem-analysis
+          python -B skills/premortem-analysis/scripts/validate_traceability.py skills/premortem-analysis/evidence/traceability.json --root skills/premortem-analysis
       - name: Release integration tests
         run: python -S -B -m unittest tests.test_runtime_integration -v
       - name: Manifest and version checks
