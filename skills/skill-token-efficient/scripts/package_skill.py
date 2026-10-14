@@ -60,7 +60,7 @@ def validate_zip(path: Path) -> tuple[bool,list[str],int]:
 def build_zip(target: Path, staged: Path) -> int:
     count=0
     with zipfile.ZipFile(staged,"w",zipfile.ZIP_DEFLATED,compresslevel=9) as z:
-        for p in files(target):
+        for p in sorted(files(target), key=lambda p: p.relative_to(target).as_posix()):
             arc=p.relative_to(target).as_posix(); info=zipfile.ZipInfo(arc,FIXED_TIME); info.compress_type=zipfile.ZIP_DEFLATED; info.external_attr=(0o755 if p.suffix==".py" else 0o644)<<16
             z.writestr(info,p.read_bytes(),compress_type=zipfile.ZIP_DEFLATED,compresslevel=9); count+=1
     return count

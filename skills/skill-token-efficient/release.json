@@ -1,0 +1,9 @@
+{
+  "skill": "skill-token-efficient",
+  "version": "0.1.0",
+  "release_type": "initial-versioned-candidate",
+  "previous_version": "unknown",
+  "contract_id": "skill-opt.token-efficiency",
+  "integration_contract_version": 1,
+  "version_notes": "First explicit version identity in this candidate; no prior semantic version asserted."
+}

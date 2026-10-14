@@ -1,0 +1,351 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skill-opt:token-efficiency:request:v1",
+  "title": "Token Efficiency Delegation Request v1",
+  "type": "object",
+  "required": [
+    "contract_id",
+    "contract_version",
+    "consumer",
+    "operation",
+    "mode",
+    "target_skill",
+    "mutation_authorized"
+  ],
+  "properties": {
+    "contract_id": {
+      "const": "skill-opt.token-efficiency"
+    },
+    "contract_version": {
+      "const": 1
+    },
+    "consumer": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "operation": {
+      "enum": [
+        "format-advice",
+        "optimize-existing",
+        "compare-existing"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "audit",
+        "plan",
+        "apply",
+        "validate"
+      ]
+    },
+    "target_skill": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "mutation_authorized": {
+      "type": "boolean"
+    },
+    "staged_candidate": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "baseline_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "candidate_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "tokenization": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "primary_method",
+        "scope"
+      ],
+      "properties": {
+        "primary_method": {
+          "type": "string",
+          "pattern": "^(estimator-v1|tiktoken:.+)$"
+        },
+        "scope": {
+          "enum": [
+            "catalog",
+            "entrypoint",
+            "activated",
+            "instructions",
+            "all-text"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "format_context": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "role",
+        "supported_formats",
+        "requires_machine_parse",
+        "requires_type_fidelity",
+        "schema_available",
+        "has_typed_decoder",
+        "allow_nonstandard_codec",
+        "human_editable"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "skill-instructions",
+            "human-config",
+            "flat-records",
+            "nested-data",
+            "event-stream",
+            "html-dom",
+            "tool-schema",
+            "workflow"
+          ]
+        },
+        "supported_formats": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "markdown",
+              "plaintext",
+              "yaml",
+              "json-compact",
+              "json-pretty",
+              "toml",
+              "ini",
+              "xml",
+              "html",
+              "csv",
+              "tsv",
+              "toon",
+              "jton",
+              "ndjson"
+            ]
+          }
+        },
+        "requires_machine_parse": {
+          "type": "boolean"
+        },
+        "requires_type_fidelity": {
+          "type": "boolean"
+        },
+        "schema_available": {
+          "type": "boolean"
+        },
+        "has_typed_decoder": {
+          "type": "boolean"
+        },
+        "allow_nonstandard_codec": {
+          "type": "boolean"
+        },
+        "human_editable": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "format-advice"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "format_context"
+        ],
+        "properties": {
+          "mutation_authorized": {
+            "const": false
+          },
+          "mode": {
+            "enum": [
+              "audit",
+              "plan"
+            ]
+          },
+          "format_context": {
+            "$ref": "#/$defs/required_format_context"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "compare-existing"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "baseline_path",
+          "candidate_path",
+          "tokenization"
+        ],
+        "properties": {
+          "mutation_authorized": {
+            "const": false
+          },
+          "mode": {
+            "const": "validate"
+          },
+          "tokenization": {
+            "$ref": "#/$defs/required_tokenization"
+          },
+          "format_context": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "optimize-existing"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "staged_candidate",
+          "tokenization"
+        ],
+        "properties": {
+          "consumer": {
+            "const": "skill-booster"
+          },
+          "mutation_authorized": {
+            "const": true
+          },
+          "mode": {
+            "const": "apply"
+          },
+          "tokenization": {
+            "$ref": "#/$defs/required_tokenization"
+          },
+          "format_context": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "required_format_context": {
+      "type": "object",
+      "required": [
+        "role",
+        "supported_formats",
+        "requires_machine_parse",
+        "requires_type_fidelity",
+        "schema_available",
+        "has_typed_decoder",
+        "allow_nonstandard_codec",
+        "human_editable"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "skill-instructions",
+            "human-config",
+            "flat-records",
+            "nested-data",
+            "event-stream",
+            "html-dom",
+            "tool-schema",
+            "workflow"
+          ]
+        },
+        "supported_formats": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "markdown",
+              "plaintext",
+              "yaml",
+              "json-compact",
+              "json-pretty",
+              "toml",
+              "ini",
+              "xml",
+              "html",
+              "csv",
+              "tsv",
+              "toon",
+              "jton",
+              "ndjson"
+            ]
+          }
+        },
+        "requires_machine_parse": {
+          "type": "boolean"
+        },
+        "requires_type_fidelity": {
+          "type": "boolean"
+        },
+        "schema_available": {
+          "type": "boolean"
+        },
+        "has_typed_decoder": {
+          "type": "boolean"
+        },
+        "allow_nonstandard_codec": {
+          "type": "boolean"
+        },
+        "human_editable": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "required_tokenization": {
+      "type": "object",
+      "required": [
+        "primary_method",
+        "scope"
+      ],
+      "properties": {
+        "primary_method": {
+          "type": "string",
+          "pattern": "^(estimator-v1|tiktoken:.+)$"
+        },
+        "scope": {
+          "enum": [
+            "catalog",
+            "entrypoint",
+            "activated",
+            "instructions",
+            "all-text"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
