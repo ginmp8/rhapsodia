@@ -1,5 +1,17 @@
 # RhapsodIA
 
+## 0.10.0 - Selective agent activation, bounded decisions and prospective risk review
+
+RhapsodIA **0.10.0** retains 56 Agent Skills and seven native agent profiles, with no change to their canonical lifecycle ownership, native delegation permissions or skill-local versions.
+
+- Agent descriptions better distinguish governance (Nomia), technical planning (Mago), execution (Magia), read-only analysis, independent proof, orchestration and derived presentation.
+- Three optional semantic capabilities connect existing bundled skills without pinned runtime names: bounded choices (Decision Engine), prospective plan-failure hypotheses (Premortem Analysis), and a minimal post-answer uncertainty question (Discernment Nudge). Each has explicit non-activation cases, ownership limits and no automatic approval.
+- Repeated runtime-context instructions are condensed while preserving permission, freshness, cache and handoff safeguards. Agent routing scenarios and static regression guards cover selection and exclusions.
+- Marketplace and host manifests, both release workflows and the Agent manifest are aligned to 0.10.0. Individual skill package releases and contracts are unchanged.
+- Source correction (same pre-publication 0.10.0 identity, distinct archive): all seven `.agent.md` control planes fit within 100 physical lines; critical routing, authority, stop, output and checkpoint rules are validated within the first 100 lines. Long agent reference docs now have decision-useful previews and synchronized heading maps. The standalone agent installer still requires no bundled `docs/agents/` files.
+
+See [0.10.0 release notes](docs/releases/0.10.0.md) and [agent integration guidance](docs/agents/ARCHITECTURE.md). Token counts are estimates until comparable model/runtime measurements exist; scenario descriptions alone are not executed activation results.
+
 ## 0.9.0 - Reverse engineering, deep research, premortems and portable skill lifecycle contracts
 
 RhapsodIA 0.9.0 contains **56 Agent Skills and seven native agent profiles**. It adds

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import hashlib
+import importlib.util
 import json
 import shutil
 import subprocess
@@ -56,6 +57,18 @@ class ValidatorTests(unittest.TestCase):
         finally:
             td.cleanup()
 
+
+    def test_selective_decision_risk_lens_cannot_silently_disappear(self):
+        td, dst = self.copy_package()
+        try:
+            p = dst / "agents" / "rhapsodia-supervisor.agent.md"
+            text = p.read_text(encoding="utf-8").replace("`prospective-failure-review`", "`deleted-lens`")
+            p.write_text(text, encoding="utf-8")
+            rc, doc = run_validator(dst)
+            self.assertNotEqual(rc, 0)
+            self.assert_code(doc, "DECISION_RISK_LENS")
+        finally:
+            td.cleanup()
 
     def test_analyst_write_tool_is_rejected(self):
         td, dst = self.copy_package()
@@ -293,6 +306,51 @@ class ValidatorTests(unittest.TestCase):
             self.assert_code(result, "MANIFEST_INTEGRITY")
         finally:
             td.cleanup()
+
+
+
+
+class Top100PlacementTests(unittest.TestCase):
+    """These isolated checks protect agent control-plane loading without a full repository copy."""
+
+    @classmethod
+    def setUpClass(cls):
+        spec = importlib.util.spec_from_file_location("agent_gate_under_test", VALIDATOR)
+        cls.validator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.validator)
+
+    def test_supervisor_critical_output_moved_after_100_fails(self):
+        original = (ROOT / "agents" / "rhapsodia-supervisor.agent.md").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "rhapsodia-supervisor.agent.md"
+            p.write_text(original.replace("## Terminal output contract", "\n" * 90 + "## Terminal output contract", 1), encoding="utf-8")
+            findings = []
+            self.validator.validate_agent_file(p, self.validator.EXPECTED[p.name], findings)
+            self.assertIn("AGENT_TOP100_CONTROL", {f["code"] for f in findings})
+
+    def test_no_top100_violations_in_seven_profiles(self):
+        for p in sorted((ROOT / "agents").glob("*.agent.md")):
+            findings = []
+            self.validator.validate_agent_file(p, self.validator.EXPECTED[p.name], findings)
+            self.assertNotIn("AGENT_TOP100_CONTROL", {f["code"] for f in findings}, (p.name, findings))
+
+    def test_architecture_stale_contents_are_rejected(self):
+        source = (ROOT / "docs" / "agents" / "ARCHITECTURE.md").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "ARCHITECTURE.md"
+            p.write_text(source.replace("- Authority model", "- Undocumented missing chapter", 1), encoding="utf-8")
+            findings = []
+            self.validator.validate_supporting_markdown(p, findings)
+            self.assertIn("DOC_CONTEXT_MAP", {f["code"] for f in findings})
+
+    def test_sources_missing_decision_preview_is_rejected(self):
+        source = (ROOT / "docs" / "agents" / "SOURCES.md").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "SOURCES.md"
+            p.write_text(source.replace("**Decision impact:**", "**Generic topics:**", 1), encoding="utf-8")
+            findings = []
+            self.validator.validate_supporting_markdown(p, findings)
+            self.assertIn("DOC_CONTEXT_PREVIEW", {f["code"] for f in findings})
 
 
 if __name__ == "__main__":

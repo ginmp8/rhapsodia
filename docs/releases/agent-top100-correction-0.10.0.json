@@ -1,0 +1,83 @@
+{
+  "version": "0.10.0",
+  "source": "0.10.0 source-correction candidate; original ZIP remains immutable",
+  "comparator_sha256": "f69ce3f0c47bce5b3f870c9b21ef40a718e57e65d6584fe360f0ad5c2ce5a1e4",
+  "tokenizer": {
+    "method": "estimator-v1",
+    "kind": "estimated",
+    "implementation": "builtin-regex-v1"
+  },
+  "surface": "complete agents/*.agent.md incl frontmatter",
+  "totals": {
+    "before": 10223,
+    "after": 9885,
+    "estimated_delta": -338,
+    "estimated_change_pct": -3.31
+  },
+  "agents": [
+    {
+      "agent": "magia.agent.md",
+      "before_lines": 100,
+      "after_lines": 100,
+      "tokens_before": 1594,
+      "tokens_after": 1594,
+      "baseline_sha256": "1a140593f03b4020f7a169096a932c0e1076465856386a126212690e39dcc19c",
+      "candidate_sha256": "1a140593f03b4020f7a169096a932c0e1076465856386a126212690e39dcc19c"
+    },
+    {
+      "agent": "mago.agent.md",
+      "before_lines": 89,
+      "after_lines": 89,
+      "tokens_before": 1223,
+      "tokens_after": 1223,
+      "baseline_sha256": "2ae46d4ae046d04f0c941a70d25db26d6a03858fa6fbbc5bb387150920e27f9b",
+      "candidate_sha256": "2ae46d4ae046d04f0c941a70d25db26d6a03858fa6fbbc5bb387150920e27f9b"
+    },
+    {
+      "agent": "nomia.agent.md",
+      "before_lines": 87,
+      "after_lines": 87,
+      "tokens_before": 1208,
+      "tokens_after": 1208,
+      "baseline_sha256": "98d6f2960dad9fb4bf42d6cf4906dca4a547ecbb4f920b66934d1264fc6fb87b",
+      "candidate_sha256": "98d6f2960dad9fb4bf42d6cf4906dca4a547ecbb4f920b66934d1264fc6fb87b"
+    },
+    {
+      "agent": "rhapsodia-analyst.agent.md",
+      "before_lines": 110,
+      "after_lines": 96,
+      "tokens_before": 1169,
+      "tokens_after": 1183,
+      "baseline_sha256": "4e0729d051ae94fda5586ac70b2dc868f05bbc5247b1e5a09c6f27eb661f5de3",
+      "candidate_sha256": "724dd743dda7b4aafd38fa435f40be5b5c00ceb0579cbed22e516e96eba15b3e"
+    },
+    {
+      "agent": "rhapsodia-supervisor.agent.md",
+      "before_lines": 188,
+      "after_lines": 87,
+      "tokens_before": 3015,
+      "tokens_after": 2670,
+      "baseline_sha256": "9767ffc497df4a17bf5e330588854395c396be38f9e0ed530b80bd3168aebe43",
+      "candidate_sha256": "01b8b4f2ec911af3dfe9ef5beb84e80d6e5d1c40486ae0752890ec521f41569e"
+    },
+    {
+      "agent": "rhapsodia-verifier.agent.md",
+      "before_lines": 116,
+      "after_lines": 100,
+      "tokens_before": 1245,
+      "tokens_after": 1238,
+      "baseline_sha256": "e392b121d236567718a0bbef2f662a0cf27eeeccc6018c4a6a93fedd755686de",
+      "candidate_sha256": "207aae235f16015032d7c0b40c15ccf8b37dfa8091c2af06f936daefbab249f5"
+    },
+    {
+      "agent": "rhapsodia-workspace.agent.md",
+      "before_lines": 59,
+      "after_lines": 59,
+      "tokens_before": 769,
+      "tokens_after": 769,
+      "baseline_sha256": "577285654674928dc3ab1b46c5a93c99767a4a1fa71e6a67945e89e4dea8cd89",
+      "candidate_sha256": "577285654674928dc3ab1b46c5a93c99767a4a1fa71e6a67945e89e4dea8cd89"
+    }
+  ],
+  "limits": "static estimated token counts only; not runtime cost or behavioral/host proof"
+}

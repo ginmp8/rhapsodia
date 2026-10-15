@@ -1,6 +1,35 @@
 # Rhapsodia Agent Architecture
 
-## Artifact-native default (agent-system-contract/v3)
+## At a Glance
+
+- **Purpose:** Describe who owns decisions, repository changes, typed handoffs and independent proof across the seven native agent profiles; explain their capabilities without creating runtime dependencies.
+- **Load when:** Resolving a disputed Nomia/Mago/Magia route, selecting Analyst/Verifier/Workspace, checking a host adapter, or interpreting checkpoint/dynamic workflow limits.
+- **Decision impact:** Enforces one canonical writer and one progression owner, bounded delegation/checkpoints, host-native semantic support and derived-only outputs; no document here extends agent authority.
+
+## Contents
+
+- Artifact-native default (agent-system-contract/v4)
+- Purpose
+- Responsibility split
+- Why the analyst is separate
+- Delegation versus evidence transfer
+- Supporting semantic capabilities
+- Decision and risk lenses (optional, host-native)
+- Canonical governed lifecycle
+- Adaptive execution model
+- Routing budgets
+- Authority model
+- Context policy
+- Failure, cancellation, and partial results
+- Recovery and resume
+- Installation boundary
+- Host boundary
+- Reference-grounded convergence
+- Dual control planes: topology vs. convergence
+- Optional runtime context (0.7.0)
+
+
+## Artifact-native default (agent-system-contract/v4)
 
 Domain agents decide which files their own skill needs. The Supervisor selects the current owner, not filenames. All three workers return uniform `artifact_actions` and a separate action-validation result. Their canonical roots are independently owned (`docs/product`, `docs/specs`, `docs/implementation`, or explicit non-overlapping alternatives). Board/cycle/registry setup is not a native requirement.
 
@@ -130,6 +159,20 @@ Supporting skills are resolved **at runtime by semantic capability**, not by a f
 5. the result records semantic capability status and, when the host exposes it, the actual skill identity used as execution evidence.
 
 There is intentionally **no external-skill allowlist, package-name mapping, vendor mapping, or installation-path dependency** in the portable contract. Supporting skills are not subagents and must not be added to the VS Code `agents:` allowlist. Their instructions cannot change lifecycle ownership or grant authority the active agent does not already have.
+
+## Decision and risk lenses (optional, host-native)
+
+The Supervisor passes **semantic capability IDs** in an existing bounded `handoff/v1` packet. The current worker selects an installed Skill by meaning, applies its domain/authority limits, and returns attributed evidence. The bundled `decision-engine`, `premortem-analysis`, and `discernment-nudge` skills are available examples, **not** a mandatory runtime dependency or a fixed name-to-skill routing table. No extra agent or escalation hop is created solely to enable these skills.
+
+| Semantic capability | Eligible owner and trigger | Exclude / authority boundary |
+| --- | --- | --- |
+| `bounded-decision-judgment` | Nomia for specified business alternatives, Mago for bounded technical options, Magia for in-scope execution choices, Analyst for evidence-only comparison; Decision Engine is an example provider | No invented criteria, probabilities, authorization, policy thresholds or mechanically decidable gates. Typed recommendations do not approve actions. |
+| `prospective-failure-review` | Nomia for material launch/delivery plans, Mago for design/migration plans, Magia only for authorized prospective execution plans, Analyst for isolated read-only risk challenge; Premortem Analysis is an example provider | No observed incident analysis, routine bug diagnosis, generic pessimism, automatic plan changes or risk acceptance. Record hypothetical causal mechanisms, counterchecks and owner decisions separately. |
+| `material-uncertainty-reflection` | Complete human-facing recommendations when a still-unverified assumption could materially change action; Discernment Nudge is an example provider | No machine/JSON/handoff injection, repeated nudge, premature caveat, already-verified result or extra agent invocation solely for a cue. |
+
+For a consequential *future* migration: Mago owns the plan and may request a prospective risk review; the reviewer returns hypothetical evidence; Mago owns plan changes and acceptance criteria; Magia executes only an accepted handoff; Verifier proves frozen claims independently; Nomia alone owns any business approval or closure. For a bounded design choice, semantic decision assistance informs Mago but does not replace a validator or owner judgment. A completed Supervisor summary may include one decision-critical reflection question only if it helps the user act on an unresolved hinge.
+
+All capabilities are optional by default and require material relevance. Mark `required` only when the user/accepted plan makes that analysis an acceptance condition; unresolved required capabilities block that unit, unresolved optional capabilities are `not-run` only if semantics remain valid. Keep the existing subagent allowlist, read-only/one-writer partition, handoff versions, and finite budgets. This is selection guidance, not evidence of an executed multi-host agent session.
 
 ## Canonical governed lifecycle
 

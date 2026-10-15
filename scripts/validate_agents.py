@@ -54,6 +54,44 @@ EXPECTED = {
     },
 }
 
+# Hard control-plane placement gate: supporting details may follow line 100,
+# but activation, scope, authority, workflow, stops, outputs and load pointers
+# must remain accessible without loading later pages. These profiles currently
+# fit entirely within 100 lines; future elaboration may grow only below the gate.
+TOP100_SECTIONS = {
+    "supervisor": (
+        "## Mission and activation", "## Authority, evidence and handoffs",
+        "## Canonical lifecycle and route", "## Optional semantic capabilities",
+        "## State and hard budgets", "## Workflow (owner first",
+        "## Reference-grounded gated convergence", "## Derived-only Workspace",
+        "## Stop and escalation", "## Terminal output contract",
+        "## Direct supporting references",
+        "maximum 24 total subagent delegations", "maximum 4 gated checkpoints",
+        "maximum 2 checkpoint repair re-entries", "not promotable",
+        "bounded-decision-judgment", "prospective-failure-review",
+        "material-uncertainty-reflection",
+    ),
+    "worker": (
+        "## Role", "## Owned outcome", "## Authority", "## Selective support",
+        "## Workflow", "## Source-owned artifact orchestration",
+        "## Stop Conditions", "## Output contract",
+    ),
+    "analyst": (
+        "## Role", "## Authority", "## Input packet", "## Selective support",
+        "## Workflow", "## Stop Conditions", "## Dual control-plane evidence",
+        "## Output contract",
+    ),
+    "verifier": (
+        "## Role", "## Authority", "## Input packet", "## Freshness and oracle binding",
+        "## Workflow", "## Stop Conditions", "## Dual control-plane proof",
+        "## Output contract",
+    ),
+    "workspace": (
+        "## Role and skill binding", "## Authority", "## Workflow",
+        "## Output contract", "## Stop conditions",
+    ),
+}
+
 REQUIRED_SCENARIO_TYPES = {
     "core", "boundary", "regression", "ambiguous", "adversarial",
     "security", "failure", "privacy", "portability"
@@ -108,6 +146,12 @@ def parse_frontmatter(path, findings):
 
 
 def validate_agent_file(path, spec, findings):
+    all_lines = path.read_text(encoding="utf-8").splitlines()
+    control_plane = "\n".join(all_lines[:100]).lower()
+    for marker in TOP100_SECTIONS[spec["profile"]]:
+        if marker.lower() not in control_plane:
+            add(findings, "AGENT_TOP100_CONTROL", path,
+                f"required control-plane section/rule missing in first 100 lines: {marker}")
     fm, body = parse_frontmatter(path, findings)
     if fm.get("name") != spec["name"]:
         add(findings, "AGENT_NAME", path, f"name must be {spec['name']!r}")
@@ -156,6 +200,9 @@ def validate_agent_file(path, spec, findings):
         ):
             if phrase not in normalized_body:
                 add(findings, "SUPERVISOR_INVARIANT", path, f"missing required supervisor invariant: {phrase}")
+        for capability in ("bounded-decision-judgment", "prospective-failure-review", "material-uncertainty-reflection"):
+            if capability not in body:
+                add(findings, "DECISION_RISK_LENS", path, f"supervisor missing selective capability: {capability}")
     elif spec["profile"] == "analyst":
         if toolset != {"read", "search"}:
             add(findings, "ANALYST_TOOL_SCOPE", path, "analyst must expose only read and search")
@@ -211,6 +258,34 @@ def validate_agent_file(path, spec, findings):
 
     if len(body) > 30000:
         add(findings, "PROMPT_LENGTH", path, "agent body exceeds the documented 30,000 character prompt limit")
+
+
+def validate_supporting_markdown(path, findings):
+    """For long editable agent reference docs, validate a semantic first-40-line preview and heading-derived navigation."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if len(lines) <= 100:
+        return
+    preface = "\n".join(lines[:40])
+    for marker in ("## At a Glance", "**Purpose:**", "**Load when:**", "**Decision impact:**", "## Contents"):
+        if marker not in preface:
+            add(findings, "DOC_CONTEXT_PREVIEW", path, f"required first-40-line preview/navigation signal missing: {marker}")
+    # Extract actual material H2 headings outside fenced code, excluding preview/navigation.
+    fence = False
+    headings = []
+    for line in lines:
+        if line.lstrip().startswith(("```", "~~~")):
+            fence = not fence
+        elif not fence and line.startswith("## ") and line[3:] not in {"At a Glance", "Contents"}:
+            headings.append(line[3:])
+    try:
+        start = lines.index("## Contents") + 1
+        end = next(i for i in range(start, len(lines)) if lines[i].startswith("## "))
+    except (ValueError, StopIteration):
+        add(findings, "DOC_CONTEXT_MAP", path, "long supporting document needs Contents before material H2 sections")
+        return
+    navigation = [line[2:] for line in lines[start:end] if line.startswith("- ")]
+    if navigation != headings:
+        add(findings, "DOC_CONTEXT_MAP", path, "Contents must list each material H2 exactly once and in document order")
 
 
 def validate_contract(path, findings):
@@ -505,8 +580,11 @@ def validate(target):
             add(findings, "PACKAGE_HYGIENE", artifact, f"generated Python bytecode must not be packaged: {rel}")
 
     for rel in ("README.md", "docs/agents/ARCHITECTURE.md", "docs/agents/SOURCES.md"):
-        if not (root / rel).is_file():
-            add(findings, "DOC_MISSING", root / rel, "required documentation file is missing")
+        doc = root / rel
+        if not doc.is_file():
+            add(findings, "DOC_MISSING", doc, "required documentation file is missing")
+        elif rel.startswith("docs/agents/"):
+            validate_supporting_markdown(doc, findings)
     return findings
 
 

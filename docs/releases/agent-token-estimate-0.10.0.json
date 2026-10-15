@@ -1,0 +1,85 @@
+{
+  "schema": "rhapsodia-agent-token-estimate/v1",
+  "release_version": "0.10.0",
+  "previous_version": "0.9.0",
+  "date": "2026-10-15",
+  "source_archive_sha256": "6934edbf8261ea42b321680358cd8858194af63705e8b957274e3f79e16a0c82",
+  "surface": "all seven agents/*.agent.md complete text including frontmatter",
+  "tokenizer": {
+    "method": "estimator-v1",
+    "kind": "estimated",
+    "implementation": "builtin-regex-v1"
+  },
+  "totals": {
+    "estimated_before": 11275,
+    "estimated_after": 10223,
+    "estimated_delta": -1052,
+    "estimated_reduction_pct": 9.33
+  },
+  "agents": [
+    {
+      "agent": "magia.agent.md",
+      "estimated_before": 1598,
+      "estimated_after": 1594,
+      "estimated_delta": -4,
+      "estimated_reduction_percent": 0.25,
+      "baseline_sha256": "4471aa6ddb8168d361f7abde88a6bd74e5ffeaead5885cdc1be1bc906fcd2289",
+      "candidate_sha256": "1a140593f03b4020f7a169096a932c0e1076465856386a126212690e39dcc19c"
+    },
+    {
+      "agent": "mago.agent.md",
+      "estimated_before": 1224,
+      "estimated_after": 1223,
+      "estimated_delta": -1,
+      "estimated_reduction_percent": 0.08,
+      "baseline_sha256": "923a5030f6a238afb855845fb3c88c996ad4e1fd95aa17bd40226033476312fd",
+      "candidate_sha256": "2ae46d4ae046d04f0c941a70d25db26d6a03858fa6fbbc5bb387150920e27f9b"
+    },
+    {
+      "agent": "nomia.agent.md",
+      "estimated_before": 1204,
+      "estimated_after": 1208,
+      "estimated_delta": 4,
+      "estimated_reduction_percent": -0.33,
+      "baseline_sha256": "c140ae764462be4c7806a1282904ea56b396a1116dbfbe03330daf62ea037594",
+      "candidate_sha256": "98d6f2960dad9fb4bf42d6cf4906dca4a547ecbb4f920b66934d1264fc6fb87b"
+    },
+    {
+      "agent": "rhapsodia-analyst.agent.md",
+      "estimated_before": 1306,
+      "estimated_after": 1169,
+      "estimated_delta": -137,
+      "estimated_reduction_percent": 10.49,
+      "baseline_sha256": "d3aa3fc9238ed0513df8459446b8ca346461458f633e3705e92f6c73c7413e71",
+      "candidate_sha256": "4e0729d051ae94fda5586ac70b2dc868f05bbc5247b1e5a09c6f27eb661f5de3"
+    },
+    {
+      "agent": "rhapsodia-supervisor.agent.md",
+      "estimated_before": 3824,
+      "estimated_after": 3015,
+      "estimated_delta": -809,
+      "estimated_reduction_percent": 21.16,
+      "baseline_sha256": "660e1f6f07ea3780bcd36beb2fd751e4823f0847f12eb55ac2ad2e8a0a447ffd",
+      "candidate_sha256": "9767ffc497df4a17bf5e330588854395c396be38f9e0ed530b80bd3168aebe43"
+    },
+    {
+      "agent": "rhapsodia-verifier.agent.md",
+      "estimated_before": 1339,
+      "estimated_after": 1245,
+      "estimated_delta": -94,
+      "estimated_reduction_percent": 7.02,
+      "baseline_sha256": "a5b6a02dcf73e0ca3d6321820d3bfaf99ebe49b9c6d9dd3c4b6b1e9b9051c869",
+      "candidate_sha256": "e392b121d236567718a0bbef2f662a0cf27eeeccc6018c4a6a93fedd755686de"
+    },
+    {
+      "agent": "rhapsodia-workspace.agent.md",
+      "estimated_before": 780,
+      "estimated_after": 769,
+      "estimated_delta": -11,
+      "estimated_reduction_percent": 1.41,
+      "baseline_sha256": "6c045a976193ba5de18287460d77d004ffe85fe550183f57a3e40bf3d30d0bae",
+      "candidate_sha256": "577285654674928dc3ab1b46c5a93c99767a4a1fa71e6a67945e89e4dea8cd89"
+    }
+  ],
+  "claims": "Estimated static instruction token surface only. Native selection/agent behavior, per-model tokens, caching, total runtime costs and cross-host runtime compatibility were not measured."
+}

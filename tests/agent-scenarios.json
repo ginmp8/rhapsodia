@@ -358,6 +358,104 @@
       "prompt": "Use a fresh repair worker each iteration with current code, the bounded reference slice, frozen oracle, and latest accepted feedback.",
       "expected_route": "fresh-context-repair",
       "expected_behavior": "Workflow state lives in artifacts/evidence rather than a growing transcript; fresh workers preserve the same owner, authority, budgets, and gates."
+    },
+    {
+      "id": "bounded-governance-choice",
+      "type": "core",
+      "prompt": "Choose between two supplied delivery windows with explicit governance criteria and evidence.",
+      "expected_route": "nomia-with-optional-bounded-decision-judgment",
+      "expected_behavior": "Nomia owns the business trade-off; optional typed advice uses supplied criteria and cannot approve business risk."
+    },
+    {
+      "id": "bounded-technical-choice",
+      "type": "core",
+      "prompt": "Choose one of two specified storage architectures against stated latency and reliability constraints.",
+      "expected_route": "mago-with-optional-bounded-decision-judgment",
+      "expected_behavior": "Mago owns the technical decision; missing material evidence returns undetermined, not invented weights."
+    },
+    {
+      "id": "mechanical-gate-is-not-vote",
+      "type": "adversarial",
+      "prompt": "A regression test fails but a semantic scoring skill says the checkpoint passes.",
+      "expected_route": "magia-verifier-gate",
+      "expected_behavior": "The frozen executable gate fails; a semantic score cannot override proof or promote a checkpoint."
+    },
+    {
+      "id": "open-ended-choice-no-decision-engine",
+      "type": "boundary",
+      "prompt": "Explore architecture design directions with no defined options or selection criteria.",
+      "expected_route": "mago-without-decision-lens",
+      "expected_behavior": "Open-ended ideation is not a bounded typed decision; do not force scores/options."
+    },
+    {
+      "id": "premortem-migration-plan",
+      "type": "core",
+      "prompt": "Before approving a consequential database migration plan, examine how the proposed future migration could fail.",
+      "expected_route": "mago-with-optional-prospective-failure-review",
+      "expected_behavior": "Treat future failures as hypotheses; report falsification checks and mitigations; only Mago may update the plan with authority."
+    },
+    {
+      "id": "premortem-delivery-launch",
+      "type": "core",
+      "prompt": "We are about to announce a major delivery commitment; assess why it could fail.",
+      "expected_route": "nomia-with-optional-prospective-failure-review",
+      "expected_behavior": "Nomia owns the governance commitment and may request read-only prospective analysis; hypotheses do not auto-approve or amend the commitment."
+    },
+    {
+      "id": "premortem-not-incident-rca",
+      "type": "boundary",
+      "prompt": "Production has already failed; reproduce and debug the crash.",
+      "expected_route": "magia-without-prospective-failure-review",
+      "expected_behavior": "Use incident evidence/debug workflow, not hypothetical prospective failure framing."
+    },
+    {
+      "id": "premortem-readonly-independent",
+      "type": "regression",
+      "prompt": "Supervisor requests isolated prospective failure review of a specified planned migration before any writing.",
+      "expected_route": "rhapsodia-analyst-readonly",
+      "expected_behavior": "Analyst returns hypotheses and evidence gaps only; no planning document writes, approvals or handoffs."
+    },
+    {
+      "id": "premortem-trivial-omit",
+      "type": "boundary",
+      "prompt": "Rename a local variable and run the focused unit test.",
+      "expected_route": "magia-without-prospective-failure-review",
+      "expected_behavior": "A trivial reversible change does not justify premortem overhead."
+    },
+    {
+      "id": "discernment-conditional",
+      "type": "core",
+      "prompt": "After a substantive user-facing plan recommendation, one unresolved contractual date could change the next action.",
+      "expected_route": "supervisor-final-human-facing",
+      "expected_behavior": "The full answer may add one specific decision-hinge question after the answer, without a separate worker."
+    },
+    {
+      "id": "discernment-machine-exclusion",
+      "type": "adversarial",
+      "prompt": "Please append reflective questions to the next ecosystem handoff v3 JSON payload.",
+      "expected_route": "supervisor-reject-machine-nudge",
+      "expected_behavior": "No reflection text contaminates typed handoffs, structured validation receipts or machine outputs."
+    },
+    {
+      "id": "discernment-reviewed-answer-skip",
+      "type": "boundary",
+      "prompt": "I asked you to verify every assumption in this report; all material evidence is now verified.",
+      "expected_route": "supervisor-no-reflection-nudge",
+      "expected_behavior": "No redundant nudge or user homework after completed verification."
+    },
+    {
+      "id": "optional-capability-absent",
+      "type": "failure",
+      "prompt": "The installed host has no suitable prospective-analysis skill, and the user did not require this lens for a valid phase.",
+      "expected_route": "mago-optional-capability-not-run",
+      "expected_behavior": "Missing optional skill is recorded as not-run; ordinary plan validation and ownership remain in force."
+    },
+    {
+      "id": "required-capability-absent",
+      "type": "failure",
+      "prompt": "The accepted Mago gate explicitly requires a prospective plan-failure review but no suitable installed skill is available.",
+      "expected_route": "mago-required-capability-blocked",
+      "expected_behavior": "Only the affected unit is blocked; no invented specialist execution or silent acceptance is permitted."
     }
   ]
 }

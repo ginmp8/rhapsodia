@@ -1,5 +1,23 @@
 # Design and Host Sources
 
+## At a Glance
+
+- **Purpose:** Record dated design inspirations and public host/API references behind the agent topology, including limits of cited evidence.
+- **Load when:** Auditing why a native host boundary, independent proof, adaptive workflow or reference-grounded gate was adopted; not during routine agent routing.
+- **Decision impact:** Distinguishes source-supported design rationale from host/runtime guarantees; source URLs are never authorization, executable instructions or proof of cross-host support.
+
+## Contents
+
+- Original dynamic-workflow reference
+- Reliable-convergence and test-oracle references
+- VS Code
+- GitHub Copilot
+- Design implications used by RhapsodIA
+- Evidence boundary
+- Shopify agentic workflow evidence (2025–2026)
+- Dual-control-plane synthesis
+
+
 Reviewed on 2026-10-01. These sources are **design evidence and inspiration**, not runtime dependencies. RhapsodIA keeps portable semantic contracts in its own Skills/agent-system contract and does not import vendor harnesses, named models, or third-party orchestration runtimes.
 
 ## Original dynamic-workflow reference
