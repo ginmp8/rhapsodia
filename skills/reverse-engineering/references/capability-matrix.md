@@ -26,8 +26,12 @@
 | JS/TS, source maps, Electron | `web_analysis.py` patterns, source maps and HAR; browser optional | No universal bundler resolution, JS execution sandbox or live IPC tracing |
 | Firmware / binary formats | `format_probes.py` signature candidates; optional Kaitai `.ksy` compiler adapter | Kaitai tool compiles a trusted schema; output parser is not executed here; no firmware unpack/decrypt |
 | Recorded API | `web_analysis.py`, `interface_traces.py inspect-har/inspect-openapi/replay` | Network replay is trusted-only, no server-side state visibility or full HTTP proxy |
-| UI/browser | `browser_capture.py` Playwright action + DOM hash + limited network metadata | Requires installed Playwright/Chromium; no full web crawler/visual regression or browser isolation |
-| Static evidence IR | `evidence_ir.py` normalizer, append-only SQLite graph, JSON export | Node/edge evidence is not authoritative whole-program reachability |
+| UI/browser legacy | `browser_capture.py` Playwright action + DOM hash + limited network metadata | Requires installed Playwright/Chromium; no full crawler or browser isolation |
+| UI/browser enhanced | `web_investigator.py detect/capture/explore`, trusted offline fixtures, bounded DOM/network metadata, action and local timing, same-origin link discovery | Trusted targets only; no OS isolation or automatic remote endpoint validation; fixture execution never proves remote network behavior |
+| Functional/performance/security trace rules | `web_audit.py` with frozen, typed JSON-Pointer assertions | No inferred business oracles, full Core Web Vitals, accessibility audit or security clearance; missing fields stay incomplete |
+| Passive credential-marker scanning | `source_marker_scan.py` with bounded redacted findings | Read-only candidate patterns, not validity or absence proof |
+| Browser-to-API route correlation | `correlate_web_evidence.py` method/route shape matches; `evidence_ir.py` browser/fixture/correlation graph | Inferred candidate relations only; no backend method-execution proof |
+| Static + bounded browser evidence IR | `evidence_ir.py` normalizer, append-only SQLite graph, JSON export | Labels static/fixture/runtime/inferred separately; not authoritative whole-program reachability |
 | Typed observation | `behavior_lab.py` V1/V2, tagged bytes/bigint/decimal/undefined/special-float/offset-datetime | Tagged values are representational envelopes; external adapters must preserve source semantics |
 | Probes / fuzz | `probe_engine.py generate/fuzz`, seeded structural mutations, optional external `by_case` edge feedback | No target instrumentation, no automatic coverage-guided feedback loop or output oracle predictions |
 | State inference | `state_inference.py offline/active`, optional AALpy L* | Finite observed/inferred hypothesis, no universal automata equivalence; active execution trusted-only |

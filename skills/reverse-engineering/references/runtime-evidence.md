@@ -40,3 +40,7 @@ For request cases supply JSONL `{id,input:{method,path,query?,headers?,json?,bod
 ## Evidence and comparisons
 
 Record input/case/command hashes, target binaries where verifiable, environment, seed, timezone, reset policy, evaluated state, observed effects and trial counts. The default comparator uses exact types/order and full explicit observation fields. Timeout/error/invalid runner responses block `PASS_OBSERVED_CASES`. Do not assert exhaustive equivalence, isolation or absence of external effects from a limited capture.
+
+## Enhanced investigation and reproducibility
+
+`web_investigator.py` is a separate optional browser pipeline; it does not modify legacy `browser_capture.py`. See [Dynamic investigation](dynamic-investigation.md) directly from `SKILL.md` for exact authorized execution/fixture commands. **Offline fixture** runs execute pre-reviewed local HTML/JS inside Chromium `page.set_content`; never infer actual remote HTTP behavior. Network route interception is not an OS sandbox. `web_audit.py` performs only finite explicitly supplied expectations, `source_marker_scan.py` is passive, and route matching is inferred. Preserve action/fixture hashes, viewport, browser version, locale, state-reset, request metadata/limits and policy identity before comparing repeated runs.

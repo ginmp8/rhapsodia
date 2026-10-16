@@ -94,6 +94,48 @@ def normalize(report:dict,report_sha:str)->dict:
                 for ref in obj.get('references',[]) if isinstance(obj.get('references'),list) else []:
                     dest=node('call-target-candidate',norm(ref),'unresolved',path,path)
                     edge(target,dest,'calls-at-site','decoded_call_site',path)
+    # Optional dynamic evidence is represented separately from static declarations.
+    # Temporal proximity, route shapes, DOM changes and offline fixtures DO NOT
+    # prove backend handler execution or actual network reachability.
+    if report.get('mode') == 'web-investigation':
+        fixture = report.get('evidence_type') == 'trusted-offline-html-fixture'
+        level = 'fixture_observed' if fixture else 'runtime_observed'
+        for step in report.get('steps', [])[:100]:
+            if not isinstance(step, dict):
+                continue
+            index = step.get('index', '?')
+            action = node('browser-action', norm(step.get('type', 'unknown')), level, 'step:' + str(index))
+            edge(source, action, 'records-browser-step', level, 'step:' + str(index))
+            dom = step.get('dom', {})
+            if isinstance(dom, dict) and isinstance(dom.get('text_sha256'), str):
+                observed = node('dom-snapshot', dom['text_sha256'][:64], level, 'dom-after:' + str(index))
+                edge(action, observed, 'observed-after-action', level, 'dom-after:' + str(index))
+        for i, event in enumerate(report.get('events', [])[:1500]):
+            if not isinstance(event, dict) or event.get('observed') is not True:
+                continue
+            kind = event.get('kind')
+            if kind not in ('request','response'):
+                continue
+            label = str(event.get('method', event.get('status', '?'))) + ' ' + str(event.get('path','?'))
+            request = node('browser-' + kind, norm(label), 'runtime_observed', 'event:' + str(i))
+            edge(source, request, 'records-network-metadata', 'runtime_observed', 'event:' + str(i))
+        for i, link in enumerate(report.get('links', [])[:1000]):
+            if not isinstance(link, dict):
+                continue
+            src = node('browser-page', str(link.get('from', '?')), 'fixture_observed' if fixture else 'runtime_observed', 'link-from:' + str(i))
+            dst = node('browser-page', str(link.get('to', '?')), 'declared', 'link-to:' + str(i))
+            edge(src, dst, 'declares-link-to', 'declared', 'link:' + str(i))
+            edge(source, src, 'records-browser-page', level, 'link:' + str(i))
+    elif report.get('mode') == 'web-route-correlation':
+        for i, match in enumerate(report.get('matches', [])[:5000]):
+            if not isinstance(match, dict):
+                continue
+            observed = node('observed-http-route', norm(str(match.get('method', '?')) + ' ' + str(match.get('observed_path', '?'))),
+                            'runtime_observed', 'match-event:' + str(match.get('event_index', '?')))
+            declared = node('declared-api-route', norm(str(match.get('method', '?')) + ' ' + str(match.get('declared_route', '?'))),
+                            'declared', 'contract-operation:' + str(match.get('operation_index', '?')))
+            edge(source, observed, 'contains-route-match', 'recorded', 'match:' + str(i))
+            edge(observed, declared, 'candidate-route-shape-match', 'inferred', 'match:' + str(i))
     return {'schema_version':'1.0','mode':'evidence-ir','report_sha256':report_sha,
             'nodes':sorted(nodes.values(),key=lambda n:n['id']),
             'edges':sorted(edges.values(),key=lambda n:n['id']),
