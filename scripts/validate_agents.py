@@ -147,9 +147,33 @@ def parse_frontmatter(path, findings):
     return data, body
 
 
+# Static presence guards protect the first-load policy, not model comprehension.
+MEMORY_PURPOSE_MARKERS = (
+    "prevent repeated environment discovery", "across agents and sessions",
+    "not a ritual", "repository and live environment remain authoritative",
+    "same question and unchanged evidence", "no-new-reusable-knowledge",
+    "not graph size or invocation counts",
+    "do not skip necessary source reads or verification",
+)
+MEMORY_PURPOSE_CONTRACT = {
+    "harness": "avoid-repeated-environment-discovery",
+    "graph": "reuse-structural-and-operational-knowledge-across-agents-and-sessions",
+    "source_authority": "repository-and-live-environment",
+    "lookup_unit": "question-scope-and-current-evidence",
+    "learning": "relevant-reusable-evidence-backed-nonduplicate",
+    "no_new_knowledge": "report-no-new-reusable-knowledge-with-reason",
+    "success_measure": "useful-verified-reuse-not-record-or-invocation-count",
+    "required_verification": "never-skipped-for-efficiency"
+}
+
+
 def validate_agent_file(path, spec, findings):
     all_lines = path.read_text(encoding="utf-8").splitlines()
     control_plane = "\n".join(all_lines[:100]).lower()
+    for marker in MEMORY_PURPOSE_MARKERS:
+        if marker not in control_plane:
+            add(findings, "MEMORY_PURPOSE", path,
+                f"required reuse/learning purpose missing in first 100 lines: {marker}")
     for marker in TOP100_SECTIONS[spec["profile"]]:
         if marker.lower() not in control_plane:
             add(findings, "AGENT_TOP100_CONTROL", path,
@@ -315,6 +339,10 @@ def validate_contract(path, findings):
             or session.get("corrupt_state") != "preserve-and-block"
             or session.get("opt_out") != {"authority": "explicit-current-user-request", "independent": True, "inherited_by_delegation": True, "persisted_global_disable": False}):
         add(findings, "MANDATORY_SESSION", path, "all agents require scoped bootstrap/memory with independent explicit user opt-outs and fail-closed gates")
+    purpose = session.get("purpose", {})
+    if not isinstance(purpose, dict) or any(purpose.get(key) != value for key, value in MEMORY_PURPOSE_CONTRACT.items()):
+        add(findings, "MEMORY_PURPOSE_CONTRACT", path,
+            "required purpose must preserve verified reuse, source authority, selective learning and honest completion")
     maintenance = next((cap for cap in doc.get("capabilities", []) if cap.get("id") == "local-memory-maintenance"), {})
     if (maintenance.get("scope") != [".rhapsodia/runtime", ".rhapsodia/graph"] or maintenance.get("required") is not True
             or maintenance.get("approval") != "policy" or maintenance.get("idempotency") != "required"):

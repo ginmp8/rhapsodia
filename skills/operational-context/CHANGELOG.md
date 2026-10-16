@@ -2,6 +2,8 @@
 
 ## 1.0.1 - 2026-10-16
 
+Same-release clarification in RhapsodIA 0.11.0: Clarify temporary context packs versus persistent learning and runtime reuse; retain required source coverage and independent proof instead of optimizing only prompt size.
+
 Respect enclosing mandatory graph-first agent policy while retaining optional graph selection for standalone context-pack workflows.
 
 ## 1.0.0 - RhapsodIA 0.8.0

@@ -379,6 +379,15 @@ Composition has one invariant: **one progression owner at a time**. Nested subfl
 
 ## Required session and memory (0.11.0)
 
+The purpose is cumulative learning, not mechanical startup. Harness avoids repeated runtime
+and resource discovery; Graph retains structural knowledge, decision rationale and operational
+experience across agents/sessions in the approved workspace. Query compact relevant context,
+reuse a lookup while question/scope/evidence is unchanged, and retain new reusable findings.
+No-new-learning with an explicit reason is valid; filler records and raw transcript capture are
+not. The repository/live environment remain authoritative, and fresh proof cannot be cached away.
+Judge useful verified reuse, not graph size or invocation counts. Preserve non-reconstructible
+learned experience separately from rebuildable projections; a view reset cannot erase memory.
+
 All eight profiles initialize/reuse Runtime Harness and Local Graph Engine before task work;
 only explicit user opt-outs may independently disable a component. The gate fails closed for
 missing permissions/skills or corrupt state. Every role has private-maintenance-only helper

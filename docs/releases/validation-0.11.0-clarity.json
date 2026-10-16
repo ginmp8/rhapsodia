@@ -1,0 +1,582 @@
+{
+  "schema": "rhapsodia-release-validation/v1",
+  "release": "0.11.0",
+  "baseline_release": "0.11.0",
+  "revision": "purpose-and-selective-learning-clarification",
+  "date": "2026-10-16",
+  "evidence_kind": "executed-local-cli-and-structural",
+  "source_manifest_sha256": "229d7034ba9c987a2c5e780b199084c1dd8da64f1533986a3f07774c0150306c",
+  "baseline_source_sha256": "b0afbbb52d93742b5a360b83718fee00a80aea4318b4adf1efde514f6172ba33",
+  "versions_changed": false,
+  "environment": {
+    "os": "Linux",
+    "machine": "x86_64",
+    "python": "3.13.5",
+    "sqlite": "3.46.1"
+  },
+  "test_totals": {
+    "run": 496,
+    "passed": 495,
+    "skipped": 1,
+    "failed": 0
+  },
+  "test_groups": [
+    {
+      "group": "local-graph-engine",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/local-graph-engine/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 103,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 20.904,
+      "timeout": false,
+      "log_sha256": "71785f3cbd1dc80df54a6b67448411d846d0c6af52ed0763f2f0fbbc16d7d7a2"
+    },
+    {
+      "group": "operational-context",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/operational-context/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 49,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 2.327,
+      "timeout": false,
+      "log_sha256": "5d47394d9dae88ed905d2c2c497f8667f3b77f810dc905c8bb8762a950ae0040"
+    },
+    {
+      "group": "rhapsodia-workspace",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/rhapsodia-workspace/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 69,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 1.737,
+      "timeout": false,
+      "log_sha256": "fc8926ff0a3d4c6b2c023723123a24c8159ac6d8b416732a3f342b13c3775312"
+    },
+    {
+      "group": "root-artifact-native-e2e",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_artifact_native_e2e.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 1,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 12.21,
+      "timeout": false,
+      "log_sha256": "4d2a9fcdef80347f27911e44d24523d4a61518d550722756d0a2cf6de8109d4d"
+    },
+    {
+      "group": "root-install-agents",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_install_agents.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 7,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 8.088,
+      "timeout": false,
+      "log_sha256": "728a9223a133c06e0292c833483add28fbbe7974aa759fc754db0878f173c02c"
+    },
+    {
+      "group": "root-marketplace-manifests",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_marketplace_manifests.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 10,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 2.781,
+      "timeout": false,
+      "log_sha256": "a448a36e30e45d84069a1ef3ce46e59379eeb89c9c281f45dccfa175223437b5"
+    },
+    {
+      "group": "root-native-artifacts",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_native_artifacts.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 13,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 21.843,
+      "timeout": false,
+      "log_sha256": "1301e9dac8787c539ef9f9fadae411459c2255f94eda52ce29d9feabc37b46a7"
+    },
+    {
+      "group": "root-native-execution",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_native_execution.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 15,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 25.109,
+      "timeout": false,
+      "log_sha256": "a8fceb8bfc54ed500ee64833cad4fe8d6727445ae86ac3de2bedd0de208802d1"
+    },
+    {
+      "group": "root-native-migration",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_native_migration.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 14,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 31.018,
+      "timeout": false,
+      "log_sha256": "0a1618f6a8e1be4a771e1be87fa724c074cdb0a102cbf383e61032e2e102712d"
+    },
+    {
+      "group": "root-release-versions",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_release_versions.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 9,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 3.635,
+      "timeout": false,
+      "log_sha256": "b7125e845a80cd479e85b701f3a6063199f698787d396cd0614d18e12b0b971d"
+    },
+    {
+      "group": "root-required-session",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_required_session*.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 58,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 23.306,
+      "timeout": false,
+      "log_sha256": "9249c777f61bf18e81fc1a927852a0a9781271bcb454e3fca7efcfc10dd12252"
+    },
+    {
+      "group": "root-runtime-integration",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_runtime_integration.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 11,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 0.878,
+      "timeout": false,
+      "log_sha256": "396a8c383c03e006f78a9aa9e7a4c9e3362eec61b1e7aa89ed14cb6edc5ab45d"
+    },
+    {
+      "group": "root-validate-agents",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_validate_agents.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 22,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 23.172,
+      "timeout": false,
+      "log_sha256": "957e9cfbfc7167599a438d5dd6328a19513a1448f19eb6565328e3db2a0954c8"
+    },
+    {
+      "group": "root-workspace-agent-contract",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_workspace_agent_contract.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 5,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 0.719,
+      "timeout": false,
+      "log_sha256": "ca27937a34a99e8434c55bb2ec9fac021d4e07b1b47ebddf9f3d1eb3a9b40c72"
+    },
+    {
+      "group": "runtime-harness",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/runtime-harness/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "return_code": 0,
+      "status": "pass",
+      "tests_run": 110,
+      "skipped": 1,
+      "failures": 0,
+      "errors": 0,
+      "elapsed_seconds": 9.554,
+      "timeout": false,
+      "log_sha256": "60f2a341353096c7d6c75680a3023e92322fef085a2a1bf3951e951d566a1369"
+    }
+  ],
+  "additive_guards": {
+    "frozen_test_sha256": "6784b46ce481cf410d102be0fd10f34b7cb2f5f40edea432b99b4ee530bc5289",
+    "baseline_existing_tests": "pass",
+    "new_tests_on_baseline": "fail-as-expected",
+    "same_tests_on_candidate": "pass",
+    "existing_test_bodies_preserved": true,
+    "native_model_behavior": "not-run"
+  },
+  "structural_review": {
+    "status": "pass",
+    "agent_line_counts": {
+      "magia.agent.md": 100,
+      "mago.agent.md": 96,
+      "nomia.agent.md": 94,
+      "rhapsodia-adhoc.agent.md": 44,
+      "rhapsodia-analyst.agent.md": 100,
+      "rhapsodia-supervisor.agent.md": 96,
+      "rhapsodia-verifier.agent.md": 100,
+      "rhapsodia-workspace.agent.md": 65
+    },
+    "agent_frontmatter_and_authority_unchanged": true,
+    "integration_changes": "managed CONTENT text only; executable logic unchanged",
+    "versions_unchanged": true,
+    "original_files_removed": 0,
+    "historical_evidence_preserved": true,
+    "checked_local_file_links": 130,
+    "local_link_scope": "changed/new Markdown targets; external URLs and anchor semantics are not included"
+  },
+  "semantic_review": {
+    "status": "pass",
+    "review_kind": "same-session-source-and-contract-review",
+    "checks": [
+      "why, when, how and stop conditions present within first 100 agent lines",
+      "structural memory, experiential memory and runtime observations have distinct ownership",
+      "mandatory independent user opt-outs unchanged",
+      "lookup reuse is task/question/scope/freshness bounded, not per file",
+      "fresh irrelevant hits do not replace missing relevant context",
+      "no-new-reusable-knowledge allowed with reason; no quantity quota",
+      "source reads, current validation and independent proof preserved",
+      "reference/remedy instructions use existing record types and evidence states",
+      "source projections do not justify erasing non-reconstructible learning",
+      "no external hooks, dependencies or increased tool authority"
+    ]
+  },
+  "session_memory": {
+    "cold_bootstrap": "ready",
+    "initial_lookup": "miss",
+    "learned_key": "shared-memory-purpose-owners",
+    "learning_status": "pass",
+    "reconciliation_status": "pass",
+    "warm_bootstrap": "ready",
+    "warm_harness_cache_hit": true,
+    "private_state_in_delivery": false
+  },
+  "attempt_notes": [
+    "Some aggregated root-test invocations exceeded the container wall-time limit; incomplete attempts were not counted. Every required group was subsequently completed separately.",
+    "A case-sensitive existing integration check rejected a capitalized policy phrase. The instruction was corrected; the test was unchanged. A fresh rerun passed.",
+    "Temporary Python bytecode from generator subprocesses was removed; final hygiene guards passed."
+  ],
+  "limitations": [
+    "One PowerShell-dependent test skipped because PowerShell was unavailable.",
+    "Execution was Linux-local Python/SQLite; no Windows/macOS editor session, SSO, installation or external account action executed.",
+    "Planned agent scenarios were not executed against models. Static guards do not prove understanding or universal enforcement.",
+    "No measured token, latency or answer-quality gain claimed.",
+    "External research sources are live pages; the curated note is hashed, not a full upstream commit snapshot."
+  ],
+  "changes": {
+    "modified": [
+      "AGENTS.md",
+      "MANIFEST.json",
+      "README.md",
+      "agents/magia.agent.md",
+      "agents/mago.agent.md",
+      "agents/nomia.agent.md",
+      "agents/rhapsodia-adhoc.agent.md",
+      "agents/rhapsodia-analyst.agent.md",
+      "agents/rhapsodia-supervisor.agent.md",
+      "agents/rhapsodia-verifier.agent.md",
+      "agents/rhapsodia-workspace.agent.md",
+      "docs/agents/ARCHITECTURE.md",
+      "docs/agents/contracts/rhapsodia-agent-system.json",
+      "docs/releases/0.11.0.md",
+      "docs/releases/source-manifest-0.11.0.json",
+      "docs/research/README.md",
+      "docs/runtime/REQUIRED-SESSION.md",
+      "scripts/validate_agents.py",
+      "skills/local-graph-engine/CHANGELOG.md",
+      "skills/local-graph-engine/README.md",
+      "skills/local-graph-engine/SKILL.md",
+      "skills/local-graph-engine/agents/openai.yaml",
+      "skills/local-graph-engine/references/workspace-memory.md",
+      "skills/operational-context/CHANGELOG.md",
+      "skills/operational-context/SKILL.md",
+      "skills/rhapsodia-workspace/CHANGELOG.md",
+      "skills/rhapsodia-workspace/SKILL.md",
+      "skills/runtime-harness/CHANGELOG.md",
+      "skills/runtime-harness/README.md",
+      "skills/runtime-harness/SKILL.md",
+      "skills/runtime-harness/agents/openai.yaml",
+      "skills/runtime-harness/references/agent-session.md",
+      "skills/runtime-harness/scripts/runtime_core/integration.py",
+      "tests/agent-scenarios.json",
+      "tests/test_required_session_guards.py"
+    ],
+    "added": [
+      "docs/releases/source-manifest-0.11.0-initial.json",
+      "docs/releases/validation-0.11.0-clarity.json",
+      "docs/research/shared-memory-purpose-0.11.0.md",
+      "docs/research/shared-memory-purpose-traceability.json",
+      "skills/local-graph-engine/references/workspace-learning.md"
+    ],
+    "removed": []
+  },
+  "validators": [
+    {
+      "name": "operational-package",
+      "command": "python -B skills/operational-context/scripts/validate_package.py",
+      "status": "pass",
+      "log_sha256": "23c8f59d30bdfa01addaf862e0c111372399121598fdaccca9b1cb66a3b65cfe"
+    },
+    {
+      "name": "workspace-package",
+      "command": "python -B skills/rhapsodia-workspace/scripts/validate_skill_package.py --target skills/rhapsodia-workspace",
+      "status": "pass",
+      "log_sha256": "fedd9fdeb75f7cb02a9b32352b1a4a45435d96ac455edbfbd44193385da7a2f2"
+    },
+    {
+      "name": "workspace-native",
+      "command": "python -B skills/rhapsodia-workspace/scripts/validate_native_contracts.py",
+      "status": "pass",
+      "log_sha256": "e553dbef86574d7a63f49be41f88a18ef1f0b6a44257a1c02e4cbf384a025c24"
+    },
+    {
+      "name": "agents-final",
+      "command": "python -B scripts/validate_agents.py --target .",
+      "status": "pass",
+      "log_sha256": "6d03c1d6a72417243952a9d6d87b219abd9e758fa3446156ebaa746cece6ddba"
+    },
+    {
+      "name": "prepare-check",
+      "command": "python -B scripts/prepare_release.py --check",
+      "status": "pass",
+      "log_sha256": "a25ac10288d958d225719c70d690d0133d18b88b7f142129bd22535a259317f4"
+    },
+    {
+      "name": "source-check",
+      "command": "python -B scripts/validate_release_source_manifest.py --version 0.11.0 --check",
+      "status": "pass",
+      "log_sha256": "0a700189231c67aa7416e081e28e66f1f5d9c3412b5149fc47bdd528cfeac33a"
+    }
+  ],
+  "research_traceability": {
+    "status": "warn",
+    "metrics": {
+      "source_count": 4,
+      "finding_count": 6,
+      "requirement_count": 5,
+      "change_count": 5,
+      "evaluation_count": 4,
+      "conflict_count": 0,
+      "finding_dispositions": {
+        "implement": 4,
+        "not-applicable": 1,
+        "uncertain": 1
+      },
+      "finding_accounting_percent": 100.0,
+      "accepted_finding_requirement_coverage_percent": 100.0,
+      "requirement_implementation_coverage_percent": 100.0,
+      "requirement_verification_coverage_percent": 100.0,
+      "reverse_justification_percent": 100.0,
+      "unresolved_conflicts": 0,
+      "not_run_evaluations": 1
+    },
+    "warnings": [
+      {
+        "code": "source/live-evidence",
+        "subject": "S-001"
+      },
+      {
+        "code": "source/live-evidence",
+        "subject": "S-002"
+      },
+      {
+        "code": "source/live-evidence",
+        "subject": "S-003"
+      },
+      {
+        "code": "source/live-evidence",
+        "subject": "S-004"
+      },
+      {
+        "code": "evaluation/not-run",
+        "subject": "E-004"
+      }
+    ],
+    "limitation": "Structural accounting only; live-source and unexecuted-model warnings are retained."
+  }
+}

@@ -1,0 +1,391 @@
+{
+  "schema_version": "1.0",
+  "mode": "improve",
+  "scope": {
+    "research_question": "Clarify why workspace graph memory should support useful cumulative learning while preserving existing bounded mechanisms.",
+    "target": "skills/local-graph-engine",
+    "completeness_boundary": "corpus-bounded"
+  },
+  "identities": {
+    "research": {
+      "kind": "sha256",
+      "value": "e1b0eda4498592c0fab7a52f938632dc6c198f9a6355ab8314ba07c4fc5c93c7"
+    },
+    "target_baseline": {
+      "kind": "sha256",
+      "value": "e56f06356dc0fb5d36a2c65c38c5781d01ec6535d290b055a07c7d0ceeac382d"
+    },
+    "evaluators": {
+      "kind": "sha256",
+      "value": "6784b46ce481cf410d102be0fd10f34b7cb2f5f40edea432b99b4ee530bc5289"
+    }
+  },
+  "sources": [
+    {
+      "id": "S-001",
+      "title": "Graphify",
+      "locator": "https://github.com/Graphify-Labs/graphify",
+      "authority": "primary",
+      "evidence_state": "live",
+      "identity": "accessed-2026-10-16",
+      "notes": "Selected README/concepts sections reviewed; curated observations are pinned in the research identity, not an upstream commit."
+    },
+    {
+      "id": "S-002",
+      "title": "Cartograph",
+      "locator": "https://github.com/onixhdz/cartograph",
+      "authority": "primary",
+      "evidence_state": "live",
+      "identity": "accessed-2026-10-16",
+      "notes": "Selected README/concepts sections reviewed; curated observations are pinned in the research identity, not an upstream commit."
+    },
+    {
+      "id": "S-003",
+      "title": "Trail-Code",
+      "locator": "https://github.com/trailhq/Trail-Code",
+      "authority": "primary",
+      "evidence_state": "live",
+      "identity": "accessed-2026-10-16",
+      "notes": "Selected README/concepts sections reviewed; curated observations are pinned in the research identity, not an upstream commit."
+    },
+    {
+      "id": "S-004",
+      "title": "Graft core concepts",
+      "locator": "https://github.com/AEndrix03/Graft/blob/master/docs/concepts.md",
+      "authority": "primary",
+      "evidence_state": "live",
+      "identity": "accessed-2026-10-16",
+      "notes": "Selected README/concepts sections reviewed; curated observations are pinned in the research identity, not an upstream commit."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "statement": "Source maps motivate avoiding repeated navigation.",
+      "source_ids": [
+        "S-001",
+        "S-002"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Apply to bounded reference retrieval, not completeness or source replacement.",
+      "requirement_ids": [
+        "R-001",
+        "R-002"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-002",
+      "statement": "Structural maps and operational learning solve different problems.",
+      "source_ids": [
+        "S-003"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Preserve domain-neutral graph ownership and separate runtime location discovery.",
+      "requirement_ids": [
+        "R-001",
+        "R-003"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-003",
+      "statement": "Specific scoped notes support relevant retrieval of accumulated knowledge.",
+      "source_ids": [
+        "S-004"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Use existing source-pinned reference/remedy records; no new storage schema.",
+      "requirement_ids": [
+        "R-002",
+        "R-003",
+        "R-005"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-004",
+      "statement": "Freshness and retained context matter across tasks and changing sources.",
+      "source_ids": [
+        "S-001",
+        "S-003",
+        "S-004"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Conservative reconciliation and recovery complement existing pins and expiry.",
+      "requirement_ids": [
+        "R-004"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-005",
+      "statement": "External integrations may use hooks/services.",
+      "source_ids": [
+        "S-001",
+        "S-003"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "This clarification does not add host hooks, services or dependencies.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-006",
+      "statement": "Upstream efficiency numbers might transfer to this system.",
+      "source_ids": [
+        "S-001",
+        "S-003"
+      ],
+      "confidence": "medium",
+      "relevance": "contextual",
+      "disposition": "uncertain",
+      "rationale": "No comparable Rhapsodia benchmark; exclude numbers and superiority claims.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-001",
+      "statement": "Explain the graph purpose and structural/operational memory within the first 100 skill lines.",
+      "priority": "must",
+      "derived_from": [
+        "F-001",
+        "F-002"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-004",
+        "C-005"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-002",
+      "statement": "Retrieve relevant bounded context, reuse unchanged lookups and inspect unresolved/current sources.",
+      "priority": "must",
+      "derived_from": [
+        "F-001",
+        "F-003"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-003"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-003",
+      "statement": "Learn relevant reusable nonduplicate evidence with one useful question per record and honest diagnostic status.",
+      "priority": "must",
+      "derived_from": [
+        "F-002",
+        "F-003"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-003"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-004",
+      "statement": "Preserve current-source authority, conservative invalidation, history and non-reconstructible memory.",
+      "priority": "must",
+      "derived_from": [
+        "F-004"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-003",
+        "C-004"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-005",
+      "statement": "Report no qualifying learning honestly; judge useful reuse rather than activity or unmeasured gain.",
+      "priority": "must",
+      "derived_from": [
+        "F-003"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-003",
+        "C-004"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "C-001",
+      "kind": "modify",
+      "target": "skills/local-graph-engine/SKILL.md",
+      "summary": "Clarify evidence-bounded useful retrieval, cumulative learning and current-source authority without changing CLI behavior.",
+      "status": "applied",
+      "satisfies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005"
+      ]
+    },
+    {
+      "id": "C-002",
+      "kind": "modify",
+      "target": "skills/local-graph-engine/references/workspace-memory.md",
+      "summary": "Clarify evidence-bounded useful retrieval, cumulative learning and current-source authority without changing CLI behavior.",
+      "status": "applied",
+      "satisfies": [
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005"
+      ]
+    },
+    {
+      "id": "C-003",
+      "kind": "add",
+      "target": "skills/local-graph-engine/references/workspace-learning.md",
+      "summary": "Clarify evidence-bounded useful retrieval, cumulative learning and current-source authority without changing CLI behavior.",
+      "status": "applied",
+      "satisfies": [
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005"
+      ]
+    },
+    {
+      "id": "C-004",
+      "kind": "modify",
+      "target": "skills/local-graph-engine/README.md",
+      "summary": "Clarify evidence-bounded useful retrieval, cumulative learning and current-source authority without changing CLI behavior.",
+      "status": "applied",
+      "satisfies": [
+        "R-001",
+        "R-004",
+        "R-005"
+      ]
+    },
+    {
+      "id": "C-005",
+      "kind": "modify",
+      "target": "skills/local-graph-engine/agents/openai.yaml",
+      "summary": "Clarify evidence-bounded useful retrieval, cumulative learning and current-source authority without changing CLI behavior.",
+      "status": "applied",
+      "satisfies": [
+        "R-001"
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "E-001",
+      "kind": "deterministic",
+      "description": "Additive first-load guards, local links and schema/trace checks.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "../releases/validation-0.11.0-clarity.json",
+      "limitation": "Static presence/link checks are not semantic or behavioral proof."
+    },
+    {
+      "id": "E-002",
+      "kind": "review",
+      "description": "Review each source finding, requirement and direct skill guide against current ownership and real CLI record schema.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "../releases/validation-0.11.0-clarity.json",
+      "limitation": "Same-session semantic review, not an independent reviewer or blind holdout."
+    },
+    {
+      "id": "E-003",
+      "kind": "runtime",
+      "description": "Run Local Graph Engine and mandatory-session CLI regression suites.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "../releases/validation-0.11.0-clarity.json",
+      "limitation": "Local Python/SQLite execution only, not native editor/model compliance."
+    },
+    {
+      "id": "E-004",
+      "kind": "runtime",
+      "description": "Native editor/model behavior and paired token/latency/correctness trials.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005"
+      ],
+      "status": "not-run",
+      "frozen": true,
+      "evidence": "../releases/validation-0.11.0-clarity.json",
+      "limitation": "No provider/native editor execution used; no measured behavior or savings claimed."
+    }
+  ],
+  "conflicts": []
+}

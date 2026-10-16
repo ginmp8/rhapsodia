@@ -716,6 +716,16 @@
       "acceptance",
       "independent-proof",
       "host-permissions"
-    ]
+    ],
+    "purpose": {
+      "harness": "avoid-repeated-environment-discovery",
+      "graph": "reuse-structural-and-operational-knowledge-across-agents-and-sessions",
+      "source_authority": "repository-and-live-environment",
+      "lookup_unit": "question-scope-and-current-evidence",
+      "learning": "relevant-reusable-evidence-backed-nonduplicate",
+      "no_new_knowledge": "report-no-new-reusable-knowledge-with-reason",
+      "success_measure": "useful-verified-reuse-not-record-or-invocation-count",
+      "required_verification": "never-skipped-for-efficiency"
+    }
   }
 }

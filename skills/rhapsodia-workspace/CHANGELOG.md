@@ -2,6 +2,8 @@
 
 ## 1.0.2 - 2026-10-16
 
+Same-release clarification in RhapsodIA 0.11.0: Explain presentation versus runtime and learned memory; rebuilding a disposable view does not authorize erasing persistent experience or treating node counts as effectiveness.
+
 Clarify that this skill owns optional derived artifact catalogs/views, not mandatory session bootstrap, environment discovery or persistent knowledge memory.
 
 ## 1.0.1 - 2026-10-05

@@ -13,6 +13,17 @@ and immutable snapshots. Local Graph Engine owns source references, learned rela
 sanitized troubleshooting recipes. Rhapsodia Workspace owns optional artifact catalogs/views;
 it neither initializes memory nor replaces either required component.
 
+## Meaning of successful use
+
+The paired gate enables reuse; it is not the task outcome. Use Harness to avoid rediscovering
+available tools/resources and Graph to retain structural and operational learning across
+agents and sessions in this workspace. Ask one relevant bounded question, follow current
+references, investigate only unresolved scope and retain meaningful findings. Reuse the lookup
+while question/scope/evidence is unchanged; refresh on drift, not before every adjacent read.
+Do not run queries or invent notes merely to show activity. With no qualifying learning,
+report `no-new-reusable-knowledge` and why. Useful verified reuse, not graph size or invocation
+counts, is the objective. Source/live evidence and required fresh proof are never optional.
+
 ## Invoke and require an actual receipt
 
 Resolve an approved Python 3.10+ once and the installed skill through native discovery:

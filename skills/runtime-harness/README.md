@@ -2,8 +2,8 @@
 
 ## At a Glance
 
-- **Purpose:** Explain the owned capability and supported operations.
-- **Load when:** Select setup, command, integration or recovery behavior for this capability.
+- **Purpose:** Avoid repeated environment/resource discovery while keeping persistent learned knowledge with Graph and canonical decisions with their owners.
+- **Load when:** Bootstrapping a required Rhapsodia session, reusing a tool/resource location, updating native host guidance or recovering stale state.
 - **Decision impact:** Preserves source authority, explicit permissions, required session gates and honest validation limits.
 
 ## Contents
@@ -26,6 +26,12 @@ Agents never edit `current.json` or snapshots directly; writers merge observatio
 atomically move the pointer to a new content-identified snapshot.
 
 ## Required Rhapsodia agent session
+
+The pair exists to reuse what is already known: Harness retains available tools/resources;
+Graph retains structural and operational knowledge across agents and sessions. Start from
+verified relevant context, learn meaningful findings and avoid repeated investigations.
+Initialization alone is not success. Reuse unchanged lookups, record an explicit no-new-learning
+reason when appropriate, and retain necessary source inspection and independent proof.
 
 All Rhapsodia profiles run `scripts/agent_session.py` before repository search, task work
 or delegation. It initializes missing harness and Local Graph Engine state, reuses valid
