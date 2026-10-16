@@ -1,9 +1,25 @@
-# Local Graph Engine 3.1.0
+# Local Graph Engine 3.2.0
 
 A local, domain-neutral data workbench: inspect sources, choose a data model,
 produce evidence-backed entities and relationships, store them in SQLite, and
 query/export useful projections. No external application account is required.
 Original source files are never rewritten by ingestion.
+
+## At a Glance
+
+- **Purpose:** Operate the local graph and source-pinned workspace memory without replacing authoritative source or independently verified behavior.
+- **Load when:** Setting up workspace graph memory, learning environment remedies or execution episodes, or reading graph CLI examples and migration limits.
+- **Decision impact:** v1 references/remedies remain compatible; v2 execution lessons are advisory only, with read-only independent-episode review and separate acceptance/promotion authority.
+
+## Contents
+
+- Persistent workspace memory
+- Start with a working example
+- Bring your own data
+- Capability and access
+- Budget the agent context
+- Validation and license
+- Version 3 local-access migration
 
 ## Persistent workspace memory
 
@@ -23,10 +39,12 @@ python -I -S -B scripts/workspace_memory.py --workspace <ROOT> lookup "configura
 python -I -S -B scripts/workspace_memory.py --workspace <ROOT> pin src/config.py
 python -I -S -B scripts/workspace_memory.py --workspace <ROOT> learn --input <REVIEWED_NOTE_JSON>
 python -I -S -B scripts/workspace_memory.py --workspace <ROOT> reconcile --paths src/config.py
+python -I -S -B scripts/workspace_memory.py --workspace <ROOT> review-lessons
 ```
 
 Use actual source pins; do not copy placeholder paths into a completed record.
 See [learning criteria](references/workspace-learning.md) for what to retain and why.
+Source-backed v2 lessons about repeated feature failures are **not** automatically reusable instructions. Read-only `review-lessons` produces only independent-review candidates (at least two distinct observed failures), without changing acceptance, tests or prompts. See [execution lessons](references/execution-lessons.md) for the contract.
 See [workspace memory](references/workspace-memory.md) for exact schemas, statuses,
 concurrency, permissions and privacy. Standalone dataset workflows below remain unchanged.
 

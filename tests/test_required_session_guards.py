@@ -120,12 +120,21 @@ class MemoryPurposeGuardTests(RequiredSessionGuardTests):
             with self.subTest(marker=marker):
                 self.assertIn(marker, text)
 
-    def test_cli_contract_versions_remain_unchanged(self):
-        expected = {'runtime-harness': '1.3.0', 'local-graph-engine': '3.1.0',
+    def test_cli_contract_versions_and_legacy_memory_compatibility(self):
+        # Local Graph Engine 3.2.0 adds a separate v2 lesson contract; do not
+        # change the existing v1 reference/remedy schema or distribution ID.
+        expected = {'runtime-harness': '1.3.0', 'local-graph-engine': '3.2.0',
                     'rhapsodia-workspace': '1.0.2', 'operational-context': '1.0.1'}
         for skill, version in expected.items():
             with self.subTest(skill=skill):
                 self.assertEqual((ROOT / 'skills' / skill / 'VERSION').read_text().strip(), version)
+        contracts = ROOT / 'skills' / 'local-graph-engine' / 'contracts'
+        v1 = json.loads((contracts / 'workspace-knowledge-v1.schema.json').read_text())
+        v2 = json.loads((contracts / 'workspace-knowledge-v2.schema.json').read_text())
+        self.assertEqual(v1['properties']['kind']['enum'], ['reference', 'remedy'])
+        self.assertEqual(v1['properties']['schema']['const'], 'workspace-knowledge-v1')
+        self.assertEqual(v2['properties']['kind']['const'], 'lesson')
+        self.assertEqual(v2['properties']['schema']['const'], 'workspace-knowledge-v2')
         catalog = json.loads((ROOT / 'marketplace/catalog.json').read_text())
         self.assertEqual(catalog['plugin']['version'], '0.11.0')
 

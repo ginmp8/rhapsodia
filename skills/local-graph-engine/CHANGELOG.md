@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0 - 2026-10-16
+
+Add backward-compatible `workspace-knowledge-v2` advisory execution lessons and read-only `review-lessons` grouping on distinct source-pinned episodes. Old v1 references/remedies and graph storage remain supported without migration or a new dependency. No automatic instruction/test changes, evaluator rewrites, or agent authorization; only an independent owner-controlled promotion can adopt a suggestion. Add focused negative, stale-source, conflict, revision and legacy-compatibility regressions.
+
 ## 3.1.0 - 2026-10-16
 
 Same-release clarification in RhapsodIA 0.11.0: Explain structural versus operational memory, relevance and nonduplicate learning, same-question reuse, explicit no-new-knowledge outcomes and preservation of non-reconstructible experiences. Add a direct learning guide; schemas and CLI behavior are unchanged.

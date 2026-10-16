@@ -379,7 +379,7 @@ Composition has one invariant: **one progression owner at a time**. Nested subfl
 
 ## Required session and memory (0.11.0)
 
-The purpose is cumulative learning, not mechanical startup. Harness avoids repeated runtime
+The purpose is cumulative learning, not mechanical startup. Source-pinned v2 execution lessons and `review-lessons` identify recurrent issues as advisory evidence; only the canonical owner and an independent frozen evaluator may adopt a proposed instruction change. Harness avoids repeated runtime
 and resource discovery; Graph retains structural knowledge, decision rationale and operational
 experience across agents/sessions in the approved workspace. Query compact relevant context,
 reuse a lookup while question/scope/evidence is unchanged, and retain new reusable findings.

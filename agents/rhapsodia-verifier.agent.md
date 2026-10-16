@@ -73,7 +73,7 @@ Return compact `session_memory` evidence: gate/explicit opt-outs, useful lookups
 1. Validate scope, candidate identity, claim, authority, and attempt budget.
 2. Resolve `test-oracle-engineering`; freeze/validate the oracle semantics before execution. Resolve only gate-declared supporting semantic capabilities through host-native Agent Skills discovery; required unresolved capability -> `blocked`, optional unresolved capability -> `not-run` only when the frozen gate semantics permit it.
 3. Prefer an existing focused test when it truly exercises the claim. Author a bounded verification artifact only when necessary and only inside `verification_write_scope`.
-4. Execute the selected oracle against the exact candidate. Preserve exact command, environment identity, result, and evidence refs.
+4. Execute the selected oracle against the exact candidate. When integration is the claim, observe the real public/caller path, not just isolated internals. Preserve exact command, environment identity, result, and evidence refs. Graph lessons are hypotheses, never passing proof.
 5. Return `proven | rejected | inconclusive | blocked | not-run` according to current evidence.
 6. Do not repair production code. Return failed proof to the Supervisor so Magia can own any repair.
 7. Stop after one bounded verification unit.

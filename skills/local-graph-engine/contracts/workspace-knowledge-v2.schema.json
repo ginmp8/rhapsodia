@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "workspace-knowledge-v2",
+  "title": "Source-pinned advisory execution lesson",
+  "description": "Agent-reported episode; independently verified failures require external review. Runtime validates source hashes, privacy, byte limits and revisions. Backward-compatible with v1 references/remedies.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "kind",
+    "key",
+    "title",
+    "summary",
+    "tags",
+    "sources",
+    "episode_id",
+    "failure_signature",
+    "observed_outcome",
+    "integration_status",
+    "verification",
+    "proposed_rule"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,95}$",
+      "not": {
+        "enum": [
+          "root",
+          "workspace"
+        ]
+      }
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "expected_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verification": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1800
+    },
+    "schema": {
+      "const": "workspace-knowledge-v2"
+    },
+    "kind": {
+      "const": "lesson"
+    },
+    "episode_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,95}$"
+    },
+    "failure_signature": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,95}$"
+    },
+    "observed_outcome": {
+      "enum": [
+        "observed-failure",
+        "observed-success",
+        "hypothesis",
+        "documented"
+      ]
+    },
+    "integration_status": {
+      "enum": [
+        "not-integrated",
+        "integrated",
+        "not-verified"
+      ]
+    },
+    "proposed_rule": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800
+    }
+  }
+}

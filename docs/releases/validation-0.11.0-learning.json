@@ -1,0 +1,26 @@
+{
+  "version": "0.11.0",
+  "snapshot": "working-2026-10-16-execution-learning",
+  "evidence_kind": "executed-local-and-static",
+  "tests": [
+    {"name": "new execution lesson behavior", "command": "python -I -S -B -m unittest discover -s tests -p 'test_workspace_lessons.py' -q", "result": "pass", "run": 8, "failed": 0},
+    {"name": "Local Graph Engine regressions", "command": "python -I -S -B -m unittest discover -s skills/local-graph-engine/tests -p 'test_*.py' -q", "result": "pass", "run": 103, "skipped": 5},
+    {"name": "session/memory controls", "command": "python -I -S -B -m unittest discover -s tests -p 'test_required_session_guards.py' -q", "result": "pass", "run": 22},
+    {"name": "selected required-session tests", "command": "python -I -S -B -c '<unittest discovery selected 35 methods excluding slow 1030-record scale case>'", "result": "pass", "run": 35},
+    {"name": "runtime integration", "command": "python -I -S -B -m unittest discover -s tests -p 'test_runtime_integration.py' -q", "result": "pass", "run": 11},
+    {"name": "full required-session suite", "command": "python -I -S -B -m unittest discover -s tests -p 'test_required_session*.py' -q", "result": "inconclusive-timeout", "limit_seconds": 100, "limitation": "The 1030-record scale case was not completed within the command limit."},
+    {"name": "complete validator regression suite", "command": "python -I -S -B -m unittest discover -s tests -p 'test_validate_agents.py' -q", "result": "inconclusive-timeout", "limit_seconds": 90}
+  ],
+  "gates": [
+    {"name": "native agent structural validator", "command": "python -B scripts/validate_agents.py --target .", "status": "pass", "errors": 0, "warnings": 0},
+    {"name": "research traceability", "command": "python -B skills/research-traceability/scripts/validate_traceability.py docs/research/learning-loop-0.11.0-traceability.json --phase final", "status": "pass", "finding_accounting_percent": 100, "reverse_justification_percent": 100},
+    {"name": "Local Graph Engine progressive context", "command": "python -B skills/reproducibility-engineer/scripts/validate_context_loading.py --target skills/local-graph-engine", "status": "pass"},
+    {"name": "Skill Token Efficient estimator-v1", "command": "python -B skills/skill-token-efficient/scripts/refactor_audit.py --before <baseline> --after skills/local-graph-engine --tokenizer estimator-v1 --token-scope instructions", "status": "measured-cost-only", "before_estimated_tokens": 18327, "after_estimated_tokens": 19361, "delta": 1034, "approximate_increase_percent": 5.64, "preservation": "manual-and-target-tests-not-frozen-token-contract"}
+  ],
+  "nonclaims": [
+    "No host-native behavior validation on Windows/macOS or within Copilot, Cursor, Claude, Codex or ChatGPT.",
+    "No model-behavior equivalence, token saving or automatic learning quality improvement proved.",
+    "Changing the 0.11.0 working archive preserves the version label, not the original release hash.",
+    "Mago/Magia/Nomia canonical 2.0.0 skill packages are unchanged to preserve coordinated version compatibility."
+  ]
+}

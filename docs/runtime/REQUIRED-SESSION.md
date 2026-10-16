@@ -26,7 +26,7 @@ in the approved workspace. Reuse what is relevant and current before rediscoveri
 retain new reusable findings for the next task. Initialization is not a ritual or success metric.
 
 Structural memory answers where definitions, callers, dependencies and decisions live.
-Operational memory explains what failed, why, what was tried, what worked and when it applies.
+Operational memory explains what failed, why, what was tried, what worked and when it applies. Distinct source-pinned feature failures may be stored as advisory v2 execution lessons; a read-only `review-lessons` never authorizes changes to frozen criteria or prompts.
 The repository and live environment remain authoritative. Graph-first changes discovery
 order; it does not waive necessary source inspection, current acceptance or independent proof.
 

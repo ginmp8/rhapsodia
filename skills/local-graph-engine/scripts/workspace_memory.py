@@ -28,6 +28,7 @@ def parser():
     lookup.add_argument('query')
     lookup.add_argument('--key')
     lookup.add_argument('--budget-bytes', type=int, default=8192)
+    subs.add_parser('review-lessons')
     for name in ('learn', 'import-runtime'):
         subs.add_parser(name).add_argument('--input', type=Path)
     reconcile = subs.add_parser('reconcile')
@@ -67,6 +68,8 @@ def main(argv=None):
                 result = {'status': 'ready', 'db': str(memory.db), 'scope': memory.scope}
             elif args.command == 'lookup':
                 result = memory.lookup(args.query, budget=args.budget_bytes, key=args.key)
+            elif args.command == 'review-lessons':
+                result = memory.review_lessons()
             elif args.command == 'learn':
                 result = memory.learn(input_value(args.input, MAX_INPUT))
             elif args.command == 'import-runtime':
