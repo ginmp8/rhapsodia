@@ -159,7 +159,7 @@ class Store:
             if pointer["snapshot_file"] != rel:
                 raise ValueError("invalid pointer")
             snapshot = strict_json(read_bytes(confined(self.root, rel)), MAX_STATE)
-            if sha(snapshot) != key or snapshot["schema"] != "runtime-snapshot-v1" or snapshot["runtime_version"] not in {"1.1.0", VERSION}:
+            if sha(snapshot) != key or snapshot["schema"] != "runtime-snapshot-v1" or snapshot["runtime_version"] not in {"1.1.0", "1.2.0", VERSION}:
                 raise ValueError("invalid snapshot")
             validate_snapshot(snapshot)
             runtime = Path(__file__).resolve().parents[1] / "runtime.py"

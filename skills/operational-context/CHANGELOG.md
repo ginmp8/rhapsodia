@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 - 2026-10-16
+
+Respect enclosing mandatory graph-first agent policy while retaining optional graph selection for standalone context-pack workflows.
+
 ## 1.0.0 - RhapsodIA 0.8.0
 
 Initial portable operational-context package: reference-first task packs, stable-prefix

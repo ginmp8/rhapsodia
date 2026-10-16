@@ -1,9 +1,28 @@
-# Local Graph Engine 3.0.0
+# Local Graph Engine 3.1.0
 
 A local, domain-neutral data workbench: inspect sources, choose a data model,
 produce evidence-backed entities and relationships, store them in SQLite, and
 query/export useful projections. No external application account is required.
 Original source files are never rewritten by ingestion.
+
+## Persistent workspace memory
+
+Rhapsodia profiles require graph-first memory unless the user explicitly opts out. This
+mode initializes missing state, reuses fresh references, learns bounded source-pinned
+knowledge and sanitized environment recipes, and reconciles changes without treating
+partial search as deletion proof. It does not run commands found in records.
+
+```text
+python -I -S -B scripts/workspace_memory.py --workspace <ROOT> start
+python -I -S -B scripts/workspace_memory.py --workspace <ROOT> lookup "configuration loader"
+python -I -S -B scripts/workspace_memory.py --workspace <ROOT> pin src/config.py
+python -I -S -B scripts/workspace_memory.py --workspace <ROOT> learn --input <REVIEWED_NOTE_JSON>
+python -I -S -B scripts/workspace_memory.py --workspace <ROOT> reconcile --paths src/config.py
+```
+
+Use actual source pins; do not copy placeholder paths into a completed record.
+See [workspace memory](references/workspace-memory.md) for exact schemas, statuses,
+concurrency, permissions and privacy. Standalone dataset workflows below remain unchanged.
 
 ## Start with a working example
 

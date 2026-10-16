@@ -47,7 +47,7 @@ class ValidatorTests(unittest.TestCase):
         try:
             p = dst / "agents" / "rhapsodia-supervisor.agent.md"
             text = p.read_text(encoding="utf-8").replace(
-                'tools: ["read", "search", "agent"]',
+                'tools: ["read", "search", "execute", "agent"]',
                 'tools: ["read", "search", "edit", "agent"]',
             )
             p.write_text(text, encoding="utf-8")
@@ -75,7 +75,7 @@ class ValidatorTests(unittest.TestCase):
         try:
             p = dst / "agents" / "rhapsodia-analyst.agent.md"
             text = p.read_text(encoding="utf-8").replace(
-                'tools: ["read", "search"]',
+                'tools: ["read", "search", "execute"]',
                 'tools: ["read", "search", "edit"]',
             )
             p.write_text(text, encoding="utf-8")
@@ -328,7 +328,7 @@ class Top100PlacementTests(unittest.TestCase):
             self.validator.validate_agent_file(p, self.validator.EXPECTED[p.name], findings)
             self.assertIn("AGENT_TOP100_CONTROL", {f["code"] for f in findings})
 
-    def test_no_top100_violations_in_seven_profiles(self):
+    def test_no_top100_violations_in_eight_profiles(self):
         for p in sorted((ROOT / "agents").glob("*.agent.md")):
             findings = []
             self.validator.validate_agent_file(p, self.validator.EXPECTED[p.name], findings)

@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 INSTALLER = ROOT / "scripts" / "install_agents.py"
 AGENT_NAMES = {
+    "rhapsodia-adhoc.agent.md",
     "rhapsodia-supervisor.agent.md",
     "rhapsodia-analyst.agent.md",
     "rhapsodia-verifier.agent.md",
@@ -33,11 +34,36 @@ class InstallerTests(unittest.TestCase):
         td = tempfile.TemporaryDirectory()
         target = Path(td.name) / "repo"
         target.mkdir()
-        for name in ("nomia", "mago", "magia", "test-oracle-engineering"):
+        for name in ("nomia", "mago", "magia", "test-oracle-engineering", "runtime-harness", "local-graph-engine"):
             p = target / ".github" / "skills" / name
             p.mkdir(parents=True, exist_ok=True)
             (p / "SKILL.md").write_text(f"---\\nname: {name}\\ndescription: test\\n---\\n", encoding="utf-8")
+        for name, script in (("runtime-harness", "agent_session.py"), ("local-graph-engine", "workspace_memory.py")):
+            helper = target / ".github/skills" / name / "scripts" / script
+            helper.parent.mkdir(exist_ok=True)
+            helper.write_text("# Fixture only; never executed.\n", encoding="utf-8")
         return td, target
+
+    def test_missing_required_session_helper_blocks_install(self):
+        td, target = self.make_target_with_skills()
+        try:
+            (target / ".github/skills/runtime-harness/scripts/agent_session.py").unlink()
+            proc = run_installer("--target", target)
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertIn("agent_session.py", proc.stderr)
+            self.assertFalse((target / ".github/agents").exists())
+        finally:
+            td.cleanup()
+
+    def test_missing_graph_memory_helper_blocks_install(self):
+        td, target = self.make_target_with_skills()
+        try:
+            (target / ".github/skills/local-graph-engine/scripts/workspace_memory.py").unlink()
+            proc = run_installer("--target", target, "--dry-run")
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertIn("workspace_memory.py", proc.stderr)
+        finally:
+            td.cleanup()
 
     def test_install_copies_only_agent_profiles(self):
         td, target = self.make_target_with_skills()

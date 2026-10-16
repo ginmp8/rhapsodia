@@ -7,6 +7,8 @@ ROOT=Path(__file__).resolve().parents[1]
 MANIFEST=ROOT/"MANIFEST.json"
 CATALOG=ROOT/"marketplace"/"catalog.json"
 AGENT_SURFACE=(
+"agents/rhapsodia-adhoc.agent.md","scripts/session.py","scripts/memory.py","docs/runtime/REQUIRED-SESSION.md",
+"tests/test_required_session.py","tests/test_required_session_guards.py",
 "LICENSE","README.md","agents/magia.agent.md","agents/mago.agent.md","agents/nomia.agent.md",
 "agents/rhapsodia-analyst.agent.md","agents/rhapsodia-supervisor.agent.md","agents/rhapsodia-verifier.agent.md",
 "agents/rhapsodia-workspace.agent.md","docs/agents/ARCHITECTURE.md","docs/agents/ARTIFACT-ORCHESTRATION.md",

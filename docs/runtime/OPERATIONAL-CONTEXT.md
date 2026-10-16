@@ -14,7 +14,7 @@ Supervisor --native delegation--> Nomia / Mago / Magia / Verifier
     |       packs / indexes / usage / policy / conservative result lookup
     +--> Runtime Harness
     |       tools / resources / observed capabilities / immutable handoffs
-    +--> optional Local Graph v3 projection
+    +--> required Local Graph workspace memory (explicit user opt-out only)
 ```
 
 ## Physical data and lifecycle
@@ -24,7 +24,7 @@ Supervisor --native delegation--> Nomia / Mago / Magia / Verifier
 | `.rhapsodia/runtime/current.json` and snapshots | Existing pointer/catalog mechanism | Environment observations only |
 | `.rhapsodia/cache/operational-context/` | Hash-addressed finite objects, cooperative leases | Disposable derived data |
 | Domain artifact roots | Approved plans, decisions, implementation/evidence records | Existing producer owners |
-| Local Graph | Optional relationships extracted from pinned data | Projection, not canonical truth |
+| Local Graph | Required agent knowledge projection, except explicit user opt-out | Projection, not canonical truth |
 
 Read commands create no cache directories. Publication uses short exclusive local locks,
 immutable objects and atomic files. It is not a multi-user or hostile-filesystem security
@@ -33,7 +33,7 @@ No external database is introduced merely to index a small local workload.
 
 ## Context before delegation
 
-Start with an exact source reference, diff or known symbol; expand only for unresolved
+For Rhapsodia agents, query required graph memory first, then use fresh exact source references, diffs or known symbols; expand only for unresolved
 relationships. Preserve required contracts in every task pack. If a budget cannot contain
 them, fail explicitly instead of truncating. Optional omissions are visible; inline content
 requires approval. A line slice pins the entire file so edits outside the slice still

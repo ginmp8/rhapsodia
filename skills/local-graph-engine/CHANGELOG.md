@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.0 - 2026-10-16
+
+Add bounded per-workspace GraphPatch memory with idempotent start, source pins, graph-first lookup, typed troubleshooting recipes, expected-revision updates, serialized writers and conservative reconciliation. Existing graph/data/view schemas remain unchanged.
+
 ## [3.0.0] - 2026-10-07
 
 ### Fixed

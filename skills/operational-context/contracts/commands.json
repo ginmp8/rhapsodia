@@ -1,6 +1,6 @@
 {
   "schema": "operational-command-catalog/v1",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
   "commands": {
     "describe": {

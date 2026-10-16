@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 - 2026-10-16
+
+Add required Rhapsodia agent-session adapter, independent explicit opt-outs, private graph bootstrap, clarified ownership and maintenance-only host guidance. Standalone registry and immutable snapshot contracts remain compatible.
+
 ## 1.2.0 - RhapsodIA 0.8.0
 
 Add tool/proof-pinned capability observations, typed discovery attempts and bounded

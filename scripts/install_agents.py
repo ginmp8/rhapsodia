@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 AGENT_FILES = (
+    "rhapsodia-adhoc.agent.md",
     "rhapsodia-supervisor.agent.md",
     "rhapsodia-analyst.agent.md",
     "rhapsodia-verifier.agent.md",
@@ -14,8 +15,9 @@ AGENT_FILES = (
     "magia.agent.md",
     "rhapsodia-workspace.agent.md",
 )
-REQUIRED_SKILLS = ("nomia", "mago", "magia", "test-oracle-engineering")
-SKILL_ROOTS = (Path(".github/skills"), Path(".claude/skills"), Path(".agents/skills"))
+REQUIRED_SKILLS = ("nomia", "mago", "magia", "test-oracle-engineering", "runtime-harness", "local-graph-engine")
+REQUIRED_HELPERS = {"runtime-harness": "scripts/agent_session.py", "local-graph-engine": "scripts/workspace_memory.py"}
+SKILL_ROOTS = (Path(".github/skills"), Path(".claude/skills"), Path(".agents/skills"), Path(".cursor/skills"), Path("skills"))
 
 
 def sha256(path: Path) -> str:
@@ -54,6 +56,10 @@ def preflight(target: Path):
                 f"required skill '{skill}' is installed in multiple discovery roots: "
                 + ", ".join(str(p.relative_to(target)) for p in matches)
             )
+        elif skill in REQUIRED_HELPERS:
+            helper = matches[0].parent / REQUIRED_HELPERS[skill]
+            if not helper.is_file() or helper.is_symlink():
+                errors.append(f"required session helper is missing or linked: {helper.relative_to(target)}; install the matching skill release")
     return errors
 
 
@@ -129,7 +135,7 @@ def main():
             for error in errors:
                 print(f"ERROR: {error}", file=sys.stderr)
             return 1
-        print(f"PASS: {len(AGENT_FILES)} agent profiles match the package source and required nomia/mago/magia/test-oracle-engineering skills are discoverable.")
+        print(f"PASS: {len(AGENT_FILES)} agent profiles match the package source and required domain, runtime-harness and local-graph-engine skills are discoverable.")
         return 0
 
     errors, plan = install(target, dry_run=args.dry_run, force=args.force)

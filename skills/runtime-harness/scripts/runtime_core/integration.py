@@ -7,19 +7,28 @@ START = "<!-- rhapsodia-runtime:start -->"
 END = "<!-- rhapsodia-runtime:end -->"
 HOST_PATHS = {"generic": "AGENTS.md", "codex": "AGENTS.md", "copilot": ".github/copilot-instructions.md",
               "claude": "CLAUDE.md", "cursor": ".cursor/rules/rhapsodia-runtime.mdc"}
-CONTENT = """## Runtime and operational context
+CONTENT = """## Required Rhapsodia session and reusable memory
 
-Read a supplied `.rhapsodia/runtime/current.json` once and reuse exact local IDs rather
-than rediscovering resources. Do not load the whole catalog. Read-only workers consume
-existing data only. Already-authorized execution/cache writers may `ensure` exact tools
-or publish verified locations with `observe-tool`/`observe-resource`; respect negative TTLs.
-Runtime receipts are observations and never replace domain handoffs or validation gates.
-For repeated context/work, use native skill discovery for bounded-task-context and
-evidence-reference-reuse when available. Required contracts remain mandatory; recheck
-source pins and keep full logs at references. Cache hits do not replace fresh/independent
-proof. No helper grants permissions, starts a service, or enables automatic sharing.
-Keep static instructions before dynamic context where the host exposes that control.
-Record available provider usage, not invented token estimates; absent counters remain null.
+When acting as any Rhapsodia agent, before repository search, domain work or delegation,
+run the host-discovered runtime-harness `scripts/agent_session.py --workspace <ROOT>
+--skills-root <APPROVED_SKILLS_ROOT>` with the approved Python 3.10+ and -I -S -B.
+The adapter creates/reuses `.rhapsodia/runtime/current.json` and the actual Local Graph
+Engine database `.rhapsodia/graph/workspace.sqlite3`; require both ready receipts.
+Only an explicit user request permits --no-harness and/or --no-graph with
+--opt-out-reason user-request. Missing permission/capability or corrupt state blocks;
+Do not install, bypass policy, silently disable, or fabricate a bootstrap result.
+Every Rhapsodia role has private-maintenance scope only for approved helper operations;
+this does not expand its domain authority or native host permissions.
+Use graph-first lookup, fresh exact source reads and bounded discovery on misses. Pin
+and learn new reusable knowledge; reconcile changed/deleted sources before returning.
+Recipes retain sanitized diagnosis, applicability, outcome and verification, never
+credentials, environment values or raw logs. Source history and independent proof stay
+separate; partial searches/branch changes cannot justify destructive pruning.
+Use runtime resolve/context before ensure/observe; respect source pins and negative TTLs.
+Return compact session_memory evidence. Runtime/graph receipts never replace domain
+handoffs, fresh validation or independent proof. Standalone registry-only consumers
+remain graph-independent; this required pair belongs to the Rhapsodia agent profile.
+No helper grants permissions, starts a service, runs a recipe, authenticates or installs.
 """
 
 
@@ -66,6 +75,9 @@ def configure(store: Store, host: str) -> dict:
         cache_line = b"/.rhapsodia/cache/"
         if cache_line not in new_ignore.splitlines():
             new_ignore += (b"\n" if new_ignore and not new_ignore.endswith(b"\n") else b"") + cache_line + b"\n"
+        graph_line = b"/.rhapsodia/graph/"
+        if graph_line not in new_ignore.splitlines():
+            new_ignore += (b"\n" if new_ignore and not new_ignore.endswith(b"\n") else b"") + graph_line + b"\n"
         targets = [
             (store.workspace, rel, before if path.exists() else None, after),
             (store.workspace, ".gitignore", old_ignore if ignore.exists() else None, new_ignore),

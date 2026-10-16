@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "workspace-knowledge-v1",
+  "title": "Workspace knowledge with source pins and bounded environment recipes",
+  "description": "Runtime validation additionally enforces UTF-8 byte limits, source confinement/freshness, privacy checks and expected-revision concurrency. Evidence is agent-reported, not independent proof.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "key",
+    "kind",
+    "title",
+    "summary",
+    "tags",
+    "sources"
+  ],
+  "properties": {
+    "schema": {
+      "const": "workspace-knowledge-v1"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,95}$",
+      "not": {
+        "enum": [
+          "root",
+          "workspace"
+        ]
+      }
+    },
+    "kind": {
+      "enum": [
+        "reference",
+        "remedy"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "expected_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "symptom": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1800
+    },
+    "cause": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1800
+    },
+    "resolution": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1800
+    },
+    "verification": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1800
+    },
+    "evidence_status": {
+      "enum": [
+        "observed-success",
+        "documented",
+        "hypothesis",
+        "failed",
+        "auth-required"
+      ]
+    },
+    "applicability": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "os": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "shell": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "shell_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "language_mode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "tool_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "configuration": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "environment_variables": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,127}$"
+      }
+    },
+    "ttl_seconds": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 2592000
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "reference"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sources": {
+            "minItems": 1
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "symptom"
+              ]
+            },
+            {
+              "required": [
+                "cause"
+              ]
+            },
+            {
+              "required": [
+                "resolution"
+              ]
+            },
+            {
+              "required": [
+                "verification"
+              ]
+            },
+            {
+              "required": [
+                "evidence_status"
+              ]
+            },
+            {
+              "required": [
+                "applicability"
+              ]
+            },
+            {
+              "required": [
+                "environment_variables"
+              ]
+            },
+            {
+              "required": [
+                "ttl_seconds"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "symptom",
+          "cause",
+          "resolution",
+          "verification",
+          "evidence_status",
+          "applicability",
+          "environment_variables",
+          "ttl_seconds"
+        ]
+      }
+    }
+  ]
+}

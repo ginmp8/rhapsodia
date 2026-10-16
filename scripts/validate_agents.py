@@ -9,14 +9,14 @@ from pathlib import Path
 EXPECTED = {
     "rhapsodia-supervisor.agent.md": {
         "name": "Rhapsodia Supervisor",
-        "tools": {"read", "search", "agent"},
+        "tools": {"read", "search", "execute", "agent"},
         "user_invocable": True,
         "agents": ["Rhapsodia Analyst", "Rhapsodia Verifier", "Nomia", "Mago", "Magia", "Rhapsodia Workspace"],
         "profile": "supervisor",
     },
     "rhapsodia-analyst.agent.md": {
         "name": "Rhapsodia Analyst",
-        "tools": {"read", "search"},
+        "tools": {"read", "search", "execute"},
         "user_invocable": False,
         "profile": "analyst",
     },
@@ -52,6 +52,7 @@ EXPECTED = {
         "name": "Rhapsodia Workspace", "tools": {"read", "search", "edit", "execute"},
         "user_invocable": False, "profile": "workspace", "skill": "rhapsodia-workspace",
     },
+    "rhapsodia-adhoc.agent.md": {"name": "Rhapsodia Adhoc", "tools": {"read", "search", "edit", "execute"}, "user_invocable": True, "profile": "adhoc"},
 }
 
 # Hard control-plane placement gate: supporting details may follow line 100,
@@ -59,6 +60,7 @@ EXPECTED = {
 # must remain accessible without loading later pages. These profiles currently
 # fit entirely within 100 lines; future elaboration may grow only below the gate.
 TOP100_SECTIONS = {
+    "adhoc": ("## Role and activation", "## Authority", "## Skill routing", "## Workflow", "## Stop conditions", "## Output contract", "no subagent orchestration"),
     "supervisor": (
         "## Mission and activation", "## Authority, evidence and handoffs",
         "## Canonical lifecycle and route", "## Optional semantic capabilities",
@@ -152,6 +154,11 @@ def validate_agent_file(path, spec, findings):
         if marker.lower() not in control_plane:
             add(findings, "AGENT_TOP100_CONTROL", path,
                 f"required control-plane section/rule missing in first 100 lines: {marker}")
+    for marker in ("## Mandatory session and memory", "agent_session.py", "--no-harness", "--no-graph", "graph-first", "pin", "learn", "reconcile", "blocked", "Local-maintenance exception", "explicit request", "never persist tokens", "never replace domain handoffs"):
+        if marker.lower() not in control_plane:
+            add(findings, "MANDATORY_SESSION", path, f"required session/memory rule missing in first 100 lines: {marker}")
+    if "## optional runtime context" in control_plane:
+        add(findings, "MANDATORY_SESSION", path, "runtime and graph must not revert to optional guidance")
     fm, body = parse_frontmatter(path, findings)
     if fm.get("name") != spec["name"]:
         add(findings, "AGENT_NAME", path, f"name must be {spec['name']!r}")
@@ -180,8 +187,8 @@ def validate_agent_file(path, spec, findings):
         add(findings, "SUBAGENT_INVOCATION", path, "disable-model-invocation must be false so native delegation remains available")
 
     if spec["profile"] == "supervisor":
-        if "edit" in toolset or "execute" in toolset:
-            add(findings, "SUPERVISOR_WRITE_TOOL", path, "supervisor must remain read-only and non-executing")
+        if "edit" in toolset:
+            add(findings, "SUPERVISOR_WRITE_TOOL", path, "supervisor cannot gain domain edit authority; execute is maintenance-only")
         if "agent" not in toolset:
             add(findings, "SUPERVISOR_AGENT_TOOL", path, "supervisor requires the native agent tool")
         if fm.get("agents") != spec["agents"]:
@@ -203,11 +210,14 @@ def validate_agent_file(path, spec, findings):
         for capability in ("bounded-decision-judgment", "prospective-failure-review", "material-uncertainty-reflection"):
             if capability not in body:
                 add(findings, "DECISION_RISK_LENS", path, f"supervisor missing selective capability: {capability}")
+    elif spec["profile"] == "adhoc":
+        if "agent" in toolset or "agents" in fm or "no subagent orchestration" not in body:
+            add(findings, "ADHOC_AUTHORITY", path, "Adhoc must execute selected skills inline without custom-agent delegation")
     elif spec["profile"] == "analyst":
-        if toolset != {"read", "search"}:
-            add(findings, "ANALYST_TOOL_SCOPE", path, "analyst must expose only read and search")
-        if "agent" in toolset or "edit" in toolset or "execute" in toolset:
-            add(findings, "ANALYST_TOOL_SCOPE", path, "analyst must not receive agent/edit/execute tools")
+        if toolset != {"read", "search", "execute"}:
+            add(findings, "ANALYST_TOOL_SCOPE", path, "analyst requires read/search plus maintenance-only execute")
+        if "agent" in toolset or "edit" in toolset:
+            add(findings, "ANALYST_TOOL_SCOPE", path, "analyst must not receive agent/edit tools; execute is only for memory maintenance")
         if "agents" in fm:
             add(findings, "ANALYST_ALLOWLIST", path, "analyst must not declare a subagent allowlist")
         for phrase in (
@@ -298,7 +308,23 @@ def validate_contract(path, findings):
         add(findings, "CONTRACT_ID", path, "contract must be agent-system-contract/v4")
     if doc.get("system", {}).get("autonomy") != "policy-bounded-autonomous":
         add(findings, "AUTONOMY", path, "system autonomy must remain policy-bounded-autonomous")
+    session = doc.get("session_memory", {})
+    if (session.get("contract") != "rhapsodia-required-session/v1"
+            or session.get("default") != {"harness": "required", "graph": "required"}
+            or session.get("missing_permission_or_capability") != "blocked"
+            or session.get("corrupt_state") != "preserve-and-block"
+            or session.get("opt_out") != {"authority": "explicit-current-user-request", "independent": True, "inherited_by_delegation": True, "persisted_global_disable": False}):
+        add(findings, "MANDATORY_SESSION", path, "all agents require scoped bootstrap/memory with independent explicit user opt-outs and fail-closed gates")
+    maintenance = next((cap for cap in doc.get("capabilities", []) if cap.get("id") == "local-memory-maintenance"), {})
+    if (maintenance.get("scope") != [".rhapsodia/runtime", ".rhapsodia/graph"] or maintenance.get("required") is not True
+            or maintenance.get("approval") != "policy" or maintenance.get("idempotency") != "required"):
+        add(findings, "MEMORY_AUTHORITY", path, "maintenance may write only private runtime/graph state and cannot widen domain authority")
+    for agent in doc.get("agents", []):
+        if "local-memory-maintenance" not in agent.get("capabilities", []):
+            add(findings, "MANDATORY_SESSION", path, "every profile must declare local-memory-maintenance")
     routing = doc.get("routing", {})
+    if routing.get("direct_adhoc") != {"agent": "rhapsodia-adhoc", "user_invocable": True, "subagent_delegation": False, "skill_execution": "inline", "governed_transition_bypass": False}:
+        add(findings, "ADHOC_AUTHORITY", path, "Adhoc must remain a direct inline skill router without orchestration or governed-transition bypass")
     if routing.get("type") != "centralized-supervisor":
         add(findings, "ROUTING_TYPE", path, "routing must be centralized-supervisor")
     if routing.get("max_hops") != 24:
@@ -388,7 +414,7 @@ def validate_contract(path, findings):
     if derived.get("canonical_write") is not False or derived.get("trigger") != "explicit-visualization-request" or derived.get("max_refresh_attempts") != 2 or derived.get("concurrent_with_canonical_writer") is not False:
         add(findings, "WORKSPACE_ROUTING", path, "workspace must be optional, derived-only, serial and bounded")
     ids = [a.get("id") for a in doc.get("agents", [])]
-    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia", "rhapsodia-workspace"]:
+    if ids != ["rhapsodia-supervisor", "rhapsodia-analyst", "rhapsodia-verifier", "nomia", "mago", "magia", "rhapsodia-workspace", "rhapsodia-adhoc"]:
         add(findings, "AGENT_CONTRACT_SET", path, "contract agent ids/order do not match the package")
     capability_ids = {c.get("id") for c in doc.get("capabilities", []) if isinstance(c, dict)}
     capabilities = doc.get("capabilities", [])
@@ -432,8 +458,8 @@ def validate_contract(path, findings):
     if mappings.get("specialist-delegation") != "agent tool with agents allowlist":
         add(findings, "VSCODE_DELEGATION", path, "VS Code delegation must map to native agent tool plus allowlist")
     analyst_mapping = mappings.get("read-only-analysis", "")
-    if "read + search" not in analyst_mapping:
-        add(findings, "VSCODE_ANALYST_SCOPE", path, "VS Code read-only analysis must map to an explicit read + search-only analyst profile")
+    if not ("read/search" in analyst_mapping or "read + search" in analyst_mapping) or "maintenance-only execute" not in analyst_mapping:
+        add(findings, "VSCODE_ANALYST_SCOPE", path, "VS Code analysis must map to domain-read-only plus maintenance-only execution")
     verifier_mapping = mappings.get("executable-verification", "")
     if "Rhapsodia Verifier" not in verifier_mapping or "verification-only" not in verifier_mapping:
         add(findings, "VSCODE_VERIFIER_SCOPE", path, "VS Code executable verification must map to the bounded Rhapsodia Verifier profile")
@@ -476,7 +502,9 @@ def validate_manifest(root, path, findings):
         if full_repo:
             in_agent_surface = (
                 rel in {"README.md", "LICENSE", "scripts/install_agents.py", "scripts/validate_agents.py",
-                        "tests/agent-scenarios.json", "tests/test_install_agents.py", "tests/test_validate_agents.py"}
+                        "tests/agent-scenarios.json", "tests/test_install_agents.py", "tests/test_validate_agents.py",
+                        "scripts/session.py", "scripts/memory.py", "docs/runtime/REQUIRED-SESSION.md",
+                        "tests/test_required_session.py", "tests/test_required_session_guards.py"}
                 or rel.startswith("agents/")
                 or rel.startswith("docs/agents/")
             )

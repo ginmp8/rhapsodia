@@ -1,6 +1,53 @@
 # RhapsodIA
 
-## 0.10.0 - Selective agent activation, bounded decisions and prospective risk review
+## 0.11.0 - Required sessions, persistent workspace knowledge and direct Adhoc
+
+RhapsodIA **0.11.0** includes **56 Agent Skills and eight native agent profiles**.
+All profiles require Runtime Harness and Local Graph Engine before task work; only explicit
+user instructions can independently disable either component for that request. Missing state
+is initialized, valid state reused, and missing permission/capability or corruption blocks.
+
+The new **Rhapsodia Adhoc** performs direct authorized work with relevant skills inline,
+without Supervisor or subagent orchestration. Supervisor retains governed delivery. Every
+profile has a private-memory maintenance exception; domain ownership and proof gates remain.
+Graph-first lookup, source-pinned learning, sanitized environment recipes and conservative
+reconciliation replace repeated blind discovery without treating graph data as source truth.
+
+Start with [required sessions](docs/runtime/REQUIRED-SESSION.md), [agent architecture](docs/agents/ARCHITECTURE.md)
+and [0.11.0 release notes](docs/releases/0.11.0.md). CLI/structural checks do not prove native
+host/model adherence or actual token savings. No runtime state belongs in version control.
+
+
+## Reading guide
+
+**Purpose:** Install and use the current native agent/skill distribution without confusing required session memory, optional artifact views and governed lifecycle ownership.
+**Load when:** Selecting Adhoc versus Supervisor, installing profiles, resolving prerequisites or interpreting release validation.
+**Decision impact:** Bootstrap harness and graph unless explicitly disabled by the user; preserve scoped permissions, source freshness and independent proof. Historical sections describe their named releases, not current defaults.
+
+## Contents
+
+- 0.11.0 - Required sessions, persistent workspace knowledge and direct Adhoc
+- 0.10.0 (historical) - Selective agent activation, bounded decisions and prospective risk review
+- 0.9.0 - Reverse engineering, deep research, premortems and portable skill lifecycle contracts
+- 0.8.0 - Bounded operational context and evidence reuse
+- 0.7.0 (historical) - Lazy shared runtime knowledge and compact agent handoffs
+- 0.6.0 (historical) — Local graph workbench, interactive exploration, and PDF workbench
+- 0.5.0 (historical) — Top-100 control surfaces and progressive loading
+- Artifact-native workspace (Mags 2.0.0)
+- Purpose
+- Distribution scope
+- Marketplace distribution
+- Full repository model
+- RhapsodIA usage model
+- RhapsodIA Agents
+- Validation in the full RhapsodIA repository
+- Third-party and adapted content
+- Design inspirations for this update
+- License
+- 0.3.0 (historical) — dual workflow architecture
+
+
+## 0.10.0 (historical) - Selective agent activation, bounded decisions and prospective risk review
 
 RhapsodIA **0.10.0** retains 56 Agent Skills and seven native agent profiles, with no change to their canonical lifecycle ownership, native delegation permissions or skill-local versions.
 
@@ -253,6 +300,8 @@ agents/
   rhapsodia-supervisor.agent.md
   rhapsodia-analyst.agent.md
   rhapsodia-verifier.agent.md
+  rhapsodia-adhoc.agent.md
+  rhapsodia-workspace.agent.md
   nomia.agent.md
   mago.agent.md
   magia.agent.md
@@ -332,14 +381,14 @@ python scripts/install_agents.py --target <TARGET_REPOSITORY> --force
 ```
 
 - `--dry-run`: verify prerequisites and show the install plan without mutation.
-- `--check`: verify the installed profiles against this package and confirm that Nomia, Mago, and Magia are discoverable.
+- `--check`: verify the installed profiles against this package and confirm required domain Skills plus Runtime Harness and Local Graph Engine and their session helpers are discoverable.
 - `--force`: replace a differing existing agent profile. Without it, differing files fail closed.
 
-Manual installation is also valid: copy the six profiles from `agents/` to `.github/agents/` in the target repository.
+Manual installation is also valid: copy the eight profiles from `agents/` to `.github/agents/` in the target repository.
 
-After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that the six custom agents plus the four required canonical Agent Skills are discovered. Any additional installed Agent Skills remain independently discoverable as supporting semantic capabilities; they do not need to be copied into Rhapsodia.
+After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that eight custom agents, four canonical domain Skills, Runtime Harness and Local Graph Engine are discovered. Any additional installed Agent Skills remain independently discoverable as supporting semantic capabilities; they do not need to be copied into Rhapsodia.
 
-The primary user-facing entry point is **Rhapsodia Supervisor**. Rhapsodia Analyst, Nomia, Mago, and Magia are configured as subagents rather than normal user-selected modes; Analyst is read-only and hidden from ordinary user selection.
+The user-facing entry points are **Rhapsodia Supervisor** for governed work and **Rhapsodia Adhoc** for direct work without orchestration. Rhapsodia Analyst, Nomia, Mago, and Magia are configured as subagents rather than normal user-selected modes; Analyst is domain-read-only with a private-maintenance exception and hidden from ordinary user selection.
 
 ### Runtime boundary
 
@@ -350,6 +399,8 @@ The deployed runtime requires only:
   rhapsodia-supervisor.agent.md
   rhapsodia-analyst.agent.md
   rhapsodia-verifier.agent.md
+  rhapsodia-adhoc.agent.md
+  rhapsodia-workspace.agent.md
   nomia.agent.md
   mago.agent.md
   magia.agent.md
@@ -359,11 +410,13 @@ The deployed runtime requires only:
   mago/
   magia/
   test-oracle-engineering/
+  runtime-harness/
+  local-graph-engine/
 ```
 
-Additional supporting Agent Skills are optional runtime inputs discovered by the active host/worker when a semantic capability requires them; they are deliberately outside this fixed prerequisite set.
+Beyond the required runtime/graph pair, additional supporting Agent Skills are optional runtime inputs discovered by the active host/worker when a semantic capability requires them; they are deliberately outside this fixed prerequisite set.
 
-The portable JSON contract shipped in this archive is a **design/build-time validation contract**, not a runtime dependency that must be copied to every target repository.
+The portable JSON contract shipped in this repository is a **design/build-time validation contract**, not a runtime dependency that must be copied to every target repository.
 
 At runtime:
 
@@ -373,6 +426,8 @@ At runtime:
 - **Nomia** owns one product/delivery-governance phase through the Nomia Skill.
 - **Mago** owns one technical-planning or reconciliation phase through the Mago Skill.
 - **Magia** owns one bounded implementation/validation phase through the Magia Skill.
+- **Rhapsodia Workspace** owns requested derived catalogs/views, never source mutation.
+- **Rhapsodia Adhoc** owns one direct authorized result through inline skill routing without multi-agent orchestration.
 
 ### Native-only runtime policy
 
@@ -382,7 +437,7 @@ Normal operation requires only native host capabilities:
 - scoped editing in specialist workers;
 - bounded command execution in specialist workers;
 - native custom-agent/subagent invocation in the supervisor;
-- an explicit read/search-only analyst profile for isolated read-only work units;
+- an Analyst profile without edit/delegation tools; required execute access is limited to private runtime/graph maintenance and remains host-approval-gated;
 - an explicit verifier profile with verification-only edit/execute authority plus the `test-oracle-engineering` Skill;
 - native Agent Skills discovery.
 
@@ -394,16 +449,18 @@ Knowledge from those systems may inform design patterns, but they are not runtim
 
 | Agent | Tools | Purpose |
 |---|---|---|
-| Rhapsodia Supervisor | `read`, `search`, `agent` | Read-only routing, synthesis, and native delegation |
-| Rhapsodia Analyst | `read`, `search` | Isolated read-only analysis/adversarial review |
+| Rhapsodia Supervisor | `read`, `search`, `execute`, `agent` | Domain-read-only routing/delegation; execute only private memory helpers |
+| Rhapsodia Analyst | `read`, `search`, `execute` | Domain-read-only analysis; execute only private memory helpers |
 | Rhapsodia Verifier | `read`, `search`, `edit`, `execute` | Independent executable oracle proof; edit restricted to verification artifacts |
 | Nomia | `read`, `search`, `edit`, `execute` | Governance artifacts and Nomia validators |
 | Mago | `read`, `search`, `edit`, `execute` | Planning artifacts and Mago validators |
 | Magia | `read`, `search`, `edit`, `execute` | Bounded implementation and execution proof |
+| Rhapsodia Workspace | `read`, `search`, `edit`, `execute` | Requested derived catalogs/views plus private memory maintenance |
+| Rhapsodia Adhoc | `read`, `search`, `edit`, `execute` | Direct authorized task and inline skills; no agent orchestration |
 
 Workers intentionally do not receive the `agent` tool. Worker-to-worker recursive orchestration is excluded by the package design.
 
-Tool availability is not equivalent to semantic authority: each worker remains bounded by its corresponding Agent Skill.
+Tool availability is not equivalent to semantic authority: each worker remains bounded by its corresponding Agent Skill. All profiles first run the required session gate; a coarse execute tool is not a command allowlist or operating-system sandbox. Preserve native approvals.
 
 ### Governed lifecycle
 
@@ -478,7 +535,7 @@ No profile pins a model. Model selection remains under the active host/account/u
 
 The package deliberately avoids global workspace instruction files such as AGENTS.md or `.github/copilot-instructions.md`. Mago/Magia/Nomia rules should apply when these agents/skills are active, not to every unrelated Copilot interaction in a repository.
 
-VS Code is the primary validated adapter. The Skills and `agent-system-contract/v2` form the portable semantic core for OpenAI/ChatGPT, Codex, Claude, GitHub Copilot/VS Code, Cursor, Visual Studio, and other capable hosts. Hosts with different custom-agent discovery formats require an adapter that preserves the same authority, gate, state, and termination semantics.
+VS Code is the primary native adapter format, checked structurally but not executed against a live editor/model for this release. The Skills and `agent-system-contract/v4` form the portable semantic core for OpenAI/ChatGPT, Codex, Claude, GitHub Copilot/VS Code, Cursor, Visual Studio, and other capable hosts. Hosts with different custom-agent discovery formats require an adapter that preserves the same authority, gate, state, and termination semantics.
 
 A portable semantic contract does **not** by itself prove runtime parity on those hosts; unsupported adapters remain explicitly `adapter-required`.
 
@@ -493,7 +550,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 The Agent-layer validator checks, among other things:
 
-- exact six-agent source set;
+- exact eight-agent source set;
 - frontmatter and tool boundaries;
 - Supervisor allowlist, adaptive read-only fan-out, single-writer, and finite routing invariants;
 - worker non-delegation;
@@ -509,7 +566,7 @@ The installer can validate an actual target installation with:
 python scripts/install_agents.py --target <TARGET_REPOSITORY> --check
 ```
 
-The scenario suite in this archive is **planned/structural evidence** until executed against a real model and host runtime. Static validation must not be reported as measured routing accuracy, runtime reliability, or proof of zero-HITL operation.
+The scenario suite in this repository is **planned/structural evidence** until executed against a real model and host runtime. Static validation must not be reported as measured routing accuracy, runtime reliability, or proof of zero-HITL operation.
 
 ## Validation in the full RhapsodIA repository
 
@@ -517,7 +574,7 @@ Validation remains capability-specific in the full repository. Individual Skills
 
 There is intentionally no assumption that one command validates every RhapsodIA Skill.
 
-The Agent-layer checks in this archive validate the integration boundary around Nomia/Mago/Magia; they do not replace the validators owned by those Skills.
+The Agent-layer checks in this repository validate the integration boundary around Nomia/Mago/Magia; they do not replace the validators owned by those Skills.
 
 ## Third-party and adapted content
 
@@ -536,7 +593,7 @@ The repository-level policy is to preserve upstream notices and keep attribution
 
 Those packages are present only when they exist in this complete snapshot. Their local notices remain authoritative; this README does not replace package-specific attribution or licensing metadata.
 
-The Agents in this archive are original RhapsodIA package content unless an included file states otherwise.
+The Agents in this repository are original RhapsodIA package content unless an included file states otherwise.
 
 ## Design inspirations for this update
 
