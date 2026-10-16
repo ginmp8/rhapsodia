@@ -1,7 +1,7 @@
 {
   "name": "rhapsodia",
-  "version": "0.10.0",
-  "description": "Portable RhapsodIA Agent Skills and native-host adapters for engineering, governance, evidence-bound operational context, measured efficiency, and validation.",
+  "version": "0.11.0",
+  "description": "Portable RhapsodIA Agent Skills and native-host adapters with required runtime/graph sessions, reusable source-pinned knowledge, governed delivery and direct Adhoc execution.",
   "author": {
     "name": "ginmp8",
     "url": "https://github.com/ginmp8"
@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "RhapsodIA",
     "shortDescription": "Portable engineering and agent-workflow skills",
-    "longDescription": "Portable RhapsodIA Agent Skills and native-host adapters for engineering, governance, evidence-bound operational context, measured efficiency, and validation.",
+    "longDescription": "Portable RhapsodIA Agent Skills and native-host adapters with required runtime/graph sessions, reusable source-pinned knowledge, governed delivery and direct Adhoc execution.",
     "developerName": "ginmp8",
     "category": "Productivity"
   }

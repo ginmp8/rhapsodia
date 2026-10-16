@@ -1,0 +1,25 @@
+{
+  "schema": "workspace-knowledge-v1",
+  "key": "powershell-chain-operators",
+  "kind": "remedy",
+  "title": "PowerShell pipeline chain syntax is version-dependent",
+  "summary": "A documented example, not an observed local success. Preserve conditional execution when adapting syntax.",
+  "tags": [
+    "powershell",
+    "pipeline",
+    "syntax"
+  ],
+  "sources": [],
+  "symptom": "The shell does not accept the pipeline chain operator.",
+  "cause": "Hypothesis: the active session is Windows PowerShell 5.1 rather than PowerShell 7 or later.",
+  "resolution": "Verify the active shell version; use a supported conditional success check rather than an unconditional semicolon.",
+  "verification": "Documented by Microsoft about_Pipeline_Chain_Operators; verify the actual shell and authorized command outcome before marking observed-success.",
+  "evidence_status": "documented",
+  "applicability": {
+    "os": "Windows",
+    "shell": "powershell",
+    "shell_version": "5.1"
+  },
+  "environment_variables": [],
+  "ttl_seconds": 86400
+}

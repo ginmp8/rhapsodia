@@ -1,5 +1,27 @@
 # Rhapsodia Workspace
 
+## At a Glance
+
+- **Purpose:** Explain the owned capability and supported operations.
+- **Load when:** Select setup, command, integration or recovery behavior for this capability.
+- **Decision impact:** Preserves source authority, explicit permissions, required session gates and honest validation limits.
+
+## Contents
+
+- Ownership model
+- Data flow
+- Commands
+- Offline viewer
+- Validation
+- Safety and freshness
+- Legacy Board migration
+- Detailed contracts
+
+This is optional derived artifact presentation, not runtime initialization or persistent
+workspace memory. All Rhapsodia agents use Runtime Harness plus Local Graph Engine first,
+unless the user explicitly opts out; Workspace only catalogs/views published sidecars.
+See [required sessions](../runtime/REQUIRED-SESSION.md) for that separate mandatory gate.
+
 Rhapsodia Workspace is an optional, read-only projection layer for artifacts owned by RhapsodIA producers. It discovers producer-published `.artifact.json` sidecars, validates their metadata, builds derived catalogs, and renders a self-contained offline HTML view.
 
 Workspace never becomes the source of truth for governance, planning, or execution. Nomia owns product and delivery governance, Mago owns technical planning, and Magia owns implementation and execution evidence. Their artifacts remain independently usable when Workspace is absent.

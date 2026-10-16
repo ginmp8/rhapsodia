@@ -1,6 +1,22 @@
-# Runtime Harness 1.1.0
+# Runtime Harness 1.3.0
 
-A stdlib-only local runtime registry bundled with RhapsodIA 0.7.0. It is intentionally
+## At a Glance
+
+- **Purpose:** Explain the owned capability and supported operations.
+- **Load when:** Select setup, command, integration or recovery behavior for this capability.
+- **Decision impact:** Preserves source authority, explicit permissions, required session gates and honest validation limits.
+
+## Contents
+
+- Required Rhapsodia agent session
+- Start
+- Lazy tool discovery
+- Share reusable resources
+- Session preparation
+- Handoff
+- Design boundary
+
+A stdlib-only local runtime registry with a required-session adapter for RhapsodIA 0.11.0. It is intentionally
 **lazy and incremental**: bootstrap records only the running Python plus bounded
 skill/agent catalogs. Agents discover exact missing tools only when needed and can
 publish mechanically verifiable reusable resource locations for later agents.
@@ -8,6 +24,24 @@ publish mechanically verifiable reusable resource locations for later agents.
 The registry is shared through immutable snapshots under `.rhapsodia/runtime/`.
 Agents never edit `current.json` or snapshots directly; writers merge observations and
 atomically move the pointer to a new content-identified snapshot.
+
+## Required Rhapsodia agent session
+
+All Rhapsodia profiles run `scripts/agent_session.py` before repository search, task work
+or delegation. It initializes missing harness and Local Graph Engine state, reuses valid
+state and returns verified helper argv arrays. Missing capability/permission blocks;
+corrupt state is preserved. Only explicit user instructions allow independent
+`--no-harness` / `--no-graph` with `--opt-out-reason user-request`.
+
+```text
+<PYTHON> -I -S -B scripts/agent_session.py --workspace <ROOT> --skills-root <APPROVED_SKILLS_ROOT>
+```
+
+The [required-session contract](references/agent-session.md) explains graph-first lookup,
+learning, reconciliation and maintenance-only authority. Rhapsodia Workspace is optional
+artifact presentation, not this gate. Registry-only consumers may still use the standalone
+commands below without a graph. No workflow runtime, service, automatic login or install
+is introduced.
 
 ## Start
 

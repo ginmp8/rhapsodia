@@ -2,7 +2,7 @@
 
 ## At a Glance
 
-- **Purpose:** Describe who owns decisions, repository changes, typed handoffs and independent proof across the seven native agent profiles; explain their capabilities without creating runtime dependencies.
+- **Purpose:** Describe who owns decisions, repository changes, typed handoffs and independent proof across the eight native agent profiles; explain their capabilities while separating required local session infrastructure from optional orchestration helpers.
 - **Load when:** Resolving a disputed Nomia/Mago/Magia route, selecting Analyst/Verifier/Workspace, checking a host adapter, or interpreting checkpoint/dynamic workflow limits.
 - **Decision impact:** Enforces one canonical writer and one progression owner, bounded delegation/checkpoints, host-native semantic support and derived-only outputs; no document here extends agent authority.
 
@@ -10,6 +10,7 @@
 
 - Artifact-native default (agent-system-contract/v4)
 - Purpose
+- Direct Adhoc entry point
 - Responsibility split
 - Why the analyst is separate
 - Delegation versus evidence transfer
@@ -26,14 +27,13 @@
 - Host boundary
 - Reference-grounded convergence
 - Dual control planes: topology vs. convergence
-- Optional runtime context (0.7.0)
-
+- Required session and memory (0.11.0)
 
 ## Artifact-native default (agent-system-contract/v4)
 
 Domain agents decide which files their own skill needs. The Supervisor selects the current owner, not filenames. All three workers return uniform `artifact_actions` and a separate action-validation result. Their canonical roots are independently owned (`docs/product`, `docs/specs`, `docs/implementation`, or explicit non-overlapping alternatives). Board/cycle/registry setup is not a native requirement.
 
-`Rhapsodia Workspace` is a seventh, derived-only profile. Invoke it only for an explicit catalog/UI request after canonical writers stop. It can index, validate, project and render under `.rhapsodia`, but cannot create source sidecars, write domain files, advance lifecycle, mint planning identity or emit ecosystem v3 handoffs. Its absence does not prevent a domain phase from running. Requested UI output must still complete before claiming the user's whole request is complete.
+`Rhapsodia Workspace` is the derived-only presentation profile. Invoke it only for an explicit catalog/UI request after canonical writers stop. It can index, validate, project and render under `.rhapsodia`, but cannot create source sidecars, write domain files, advance lifecycle, mint planning identity or emit ecosystem v3 handoffs. Its absence does not prevent a domain phase from running. Requested UI output must still complete before claiming the user's whole request is complete.
 
 The original Nomia/Mago/Magia ownership and typed v3 handoff directions remain intact. Read-only Analyst fan-out and independent Verifier checkpoints are unchanged. Workspace counts toward the same 24-hop budget and has at most one retry after a source change. No framework, external orchestration service, watcher or Board runtime is introduced.
 
@@ -42,7 +42,7 @@ See [artifact orchestration](ARTIFACT-ORCHESTRATION.md) for data contracts, migr
 
 ## Purpose
 
-This package adds a portable semantic agent layer with a validated VS Code adapter around the Nomia, Mago, Magia, and test-oracle-engineering Agent Skills. It preserves one centralized orchestration owner and one canonical production writer per lifecycle phase while allowing bounded isolated analysis, adversarial review, and executable verification when they materially reduce false confidence.
+This package adds a portable semantic agent layer with a structurally checked VS Code adapter around the Nomia, Mago, Magia, and test-oracle-engineering Agent Skills. It preserves one centralized orchestration owner and one canonical production writer per lifecycle phase while allowing bounded isolated analysis, adversarial review, and executable verification when they materially reduce false confidence.
 
 The architecture is native-first:
 
@@ -66,6 +66,13 @@ Rhapsodia Supervisor
 ```
 
 The VS Code adapter uses native custom agents and native subagent delegation. No external orchestration runtime is required.
+
+## Direct Adhoc entry point
+
+`Rhapsodia Adhoc` owns a direct user-requested outcome. It requires the same session gates,
+selects the most relevant installed Skill or works directly when no specialist is needed,
+and executes inline. It has no `agent` tool, subagent allowlist or orchestration loop.
+It cannot bypass an existing governed lifecycle, selected skill boundary or required proof.
 
 ## Responsibility split
 
@@ -99,13 +106,13 @@ Owns one isolated **read-only** work unit. It may inspect evidence, answer a bou
 It never owns a canonical lifecycle phase and cannot:
 
 - edit files;
-- execute commands;
+- execute arbitrary project commands; only approved private runtime/graph maintenance helpers are permitted;
 - emit ecosystem handoff v3;
 - complete a canonical phase;
 - change governance/planning/implementation authority;
 - invoke another agent.
 
-This separate profile exists because current host custom-agent tool lists can mechanically enforce `read`/`search` only, instead of relying on a write-capable worker to obey a prompt-only read-only convention.
+This separate profile removes direct edit and delegation tools. Its required `execute` capability is restricted by the profile to approved private runtime/graph maintenance. Native command approval or sandbox controls must enforce that restriction where supported; prompt wording alone is not mechanical least privilege.
 
 ### Rhapsodia Verifier
 
@@ -129,7 +136,7 @@ Owns one bounded repository execution phase through the Magia Skill. Direct ADHO
 
 Adaptive decomposition is justified only for distinct context isolation, independent verification, or independent read-only work. Nomia, Mago, and Magia all have edit/execute capabilities because their canonical phases may mutate owned artifacts or run validators. Running several of those profiles concurrently would violate least privilege and single-writer ownership even if the prompt told them to remain read-only.
 
-`Rhapsodia Analyst` solves that with an explicit host-enforced read-only toolset. One analyst profile can apply the already-resolved domain skill context without creating three duplicate read-only domain agents.
+`Rhapsodia Analyst` separates domain-read-only analysis from private-memory helper execution. It has no direct edit or delegation tool; its execute capability still requires native approval and bounded command scope. One analyst profile can apply the already-resolved domain skill context without creating three duplicate read-only domain agents.
 
 ## Delegation versus evidence transfer
 
@@ -148,7 +155,7 @@ A workflow plan cannot change lifecycle ownership, tool authority, budgets, or t
 
 ## Supporting semantic capabilities
 
-Rhapsodia distinguishes **canonical domain skills** from **supporting Agent Skills**. Nomia, Mago, Magia, and `test-oracle-engineering` remain the canonical skill owners for their phases. Any other installed Agent Skill is optional supporting guidance unless another explicit package contract says otherwise.
+Rhapsodia distinguishes **canonical domain skills** from **supporting Agent Skills**. Nomia, Mago, Magia, and `test-oracle-engineering` remain the canonical skill owners for their phases. Runtime Harness and Local Graph Engine are required session infrastructure. Other installed Agent Skills are supporting guidance unless the request or accepted plan makes a capability required.
 
 Supporting skills are resolved **at runtime by semantic capability**, not by a fixed repository catalog:
 
@@ -172,7 +179,7 @@ The Supervisor passes **semantic capability IDs** in an existing bounded `handof
 
 For a consequential *future* migration: Mago owns the plan and may request a prospective risk review; the reviewer returns hypothetical evidence; Mago owns plan changes and acceptance criteria; Magia executes only an accepted handoff; Verifier proves frozen claims independently; Nomia alone owns any business approval or closure. For a bounded design choice, semantic decision assistance informs Mago but does not replace a validator or owner judgment. A completed Supervisor summary may include one decision-critical reflection question only if it helps the user act on an unresolved hinge.
 
-All capabilities are optional by default and require material relevance. Mark `required` only when the user/accepted plan makes that analysis an acceptance condition; unresolved required capabilities block that unit, unresolved optional capabilities are `not-run` only if semantics remain valid. Keep the existing subagent allowlist, read-only/one-writer partition, handoff versions, and finite budgets. This is selection guidance, not evidence of an executed multi-host agent session.
+These decision/risk support capabilities are optional by default and require material relevance; required runtime/graph infrastructure is separate. Mark `required` only when the user/accepted plan makes that analysis an acceptance condition; unresolved required capabilities block that unit, unresolved optional capabilities are `not-run` only if semantics remain valid. Keep the existing subagent allowlist, read-only/one-writer partition, handoff versions, and finite budgets. This is selection guidance, not evidence of an executed multi-host agent session.
 
 ## Canonical governed lifecycle
 
@@ -218,7 +225,7 @@ A phase may be decomposed only when:
 
 - the domain owner is already resolved;
 - work units are independent read-only analysis/verification;
-- every unit can run under `Rhapsodia Analyst` with `read`/`search` only;
+- every domain unit can run under `Rhapsodia Analyst` without project execution or edits; private-memory helper execution is separately approved and serialized;
 - dependencies and source identities are explicit enough to integrate safely;
 - the supervisor remains the only orchestration-state owner;
 - any canonical write/validator/phase completion/handoff v3 still goes through one Nomia/Mago/Magia worker;
@@ -268,8 +275,8 @@ Analyst units count toward the total delegation budget. A re-entry requires new 
 
 Capability is not authorization.
 
-- Supervisor: `read`, `search`, `agent`; no edit/execute.
-- Rhapsodia Analyst: `read`, `search`; no edit/execute/agent.
+- Supervisor: `read`, `search`, `agent`, `execute`; no direct edit. Execute is limited to private runtime/graph maintenance, never project operations.
+- Rhapsodia Analyst: `read`, `search`, `execute`; no edit/agent. Execute is limited to private runtime/graph maintenance, never project operations.
 - Rhapsodia Verifier: `read`, `search`, `edit`, `execute`; edit is restricted to verification-only scope, execute to bounded oracle proof, and production repair/delegation are forbidden.
 - Nomia: read/search/edit/execute only inside governance authority.
 - Mago: read/search/edit/execute only for planning artifacts and planning validators; application tests/builds/deployments remain forbidden.
@@ -334,13 +341,13 @@ On resume:
 
 ## Installation boundary
 
-The RhapsodIA source package keeps canonical profiles in `agents/`. VS Code discovers workspace custom agents from `.github/agents/`, so installation copies the six `.agent.md` profiles to that destination. Documentation, tests, validators, and the portable contract remain source-package artifacts and do not need to be copied into the consuming repository.
+The RhapsodIA source package keeps canonical profiles in `agents/`. VS Code discovers workspace custom agents from `.github/agents/`, so installation copies the eight `.agent.md` profiles to that destination. Documentation, tests, validators, and the portable contract remain source-package artifacts and do not need to be copied into the consuming repository.
 
-Nomia, Mago, Magia, and `test-oracle-engineering` Agent Skills are prerequisites for the full six-agent adapter. `adaptive-workflow-orchestration` is optional: installing it enables the reusable portable workflow-plan capability but is not required for the canonical serial lifecycle. Additional Agent Skills may be installed independently and discovered as supporting semantic capabilities; they are not Rhapsodia package prerequisites and are never enumerated in the portable contract.
+Nomia, Mago, Magia, `test-oracle-engineering`, Runtime Harness and Local Graph Engine are prerequisites for the full eight-agent adapter. The installer checks both required session helpers as well as skill entrypoints; it does not copy or install dependencies. `adaptive-workflow-orchestration` is optional: installing it enables the reusable portable workflow-plan capability but is not required for the canonical serial lifecycle. Additional Agent Skills may be installed independently and discovered as supporting semantic capabilities; they are not Rhapsodia package prerequisites and are never enumerated in the portable contract.
 
 ## Host boundary
 
-The portable design/build contract is `docs/agents/contracts/rhapsodia-agent-system.json`. It validates the source package and future adapters, but it is not a runtime dependency in target repositories. Runtime authority comes from the installed custom-agent profiles plus the installed Nomia, Mago, Magia, and test-oracle-engineering Agent Skills. `perceptual-validation` is an optional capability when a plan includes a perceptual gate.
+The portable design/build contract is `docs/agents/contracts/rhapsodia-agent-system.json`. It validates the source package and future adapters, but it is not a runtime dependency in target repositories. Runtime domain authority comes from installed profiles and domain Skills; required private session maintenance additionally uses Runtime Harness and Local Graph Engine. `perceptual-validation` is an optional capability when a plan includes a perceptual gate.
 
 The repository stores source profiles in `agents/*.agent.md`. For VS Code/Copilot use, copy those profiles into the target repository's `.github/agents/` discovery directory. The JSON contract is the portable semantic core. Future/adapted host profiles for OpenAI/ChatGPT, Codex, Claude, GitHub Copilot, Cursor, Visual Studio, or other hosts must translate capabilities and discovery conventions without changing ownership, authority, termination, producer/verifier separation, gate-promotion, single-writer, or evidence semantics. Structural portability is not a claim of runtime parity.
 
@@ -370,13 +377,22 @@ The first control plane is compile-to-workflow: an LLM/planner may synthesize to
 
 Composition has one invariant: **one progression owner at a time**. Nested subflows return evidence; they do not acquire the caller's promotion authority. This prevents two controllers from independently deciding that the same work may advance.
 
-## Optional runtime context (0.7.0)
+## Required session and memory (0.11.0)
 
-Agents may consume the compact Runtime Harness card and exact shared observations without
-changing canonical domain ownership. Read-only agents only reuse existing observations.
-An agent that already has execution/local-state write authority may lazily `ensure` one
-missing exact tool and publish stable mechanically verifiable resource locations; each
-publication merges into a new immutable snapshot for later agents. Arbitrary prose,
-permissions, domain decisions and validation verdicts are not runtime knowledge. Runtime
-receipts supplement handoff/v1 and ecosystem handoff v3; they never replace them. See
-[Runtime Harness](../../skills/runtime-harness/README.md).
+All eight profiles initialize/reuse Runtime Harness and Local Graph Engine before task work;
+only explicit user opt-outs may independently disable a component. The gate fails closed for
+missing permissions/skills or corrupt state. Every role has private-maintenance-only helper
+execution under `.rhapsodia/runtime` and `.rhapsodia/graph`; no domain permission is added.
+Supervisor/Analyst remain domain-read-only but are no longer helper-non-executing profiles.
+
+Graph-first retrieval precedes new repository keyword searches. Fresh hits locate exact source
+reads; misses/stale/insufficient hits justify bounded discovery and source-pinned learning.
+Recipes retain applicability and honest verification status, not secrets or raw logs. Reconcile
+changed references before return; complete-scope evidence is required for single-source pruning.
+Runtime and graph receipts never replace fresh acceptance or independent verification.
+
+Rhapsodia Workspace remains optional derived artifact presentation. Adhoc is a second public
+entry point for a direct outcome, using skills inline without Supervisor or subagent orchestration.
+See [required-session contract](../runtime/REQUIRED-SESSION.md) for mechanics and evidence limits.
+The JSON capability contract records maintenance scope separately from domain and external writes.
+Host execute tools are coarse; prompt scope is not an OS sandbox or measured host adherence.

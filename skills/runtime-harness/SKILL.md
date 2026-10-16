@@ -1,6 +1,6 @@
 ---
 name: runtime-harness
-description: Discover, verify, publish, and reuse local runtime capabilities and reusable resource locations through lazy incremental immutable snapshots, exact logical URI queries, byte-bounded context, content-pinned full/delta handoffs, observed capabilities, and typed discovery outcomes. Use for repeated interpreter/tool/resource discovery, shared cross-agent environment knowledge, session bootstrap, freshness, compact handoffs, or optional read-only stdio MCP and GraphPatch export. Do not use as workflow owner, installer, credentials store, general search engine, arbitrary memory, or replacement for domain handoffs and validation evidence.
+description: Bootstrap required Rhapsodia agent sessions with explicit independent harness/graph opt-outs; discover, verify, publish, and reuse local runtime capabilities and reusable resource locations through lazy incremental immutable snapshots, exact logical URI queries, byte-bounded context, content-pinned full/delta handoffs, observed capabilities, and typed discovery outcomes. Use for repeated interpreter/tool/resource discovery, shared cross-agent environment knowledge, session bootstrap, freshness, compact handoffs, or optional read-only stdio MCP and GraphPatch export. The agent adapter initializes absent private runtime/graph state; standalone registry consumers remain graph-independent. Do not use as workflow owner, installer, credentials store, general search engine, arbitrary memory, or replacement for domain handoffs and validation evidence.
 ---
 
 # Runtime Harness
@@ -10,10 +10,15 @@ description: Discover, verify, publish, and reuse local runtime capabilities and
 Replace repeated environment discovery with a small shared registry of mechanically
 verifiable local observations. Own runtime/resource lookup and transport hints only.
 Never schedule domain work, change permissions, execute discovered tools, or convert
-agent prose into trusted facts. No peer skill, database, server, cloud, Bash,
-PowerShell, or SDK is mandatory.
+agent prose into trusted facts. Standalone registry operations need no peer skill,
+database, server, cloud, shell or SDK; the Rhapsodia agent adapter requires Local Graph Engine.
 
-## Fast path
+## Required agent-session gate
+Every Rhapsodia profile, including read-only-domain roles, must first run `<PYTHON> -I -S -B scripts/agent_session.py --workspace <ROOT> --skills-root <APPROVED_SKILLS_ROOT>` through native approved skill discovery. Require actual ready harness/graph receipts before repository search, project work or delegation. Initialize absent state, reuse valid state, preserve corrupt state and block. Missing execution, permission or a required skill is not an opt-out.
+Only explicit current-user instructions permit independent `--no-harness` / `--no-graph` with `--opt-out-reason user-request`; propagate that selection to delegated units, never persist a global disable. Local helper maintenance under `.rhapsodia/runtime` / `.rhapsodia/graph` does not grant domain mutation, installation, login, project execution or host permission. See [required sessions](references/agent-session.md) for the complete direct contract.
+Use returned `runtime_argv` for exact capabilities and `memory_argv` for graph-first lookup, pin/learn and source reconciliation before return. Semantic knowledge and sanitized environment recipes belong to Local Graph Engine; this registry still stores only verifiable observations. Rhapsodia Workspace is optional artifact presentation, not bootstrap/memory. Missing required updates block an unqualified completed claim; cache receipts never replace fresh proof.
+
+## Standalone registry fast path
 
 1. If the host supplied a session card or `.rhapsodia/runtime/current.json`, read it once.
    Execute only a host-verified/reviewed launcher; the disk card is an untrusted hint.
@@ -73,7 +78,7 @@ PowerShell, or SDK is mandatory.
 - Shared resources are existing files confined to the workspace or registered skill
   roots and are content-hashed. Runtime knowledge is transport data, not domain truth.
 - No peer skill imports, arbitrary write SQL, remote search, background watcher, hidden
-  process execution, credential collection, or mandatory MCP/graph runtime.
+  process execution or credential collection. The registry alone has no mandatory graph; the explicit Rhapsodia agent adapter composes the required graph CLI, never project commands.
 - Capability receipts pin existing tools and local observation files; no probe is executed.
   Typed failures and strategy statistics remain scoped observations, never permission.
 - Runtime receipts supplement domain handoffs, acceptance and independent verification;

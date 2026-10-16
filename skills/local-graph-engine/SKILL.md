@@ -1,6 +1,6 @@
 ---
 name: local-graph-engine
-description: Model, organize, ingest, query and analyze local data from any domain as an evidence-backed SQLite graph. Use for messy datasets, CSV/JSON/XML/SQLite, documents, code, relationships, source history, budgeted agent context, graph federation, local SQL/MCP access or GraphView exports. Do not assume software data, invent relationships, or render the graph UI; use a graph viewer for presentation.
+description: Model, organize, ingest, query and analyze local data from any domain as an evidence-backed SQLite graph. Use for messy datasets, CSV/JSON/XML/SQLite, documents, code, relationships, source history, budgeted agent context, graph federation, local SQL/MCP access, GraphView exports, persistent workspace knowledge, graph-first source retrieval and recurring environment troubleshooting. Do not assume software data, invent relationships, or render the graph UI; use a graph viewer for presentation.
 ---
 # Local Graph Engine
 
@@ -15,6 +15,11 @@ Let the supplied data, evidence and user's questions determine entities, relatio
 | Query/analyze | Typed queries, byte-budgeted context/reuse, bounded SQL, paths, impact, quality and aggregates. |
 | Manage | Revision history, backup/restore, namespace federation, saved queries and outcome memory. |
 | Access/export | Portable GraphView, GraphML/DOT/Mermaid/CSV/wiki; optional local HTTP or read-only stdio MCP. |
+
+## Workspace-memory mode
+For Rhapsodia agents, workspace memory is mandatory unless the user explicitly opts out; this does not force unrelated standalone datasets into a graph. Run `<PYTHON> -I -S -B scripts/workspace_memory.py --workspace <ROOT> start` to create/reuse the private `.rhapsodia/graph/workspace.sqlite3`. Missing capability/permission or corrupt/foreign state -> `blocked`, not fabricated persistence.
+Use `lookup` before new repository keyword searches or repeated troubleshooting, then exact fresh source reads. On misses/insufficient evidence, inspect bounded source scope, `pin` and `learn` reusable findings before return. Use `reconcile` after changes; invalidate stale knowledge, prune only confirmed complete-scope single-source absences, and preserve revision history. No broad automatic indexing or background watcher.
+Records require source hashes or explicitly agent-reported recipe evidence, applicability and honest status; failed/hypothetical/auth-required notes are not verified fixes. Store variable names, never values, credentials or raw logs; recipes never execute automatically. Mutex + atomic GraphPatch publication and expected revisions protect concurrent updates. Runtime discovery remains with the runtime owner; Workspace artifact views remain separate. [Commands and boundaries](references/workspace-memory.md), [schema](contracts/workspace-knowledge-v1.schema.json), [documented example](examples/workspace-remedy.json).
 
 ## Workflow
 1. Resolve readable sources, writable output, an available Python 3.10+ launcher and this package path. Run `<PYTHON> scripts/graph.py doctor`. Never install dependencies, start servers or download models implicitly.

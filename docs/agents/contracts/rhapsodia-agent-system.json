@@ -21,7 +21,9 @@
       "Mago-owned planning artifact changes through the Mago worker",
       "Magia-owned repository changes and validation through the Magia worker",
       "local package-owned validators and bounded repository verification commands",
-      "verification-only test/fixture changes and bounded executable proof through Rhapsodia Verifier inside an authorized Magia checkpoint/claim scope"
+      "verification-only test/fixture changes and bounded executable proof through Rhapsodia Verifier inside an authorized Magia checkpoint/claim scope",
+      "Every profile: reviewed local-memory helper operations inside .rhapsodia/runtime and .rhapsodia/graph, subject to host/user permissions; never domain authority",
+      "Rhapsodia Adhoc: direct authorized work with inline skill routing and no subagent orchestration"
     ],
     "must_not_execute": [
       "cross-owner artifact mutation",
@@ -31,7 +33,7 @@
       "self-modification of ownership, approval policy, validators, or acceptance criteria during an active run",
       "third-party orchestration runtime installation as a prerequisite for normal operation",
       "concurrent or fan-out invocation of write-capable Nomia, Mago, or Magia canonical workers",
-      "analyst work units that mutate files, execute commands, complete canonical phases, or emit ecosystem handoff v3",
+      "analyst work units that mutate domain files, execute project commands, complete canonical phases, or emit ecosystem handoff v3",
       "production repair through Rhapsodia Verifier",
       "checkpoint promotion when any required gate is failed, blocked, invalid, inconclusive, not-run, missing, stale, or bound to another candidate"
     ],
@@ -213,6 +215,32 @@
       ],
       "approval": "policy",
       "idempotency": "required"
+    },
+    {
+      "id": "local-memory-maintenance",
+      "required": true,
+      "effect": "local-write",
+      "scope": [
+        ".rhapsodia/runtime",
+        ".rhapsodia/graph"
+      ],
+      "approval": "policy",
+      "idempotency": "required",
+      "user_opt_out": [
+        "harness",
+        "graph"
+      ],
+      "execution": "reviewed bootstrap/runtime/workspace-memory helper CLIs only; no project commands or external actions"
+    },
+    {
+      "id": "adhoc-scoped-work",
+      "required": false,
+      "effect": "local-write",
+      "scope": [
+        "explicit user-authorized direct task and selected skill boundary"
+      ],
+      "approval": "policy",
+      "idempotency": "reconcile-before-retry"
     }
   ],
   "state": {
@@ -299,7 +327,8 @@
         "specialist-delegation",
         "adaptive-workflow-planning",
         "dynamic-workflow-compilation",
-        "checkpoint-convergence"
+        "checkpoint-convergence",
+        "local-memory-maintenance"
       ]
     },
     {
@@ -311,7 +340,8 @@
       "capabilities": [
         "repository-read",
         "supporting-capability-resolution",
-        "read-only-analysis"
+        "read-only-analysis",
+        "local-memory-maintenance"
       ]
     },
     {
@@ -325,7 +355,8 @@
         "repository-read",
         "supporting-capability-resolution",
         "executable-verification",
-        "bounded-process-execution"
+        "bounded-process-execution",
+        "local-memory-maintenance"
       ]
     },
     {
@@ -340,7 +371,8 @@
         "repository-read",
         "supporting-capability-resolution",
         "governance-write",
-        "bounded-process-execution"
+        "bounded-process-execution",
+        "local-memory-maintenance"
       ]
     },
     {
@@ -355,7 +387,8 @@
         "repository-read",
         "supporting-capability-resolution",
         "planning-write",
-        "bounded-process-execution"
+        "bounded-process-execution",
+        "local-memory-maintenance"
       ]
     },
     {
@@ -370,7 +403,8 @@
         "repository-read",
         "supporting-capability-resolution",
         "repository-write",
-        "bounded-process-execution"
+        "bounded-process-execution",
+        "local-memory-maintenance"
       ]
     },
     {
@@ -383,7 +417,23 @@
         "repository-read",
         "supporting-capability-resolution",
         "derived-output-write",
-        "bounded-process-execution"
+        "bounded-process-execution",
+        "local-memory-maintenance"
+      ]
+    },
+    {
+      "id": "rhapsodia-adhoc",
+      "owns": [
+        "direct-user-outcome",
+        "inline-skill-routing",
+        "scoped-direct-execution"
+      ],
+      "capabilities": [
+        "repository-read",
+        "supporting-capability-resolution",
+        "adhoc-scoped-work",
+        "bounded-process-execution",
+        "local-memory-maintenance"
       ]
     }
   ],
@@ -462,6 +512,13 @@
         "oracle_frozen_before_candidate": true,
         "gate_order_binding": true
       }
+    },
+    "direct_adhoc": {
+      "agent": "rhapsodia-adhoc",
+      "user_invocable": true,
+      "subagent_delegation": false,
+      "skill_execution": "inline",
+      "governed_transition_bypass": false
     }
   },
   "hosts": [
@@ -477,10 +534,13 @@
         "supporting-capability-resolution": "semantic capability -> host-native Agent Skill discovery; no fixed catalog",
         "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden",
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
-        "portable semantic support does not itself prove any host-specific discovery format or runtime behavior"
+        "portable semantic support does not itself prove any host-specific discovery format or runtime behavior",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     },
     {
@@ -494,20 +554,23 @@
         "repository-write": "edit tool in Magia worker",
         "bounded-process-execution": "execute tool under worker authority",
         "external-side-effect": "host/user approval plus explicit external authority",
-        "read-only-analysis": "Rhapsodia Analyst custom agent with explicit read + search tools only",
+        "read-only-analysis": "Rhapsodia Analyst custom agent with explicit read/search plus maintenance-only execute",
         "adaptive-workflow-planning": "optional Agent Skill guidance supporting workflow-plan/v1 and gated workflow-plan/v2; supervisor gate remains valid without it",
         "executable-verification": "Rhapsodia Verifier custom agent with read/search/edit/execute; edit is restricted by prompt contract to verification-only scope",
         "supporting-capability-resolution": "host-native Agent Skills semantic discovery inside the active custom agent; no fixed catalog and no authority expansion",
         "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden",
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
         "runtime behavior still depends on the selected model and installed skills",
         "orchestration state is session-scoped unless canonical workflow artifacts provide resumable evidence",
         "parallel analyst dispatch depends on host subagent scheduling; serial fallback preserves semantics",
-        "the portable workflow-plan validator is not executed by the read-only supervisor profile unless supplied by another validated workflow",
-        "perceptual gates require a separate image-capable/human review capability; they are blocked/not-run when the host adapter cannot provide one"
+        "the portable workflow-plan validator is not executed by the maintenance-only supervisor profile unless supplied by another validated workflow",
+        "perceptual gates require a separate image-capable/human review capability; they are blocked/not-run when the host adapter cannot provide one",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     },
     {
@@ -520,18 +583,21 @@
         "planning-write": "edit alias",
         "repository-write": "edit alias",
         "bounded-process-execution": "execute alias",
-        "read-only-analysis": "custom subagent with explicit read/search tool scope where supported",
+        "read-only-analysis": "custom subagent with domain-read-only scope plus maintenance-only execute where supported",
         "adaptive-workflow-planning": "optional skill/customization guidance; serial fallback when unavailable",
         "executable-verification": "custom subagent with bounded execute and verification-only edit authority where supported",
         "supporting-capability-resolution": "host-native Agent Skills/customization discovery where available; no fixed catalog and no authority expansion",
         "derived-output-write": "Rhapsodia Workspace: derived-only edit/execute within .rhapsodia/catalog and .rhapsodia/views; canonical source writes forbidden",
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
         "the VS Code-specific agents allowlist is an adapter optimization and may be ignored by other Copilot surfaces",
         "this package is validated primarily for VS Code custom-agent discovery",
-        "parallel subagent behavior varies by Copilot surface; serial fallback is required when unavailable"
+        "parallel subagent behavior varies by Copilot surface; serial fallback is required when unavailable",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     },
     {
@@ -539,10 +605,13 @@
       "status": "adapter-required",
       "capability_mapping": {
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
-        "portable semantics are reusable but no Cursor-specific adapter is included"
+        "portable semantics are reusable but no Cursor-specific adapter is included",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     },
     {
@@ -550,10 +619,13 @@
       "status": "adapter-required",
       "capability_mapping": {
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
-        "portable semantics are reusable but no Claude-specific agent adapter is included"
+        "portable semantics are reusable but no Claude-specific agent adapter is included",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     },
     {
@@ -561,10 +633,13 @@
       "status": "adapter-required",
       "capability_mapping": {
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
-        "portable semantics are reusable but no Codex-specific agent adapter is included"
+        "portable semantics are reusable but no Codex-specific agent adapter is included",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     },
     {
@@ -572,10 +647,13 @@
       "status": "adapter-required",
       "capability_mapping": {
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
-        "the package does not claim runtime parity with VS Code without host-specific validation"
+        "the package does not claim runtime parity with VS Code without host-specific validation",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     },
     {
@@ -583,11 +661,14 @@
       "status": "adapter-required",
       "capability_mapping": {
         "dynamic-workflow-compilation": "dynamic-workflow-plan/v1 semantic contract with serial/direct degradation when topology adaptation is unnecessary",
-        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller"
+        "checkpoint-convergence": "convergence-plan/v1 semantic contract; Magia remains canonical producer and promotion authority stays with convergence controller",
+        "local-memory-maintenance": "approved execute capability limited by agent contract to reviewed private runtime/graph helpers; blocked when unavailable",
+        "adhoc-scoped-work": "native direct agent with inline skill selection; no custom-agent delegation"
       },
       "limitations": [
         "portable Agent Skills can carry the reusable capabilities; this package does not claim the VS Code .agent.md discovery format is native to ChatGPT/OpenAI surfaces",
-        "translate the portable agent-system contract to native host capabilities without changing authority or gate semantics"
+        "translate the portable agent-system contract to native host capabilities without changing authority or gate semantics",
+        "Prompt-level maintenance scope is not an OS sandbox or command allowlist; host permissions and explicit approval remain required. Native host/model adherence is not measured by structural validation."
       ]
     }
   ],
@@ -608,5 +689,33 @@
     ],
     "metadata_validation_is_runtime_proof": false,
     "legacy_profile": "explicit-legacy-board-maintenance-or-copy-migration"
+  },
+  "session_memory": {
+    "contract": "rhapsodia-required-session/v1",
+    "default": {
+      "harness": "required",
+      "graph": "required"
+    },
+    "opt_out": {
+      "authority": "explicit-current-user-request",
+      "independent": true,
+      "inherited_by_delegation": true,
+      "persisted_global_disable": false
+    },
+    "entrypoint": "runtime-harness/scripts/agent_session.py",
+    "missing_state": "initialize-before-domain-work",
+    "missing_permission_or_capability": "blocked",
+    "corrupt_state": "preserve-and-block",
+    "lookup": "graph-first-then-exact-source-or-bounded-miss",
+    "learning": "source-pinned-reusable-knowledge-before-return",
+    "reconciliation": "changed-sources-stale; confirmed-complete-scope-only-prune; preserve-history",
+    "secrets": "no-credentials-no-environment-values-no-raw-logs",
+    "receipt": "session_memory",
+    "memory_never_replaces": [
+      "domain-handoffs",
+      "acceptance",
+      "independent-proof",
+      "host-permissions"
+    ]
   }
 }

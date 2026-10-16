@@ -12,6 +12,15 @@ The repository wrapper is `scripts/runtime.py`; a standalone skill uses its own
 reviewed optional launcher. The harness cannot discover the interpreter required to run
 itself without any execution capability.
 
+## Required Rhapsodia profiles versus standalone registry
+
+For all Rhapsodia profiles, use `scripts/agent_session.py` and its required harness/graph
+gates, explicit independent user opt-outs and private-maintenance scope. The standalone
+`runtime.py session-start` remains registry-only for existing consumers. Do not mistake
+a registry-only receipt for completion of the required Rhapsodia agent gate.
+The adapter uses Python/SQLite and no project shell commands; it does not install hooks.
+Native host execution/permission must exist; structural support is not measured adherence.
+
 ## Managed instruction adapters
 
 `configure --host ...` writes a short managed block while preserving unrelated content:
@@ -23,7 +32,7 @@ itself without any execution capability.
 | Claude | `CLAUDE.md` |
 | Cursor | `.cursor/rules/rhapsodia-runtime.mdc` |
 
-The block tells agents to:
+The block requires the Rhapsodia paired session gate first, then tells agents to:
 
 1. reuse existing exact observations first;
 2. keep `resolve/context` read-only;

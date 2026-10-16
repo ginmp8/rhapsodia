@@ -1,0 +1,439 @@
+{
+  "schema": "rhapsodia-release-validation/v1",
+  "release": "0.11.0",
+  "baseline_release": "0.10.0",
+  "date": "2026-10-16",
+  "evidence_kind": "executed-local-cli-and-structural",
+  "source_manifest_sha256": "f0a8639fd21858daa66e641ae43b8822946b1a2da9e928f46392f1a396cb5d54",
+  "environment": {
+    "os": "Linux",
+    "machine": "x86_64",
+    "python": "3.13.5",
+    "sqlite": "3.46.1"
+  },
+  "test_totals": {
+    "run": 480,
+    "passed": 479,
+    "skipped": 1,
+    "failed": 0
+  },
+  "test_groups": [
+    {
+      "scope": "root-test_artifact_native_e2e",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_artifact_native_e2e.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 1,
+      "passed": 1,
+      "skipped": 0,
+      "output_sha256": "4acca0a9f4a65ccfab40eab689f143ff47b1f97f59a1adbfe37057af256e74a1"
+    },
+    {
+      "scope": "root-test_install_agents",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_install_agents.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 7,
+      "passed": 7,
+      "skipped": 0,
+      "output_sha256": "da752798466f7f8c1d08f7a92fb475fc8d8b3ce64c1c1fe931978b437be3d554"
+    },
+    {
+      "scope": "root-test_marketplace_manifests",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_marketplace_manifests.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 10,
+      "passed": 10,
+      "skipped": 0,
+      "output_sha256": "818fda4abb6fc1bf27c8fe199474303cabdb52e20e46e44f4b381dd48272eb26"
+    },
+    {
+      "scope": "root-test_native_artifacts",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_native_artifacts.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 13,
+      "passed": 13,
+      "skipped": 0,
+      "output_sha256": "e406290b7aad3a22af77c3b573f62cab38ee66a0c3eb9b97da7e46b091ab0ec7"
+    },
+    {
+      "scope": "root-test_native_execution",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_native_execution.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 15,
+      "passed": 15,
+      "skipped": 0,
+      "output_sha256": "c1cbf7106013da9c6360927f46db22fea66fa77835678ee02f45c1cd8515b604"
+    },
+    {
+      "scope": "root-test_native_migration",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_native_migration.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 14,
+      "passed": 14,
+      "skipped": 0,
+      "output_sha256": "36f70944e1acd94e25abb5cf46be454bf8e4c099a4229d6e9ee70079f7976183"
+    },
+    {
+      "scope": "root-test_release_versions",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_release_versions.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 9,
+      "passed": 9,
+      "skipped": 0,
+      "output_sha256": "390c9c2099f58915e8ad51fc6b5d3dcdb42268e405a36a597a376e930457900e"
+    },
+    {
+      "scope": "root-test_runtime_integration",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_runtime_integration.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 11,
+      "passed": 11,
+      "skipped": 0,
+      "output_sha256": "0062de4467b41b035f9d9bd4e1f439f53108ceee4599afb2921aec43d05419cd"
+    },
+    {
+      "scope": "root-test_validate_agents",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_validate_agents.py",
+        "-q"
+      ],
+      "result": "pass",
+      "tests_run": 22,
+      "passed": 22,
+      "skipped": 0,
+      "output_sha256": "e2bdba53cd58f697bd66afda2efa97827f44e861240e7e2573e220168fdd5822"
+    },
+    {
+      "scope": "root-test_workspace_agent_contract",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_workspace_agent_contract.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 5,
+      "passed": 5,
+      "skipped": 0,
+      "output_sha256": "303fbfe6b39eb831ff4c8a0ac4d2040a934eaa625ec7296c7daf14d6ce3caf8f"
+    },
+    {
+      "scope": "runtime-harness",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/runtime-harness/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 110,
+      "passed": 109,
+      "skipped": 1,
+      "output_sha256": "9721a6134952a91fa38fe71b50a9e809ea6d30ebb46947fbfc5a9274e232db2c"
+    },
+    {
+      "scope": "local-graph-engine",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/local-graph-engine/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 103,
+      "passed": 103,
+      "skipped": 0,
+      "output_sha256": "121761bb4779c7dd11b8c1dd5b85b22f66d9b8529eaaf5c80d2ed875d08fba63"
+    },
+    {
+      "scope": "rhapsodia-workspace",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/rhapsodia-workspace/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 69,
+      "passed": 69,
+      "skipped": 0,
+      "output_sha256": "64959f3860aeae3f6e8e00fba22d71c1ff3a6da40273332f6c83e69237aee7b0"
+    },
+    {
+      "scope": "operational-context",
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/operational-context/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "result": "pass",
+      "tests_run": 49,
+      "passed": 49,
+      "skipped": 0,
+      "output_sha256": "21527c748b6b8132e630a1c4e1af616373f85a06ae3d4f69bed2b0a94cd4c3d7"
+    },
+    {
+      "scope": "required-sessions-and-mutation-guards",
+      "command": [
+        "python",
+        "-I",
+        "-S",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_required_session*.py",
+        "-q"
+      ],
+      "result": "pass",
+      "tests_run": 42,
+      "passed": 42,
+      "skipped": 0,
+      "output_sha256": "08acafe467bf0bd4b17bffd9d9e26ca0b1576dd5266669500224c49f8eaa037f"
+    }
+  ],
+  "structural_checks": [
+    {
+      "command": [
+        "python",
+        "-B",
+        "scripts/validate_agents.py",
+        "--target",
+        "."
+      ],
+      "status": "pass",
+      "output_sha256": "8ff4c0fbd6d9153ae52de332bf143b45a2162660040d1f4239a915987635464b"
+    },
+    {
+      "command": [
+        "python",
+        "-I",
+        "-S",
+        "-B",
+        "skills/operational-context/scripts/validate_package.py"
+      ],
+      "status": "pass",
+      "output_sha256": "23c8f59d30bdfa01addaf862e0c111372399121598fdaccca9b1cb66a3b65cfe"
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "skills/rhapsodia-workspace/scripts/validate_skill_package.py",
+        "--target",
+        "skills/rhapsodia-workspace"
+      ],
+      "status": "pass",
+      "output_sha256": "fedd9fdeb75f7cb02a9b32352b1a4a45435d96ac455edbfbd44193385da7a2f2"
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "skills/rhapsodia-workspace/scripts/validate_native_contracts.py"
+      ],
+      "status": "pass",
+      "output_sha256": "e553dbef86574d7a63f49be41f88a18ef1f0b6a44257a1c02e4cbf384a025c24"
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "scripts/prepare_release.py",
+        "--check"
+      ],
+      "status": "pass"
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "scripts/validate_release_source_manifest.py",
+        "--version",
+        "0.11.0",
+        "--check"
+      ],
+      "status": "pass"
+    },
+    {
+      "check": "workspace-knowledge-v1 schema, example and normalization",
+      "status": "pass"
+    }
+  ],
+  "skips": [
+    {
+      "test": "runtime-harness.tests.test_delivery.DeliveryTests.test_powershell_bootstrap",
+      "reason": "PowerShell unavailable on this host"
+    }
+  ],
+  "agent_lines": {
+    "magia.agent.md": 100,
+    "mago.agent.md": 96,
+    "nomia.agent.md": 94,
+    "rhapsodia-adhoc.agent.md": 44,
+    "rhapsodia-analyst.agent.md": 100,
+    "rhapsodia-supervisor.agent.md": 96,
+    "rhapsodia-verifier.agent.md": 100,
+    "rhapsodia-workspace.agent.md": 65
+  },
+  "new_regressions": [
+    "independent opt-outs",
+    "cold/warm real state",
+    "warm start without skill directory enumeration",
+    "source hash and revision conflicts",
+    "expired/environment-stale recipe renewal",
+    "conservative prune/history",
+    "cross-workspace and link isolation",
+    "bounded output",
+    "serialized concurrent learning",
+    "narrow reconciliation with 1031 knowledge records",
+    "missing helper installation guard",
+    "agent scope/activation mutation guards"
+  ],
+  "preservation": {
+    "original_files_removed": [],
+    "domain_owner_implementations_modified": false,
+    "historical_release_evidence_rewritten": false
+  },
+  "limits": [
+    "No native editor/model session executed; prompt adherence is not proven.",
+    "No Windows/macOS runtime or PowerShell/SSO authentication execution in this environment.",
+    "No measured model tokens, model reliability, or end-to-end performance comparison.",
+    "No claim that all unrelated skill suites in the catalog were executed.",
+    "Secret-pattern checks supplement producer sanitization; they do not prove anonymization.",
+    "Source-pinned graph records are retrieval evidence, not independent behavioral proof."
+  ],
+  "superseded_validation": [
+    "Initial aggregate invocation exceeded its execution bound; final suites ran individually with explicit successful completion.",
+    "Initial red/regression failures were corrected; final passing outputs above supersede them."
+  ]
+}

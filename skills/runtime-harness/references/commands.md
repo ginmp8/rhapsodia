@@ -1,5 +1,22 @@
 # Commands and bounded behavior
 
+## At a Glance
+
+- **Purpose:** Explain the owned capability and supported operations.
+- **Load when:** Select setup, command, integration or recovery behavior for this capability.
+- **Decision impact:** Preserves source authority, explicit permissions, required session gates and honest validation limits.
+
+## Contents
+
+- Required Rhapsodia agent adapter
+- Bootstrap and status
+- Read-only lookup
+- Incremental tool discovery
+- Shared resource observations
+- Handoffs
+- Optional adapters
+- Limits and exit behavior
+
 All examples use an argv array equivalent to:
 
 ```text
@@ -8,6 +25,14 @@ All examples use an argv array equivalent to:
 
 The core requires Python 3.10+ and standard library only. Never concatenate untrusted
 values into a shell string.
+
+## Required Rhapsodia agent adapter
+
+The separate `scripts/agent_session.py --workspace <ROOT> --skills-root <APPROVED_SKILLS_ROOT>`
+creates/reuses both runtime and graph; it returns `runtime_argv` and `memory_argv`.
+Only explicit current-user requests allow `--no-harness` and/or `--no-graph` with
+`--opt-out-reason user-request`. A missing permission/helper blocks; no silent fallback.
+The registry-only commands below retain compatibility and do not alone satisfy this gate.
 
 ## Bootstrap and status
 

@@ -1,11 +1,14 @@
 ---
 name: rhapsodia-workspace
-description: use when asked to discover, validate, catalog, correlate, or visualize source-owned skill artifacts that publish adjacent .artifact.json sidecars in a local repository, including portfolio, update timeline, relationship, and per-skill views. produces rebuildable derived projections and an offline html workspace. do not use for generic repository/code visualization, agent execution monitoring, creating or moving canonical domain files, changing status or priorities, migrating legacy boards, running product tests, or orchestrating governance, planning, or implementation.
+description: use when asked to discover, validate, catalog, correlate, or visualize source-owned skill artifacts that publish adjacent .artifact.json sidecars in a local repository, including portfolio, update timeline, relationship, and per-skill views. produces rebuildable derived projections and an offline html workspace. do not use for session bootstrap, environment/tool discovery, persistent development memory, generic repository/code visualization, agent execution monitoring, creating or moving canonical domain files, changing status or priorities, migrating legacy boards, running product tests, or orchestrating governance, planning, or implementation.
 ---
 
 # Rhapsodia Workspace
 
 Observe independently owned artifacts without becoming their owner. Canonical truth is the producer-owned source file plus its adjacent `<source>.artifact.json` sidecar. Catalogs and HTML views are derived, disposable, reconstructible snapshots; deleting or rebuilding them must never change domain state.
+
+## Distinguish the three workspace-related capabilities
+Runtime Harness initializes environment/tool/resource observations for every Rhapsodia agent. Local Graph Engine initializes persistent source/diagnostic knowledge and owns graph-first lookup, learning and reconciliation. This skill initializes neither: use it only to catalog or present producer-owned artifact sidecars. Its optional status never disables the agents' required harness/graph gates. The Workspace agent performs its own mandatory private maintenance separately from derived catalog/view writes.
 
 ## Selection, authority, and evidence
 

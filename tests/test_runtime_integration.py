@@ -1,4 +1,4 @@
-"""Release-level contract for optional runtime integration and clean packages."""
+"""Release-level contract for mandatory agent runtime integration and clean packages."""
 from __future__ import annotations
 import contextlib
 import importlib.util
@@ -20,24 +20,24 @@ def load(name):
     return module
 
 class RuntimeIntegrationTests(unittest.TestCase):
-    def test_new_skill_is_complete_and_catalog_has_53_skills(self):
+    def test_runtime_skill_is_complete_and_catalog_has_56_skills(self):
         skills = sorted(ROOT.glob('skills/*/SKILL.md'))
-        self.assertEqual(len(skills), 53)
+        self.assertEqual(len(skills), 56)
         self.assertTrue((ROOT / 'skills/operational-context/SKILL.md').is_file())
         for rel in ('SKILL.md', 'README.md', 'VERSION', 'agents/openai.yaml', 'contracts/runtime-query-v1.schema.json', 'contracts/runtime-handoff-v1.schema.json', 'scripts/runtime.py'):
             self.assertTrue((ROOT / 'skills/runtime-harness' / rel).is_file(), rel)
 
-    def test_all_seven_agents_have_optional_runtime_guidance(self):
+    def test_all_eight_agents_have_required_runtime_guidance(self):
         agents = list(ROOT.glob('agents/*.agent.md'))
-        self.assertEqual(len(agents), 7)
+        self.assertEqual(len(agents), 8)
         for agent in agents:
             content = agent.read_text(encoding='utf-8')
-            self.assertIn('## Optional runtime context', content, agent.name)
+            self.assertIn('## Mandatory session and memory', content, agent.name)
             self.assertIn('never replace domain handoffs', content, agent.name)
         for name in ('rhapsodia-supervisor', 'rhapsodia-analyst'):
             front = (ROOT / 'agents' / (name + '.agent.md')).read_text().split('---')[1]
-            self.assertNotIn('execute', front)
-            self.assertNotIn('edit', front)
+            self.assertIn('execute', front)
+            self.assertNotIn('\"edit\"', next(line for line in front.splitlines() if line.startswith('tools:')))
 
     def test_repo_entrypoint_initializes_explicit_workspace(self):
         with tempfile.TemporaryDirectory() as td:
@@ -115,13 +115,14 @@ class RuntimeIntegrationTests(unittest.TestCase):
             self.assertFalse((output / 'skills/example/.rhapsodia').exists())
             self.assertFalse((output / 'skills/example/__pycache__').exists())
 
-    def test_installer_reports_actual_count_without_runtime_prerequisite(self):
+    def test_installer_reports_actual_count_with_required_runtime_and_graph(self):
         installer = load('install_agents')
-        self.assertNotIn('runtime-harness', installer.REQUIRED_SKILLS)
+        self.assertIn('runtime-harness', installer.REQUIRED_SKILLS)
+        self.assertIn('local-graph-engine', installer.REQUIRED_SKILLS)
         stream = io.StringIO()
         with patch.object(sys, 'argv', ['installer', '--target', str(ROOT), '--check']), patch.object(installer, 'check_installation', return_value=[]), contextlib.redirect_stdout(stream):
             self.assertEqual(installer.main(), 0)
-        self.assertIn('7 agent profiles', stream.getvalue())
+        self.assertIn('8 agent profiles', stream.getvalue())
 
     def test_multiplatform_ci_is_present_not_assumed_executed(self):
         text = (ROOT / '.github/workflows/runtime-portability.yml').read_text()
