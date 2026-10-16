@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "25d32497b8232be9a9a69990fccec4cc6bb7504ee104c6b2e697dacb90e8150b",
+  "sha256": "580f0d0a4563049aa4d3bd47a6610c8b05c329be6c74d5ad0d1ac415491dd3d8",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -70,7 +70,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "ee8a10811993524a78b92cb17e46c5d0a4532357aa9ef3478dc87acbea07bb9f"
+      "sha256": "f9862098b6fd978594bd83442940ca854778552f2c43cbbc9d5f0a88cb492c84"
     },
     {
       "path": "agents/magia.agent.md",
@@ -110,7 +110,7 @@
     },
     {
       "path": "docs/VERSIONING.md",
-      "sha256": "a8c2a11683b24fa600aa1a0ea71247f75f497db18f8eebc0856a4ef52d2c1ff8"
+      "sha256": "13669347492c353a1a11b2412f3bcee03039c07450cd9091afdae6e38ef40bbc"
     },
     {
       "path": "docs/agents/ARCHITECTURE.md",
@@ -5610,23 +5610,23 @@
     },
     {
       "path": "skills/reverse-engineering/CHANGELOG.md",
-      "sha256": "3ceb5b3cfb64a2881ee77ded6a870f2e3b35df639e0970a7db43de15ee626191"
+      "sha256": "e6334d9ced258904e4b98b8feb3afdb2f52910b571ab9e9d94872642ca981369"
     },
     {
       "path": "skills/reverse-engineering/README.md",
-      "sha256": "a6667b48888da07eb78c34ac65e47d83b34571ecc37fdda145807be66d1789b5"
+      "sha256": "07dd937be20c9c5b57d2410856b7aa65daa5dc51b5f1a710a4e6820dffc990f0"
     },
     {
       "path": "skills/reverse-engineering/SKILL.md",
-      "sha256": "b5aad03a99d01fa93b7bdf14afecb3d496b9309058ea0d1836805be9f815ecf9"
+      "sha256": "2cb33b96f9d17fe78f89dc1e4905a9bed0813236023a5b534b6b668251866497"
     },
     {
       "path": "skills/reverse-engineering/VERSION",
-      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
+      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
     },
     {
       "path": "skills/reverse-engineering/agents/openai.yaml",
-      "sha256": "6c6bd9f03276262cbfa3ca9263a0ba2255148f1549fc6859101dfbd492cce8bc"
+      "sha256": "82e35c7b4f8020150784bd4345e914854f7747d0f4c9be929466339a8c75d07e"
     },
     {
       "path": "skills/reverse-engineering/assets/icon.svg",
@@ -5657,6 +5657,22 @@
       "sha256": "ca2150d090b4ce7a0c58b417986430b0591724671ca50d3e66f4e6b0f48f8766"
     },
     {
+      "path": "skills/reverse-engineering/examples/web-actions.json",
+      "sha256": "44dc878f94b91f8e95ad3576ed658b6b4aba36859c27c588fcca851d5558b2dd"
+    },
+    {
+      "path": "skills/reverse-engineering/examples/web-fixture/index.html",
+      "sha256": "97115687e68df9f86f752ca0336386af210e7d50ef38cfe1114a42da046b213c"
+    },
+    {
+      "path": "skills/reverse-engineering/examples/web-fixture/next.html",
+      "sha256": "0a5c7f26623f1102af960db659bb2d38a6c956a9e0b844f14ab97ec16712c882"
+    },
+    {
+      "path": "skills/reverse-engineering/examples/web-policy.json",
+      "sha256": "ae118089b93454f990c04ef59f415f5b91ac0655dc38daf79b8f0cedda5a21be"
+    },
+    {
       "path": "skills/reverse-engineering/references/advanced-analysis.md",
       "sha256": "1c98d9bef7ae7588f019d87dc64ecc1118531519e871311ce71c13c3050303e8"
     },
@@ -5666,11 +5682,15 @@
     },
     {
       "path": "skills/reverse-engineering/references/capability-matrix.md",
-      "sha256": "3f45617af3e7c392dbdbcf741339b286ebab2603626954c7f78a4d2a5c5df9b5"
+      "sha256": "f334e8fc6a3fa320e79f6de646e7f1b42ba86027ec14b1926cc245735cf0c0df"
     },
     {
       "path": "skills/reverse-engineering/references/discover.md",
       "sha256": "0f8d6ff644d769b9c4b23c99e9d3ee3276461e7ea3621be505d02f5c6aae1a88"
+    },
+    {
+      "path": "skills/reverse-engineering/references/dynamic-investigation.md",
+      "sha256": "df05cf94987a4a18ffe17dbd2d451a11053484f42ae594fa31a8dd6a2f7e1e7e"
     },
     {
       "path": "skills/reverse-engineering/references/graph-and-provenance.md",
@@ -5694,7 +5714,7 @@
     },
     {
       "path": "skills/reverse-engineering/references/runtime-evidence.md",
-      "sha256": "9452405e89359faa4a2685d854e42ca4262ef2c55929a10aff11fcd692c27f8a"
+      "sha256": "7f5f63906cd72b78ff35a4e8d29a96a25f20927b239964346df52bb0ff9cbb90"
     },
     {
       "path": "skills/reverse-engineering/references/trust-and-provenance.md",
@@ -5702,7 +5722,11 @@
     },
     {
       "path": "skills/reverse-engineering/references/verify.md",
-      "sha256": "1c6b73120e819ea5b58b37524bb256942d18a43fb0f56e65962c6876dc1db169"
+      "sha256": "3c5370a6ea7db1dcff5b04f4a605ef81363abe30bbcb569a6f254404b6b5a88e"
+    },
+    {
+      "path": "skills/reverse-engineering/references/web-audits.md",
+      "sha256": "f340f99394924cb3747975b7d9b568b374936a5de3b5e2e46ae69df9631475b2"
     },
     {
       "path": "skills/reverse-engineering/scripts/app_manifests.py",
@@ -5729,8 +5753,8 @@
       "sha256": "f97fc145e419cd7de3c26ab959e2741c62f5c8e3694dff9ecac82cbaeaf380a1"
     },
     {
-      "path": "skills/reverse-engineering/scripts/browser_capture.py",
-      "sha256": "ececd24ebc59bb8f7500432a6243714870f0142f3eae1460c934738d5600e4b0"
+      "path": "skills/reverse-engineering/scripts/correlate_web_evidence.py",
+      "sha256": "ee042b9b846c41f076aa2e8eee237a9cc81f9caaa7d29ef7761a0a1cc20afce2"
     },
     {
       "path": "skills/reverse-engineering/scripts/dex_analysis.py",
@@ -5746,7 +5770,7 @@
     },
     {
       "path": "skills/reverse-engineering/scripts/evidence_ir.py",
-      "sha256": "fbdb94f9429db258d802dd97eb70328c223be1ba16c5485c840ac4efb89eda6a"
+      "sha256": "ff753d670878ddcb7d91b889764c2837af877301ab67bf8ad3961060d09ad091"
     },
     {
       "path": "skills/reverse-engineering/scripts/evm_analysis.py",
@@ -5809,6 +5833,10 @@
       "sha256": "64f645bdbfd7e85f3a3d9ca0d049cde4c17ebe9421e25fd90f92db34ce146d3b"
     },
     {
+      "path": "skills/reverse-engineering/scripts/source_marker_scan.py",
+      "sha256": "6bd1efa6c7a4115c2a6a87a906fd09feaaae3f08286e48582ed8e6fade67e00e"
+    },
+    {
       "path": "skills/reverse-engineering/scripts/state_inference.py",
       "sha256": "c160e8b5f36f13a6a5a7ae7ca923022d5f91d2cedb36dcdbff5a88eadcd23cad"
     },
@@ -5823,6 +5851,14 @@
     {
       "path": "skills/reverse-engineering/scripts/web_analysis.py",
       "sha256": "49facc332e023b20d89608ae56df80335db9d863c3a30be665eecfe5c9c92292"
+    },
+    {
+      "path": "skills/reverse-engineering/scripts/web_audit.py",
+      "sha256": "b34b8a16cbbf82bc5858748d16ee56efa6bc3248b508f8a4d402dc40824a7067"
+    },
+    {
+      "path": "skills/reverse-engineering/scripts/web_investigator.py",
+      "sha256": "dc15b2b660c1269a27a40b652d5f0a0bf7fe389c8eec0feab9b2634f1d5461f3"
     },
     {
       "path": "skills/reverse-engineering/scripts/workbench.py",
@@ -5846,11 +5882,11 @@
     },
     {
       "path": "skills/reverse-engineering/tests/test_complete_features.py",
-      "sha256": "981a007ca24ce5c6390076ed561dd3b41ba8667d5cf99772c6eda4ea8b5e1675"
+      "sha256": "d044ec552401bc22d7a2936c4db0d9ba6bfb25a598eed19d93039f8e639715be"
     },
     {
       "path": "skills/reverse-engineering/tests/test_extended_acceptance.py",
-      "sha256": "f8f7da9ceefeba64dc2c2b9a0e9e079d86d02e1bfd419ec1f9b8bfcfb3b34d90"
+      "sha256": "2398fcf6b1077517c9f96f44eb7d5804dcaa588a03588807092ac91b35a5dc92"
     },
     {
       "path": "skills/reverse-engineering/tests/test_format_probes.py",
@@ -5879,6 +5915,10 @@
     {
       "path": "skills/reverse-engineering/tests/test_web_and_dex.py",
       "sha256": "59a3889e14c610c24490444a7c5b26f9f2a4a5a0d92e671cbcdc74a9981da900"
+    },
+    {
+      "path": "skills/reverse-engineering/tests/test_web_investigation.py",
+      "sha256": "a5c89ba86e545d3575e9177012ab94f9b2aa6a6d6a6cdfc35d992e4f070c6f1b"
     },
     {
       "path": "skills/reverse-engineering/tests/test_workbench.py",
