@@ -85,7 +85,7 @@ class WorkspaceMemory:
     def patch_for(self, props):
         key = props['key']
         uri = self.prefix + key
-        kind = 'WorkspaceReference' if props['kind'] == 'reference' else 'EnvironmentRecipe'
+        kind = {'reference': 'WorkspaceReference', 'remedy': 'EnvironmentRecipe', 'lesson': 'ExecutionLesson'}[props['kind']]
         nodes = [{'id': uri, 'kind': kind, 'label': props['title'], 'properties': props,
                   'evidence': self.evidence('agent-observation:' + key)}]
         edges = []
@@ -96,10 +96,12 @@ class WorkspaceMemory:
             edges.append({'source': uri, 'target': sid, 'relation': 'supported-by', 'directed': True, 'evidence': ev})
         return {'schema_version': 'graph-patch-v1', 'source': {'uri': uri, 'kind': 'workspace-knowledge', 'content_hash': digest(props)}, 'nodes': nodes, 'edges': edges}
 
-    def rows(self, query=None, key=None, paths=None, limit=1025):
+    def rows(self, query=None, key=None, paths=None, limit=1025, kind=None):
         self.check()
-        sql = "SELECT n.properties_json, r.revision FROM nodes n JOIN sources s ON s.uri=n.id JOIN current_revisions r ON r.source_id=s.id WHERE n.id LIKE ? AND n.kind IN ('WorkspaceReference','EnvironmentRecipe')"
+        sql = "SELECT n.properties_json, r.revision FROM nodes n JOIN sources s ON s.uri=n.id JOIN current_revisions r ON r.source_id=s.id WHERE n.id LIKE ? AND n.kind IN ('WorkspaceReference','EnvironmentRecipe','ExecutionLesson')"
         args = [self.prefix + '%']
+        if kind == 'lesson':
+            sql += " AND n.kind='ExecutionLesson'"
         if key is not None:
             sql += ' AND n.id=?'
             args.append(self.prefix + key)
@@ -181,14 +183,69 @@ class WorkspaceMemory:
             reasons, _ = self.freshness(props)
             item = {k: v for k, v in props.items() if not k.startswith('_') and k != 'schema'}
             item.update(revision=revision, freshness='stale' if reasons else 'fresh', reasons=reasons,
-                        reusable=not reasons and (props['kind'] == 'reference' or props['evidence_status'] in {'observed-success', 'documented'}),
-                        requires_applicability_check=props['kind'] == 'remedy')
+                        reusable=not reasons and (props['kind'] == 'reference' or (props['kind'] == 'remedy' and props['evidence_status'] in {'observed-success', 'documented'})),
+                        requires_applicability_check=props['kind'] in {'remedy', 'lesson'})
             result['hits'].append(item)
             if len((canonical(result) + '\n').encode()) > budget:
                 result['hits'].pop()
                 result['truncated'] = True
                 break
         return result
+
+    def review_lessons(self):
+        """Return advisory, evidence-linked hypotheses; never mutate the graph or instructions."""
+        if not self.db.exists():
+            return {'status': 'not-initialized', 'candidates': [], 'conflicts': [], 'excluded': {},
+                    'notice': 'No workspace graph exists. A read-only review never initializes it.'}
+        rows = self.rows(kind='lesson', limit=513)
+        if len(rows) > 512:
+            raise MemoryFault('CONTEXT_LIMIT', 'More than 512 execution lessons require a narrower review contract; never silently omit evidence.')
+        grouped = {}
+        excluded = {'stale': 0, 'nonfailure': 0, 'duplicate': 0}
+        for props, revision in rows:
+            if self.freshness(props)[0]:
+                excluded['stale'] += 1
+                continue
+            if props['observed_outcome'] != 'observed-failure':
+                excluded['nonfailure'] += 1
+                continue
+            key = props['failure_signature']
+            grouped.setdefault(key, []).append((props, revision))
+        candidates, conflicts = [], []
+        for signature, records in sorted(grouped.items()):
+            episodes, source_sets = set(), set()
+            eligible = []
+            for props, revision in records:
+                # Different keys, repeated episode labels or identical source content
+                # do not establish independent observations.
+                content_identity = tuple(sorted(source['sha256'] for source in props['sources']))
+                if props['episode_id'] in episodes or content_identity in source_sets:
+                    excluded['duplicate'] += 1
+                    continue
+                episodes.add(props['episode_id'])
+                source_sets.add(content_identity)
+                eligible.append((props, revision))
+            if len(eligible) < 2:
+                continue
+            rules = {props['proposed_rule'] for props, _ in eligible}
+            if len(rules) != 1:
+                conflicts.append({'failure_signature': signature, 'reason': 'conflicting-proposed-rules',
+                                  'independent_occurrences': len(eligible),
+                                  'keys': sorted(props['key'] for props, _ in eligible)})
+                continue
+            evidence = [{'key': props['key'], 'episode_id': props['episode_id'],
+                         'revision': revision, 'sources': props['sources'],
+                         'integration_status': props['integration_status']}
+                        for props, revision in eligible]
+            candidates.append({'failure_signature': signature, 'proposed_rule': next(iter(rules)),
+                               'independent_occurrences': len(eligible), 'evidence': evidence,
+                               'promotion': 'requires-independent-evaluation',
+                               'evidence_basis': 'agent-reported-source-pinned'})
+        if len(candidates) + len(conflicts) > 32:
+            raise MemoryFault('CONTEXT_LIMIT', 'More than 32 lesson groups require scoped review, not truncated promotion evidence.')
+        return {'status': 'pass', 'candidates': candidates, 'conflicts': conflicts,
+                'excluded': excluded, 'checked': len(rows), 'mutated': False,
+                'notice': 'Candidate patterns are hypotheses, not approved instructions. Keep tests, evaluator and owner policy immutable; use an independently frozen review before any change.'}
 
     def reconcile(self, paths=None, *, prune=False, complete=False):
         if prune and not complete:

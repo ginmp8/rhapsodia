@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "295783e38c5cbef88278c16843b51e7ca743e893c55933f8db72f91f5482f678",
+  "sha256": "25d32497b8232be9a9a69990fccec4cc6bb7504ee104c6b2e697dacb90e8150b",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -62,7 +62,7 @@
     },
     {
       "path": "AGENTS.md",
-      "sha256": "6826f80f33b5606982f2539fb09cbaf2b2982e2e78208cc408e9c19ca1a0a90c"
+      "sha256": "826bee0702c6f48f6cab17b27b26749d2ba869b4d11dc75a666b9573016cf84b"
     },
     {
       "path": "LICENSE",
@@ -70,11 +70,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "29592e9a4fae9bb2ad8eeaaf2e1c69ef0e8c7d4d509a214620b0b1cff1c3813b"
+      "sha256": "ee8a10811993524a78b92cb17e46c5d0a4532357aa9ef3478dc87acbea07bb9f"
     },
     {
       "path": "agents/magia.agent.md",
-      "sha256": "f91074d240ef478cd9cd7f0d7bd5a7cf1b05e11f52d2a2e46a7a8feb7ca86dd0"
+      "sha256": "2032452b2ad2ae6a71408f808785e052db7496296cc2aa3e43c6ab8202c531e7"
     },
     {
       "path": "agents/mago.agent.md",
@@ -94,11 +94,11 @@
     },
     {
       "path": "agents/rhapsodia-supervisor.agent.md",
-      "sha256": "665c2d7735d7b81908e07e3880ad6eac4703f4776ab3775eba27499e6b8d5909"
+      "sha256": "fdd07a685ba74a395035b379964eaa6c389deb913fdfe3a10b57005461185e7a"
     },
     {
       "path": "agents/rhapsodia-verifier.agent.md",
-      "sha256": "fd69dc27ddc2098b9c621035fc875bce8894520f6bd39dc7f045d2600ab80a4e"
+      "sha256": "0047be94647240e91670f59d9d7d2901fa5e674f9eb0ba0757f87aa604ae3713"
     },
     {
       "path": "agents/rhapsodia-workspace.agent.md",
@@ -114,7 +114,7 @@
     },
     {
       "path": "docs/agents/ARCHITECTURE.md",
-      "sha256": "4fac8dd4d044c4690d3730c23d02abe570dfbb9f4b2d8565f10cd4f8334021bd"
+      "sha256": "d1924d6e44982548b22167946ff472c8d87878631a11d2abed4d553d11617092"
     },
     {
       "path": "docs/agents/ARTIFACT-ORCHESTRATION.md",
@@ -158,7 +158,7 @@
     },
     {
       "path": "docs/runtime/REQUIRED-SESSION.md",
-      "sha256": "25fec7c4f68a0a6ede98aa8b306cfccbc710c05ecf1fc0f80ccf8bae4e78d24b"
+      "sha256": "45634550beb4cdad356a13fdef05d6dc2b42472546da478dde69bb761fa6e58f"
     },
     {
       "path": "docs/workspace/README.md",
@@ -1374,7 +1374,7 @@
     },
     {
       "path": "skills/local-graph-engine/CHANGELOG.md",
-      "sha256": "e61cd8f0301f0b63b91c1b364e3260d0d705ec761e7c3f79593c69d3efe994e9"
+      "sha256": "e949a0c8f7749e630586c3ae929d8cabf9ef41b8ccf75fc5306532c594b4af73"
     },
     {
       "path": "skills/local-graph-engine/LICENSE",
@@ -1382,7 +1382,7 @@
     },
     {
       "path": "skills/local-graph-engine/README.md",
-      "sha256": "4213dde661b96283e1de70fef54c328a13e179c03171de9f6f3500eb22cc2bb5"
+      "sha256": "1b5064c5ddfd7c96361c9d843bafacc297c9fcadeb4be6c475a469dbdd0b0fa5"
     },
     {
       "path": "skills/local-graph-engine/RELEASE_NOTES.md",
@@ -1390,7 +1390,7 @@
     },
     {
       "path": "skills/local-graph-engine/SKILL.md",
-      "sha256": "ae36c8e943ebf63f387fc93a3d478a72895f2f9cc9d5e31a9874e8bef42ce8f0"
+      "sha256": "eda89dc9f4ce8c4ddaf6125bdf98966399baa0a3eb875876446e100d93f64897"
     },
     {
       "path": "skills/local-graph-engine/THIRD_PARTY_NOTICES.md",
@@ -1398,7 +1398,7 @@
     },
     {
       "path": "skills/local-graph-engine/VERSION",
-      "sha256": "b2f44d3b6e29f8b1b73ea4735f006affc4d198e1fd9c7d50e736159b1ef636c6"
+      "sha256": "33bdaf9e2d6bcbde2e4e613e865e403f8fe21fc621078d34c30b0bdc7f68d903"
     },
     {
       "path": "skills/local-graph-engine/adapters/roslyn/LocalGraph.Roslyn.csproj",
@@ -1451,6 +1451,10 @@
     {
       "path": "skills/local-graph-engine/contracts/workspace-knowledge-v1.schema.json",
       "sha256": "06fc48bcbe615e735e0caf684ee91daa5a33db61850546cd35b109bdef954f4f"
+    },
+    {
+      "path": "skills/local-graph-engine/contracts/workspace-knowledge-v2.schema.json",
+      "sha256": "cb54021f34a18ce0abcbfc57f6f19ca2eabc508c08a1a33008d210ece211e6e8"
     },
     {
       "path": "skills/local-graph-engine/evals/activation-scenarios.json",
@@ -1533,6 +1537,10 @@
       "sha256": "8579878744734071d7a47a3910a0e6eeda80a8968ba13b9750752a40dee07bd4"
     },
     {
+      "path": "skills/local-graph-engine/references/execution-lessons.md",
+      "sha256": "473b66e70fb239c175c6ae6ae2921a39e8f91c4217706aa5164e2fa1e6257eef"
+    },
+    {
       "path": "skills/local-graph-engine/references/graphpatch.md",
       "sha256": "f7687c07e5a84b5b538a3a7e5c344945adcb3caf9219bc3e9d4de233a5f4b454"
     },
@@ -1586,11 +1594,11 @@
     },
     {
       "path": "skills/local-graph-engine/references/workspace-learning.md",
-      "sha256": "769af721457973d02d6fe32e76dc219241bf25ab4dde4084d15776853f98b33f"
+      "sha256": "0d04be92963b474b080fb256cc5fb15a26b08d4a19e740cb8ef78bb7bbca8b06"
     },
     {
       "path": "skills/local-graph-engine/references/workspace-memory.md",
-      "sha256": "eeb2b3faa9839d4d8e9559817501f055df74215e42a21bb3ce7f8361a8b14dfa"
+      "sha256": "2898faac3ddfcf3d7e2bfaf550e1e0283088ccfdd38cafd126bec38c91eaea60"
     },
     {
       "path": "skills/local-graph-engine/scripts/graph.py",
@@ -1654,15 +1662,15 @@
     },
     {
       "path": "skills/local-graph-engine/scripts/workspace_memory.py",
-      "sha256": "a40225897a4ca27e04efa1057e284eb00b4db72f98404aa4bf6f4b0c9b91aad5"
+      "sha256": "8bc677b38e71228a8c757f086ce953346ac151dc7de14e47ff4fecf170e44bcf"
     },
     {
       "path": "skills/local-graph-engine/scripts/workspace_memory_contract.py",
-      "sha256": "5bb4ab024253f5c6d54e590bf6f5cf611b7b7a232b90b91d0c427a0d4a1d0bcc"
+      "sha256": "138b9ead22f943076c59624fe39b75c945218ea7cf2fbe35db2c352980bb6215"
     },
     {
       "path": "skills/local-graph-engine/scripts/workspace_memory_core.py",
-      "sha256": "ca34789911924b61bb7b34422cd451508fb1d596891a941a8df0f72f70f12358"
+      "sha256": "5b85ec9647ec8ce4c5adb42eb594f1f80285be16cb354ef28d41f13e737d5563"
     },
     {
       "path": "skills/local-graph-engine/tests/test_context.py",
@@ -9442,7 +9450,7 @@
     },
     {
       "path": "tests/test_required_session_guards.py",
-      "sha256": "6784b46ce481cf410d102be0fd10f34b7cb2f5f40edea432b99b4ee530bc5289"
+      "sha256": "f63b7bdf1080268f6bbf47ad11fa867e894b2aeabf89283aadddab9bb4c60269"
     },
     {
       "path": "tests/test_runtime_integration.py",
@@ -9455,6 +9463,10 @@
     {
       "path": "tests/test_workspace_agent_contract.py",
       "sha256": "2459462bb1356a20931cf241e588b90b630068b7b98314812b3493123cdcd542"
+    },
+    {
+      "path": "tests/test_workspace_lessons.py",
+      "sha256": "58e49bbbbda04be54a629bd8aef0a06b18a90a8253d85d33874332b76b50c679"
     }
   ]
 }

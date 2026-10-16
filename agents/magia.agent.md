@@ -61,7 +61,7 @@ Use `bounded-decision-judgment` only for a declared, evidence-backed choice **wi
 
 ## Workflow
 
-1. Apply the installed `magia` skill and current contracts.
+1. Apply the installed `magia` skill and current contracts; before feature closure require public/caller integration evidence when material. Source-pinned v2 lessons and read-only pattern review are advisory: no automatic edits to tests, skill instructions or owner decisions.
    - When the delegation or accepted workflow plan declares supporting semantic capabilities, resolve only the minimum required/optional capabilities through host-native Agent Skills discovery. If a required capability cannot be resolved, return `blocked`; if an optional capability is unavailable, continue only when semantics remain valid and record it as `not-run`/degraded. Never treat a supporting skill as a new owner or authority source.
 2. Validate the parent `handoff/v1`; for governed execution validate incoming `mago_to_magia` before mutation.
 3. Resolve mode, scope, risk, ownership, success criteria, protected paths, and proving checks. If the packet is a checkpoint candidate/repair, load the Magia gated-checkpoint execution branch and keep canonical task/phase completion open.

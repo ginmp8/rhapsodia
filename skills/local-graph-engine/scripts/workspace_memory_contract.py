@@ -98,12 +98,17 @@ def environment_id() -> str:
 
 def normalize(root: Path, value: dict) -> dict:
     required = {'schema', 'key', 'kind', 'title', 'summary', 'tags', 'sources'}
-    optional = {'expected_revision', 'symptom', 'cause', 'resolution', 'verification', 'evidence_status',
-                'applicability', 'environment_variables', 'ttl_seconds'}
-    if not isinstance(value, dict) or not required <= value.keys() or value.keys() - required - optional:
-        raise MemoryFault('INVALID_INPUT', 'Missing or unsupported knowledge fields; environment values and raw logs are not accepted.')
-    if value['schema'] != 'workspace-knowledge-v1' or value['kind'] not in {'reference', 'remedy'} or not isinstance(value['key'], str) or not KEY.fullmatch(value['key']) or value['key'] in {'root', 'workspace'}:
-        raise MemoryFault('INVALID_INPUT', 'Invalid knowledge schema, kind or stable key.')
+    remedy_fields = {'symptom', 'cause', 'resolution', 'verification', 'evidence_status',
+                     'applicability', 'environment_variables', 'ttl_seconds'}
+    lesson_fields = {'episode_id', 'failure_signature', 'observed_outcome',
+                     'integration_status', 'verification', 'proposed_rule'}
+    if not isinstance(value, dict) or not required <= value.keys():
+        raise MemoryFault('INVALID_INPUT', 'Missing required knowledge fields.')
+    is_v1 = value['schema'] == 'workspace-knowledge-v1' and value['kind'] in {'reference', 'remedy'}
+    is_lesson = value['schema'] == 'workspace-knowledge-v2' and value['kind'] == 'lesson'
+    allowed = required | {'expected_revision'} | (lesson_fields if is_lesson else remedy_fields)
+    if not (is_v1 or is_lesson) or value.keys() - allowed or not isinstance(value['key'], str) or not KEY.fullmatch(value['key']) or value['key'] in {'root', 'workspace'}:
+        raise MemoryFault('INVALID_INPUT', 'Unsupported knowledge contract, fields or key.')
     result = dict(value)
     result['title'] = text(value['title'], 200)
     result['summary'] = text(value['summary'], 1200)
@@ -112,7 +117,7 @@ def normalize(root: Path, value: dict) -> dict:
         raise MemoryFault('INVALID_INPUT', 'At most sixteen sanitized tags are supported.')
     result['tags'] = sorted(set(text(tag, 80) for tag in tags))
     sources = value['sources']
-    if not isinstance(sources, list) or len(sources) > 16 or (value['kind'] == 'reference' and not sources):
+    if not isinstance(sources, list) or len(sources) > 16 or (value['kind'] in {'reference', 'lesson'} and not sources):
         raise MemoryFault('INVALID_INPUT', 'References require one to sixteen content-pinned sources.')
     verified = []
     for source in sources:
@@ -127,8 +132,24 @@ def normalize(root: Path, value: dict) -> dict:
     expected = result.pop('expected_revision', None)
     if expected is not None and (not isinstance(expected, str) or not HASH.fullmatch(expected)):
         raise MemoryFault('INVALID_INPUT', 'Expected revision must be a SHA-256 identity.')
-    if value['kind'] == 'reference':
-        if set(value) & (optional - {'expected_revision'}):
+    if is_lesson:
+        if not lesson_fields <= value.keys():
+            raise MemoryFault('INVALID_INPUT', 'A lesson needs an episode, failure, outcome, integration status, verification and proposed rule.')
+        for field in ('episode_id', 'failure_signature'):
+            identifier = value[field]
+            if not isinstance(identifier, str) or not KEY.fullmatch(identifier):
+                raise MemoryFault('INVALID_INPUT', 'A lesson episode and failure signature must be portable stable IDs.')
+            result[field] = identifier
+        if value['observed_outcome'] not in {'observed-failure', 'observed-success', 'hypothesis', 'documented'}:
+            raise MemoryFault('INVALID_INPUT', 'Lesson evidence status must reflect what was actually observed.')
+        if value['integration_status'] not in {'not-integrated', 'integrated', 'not-verified'}:
+            raise MemoryFault('INVALID_INPUT', 'A lesson requires a bounded integration status.')
+        result['observed_outcome'] = value['observed_outcome']
+        result['integration_status'] = value['integration_status']
+        result['verification'] = text(value['verification'], 1800)
+        result['proposed_rule'] = text(value['proposed_rule'], 800)
+    elif value['kind'] == 'reference':
+        if set(value) & remedy_fields:
             raise MemoryFault('INVALID_INPUT', 'Remedy fields cannot be attached to a repository reference.')
     else:
         needed = {'symptom', 'cause', 'resolution', 'verification', 'evidence_status', 'applicability', 'environment_variables', 'ttl_seconds'}

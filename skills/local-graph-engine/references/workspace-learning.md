@@ -29,6 +29,9 @@ order of discovery, not a ban on authoritative source reads or independent verif
 
 ## Learning filter
 
+For recurring **feature** mistakes, use the separate [execution lesson contract](execution-lessons.md): a source-pinned v2 episode is not a v1 environment remedy. Group observations with `review-lessons` only after distinct evidence-bearing episodes; never auto-apply its proposed rule. MAGIA must still verify the actual public/caller integration; a passing isolated test alone is not closure. Do not record speculative errors as observed.
+
+
 Retain a finding only when it is relevant to the approved work, likely useful again, specific
 enough to change a future action, safe to store, and supported at its declared evidence level.
 Search its stable key/topic first. Reuse an unchanged record; update changed knowledge with

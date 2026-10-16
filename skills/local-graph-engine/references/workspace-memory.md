@@ -2,9 +2,9 @@
 
 ## At a Glance
 
-**Purpose:** Operate source-pinned workspace memory and diagnostic recipes.
-**Load when:** Using lookup, learn, reconcile or recovering existing knowledge.
-**Decision impact:** Preserve current-source authority, selective learning, recipe applicability, history and scoped writes.
+- **Purpose:** Operate source-pinned workspace memory and diagnostic recipes.
+- **Load when:** Using lookup, learn, reconcile or recovering existing knowledge.
+- **Decision impact:** Preserve current-source authority, selective learning, source-pinned advisory execution lessons, recipe applicability, history and scoped writes.
 
 ## Contents
 
@@ -37,7 +37,8 @@ Python 3.10+ with `-I -S -B`. The fixed private database is
 | `lookup "<question/symbol/path/error>"` | Bounded indexed-knowledge query with fresh source checks |
 | `lookup "<text>" --key <KEY> --budget-bytes 8192` | Exact key, bounded context; no repository scan |
 | `pin <relative-file> [<relative-file> ...]` | Read-only source SHA-256 pins, maximum 16 files |
-| `learn [--input <JSON>]` | Validate pins, then atomically publish one typed note; otherwise stdin |
+| `learn [--input <JSON>]` | Validate pins, then atomically publish one v1 reference/remedy or v2 execution lesson; otherwise stdin |
+| `review-lessons` | Read-only, bounded independent-episode grouping; advisory proposals, never prompt or test mutation |
 | `reconcile [--paths <relative-file> ...]` | Check tracked references, persist invalidation, keep history |
 | `reconcile --prune-missing --confirm-complete-scope` | Remove only confirmed missing single-source references |
 | `import-runtime [--input <JSON>]` | Apply a runtime-owned GraphPatch; not arbitrary execution |

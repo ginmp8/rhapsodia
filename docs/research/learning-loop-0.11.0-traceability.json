@@ -1,0 +1,348 @@
+{
+  "schema_version": "1.0",
+  "mode": "improve",
+  "scope": {
+    "research_question": "Integrate independent feature-lesson loops and actual integration proof into the Rhapsodia 0.11.0 distribution without weakening authority or creating a second control system.",
+    "target": "skills/local-graph-engine and skills/magia integration (same distribution working revision)",
+    "completeness_boundary": "corpus-bounded"
+  },
+  "identities": {
+    "research": {
+      "kind": "sha256",
+      "value": "13e04708b4400741318141a7a8e4d29da8eae446c4651e448f5f44aa170b8ba8"
+    },
+    "target_baseline": {
+      "kind": "sha256",
+      "value": "f5780134b28e5b82c0db94e0ea8b56281fce7c11fcf324e89dab5b30f7b92cc8"
+    },
+    "evaluators": {
+      "kind": "sha256",
+      "value": "58e49bbbbda04be54a629bd8aef0a06b18a90a8253d85d33874332b76b50c679"
+    }
+  },
+  "sources": [
+    {
+      "id": "S-001",
+      "title": "Auto-generated video transcript: loop engineering",
+      "locator": "https://www.youtube.com/watch?v=qLfSDQ5NGh0",
+      "authority": "user-provided",
+      "evidence_state": "pinned",
+      "identity": "sha256:13e04708b4400741318141a7a8e4d29da8eae446c4651e448f5f44aa170b8ba8",
+      "notes": "User-supplied transcript snapshot; the original video and external performance claims were not independently audited."
+    },
+    {
+      "id": "S-002",
+      "title": "RhapsodIA distribution 0.11.0 supplied ZIP",
+      "locator": "user-provided:rhapsodia-0.11.0-updated(1).zip",
+      "authority": "user-provided",
+      "evidence_state": "pinned",
+      "identity": "sha256:f5780134b28e5b82c0db94e0ea8b56281fce7c11fcf324e89dab5b30f7b92cc8",
+      "notes": "Immutable before-state for repository structure, existing interfaces, tests and host profiles."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "statement": "A clean feature-builder context can repeat previously observed failures unless a separate durable learning process propagates evidence.",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Source-backed lesson is advisory; avoid automatic prompt rewriting.",
+      "requirement_ids": [
+        "R-001"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-002",
+      "statement": "The original loop freezes acceptance checks before candidate mutation and forbids an agent from lowering those checks.",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "already-covered",
+      "rationale": "Existing independent gates protect evaluators; make new memory explicitly subordinate.",
+      "requirement_ids": [
+        "R-002"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-003",
+      "statement": "Passing isolated checks can miss actual public/UI/storage integration, leading to false feature closure.",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "implement",
+      "rationale": "Require suitable observable consumer integration proof when the feature needs it.",
+      "requirement_ids": [
+        "R-003"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-004",
+      "statement": "Repeated attempts must be bounded, evaluable and scoped rather than letting an entire product run in one uncontrolled loop.",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "high",
+      "relevance": "required",
+      "disposition": "already-covered",
+      "rationale": "Existing bounded execution and explicit stop rules already cover this.",
+      "requirement_ids": [
+        "R-004"
+      ],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-005",
+      "statement": "The transcript advocates a special project-context skill, but context may be retained through the existing workspace graph.",
+      "source_ids": [
+        "S-001",
+        "S-002"
+      ],
+      "confidence": "high",
+      "relevance": "contextual",
+      "disposition": "not-applicable",
+      "rationale": "Avoid duplicate skill/system-of-truth; preserve source authority and existing memory.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    },
+    {
+      "id": "F-006",
+      "statement": "Claimed improvements in the narrated demos transfer to this catalog.",
+      "source_ids": [
+        "S-001"
+      ],
+      "confidence": "medium",
+      "relevance": "contextual",
+      "disposition": "uncertain",
+      "rationale": "No paired behavioral or host cross-platform experiment on this distribution; do not claim measured improvement.",
+      "requirement_ids": [],
+      "conflict_ids": []
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-001",
+      "statement": "Persist source-pinned independent feature episodes and return only read-only recurring-failure guidance candidates; never auto-modify instructions or evaluators.",
+      "priority": "must",
+      "derived_from": [
+        "F-001"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-003"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-002",
+      "statement": "Keep frozen independent acceptance/evaluator gates and canonical owner authority before any learned guidance is promoted.",
+      "priority": "must",
+      "derived_from": [
+        "F-002"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-004",
+        "C-005",
+        "C-007"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-003",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-003",
+      "statement": "MAGIA closure for integrated features needs observable actual consumer/public path evidence, not only isolated tests.",
+      "priority": "must",
+      "derived_from": [
+        "F-003"
+      ],
+      "change_ids": [
+        "C-004",
+        "C-005"
+      ],
+      "evaluation_ids": [
+        "E-003",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-004",
+      "statement": "Preserve bounded loops, compatibility, portable core, source authority and all existing session/harness controls.",
+      "priority": "must",
+      "derived_from": [
+        "F-004"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-003",
+        "C-004",
+        "C-005",
+        "C-006"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "C-001",
+      "kind": "modify",
+      "target": "skills/local-graph-engine/scripts/workspace_memory_{core,contract}.py and workspace_memory.py",
+      "summary": "Add v2 source-pinned execution lessons and bounded advisory review without auto-mutation.",
+      "status": "applied",
+      "satisfies": [
+        "R-001",
+        "R-002",
+        "R-004"
+      ]
+    },
+    {
+      "id": "C-002",
+      "kind": "add",
+      "target": "skills/local-graph-engine/contracts/workspace-knowledge-v2.schema.json",
+      "summary": "Add typed v2 payload preserving v1 compatibility and explicit observed/hypothetical evidence.",
+      "status": "applied",
+      "satisfies": [
+        "R-001",
+        "R-004"
+      ]
+    },
+    {
+      "id": "C-003",
+      "kind": "add",
+      "target": "tests/test_workspace_lessons.py and skills/local-graph-engine/references/execution-lessons.md",
+      "summary": "Add eight executable new-path/privacy/conflict/revision/legacy tests and compact direct reference.",
+      "status": "applied",
+      "satisfies": [
+        "R-001",
+        "R-004"
+      ]
+    },
+    {
+      "id": "C-004",
+      "kind": "modify",
+      "target": "agents/{magia,supervisor,verifier}.agent.md",
+      "summary": "Clarify consumer integration proof and advisory, independently gated lessons in canonical owner-bounded agent profiles; leave the coordinated MAGIA skill intact.",
+      "status": "applied",
+      "satisfies": [
+        "R-002",
+        "R-003",
+        "R-004"
+      ]
+    },
+    {
+      "id": "C-005",
+      "kind": "modify",
+      "target": "AGENTS.md, README.md, docs/runtime, docs/agents and docs/releases/0.11.0.md",
+      "summary": "Clarify why and how to reuse lessons without copying or weakening canonical independent gates.",
+      "status": "applied",
+      "satisfies": [
+        "R-002",
+        "R-003",
+        "R-004"
+      ]
+    },
+    {
+      "id": "C-006",
+      "kind": "existing",
+      "target": "skills/runtime-harness and existing workspace graph/session entrypoints",
+      "summary": "Keep the existing paired startup, source pins, private storage, permissions and opt-outs.",
+      "status": "applied",
+      "satisfies": [
+        "R-004"
+      ]
+    },
+    {
+      "id": "C-007",
+      "kind": "existing",
+      "target": "skills/test-oracle-engineering, skills/checkpoint-convergence and skills/skill-change-gate",
+      "summary": "Existing independently frozen evaluators and gate ownership remain authoritative; graph lessons may not override them.",
+      "status": "applied",
+      "satisfies": [
+        "R-002"
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "E-001",
+      "kind": "scenario",
+      "description": "Test v2 lesson review, source freshness, duplicate/conflicting failures, privacy, revision and v1 compatibility.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-004"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "tests/test_workspace_lessons.py; 8/8 passed",
+      "limitation": "Local CLI behavioral proof; agent-reported evidence requires independent inspection."
+    },
+    {
+      "id": "E-002",
+      "kind": "runtime",
+      "description": "Existing Local Graph Engine regression suite.",
+      "verifies": [
+        "R-001",
+        "R-004"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "skills/local-graph-engine/tests; 103 tests, 5 skipped",
+      "limitation": "Nonexecuted optional adapters remain unverified on this platform."
+    },
+    {
+      "id": "E-003",
+      "kind": "deterministic",
+      "description": "Agent profile / manifest / distribution-version gate.",
+      "verifies": [
+        "R-002",
+        "R-003",
+        "R-004"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "scripts/validate_agents.py --target . and scripts/prepare_release.py --check",
+      "limitation": "Static checks do not prove native host invocation or model following."
+    },
+    {
+      "id": "E-004",
+      "kind": "review",
+      "description": "Direct top-100 control and semantically relevant owner/verifier invariants checked against immutable ZIP.",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004"
+      ],
+      "status": "pass",
+      "frozen": true,
+      "evidence": "AGENTS.md; skills/{magia,local-graph-engine}/SKILL.md; eight agents; changed-file review",
+      "limitation": "Human-readable contract review, not a paired model-behavior benchmark."
+    }
+  ],
+  "conflicts": []
+}

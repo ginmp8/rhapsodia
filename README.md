@@ -2,10 +2,26 @@
 
 ## 0.11.0 - Required sessions, persistent workspace knowledge and direct Adhoc
 
+## Reading guide
+
+**Purpose:** Install and use the current native agent/skill distribution without confusing required session memory, optional artifact views and governed lifecycle ownership.
+**Load when:** Selecting Adhoc versus Supervisor, installing profiles, resolving prerequisites or interpreting release validation.
+**Decision impact:** Bootstrap harness and graph unless explicitly disabled by the user; preserve scoped permissions, source freshness and independent proof. Historical sections describe their named releases, not current defaults.
+
 RhapsodIA **0.11.0** includes **56 Agent Skills and eight native agent profiles**.
 All profiles require Runtime Harness and Local Graph Engine before task work; only explicit
 user instructions can independently disable either component for that request. Missing state
 is initialized, valid state reused, and missing permission/capability or corruption blocks.
+
+A further **same-distribution-version working update** adds source-pinned execution
+lessons (`workspace-knowledge-v2`) and read-only `review-lessons` to the existing
+Graph memory. MAGIA verifies material consumer/public-path integration before treating
+isolated green tests as feature completion. Independent review and frozen evaluators
+remain required before any learned guidance changes an agent or skill. The distribution
+stays **0.11.0**; the changed Skill packages retain independent SemVer identities.
+These are candidate working bytes, not the original immutable 0.11.0 release identity.
+See [execution learning](skills/local-graph-engine/references/execution-lessons.md) and
+[traceability](docs/research/learning-loop-0.11.0.md).
 
 The new **Rhapsodia Adhoc** performs direct authorized work with relevant skills inline,
 without Supervisor or subagent orchestration. Supervisor retains governed delivery. Every
@@ -25,12 +41,6 @@ Start with [required sessions](docs/runtime/REQUIRED-SESSION.md), [agent archite
 and [0.11.0 release notes](docs/releases/0.11.0.md). CLI/structural checks do not prove native
 host/model adherence or actual token savings. No runtime state belongs in version control.
 
-
-## Reading guide
-
-**Purpose:** Install and use the current native agent/skill distribution without confusing required session memory, optional artifact views and governed lifecycle ownership.
-**Load when:** Selecting Adhoc versus Supervisor, installing profiles, resolving prerequisites or interpreting release validation.
-**Decision impact:** Bootstrap harness and graph unless explicitly disabled by the user; preserve scoped permissions, source freshness and independent proof. Historical sections describe their named releases, not current defaults.
 
 ## Contents
 

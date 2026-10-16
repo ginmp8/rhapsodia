@@ -29,7 +29,7 @@ symptom/cause/resolution/verification/applicability recipes, then reconcile touc
 before handoff/return. Reuse a lookup for the same question and unchanged evidence; refresh
 on scope/source/environment changes. Learn only relevant, reusable, nonduplicate records.
 When nothing qualifies, report `no-new-reusable-knowledge` and why, not a token write quota.
-Measure useful verified reuse, not graph size or invocation counts; unmeasured gains stay unknown.
+Measure useful verified reuse, not graph size or invocation counts; unmeasured gains stay unknown. For observed recurring feature failures, the Graph `workspace-knowledge-v2` lesson type and read-only `review-lessons` produce evaluation candidates. They cannot automatically rewrite policies, evaluator assets, tests, agents or owner instructions; use independent frozen gates and explicit promotion. An integration gap means green isolated tests are not sufficient proof of completion.
 Never store credentials, environment values or raw logs. Partial
 search, branch changes and permissions cannot prove deletion; preserve source history.
 
