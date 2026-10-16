@@ -18,8 +18,7 @@ One portable Agent Skills package, six modes (`Discover`, `Investigate`, `Charac
 | Mismatch diagnosis | `behavioral_pipeline.py` bounded oracle-rerun shrinking with first mismatch pointer and class preservation | Trusted binaries only; state reset required; not globally minimal |
 | Process effects | `oracle_runner.py --capture-fs` hashes regular files in trusted working directories | No OS isolation; cannot see outside-cwd, database/network/syscall effects |
 | Web/API analysis | `interface_traces.py` HAR/OpenAPI inspection and authorized HTTP status/hash replay | No redirects; no server-internal effects; test inputs can contain sensitive data |
-| Browser behavior (legacy) | `browser_capture.py` opt-in Playwright actions, request/response metadata, DOM hashes, screenshot option | Existing entrypoint unchanged; requires explicit approval and installed browser |
-| Interactive browser investigation | `web_investigator.py` with click, drag, hover, selection, viewport, DOM/network/console metadata, local timings, bounded same-origin link exploration | Optional browser, separately authorized trusted target; fixture fallback is not HTTP evidence |
+| Interactive browser investigation | `web_investigator.py` as the sole Playwright entrypoint: navigate/click/fill/press, selected-element text hashes, screenshots, hover/drag/select/scroll, viewport, DOM/network/console metadata, local timings and bounded same-origin link exploration | Optional installed browser, separately authorized trusted target; fixture fallback is not HTTP evidence; the previous CLI/output contract was retired in v0.2.0 |
 | Functional/performance/security expectation audit | `web_audit.py` with text/hash, HTTP status, DOM change, timing, viewport overflow and header-presence rules | Only finite, independently defined policies; no automated full SAST/DAST or visual/field monitoring |
 | Credential-marker detection | `source_marker_scan.py` read-only bounded local source scan with redacted findings | Pattern matches may be false; never validates keys or probes targets |
 | Browser-to-API evidence correlation | `correlate_web_evidence.py`, dynamic evidence ingestion in `evidence_ir.py` | Route-shape/time-window associations labeled inferred, not backend-handler proof |
@@ -55,7 +54,7 @@ python3 -m unittest discover -s tests -q
 python3 scripts/behavioral_pipeline.py --cases cases.jsonl --reference-argv ref-argv.json --candidate-argv cand-argv.json --reference-cwd REF --candidate-cwd CAND --output-dir NEW --execute-authorized --shrink-trials 40
 python3 scripts/tool_adapters.py run --provider ilspy --input TRUSTED.dll --output-dir NEW --execute-authorized --environment-approved
 python3 scripts/interface_traces.py replay --cases http-cases.jsonl --origin http://127.0.0.1:8080 --execute-authorized -o http-observations.jsonl
-python3 scripts/browser_capture.py --origin http://127.0.0.1:8080 --actions approved-actions.json --execute-authorized -o browser.json
+python3 scripts/web_investigator.py capture --origin http://127.0.0.1:8080 --actions approved-actions.json --execute-authorized --mutations-approved -o browser.json
 python3 scripts/execution_policy.py oci-pinned --execute-authorized --isolation-approved --image local/approved@sha256:INSERT64HEX -o argv.json
 ```
 

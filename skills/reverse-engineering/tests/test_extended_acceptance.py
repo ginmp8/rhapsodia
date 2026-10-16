@@ -11,7 +11,7 @@ from unittest.mock import patch
 SCRIPTS=Path(__file__).resolve().parents[1]/'scripts'
 sys.path.insert(0,str(SCRIPTS))
 from behavior_lab import DataError, load_corpus, compare
-import tool_adapters, probe_engine, state_inference, evidence_ir, execution_policy, browser_capture
+import tool_adapters, probe_engine, state_inference, evidence_ir, execution_policy, web_investigator
 
 class ExtraCases(unittest.TestCase):
     def setUp(self):
@@ -84,7 +84,7 @@ print(json.dumps({'steps':steps,'state':{'count':state}}))
         self.assertFalse(any(n['evidence_level']=='runtime_observed' for n in g['nodes']))
 
     def test_restriction_browser_url_and_oci_digest(self):
-        with self.assertRaises(DataError):browser_capture.safe_actions(self.put('actions.json','[{"type":"goto","path":"//evil"}]'))
+        with self.assertRaises(DataError):web_investigator.checked_actions(self.put('actions.json','[{"type":"goto","path":"//evil"}]'))
         with patch('execution_policy.shutil.which',return_value='/bin/docker'):
             with self.assertRaises(DataError):
                 execution_policy.preflight('oci-pinned',authorized=True,isolated_approved=True,

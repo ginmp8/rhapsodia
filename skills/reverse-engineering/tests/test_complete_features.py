@@ -22,7 +22,7 @@ import state_inference
 import evidence_ir
 import tool_adapters
 import interface_traces
-import browser_capture
+import web_investigator
 from oracle_runner import run_one
 from behavioral_pipeline import run_pair
 
@@ -204,10 +204,11 @@ class TestFullCapabilities(unittest.TestCase):
 
     def test_browser_adapter_policy_without_playwright(self):
         p=self.file('actions.json',json.dumps([{'type':'goto','path':'/'}, {'type':'text-hash','selector':'h1'}]))
-        self.assertEqual(len(browser_capture.safe_actions(p)),2)
-        with self.assertRaises(DataError):browser_capture.record('http://localhost',[{'type':'goto','path':'/'}])
+        self.assertEqual(len(web_investigator.checked_actions(p)),2)
+        with self.assertRaises(DataError):
+            web_investigator.inspect_browser(mode='capture',origin='http://localhost',actions=[{'type':'goto','path':'/'}])
         self.file('actions.json',json.dumps([{'type':'goto','path':'//outside.com'}]))
-        with self.assertRaises(DataError):browser_capture.safe_actions(p)
+        with self.assertRaises(DataError):web_investigator.checked_actions(p)
 
 
 if __name__=='__main__':unittest.main()

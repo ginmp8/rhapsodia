@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0] - 2026-10-16
+
+### Consolidated
+- Removed `scripts/browser_capture.py` after migrating package-local consumers to `web_investigator.py`. The latter is now the sole supported Playwright browser entrypoint; remaining static analysis, HTTP replay, six modes and 13 MCP tools are unchanged.
+- Preserved the former tool's navigations, clicks, fills, keypresses, complete selected-element SHA-256, explicit text capture (up to 4096 characters), screenshot capture, same-origin request/response metadata and event overflow accounting; additional advanced interactions, offline reviewed fixtures, exploration and audit integration remain available.
+- Updated capability matrix, usage guide, trust/replay references and acceptance tests without deleting any original test scenario.
+
+### Migration / compatibility
+- **Breaking CLI and Python import change:** replace `scripts/browser_capture.py --origin ...` with `scripts/web_investigator.py capture --origin ...`, add `--mutations-approved` for click/fill/press/etc.; import `checked_actions` / `inspect_browser` from `web_investigator` rather than importing `browser_capture`.
+- **Trace schema change:** outputs now use `mode: web-investigation` with `steps`/`events`, not `mode: authorized-browser-capture` with `observations`. External consumers must migrate their field mappings; no legacy alias is included.
+- Existing V1/V2 `behavior_lab` observational contracts, MCP tool names, original parser CLI commands and recorded corpora are untouched.
+- Tests cover the migrated permission and path guards, full selected-text hash, optional screenshot and blocked-overwrite behavior. Live HTTP/browser access across hosts is not asserted unless independently tested.
+
 ## [0.1.0] - 2026-10-16
 
 First tracked release of the existing unversioned Reverse Engineering + Behavioral Reconstruction package. Previous unpublished or historical versions were not independently established.
