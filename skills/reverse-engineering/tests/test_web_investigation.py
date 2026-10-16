@@ -100,6 +100,31 @@ class BrowserTest(unittest.TestCase):
         self.assertFalse(out['network_evidence'])
         self.assertEqual(out['events'],[])
         self.assertEqual(out['counters']['page_errors'],0)
+    def test_full_selected_text_hash_and_screenshot_survive_consolidation(self):
+        # Regression against the removed browser recorder: do not hash only 100k characters.
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)/'trusted-fixture';root.mkdir()
+            contents='a'*100001+'Z'
+            (root/'index.html').write_text('<!doctype html><html><body><div id="value">'+contents+'</div></body></html>',encoding='utf-8')
+            screenshot=Path(d)/'result.png'
+            result=inspect_browser(mode='capture',origin='http://localhost:8080',fixture_root=root,
+                                   actions=[{'type':'goto','path':'/index.html'}, {'type':'text-hash','selector':'#value'}],
+                                   authorized=True,include_text=True,screenshot=screenshot,
+                                   browser_executable=Path(shutil.which(browser_capabilities()['browser_candidates'][0])))
+            step=result['steps'][1]
+            self.assertEqual(step['selected_text_sha256'],hashlib.sha256(contents.encode()).hexdigest())
+            self.assertEqual(step['selected_text_characters'],len(contents))
+            self.assertEqual(step['selected_text'],contents[:4096])
+            self.assertTrue(screenshot.is_file())
+            self.assertEqual(result['screenshot']['sha256'],hashlib.sha256(screenshot.read_bytes()).hexdigest())
+            self.assertEqual(result['events_dropped'],0)
+            self.assertFalse(result['events_truncated'])
+            self.assertFalse(result['network_evidence'])
+            # The new module must still refuse overwriting the screenshot, even with approval.
+            with self.assertRaisesRegex(DataError,'screenshot output already exists'):
+                inspect_browser(mode='capture',origin='http://localhost:8080',fixture_root=root,
+                                actions=[],authorized=True,screenshot=screenshot)
+
     def test_explore_only_approved_html_links(self):
         result=inspect_browser(mode='explore',origin='http://localhost:8080',
                                fixture_root=ROOT/'examples'/'web-fixture',authorized=True,max_pages=2,

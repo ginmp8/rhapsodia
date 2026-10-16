@@ -23,7 +23,7 @@ from interface_traces import origin_url
 from json_writer import write_exclusive
 
 MAX_ACTIONS = 100
-MAX_EVENTS = 1500
+MAX_EVENTS = 2000
 MAX_PAGES = 20
 MAX_HTML = 1024 * 1024
 MUTATIONS = frozenset({'click', 'fill', 'press', 'hover', 'drag', 'select', 'scroll'})
@@ -209,6 +209,7 @@ def inspect_browser(*, mode: str, origin: str, actions: list[dict] | None = None
     except ImportError as exc:
         raise DataError('Playwright is not installed in this runtime') from exc
     events: list[dict] = []
+    dropped_events = [0]
     steps: list[dict] = []
     pages: list[dict] = []
     links: list[dict] = []
@@ -217,6 +218,7 @@ def inspect_browser(*, mode: str, origin: str, actions: list[dict] | None = None
     base_parts = urlsplit(base)
     def on_request(req):
         if len(events) >= MAX_EVENTS:
+            dropped_events[0] += 1
             return
         url = urlsplit(req.url)
         permitted = (url.scheme, url.netloc) == (base_parts.scheme, base_parts.netloc)
@@ -225,6 +227,7 @@ def inspect_browser(*, mode: str, origin: str, actions: list[dict] | None = None
                        'resource_type': req.resource_type[:32], 'observed': fixture_root is None})
     def on_response(res):
         if len(events) >= MAX_EVENTS:
+            dropped_events[0] += 1
             return
         url = urlsplit(res.url)
         permitted = (url.scheme, url.netloc) == (base_parts.scheme, base_parts.netloc)
@@ -293,11 +296,11 @@ def inspect_browser(*, mode: str, origin: str, actions: list[dict] | None = None
                                 # Fixed scroll implementation without an arbitrary JS expression supplied by input.
                                 page.locator(action['selector']).evaluate('(el,pixels)=>el.scrollBy(0,pixels)',action['pixels'])
                             elif typ == 'text-hash':
-                                t = page.locator(action['selector']).inner_text(timeout=5000)[:100000]
+                                t = page.locator(action['selector']).inner_text(timeout=5000)
                                 additional['selected_text_sha256'] = digest(t)
                                 additional['selected_text_characters'] = len(t)
                                 if include_text:
-                                    additional['selected_text'] = t[:4000]
+                                    additional['selected_text'] = t[:4096]
                             elapsed = round((time.monotonic() - before)*1000, 2)
                             steps.append({'index': index, 'type': typ, 'duration_ms': elapsed,
                                           'events_from': start_events, 'events_to': len(events),
@@ -340,7 +343,8 @@ def inspect_browser(*, mode: str, origin: str, actions: list[dict] | None = None
               'actions_sha256':digest(json.dumps(actions,sort_keys=True,ensure_ascii=False)) if actions is not None else None,
               'viewport': {'width':viewport_width,'height':viewport_height}, 'steps':steps,
               'pages':pages,'links':links,'events':events, 'counters':errors,
-              'events_truncated':len(events)>=MAX_EVENTS,
+              'events_truncated':dropped_events[0]>0,
+              'events_dropped':dropped_events[0],
               'limitations': ('Fixture executes approved local HTML scripts; no HTTP/network or real app behavior validated.'
                               if fixture_root else 'Captured only allowed browser metadata; no backend logic or OS-level network isolation.'),
               'privacy':'No cookies, headers values, HTTP bodies, search params, form input values or console messages recorded.'}
