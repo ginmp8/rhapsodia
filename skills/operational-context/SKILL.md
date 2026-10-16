@@ -12,6 +12,13 @@ Select only the mode needed for the current task; do not load every reference or
 command. Environment discovery belongs to its environment owner. Planning, execution,
 governance and independent verification remain with their existing owners.
 
+The purpose is relevant context with less repeated reading, not smaller prompts at any cost.
+Harness reuses environment/resource observations; Graph retains structural and operational
+learning across sessions; this skill composes temporary task packs from verified references.
+Reuse the enclosing task's current graph lookup instead of repeating it for every pack item.
+Refresh on question/scope/source/environment drift. Never drop required evidence or proof,
+claim measured token savings from bytes, or make a cache quota the definition of success.
+
 ## Modes
 
 | Need | Commands | Direct instructions |

@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "f0a8639fd21858daa66e641ae43b8822946b1a2da9e928f46392f1a396cb5d54",
+  "sha256": "295783e38c5cbef88278c16843b51e7ca743e893c55933f8db72f91f5482f678",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -62,7 +62,7 @@
     },
     {
       "path": "AGENTS.md",
-      "sha256": "e6b77eae6e3f1d097dea8773b6b3a574ea183d5877c8c4a2686bda323dc643c0"
+      "sha256": "6826f80f33b5606982f2539fb09cbaf2b2982e2e78208cc408e9c19ca1a0a90c"
     },
     {
       "path": "LICENSE",
@@ -70,39 +70,39 @@
     },
     {
       "path": "README.md",
-      "sha256": "5f55c57e3a87a154f3add1abce412f111dd88d3886b7897f73f66c0b18906f76"
+      "sha256": "29592e9a4fae9bb2ad8eeaaf2e1c69ef0e8c7d4d509a214620b0b1cff1c3813b"
     },
     {
       "path": "agents/magia.agent.md",
-      "sha256": "69555707cd917a9f282854ef392e618e39906dd6141dae8619d35a993d8221e8"
+      "sha256": "f91074d240ef478cd9cd7f0d7bd5a7cf1b05e11f52d2a2e46a7a8feb7ca86dd0"
     },
     {
       "path": "agents/mago.agent.md",
-      "sha256": "5dab5a9878049a1201ebd8935c303c452fcb19eaa11dd64de4568e359c2a6943"
+      "sha256": "fdc2db9796e06a51119ca9938eef6e52c34134b5b1a40212b2335a602a73e0dd"
     },
     {
       "path": "agents/nomia.agent.md",
-      "sha256": "0ced314186ff9b8227a5b53042d02edbbcbb779f32549392cfc43d45a3d56a5a"
+      "sha256": "765adc3fd63a087d310afdd0b76736af4b0f68e284d9444390cfe59544d3924f"
     },
     {
       "path": "agents/rhapsodia-adhoc.agent.md",
-      "sha256": "d481607b2f6c9cf95fd81a5718b526dc922835de8bd9b35801865991845b814d"
+      "sha256": "c4985907e27e1d04bb9b5b2a955db343983e340d52c6a6e916ec9acf38aca14e"
     },
     {
       "path": "agents/rhapsodia-analyst.agent.md",
-      "sha256": "8f3fc55356ba66d2130bd80022b113df8252aedcbb388ba7225f21f865f7ff06"
+      "sha256": "2ccc58ef386979c0f68655c2023fb9eb229ae2048194b32638eb927b341684c2"
     },
     {
       "path": "agents/rhapsodia-supervisor.agent.md",
-      "sha256": "47b55addcc8e2c92f879e225e431f6403717f06eee062a1afe978b753ed7b330"
+      "sha256": "665c2d7735d7b81908e07e3880ad6eac4703f4776ab3775eba27499e6b8d5909"
     },
     {
       "path": "agents/rhapsodia-verifier.agent.md",
-      "sha256": "095b439869c2ca93fef38f40ccc8e356258bb24d9732419b6879c1fffa843f6e"
+      "sha256": "fd69dc27ddc2098b9c621035fc875bce8894520f6bd39dc7f045d2600ab80a4e"
     },
     {
       "path": "agents/rhapsodia-workspace.agent.md",
-      "sha256": "bd220200fa5ed99c4c3126d1aac534b17c3d2f3b0a22c41762a2090cbef5a794"
+      "sha256": "9f75243a9369da6e08151093c1b80232d9cccbe80c2b7700edfa6ae84b12114b"
     },
     {
       "path": "docs/JSON_VERSION_INVENTORY.md",
@@ -114,7 +114,7 @@
     },
     {
       "path": "docs/agents/ARCHITECTURE.md",
-      "sha256": "b7c3fbce774e656ec88512435391f74e130c3461e5dc5c64d25c2feff5419677"
+      "sha256": "4fac8dd4d044c4690d3730c23d02abe570dfbb9f4b2d8565f10cd4f8334021bd"
     },
     {
       "path": "docs/agents/ARTIFACT-ORCHESTRATION.md",
@@ -126,7 +126,7 @@
     },
     {
       "path": "docs/agents/contracts/rhapsodia-agent-system.json",
-      "sha256": "a3559f0a6b909f46d9169b0be2cb2aeb4a82f5fea0a4d12c9980d355153ccefc"
+      "sha256": "24c8f9f278cf2435968002678341fce2dd1f254680d14b10b22e4a3da6fea87a"
     },
     {
       "path": "docs/marketplace.md",
@@ -158,7 +158,7 @@
     },
     {
       "path": "docs/runtime/REQUIRED-SESSION.md",
-      "sha256": "cd61a999e477b973355eea730a9cc52c09fd3a4c084bb3d6ade429bc22053efd"
+      "sha256": "25fec7c4f68a0a6ede98aa8b306cfccbc710c05ecf1fc0f80ccf8bae4e78d24b"
     },
     {
       "path": "docs/workspace/README.md",
@@ -234,7 +234,7 @@
     },
     {
       "path": "scripts/validate_agents.py",
-      "sha256": "e64c5c787e3551333ddb1a8bc554a09575501f3c246f03c21352ad8194d5fe96"
+      "sha256": "db101e45382fc543516f7502c068060d0c49fc74e9db3a81abc59cf7054d76de"
     },
     {
       "path": "scripts/validate_and_attest.py",
@@ -1374,7 +1374,7 @@
     },
     {
       "path": "skills/local-graph-engine/CHANGELOG.md",
-      "sha256": "48215a67515f107bc0a20735a4ab9e7ec12cbed4ea2fa09dbc041a048f063b8e"
+      "sha256": "e61cd8f0301f0b63b91c1b364e3260d0d705ec761e7c3f79593c69d3efe994e9"
     },
     {
       "path": "skills/local-graph-engine/LICENSE",
@@ -1382,7 +1382,7 @@
     },
     {
       "path": "skills/local-graph-engine/README.md",
-      "sha256": "84923628b7034f02e11e3510a78e343f044d168c14e7fefd9752ea52818d356e"
+      "sha256": "4213dde661b96283e1de70fef54c328a13e179c03171de9f6f3500eb22cc2bb5"
     },
     {
       "path": "skills/local-graph-engine/RELEASE_NOTES.md",
@@ -1390,7 +1390,7 @@
     },
     {
       "path": "skills/local-graph-engine/SKILL.md",
-      "sha256": "c489dac25a07d5b968cfc7c47fe97125264d9da1baffa8ceaa1e60c45891a426"
+      "sha256": "ae36c8e943ebf63f387fc93a3d478a72895f2f9cc9d5e31a9874e8bef42ce8f0"
     },
     {
       "path": "skills/local-graph-engine/THIRD_PARTY_NOTICES.md",
@@ -1418,7 +1418,7 @@
     },
     {
       "path": "skills/local-graph-engine/agents/openai.yaml",
-      "sha256": "6b30433c0431cb8fdfe3e4bd5096c3199318b612624679db0860f9e6203a3b99"
+      "sha256": "f00923015df167569128683cca8ccdd739d021b4bfd87a3d8bb51a3c6fd58233"
     },
     {
       "path": "skills/local-graph-engine/assets/icon.svg",
@@ -1585,8 +1585,12 @@
       "sha256": "989833491882b54576356d8d30f24c8d750276140e84a86fc45f77a736dc6a76"
     },
     {
+      "path": "skills/local-graph-engine/references/workspace-learning.md",
+      "sha256": "769af721457973d02d6fe32e76dc219241bf25ab4dde4084d15776853f98b33f"
+    },
+    {
       "path": "skills/local-graph-engine/references/workspace-memory.md",
-      "sha256": "b6e46b739c212dc5ee88508bb0e461c96a4bc33809f1914a484a7b446f7ba7fb"
+      "sha256": "eeb2b3faa9839d4d8e9559817501f055df74215e42a21bb3ce7f8361a8b14dfa"
     },
     {
       "path": "skills/local-graph-engine/scripts/graph.py",
@@ -4802,7 +4806,7 @@
     },
     {
       "path": "skills/operational-context/CHANGELOG.md",
-      "sha256": "226999b6446f96adffa5e803d1d837d7d48de226f5f3c411cf595b7134018199"
+      "sha256": "07d43e4913688cba199bcd984f10b3fa8609c307659f10be5aa2912c18fc9b07"
     },
     {
       "path": "skills/operational-context/LICENSE",
@@ -4810,7 +4814,7 @@
     },
     {
       "path": "skills/operational-context/SKILL.md",
-      "sha256": "7b7a7a13d99d3ff6329b9a8f3c464a8f1518b046f807ba6b83af0d36371f60b6"
+      "sha256": "d57e9d7e5605db573da86d651c8817018563083ed45351dbf084f704496b84bf"
     },
     {
       "path": "skills/operational-context/VERSION",
@@ -5890,11 +5894,11 @@
     },
     {
       "path": "skills/rhapsodia-workspace/CHANGELOG.md",
-      "sha256": "dcb052c96b46a27cbcc6c24aaf6783c955f7f817e757f0c57c75e4420130cc01"
+      "sha256": "91edf2ecd18741488599325a615d804763550d076a341193c926f53a427b634f"
     },
     {
       "path": "skills/rhapsodia-workspace/SKILL.md",
-      "sha256": "2717e45f63912d9e2ee20a5562dc1688af71dc519cfbdc38c1febb65e36aef0f"
+      "sha256": "9e4bd34f9d9254742f9b7aa026061ce27b67dcea3fac85350460c589fc69c6fb"
     },
     {
       "path": "skills/rhapsodia-workspace/VERSION",
@@ -6006,7 +6010,7 @@
     },
     {
       "path": "skills/runtime-harness/CHANGELOG.md",
-      "sha256": "b369e1a6123344d295f697713f129ea8a675987f0488486e14d9bd729b3d403c"
+      "sha256": "13388047bd4dca73eb52b2c339130ed2aaf3811265002f01a42d33c73de3b7fa"
     },
     {
       "path": "skills/runtime-harness/LICENSE",
@@ -6014,11 +6018,11 @@
     },
     {
       "path": "skills/runtime-harness/README.md",
-      "sha256": "14a263a2e9a1f119761570518e209b7542e0be91cb67a46bb5bd367d4669ab8d"
+      "sha256": "196cfa894309f69b8cdd8b7469cbdc71be5934b532004f9bcfa972b8808d1556"
     },
     {
       "path": "skills/runtime-harness/SKILL.md",
-      "sha256": "84387fbda7a463f434e0c0182348b89f8a0c7dcac14d212441edc3825c553952"
+      "sha256": "1db4c697aa3b3bc77c5e5e0abe68dce87383168ede1bf0df9ceafc56de23a68b"
     },
     {
       "path": "skills/runtime-harness/VERSION",
@@ -6026,7 +6030,7 @@
     },
     {
       "path": "skills/runtime-harness/agents/openai.yaml",
-      "sha256": "8530b706b550d5d24ccd77ecc89d505ba9d47b7bc917a0b0dcfd3f042de557d3"
+      "sha256": "a5bee29c7522583734117c4a5e273043405c9dc92c890bf93de578f658a0255b"
     },
     {
       "path": "skills/runtime-harness/assets/icon.svg",
@@ -6066,7 +6070,7 @@
     },
     {
       "path": "skills/runtime-harness/references/agent-session.md",
-      "sha256": "362579ed0efd5f90e233e2739bc52c0582b03243d6b0c89cef6a9d66a05b457d"
+      "sha256": "08a096f5b65567021900f55cf7624d45abac19dd14e36e7c099b3fe802b2d7bb"
     },
     {
       "path": "skills/runtime-harness/references/commands.md",
@@ -6166,7 +6170,7 @@
     },
     {
       "path": "skills/runtime-harness/scripts/runtime_core/integration.py",
-      "sha256": "7b4100f4cddf0d478636fe8c946bbcc873b216c4627b9c6e3e8f87585e19e78c"
+      "sha256": "4805de606e5ce8ace883cebeeaca3232c675b92ac6053655310c9ad443abde8b"
     },
     {
       "path": "skills/runtime-harness/scripts/runtime_core/mcp.py",
@@ -9402,7 +9406,7 @@
     },
     {
       "path": "tests/agent-scenarios.json",
-      "sha256": "f44f01e5381b0309899861f04532b19d8a05eb2fa4304c2c41524a3976efd833"
+      "sha256": "870ee486a79deb03ca112b42cbedfee08a88a80e38f3824943e85909686167d1"
     },
     {
       "path": "tests/test_artifact_native_e2e.py",
@@ -9438,7 +9442,7 @@
     },
     {
       "path": "tests/test_required_session_guards.py",
-      "sha256": "68539a00c2908a24ebac8bc51bd7f46a741682773af40f95301e1016c5fa1fe4"
+      "sha256": "6784b46ce481cf410d102be0fd10f34b7cb2f5f40edea432b99b4ee530bc5289"
     },
     {
       "path": "tests/test_runtime_integration.py",

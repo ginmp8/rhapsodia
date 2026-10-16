@@ -6,6 +6,13 @@ generated projections. Preserve independent skill/schema versions.
 
 ## Mandatory session and memory
 
+**Why:** Harness prevents repeated environment/tool discovery; Graph preserves structural
+knowledge, decision rationale and diagnostic experience across agents and sessions in the
+approved workspace. Reuse verified knowledge before rediscovery, retrieve only relevant
+context, and retain reusable findings rather than losing them at the end of a conversation.
+The repository and live environment remain authoritative. Initialization is not a ritual;
+never skip necessary source inspection or fresh proof for efficiency.
+
 Every Rhapsodia agent must run `python -I -S -B scripts/session.py --workspace <ROOT>
 --skills-root <APPROVED_SKILLS_ROOT>` before repository search, domain commands or delegation.
 Installed agents locate `runtime-harness/scripts/agent_session.py` through native discovery.
@@ -19,7 +26,11 @@ Use verified `runtime_argv` for exact resolve/context, bounded ensure and observ
 Use `memory_argv` for graph-first lookup; fresh hits lead to exact source reads, misses/stale
 hits to bounded repository discovery. Pin and learn reusable references and sanitized
 symptom/cause/resolution/verification/applicability recipes, then reconcile touched sources
-before handoff/return. Never store credentials, environment values or raw logs. Partial
+before handoff/return. Reuse a lookup for the same question and unchanged evidence; refresh
+on scope/source/environment changes. Learn only relevant, reusable, nonduplicate records.
+When nothing qualifies, report `no-new-reusable-knowledge` and why, not a token write quota.
+Measure useful verified reuse, not graph size or invocation counts; unmeasured gains stay unknown.
+Never store credentials, environment values or raw logs. Partial
 search, branch changes and permissions cannot prove deletion; preserve source history.
 
 Private runtime/graph maintenance is allowed by all profiles only through reviewed helpers,

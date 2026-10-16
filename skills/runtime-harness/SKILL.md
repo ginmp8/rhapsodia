@@ -13,6 +13,9 @@ Never schedule domain work, change permissions, execute discovered tools, or con
 agent prose into trusted facts. Standalone registry operations need no peer skill,
 database, server, cloud, shell or SDK; the Rhapsodia agent adapter requires Local Graph Engine.
 
+## Why reuse comes first
+Harness prevents each agent from rediscovering the same interpreter, tool path, resource and failed discovery strategy. Its verified observations answer **what is available here and how to locate it**; Graph preserves **what was learned, why it matters and when it applies** across agents and sessions in the approved workspace. Reuse valid observations before probing; refresh only changed/expired scope. Initialization is not success by itself, and fewer probes never justify skipped verification. The repository and live environment remain authoritative; semantics and diagnostic rationale do not belong in this registry.
+
 ## Required agent-session gate
 Every Rhapsodia profile, including read-only-domain roles, must first run `<PYTHON> -I -S -B scripts/agent_session.py --workspace <ROOT> --skills-root <APPROVED_SKILLS_ROOT>` through native approved skill discovery. Require actual ready harness/graph receipts before repository search, project work or delegation. Initialize absent state, reuse valid state, preserve corrupt state and block. Missing execution, permission or a required skill is not an opt-out.
 Only explicit current-user instructions permit independent `--no-harness` / `--no-graph` with `--opt-out-reason user-request`; propagate that selection to delegated units, never persist a global disable. Local helper maintenance under `.rhapsodia/runtime` / `.rhapsodia/graph` does not grant domain mutation, installation, login, project execution or host permission. See [required sessions](references/agent-session.md) for the complete direct contract.

@@ -1,6 +1,6 @@
 interface:
   display_name: Runtime Harness
-  short_description: Reuse and share verified local runtime/resource observations with compact handoffs.
+  short_description: Avoid repeated environment discovery; bootstrap required agent memory and reuse verified runtime/resource observations.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

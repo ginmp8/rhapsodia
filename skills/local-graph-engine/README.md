@@ -10,7 +10,12 @@ Original source files are never rewritten by ingestion.
 Rhapsodia profiles require graph-first memory unless the user explicitly opts out. This
 mode initializes missing state, reuses fresh references, learns bounded source-pinned
 knowledge and sanitized environment recipes, and reconciles changes without treating
-partial search as deletion proof. It does not run commands found in records.
+partial search as deletion proof. It does not run commands found in records. The goal is to preserve structural knowledge and
+operational experience across sessions, so the next investigation can reuse verified work.
+Retrieve compact relevant context; learn only actionable nonduplicate findings. No useful new
+finding means an explicit no-new-knowledge reason, not a filler write. Source/live evidence
+and fresh validation remain necessary. Learned experiences may not be reconstructible after
+a reset; preserve them separately from rebuildable source indexes.
 
 ```text
 python -I -S -B scripts/workspace_memory.py --workspace <ROOT> start
@@ -21,6 +26,7 @@ python -I -S -B scripts/workspace_memory.py --workspace <ROOT> reconcile --paths
 ```
 
 Use actual source pins; do not copy placeholder paths into a completed record.
+See [learning criteria](references/workspace-learning.md) for what to retain and why.
 See [workspace memory](references/workspace-memory.md) for exact schemas, statuses,
 concurrency, permissions and privacy. Standalone dataset workflows below remain unchanged.
 

@@ -2,6 +2,8 @@
 
 ## 1.3.0 - 2026-10-16
 
+Same-release clarification in RhapsodIA 0.11.0: Clarify cumulative runtime/graph purpose in the first-load skill and managed native-host guidance; require useful verified reuse rather than ritual calls. No CLI, snapshot or permission contract changes.
+
 Add required Rhapsodia agent-session adapter, independent explicit opt-outs, private graph bootstrap, clarified ownership and maintenance-only host guidance. Standalone registry and immutable snapshot contracts remain compatible.
 
 ## 1.2.0 - RhapsodIA 0.8.0

@@ -1,6 +1,6 @@
 interface:
   display_name: Local Graph Engine
-  short_description: Organize any local dataset as an evidence-backed queryable graph.
+  short_description: Query evidence-backed local data and retain reusable workspace knowledge and diagnostic experience.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

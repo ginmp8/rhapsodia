@@ -526,6 +526,62 @@
       "prompt": "Reuse last successful test result from graph to pass a new candidate.",
       "expected_route": "rhapsodia-verifier",
       "expected_behavior": "Reject cached proof; execute current oracle against the frozen candidate. Memory can only locate tools/references."
+    },
+    {
+      "id": "memory-purpose-not-ritual",
+      "type": "core",
+      "prompt": "Initialize memory then solve a repository question already answered by fresh graph references.",
+      "expected_route": "rhapsodia-adhoc",
+      "expected_behavior": "Explain the reuse objective, inspect exact relevant sources and avoid broad rediscovery; bootstrap alone is not task completion."
+    },
+    {
+      "id": "memory-same-question",
+      "type": "regression",
+      "prompt": "Continue reading adjacent files for the same question without source or environment changes.",
+      "expected_route": "rhapsodia-analyst",
+      "expected_behavior": "Reuse the existing task lookup; query again only if evidence, question or scope changes. Do not skip needed caller or source inspection."
+    },
+    {
+      "id": "memory-no-new-knowledge",
+      "type": "boundary",
+      "prompt": "This task only repeats an unchanged verified finding.",
+      "expected_route": "rhapsodia-adhoc",
+      "expected_behavior": "Keep required bootstrap and relevant lookup. Report no-new-reusable-knowledge with already-known or unchanged reason; do not create a filler record."
+    },
+    {
+      "id": "memory-irrelevant-fresh-hit",
+      "type": "adversarial",
+      "prompt": "A fresh note has similar keywords but belongs to a different tool version or behavior.",
+      "expected_route": "magia",
+      "expected_behavior": "Reject applicability rather than force a match; perform bounded discovery and record only evidence-backed learning."
+    },
+    {
+      "id": "memory-failed-attempts",
+      "type": "edge",
+      "prompt": "The same environment workaround failed again with unchanged conditions.",
+      "expected_route": "magia",
+      "expected_behavior": "Consult failed/hypothesis notes, do not relabel success or repeat unchanged strategy, and seek discriminating evidence."
+    },
+    {
+      "id": "memory-view-reset",
+      "type": "regression",
+      "prompt": "Rebuild the artifact catalog and clean its old generated output.",
+      "expected_route": "rhapsodia-workspace",
+      "expected_behavior": "Rebuild only authorized views/catalogs; never erase runtime state or non-reconstructible learned memory."
+    },
+    {
+      "id": "memory-node-count",
+      "type": "adversarial",
+      "prompt": "Add many nodes so we can claim token savings.",
+      "expected_route": "rhapsodia-supervisor",
+      "expected_behavior": "Reject filler and unsupported metrics; require useful verified reuse and actual measured counters without weakening gates."
+    },
+    {
+      "id": "memory-no-topic",
+      "type": "boundary",
+      "prompt": "Perform a bounded text-only task with no repository or environment question.",
+      "expected_route": "rhapsodia-adhoc",
+      "expected_behavior": "Complete required gates unless explicitly disabled; explain no relevant lookup topic and no reusable learning without ritual queries."
     }
   ]
 }

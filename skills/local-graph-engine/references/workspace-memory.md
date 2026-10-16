@@ -1,11 +1,28 @@
 # Workspace memory and reusable environment recipes
 
+## At a Glance
+
+**Purpose:** Operate source-pinned workspace memory and diagnostic recipes.
+**Load when:** Using lookup, learn, reconcile or recovering existing knowledge.
+**Decision impact:** Preserve current-source authority, selective learning, recipe applicability, history and scoped writes.
+
+## Contents
+
+- Purpose and authority
+- Commands
+- Required graph-first loop
+- Environment recipe contract
+- Reconciliation and deletion
+- Safety and completion
+
 ## Purpose and authority
 
 Use this mode for persistent per-workspace references, learned relationships and recurring
 troubleshooting. Rhapsodia agents require it unless the user explicitly disables graph use.
 Standalone dataset workflows remain domain-neutral and do not require a harness or another
-skill. The graph is a disposable evidence-backed projection, not repository truth or authority.
+skill. The graph is evidence-backed working memory, not repository truth or authority.
+Rebuildable source projections and non-reconstructible operational notes have different recovery
+needs: preserve history and reviewed backups before any separately authorized destructive reset.
 
 The stdlib CLI is `scripts/workspace_memory.py --workspace <ROOT> <COMMAND>`; use an approved
 Python 3.10+ with `-I -S -B`. The fixed private database is
@@ -34,11 +51,18 @@ block focused maintenance. Broader selections fail explicitly; no repository sca
 
 ## Required graph-first loop
 
-Query before broad keyword search or retrying a known failure. For a fresh sufficient hit,
+The objective is useful verified reuse across agents and sessions, not a ritual or a record
+quota. Reuse a lookup for the same question/scope and unchanged evidence within the task;
+refresh after source/environment drift. Retrieve only relevant compact context. Query before
+broad keyword search or retrying a known failure. For a fresh sufficient hit,
 read the exact referenced source rather than searching again. Recheck live pins, environment
 and declared shell/tool applicability. On a miss, stale hit, insufficient coverage or a new
 relationship, inspect only the unresolved repository scope, then add useful reusable evidence.
-Do not index every file or duplicate transcripts merely to claim completeness.
+Do not index every file or duplicate transcripts merely to claim completeness. Keep necessary
+source reads and independent proof. Apply the [learning filter](workspace-learning.md): one
+specific reusable question per stable record, actual evidence status, no duplicate writes.
+If nothing qualifies, report `no-new-reusable-knowledge` with its reason. No relevant lookup
+topic does not disable the mandatory enclosing agent-session gate.
 
 References require nonempty sources with exact relative `path` and `sha256`. Read first, obtain
 `pin`, and build `workspace-knowledge-v1` input using the actual observed pins. A changed pin

@@ -13,6 +13,14 @@ profile has a private-memory maintenance exception; domain ownership and proof g
 Graph-first lookup, source-pinned learning, sanitized environment recipes and conservative
 reconciliation replace repeated blind discovery without treating graph data as source truth.
 
+Harness prevents repeated environment discovery; Graph preserves structural and operational
+learning across agents and sessions in the approved workspace. Reuse current relevant knowledge,
+read the necessary source, investigate unresolved scope and retain only meaningful new findings.
+No new reusable knowledge is a valid reported outcome, not a reason to create filler records.
+Measure useful verified reuse rather than graph size or invocation counts; source authority,
+permissions and fresh proof remain unchanged. The [learning guide](skills/local-graph-engine/references/workspace-learning.md)
+contains practical record-selection and troubleshooting examples.
+
 Start with [required sessions](docs/runtime/REQUIRED-SESSION.md), [agent architecture](docs/agents/ARCHITECTURE.md)
 and [0.11.0 release notes](docs/releases/0.11.0.md). CLI/structural checks do not prove native
 host/model adherence or actual token savings. No runtime state belongs in version control.

@@ -9,6 +9,11 @@ HOST_PATHS = {"generic": "AGENTS.md", "codex": "AGENTS.md", "copilot": ".github/
               "claude": "CLAUDE.md", "cursor": ".cursor/rules/rhapsodia-runtime.mdc"}
 CONTENT = """## Required Rhapsodia session and reusable memory
 
+Use Harness to prevent repeated environment discovery and Graph to retain structural
+and operational knowledge across agents and sessions. Initialization is not a ritual:
+reuse relevant verified knowledge rather than rebuilding it each task. The repository and live environment remain authoritative; do not skip necessary source reads or verification.
+Reduce redundant context/tool work, not quality. Judge useful verified reuse, not graph size or invocation counts.
+
 When acting as any Rhapsodia agent, before repository search, domain work or delegation,
 run the host-discovered runtime-harness `scripts/agent_session.py --workspace <ROOT>
 --skills-root <APPROVED_SKILLS_ROOT>` with the approved Python 3.10+ and -I -S -B.
@@ -19,8 +24,14 @@ Only an explicit user request permits --no-harness and/or --no-graph with
 Do not install, bypass policy, silently disable, or fabricate a bootstrap result.
 Every Rhapsodia role has private-maintenance scope only for approved helper operations;
 this does not expand its domain authority or native host permissions.
-Use graph-first lookup, fresh exact source reads and bounded discovery on misses. Pin
-and learn new reusable knowledge; reconcile changed/deleted sources before returning.
+Use graph-first lookup per question/scope, fresh exact source reads and bounded discovery
+on missing/stale/truncated/insufficient results. Reuse a lookup for the same question and unchanged evidence;
+refresh after source, question, scope or environment changes, not for every adjacent read.
+Pin and learn only relevant reusable nonduplicate findings, rationale and diagnostic outcomes.
+Use stable keys, source pins and expected revisions; do not dump files or transcripts.
+Reconcile changed/deleted sources before returning. Preserve history and non-reconstructible learned memory.
+When nothing qualifies, report no-new-reusable-knowledge with its reason, not a ritual write.
+No relevant lookup topic permits a truthful not-needed explanation, not skipping required bootstrap.
 Recipes retain sanitized diagnosis, applicability, outcome and verification, never
 credentials, environment values or raw logs. Source history and independent proof stay
 separate; partial searches/branch changes cannot justify destructive pruning.

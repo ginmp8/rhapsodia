@@ -10,6 +10,8 @@ Observe independently owned artifacts without becoming their owner. Canonical tr
 ## Distinguish the three workspace-related capabilities
 Runtime Harness initializes environment/tool/resource observations for every Rhapsodia agent. Local Graph Engine initializes persistent source/diagnostic knowledge and owns graph-first lookup, learning and reconciliation. This skill initializes neither: use it only to catalog or present producer-owned artifact sidecars. Its optional status never disables the agents' required harness/graph gates. The Workspace agent performs its own mandatory private maintenance separately from derived catalog/view writes.
 
+Harness avoids rediscovering tools and resources; Graph avoids relearning code relationships, decisions and environment remedies. This skill makes already-published artifacts easier to inspect. Rendering a catalog is not evidence of memory use or cumulative learning. Rebuilding disposable views must not delete private learned memory, and visual node counts do not measure agent effectiveness.
+
 ## Selection, authority, and evidence
 
 Use for discovery/indexing, integrity checks, relationship inspection, portfolio/update chronology, per-skill inventory, or an offline workspace over already-published artifact envelopes. Route requested domain changes to the producer instead. Workspace is optional for every producer and must not create missing artifacts, infer completion/readiness from file existence, rewrite producer state, move source trees, execute referenced content, or treat derived output as source truth.
