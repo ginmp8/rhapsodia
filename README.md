@@ -41,6 +41,69 @@ Start with [required sessions](docs/runtime/REQUIRED-SESSION.md), [agent archite
 and [0.11.0 release notes](docs/releases/0.11.0.md). CLI/structural checks do not prove native
 host/model adherence or actual token savings. No runtime state belongs in version control.
 
+### Reverse Engineering — Dynamic Investigation & Behavioral Auditing
+
+**Skill version: 0.2.0**
+
+The RhapsodIA **0.11.0** distribution includes an independently versioned update to
+[Reverse Engineering + Behavioral Reconstruction](skills/reverse-engineering/README.md).
+It expands static analysis and finite behavioral verification into a broader application
+investigation toolkit while preserving the skill's existing contracts and trust boundaries.
+
+#### Highlights
+
+- **Dynamic web investigation:** `web_investigator.py` is the sole supported Playwright
+  entrypoint, with bounded navigation and interactions, DOM/network/console observations,
+  element-text hashes, optional screenshots, viewport measurements and same-origin exploration.
+- **Functional and performance auditing:** `web_audit.py` evaluates recorded UI and HTTP
+  evidence against explicit policies, including timing, layout and response security-header
+  checks. Results are explicitly `pass`, `fail` or `incomplete`; missing evidence is not success.
+- **Passive security analysis:** `source_marker_scan.py` reports redacted credential-marker
+  matches without validating or attempting to use discovered values.
+- **Evidence correlation:** browser requests are associated with candidate API routes and
+  persisted in the SQLite evidence graph; inferred relationships remain labeled as inferred.
+- **Restricted-environment support:** approved offline HTML fixtures allow browser interaction
+  tests when HTTP navigation is unavailable, without presenting fixture results as HTTP evidence.
+- The six existing modes, 13 MCP tools, static analyzers, behavioral V1/V2 contracts and
+  differential verification remain available. Playwright, Chromium and external analyzers
+  remain optional; the package does not install or download them automatically.
+
+#### Breaking change and migration
+
+The standalone `scripts/browser_capture.py` CLI and Python import surface were removed.
+Migrate browser captures to the supported entrypoint:
+
+```sh
+python3 scripts/web_investigator.py capture \
+  --origin http://127.0.0.1:8080 \
+  --actions approved-actions.json \
+  --execute-authorized \
+  --mutations-approved \
+  -o trace.json
+```
+
+Interactive actions require explicit mutation approval in addition to authorization for
+the trusted target. Trace consumers must migrate from `observations` to `steps` and `events`;
+the output mode is now `web-investigation`, with no legacy alias. Python consumers should
+import `checked_actions` and `inspect_browser` from `web_investigator` instead of
+`browser_capture`. Existing behavioral V1/V2 records, MCP tool contracts and static-analysis
+CLI commands are unchanged.
+
+#### Portability and validation
+
+The portable core remains Python 3.10+ and standard-library-only. Runtime capability detection,
+explicit loading guidance, source traceability and the existing execution-authorization,
+trust and evidence-integrity boundaries are retained. The package's recorded validation covers
+its migration guards, trusted offline Playwright fixtures, functional-audit and evidence-graph
+examples, and portable package structure. See the [skill changelog](skills/reverse-engineering/CHANGELOG.md)
+for the change history and test details.
+
+Browser HTTP navigation was not validated in the restricted ChatGPT sandbox; fixture execution
+does not establish remote or backend behavior. Browser request interception is not OS-level
+network isolation. Performance observations do not replace Core Web Vitals or Lighthouse, and
+the bounded security checks do not replace full SAST, DAST, penetration testing or authorization
+audits. Structural host compatibility does not establish runtime equivalence across platforms.
+
 
 ## Contents
 
