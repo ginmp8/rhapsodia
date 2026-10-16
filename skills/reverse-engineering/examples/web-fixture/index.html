@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Reviewed synthetic fixture</title></head><body>
+<h1>Demo workflow</h1>
+<label>Name <input id="name"></label>
+<label>Region <select id="region"><option value="A">A</option><option value="B">B</option></select></label>
+<button id="save" type="button">Save</button><span id="status">Idle</span>
+<div id="drag" draggable="true">Drag item</div><div id="drop">Drop here</div>
+<div id="pane" style="height:50px; overflow:auto"><div style="height:300px">Scrollable area</div></div>
+<a href="/next.html">Next</a>
+<script>
+document.querySelector('#save').addEventListener('click',()=>{document.querySelector('#status').textContent='Saved';});
+document.querySelector('#drag').addEventListener('dragstart',event=>{event.dataTransfer.setData('text/plain','item')});
+document.querySelector('#drop').addEventListener('dragover',event=>event.preventDefault());
+document.querySelector('#drop').addEventListener('drop',event=>{event.preventDefault();document.querySelector('#drop').textContent='Dropped';});
+</script></body></html>

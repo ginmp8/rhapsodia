@@ -1,11 +1,13 @@
 interface:
   display_name: Reverse Engineering
-  short_description: Compreender, reconstruir e verificar comportamento de software
-    com evidências.
+  short_description: "Compreender, reconstruir e verificar comportamento de software\
+    \ com evid\xEAncias."
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
   products:
-  - CHAT
-  - CODEX
+  - chatgpt
+  - codex
+  - api
+  - atlas
   allow_implicit_invocation: true

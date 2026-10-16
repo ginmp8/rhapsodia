@@ -1,11 +1,11 @@
 ---
 name: reverse-engineering
-description: Safely inventory and analyze untrusted source archives, binaries, APIs and applications; map JS/TS/Electron/ASAR interfaces, build persistent evidence graphs via offline MCP/CLI, independently reconstruct bounded behavioral contracts and verify finite observations. Use for legacy replacement, black-box characterization, call-flow tracing, compatibility ports and behavioral diagnostics. Not for arbitrary code execution, bypassing protections, universal decompilation or equivalence guarantees.
+description: Evidence-backed reverse engineering of repositories, archives, binary formats, APIs, JS/TS/Electron apps and authorized web interfaces. Inventory static symbols and flows, capture bounded browser interactions/network/DOM, audit recorded functional/performance/security expectations, trace hypotheses, reconstruct independent behavioral contracts and compare finite original/candidate cases. Use for black-box characterization, feature investigation, legacy migration, behavior cloning without source reuse, or compatibility diagnostics. Do not use for generic UX review, ordinary unit-test writing, malware execution, unauthorized web testing, or universal decompilation/equivalence claims.
 ---
 
 # Reverse Engineering + Behavioral Reconstruction
 
-**Single skill, six modes.** Python 3.10+ standard-library core; no mandatory package installs, vendor services or host-specific tools. Optional analyzers/browser/AALpy/Roslyn/OCI are capability-detected, installed separately by the operator and never silently downloaded. Start statically for every unknown artifact.
+**Single skill, six modes.** Python 3.10+ standard-library core; no mandatory package installs, vendor services or host-specific tools. Optional browser/Playwright, analyzers, AALpy, Roslyn and OCI are capability-detected and never installed/downloaded silently; restricted hosts may use trusted offline HTML fixtures instead of network access. Start statically for every unknown artifact.
 
 ## Route by the question, not filename alone
 
@@ -28,7 +28,8 @@ description: Safely inventory and analyze untrusted source archives, binaries, A
 6. **Generate, do not hallucinate:** hypothesis/fuzz/state-transition probes have **no expected outputs**. Query an explicitly authorized reference before accepting them as golden cases; do not mutate goldens/tests to make the clone pass.
 7. **Compare correctly:** same exact input types, case IDs and state/reset policy; compare output/error/status/order/steps/events/effects; numerical tolerances and explicit exclusions affect `/observation/...` only. Failure/timeout/unverified status blocks a pass; shrink must preserve mismatch class/pointer by default.
 8. **No unsafe execution:** `--execute-authorized` is an interlock, **not** consent or sandboxing. The local oracle runner and subprocess adapters are for independently reviewed *trusted* programs only, with prior explicit operator approval. For unknown programs, use static inspection or a separately assessed isolated execution service; OCI configuration is defense-in-depth, not an isolation guarantee. Do not execute unknown uploads in the ChatGPT sandbox.
-9. **Conclude from evidence:** binary parsers and external decompilers do not prove source recovery; `complete=true` refers only to recognized constructs; `PASS_OBSERVED_CASES` refers only to valid finite observations. State missing tools, execution permissions, coverage, platform limitations and untested behaviors.
+9. **Browser authority:** only operate explicitly approved trusted origins or reviewed offline HTML fixtures. A separate mutation gate is required for click/form/drag; passive link discovery still runs scripts and can have side effects. Never equate snapshots or route-shape matches with server-code execution; never promote incomplete scans to security clearance.
+10. **Conclude from evidence:** binary parsers and external decompilers do not prove source recovery; `complete=true` refers only to recognized constructs; `PASS_OBSERVED_CASES` refers only to valid finite observations. State missing tools, execution permissions, coverage, platform limitations and untested behaviors.
 
 ## Safe offline start (replace `<PYTHON>` with actual Python 3.10+ launcher)
 
@@ -40,6 +41,20 @@ description: Safely inventory and analyze untrusted source archives, binaries, A
 ```
 
 `workbench.py` reads archives without extraction and handles `.NET` CIL, JVM, DEX, WASM, EVM, ELF/PE/Mach-O, JavaScript, source maps, HAR/OpenAPI and manifests in **documented subsets**. `recon.py`: `inventory|symbols|graph|search|diff|strings`. Focused parsers: `dotnet_analysis.py`, `jvm_analysis.py`, `dex_analysis.py`, `wasm_semantics.py`, `native_symbols.py`, `evm_analysis.py`, `web_analysis.py`, `app_manifests.py`, `format_probes.py`. Exit code `3` signals partial evidence; never drop exclusions. See [Discover](references/discover.md), [capability matrix](references/capability-matrix.md), [evidence graph](references/graph-and-provenance.md).
+
+## Authorized web investigation and audits (optional browser)
+
+```sh
+<PYTHON> scripts/web_investigator.py detect
+<PYTHON> scripts/web_investigator.py capture --origin http://127.0.0.1:8080 --actions APPROVED.json --execute-authorized --mutations-approved -o trace.json
+<PYTHON> scripts/web_investigator.py explore --origin http://127.0.0.1:8080 --execute-authorized --max-pages 5 -o links.json
+<PYTHON> scripts/web_audit.py --trace trace.json --policy FROZEN_EXPECTATIONS.json -o findings.json
+<PYTHON> scripts/source_marker_scan.py --source-root APPROVED_SOURCE -o secret-markers.json
+<PYTHON> scripts/correlate_web_evidence.py --trace trace.json --contracts openapi-contract.json -o candidates.json
+<PYTHON> scripts/evidence_ir.py build trace.json candidates.json --sqlite graph.sqlite -o merged-graph.json
+```
+
+For ChatGPT/network-restricted sandboxes, use `--fixture-root REVIEWED_HTML_DIR` with `capture|explore` to render trusted HTML in memory without claiming HTTP/network evidence. `web_audit.py` only evaluates independently supplied expectations; missing observations remain incomplete, and security/performance checks have finite scope. Read [dynamic browser](references/dynamic-investigation.md), [audits and policies](references/web-audits.md), [runtime trust](references/runtime-evidence.md), [graph evidence](references/graph-and-provenance.md).
 
 ## Persistent offline investigation: CLI or optional MCP stdio
 

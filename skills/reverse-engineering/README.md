@@ -18,7 +18,11 @@ One portable Agent Skills package, six modes (`Discover`, `Investigate`, `Charac
 | Mismatch diagnosis | `behavioral_pipeline.py` bounded oracle-rerun shrinking with first mismatch pointer and class preservation | Trusted binaries only; state reset required; not globally minimal |
 | Process effects | `oracle_runner.py --capture-fs` hashes regular files in trusted working directories | No OS isolation; cannot see outside-cwd, database/network/syscall effects |
 | Web/API analysis | `interface_traces.py` HAR/OpenAPI inspection and authorized HTTP status/hash replay | No redirects; no server-internal effects; test inputs can contain sensitive data |
-| Browser behavior | `browser_capture.py` opt-in Playwright actions, request/response metadata, DOM hashes, screenshot option | Requires installed Playwright/browser and approved site; browser routing is not an OS firewall |
+| Browser behavior (legacy) | `browser_capture.py` opt-in Playwright actions, request/response metadata, DOM hashes, screenshot option | Existing entrypoint unchanged; requires explicit approval and installed browser |
+| Interactive browser investigation | `web_investigator.py` with click, drag, hover, selection, viewport, DOM/network/console metadata, local timings, bounded same-origin link exploration | Optional browser, separately authorized trusted target; fixture fallback is not HTTP evidence |
+| Functional/performance/security expectation audit | `web_audit.py` with text/hash, HTTP status, DOM change, timing, viewport overflow and header-presence rules | Only finite, independently defined policies; no automated full SAST/DAST or visual/field monitoring |
+| Credential-marker detection | `source_marker_scan.py` read-only bounded local source scan with redacted findings | Pattern matches may be false; never validates keys or probes targets |
+| Browser-to-API evidence correlation | `correlate_web_evidence.py`, dynamic evidence ingestion in `evidence_ir.py` | Route-shape/time-window associations labeled inferred, not backend-handler proof |
 | Evidence graph | `evidence_ir.py build/export`, append-only hash-keyed SQLite sources/nodes/edges | Static evidence relations, not verified dynamic call graphs |
 | Runtime policy | `execution_policy.py static/trusted-local/oci-pinned` with pinned image and restrictive OCI argv | OCI is **not** attested isolation and its policy generator does not run or provision containers |
 
@@ -56,6 +60,19 @@ python3 scripts/execution_policy.py oci-pinned --execute-authorized --isolation-
 ```
 
 Each executable is an optional adapter. The analyzers can themselves expose host attack surfaces when parsing a hostile target; use an independently assessed isolation environment. Do not run untrusted uploads, MSBuild projects or target code in this skill's default sandbox. The browser mode needs installed Playwright and a compatible browser; no download occurs. A preapproved image with immutable digest and Docker/Podman must already exist for OCI.
+
+## Browser audit in the ChatGPT sandbox (trusted HTML fixture)
+
+If HTTP browser navigation is blocked, an **approved local HTML fixture** can still be tested with real Playwright/Chromium input events. This does not simulate or prove remote HTTP behavior.
+
+```sh
+python3 scripts/web_investigator.py detect
+python3 scripts/web_investigator.py capture --origin http://127.0.0.1:8080 --fixture-root examples/web-fixture --actions examples/web-actions.json --execute-authorized --mutations-approved --browser-executable /usr/bin/chromium -o /tmp/re-fixture-trace.json
+python3 scripts/web_audit.py --trace /tmp/re-fixture-trace.json --policy examples/web-policy.json -o /tmp/re-fixture-audit.json
+python3 scripts/evidence_ir.py build /tmp/re-fixture-trace.json --sqlite /tmp/re-fixture.sqlite -o /tmp/re-fixture-graph.json
+```
+
+The binary path is an example, not a portability requirement; use an installed browser discovered on the host. Inputs and outputs must be distinct and report location must be writable; scripts never download dependencies. To test a real trusted site on a host with networking, omit `--fixture-root`, use an approved exact origin and ensure authorization before any mutation. Direct references: [dynamic investigation](references/dynamic-investigation.md), [finite audits](references/web-audits.md).
 
 ## Behavioral and security contracts
 

@@ -1,0 +1,8 @@
+{
+  "schema_version":"1.0",
+  "rules":[
+    {"id":"fixture-provenance","path":"/network_evidence","op":"eq","expected":false},
+    {"id":"workflow-saved","path":"/steps/3/selected_text_sha256","op":"eq","expected":"b5c120b316c237a0deab3140267aebedba61947d3ae268d708a53d5be119e9fb"},
+    {"id":"no-overflow","path":"/steps/2/dom/horizontal_overflow","op":"eq","expected":false}
+  ]
+}

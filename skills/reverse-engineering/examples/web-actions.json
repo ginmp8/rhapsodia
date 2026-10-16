@@ -1,0 +1,11 @@
+[
+  {"type":"goto","path":"/index.html"},
+  {"type":"fill","selector":"#name","value":"synthetic"},
+  {"type":"click","selector":"#save"},
+  {"type":"text-hash","selector":"#status"},
+  {"type":"hover","selector":"#save"},
+  {"type":"drag","selector":"#drag","target":"#drop"},
+  {"type":"text-hash","selector":"#drop"},
+  {"type":"select","selector":"#region","value":"B"},
+  {"type":"scroll","selector":"#pane","pixels":20}
+]
