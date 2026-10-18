@@ -26,7 +26,7 @@ Resolve before mutation: one `TARGET`; mode `audit|plan|apply|validate|package`;
 - Keep token, structural, semantic-review, behavioral, and runtime evidence separate. Static/semantic evidence does not prove behavioral equivalence; runtime/cost claims require explicit comparable profiles, and strong runtime claims require observed execution.
 - Keep the portable core host-neutral: package-relative resources, capability-based Python 3 resolution, no required vendor-private tool names/install paths. Host adapters such as `agents/openai.yaml` remain optional.
 - `SKILL.md` is the control plane. Required Markdown must be directly reachable from it with an explicit load condition; nested Markdown links may aid navigation but cannot be the only route to required instructions.
-- Prefer deduplication, precise wording, and progressive loading. Use `readable` for activation/control-plane text, `dense` for low-risk detail, and `max-safe` only after preservation/readability evidence supports it.
+- Prefer deduplication, precise wording, and progressive loading. Use `readable` for activation/control-plane text, `dense` for low-risk detail, and `max-safe` only after preservation/readability evidence supports it. For long/multi-source inputs, preserve relevant middle spans, semantically indirect evidence, cross-span conditions and contradictory claims; load [long-context preservation](references/long-context-preservation.md) before condensing them.
 - When format choice matters, load [Format selection](references/format-selection.md): preserve exact schemas, typed/null values, authority, hierarchy, and step dependencies; do not claim a universal winner, or change `SKILL.md` away from Markdown. Treat TOON/JTON as conditional data codecs, never authoritative instruction syntax.
 - When invoked by Booster, Creator Juiced, or Benchmark, load [Integration protocol](references/integration-protocol.md) for versioned delegation and mutation boundaries. A selection recommendation is advisory until tokenizer and behavioral gates run.
 
@@ -42,7 +42,7 @@ Stop before mutation if target identity, authority, writable/protected scope, ro
 4. **Measure**: record applicable `catalog`, `entrypoint`, `activated`, reachable `instructions`, and `all-text` surfaces. With runtime profiles, keep uncached input, cache write/read, output, total tokens/cost, and latency separate; never invent rates, cache behavior, or load frequency. For format variants, count actual schema/hint overhead and require round-trip before interpreting savings.
 5. **Refactor**: apply only the bounded transformation; preserve activation, authority, scope, workflow, safety, validation, evidence/citation, compatibility, output/stop, readability, and protected literals unless an authorized equivalent is evidenced.
 6. **Compare**: use the same primary tokenizer, scope, frozen contract, and evaluator for both arms; measure optional comparison tokenizers independently.
-7. **Gate**: resolve applicable `manual`/`scenario` invariants; validate scenario coverage, refs/load conditions, protected surfaces, authority/workflow semantics, target checks, portability, packaging, and claim-evidence boundaries.
+7. **Gate**: resolve applicable `manual`/`scenario` invariants; validate scenario coverage, refs/load conditions, protected surfaces, authority/workflow semantics, target checks, portability, packaging, and claim-evidence boundaries. For long-context reductions, require source-obligation coverage and position-varied scenarios before behavioral claims.
 8. **Freeze/deliver**: after all gates pass, record final tree identity and make no further edits; canonicalize destinations, reject aliases with target/protected inputs, package exact frozen bytes, verify receipt/hash, preserve last-good state on failure.
 
 ## Hard gates
@@ -55,6 +55,7 @@ Load only the resource whose decision is active; all required Markdown is one ho
 
 - Tactics, levels, risk labels: [Compression playbook](references/compression-playbook.md).
 - Moving/merging/deleting/rewriting operative rules: [Semantic preservation](references/semantic-preservation.md).
+- Compressing long or multi-source evidence without losing middle-span obligations: [Long-context preservation](references/long-context-preservation.md).
 - Evidence-layer claim boundaries: [Behavioral equivalence](references/behavioral-equivalence.md).
 - Identity, tokenizer surfaces, evaluator freeze, rollback, receipts, portability: [Reproducibility controls](references/reproducibility-controls.md).
 - Metrics, preservation gates, commands, package checks, reporting: [Validation and reporting](references/validation-and-reporting.md).

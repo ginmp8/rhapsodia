@@ -1,9 +1,9 @@
 {
   "skill": "skill-token-efficient",
-  "version": "0.1.1",
-  "release_type": "patch",
-  "previous_version": "0.1.0",
+  "version": "0.2.0",
+  "release_type": "minor",
+  "previous_version": "0.1.1",
   "contract_id": "skill-opt.token-efficiency",
   "integration_contract_version": 1,
-  "version_notes": "Root VERSION aligned with release metadata; contract v1 and its exported surfaces unchanged. Previous published-release history remains unknown."
+  "version_notes": "Conditional long-context semantic-preservation guidance; skill-opt.token-efficiency integration contract v1 and interfaces remain unchanged."
 }

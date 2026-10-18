@@ -85,7 +85,9 @@ Change model/host/tool schema while keeping the prompt text constant. Pass only 
 
 ### Long context
 
-Vary relevant-information position, distractors, and overflow behavior. Preserve provenance and test untrusted embedded instructions.
+Vary relevant-information position (start/middle/end), comparable input length, distractors, and overflow behavior. Test semantic paraphrase with no literal match, a condition split across distant spans, missing evidence, middle-section contradictions, and source-provenance retention. Preserve untrusted embedded instructions as data.
+
+For a behavioral robustness claim, freeze the same questions, evidence oracles, model/tool identity, and scorer before candidate changes; record outcomes by position and failed obligations. A static prompt review, one position, or a synthetic needle test alone cannot support a claim of robust long-context use.
 
 ### LLM judge
 
