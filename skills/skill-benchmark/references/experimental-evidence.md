@@ -1,6 +1,6 @@
 # Experimental Behavioral Evidence
 
-Use this reference for measured behavioral comparison. Static score changes are not behavioral capability deltas.
+Use this reference for measured behavioral comparison. Static score changes are not behavioral capability deltas. For interpretation of materially quantitative claims, the root SKILL.md directly links `references/statistical-interpretation.md`; that source supplements, not replaces, v2/v3 comparison contracts.
 
 ## Evidence versions
 

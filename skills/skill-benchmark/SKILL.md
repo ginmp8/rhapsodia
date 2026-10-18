@@ -1,6 +1,6 @@
 ---
 name: skill-benchmark
-description: "use when the requested deliverable is a reusable Agent Skills benchmark: maturity score/report, version or candidate comparison, report validation, behavioral-evidence interpretation, publish-readiness assessment, or portability benchmark across compatible hosts. produces evidence-bound scorecards, gates, source/evaluator identities, scenario status, risks, portability findings, and verdicts. do not use to mutate or harden a skill, perform generic code/prompt review, or choose search/evolution survivors; route those to the owning workflow."
+description: "Benchmark existing Agent Skills with evidence-bound maturity scores, comparable version/candidate evaluations, behavioral results, portability checks and publish-readiness verdicts. Use for benchmark reports, scenario validation, uncertainty-aware comparisons and report audits. Do not modify target skills, perform generic code reviews, or select evolution survivors; separate static, behavioral and runtime evidence."
 ---
 
 # Skill Benchmark
@@ -47,6 +47,7 @@ Do not use for target mutation, iterative repair/hardening, generic code review,
 
 - For token/format baseline-vs-candidate comparisons, import `skill-opt.token-efficiency` v1 from `skill-token-efficient` in `compare-existing` read-only mode through [experimental evidence](references/experimental-evidence.md). The provider supplies pinned-tokenizer/scope counts and preservation diagnostics, not behavior, scores, verdicts or write authority. Without provider, mark canonical measurement unavailable and keep independently evidenced metrics separate.
 - Evidence layers stay distinct: `static`, `behavioral`, `runtime`, `qualitative`, `planned`, and `blocked`.
+- For quantitative results affecting a verdict, screen denominators, evaluated population/suite mix, effect magnitude, interval assumptions, multiplicity and selected-outcome bias; load [statistical interpretation](references/statistical-interpretation.md). Never turn observational metrics or p-values into proof of skill effect.
 - Never turn planned, missing, stale, malformed, contaminated, or unvalidated evidence into measured claims.
 - A static 0-100 score is a maturity score, not behavioral capability proof and not normative Agent Skills conformance.
 - Hard gates run before score-based comparison; a better scalar score never overrides a blocker regression.
@@ -56,6 +57,14 @@ Do not use for target mutation, iterative repair/hardening, generic code review,
 - Do not invent activation precision/recall, robustness, conformance, coverage, quality, rework, cost, or portability/runtime results.
 - If several candidates are non-dominated and no frozen weighting policy exists, report the frontier instead of manufacturing a winner.
 - Portability claims concern the semantic core; host adapters are optional and must not add score merely by existing.
+
+## Output contract summary
+
+Return the evidence-bound scorecard, source/evaluator identity, applicable gate status, comparable behavioral measurements or `not-measured`, portability limits, risk findings and verdict; keep unsupported improvement claims out. Full fields are specified in the later Output contract section.
+
+## Immediate stop conditions
+
+Stop rather than assert an evidence-based benchmark when the target cannot be inspected, a required gate fails, protected evaluator material changes, frozen arms are not comparable, hidden-grader exposure is unknown, or behavioral/runtime superiority lacks valid observed runs. Keep an explicitly bounded `not-measured` or `not-comparable` verdict when applicable.
 
 ## Required inputs and protected evidence
 
@@ -69,6 +78,7 @@ Protect target files, fixtures, expected outputs, secrets, credentials, frozen e
 - [`references/benchmark-workflow.md`](references/benchmark-workflow.md): filesystem sequence, evidence hierarchy, comparison rules, output ownership, final response.
 - [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md): immutable snapshots, evaluator identity, alias safety, atomic delivery, recovery receipts.
 - [`references/test-scenarios.md`](references/test-scenarios.md) and [`references/experimental-evidence.md`](references/experimental-evidence.md): v2/v3 result contracts, repeated trials, runtime identity, uncertainty, grader/length controls.
+- [`references/statistical-interpretation.md`](references/statistical-interpretation.md): denominator/population-mix, effect magnitude, interval, multiplicity and subgroup safeguards; apply only when quantitative evidence materially affects the verdict.
 - [`references/benchmark-health.md`](references/benchmark-health.md) and [`references/skill-coverage.md`](references/skill-coverage.md): suite-health gate and optional constraint-level behavioral coverage.
 - [`references/control-and-capability-delta.md`](references/control-and-capability-delta.md): baseline/parent/no-skill/length-control roles, visibility, provenance, capability delta.
 - [`references/evaluation-ladder-and-parent-comparison.md`](references/evaluation-ladder-and-parent-comparison.md) and [`references/multi-candidate-evaluation.md`](references/multi-candidate-evaluation.md): staged L0-L5 evidence, parent attribution, multi-candidate comparability without survivor selection.
@@ -162,7 +172,7 @@ Omit `--source-manifest` only when no frozen snapshot exists; the report must th
 
 ### 4. Add behavioral evidence only after validation
 
-For new stochastic/model-agent runs, prefer v3 repeated-trial evidence. Keep v2 readable for compatibility but do not use a one-observation v2 delta as a strong stochastic improvement claim. When a strong behavioral verdict depends on the suite, validate benchmark health first; a health `fail` blocks the claim and `review` limits it. Optional skill-coverage evidence can show which material constraints were actually exercised.
+For new stochastic/model-agent runs, prefer v3 repeated-trial evidence. Before inferring a win from pooled rates, inspect scenario/trial population and denominator comparability; apply the statistical branch only when decision-relevant. Keep v2 readable for compatibility but do not use a one-observation v2 delta as a strong stochastic improvement claim. When a strong behavioral verdict depends on the suite, validate benchmark health first; a health `fail` blocks the claim and `review` limits it. Optional skill-coverage evidence can show which material constraints were actually exercised.
 
 Validate scenario evidence before metrics:
 
