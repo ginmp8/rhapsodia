@@ -107,7 +107,7 @@ A high-materiality `decided` result requires explicit evidence references, at le
 
 ## Decision policy and tie-breakers
 
-Operational action policy is caller-owned. Do not invent thresholds, weights, utility functions, approval rules, or permissions.
+Operational action policy is caller-owned. Do not invent thresholds, weights, utility functions, approval rules, or permissions. Statistical screening of outcome-relevant evidence does not add a new type, field, probability, or required numeric threshold to `decision-engine/2`.
 
 Apply tie-breakers in this order:
 

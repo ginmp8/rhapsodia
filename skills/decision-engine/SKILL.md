@@ -1,6 +1,6 @@
 ---
 name: decision-engine
-description: Make bounded, evidence-aware decisions in a portable structured format using binary, choice, or score. Use when an agent, skill, workflow, or user needs a typed yes/no decision, selection among explicit alternatives, bounded ordinal/numeric score, routing/gate decision, or machine-readable decision contract with uncertainty and escalation. Do not use for open-ended writing, broad research, ordinary factual answers, implementation, generic comparison, or subjective exploration unless the task contains a concrete bounded decision surface.
+description: Make bounded, evidence-aware binary, choice, or score decisions in a portable typed contract with uncertainty and escalation. Use for explicit yes/no judgments, supplied alternatives, routing or gates, and bounded scoring; assess statistical evidence when it materially affects a decision. Do not use for open-ended research, general factual answers, implementation, brainstorming, or comparisons without a bounded decision surface.
 ---
 
 # Decision Engine
@@ -43,6 +43,7 @@ Identify the proposition/options/scale, `low|medium|high` materiality, supplied 
 8. Bundled/static scenarios are planned coverage until actually executed; strong behavioral/stability claims require comparable executed evidence.
 9. Keep the semantic core host-neutral; host-specific metadata is optional adapter material only.
 10. Keep the package English-only. Runtime caller input may be any language; do not translate it unless the task requires translation.
+11. When quantitative evidence is outcome-relevant, check denominators, base rates, subgroup composition, population fit, selection/causal assumptions and effect magnitude as applicable; never infer causation or practical benefit from aggregate rates or p-values alone. Do not run this screen for unrelated decisions.
 
 Stable semantic clause ids and evaluation anchors: [references/behavior-contract.md](references/behavior-contract.md).
 
@@ -52,10 +53,11 @@ Stable semantic clause ids and evaluation anchors: [references/behavior-contract
 2. **Normalize:** apply [references/decision-contract.md](references/decision-contract.md) to the decision surface, materiality, statuses, exhaustiveness, constraints, and tie-breakers.
 3. **Place control:** use [references/control-placement.md](references/control-placement.md); route mechanical truth to deterministic controls.
 4. **Acquire evidence when authorized:** fetch only evidence that can plausibly change decision/status/confidence and whose cost is proportionate to materiality.
-5. **Decide conservatively:** apply [references/evidence-and-confidence.md](references/evidence-and-confidence.md) for uncertainty, conflict, confidence, calibration, and escalation.
-6. **Render:** default to the canonical `decision-engine/2` envelope; use [assets/templates/decision-envelope.json.template](assets/templates/decision-envelope.json.template) as a skeleton, never as evidence.
-7. **Validate when machine consumption matters:** run `scripts/validate_decision.py <result.json> --json` when process execution exists; otherwise report the gate `not-run`.
-8. **Return:** add prose only when requested or needed to consume the result.
+5. **Screen quantitative inference only when material:** use [references/statistical-evidence.md](references/statistical-evidence.md); route arithmetic to deterministic methods and preserve uncertainty when evidence could reverse the result.
+6. **Decide conservatively:** apply [references/evidence-and-confidence.md](references/evidence-and-confidence.md) for uncertainty, conflict, confidence, calibration, and escalation.
+7. **Render:** default to the canonical `decision-engine/2` envelope; use [assets/templates/decision-envelope.json.template](assets/templates/decision-envelope.json.template) as a skeleton, never as evidence.
+8. **Validate when machine consumption matters:** run `scripts/validate_decision.py <result.json> --json` when process execution exists; otherwise report the gate `not-run`.
+9. **Return:** add prose only when requested or needed to consume the result.
 
 ## Output contract
 
@@ -67,6 +69,6 @@ Stop, hand off, or return a bounded non-decision when the surface is undefined; 
 
 ## Progressive loading and validation
 
-Load only what changes the active decision: [decision contract](references/decision-contract.md) for type/status/scale semantics; [evidence/confidence](references/evidence-and-confidence.md) for evidence, uncertainty, calibration, and escalation; [control placement](references/control-placement.md) for mechanical-vs-semantic routing; [examples](examples/examples.md) for valid envelope shapes. For maintenance/evaluation work use [behavior contract](references/behavior-contract.md), [evaluation protocol](references/evaluation-protocol.md), [maintenance/evidence](references/maintenance-and-evidence.md), [portability](references/host-portability.md), [versioning](references/versioning-and-compatibility.md), and [v1->v2 migration](references/migration-v1-to-v2.md). Required Markdown must not depend on a reference-to-reference hop for discovery.
+Load only what changes the active decision: [decision contract](references/decision-contract.md) for type/status/scale semantics; [evidence/confidence](references/evidence-and-confidence.md) for evidence, uncertainty, calibration, and escalation; [statistical evidence](references/statistical-evidence.md) when quantitative interpretation could change a bounded outcome; [control placement](references/control-placement.md) for mechanical-vs-semantic routing; [examples](examples/examples.md) for valid envelope shapes. For maintenance/evaluation work use [behavior contract](references/behavior-contract.md), [evaluation protocol](references/evaluation-protocol.md), [maintenance/evidence](references/maintenance-and-evidence.md), [portability](references/host-portability.md), [versioning](references/versioning-and-compatibility.md), and [v1->v2 migration](references/migration-v1-to-v2.md). Required Markdown must not depend on a reference-to-reference hop for discovery.
 
 Use `scripts/validate_skill.py` for package/link/schema/eval/Top-100 checks, `scripts/validate_evals.py` for planned suites, `tests/test_decision_contract.py` for deterministic v2 regressions, and `scripts/package_skill.py` for deterministic packaging. Structural portability is not runtime/model equivalence.

@@ -16,6 +16,8 @@ Examples:
 - `Which of these three workflows fits the evidence?` -> Choice with explicit exhaustiveness.
 - `How severe is this bounded risk on three described levels?` -> ordinal Score.
 - `What is this bounded measured value from 0 to 100?` -> numeric Score.
+- `Calculate success rates, a contingency table, an interval, or a posterior from supplied counts` -> deterministic computation under explicit assumptions; use Decision Engine only for a subsequent bounded semantic judgment.
+- `Select a release candidate using subgroup performance evidence` -> bounded Choice; screen applicable quantitative evidence with [statistical-evidence.md](statistical-evidence.md) before selecting.
 - `Write the best architecture proposal` -> open-ended analysis first; optionally use Choice later to select among explicit proposals.
 
 Do not turn every model judgment into this skill. Structured decisions are useful at boundaries, routers, gates, and explicit selection points.
