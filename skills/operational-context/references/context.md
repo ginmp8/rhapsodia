@@ -16,6 +16,33 @@ composer does not invent dependencies, silently truncate contracts, or run a sum
 An unavailable optional source still needs explicit caller removal/reselection rather
 than silent omission that hides a missing source.
 
+## Long-input selection and coverage (caller-side)
+
+Use when a task spans long documents, many files, or dispersed evidence and a relevant
+constraint may be missed. This is a **selection/checking protocol**, not a new CLI
+operation or a guarantee that any model reliably attends to every input position.
+
+1. Convert the task into answer-critical obligations: claims/questions, required
+   contracts, dependencies, counterevidence and expected source boundaries. For each,
+   locate an exact path and line range (or record `unknown` and seek a bounded read).
+2. Explore section/symbol indexes and links before selecting snippets. Check relevant
+   material across source regions, including the middle where warranted; search
+   paraphrases and related symbols, not literal keyword hits alone. Avoid indiscriminate
+   whole-file inclusion or fixed first/last placement rules.
+3. Classify each located span as required or optional. Keep a small caller-side coverage
+   map: obligation -> source/lines -> supporting/conflicting/unknown -> pack inclusion.
+   Preserve multi-span dependencies, exceptions, trust labels and source provenance.
+4. When required evidence will not fit, narrow/retrieve with the owner or enlarge an
+   authorized budget within bounds. Do not downgrade required material to optional,
+   silently summarize away qualifiers, or pretend a truncated pack is complete.
+5. After `pack`/`pack-verify`, compare the included required anchors against the map;
+   show missing, conflicting and omitted optional evidence. Revalidate source pins.
+
+For claims of improved long-context model outcomes, separately test exact and paraphrased
+facts placed near the beginning, middle and end, with distractors and missing/contrary
+sources, under fixed model/runtime/evaluator identity. CLI checks alone show only pack
+integrity and selection metadata, not model recall or semantic accuracy.
+
 A returned `task-context/v1` contains its workspace scope, required/optional pins,
 `omitted_optional`, `required_complete`, `incomplete`, exact `output_bytes`, and `pack_id`.
 `incomplete:true` means optional context is omitted, not that required gates can be skipped.

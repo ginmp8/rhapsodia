@@ -35,6 +35,10 @@ preserved quality, lower mean latency, non-worse P95, and lower reported input t
 It is not a confidence interval, causal result, noninferiority proof or population claim.
 Retain scenario coverage and balanced cold/warm repetitions; no real model savings may
 be claimed from byte counters, synthetic usage fixtures or local CLI timings alone.
+For long-context outcome claims, the frozen paired scenarios must also vary evidence
+position (beginning/middle/end), literal versus paraphrased retrieval, conflicting and
+missing evidence; report omissions separately from speed/token measures. Untested cases
+remain `not-run`, never implicit evidence of position-robust comprehension.
 
 ## Delegation and retrieval
 

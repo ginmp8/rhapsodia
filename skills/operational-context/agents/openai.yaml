@@ -1,5 +1,11 @@
 interface:
   display_name: Operational Context
-  short_description: Reuse bounded task context and current evidence without transferring authority.
+  short_description: Reuse bounded task context and current evidence without transferring
+    authority.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
 policy:
   allow_implicit_invocation: true
+  products:
+  - CHAT
+  - CODEX
