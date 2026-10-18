@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.2] - 2026-10-18
+
+### Fixed
+- Shortened the portable `SKILL.md` frontmatter `description` from 690 to 491 characters to satisfy hosts with a 500-character discovery-description limit.
+- Preserved the existing activation scope, six workflow modes, safety boundaries, references, scripts, tests, fixtures and host adapters.
+- No implementation or public CLI/data contract changes; this is a compatible metadata-only correction.
+
+## [0.2.1] - 2026-10-18
+
+### Fixed / merged
+- Rebased the LeanREA-inspired instruction optimization on the complete, supplied `0.2.0` reference instead of the older installed/catalog snapshot. No upstream reference files, scripts, tests, fixtures or optional browser capabilities were removed.
+- Added `references/fast-static-triage.md` as a conditional cheap-first, bounded static discovery guide and connected it from `SKILL.md`, `README.md`, `references/discover.md`, `references/capability-matrix.md` and the source-aware research notes.
+- Kept `web_investigator.py` as the sole supported browser entrypoint (including offline fixture mode, audits and route correlation); did **not** reintroduce the retired `browser_capture.py` entrypoint.
+- Preserved the six mode router, 13 MCP tools, authorization boundaries, observation contracts, all original `0.2.0` source/test/fixture bytes, and the original release history.
+
+### Compatibility and validation
+- Compatible documentation/routing repair; no Python/C# runtime implementation, test, fixture or browser data format changed. `0.2.0` commands, APIs and migration guidance remain authoritative.
+- The LeanREA benchmark is third-party evidence about LeanREA versus REA, **not** performance validation of this skill. No throughput, time, cost or token improvement is claimed without a paired test.
+
 ## [0.2.0] - 2026-10-16
 
 ### Consolidated
