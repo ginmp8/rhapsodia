@@ -1,0 +1,731 @@
+{
+  "schema_version": "1.0",
+  "scope": {
+    "mode": "create",
+    "target": "causal-flow-comprehension",
+    "completeness_boundary": "corpus-bounded",
+    "source_review_date": "2026-10-18",
+    "method": "targeted narrative review of primary abstracts and user requirements; not a systematic literature review",
+    "limitations": [
+      "Publisher abstracts rather than full texts were used for some studies.",
+      "Source URLs and access date are recorded; original external page bytes were not snapshotted.",
+      "Host activation and runtime effectiveness are not evaluated in this creation run."
+    ]
+  },
+  "sources": [
+    {
+      "id": "S-001",
+      "title": "Rozenblit & Keil (2002), explanatory depth",
+      "locator": "https://doi.org/10.1207/s15516709cog2605_1",
+      "evidence_locator": "publisher abstract; 12 studies described; full published article available elsewhere",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-001"
+      ]
+    },
+    {
+      "id": "S-002",
+      "title": "Chi et al. (1989), self-explanations",
+      "locator": "https://doi.org/10.1207/s15516709cog1302_1",
+      "evidence_locator": "publisher abstract; students studying physics worked examples",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-002"
+      ]
+    },
+    {
+      "id": "S-003",
+      "title": "Ko et al. (2006), information seeking in maintenance",
+      "locator": "https://doi.org/10.1109/TSE.2006.116",
+      "evidence_locator": "article metadata and abstract indexed in research results; original IEEE page not opened",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-003"
+      ]
+    },
+    {
+      "id": "S-004",
+      "title": "Sillito et al. (2008), programming change questions",
+      "locator": "https://doi.org/10.1109/TSE.2008.26",
+      "evidence_locator": "paper abstract and DOI index; 44-question taxonomy; original IEEE page not opened",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-003"
+      ]
+    },
+    {
+      "id": "S-005",
+      "title": "LaToza & Myers (2010), reachability questions",
+      "locator": "https://doi.org/10.1145/1806799.1806829",
+      "evidence_locator": "author manuscript abstract indexed and metadata; PDF not inspected in this pass",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-004"
+      ]
+    },
+    {
+      "id": "S-006",
+      "title": "Controlled experiment on confirmation bias in software testing (2019)",
+      "locator": "https://doi.org/10.1007/s10664-018-9668-8",
+      "evidence_locator": "Springer published abstract and results; 42 graduate students",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-005"
+      ]
+    },
+    {
+      "id": "S-007",
+      "title": "Fernbach et al. (2013), policy explanation",
+      "locator": "https://doi.org/10.1177/0956797612464058",
+      "evidence_locator": "publisher abstract; policy-explanation experiments",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-006"
+      ]
+    },
+    {
+      "id": "S-008",
+      "title": "Crawford & Ruscio (2021), preregistered replications",
+      "locator": "https://doi.org/10.1177/0956797620972367",
+      "evidence_locator": "publisher abstract; nonreplication of political moderation; recognition of ignorance",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-006",
+        "F-007"
+      ]
+    },
+    {
+      "id": "S-009",
+      "title": "W3C PROV-O Recommendation (2013)",
+      "locator": "https://www.w3.org/TR/prov-o/",
+      "evidence_locator": "formal provenance vocabulary standard, not a mandate for this skill",
+      "state": "live",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-008"
+      ]
+    },
+    {
+      "id": "S-010",
+      "title": "User task requirements and earlier research question",
+      "locator": "conversation:current-task",
+      "evidence_locator": "user explicitly requested new skill, research-related flow comprehension, Top-100, <=500 description and multi-host compatibility",
+      "state": "user-provided",
+      "accessed_on": "2026-10-18",
+      "finding_ids": [
+        "F-009",
+        "F-010"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "claim": "People can substantially overestimate mechanistic explanatory understanding.",
+      "source_ids": [
+        "S-001"
+      ],
+      "disposition": "implement",
+      "rationale": "Human cognitive study; use only to motivate explicit gap detection, not to assert agent effect.",
+      "requirement_ids": [
+        "R-001"
+      ]
+    },
+    {
+      "id": "F-002",
+      "claim": "Self-generated explanations in physics learning were associated with deeper principle-oriented learning.",
+      "source_ids": [
+        "S-002"
+      ],
+      "disposition": "implement",
+      "rationale": "Transfer to code reasoning is a design hypothesis, not an established effect in code agents.",
+      "requirement_ids": [
+        "R-001"
+      ]
+    },
+    {
+      "id": "F-003",
+      "claim": "Programmers in maintenance tasks seek and relate information and ask diverse cross-code questions.",
+      "source_ids": [
+        "S-003",
+        "S-004"
+      ],
+      "disposition": "implement",
+      "rationale": "Supports scoped cross-file question-driven traversal over component summaries.",
+      "requirement_ids": [
+        "R-002"
+      ]
+    },
+    {
+      "id": "F-004",
+      "claim": "Reachability questions occur frequently and can be difficult in software development tasks.",
+      "source_ids": [
+        "S-005"
+      ],
+      "disposition": "implement",
+      "rationale": "Supports checking alternate paths and constraining negative claims.",
+      "requirement_ids": [
+        "R-003"
+      ]
+    },
+    {
+      "id": "F-005",
+      "claim": "A 42-student functional-testing experiment found more confirmatory than disconfirmatory cases; time-pressure effect was not supported.",
+      "source_ids": [
+        "S-006"
+      ],
+      "disposition": "implement",
+      "rationale": "Qualify population and avoid implying time pressure causes confirmation bias.",
+      "requirement_ids": [
+        "R-004"
+      ]
+    },
+    {
+      "id": "F-006",
+      "claim": "Mechanistic policy explanations reliably reduce political extremity in general.",
+      "source_ids": [
+        "S-007",
+        "S-008"
+      ],
+      "disposition": "rejected",
+      "rationale": "2013 source suggested an effect but 2021 preregistered replications failed to support general moderation; no technical transfer.",
+      "requirement_ids": []
+    },
+    {
+      "id": "F-007",
+      "claim": "Preregistered policy-explanation replications found reduced perceived understanding but not the original moderation outcome.",
+      "source_ids": [
+        "S-008"
+      ],
+      "disposition": "implement",
+      "rationale": "Use as a transfer and epistemic-certainty warning.",
+      "requirement_ids": [
+        "R-005"
+      ]
+    },
+    {
+      "id": "F-008",
+      "claim": "Provenance can explicitly represent entities, activities, agents and their relations.",
+      "source_ids": [
+        "S-009"
+      ],
+      "disposition": "implement",
+      "rationale": "Skill uses lightweight source/claim IDs, not PROV-O/RDF conformance.",
+      "requirement_ids": [
+        "R-006"
+      ]
+    },
+    {
+      "id": "F-009",
+      "claim": "The user requests a reusable approach to development and understanding of existing execution flows.",
+      "source_ids": [
+        "S-010"
+      ],
+      "disposition": "implement",
+      "rationale": "Own bounded causal comprehension, with modes and concise representation.",
+      "requirement_ids": [
+        "R-008",
+        "R-009"
+      ]
+    },
+    {
+      "id": "F-010",
+      "claim": "The requested package must be multi-host, description <=500 characters, and Top-100 self-sufficient; specialist practices include versioning and traceability.",
+      "source_ids": [
+        "S-010"
+      ],
+      "disposition": "implement",
+      "rationale": "These are explicit user requirements plus governing creation-skill versioning contract.",
+      "requirement_ids": [
+        "R-007",
+        "R-010"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R-001",
+      "statement": "Require mechanistic input->guard->transition->effect explanation with gap identification.",
+      "priority": "must",
+      "finding_ids": [
+        "F-001",
+        "F-002"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-011"
+      ],
+      "evaluation_ids": [
+        "E-004",
+        "E-005"
+      ]
+    },
+    {
+      "id": "R-002",
+      "statement": "Traverse question-relevant cross-file/control/data/event/state relationships and cite sources.",
+      "priority": "must",
+      "finding_ids": [
+        "F-003"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-011"
+      ],
+      "evaluation_ids": [
+        "E-004",
+        "E-005"
+      ]
+    },
+    {
+      "id": "R-003",
+      "statement": "Constrain exhaustive reachability and negative claims to proved, enumerated closed-world scope.",
+      "priority": "must",
+      "finding_ids": [
+        "F-004"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-003",
+        "C-011"
+      ],
+      "evaluation_ids": [
+        "E-003",
+        "E-004",
+        "E-005"
+      ]
+    },
+    {
+      "id": "R-004",
+      "statement": "Actively seek discriminating disconfirming paths and document checks.",
+      "priority": "must",
+      "finding_ids": [
+        "F-005"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-003",
+        "C-011"
+      ],
+      "evaluation_ids": [
+        "E-004",
+        "E-005"
+      ]
+    },
+    {
+      "id": "R-005",
+      "statement": "Avoid projecting psychological experimental effects into assured engineering gains; label inference and contradictory evidence.",
+      "priority": "must",
+      "finding_ids": [
+        "F-007"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-003",
+        "C-004",
+        "C-009"
+      ],
+      "evaluation_ids": [
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-006",
+      "statement": "Give material claims source IDs and statuses; supply optional typed output and validator.",
+      "priority": "must",
+      "finding_ids": [
+        "F-008"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-003",
+        "C-005",
+        "C-006",
+        "C-007",
+        "C-012",
+        "C-016",
+        "C-017"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-002",
+        "E-003",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-007",
+      "statement": "Deliver host-neutral SKILL first-100 complete, <=500 metadata, SemVer/changelog, direct references and explicit fallback.",
+      "priority": "must",
+      "finding_ids": [
+        "F-010"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-008",
+        "C-009",
+        "C-014",
+        "C-015",
+        "C-018",
+        "C-019"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-004",
+        "E-005"
+      ]
+    },
+    {
+      "id": "R-008",
+      "statement": "Bound scope to understanding/challenge/proposed impact and hand off unrelated implementation/debugging/diagram work.",
+      "priority": "must",
+      "finding_ids": [
+        "F-009"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-010"
+      ],
+      "evaluation_ids": [
+        "E-004",
+        "E-005"
+      ]
+    },
+    {
+      "id": "R-009",
+      "statement": "Provide concise explanatory report with evidence, alternatives, unknowns and next verification.",
+      "priority": "must",
+      "finding_ids": [
+        "F-009"
+      ],
+      "change_ids": [
+        "C-001",
+        "C-002",
+        "C-005",
+        "C-012",
+        "C-013",
+        "C-019"
+      ],
+      "evaluation_ids": [
+        "E-002",
+        "E-004"
+      ]
+    },
+    {
+      "id": "R-010",
+      "statement": "Provide proportionate static evaluation assets and research-to-skill change accounting without unsupported runtime claims.",
+      "priority": "must",
+      "finding_ids": [
+        "F-010"
+      ],
+      "change_ids": [
+        "C-004",
+        "C-007",
+        "C-008",
+        "C-009",
+        "C-010",
+        "C-011",
+        "C-016",
+        "C-017",
+        "C-018",
+        "C-019"
+      ],
+      "evaluation_ids": [
+        "E-001",
+        "E-003",
+        "E-004"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "C-001",
+      "operation": "add",
+      "path": "SKILL.md",
+      "description": "Core boundary, modes, procedure, evidence and report contract",
+      "satisfies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-006",
+        "R-007",
+        "R-008",
+        "R-009"
+      ]
+    },
+    {
+      "id": "C-002",
+      "operation": "add",
+      "path": "references/investigation-playbook.md",
+      "description": "Cross-file causal traversal and reachability",
+      "satisfies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-009"
+      ]
+    },
+    {
+      "id": "C-003",
+      "operation": "add",
+      "path": "references/evidence-and-falsification.md",
+      "description": "Scoped claims, counterexamples, source qualifiers",
+      "satisfies": [
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-006"
+      ]
+    },
+    {
+      "id": "C-004",
+      "operation": "add",
+      "path": "references/research-foundation.md",
+      "description": "Qualified empirical rationale and counterevidence",
+      "satisfies": [
+        "R-005",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-005",
+      "operation": "add",
+      "path": "references/analysis-contract.md",
+      "description": "Human and typed analysis output contract",
+      "satisfies": [
+        "R-006",
+        "R-009"
+      ]
+    },
+    {
+      "id": "C-006",
+      "operation": "add",
+      "path": "assets/analysis.schema.json",
+      "description": "Typed shape for optional reports",
+      "satisfies": [
+        "R-006"
+      ]
+    },
+    {
+      "id": "C-007",
+      "operation": "add",
+      "path": "scripts/validate_analysis.py",
+      "description": "Source/status/check integrity validator",
+      "satisfies": [
+        "R-006",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-008",
+      "operation": "add",
+      "path": "scripts/validate_skill.py",
+      "description": "Top-100, metadata, reference, trace, version and scenario validation",
+      "satisfies": [
+        "R-007",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-009",
+      "operation": "add",
+      "path": "references/portability-and-evaluation.md",
+      "description": "Capability-based fallback and evidence ceilings",
+      "satisfies": [
+        "R-005",
+        "R-007",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-010",
+      "operation": "add",
+      "path": "evals/activation-scenarios.json",
+      "description": "Positive/negative/ambiguous routing cases",
+      "satisfies": [
+        "R-008",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-011",
+      "operation": "add",
+      "path": "evals/behavioral-scenarios.json",
+      "description": "Source-sensitive behavior cases",
+      "satisfies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-012",
+      "operation": "add",
+      "path": "examples/sample-analysis.json",
+      "description": "Synthetic example for validation, non-evidence",
+      "satisfies": [
+        "R-006",
+        "R-009"
+      ]
+    },
+    {
+      "id": "C-013",
+      "operation": "add",
+      "path": "examples/sample-report.md",
+      "description": "Synthetic human output example",
+      "satisfies": [
+        "R-009"
+      ]
+    },
+    {
+      "id": "C-014",
+      "operation": "add",
+      "path": "VERSION",
+      "description": "SemVer release identity",
+      "satisfies": [
+        "R-007"
+      ]
+    },
+    {
+      "id": "C-015",
+      "operation": "add",
+      "path": "CHANGELOG.md",
+      "description": "Current release entry",
+      "satisfies": [
+        "R-007"
+      ]
+    },
+    {
+      "id": "C-016",
+      "operation": "add",
+      "path": "research/traceability.json",
+      "description": "Frozen corpus-bounded findings->requirements->changes/evaluations",
+      "satisfies": [
+        "R-006",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-017",
+      "operation": "add",
+      "path": "tests/test_validators.py",
+      "description": "Regression tests for evidence and package checks",
+      "satisfies": [
+        "R-006",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-018",
+      "operation": "add",
+      "path": "scripts/package_skill.py",
+      "description": "Deterministic validated ZIP with digest receipt and cache exclusion",
+      "satisfies": [
+        "R-007",
+        "R-010"
+      ]
+    },
+    {
+      "id": "C-019",
+      "operation": "add",
+      "path": "README.md",
+      "description": "Usage, installation, validation and multi-host limitations",
+      "satisfies": [
+        "R-007",
+        "R-009",
+        "R-010"
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "E-001",
+      "kind": "deterministic",
+      "status": "pass",
+      "purpose": "Validate skill package structure, version, links, Top-100 and bidirectional research trace",
+      "verifies": [
+        "R-006",
+        "R-007",
+        "R-010"
+      ],
+      "command_or_method": "python scripts/validate_skill.py .",
+      "evidence": "Executed on 2026-10-18: python -B scripts/validate_skill.py . => PASS; validated current structure, metadata, direct refs, SemVer and bidirectional relations. Structural only."
+    },
+    {
+      "id": "E-002",
+      "kind": "deterministic",
+      "status": "pass",
+      "purpose": "Validate synthetic example typed analysis contract",
+      "verifies": [
+        "R-006",
+        "R-009"
+      ],
+      "command_or_method": "python scripts/validate_analysis.py examples/sample-analysis.json",
+      "evidence": "Executed on 2026-10-18: python -B scripts/validate_analysis.py examples/sample-analysis.json => PASS. Synthetic fixture only."
+    },
+    {
+      "id": "E-003",
+      "kind": "deterministic",
+      "status": "pass",
+      "purpose": "Run validator regression tests, including negative mutation examples",
+      "verifies": [
+        "R-003",
+        "R-006",
+        "R-010"
+      ],
+      "command_or_method": "python -m unittest discover -s tests -v",
+      "evidence": "Executed on 2026-10-18: python -B -m unittest discover -s tests -p test_*.py -q => 12 tests, OK; includes 8 contract cases and 4 package checks. No real target repo or host agent tested."
+    },
+    {
+      "id": "E-004",
+      "kind": "review",
+      "status": "pass",
+      "purpose": "Review source->finding->requirement->change/evaluation meaning and Top-100 semantics",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-005",
+        "R-006",
+        "R-007",
+        "R-008",
+        "R-009",
+        "R-010"
+      ],
+      "command_or_method": "manual source and artifact review",
+      "evidence": "Author semantic review, 2026-10-18: every of 10 findings accounted, 9 implemented and 1 rejected due contradictory replication; 10 requirements mapped to existing files and checks; no unresolved material conflict. Not an independent reviewer/behavioral validation."
+    },
+    {
+      "id": "E-005",
+      "kind": "runtime",
+      "status": "not-run",
+      "purpose": "Run frozen activation and behavioral cases in each target host, independently scored",
+      "verifies": [
+        "R-001",
+        "R-002",
+        "R-003",
+        "R-004",
+        "R-007",
+        "R-008"
+      ],
+      "command_or_method": "evals/activation-scenarios.json; evals/behavioral-scenarios.json",
+      "evidence": "No actual OpenAI/Claude/Codex/Copilot/Cursor host evaluation; 15 activation and 8 behavioral scenarios are authored only."
+    }
+  ],
+  "conflicts": []
+}
