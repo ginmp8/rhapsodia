@@ -29,8 +29,8 @@ A context map must be:
 - **Path-specific**: list concrete paths only when supported by evidence.
 - **Ownership-aware**: identify the owning source, contract, schema, or generator before derived outputs.
 - **Consumer-aware**: include direct callers/usages plus runtime/config/build/dynamic consumers relevant to the selected tier.
-- **Relation-aware**: use typed directional relations and material hop/depth instead of a generic undifferentiated dependency list.
-- **Bounded**: state evidence tier and closure status instead of searching indefinitely.
+- **Relation-aware**: use typed directional relations and material hop/depth instead of a generic undifferentiated dependency list. For flow-sensitive changes, explain the relevant `input/trigger -> guard -> state/data effect -> consumer` chain and potential competing writers.
+- **Bounded**: state evidence tier and closure status instead of searching indefinitely. Negative impact/reachability claims require the enumerated search/closed-world boundary; otherwise use provisional/unknown.
 - **Actionable**: include dependency-ordered change sequence and validation commands.
 - **Risk-aware**: connect material risks to evidence and mitigations.
 

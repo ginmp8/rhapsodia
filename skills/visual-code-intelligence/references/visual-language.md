@@ -23,7 +23,7 @@ The tie-break order is not a claim that one diagram is globally better. It exist
 - Name nodes with domain/responsibility language; attach file/symbol evidence separately.
 - Preserve direction consistently: left-to-right for dependency/data movement when natural; top-to-bottom for staged processes.
 - Include unchanged bridge components when omitting them would make a changed path misleading.
-- Represent retries/loops explicitly; do not flatten them into a straight line.
+- Represent retries/loops explicitly; do not flatten them into a straight line. Distinguish a conditional/possible edge from an observed execution where the chosen diagram syntax supports annotation; use a short legend or caption otherwise.
 - Show failure/alternate paths only when material to the user's question.
 - Never add components, data stores, calls, or states merely to make the diagram look complete.
 

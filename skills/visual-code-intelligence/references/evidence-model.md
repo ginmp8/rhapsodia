@@ -19,9 +19,11 @@ For **requested intent**, prefer explicit current user/spec requirements, then t
 For **rationale**, prefer explicit decision records/PR/issue evidence, then commit/trace evidence. If rationale comes only from architecture/code shape, label it `inferred`.
 
 ## Claim classes
-- `observed`: directly supported by evidence appropriate to the claim.
+- `observed`: directly supported by evidence appropriate to the claim; state whether it is **static code/config observation** or an **actually executed trace/test**, and keep the revision and relevant execution conditions.
 - `historical`: directly supported by historical evidence and scoped to the time/event it describes.
 - `inferred`: a bounded interpretation; cite its supporting evidence and state uncertainty when material.
+
+For `always`, `never`, `only path` and `all writers`, list the searched entrypoints/writers, dynamic hooks, configuration variants and the closed-world limit, or downgrade the claim to `inferred`/`unknown`. A single trace never proves no alternative path.
 
 Every material claim requires at least one evidence locator. Never fabricate exact lines/SHAs/URLs. When precise locators are unavailable, cite the strongest available file/symbol/artifact identity and say that line-level verification was unavailable.
 

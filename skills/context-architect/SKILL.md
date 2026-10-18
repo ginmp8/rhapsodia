@@ -1,6 +1,6 @@
 ---
 name: context-architect
-description: use when a repository change may cross files, modules, services, tests, generated artifacts, configuration, schemas, runtime wiring, or dependency boundaries and the agent must map owners, consumers, risks, validation, and safe change order before editing. use for refactors, features, migrations, pull requests, dependency-impact analysis, cross-module bugfixes, or implementation from an approved map. do not use for self-contained snippets, generic code explanation, product/governance planning, or skill-package work unless repository context mapping itself is the task.
+description: map codebase owners, consumers, runtime wiring, contracts, tests and ripple effects before multi-file or cross-boundary changes. use for refactor/feature/migration planning, pr impact reviews, dependency tracing, safe change ordering and execution from approved maps. include guards, alternative state writers and causal counterpaths when they change impact. do not use for isolated snippets, standalone code explanations, root-cause debugging, governance or skill-package editing.
 ---
 
 # Context Architect
@@ -15,7 +15,7 @@ Use this skill before edits when scope is multi-file, cross-boundary, high-rippl
 
 1. Map before modifying repository files when scope is multi-file, cross-boundary, or uncertain.
 2. Trace the owning source plus relevant consumers; never stop at the first plausible file or patch generated output before finding its source/generator.
-3. Prefer the smallest evidence set that closes the required branches; extra files are not automatically better context.
+3. Prefer the smallest evidence set that closes the required branches; extra files are not automatically better context. For state/flow changes, closure must consider materially reachable alternate writers, guards and event paths, not only direct references.
 4. Never invent paths, call sites, tests, commands, ownership, runtime/build wiring, external consumers, or validation results.
 5. Label evidence as `measured`, `observed`, `supplied`, `inferred`, `planned`, or `blocked`; weaker evidence must not be worded as stronger evidence.
 6. Before implementing from an approved map, revalidate the evidence identity. Refresh only invalidated leaf branches unless a central contract/schema/generator/registration/public boundary changed.
@@ -60,9 +60,9 @@ Load only a branch that changes the current decision; every required Markdown is
 5. Trace reverse impact plus runtime/build wiring: dependency injection, routers, schedulers/workers, project/build graph, flags, deployment/config, CODEOWNERS, generators, and version/lockfile effects when material.
 6. Find nearest tests and repository-native validation commands; keep unavailable validation `blocked` or `planned`, never passed.
 7. Find an analogous repository pattern only after owner and consumer paths are known.
-8. Map ripple effects: compatibility, migration/data, concurrency/idempotency/ordering, security, observability, rollout/rollback, generated-source drift, external/dynamic consumers, and dependency-version risk.
+8. Map ripple effects: compatibility, migration/data, concurrency/idempotency/ordering, security, observability, rollout/rollback, generated-source drift, external/dynamic consumers, and dependency-version risk. Challenge the initial owner/consumer map with plausible alternate state writers and guard/config paths; mark unverified alternatives provisional.
 9. Apply bounded closure: expand multi-hop only to close a required branch/risk; otherwise mark `provisional`, `blocked`, or `no-useful-local-context` and name the unresolved boundary.
-10. Render using the context-map contract; attach context-selection metrics only when a frozen gold/reference context exists.
+10. Render using the context-map contract: include repository identity, scope, owners, consumers, tests, risk evidence, closure, safe change order and blocking questions; attach context-selection metrics only with frozen gold/reference context.
 
 ## Hard stops before editing
 

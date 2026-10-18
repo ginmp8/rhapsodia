@@ -1,6 +1,6 @@
 ---
 name: visual-code-intelligence
-description: Create evidence-backed visual explanations of software changes and systems from repositories, PRs, diffs, commits, files, specs, and history. Use when humans need to understand what changed, how code works, why code exists, or when a visual scratchpad would clarify multi-file behavior. Produces semantic change maps plus architecture, sequence, flow, ER/data, state, or timeline views with claim-to-evidence links. Do not use for live agent execution monitoring, generic implementation work, or visual design unrelated to software understanding.
+description: Evidence-backed visual explanations of code changes, PRs, files and system flows. Use to explain what changed, how a feature behaves, why code exists, and to create architecture, sequence, branch, state, data or history views with source-linked claims. Distinguish observed paths from inferred and unverified edges. Not for agent monitoring, implementation, root-cause debugging ownership or non-software visual design.
 ---
 
 # Visual Code Intelligence
@@ -34,7 +34,7 @@ When multiple modes apply, choose one primary mode by the user's dominant questi
 
 1. **Resolve scope.** Identify the repository/files/change/history the user means. Prefer immutable commit/PR identities when available; otherwise state the working-tree/current-file scope.
 2. **Read before explaining.** Inspect the relevant source, diff, tests, contracts/config, docs, and history that can materially change the explanation. Never infer unseen file content.
-3. **Build semantic evidence.** Separate current behavior, requested intent, validation evidence, and historical rationale. Mark unsupported gaps explicitly.
+3. **Build semantic evidence.** Separate current behavior, requested intent, validation evidence, and historical rationale. For flow explanations, trace entry, material guards, state/data effects and alternative routes; mark unsupported gaps explicitly.
 4. **Choose the mode.** Apply the table above. If the choice is materially ambiguous, prefer the narrower mode that answers the user's explicit question; ask only when different modes would change the result substantially.
 5. **Normalize the result.** Identify claims, changed-file lenses when applicable, dominant relationship signals, risks/invariants, and evidence locators. For repeatable workflows, represent this as a `visual-code-intelligence/1` visual plan.
 6. **Choose visuals deterministically where possible.** Explicit user choice wins. Otherwise use the relationship rules below or `scripts/select_visual.py`; do not pick a diagram by aesthetics alone.
@@ -46,13 +46,19 @@ When multiple modes apply, choose one primary mode by the user's dominant questi
 
 - Current source/config/schema defines current implementation behavior; history explains past intent and must not override current state.
 - Never invent line numbers, commit/PR rationale, trace events, requirements, test results, or tool execution.
-- Distinguish `observed`, `inferred`, and `historical` claims. Every material claim needs evidence; inferred claims must remain visibly inferential.
+- Distinguish `observed`, `inferred`, and `historical` claims. Every material claim needs evidence; inferred claims must remain visibly inferential. Qualify `observed` as code/static evidence or executed trace; a diagram edge does not itself prove a runtime path.
 - For change reviews, account for every changed file exactly once in a semantic lens. Classify non-implementation noise first, then group implementation by responsibility in reader order.
 - Choose sequence for interactions over time; flowchart for branching/retries/control flow; ER/data view for persistent data relationships/read-write shape; state diagram for lifecycle transitions; architecture/component view for dependency structure; timeline for historical evolution; change-map for semantic file responsibilities.
 - If several visual types fit, apply explicit request first, then mode-specific rules, then the stable tie-break order in [visual language](references/visual-language.md). Do not force a winner when evidence cannot establish the dominant relationship.
 - Use the lowest reliable control layer: scripts/schema for mechanical structure, ordered rules for constrained choices, evidence + rubric for architectural interpretation. Do not fake determinism for subjective judgment.
 - Keep the semantic core host-neutral. Describe capabilities, not vendor-private tool names. Missing capabilities degrade output; they never justify fabricated evidence.
-- Avoid diagram overload. A visual must answer a concrete reader question; omit it when prose/code is clearer.
+- Avoid diagram overload. A visual must answer a concrete reader question; omit it when prose/code is clearer. For an asserted invariant or exhaustive route, show relevant counterpaths/unknowns instead of implying certainty through a continuous arrow.
+
+## Stop conditions
+
+Stop or return a bounded partial explanation when required source content is unavailable; target identity is ambiguous enough to change the explanation; historical evidence conflicts materially with current state and cannot be resolved; a requested interactive/rich surface is unavailable and the user rejects portable fallback; or correctness would require inventing evidence.
+
+Non-activation examples: “Implement this endpoint”; “Find every security vulnerability”; “Show me live what the agent is doing”; “Design a marketing infographic.”
 
 ## Output contract
 
@@ -95,9 +101,3 @@ Before claiming a result is complete:
 - “Show me how this request travels through the service and database.”
 - “Why does this retry layer exist? Check git history and current code.”
 - “Draw the relationship between these handlers, queue, and worker.”
-
-## Stop conditions
-
-Stop or return a bounded partial explanation when required source content is unavailable; target identity is ambiguous enough to change the explanation; historical evidence conflicts materially with current state and cannot be resolved; a requested interactive/rich surface is unavailable and the user rejects portable fallback; or correctness would require inventing evidence.
-
-Non-activation examples: “Implement this endpoint”; “Find every security vulnerability”; “Show me live what the agent is doing”; “Design a marketing infographic.”
