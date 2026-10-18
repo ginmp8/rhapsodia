@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.0] - 2026-10-18
+
+- Added conditional, source-located long/multi-document coverage workflow, including material middle sections, paraphrased evidence and contradictory passages before synthesis.
+- Added explicit position-sensitive and semantic-retrieval scenario guidance without modifying outline/fields/result schema or asserting model-level performance.
+- Updated the optional OpenAI adapter to supported `CHAT`/`CODEX` product identifiers for portability validation.
+
+**Compatibility:** Existing modes, CLI commands, YAML and JSON contracts, validation/resume/report behavior remain unchanged. Long-context guidance adds checks only when relevant, with explicit budget/unknown handling.
+
+**Validation:** See current-run receipts for exact checks; static tests alone do not establish long-context model reliability.
+
 ## [0.2.0] - 2026-10-14
 
 - Clarified activation, no-use boundaries, portable host capabilities, evidence safety and deterministic commands within 72 entrypoint lines.

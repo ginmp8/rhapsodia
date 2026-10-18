@@ -23,7 +23,12 @@ Choose the smallest adequate mode. Do not start deep research for plan-only edit
 
 1. Identify exactly one workspace or create it. If ambiguous, stop rather than choose unsafe files. Define time, geography, versions/jurisdiction, inclusion/exclusion, research questions, evidence standards and budget.
 2. Preserve scope/evaluator inputs. Use primary/original sources for factual claims; cross-check material disputes with independent context. Read source contents rather than snippets, noting publication vs event/access dates.
-3. Research each item against *all* fields. Record unknowns as `[uncertain]` and in `uncertain`; add `_sources` with safe URLs/date, and `_claims` with source IDs, locators, and status for material claims. Citation linkage alone does not prove factual truth.
+3. Research each item against *all* fields. For long/multi-document evidence, locate
+   question-relevant sections (including material middle spans), semantically related
+   passages and counterevidence before synthesis; use [long-context evidence](references/long-context-evidence.md).
+   Record unknowns as `[uncertain]` and in `uncertain`; add `_sources` with safe URLs/date,
+   and `_claims` with source IDs, locators, and status for material claims. Citation linkage
+   alone does not prove factual truth.
 4. Validate item JSON. Distinguish structural validity, research readiness and actual source support. Preserve contradictions; independently challenge high-impact interpretations instead of inventing or averaging facts.
 5. Before skipping prior work, check schema/scope/source/version identity and freshness; `check_resume.py` never verifies live source content. Refresh only affected items and time-sensitive evidence. Write results atomically, with one writer per item.
 6. Create an evidence-linked report; default fail-closed. `--allow-partial` explicitly excludes invalid/incomplete items and lists them. State conflicts, uncertainty, source limitations, and validation outcomes.
@@ -56,8 +61,10 @@ Choose the smallest adequate mode. Do not start deep research for plan-only edit
 - [Deep](references/deep-workflow.md), [resume](references/resume-contract.md), [evidence](references/evidence-contract.md) — investigation, checkpoints, provenance and conflicts.
 - [Report](references/report-workflow.md), [workspace contract](references/workspace-contract.md), [quality gates](references/quality-evaluation.md) — schema, strict output, validation and evaluation.
 - [Web](references/web-research-workflow.md), [methodology](references/web-research-methodology.md), [source strategy](references/source-strategy.md) — search design and trust.
+- [Long-context evidence](references/long-context-evidence.md) — load only for lengthy/multi-document sources with material omission or semantic-retrieval risk.
 - Domain source modules: [academic](references/academic-papers.md), [GitHub](references/github-debug.md), [Stack Overflow](references/stackoverflow.md), [general](references/general-web.md), [Chinese](references/chinese-tech.md). All normative references are directly reachable here.
+- [Upstream provenance](references/upstream.md) — load only when reviewing origin, migration or upstream compatibility; not needed during research execution.
 
-## Completion contract and stop conditions
+## Completion contract and stop conditions (Output contract)
 
 Return mode, path, changed files, item/field/result counts, scope/time/source strategy, source/claim validation, CLI results, missing/stale/incomplete items, report path and actual limitations. Stop safely for ambiguous ownership, scope drift, impossible verification, protected-file writes, invented mandatory evidence, or a failing required gate. Return the validated partial outcome rather than fabricating completeness.
