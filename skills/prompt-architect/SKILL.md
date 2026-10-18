@@ -1,15 +1,13 @@
 ---
 name: prompt-architect
-description: Create, improve, review, validate, or package reusable prompts, system prompts, agent prompts, chat modes, and custom instructions. Owns requirement preservation, context selection, authority, tool and output contracts, and evidence-bounded evaluations, including long-context reliability checks. Not for executing, summarizing, translating, or extracting from a supplied prompt, nor guarantees that require runtime-only enforcement.
+description: Create, rewrite, improve, review, validate, benchmark, harden, or package reusable prompts, system/agent prompts, chat modes, custom instructions, and prompt specifications. Owns right-lever selection, requirement preservation, context/retrieval, authority, tool/output contracts, and evidence-bounded evaluations, including long-context reliability. Do not use to execute, summarize, translate, or extract from supplied prompts, or to promise guarantees enforceable only by runtimes.
 ---
 
 # Prompt Architect
 
 ## Purpose and scope
 
-Turn rough prompt ideas or existing prompt artifacts into bounded, testable behavioral contracts. Preserve legitimate semantic freedom while making requirements, conflicts, execution assumptions, output shape, enforcement, validation claims, and repair decisions reproducible enough for materially comparable reviews.
-
-Treat the host-neutral semantic contract as the source of truth; adapt it to a provider, host, model, or tool surface only after the material execution profile is known.
+Turn rough prompt ideas or existing prompt artifacts into bounded, testable behavioral contracts. Preserve legitimate semantic freedom while making requirements, conflicts, execution assumptions, output shape, enforcement, validation claims, and repair decisions reproducible enough for materially comparable reviews. Treat the host-neutral semantic contract as the source of truth; adapt it to a provider, host, model, or tool surface only after the material execution profile is known.
 
 ## Reproducibility ceiling
 
@@ -58,6 +56,8 @@ Do not remove semantic content merely to shorten, beautify, or make a validator 
 7. **Repair by diagnosis**: map each failed criterion to one causal defect, apply the smallest fix, rerun the same check, then adjacent regressions; never weaken semantics, safety, evidence, or evaluators to pass.
 8. **Freeze after pass**: later semantic edits or material execution-profile drift invalidate affected evidence; package only the revalidated frozen bytes.
 
+**Evaluator integrity gate:** A scenario suite authored after seeing candidate failures may be useful for regression coverage, but it cannot retroactively prove the original improvement claim. Any **baseline vs candidate** comparison must use the same frozen evaluation basis and a materially comparable execution profile.
+
 ## Direct reference routing
 
 - Complex `create`/`improve`, conflict resolution, compilation, or rewrite scope -> [prompt-architecture-workflow.md](references/prompt-architecture-workflow.md); machine-readable requirements/protected semantics -> [prompt-contract.md](references/prompt-contract.md).
@@ -99,7 +99,6 @@ For `improve`, `review-only`, and `validation-only`:
 - record the material execution profile or capability profile when behavior depends on it;
 - if behavioral comparison will be claimed, freeze the scenarios/evaluator **before** editing the prompt.
 
-A scenario suite authored after seeing candidate failures may be useful for regression coverage, but it cannot retroactively prove the original improvement claim. Any **baseline vs candidate** comparison must use the same frozen evaluation basis and a materially comparable execution profile.
 
 ### 2. Collect sources and provenance
 
