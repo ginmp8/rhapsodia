@@ -1,6 +1,6 @@
 ---
 name: operational-context
-description: Compose bounded task context, locate content-pinned evidence and artifacts, reuse eligible deterministic action-result references, compare reported usage, and advise selective retrieval or delegation. Use when agents repeatedly reread sources, transfer excessive context, repeat proven work, or need scoped operational knowledge. Supports explicit quarantined pointer exchange and cooperative leases. Do not use for environment/tool discovery, workflow ownership, executing commands, approving validation, automatic cross-project memory, or replacing canonical records.
+description: Build bounded task-context packs with pinned evidence and artifacts; reuse eligible deterministic action references; compare reported usage. Use for repeated source reads, excessive context transfer, proven-work reuse, or selective retrieval and delegation. Supports quarantined pointer exchange and cooperative leases. Do not use for environment discovery, workflow ownership, command execution, validation approval, automatic cross-project memory, or replacing canonical records.
 ---
 
 # Operational Context
@@ -38,8 +38,11 @@ claim measured token savings from bytes, or make a cache quota the definition of
    Run `<PYTHON> -I -S -B scripts/operational.py --workspace <ROOT> <COMMAND> --input <JSON>`
    only if the host already permits local execution. Without execution, consume supplied
    artifacts through native read tools; do not claim to have validated hashes or commands.
-4. Build a reference-first task pack. Required records must fit or fail closed; optional
-   omissions are explicit. Inline source/log text requires explicit content approval.
+4. Build a reference-first task pack. For long or multi-file inputs, first map the
+   question to essential source/line anchors, including relevant middle spans and
+   semantically indirect evidence; use [context](references/context.md) for coverage.
+   Required records must fit or fail closed; optional omissions are explicit. Inline
+   source/log text requires explicit content approval.
 5. Revalidate exact source pins before consumption. A stale pack or corrupt/missing cache
    triggers fresh source reads/rebuilding by an authorized writer, not optimistic reuse.
 6. Locate canonical evidence; verify producer declaration, scope, time, receipt and candidate
