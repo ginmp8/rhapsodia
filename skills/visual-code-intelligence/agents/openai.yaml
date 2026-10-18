@@ -1,3 +1,10 @@
 interface:
-  display_name: "Visual Code Intelligence"
-  short_description: "Turn code changes and systems into evidence-backed visual explanations."
+  display_name: Visual Code Intelligence
+  short_description: Turn code changes and systems into evidence-backed visual explanations.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - CHAT
+  - CODEX
+  allow_implicit_invocation: true

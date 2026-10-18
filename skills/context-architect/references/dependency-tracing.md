@@ -59,7 +59,7 @@ Direction matters. `A calls B` is not interchangeable with `B called-by A`. If a
 2. Owning definition: type/function/module, contract, schema, migration, generator source, configuration owner.
 3. Direct consumers: calls, imports/exports, implementations, subclasses, handlers, serializers, query projections.
 4. Runtime wiring: dependency injection, routers, schedulers, workers, event subscriptions, feature flags, package/build registration.
-5. Tests and fixtures: unit, integration, contract, migration, snapshot/golden, smoke, e2e.
+5. Tests and fixtures: unit, integration, contract, migration, snapshot/golden, smoke, e2e. For a state transition or event-flow change, identify tests for guards, alternate writers, duplicate/reordered events and partial failure when material.
 6. Boundary consumers: public APIs, generated clients, database views, queues/topics, cross-service contracts, CLI/UI surfaces.
 7. Analogous patterns: nearest implementation with the same responsibility.
 8. Operational/deployment evidence: CI, containers, infra, docs, rollback/backfill, metrics/alerts when risk requires it.
@@ -88,7 +88,7 @@ Multi-hop traversal is selective, not exhaustive.
 - `hop 2+`: expand only when a relation crosses a relevant boundary, explains runtime behavior, reaches a contract/test/validation surface, or opens a new risk class.
 - Record hop/depth for material secondary evidence when it helps explain why the file is in scope.
 - Prefer a repository-native depth bound when one exists. Otherwise apply the same bound conceptually.
-- Unknown dynamic consumers or write/read overlap keep the branch provisional; they do not justify unbounded traversal.
+- Unknown dynamic consumers or write/read overlap keep the branch provisional; they do not justify unbounded traversal. A search that finds no direct call site cannot establish that a state is unreachable through dynamic registration, another writer, a queue, a scheduled job or external API.
 
 Stop a traversal branch when it reaches an already-covered node with no new relation class/risk, an explicit out-of-scope boundary, or the selected-tier closure criteria.
 

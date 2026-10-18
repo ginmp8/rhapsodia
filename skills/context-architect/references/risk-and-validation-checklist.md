@@ -18,12 +18,13 @@ Use this checklist before finalizing a context map or implementation summary.
 ## Code risks
 
 - Hidden callers or dynamic dispatch.
+- Alternative state writers, event consumers, or configuration guards can bypass the mapped path, invalidating an assumed one-writer/invariant boundary.
 - Dependency injection/runtime registrations not updated.
 - Public API/serialization contract changes.
 - Generated code edited instead of owning generator/source.
 - Cross-language/cross-service clients not regenerated or versioned.
 - External package API behavior is assumed from memory while the resolved dependency version differs.
-- Concurrency, retry, idempotency, timeout, locking, or ordering assumptions changed.
+- Concurrency, retry, idempotency, timeout, locking, or ordering assumptions changed. For a high-impact causal hypothesis, name an observation or test that would reject the proposed impact path; record unexecuted checks as planned.
 
 ## Data and flow risks
 

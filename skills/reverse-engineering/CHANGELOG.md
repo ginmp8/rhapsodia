@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0] - 2026-10-18
+
+### Added / clarified
+- Integrated a bounded mechanistic-flow and counterpath investigation playbook inside the existing six modes; preserved all original scripts, tests, fixtures, security boundaries and behavioral contracts.
+- Moved unchanged output/stop rules before command examples to keep critical control information visible early; linked the new playbook directly from `SKILL.md` without nested mandatory Markdown discovery.
+- Updated the optional OpenAI adapter product codes to match the current structural validator; retained a single portable semantic core.
+
+### Compatibility / evidence
+- Compatible conceptual workflow addition only; no changes to Python/CLI/MCP output contracts, executable analyzers, golden fixtures or optional integrations.
+- Human-cognition results motivate the hypothesis; no accuracy, runtime or token improvement is claimed without paired model evaluations.
+
 ## [0.2.2] - 2026-10-18
 
 ### Fixed
