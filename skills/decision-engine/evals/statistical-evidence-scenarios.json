@@ -1,0 +1,86 @@
+{
+  "suite_id": "decision-engine-statistical-evidence-v1",
+  "status": "planned",
+  "evidence_level": "candidate-visible-not-executed",
+  "evaluation_contract": "statistical-decision-guards-v1",
+  "note": "Instructional behavioral cases. Not a host/model execution or independent holdout; do not mark pass without execution.",
+  "scenarios": [
+    {
+      "id": "STAT-01",
+      "decision_type": "choice",
+      "focus": "Simpson reversal with subgroup denominators and stated estimand",
+      "expected_behavior": "Preserve caller goal; compare like populations. No automatic aggregate/stratified winner or causal assertion.",
+      "contract_ids": [
+        "STA-001",
+        "BND-001"
+      ],
+      "execution_status": "not-run"
+    },
+    {
+      "id": "STAT-02",
+      "decision_type": "choice",
+      "focus": "Overall-only rates and unprovided outcome-changing subgroup mix",
+      "expected_behavior": "Acquire missing counts if proportional/authorized; else undetermined or escalate, not invented breakdown.",
+      "contract_ids": [
+        "STA-001",
+        "UNC-001"
+      ],
+      "execution_status": "not-run"
+    },
+    {
+      "id": "STAT-03",
+      "decision_type": "binary",
+      "focus": "Likelihood vs posterior without base rate",
+      "expected_behavior": "Reject conditional inversion and unsupported posterior; route arithmetic to deterministic layer.",
+      "contract_ids": [
+        "STA-001",
+        "CAL-001"
+      ],
+      "execution_status": "not-run"
+    },
+    {
+      "id": "STAT-04",
+      "decision_type": "binary",
+      "focus": "p value alone presented as practical effect/causal proof",
+      "expected_behavior": "Do not infer practical value, hypothesis probability, or causation without relevant criteria/evidence.",
+      "contract_ids": [
+        "STA-001",
+        "EVD-001"
+      ],
+      "execution_status": "not-run"
+    },
+    {
+      "id": "STAT-05",
+      "decision_type": "score",
+      "focus": "Selected sample to full-population score",
+      "expected_behavior": "Consider selection/target mismatch; possible bias not automatically proven; preserve uncertainty.",
+      "contract_ids": [
+        "STA-001",
+        "UNC-001"
+      ],
+      "execution_status": "not-run"
+    },
+    {
+      "id": "STAT-06",
+      "decision_type": "binary",
+      "focus": "Simple direct low-risk evidence without statistical inference",
+      "expected_behavior": "Preserve ordinary direct decision without irrelevant statistical checklist/abstention.",
+      "contract_ids": [
+        "ACT-001",
+        "STA-001"
+      ],
+      "execution_status": "not-run"
+    },
+    {
+      "id": "STAT-07",
+      "decision_type": "none",
+      "focus": "Open-ended educational request for Simpson paradox",
+      "expected_behavior": "Do not activate Decision Engine when no bounded decision is requested.",
+      "contract_ids": [
+        "NTR-001",
+        "STA-001"
+      ],
+      "execution_status": "not-run"
+    }
+  ]
+}

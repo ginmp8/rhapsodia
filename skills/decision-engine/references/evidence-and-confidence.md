@@ -25,6 +25,10 @@ Before acquiring more evidence, ask:
 
 Acquire more evidence only when both answers are yes. If either answer is no, stop. This is a bounded operational rule, not a formal value-of-information calculation.
 
+## Outcome-relevant quantitative evidence
+
+When the decision depends on a statistical claim, apply the screening contract in [statistical-evidence.md](statistical-evidence.md). Do not upgrade confidence from sample size, aggregate rate, or a p-value alone. Assess whether missing denominators, base rates, population fit, effect magnitude, or selection/causal assumptions could change the declared decision. If so, acquire proportionate authorized evidence or select a non-decided status. Do not abstain reflexively when these concerns cannot change the bounded result.
+
 ## Qualitative confidence
 
 Confidence exists only for `status=decided`:
