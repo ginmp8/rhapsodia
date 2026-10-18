@@ -160,6 +160,12 @@ When an LLM evaluator materially decides acceptance, treat evaluator identity as
 
 Treat real-use traces, user corrections, incidents, and recurring failures as evidence sources, not direct edit instructions. Cluster repeated failures, preserve provenance, and promote durable classes into the frozen evaluation suite before using them to justify a candidate change. Distinguish `real-world recurring failure`, `historical regression`, `synthetic/adversarial case`, and `one-off preference`; do not weight them identically without rationale.
 
+### Optional long-context omission evaluation
+
+Apply only when a target actually retrieves/summarizes long or multi-source inputs, or a measured omission report exists. Freeze test cases and evidence oracles before mutation. Control relevant source position (start/middle/end), comparable length, distractor density, semantically indirect retrieval, distant constraints, contradictions, missing support, and untrusted embedded instructions; record both exact source anchors and per-position results. A plan/checklist is `planned`, not executed model evidence.
+
+Do not infer universal ordering strategies or an improvement from altered text alone: a model, corpus or retriever change can invalidate paired results. Retain baseline and candidate failure evidence even if the new skill passes structural gates. Delegate semantic-preservation mechanics to the `skill-token-efficient` provider when activated; Booster owns independent change gates. Primary studies: https://aclanthology.org/2024.tacl-1.9/ and https://aclanthology.org/2025.emnlp-main.1422/.
+
 ## Skill-hypothesis-discovery contract
 
 Use `skill-hypothesis-discovery` after initial benchmark/harness and reproducibility-routing evidence when possible. It must generate evidence-backed hypotheses, not random edits. A normal full-optimization pass should produce 5-10 candidate hypotheses, dedupe and rank them, and recommend the next 1-3 for the current cycle. Reproducibility audit findings, when present, are candidate evidence rather than automatically accepted patches. If no useful change is justified, record `no-mutation-recommended` and avoid experimental patches unless the user supplies a concrete hypothesis or a required repair exists.

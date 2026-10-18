@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] - 2026-10-18
+
+- Added a conditional, research-backed long-context omission evaluation branch for relevant target skills and a clear division between static evidence coverage and model behavior.
+- Delegates preservation/compression tactics to Skill Token Efficient's existing versioned provider contract rather than copying its rules.
+- Strengthened Top-100 control model and stop signals; kept six-phase routing and original acceptance/finalization gates intact.
+- Normalized optional OpenAI adapter metadata; portable core, validator CLI and integration contracts remain unchanged.
+- Long-context scenarios remain planned until executed with a frozen comparable model/evaluator.
+
 ## [0.1.0] - 2026-10-14
 
 - First explicitly tracked package version; historical releases, if any, were not identified in this source snapshot.

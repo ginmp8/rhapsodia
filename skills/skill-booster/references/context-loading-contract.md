@@ -82,6 +82,8 @@ Prefer:
 
 ## Optimization and Evaluation Rules
 
+For targets ingesting lengthy source collections, first decide whether a long-context omission risk is material; a small self-contained skill should not pay the extra evaluation cost. When applicable, verify mandatory source obligations, important mid-document sections, semantically indirect evidence and cross-span exceptions **before** proposing lossy compression. Route preservation details to the Golden Source `skill-token-efficient` if installed; never import its entire format/compression policy into Booster.
+
 Separate four evidence layers:
 
 `metadata selection -> skill activation -> instruction following -> task outcome`
@@ -95,7 +97,8 @@ When context-loading changes are made:
 - rerun affected activation/instruction tests;
 - use holdout/catalog-competition cases for promotion claims when metadata was tuned against visible prompts;
 - use representative catalog-pressure cases when real deployment includes many discoverable skills;
-- reject changes that improve routing by erasing legitimate scope or merely by bloating metadata to compensate for catalog-level saturation.
+- reject changes that improve routing by erasing legitimate scope or merely by bloating metadata to compensate for catalog-level saturation;
+- when the long-context gate is applicable, distinguish static coverage from executed position-varied and paraphrase/conflict recovery, and freeze cases before target edits when improvement will be claimed.
 
 ## Exceptions
 

@@ -1,3 +1,15 @@
+# Skill Booster 0.3.0
+
+## Compatible additions
+
+The booster can now request a conditional long-context omission evaluation when an optimized skill depends on lengthy or multi-source evidence. Positional, paraphrase and cross-span behavior claims still require executed comparable scenarios; static coverage is not model reliability. The format and compression policy stays owned by Skill Token Efficient via its existing v1 integration contract.
+
+## Packaging and compatibility
+
+The optional OpenAI adapter no longer declares obsolete product identifiers. The portable core, six phases, existing commands/contracts and validation hierarchy are unchanged. Migration is not required. The previous 0.2.0 archive remains a valid rollback identity.
+
+---
+
 # Skill Booster 0.2.0
 
 ## Compatibility and behavior

@@ -1,9 +1,11 @@
 ---
 name: prompt-architect
-description: use when asked to create, rewrite, improve, review, validate, benchmark, harden, or package reusable prompts, system prompts, agent prompts, chat modes, custom instructions, or prompt specifications. owns right-lever selection, requirement preservation, execution-profile/context/enforcement contracts, output contracts, scenario design, and evidence-bounded prompt comparisons. do not use merely to execute, summarize, translate, or extract from a prompt, or when the requested guarantee is purely an application/runtime concern with no prompt-design work.
+description: Create, improve, review, validate, or package reusable prompts, system prompts, agent prompts, chat modes, and custom instructions. Owns requirement preservation, context selection, authority, tool and output contracts, and evidence-bounded evaluations, including long-context reliability checks. Not for executing, summarizing, translating, or extracting from a supplied prompt, nor guarantees that require runtime-only enforcement.
 ---
 
 # Prompt Architect
+
+## Purpose and scope
 
 Turn rough prompt ideas or existing prompt artifacts into bounded, testable behavioral contracts. Preserve legitimate semantic freedom while making requirements, conflicts, execution assumptions, output shape, enforcement, validation claims, and repair decisions reproducible enough for materially comparable reviews.
 
@@ -13,11 +15,11 @@ Treat the host-neutral semantic contract as the source of truth; adapt it to a p
 
 Prompt design is **constrained-subjective**. Structure, requirement preservation, evidence handling, scenario shape, execution-profile identity, mechanical lint, and claim rules can be enforced; wording quality, decomposition, and some trade-offs remain model judgment. Never claim byte-identical outputs, universal prompt quality, universal prompting techniques, or behavioral improvement from static inspection alone.
 
-## Activation contract
+## Activation and routing
 
-Activate when the user wants to create or materially change a reusable prompt artifact; review or score prompt quality without executing the prompt's task; validate prompt behavior, activation, ambiguity, output compliance, runtime assumptions, or safety boundaries; or build reusable prompt contracts, templates, scenarios, execution profiles, or specifications.
+Use this skill when the user wants to create or materially change a reusable prompt artifact; review or score prompt quality without executing the prompt's task; validate prompt behavior, activation, ambiguity, output compliance, runtime assumptions, or safety boundaries; or build reusable prompt contracts, templates, scenarios, execution profiles, or specifications.
 
-Do **not** activate merely because a prompt is present when the user asks to execute, summarize, translate, or extract information from it. If the target artifact is required but unavailable, recover it from context or ask for it rather than inventing it. When intent is ambiguous, prefer the user's explicit verb.
+Do not use this skill merely because a prompt is present when the user asks to execute, summarize, translate, or extract information from it. If the target artifact is required but unavailable, recover it from context or ask for it rather than inventing it. When intent is ambiguous, prefer the user's explicit verb.
 
 ## Modes and routing
 
@@ -51,8 +53,8 @@ Do not remove semantic content merely to shorten, beautify, or make a validator 
 2. **Normalize** target, right lever, authority/trust, context, tools, enforcement layer, output contract, safety, validation, and compatibility; ask one focused question only when a missing fact materially changes them.
 3. **Collect evidence** from user files/docs/URLs/repos/examples; record provenance and resolve conflicts by authority instead of silently blending sources.
 4. **Audit before rewriting** in execution order: success criterion/right lever -> objective -> executor/profile -> inputs/context -> authority/trust -> tools/sources -> enforcement -> workflow -> output -> safety/privacy -> validation readiness.
-5. **Design the semantic contract**, then render for the executor: requirements -> execution profile -> authority/trust -> context contract -> enforcement map -> rendered prompt/runtime controls -> evaluation contract.
-6. **Validate proportionally** with deterministic checks and the smallest frozen scenario set that covers the material risk; bind behavioral/runtime claims to the relevant execution profile.
+5. **Design the semantic contract**, then render for the executor: requirements -> execution profile -> authority/trust -> context contract -> enforcement map -> rendered prompt/runtime controls -> evaluation contract. For long/multi-source contexts, load [context engineering](references/context-engineering.md) and specify evidence anchors, semantic retrieval and missing-source behavior before compressing or reordering.
+6. **Validate proportionally** with deterministic checks and the smallest frozen scenario set that covers the material risk; for long contexts include position-varied, paraphrase, contradiction, and omitted-evidence cases when relevant. Bind behavioral/runtime claims to the execution profile; static coverage is not model robustness.
 7. **Repair by diagnosis**: map each failed criterion to one causal defect, apply the smallest fix, rerun the same check, then adjacent regressions; never weaken semantics, safety, evidence, or evaluators to pass.
 8. **Freeze after pass**: later semantic edits or material execution-profile drift invalidate affected evidence; package only the revalidated frozen bytes.
 
