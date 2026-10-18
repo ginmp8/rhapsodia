@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "question": "Can approval be bypassed when processing the activation event?",
+  "mode": "understand",
+  "scope": {
+    "repository": "synthetic-example",
+    "revision": "fixture-v1",
+    "inspected_paths": [
+      "examples/synthetic-flow.md"
+    ],
+    "closed_world": false,
+    "limitations": [
+      "Pseudo-code only; other writers, configuration and runtime execution not inspected."
+    ]
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "code",
+      "locator": "examples/synthetic-flow.md#entrypoint [synthetic]",
+      "revision_or_context": "fixture-v1"
+    },
+    {
+      "id": "SRC-002",
+      "kind": "code",
+      "locator": "examples/synthetic-flow.md#consumer [synthetic]",
+      "revision_or_context": "fixture-v1"
+    }
+  ],
+  "claims": [
+    {
+      "id": "CL-001",
+      "statement": "The synthetic API route publishes an activation request only when the input has approval.",
+      "status": "static-observed",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "conditions": [
+        "The illustrative request is handled by the shown entrypoint."
+      ],
+      "universality": "local",
+      "countercheck": "Inspect other activation entrypoints."
+    },
+    {
+      "id": "CL-002",
+      "statement": "A consumer may persist Active after it receives the activation request.",
+      "status": "inferred",
+      "source_ids": [
+        "SRC-001",
+        "SRC-002"
+      ],
+      "conditions": [
+        "Transport delivers a message to this consumer.",
+        "No other rules intervene."
+      ],
+      "universality": "local",
+      "countercheck": "Execute a controlled test of the consumer; inspect competing writers."
+    },
+    {
+      "id": "CL-003",
+      "statement": "It is not established whether another path can persist Active without approval.",
+      "status": "unknown",
+      "source_ids": [],
+      "conditions": [],
+      "universality": "unproven",
+      "countercheck": "Enumerate all writers of the status and all dispatch/configuration paths."
+    }
+  ],
+  "transitions": [
+    {
+      "id": "T-001",
+      "from": "Request",
+      "to": "ActivationRequested",
+      "trigger": "POST /activate",
+      "guard": "approved == true",
+      "claim_ids": [
+        "CL-001"
+      ]
+    },
+    {
+      "id": "T-002",
+      "from": "ActivationRequested",
+      "to": "Active",
+      "trigger": "message consumer",
+      "guard": "delivery and consumer logic",
+      "claim_ids": [
+        "CL-002"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "CHK-001",
+      "question": "Does the shown route guard event emission?",
+      "method": "Review synthetic pseudo-code entrypoint",
+      "status": "passed",
+      "source_ids": [
+        "SRC-001"
+      ]
+    },
+    {
+      "id": "CHK-002",
+      "question": "Are there other writers that bypass the guard?",
+      "method": "Search full source and configuration at pinned revision",
+      "status": "not-run",
+      "source_ids": []
+    }
+  ],
+  "gaps": [
+    {
+      "id": "G-001",
+      "question": "Can any other writer persist Active?",
+      "why": "The complete repository and runtime wiring are absent.",
+      "next_check": "Enumerate writes, DI routes and consumers in the actual repository."
+    }
+  ],
+  "verdict": "insufficient-evidence"
+}
