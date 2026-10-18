@@ -15,6 +15,25 @@ The standard resilience handler can combine rate limiting, total timeout, retry,
 
 Review the effective composed behavior: stacking handlers can multiply retry counts or time budgets unexpectedly.
 
+## Alternate-path and amplification gate
+
+Do not treat `AddFallback`, failover routing, degraded data or hedging as a safe-by-default fix for an unavailable dependency. Before adding one, document:
+
+- **Failure chain and load shift:** which callers switch, worst-case diverted QPS/concurrency, per-request downstream cost, cold-cache stampede, shared databases/connections/rate limits, common-mode faults and restoration oscillation.
+- **Semantic floor:** what lower-quality results are explicitly permitted and which invariants are not (authorization, tenant isolation, transaction correctness, durable side effects, data freshness requirements). Reject, fail closed or return typed partial results when the alternative cannot meet mandatory semantics.
+- **Cross-policy budget:** total elapsed deadline, actual attempt count across SDK/HTTP middleware/Polly/delegating handlers and services, hedged concurrency, per-attempt timeout and cancellation behavior. Do not layer independent retries blindly.
+- **Exercise alternate path:** fault injection under sustained load, ambiguous timeout-after-success, two dependency failures, cache cold-start, circuit recovery/oscillation and rollback/compensation; verify actual failure isolation and observe latency, saturation, retries and customer-visible degradation.
+- **Simpler options:** harden the primary, pre-position data, split resource pools, shed lower-priority load, fail fast or use a continuously exercised equivalent endpoint before creating a rare alternate execution path. A circuit breaker is a trade-off, not an automatic requirement.
+
+**Microsoft.Extensions.Http.Resilience detail:** `AddStandardResilienceHandler()` includes retries for all HTTP methods by default. For state-changing or otherwise unsafe methods, use `options.Retry.DisableForUnsafeHttpMethods()` (or a deliberately restricted method list) unless a verified idempotency/reconciliation contract makes retries safe. Inspect effective composition against package/framework version instead of assuming library defaults are stable.
+
+References:
+- https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience
+- https://aws.amazon.com/pt/builders-library/avoiding-fallback-in-distributed-systems/
+- https://sre.google/sre-book/addressing-cascading-failures/
+- https://learn.microsoft.com/en-us/azure/architecture/best-practices/transient-faults
+- https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker
+
 ## Retry-safety gate
 
 Before enabling retry, answer:
