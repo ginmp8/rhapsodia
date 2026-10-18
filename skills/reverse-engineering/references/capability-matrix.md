@@ -13,6 +13,7 @@
 
 | Area | Included executable path | Non-goals / proof ceiling |
 |---|---|---|
+| Fast static triage (optional) | [Static triage guide](fast-static-triage.md) routes to existing Python parsers or independently installed approved read-only OS tools | Instruction only; not a new analyzer, package dependency, performance benchmark, authority grant or host-specific requirement |
 | Persistent investigation / MCP | `mcp_server.py`, `investigation_api.py`, 13 named bounded offline tools and CLI, local SQLite `investigation_store.py` | MCP stdio modern/legacy subset; no HTTP transport, background tasks, remote target execution, RBAC or attested isolation |
 | Virtual ZIP/TAR/ASAR and directory | `artifact_index.py` no-extraction inventory and bounded content reads, hash/exclusion tracking | Symlinks/unpacked ASAR skipped; parser subsets; OS permission boundary, not full sandbox |
 | JS/TS/Electron application flow | `application_graph.py` static import/export/router/IPC graph, trace and version diff | Lexical candidates, no runtime graph, TypeScript compiler, source-map reconstruction or dynamic resolution |

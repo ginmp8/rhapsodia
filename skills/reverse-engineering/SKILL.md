@@ -1,11 +1,12 @@
 ---
 name: reverse-engineering
-description: Evidence-backed reverse engineering of repositories, archives, binary formats, APIs, JS/TS/Electron apps and authorized web interfaces. Inventory static symbols and flows, capture bounded browser interactions/network/DOM, audit recorded functional/performance/security expectations, trace hypotheses, reconstruct independent behavioral contracts and compare finite original/candidate cases. Use for black-box characterization, feature investigation, legacy migration, behavior cloning without source reuse, or compatibility diagnostics. Do not use for generic UX review, ordinary unit-test writing, malware execution, unauthorized web testing, or universal decompilation/equivalence claims.
+description: Evidence-backed reverse engineering of repos, archives, binaries, APIs, JS/TS/Electron and authorized web apps. Use for inventory, call-flow/feature tracing, offline graphs/MCP, bounded browser/DOM/network capture, black-box characterization, independent behavior reconstruction, legacy migration and finite original/candidate comparison. Includes functional, performance and security audits. Not for unauthorized testing, executing unknown code, generic UX review or equivalence guarantees.
 ---
 
 # Reverse Engineering + Behavioral Reconstruction
 
 **Single skill, six modes.** Python 3.10+ standard-library core; no mandatory package installs, vendor services or host-specific tools. Optional browser/Playwright, analyzers, AALpy, Roslyn and OCI are capability-detected and never installed/downloaded silently; restricted hosts may use trusted offline HTML fixtures instead of network access. Start statically for every unknown artifact.
+**Cheap-first static route:** for bounded version, import/export, symbol, IPC or interface-delta questions, use [fast static triage](references/fast-static-triage.md) to choose the smallest sufficient approved read-only probe. Preserve evidence tiers and partial coverage; escalate only for missing evidence. This route does not authorize browser mutations, downloads, target execution or network access.
 
 ## Route by the question, not filename alone
 

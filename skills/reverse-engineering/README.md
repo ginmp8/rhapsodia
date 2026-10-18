@@ -2,6 +2,8 @@
 
 One portable Agent Skills package, six modes (`Discover`, `Investigate`, `Characterize`, `Reconstruct`, `Verify`, `Diagnose`) and independent source/binary decoders. **The portable core only needs Python 3.10+ and its standard library**. Optional tools are never installed or downloaded automatically. A successful static analysis never implies successful decompilation, executable safety or behavior equivalence.
 
+**Optional fast static triage:** for a narrow metadata, import/export, IPC or version question, start with one bounded Python read-only probe instead of automatically building a graph, opening MCP or decompiling. The [fast static playbook](references/fast-static-triage.md) describes conditional Go/native/JS shortcuts with a portable Python fallback. External tools are never silently installed, trusted or executed. This is an instruction-level optimization; no time/token speedup over this skill has been measured.
+
 ## Capabilities included in this package
 
 | Capability | Shipped implementation | Evidence limitation |

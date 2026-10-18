@@ -6,7 +6,7 @@
 
 ## Safe discovery workflow
 
-1. Fingerprint original artifact SHA-256; inspect file kind, archive member names/sizes/symlinks, cumulative expansion budgets, exclusions, possible secrets and provenance before parsing. Never extract/archive-install/execute user programs for routine discovery.
+1. Fingerprint original artifact SHA-256; inspect file kind, archive member names/sizes/symlinks, cumulative expansion budgets, exclusions, possible secrets and provenance before parsing. For a narrowly scoped static metadata question, follow [fast static triage](fast-static-triage.md) before escalating to a persistent graph/MCP/decompiler. Never extract/archive-install/execute user programs for routine discovery.
 2. `recon.py inventory|search|symbols|graph|strings|diff` yields bounded repository-level structural evidence. Source regex-based matches are `lexical_candidate`, not compiler-resolved calls.
 3. `workbench.py INPUT -o report.json --max-items 300 [--full]` dispatches recognized formats and emits `matched_candidates`, `analyzed`, `skipped`, `errors`, `complete`, and `coverage_scope`. Return code `3` indicates incomplete recognized coverage; `complete:true` is about supported constructs, not decompilation.
 4. Focus one known artifact with `dotnet_analysis.py`, `jvm_analysis.py`, `dex_analysis.py`, `wasm_semantics.py`, `evm_analysis.py`, `native_symbols.py`, `web_analysis.py`, `app_manifests.py` or `format_probes.py`. Record line offsets/byte offsets/method tokens where available.
