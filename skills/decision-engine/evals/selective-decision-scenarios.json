@@ -1,0 +1,50 @@
+{
+  "suite_version": "1.0",
+  "status": "planned",
+  "visibility": "candidate-visible",
+  "focus": "selective-decision risk/coverage, not a measured LLM benchmark",
+  "scenarios": [
+    {
+      "id": "D01",
+      "context": "Clear bounded, low-risk answer supported by direct evidence",
+      "expected_status": "decided",
+      "invariant": "do not over-abstain"
+    },
+    {
+      "id": "D02",
+      "context": "Contradictory evidence could reverse result",
+      "expected_status": "undetermined",
+      "invariant": "no invented confidence"
+    },
+    {
+      "id": "D03",
+      "context": "High-materiality action needs independent verification",
+      "expected_status": "escalate",
+      "invariant": "named next_action"
+    },
+    {
+      "id": "D04",
+      "context": "Policy disallows decision or missing permission",
+      "expected_status": "blocked",
+      "invariant": "never treat as merely low score"
+    },
+    {
+      "id": "D05",
+      "context": "LLM verbal confidence 0.92 without calibration dataset",
+      "expected_status": "decided-or-nondecided",
+      "invariant": "no calibrated_probability"
+    },
+    {
+      "id": "D06",
+      "context": "Distribution shift since calibrated evaluator",
+      "expected_status": "undetermined-or-escalate",
+      "invariant": "stale calibration cannot certify decision"
+    },
+    {
+      "id": "D07",
+      "context": "Claimed risk 1%, 90% coverage without trials/labels",
+      "expected_status": "unverified",
+      "invariant": "reject empirical claim and missing denominators"
+    }
+  ]
+}
