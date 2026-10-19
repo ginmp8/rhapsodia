@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "bd8a5e6c62569cc1d0ed56c3c9be0583ecfb70d067b4458837c0106f19bc09fe",
+  "sha256": "95c39032c23cb0e6435ceec3e15d442b47c81ddd39332700a06c64aaa3d12e0c",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -6402,7 +6402,7 @@
     },
     {
       "path": "skills/runtime-harness/tests/test_delivery.py",
-      "sha256": "a791925741b35fccc46b8b55a84e33ff9ade83c3c51c3c2addb62f0ba23b6e1c"
+      "sha256": "ffcc7eb535669579d496fab7a207b10d5ce9e8aac7ad0f582c586e5a53a74208"
     },
     {
       "path": "skills/runtime-harness/tests/test_incremental_discovery.py",
