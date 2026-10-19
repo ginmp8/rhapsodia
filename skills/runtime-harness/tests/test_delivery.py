@@ -138,7 +138,8 @@ class DeliveryTests(unittest.TestCase):
         p = subprocess.run([str(exe), '-I', '-S', '-B', str(SKILL / 'scripts/runtime.py'), '--workspace', str(self.root), 'init'], capture_output=True, timeout=20)
         self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
         card = json.loads((self.store.root / 'current.json').read_bytes())
-        self.assertEqual(os.path.normcase(card['python_argv'][0]), os.path.normcase(str(exe)))
+        expected = os.path.join(os.path.realpath(exe.parent), exe.name)
+        self.assertEqual(os.path.normcase(card['python_argv'][0]), os.path.normcase(expected))
 
     @unittest.skipUnless(shutil.which('pwsh') or shutil.which('powershell'), 'PowerShell unavailable on this host')
     def test_powershell_bootstrap(self):
