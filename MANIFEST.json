@@ -22,8 +22,8 @@
     },
     {
       "path": "tests/test_required_session.py",
-      "sha256": "5043c99cc7dcf24f0614a6301641bdc0f91f77acec0c96b720e33e73b4f1c6a3",
-      "size": 18593
+      "sha256": "0c0d5a41300442459e1942e779178207ec04af4076d1d90cea567f605f6f4491",
+      "size": 18633
     },
     {
       "path": "tests/test_required_session_guards.py",
