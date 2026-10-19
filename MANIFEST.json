@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/runtime/REQUIRED-SESSION.md",
-      "sha256": "45634550beb4cdad356a13fdef05d6dc2b42472546da478dde69bb761fa6e58f",
-      "size": 9480
+      "sha256": "77e8da06d44ec0982e00f0e312f24eff192193e7150808b2c5b4ea8e20292dea",
+      "size": 9503
     },
     {
       "path": "tests/test_required_session.py",
@@ -27,8 +27,8 @@
     },
     {
       "path": "tests/test_required_session_guards.py",
-      "sha256": "f63b7bdf1080268f6bbf47ad11fa867e894b2aeabf89283aadddab9bb4c60269",
-      "size": 7675
+      "sha256": "1a6e49ff03cb789699be90c8aeb19d37caa208376f7e9741313e630595b30b98",
+      "size": 7681
     },
     {
       "path": "LICENSE",
@@ -37,8 +37,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "f9862098b6fd978594bd83442940ca854778552f2c43cbbc9d5f0a88cb492c84",
-      "size": 46587
+      "sha256": "d3539760264091a45d286fb9eb80ee283933e40f4ae31fd110489ee479e15533",
+      "size": 48349
     },
     {
       "path": "agents/magia.agent.md",
@@ -77,8 +77,8 @@
     },
     {
       "path": "docs/agents/ARCHITECTURE.md",
-      "sha256": "d1924d6e44982548b22167946ff472c8d87878631a11d2abed4d553d11617092",
-      "size": 26401
+      "sha256": "1187de4682f3bc074691f12b4958df81ae76ffd19276cba854325f6b894c5304",
+      "size": 26469
     },
     {
       "path": "docs/agents/ARTIFACT-ORCHESTRATION.md",
@@ -87,8 +87,8 @@
     },
     {
       "path": "docs/agents/SOURCES.md",
-      "sha256": "13ee8aef2bd58d3551f91644d74a7287186a13b5e06beb4ad9cb12635971ab98",
-      "size": 9585
+      "sha256": "cce497355685e27a5174ba7144eaa677ed68e75f0ec527d9b8aefd4b52b48c87",
+      "size": 9657
     },
     {
       "path": "docs/agents/contracts/rhapsodia-agent-system.json",
@@ -123,5 +123,5 @@
   ],
   "manifest_version": 1,
   "package": "rhapsodia-agents-vscode",
-  "package_version": "0.11.0"
+  "package_version": "0.12.0"
 }

@@ -1,6 +1,6 @@
 {
   "name": "rhapsodia",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Portable RhapsodIA Agent Skills and native-host adapters with required runtime/graph sessions, reusable source-pinned knowledge, governed delivery and direct Adhoc execution.",
   "author": {
     "name": "ginmp8",

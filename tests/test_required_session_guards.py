@@ -122,9 +122,9 @@ class MemoryPurposeGuardTests(RequiredSessionGuardTests):
 
     def test_cli_contract_versions_and_legacy_memory_compatibility(self):
         # Local Graph Engine 3.2.0 adds a separate v2 lesson contract; do not
-        # change the existing v1 reference/remedy schema or distribution ID.
+        # change the existing v1 reference/remedy schema or independent skill IDs.
         expected = {'runtime-harness': '1.3.0', 'local-graph-engine': '3.2.0',
-                    'rhapsodia-workspace': '1.0.2', 'operational-context': '1.0.1'}
+                    'rhapsodia-workspace': '1.0.2', 'operational-context': '1.1.0'}
         for skill, version in expected.items():
             with self.subTest(skill=skill):
                 self.assertEqual((ROOT / 'skills' / skill / 'VERSION').read_text().strip(), version)
@@ -136,7 +136,7 @@ class MemoryPurposeGuardTests(RequiredSessionGuardTests):
         self.assertEqual(v2['properties']['kind']['const'], 'lesson')
         self.assertEqual(v2['properties']['schema']['const'], 'workspace-knowledge-v2')
         catalog = json.loads((ROOT / 'marketplace/catalog.json').read_text())
-        self.assertEqual(catalog['plugin']['version'], '0.11.0')
+        self.assertEqual(catalog['plugin']['version'], '0.12.0')
 
 
 if __name__ == '__main__':

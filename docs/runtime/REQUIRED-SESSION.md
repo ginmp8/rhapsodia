@@ -1,4 +1,4 @@
-# Required sessions and memory in RhapsodIA 0.11.0
+# Required sessions and memory in RhapsodIA 0.12.0 (introduced in 0.11.0)
 
 ## At a Glance
 
