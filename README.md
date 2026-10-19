@@ -14,8 +14,13 @@ The 0.12.0 changes emphasize falsifiable causal-flow reconstruction, bounded
 selective decisions with uncertainty and escalation, coverage of dispersed or
 middle-position evidence, safer alternate-path analysis, and explicit validation
 limits. Relevant updated skills include Decision Engine 2.2.0, Deep Research Suite
-0.3.0, Reverse Engineering 0.3.0, Skill Booster 0.3.0, Skill Benchmark 0.2.0,
-Operational Context 1.1.0, and Skill Token Efficient 0.2.0.
+0.3.0, Reverse Engineering 0.3.0, Skill Booster 0.3.0, Skill Benchmark 0.3.0,
+Operational Context 1.1.0, Skill Token Efficient 0.2.0, Reproducibility Engineer
+0.1.0, and Skill Prompt and Activation Review 0.1.0.
+
+The latter updates add bounded metamorphic-evidence guidance for reproducibility,
+benchmark consistency, and activation review. They preserve ownership boundaries
+and do not claim measured model behavior.
 
 **Required session controls are unchanged:** all eight native agents must use
 Runtime Harness and Local Graph Engine before task work unless the user explicitly

@@ -1,6 +1,6 @@
 ---
 name: reproducibility-engineer
-description: Engineer reproducibility for exactly one existing Agent Skills-compatible skill when the goal is to reduce controllable run-to-run or cross-agent variance without changing the skill's ownership boundary. Use for bounded reproducibility audit, transformation, validation, or packaging. Do not use for general skill optimization, benchmark-only scoring, net-new skills, ordinary application code, or prompt-only rewrites; route those to skill-booster, skill-benchmark, or skill-creator-juiced as appropriate.
+description: Engineer reproducibility for one existing Agent Skills-compatible skill by reducing controllable run-to-run or cross-agent variance without changing its ownership boundary. Use for a bounded reproducibility audit, transformation, validation, or packaging. Do not use for general skill optimization, benchmark-only scoring, new skills, ordinary application code, or prompt-only rewrites; route to skill-booster, skill-benchmark, or skill-creator-juiced as appropriate.
 ---
 
 # Reproducibility Engineer
@@ -61,9 +61,9 @@ State the ceiling before transformation. Place each control at the lowest reliab
 2. **Classify:** reproducibility ceiling; separate controllable variance from irreducible model/external/subjective variance.
 3. **Map variance:** discovery/activation -> Top-100 -> input normalization -> routing -> references -> decisions -> generation -> validation -> repair -> delivery -> packaging.
 4. **Freeze contract:** hard gates, protected paths, variability items, evaluators/scenarios, acceptance rules, and delivery guarantees before material mutation.
-5. **Transform minimally:** use the lowest reliable control layer; add machinery only for an observed variance source or evidence gap.
+5. **Transform minimally:** use the lowest reliable control layer; add machinery only for an observed variance source or evidence gap. For LLM/prompt variance, predeclare input transformations with expected invariance or expected change; do not require identical wording when semantic obligations are unchanged.
 6. **Repair causally:** failing diagnostic -> smallest supported fix -> same gate -> adjacent gates; stop a branch after two non-improving repair rounds unless evidence changes the hypothesis.
-7. **Evaluate:** baseline vs candidate on identical scenarios; add environment profiles, repeated trials, no-skill/full-context arms, or holdouts only when the claim requires them.
+7. **Evaluate:** baseline vs candidate on identical scenarios; add environment profiles, repeated trials, no-skill/full-context arms, or holdouts only when the claim requires them. For relation-based cases, check [`references/metamorphic-variance.md`](references/metamorphic-variance.md), verify preconditions, and classify violations as suspected pending independent adjudication.
 8. **Prove and freeze:** verify source/evaluator identity, target-owned tests, context/package gates, then freeze exact candidate bytes.
 9. **Deliver atomically:** package only frozen bytes, verify package/receipt identity, and preserve last-good/recovery artifacts on failure.
 
@@ -81,6 +81,7 @@ Every substantive run reports target/mode/baseline identity, reproducibility cei
 
 - **Ceiling / transformation / validators:** [`references/reproducibility-model.md`](references/reproducibility-model.md), [`references/transformation-playbook.md`](references/transformation-playbook.md), [`references/validator-patterns.md`](references/validator-patterns.md).
 - **Evaluation / scenarios / stochastic claims:** [`references/evaluation-contract.md`](references/evaluation-contract.md), [`references/scenario-design.md`](references/scenario-design.md), [`references/stochastic-evaluation.md`](references/stochastic-evaluation.md).
+- **Metamorphic variance probes:** [`references/metamorphic-variance.md`](references/metamorphic-variance.md) — typed invariance/change, false-positive safeguards, paired reliability and environment limits.
 - **Integrity / reporting:** [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md), [`references/report-contract.md`](references/report-contract.md).
 - **Portability / environment:** [`references/host-portability.md`](references/host-portability.md), [`references/environment-provenance.md`](references/environment-provenance.md).
 - **Adaptive / multi-stage:** [`references/workflow-reproducibility.md`](references/workflow-reproducibility.md), [`references/execution-lineage.md`](references/execution-lineage.md).

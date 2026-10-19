@@ -39,7 +39,7 @@ Do not use for target mutation, iterative repair/hardening, generic code review,
 2. For filesystem targets, read `SKILL.md` first, keep outputs outside the target, and run normative Agent Skills conformance before maturity scoring.
 3. Freeze target bytes and evaluator identity before strict comparison or measured claims; benchmark the frozen snapshot, not a silently changing live tree.
 4. Score static maturity with [`references/benchmark-rubric.md`](references/benchmark-rubric.md); do not treat host adapters or optional resource count as automatic quality points.
-5. Validate behavioral result envelopes before computing metrics; prefer v3 repeated trials for stochastic/model-agent claims and validate benchmark health before strong behavioral promotion claims.
+5. Validate behavioral result envelopes before computing metrics; prefer v3 repeated trials for stochastic/model-agent claims and validate benchmark health before strong behavioral promotion claims. For metamorphic evidence, predeclare semantic input relations, check case/identity pairing, and classify relation violations as **suspected**, not confirmed defects; do not mix these with v2/v3 metrics.
 6. Compare only like-for-like evidence. Changed evaluator/scenario/runtime/host identities make strict deltas `not comparable` unless the benchmark contract explicitly controls the difference.
 7. Validate the generated report, reverify source identity, freeze accepted evidence after the final pass, and deliver report/receipt atomically when writing files.
 
@@ -48,7 +48,7 @@ Do not use for target mutation, iterative repair/hardening, generic code review,
 - For token/format baseline-vs-candidate comparisons, import `skill-opt.token-efficiency` v1 from `skill-token-efficient` in `compare-existing` read-only mode through [experimental evidence](references/experimental-evidence.md). The provider supplies pinned-tokenizer/scope counts and preservation diagnostics, not behavior, scores, verdicts or write authority. Without provider, mark canonical measurement unavailable and keep independently evidenced metrics separate.
 - Evidence layers stay distinct: `static`, `behavioral`, `runtime`, `qualitative`, `planned`, and `blocked`.
 - For quantitative results affecting a verdict, screen denominators, evaluated population/suite mix, effect magnitude, interval assumptions, multiplicity and selected-outcome bias; load [statistical interpretation](references/statistical-interpretation.md). Never turn observational metrics or p-values into proof of skill effect.
-- Never turn planned, missing, stale, malformed, contaminated, or unvalidated evidence into measured claims.
+- Never turn planned, missing, stale, malformed, contaminated, or unvalidated evidence into measured claims. A metamorphic consistency check validates a *necessary relation under stated preconditions*, not correctness of either standalone answer; do not equate changed wording with failure, correlate related variants as independent trials, or treat claimed equivalence as proven.
 - A static 0-100 score is a maturity score, not behavioral capability proof and not normative Agent Skills conformance.
 - Hard gates run before score-based comparison; a better scalar score never overrides a blocker regression.
 - Existing-skill regression claims keep the immutable prior version as `baseline`; `without-skill` answers incremental value and never replaces that baseline.
@@ -78,6 +78,7 @@ Protect target files, fixtures, expected outputs, secrets, credentials, frozen e
 - [`references/benchmark-workflow.md`](references/benchmark-workflow.md): filesystem sequence, evidence hierarchy, comparison rules, output ownership, final response.
 - [`references/integrity-and-recovery.md`](references/integrity-and-recovery.md): immutable snapshots, evaluator identity, alias safety, atomic delivery, recovery receipts.
 - [`references/test-scenarios.md`](references/test-scenarios.md) and [`references/experimental-evidence.md`](references/experimental-evidence.md): v2/v3 result contracts, repeated trials, runtime identity, uncertainty, grader/length controls.
+- [`references/metamorphic-evidence.md`](references/metamorphic-evidence.md): optional metamorphic-evidence intake, validated relations, false-positive adjudication, identity matching; `scripts/validate_metamorphic_evidence.py` checks mechanical fields only.
 - [`references/statistical-interpretation.md`](references/statistical-interpretation.md): denominator/population-mix, effect magnitude, interval, multiplicity and subgroup safeguards; apply only when quantitative evidence materially affects the verdict.
 - [`references/benchmark-health.md`](references/benchmark-health.md) and [`references/skill-coverage.md`](references/skill-coverage.md): suite-health gate and optional constraint-level behavioral coverage.
 - [`references/control-and-capability-delta.md`](references/control-and-capability-delta.md): baseline/parent/no-skill/length-control roles, visibility, provenance, capability delta.

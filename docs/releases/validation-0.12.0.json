@@ -9,10 +9,21 @@
   },
   "current": {
     "source_manifest": "source-manifest-0.12.0.json",
-    "source_sha256": "1f57f09cd86a70c44fdec09615d497c6c92e7593bdf21ba8dcf15ae78ac0087d",
-    "source_files": 2419,
+    "source_sha256": "065351f4da05a7db7eda4dafa6712ab56ebffc54eb3322156f6873b8590fba3a",
+    "source_files": 2429,
     "skills": 57,
     "agent_profiles": 8
+  },
+  "previous_candidate_evidence": {
+    "source_sha256": "1f57f09cd86a70c44fdec09615d497c6c92e7593bdf21ba8dcf15ae78ac0087d",
+    "source_files": 2419,
+    "applies_to": [
+      "structural_comparison",
+      "critical_control_review",
+      "tests",
+      "inherited_nonblocking_warnings"
+    ],
+    "note": "These results describe the prior 0.12.0 candidate before the staged metamorphic-evidence updates; they are retained for traceability and do not validate the updated source."
   },
   "structural_comparison": {
     "baseline_files": 2412,
@@ -98,5 +109,29 @@
     "cross-model behavioral improvement",
     "perfect proof of semantic equivalence"
   ],
-  "removed_files": []
+  "removed_files": [],
+  "update_validation": {
+    "source_sha256": "065351f4da05a7db7eda4dafa6712ab56ebffc54eb3322156f6873b8590fba3a",
+    "scope": "Staged metamorphic-evidence updates and release-documentation/manifests refresh.",
+    "checks": [
+      {
+        "name": "generated package and marketplace manifests",
+        "status": "pass"
+      },
+      {
+        "name": "0.12.0 source manifest consistency",
+        "status": "pass"
+      },
+      {
+        "name": "Skill Benchmark metamorphic evidence unit tests",
+        "passed": 10,
+        "skipped": 0,
+        "status": "pass"
+      }
+    ],
+    "limitations": [
+      "The full integration suite was not rerun for this update.",
+      "No model-behavior or cross-host runtime claim is made."
+    ]
+  }
 }

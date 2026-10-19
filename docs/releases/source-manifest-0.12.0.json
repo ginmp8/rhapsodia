@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "51838da6c912981487fcc88ad973d4ef941d502ce9d9ef86120f522f521887a4",
+  "sha256": "065351f4da05a7db7eda4dafa6712ab56ebffc54eb3322156f6873b8590fba3a",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -70,7 +70,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "d3539760264091a45d286fb9eb80ee283933e40f4ae31fd110489ee479e15533"
+      "sha256": "e9d98167d4fd1998de6f2ec9dcf4f18c6b6ada1cb8f010422a49736e5c2cd103"
     },
     {
       "path": "agents/magia.agent.md",
@@ -5501,12 +5501,20 @@
       "sha256": "3189ee37a011508c146e2b78383d54002bfb1d429f7c390a02c904b0a4b33faf"
     },
     {
+      "path": "skills/reproducibility-engineer/CHANGELOG.md",
+      "sha256": "3cf4e6de0621acb17636141976050eb87fe3799bc1032301f42a6b147b4bd338"
+    },
+    {
       "path": "skills/reproducibility-engineer/SKILL.md",
-      "sha256": "3e6c000cf5bad3e5084bcae0ec4b2487e8c8d92b1622b2355be65a546081e2b9"
+      "sha256": "1632d20cd69e4a65858b2d654da1545eefac3e1b8a89ed3d0922d4c56b6bf5cc"
+    },
+    {
+      "path": "skills/reproducibility-engineer/VERSION",
+      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
     },
     {
       "path": "skills/reproducibility-engineer/agents/openai.yaml",
-      "sha256": "638aea189f3365a545fb579b042099a415af44d6198c4c93155b04ae983d3965"
+      "sha256": "51e67f2260d75c34c9a6a614c8ac73d9ecd7fd8ef0a828c417008009f786fe12"
     },
     {
       "path": "skills/reproducibility-engineer/assets/icon.svg",
@@ -5567,6 +5575,10 @@
     {
       "path": "skills/reproducibility-engineer/references/integrity-and-recovery.md",
       "sha256": "166e09594a38563b8e74bd069fd7fca463f64f25bbf388ed927520470d2450fb"
+    },
+    {
+      "path": "skills/reproducibility-engineer/references/metamorphic-variance.md",
+      "sha256": "d230888b085973656e834e04f2e40d0fa9f20d9c5700f9a4f557a19670d9cdf4"
     },
     {
       "path": "skills/reproducibility-engineer/references/report-contract.md",
@@ -6786,15 +6798,15 @@
     },
     {
       "path": "skills/skill-benchmark/CHANGELOG.md",
-      "sha256": "1cdd3170b1e9155ef0f41e68317bdc70b2acd08c23680fda29adb66c06691aa4"
+      "sha256": "e22d78cc3f77075c1503420d8c386d6e81643cc6f019b68f0cdba57b84d7632b"
     },
     {
       "path": "skills/skill-benchmark/SKILL.md",
-      "sha256": "35d264268de97862a521c3c471b454877dded09428dc3c074700925d661083e8"
+      "sha256": "dd4dd41f262d05c348fa6f958c699bc0737324c3d989b9e3377707bfcd150cff"
     },
     {
       "path": "skills/skill-benchmark/VERSION",
-      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
+      "sha256": "d915cc95d6ca8f47ae297713ed46d4e5c5d99ddd29fc3c61e263bdf305f2b5b0"
     },
     {
       "path": "skills/skill-benchmark/agents/openai.yaml",
@@ -6873,6 +6885,10 @@
       "sha256": "f622147481e41ebc2e16be75a0029a193286f1c7ffa46f0d8686ae75c77adeca"
     },
     {
+      "path": "skills/skill-benchmark/references/metamorphic-evidence.md",
+      "sha256": "795e958281053a62c8166f405472a3f6e9bbfd92aa72af576cdab40817343295"
+    },
+    {
       "path": "skills/skill-benchmark/references/multi-candidate-evaluation.md",
       "sha256": "7eff317f30f96edf52e30af876df4a1530a0cd8b7c7db91b23d4921ee1baa92a"
     },
@@ -6933,6 +6949,10 @@
       "sha256": "92dfb092a7c12ea1640f7eb3c9609ec13942edf370d82293423372ba73b27b12"
     },
     {
+      "path": "skills/skill-benchmark/scripts/validate_metamorphic_evidence.py",
+      "sha256": "0b9ac46a5f0553a6fd92ffc83b3c2104e16a15c5d1f72048b86aadc82412457b"
+    },
+    {
       "path": "skills/skill-benchmark/scripts/validate_portability.py",
       "sha256": "f655fd3f54ad55e4de873da9cf55b24f87faa9b0be2ef4ecdcd6769cc7a0cd8d"
     },
@@ -6955,6 +6975,10 @@
     {
       "path": "skills/skill-benchmark/tests/test_experimental_comparison.py",
       "sha256": "c744324c2b64ab6acf7533d811d628198ec27fe2f7b38605887821edcd0b2bfb"
+    },
+    {
+      "path": "skills/skill-benchmark/tests/test_metamorphic_evidence.py",
+      "sha256": "2ce08433e5bc763b4dafde65071b4480c11ff810a3fde9dd61227996a075d55b"
     },
     {
       "path": "skills/skill-benchmark/tests/test_multi_candidate_set.py",
@@ -8725,12 +8749,20 @@
       "sha256": "11c20cee58d2295aed3919ab64bb7758f2eafdc97dfa943c90b8e78c77b03150"
     },
     {
+      "path": "skills/skill-prompt-and-activation-review/CHANGELOG.md",
+      "sha256": "9a459142ba256b675df4cb00ae447b14e20ed4e9c077538aaebdbe19a563b0c7"
+    },
+    {
       "path": "skills/skill-prompt-and-activation-review/SKILL.md",
-      "sha256": "0c1f4c4b08c53ba63adaf2397aa076318ad0410e75c972b9e942ca8ec95ad5e7"
+      "sha256": "0d4808f0c262fa68db122dd57e6e0ad593c73234c466af04b3621549b263dfd6"
+    },
+    {
+      "path": "skills/skill-prompt-and-activation-review/VERSION",
+      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
     },
     {
       "path": "skills/skill-prompt-and-activation-review/agents/openai.yaml",
-      "sha256": "09f47a2981a89ca68894c861046f8a3daa597538a93ab40119595b0a3e0a8540"
+      "sha256": "731efa03b0aec41c133afe734c37e9b932f88c37d54e0e8209d6319352f80bc7"
     },
     {
       "path": "skills/skill-prompt-and-activation-review/assets/icon.svg",
@@ -8771,6 +8803,10 @@
     {
       "path": "skills/skill-prompt-and-activation-review/references/evaluator-visibility.md",
       "sha256": "93ef1a6a84eb917ff07897828d9613f9e3338ce9e39076a87643601c020f5c56"
+    },
+    {
+      "path": "skills/skill-prompt-and-activation-review/references/metamorphic-activation-review.md",
+      "sha256": "c769a533435a0bc549100d8f41cd2a68a6c2e24090d91e987971c30eb3b94122"
     },
     {
       "path": "skills/skill-prompt-and-activation-review/references/prompt-rewrite-patterns.md",

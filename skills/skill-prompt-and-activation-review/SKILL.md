@@ -46,7 +46,7 @@ Use one primary mode unless the request clearly spans multiple owned surfaces. G
 
 - Route by **artifact + action + ownership**, not keywords; preserve the target role, authority, safety rules, and supplied scope.
 - Separate `explicit` direct invocation from `implicit`/`contextual` automatic routing; never count explicit cases in automatic precision/recall.
-- Static breadth/omission is FP/FN **risk**; only frozen executed host-routing evidence can confirm a false positive/negative.
+- Static breadth/omission is FP/FN **risk**; only frozen executed host-routing evidence can confirm a false positive/negative. For metamorphic pairs, freeze a justified input relation before execution: preserve routes only for genuinely equivalent intents; changed scope/authority needs a separately stated expected delta.
 - Keep `alternative-owner` negatives separate from true `abstain` negatives.
 - Before behavioral comparison, freeze suite/evaluator, catalog/routing fingerprint, evaluator visibility, and trial policy; paired arms must use identical material identities.
 - Bundled activation scenarios are candidate-visible regression/calibration evidence, never a blind holdout. Blind holdouts stay external/evaluator-only.
@@ -65,7 +65,7 @@ Use one primary mode unless the request clearly spans multiple owned surfaces. G
 5. Classify defects with TAX-001, keeping static FP/FN risks distinct from executed routing defects.
 6. Resolve overlap and negatives using OVL-001/NEG-001; prefer the narrow legitimate owner and split cleanly decomposable work.
 7. Apply the smallest EVD-001-supported rewrite; do not broaden authority or optimize for trigger frequency.
-8. When routing changes, cover positive, near-miss negative, abstention, ambiguous, boundary, adversarial, and regression cases.
+8. When routing changes, cover positive, near-miss negative, abstention, ambiguous, boundary, adversarial, and regression cases. If prompt sensitivity matters, additionally use paired variants following [`references/metamorphic-activation-review.md`](references/metamorphic-activation-review.md), without treating repeated paraphrases as independent cases.
 9. Before behavioral execution, freeze evaluator/suite, visibility boundary, routing fingerprint, and fixed trial policy.
 10. Validate suite/evidence arms, compare only materially identical identities, and keep single-run observations separate from repeatability evidence.
 11. Report metrics by question: automatic precision/recall, explicit route accuracy, abstention, near-miss false activation, full-route regressions, and trigger rates.
@@ -80,6 +80,7 @@ Load only the branch that changes the decision; required Markdown is directly re
 - **Static review/severity/evidence rubric:** [`references/activation-review-rubric.md`](references/activation-review-rubric.md).
 - **Bounded rewrite patterns:** [`references/prompt-rewrite-patterns.md`](references/prompt-rewrite-patterns.md).
 - **Adversarial and scenario design:** [`references/adversarial-scenarios.md`](references/adversarial-scenarios.md) and [`evals/activation-scenarios.json`](evals/activation-scenarios.json).
+- **Metamorphic activation review:** [`references/metamorphic-activation-review.md`](references/metamorphic-activation-review.md) — intent-preserving versus boundary-changing variants; relation and provenance gates.
 - **Behavioral comparison only:** [`references/evaluation-protocol.md`](references/evaluation-protocol.md), [`references/routing-evidence-profile.md`](references/routing-evidence-profile.md), and [`references/evaluator-visibility.md`](references/evaluator-visibility.md).
 - **Optional calibration/reporting:** [`examples/good-and-bad-descriptions.md`](examples/good-and-bad-descriptions.md), [`examples/prompt-review-cases.md`](examples/prompt-review-cases.md), and [`assets/templates/review-report.md.template`](assets/templates/review-report.md.template).
 - **Deterministic regression coverage:** [`tests/test_activation_eval_tools.py`](tests/test_activation_eval_tools.py).
