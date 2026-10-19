@@ -1,5 +1,6 @@
 """Executable contract for mandatory, opt-out-aware agent sessions and memory."""
 from __future__ import annotations
+from contextlib import closing
 import hashlib
 import json
 import os
@@ -236,7 +237,7 @@ with memory.writer():
         self.assertEqual(result['pruned'], 1)
         self.assertFalse(self.memory('lookup', 'answer')['hits'])
         import sqlite3
-        with sqlite3.connect(self.workspace / '.rhapsodia/graph/workspace.sqlite3') as con:
+        with closing(sqlite3.connect(self.workspace / '.rhapsodia/graph/workspace.sqlite3')) as con:
             self.assertGreater(con.execute('SELECT COUNT(*) FROM source_revisions').fetchone()[0], 1)
 
     def test_remedy_is_persisted_with_applicability_not_automatic_proof(self):
