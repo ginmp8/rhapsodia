@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "7acc30aad7a2a599f10c4ea06d064eda3d4ac9a00d447ff185d115830c4fe83f",
+  "sha256": "bd8a5e6c62569cc1d0ed56c3c9be0583ecfb70d067b4458837c0106f19bc09fe",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -5958,7 +5958,7 @@
     },
     {
       "path": "skills/reverse-engineering/scripts/mcp_server.py",
-      "sha256": "bf38ac098ff78836c31789ee7f44cf093933e8ccd6dc0d9d22a723aa7abacb89"
+      "sha256": "8bd6e9f137a8f2083239ba2d92343a7fe438a510a29cef2910962754b60d1b0a"
     },
     {
       "path": "skills/reverse-engineering/scripts/native_symbols.py",
@@ -6034,7 +6034,7 @@
     },
     {
       "path": "skills/reverse-engineering/tests/test_complete_features.py",
-      "sha256": "d044ec552401bc22d7a2936c4db0d9ba6bfb25a598eed19d93039f8e639715be"
+      "sha256": "d02302a130f93e076c6b9704bdbef758c1cbea12eacd1f2fcdbc83078fc70f57"
     },
     {
       "path": "skills/reverse-engineering/tests/test_extended_acceptance.py",
