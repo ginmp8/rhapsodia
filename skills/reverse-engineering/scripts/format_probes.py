@@ -341,7 +341,8 @@ def scan_sqlite(path: Path) -> dict:
     uri = path.absolute().as_uri() + '?mode=ro&immutable=1'
     try:
         con = sqlite3.connect(uri, uri=True, timeout=2)
-        con.enable_load_extension(False)
+        if hasattr(con, 'enable_load_extension'):
+            con.enable_load_extension(False)
         con.execute('PRAGMA query_only=ON')
         con.execute('PRAGMA trusted_schema=OFF')
         rows = con.execute("SELECT type,name,tbl_name,sql FROM sqlite_master WHERE type IN ('table','view','index','trigger') ORDER BY type,name LIMIT ?",(MAX_ITEMS,)).fetchall()
