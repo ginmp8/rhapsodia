@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "1f57f09cd86a70c44fdec09615d497c6c92e7593bdf21ba8dcf15ae78ac0087d",
+  "sha256": "7acc30aad7a2a599f10c4ea06d064eda3d4ac9a00d447ff185d115830c4fe83f",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -4974,7 +4974,7 @@
     },
     {
       "path": "skills/operational-context/contracts/commands.json",
-      "sha256": "1a27c1c73e177b7f67358d78c23a243680414ca021a532d6f9f613ea68a761e4"
+      "sha256": "03216448bb686b354795b7a9623bd8c459bbb8016d4cc6bea2bfde975fa6b5c9"
     },
     {
       "path": "skills/operational-context/contracts/task-context-v1.schema.json",
@@ -5026,7 +5026,7 @@
     },
     {
       "path": "skills/operational-context/scripts/oc_core/__init__.py",
-      "sha256": "016ed7201088092f07cde2dda534dbf423b2446d4bccccd906ad120c9251ff90"
+      "sha256": "b6ba91ac26d5703321f2441eec08dfcd7980327805031bc4b25f70a998659aa7"
     },
     {
       "path": "skills/operational-context/scripts/oc_core/actions.py",
@@ -6402,7 +6402,7 @@
     },
     {
       "path": "skills/runtime-harness/tests/test_delivery.py",
-      "sha256": "20fd423461d9f6989d62c5d4a149a5c7f700c1235fb7367b4cec6d35fd1a0082"
+      "sha256": "a791925741b35fccc46b8b55a84e33ff9ade83c3c51c3c2addb62f0ba23b6e1c"
     },
     {
       "path": "skills/runtime-harness/tests/test_incremental_discovery.py",
