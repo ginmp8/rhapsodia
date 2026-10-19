@@ -77,7 +77,10 @@ def run_one(command: list[str], value: Any, cwd: Path, timeout: float, output_ca
         resource.setrlimit(resource.RLIMIT_FSIZE, (output_cap, output_cap))
         if memory_mb:
             bound=memory_mb*1024*1024
-            resource.setrlimit(resource.RLIMIT_AS, (bound,bound))
+            try:
+                resource.setrlimit(resource.RLIMIT_AS, (bound,bound))
+            except (ValueError, OSError):
+                pass
     try:
         initial_files = snapshot(cwd) if capture_fs else None
     except (CaptureError, OSError) as exc:

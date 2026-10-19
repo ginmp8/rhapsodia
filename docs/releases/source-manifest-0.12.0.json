@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "e35358dc1d757fef4cc4a8b5bf677c723f6d0ea52bdf963957b5dbdbf6532294",
+  "sha256": "e34125521daf5be92259352f5c799f6594f0e2a7a52701f55231b3e387d373c8",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -5938,7 +5938,7 @@
     },
     {
       "path": "skills/reverse-engineering/scripts/format_probes.py",
-      "sha256": "43e26e1b0a3912fd00c809aad466c9635873ee91c1114710b9dac0079433646b"
+      "sha256": "88c58afdd2941a40057262d8d767d66d6c1b7e68ab155265e2181d43407a8be3"
     },
     {
       "path": "skills/reverse-engineering/scripts/interface_traces.py",
@@ -5970,7 +5970,7 @@
     },
     {
       "path": "skills/reverse-engineering/scripts/oracle_runner.py",
-      "sha256": "d364d1d438bb36622874fa4a4e79db0808deba83e388e82f6621a2f61226c088"
+      "sha256": "72d50860ce29b55fe49d644eabad45dd3030c6ea82ca4d074ef1f7b62f1f0cb5"
     },
     {
       "path": "skills/reverse-engineering/scripts/originality_audit.py",
@@ -6014,7 +6014,7 @@
     },
     {
       "path": "skills/reverse-engineering/scripts/web_investigator.py",
-      "sha256": "dc15b2b660c1269a27a40b652d5f0a0bf7fe389c8eec0feab9b2634f1d5461f3"
+      "sha256": "78432bd20a7b0046b167b46300a96c624a6929716c1dd0397308a16ef4ebf7de"
     },
     {
       "path": "skills/reverse-engineering/scripts/workbench.py",

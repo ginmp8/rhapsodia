@@ -122,7 +122,7 @@ def checked_fixture(root: Path, route: str) -> str:
     if not relative.endswith('.html'):
         raise DataError('fixtures must be .html files')
     candidate = root / relative
-    if any(p.is_symlink() for p in (candidate, *candidate.parents) if p != root.parent):
+    if any(p.is_symlink() for p in (candidate, *candidate.parents) if p.is_relative_to(root) and p != root):
         raise DataError('fixture symlink forbidden')
     if not candidate.resolve().is_relative_to(root.resolve()):
         raise DataError('fixture escaped approved root')
