@@ -18,7 +18,7 @@
 - Dual-control-plane synthesis
 
 
-Historical design sources reviewed on 2026-10-01. The 0.11.0 maintenance exception adds approved runtime/graph helper execution to otherwise domain-read-only profiles; current details and sources are in [required sessions](../runtime/REQUIRED-SESSION.md). These sources are **design evidence and inspiration**, not runtime dependencies. RhapsodIA keeps portable semantic contracts in its own Skills/agent-system contract and does not import vendor harnesses, named models, or third-party orchestration runtimes.
+Historical design sources reviewed on 2026-10-01. The maintenance exception introduced in 0.11.0 and retained in 0.12.0 permits approved runtime/graph helper execution for otherwise domain-read-only profiles; current details and sources are in [required sessions](../runtime/REQUIRED-SESSION.md). These sources are **design evidence and inspiration**, not runtime dependencies. RhapsodIA keeps portable semantic contracts in its own Skills/agent-system contract and does not import vendor harnesses, named models, or third-party orchestration runtimes.
 
 ## Original dynamic-workflow reference
 
@@ -78,7 +78,7 @@ These sources justify the current VS Code/Copilot adapter mechanics only. Other 
 ## Design implications used by RhapsodIA
 
 1. `Rhapsodia Supervisor` remains read-only and owns orchestration/promotion state.
-2. `Rhapsodia Analyst` remains domain-read-only for isolated analysis and adversarial review; 0.11.0 adds only the approved private-memory execution exception.
+2. `Rhapsodia Analyst` remains domain-read-only for isolated analysis and adversarial review; that approved private-memory execution exception was introduced in 0.11.0 and remains in 0.12.0.
 3. `Rhapsodia Verifier` is separate from Magia: it may write verification-only artifacts and execute bounded test oracles, but never production repairs or acceptance-criteria changes.
 4. Nomia/Mago/Magia remain the only canonical domain owners; gated convergence is nested inside one already-resolved Magia phase.
 5. `adaptive-workflow-orchestration` preserves the original dynamic-workflow patterns and adds v2 gated convergence without removing v1.

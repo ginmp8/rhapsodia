@@ -35,17 +35,23 @@ jobs:
           python -I -S -B -m unittest discover -s skills/premortem-analysis/tests -p 'test_*.py' -q
           python -B skills/premortem-analysis/scripts/validate_package.py skills/premortem-analysis
           python -B skills/premortem-analysis/scripts/validate_traceability.py skills/premortem-analysis/evidence/traceability.json --root skills/premortem-analysis
+      - name: New causal-flow and selective-decision guards
+        run: |
+          python -I -S -B -m unittest discover -s skills/causal-flow-comprehension/tests -p 'test_*.py' -q
+          python -I -S -B -m unittest discover -s skills/decision-engine/tests -p 'test_*.py' -q
+          python -I -S -B skills/causal-flow-comprehension/scripts/validate_skill.py skills/causal-flow-comprehension
+          python -I -S -B skills/decision-engine/scripts/validate_skill.py skills/decision-engine
       - name: Required session and workspace memory regression gates
         run: python -I -S -B -m unittest discover -s tests -p 'test_required_session*.py' -v
       - name: Release integration tests
         run: python -S -B -m unittest tests.test_runtime_integration -v
       - name: Manifest and version checks
         run: python -B scripts/prepare_release.py --check
-      - name: Verify 0.11.0 source inventory
-        run: python -B scripts/validate_release_source_manifest.py --version 0.11.0 --check
+      - name: Verify 0.12.0 source inventory
+        run: python -B scripts/validate_release_source_manifest.py --version 0.12.0 --check
       - name: Build once on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.11.0 --output dist/a/rhapsodia-0.11.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.12.0 --output dist/a/rhapsodia-0.12.0.zip
       - name: Build again on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.11.0 --output dist/b/rhapsodia-0.11.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.12.0 --output dist/b/rhapsodia-0.12.0.zip
       - name: Compare exact archive bytes and inspect integrity
-        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.11.0.zip'); b=Path('dist/b/rhapsodia-0.11.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"
+        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.12.0.zip'); b=Path('dist/b/rhapsodia-0.12.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"

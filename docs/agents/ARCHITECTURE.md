@@ -27,7 +27,7 @@
 - Host boundary
 - Reference-grounded convergence
 - Dual control planes: topology vs. convergence
-- Required session and memory (0.11.0)
+- Required session and memory (introduced in 0.11.0; retained in 0.12.0)
 
 ## Artifact-native default (agent-system-contract/v4)
 
@@ -377,7 +377,7 @@ The first control plane is compile-to-workflow: an LLM/planner may synthesize to
 
 Composition has one invariant: **one progression owner at a time**. Nested subflows return evidence; they do not acquire the caller's promotion authority. This prevents two controllers from independently deciding that the same work may advance.
 
-## Required session and memory (0.11.0)
+## Required session and memory (introduced in 0.11.0; retained in 0.12.0)
 
 The purpose is cumulative learning, not mechanical startup. Source-pinned v2 execution lessons and `review-lessons` identify recurrent issues as advisory evidence; only the canonical owner and an independent frozen evaluator may adopt a proposed instruction change. Harness avoids repeated runtime
 and resource discovery; Graph retains structural knowledge, decision rationale and operational

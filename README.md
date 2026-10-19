@@ -1,12 +1,43 @@
 # RhapsodIA
 
-## 0.11.0 - Required sessions, persistent workspace knowledge and direct Adhoc
+## 0.12.0 — causal flow, selective decisions and evidence coverage
+
+### Current distribution
+
+RhapsodIA **0.12.0** contains **57 Agent Skills and eight native agent profiles**.
+It preserves the complete preceding `main` source baseline and adds the independently
+versioned [Causal Flow Comprehension](skills/causal-flow-comprehension/SKILL.md) skill.
+Existing skill packages remain independently versioned; internal JSON schemas and
+agent-system contract versions are not automatically advanced with the distribution.
+
+The 0.12.0 changes emphasize falsifiable causal-flow reconstruction, bounded
+selective decisions with uncertainty and escalation, coverage of dispersed or
+middle-position evidence, safer alternate-path analysis, and explicit validation
+limits. Relevant updated skills include Decision Engine 2.2.0, Deep Research Suite
+0.3.0, Reverse Engineering 0.3.0, Skill Booster 0.3.0, Skill Benchmark 0.2.0,
+Operational Context 1.1.0, and Skill Token Efficient 0.2.0.
+
+**Required session controls are unchanged:** all eight native agents must use
+Runtime Harness and Local Graph Engine before task work unless the user explicitly
+disables either one independently for that request. Graph data never replaces
+source authority; domain ownership, frozen evaluators, safety/authorization gates,
+and independent evidence remain mandatory. Adhoc executes authorized direct work
+without bypassing governed orchestration or verification.
+
+Start with [required sessions](docs/runtime/REQUIRED-SESSION.md),
+[agent architecture](docs/agents/ARCHITECTURE.md) and
+[0.12.0 release notes](docs/releases/0.12.0.md).
+Structural and deterministic checks do not establish native-host/model behavior,
+measured reliability improvements or cross-platform runtime equivalence.
+Do not commit private runtime state or secrets.
+
+## 0.11.0 (historical) - Required sessions, persistent workspace knowledge and direct Adhoc
 
 ## Reading guide
 
-**Purpose:** Install and use the current native agent/skill distribution without confusing required session memory, optional artifact views and governed lifecycle ownership.
-**Load when:** Selecting Adhoc versus Supervisor, installing profiles, resolving prerequisites or interpreting release validation.
-**Decision impact:** Bootstrap harness and graph unless explicitly disabled by the user; preserve scoped permissions, source freshness and independent proof. Historical sections describe their named releases, not current defaults.
+**Purpose:** Explain the 0.11.0 release and its required-session design history, preserving the original scope and evidence.
+**Load when:** Checking 0.11.0 behavior or tracing the introduction of mandatory sessions and the Adhoc profile.
+**Decision impact:** These safeguards remain required in 0.12.0; earlier release validation applies to its named version, not to the current distribution.
 
 RhapsodIA **0.11.0** includes **56 Agent Skills and eight native agent profiles**.
 All profiles require Runtime Harness and Local Graph Engine before task work; only explicit
@@ -107,7 +138,8 @@ audits. Structural host compatibility does not establish runtime equivalence acr
 
 ## Contents
 
-- 0.11.0 - Required sessions, persistent workspace knowledge and direct Adhoc
+- 0.12.0 - Causal flow, selective decisions and evidence coverage
+- 0.11.0 (historical) - Required sessions, persistent workspace knowledge and direct Adhoc
 - 0.10.0 (historical) - Selective agent activation, bounded decisions and prospective risk review
 - 0.9.0 - Reverse engineering, deep research, premortems and portable skill lifecycle contracts
 - 0.8.0 - Bounded operational context and evidence reuse

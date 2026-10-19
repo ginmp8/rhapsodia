@@ -16,7 +16,7 @@
 - Handoff
 - Design boundary
 
-A stdlib-only local runtime registry with a required-session adapter for RhapsodIA 0.11.0. It is intentionally
+A stdlib-only local runtime registry with a required-session adapter for RhapsodIA 0.12.0. It is intentionally
 **lazy and incremental**: bootstrap records only the running Python plus bounded
 skill/agent catalogs. Agents discover exact missing tools only when needed and can
 publish mechanically verifiable reusable resource locations for later agents.

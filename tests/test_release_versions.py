@@ -1,11 +1,17 @@
 import importlib.util,json,shutil,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-RELEASE="0.11.0"
-NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness","operational-context","reverse-engineering","deep-research-suite","premortem-analysis")
+RELEASE="0.12.0"
+NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness","operational-context","reverse-engineering","deep-research-suite","premortem-analysis","causal-flow-comprehension")
 class Tests(unittest.TestCase):
  def test_catalog_release_matches_current(self):
   d=json.loads((ROOT/"marketplace/catalog.json").read_text());self.assertEqual(d["plugin"]["version"],RELEASE);self.assertEqual(d["marketplace"]["version"],RELEASE)
+ def test_current_release_documentation_and_skill_inventory(self):
+  self.assertTrue((ROOT/"docs/releases"/f"{RELEASE}.md").is_file())
+  self.assertIn(f"`{RELEASE}`",(ROOT/"docs/VERSIONING.md").read_text(encoding="utf-8"))
+  self.assertIn(f"yes: {RELEASE}",(ROOT/"docs/JSON_VERSION_INVENTORY.md").read_text(encoding="utf-8"))
+  skills=[path for path in (ROOT/"skills").iterdir() if (path/"SKILL.md").is_file()]
+  self.assertEqual(len(skills),57)
  def test_readme_declares_current_release(self):
   first=(ROOT/"README.md").read_text(encoding="utf-8").splitlines()[:20];self.assertTrue(any(line.startswith(f"## {RELEASE}") for line in first),first)
  def test_github_release_workflows_use_current_version(self):
