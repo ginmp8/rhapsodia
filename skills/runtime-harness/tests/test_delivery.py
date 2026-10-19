@@ -139,7 +139,7 @@ class DeliveryTests(unittest.TestCase):
         self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
         card = json.loads((self.store.root / 'current.json').read_bytes())
         expected = os.path.join(os.path.realpath(exe.parent), exe.name)
-        self.assertEqual(os.path.normcase(card['python_argv'][0]), os.path.normcase(expected))
+        self.assertEqual(os.path.normcase(os.path.realpath(card['python_argv'][0])), os.path.normcase(os.path.realpath(expected)))
 
     @unittest.skipUnless(shutil.which('pwsh') or shutil.which('powershell'), 'PowerShell unavailable on this host')
     def test_powershell_bootstrap(self):
