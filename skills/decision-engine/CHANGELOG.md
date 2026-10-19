@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0] - 2026-10-18
+
+- Adds a source-backed selective-decision policy: separate epistemic uncertainty, capability/authority blocks, and independent escalation within existing `decision-engine/2` statuses.
+- Adds risk-versus-coverage and false-abstention evaluation requirements only when a caller uses a selective decision policy with representative labeled examples; prohibits invented confidence thresholds and statistical guarantees.
+- Makes calibration provenance, distribution-shift checks and missing-evidence limitations explicit; preserves all existing schema fields, statuses, safety controls, and selection behavior.
+- Adds directly linked operational reference and independent planned scenarios, plus focused deterministic regression checks.
+- Portable English-only core and existing v2 consumers remain unchanged; no hosted-model behavioral uplift is claimed.
+
 ## [2.1.0] - 2026-10-18
 
 - Added a conditional quantitative-evidence screen for bounded decisions, covering aggregation/Simpson reversal, denominators, base rates, conditional direction, selection/collider risks, p-value misuse and material effect/uncertainty.

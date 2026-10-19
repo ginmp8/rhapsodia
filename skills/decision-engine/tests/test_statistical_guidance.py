@@ -19,6 +19,6 @@ evals=json.loads((root/'evals/statistical-evidence-scenarios.json').read_text(en
 assert evals['status']=='planned', 'Planned scenarios must not imply runtime evaluation'
 assert {f'STAT-0{i}' for i in range(1,8)}=={s['id'] for s in evals['scenarios']}
 assert all(s['execution_status']=='not-run' for s in evals['scenarios'])
-assert (root/'VERSION').read_text().strip()=='2.1.0'
+assert tuple(int(x) for x in (root/'VERSION').read_text().strip().split('.')) >= (2,1,0), 'Statistical guidance requires version 2.1.0 or later'
 assert '## [2.1.0]' in (root/'CHANGELOG.md').read_text(encoding='utf-8')
 print('Statistical-evidence guidance/description/Top-100 structural checks: pass')
