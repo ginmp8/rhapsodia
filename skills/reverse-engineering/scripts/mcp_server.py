@@ -243,7 +243,7 @@ class Server:
                 self.futures[req_id]=future
                 future.add_done_callback(lambda task,rid=req_id:self._done(rid,task))
         finally:
-            self.executor.shutdown(wait=True,cancel_futures=True)
+            self.executor.shutdown(wait=True)
             self.api.close()
 
 
