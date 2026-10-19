@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "e34125521daf5be92259352f5c799f6594f0e2a7a52701f55231b3e387d373c8",
+  "sha256": "51838da6c912981487fcc88ad973d4ef941d502ce9d9ef86120f522f521887a4",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -9662,7 +9662,7 @@
     },
     {
       "path": "tests/test_required_session.py",
-      "sha256": "5043c99cc7dcf24f0614a6301641bdc0f91f77acec0c96b720e33e73b4f1c6a3"
+      "sha256": "0c0d5a41300442459e1942e779178207ec04af4076d1d90cea567f605f6f4491"
     },
     {
       "path": "tests/test_required_session_guards.py",
@@ -9670,7 +9670,7 @@
     },
     {
       "path": "tests/test_runtime_integration.py",
-      "sha256": "4fd905b4ca8aa3ad6bfcbccec047c176f4df6cd7254a84bfc64ede8d88f23f97"
+      "sha256": "2d42fa6f0c0c0804a808f0232fdd3a9b84b749cfd731b0d34c037d6def7bd6c5"
     },
     {
       "path": "tests/test_validate_agents.py",
