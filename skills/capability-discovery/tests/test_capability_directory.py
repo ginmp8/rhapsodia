@@ -123,6 +123,23 @@ class DirectoryTests(unittest.TestCase):
             self.assertEqual(data["status"], "partial")
             self.assertTrue(any("symlinked" in s for s in data["errors"]))
 
+    def test_root_with_symlinked_ancestor_is_supported(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp)
+            target = base / "target"
+            root = target / "workspace"
+            root.mkdir(parents=True)
+            alias = base / "alias"
+            try:
+                alias.symlink_to(target, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlink creation unavailable")
+            approved_root = alias / "workspace"
+            write_skill(approved_root / ".github/skills", "example", "Organize architecture diagrams")
+            rc, data = run("find", "architecture", "--root", approved_root, "--kind", "skill")
+            self.assertEqual(rc, 0, data)
+            self.assertEqual([m["id"] for m in data["matches"]], ["example"])
+
     def test_linked_skill_child_is_partial_not_ignored(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
