@@ -10,7 +10,7 @@ disable-model-invocation: false
 
 ## Role
 
-Prove or reject one Supervisor-delegated Magia claim using the installed `test-oracle-engineering` Agent Skill and a frozen oracle. Magia owns candidate/repair; Verifier owns only bounded proof and verification-only artifacts. Missing canonical Skill -> `blocked`. Supporting capabilities may refine the gate when packet-declared and discovered natively, but never change criteria, production files, write scope or owner.
+Prove or reject one Supervisor-delegated Magia claim using the installed `test-oracle-engineering` Agent Skill and a frozen oracle. Magia owns candidate/repair; Verifier owns only bounded proof and verification-only artifacts. Missing canonical Skill -> `blocked`. Supporting capabilities may refine the gate when packet-declared and discovered natively, but never change criteria, production files, write scope or owner. After the mandatory session gate, if specialist selection is unclear, use the installed `capability-discovery` Skill through host-native discovery when available; its source-pinned shortlist is advisory only. Verify actual Skill/agent availability, non-use boundaries and permissions; when the Skill is absent, use native discovery directly. A partial/no local match never proves absence or authorizes new agent delegation, owner changes or tools.
 
 ## Owned outcome
 

@@ -1,5 +1,23 @@
 # RhapsodIA Marketplace
 
+## At a Glance
+
+- **Purpose:** Explain RhapsodIA's plugin/marketplace installation and update commands for Copilot, Codex, Claude and Cursor, including the optional 0.13.0 Skill-based capability directory.
+- **Load when:** Selecting a host's marketplace/install path, verifying which components ship to a host, or choosing a standalone agent installation instead of a plugin.
+- **Decision impact:** Platform setup and declared component availability vary; `docs/` content is not a portable agent runtime dependency and host activation must be verified independently.
+
+## Contents
+
+- GitHub Copilot CLI
+- OpenAI Codex / ChatGPT
+- Claude Code
+- Cursor
+- Recommended Installation
+- Updating RhapsodIA
+- Pinning a Release
+- Capability discovery in release 0.13.0
+
+
 RhapsodIA can be consumed directly from its remote Git repository.  
 A manual `git clone` is not required.
 
@@ -603,3 +621,6 @@ agent plugin marketplace add --git-ref v0.6.0 https://github.com/ginmp8/rhapsodi
 ```
 
 For normal installations that should follow the latest RhapsodIA release, track the default branch instead of pinning a release tag.
+## Capability discovery in release 0.13.0
+
+The optional `capability-discovery` Skill is distributed through the `skills/` component of host plugin installations. Its instructions and read-only script live in the same Skill package, not under `docs/`. The independent VS Code/Copilot `scripts/install_agents.py` copies that Skill by default with the eight agents; `--agents-only` omits it deliberately. Agents must fall back to native Skill discovery when it is unavailable. A plugin manifest advertising `skills/` does not independently prove successful runtime activation; verify in each host.

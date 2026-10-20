@@ -1,0 +1,151 @@
+{
+  "schema": "rhapsodia-release-validation/v1",
+  "release": "0.13.0",
+  "date": "2026-10-20",
+  "base": {
+    "name": "rhapsodia-main (7)(1).zip",
+    "sha256": "28ae8aa5a64d9c79f808f5cbd691412335af79cb821101e751f89d70c75ddf51",
+    "total_source_files": 2468
+  },
+  "superseded_candidate": {
+    "name": "rhapsodia-0.12.1-transactive-memory.zip",
+    "sha256": "761939c7fd9d3a6f3c0f1b137597bd40aec261ba3e3c12ebe0b554fd94e5db41",
+    "usage": "design reference only, not baseline"
+  },
+  "component_inventory": {
+    "agents": 8,
+    "skills": 58,
+    "existing_skills_retained_byte_identical": 57,
+    "new_skill": "capability-discovery",
+    "new_skill_version": "0.1.0"
+  },
+  "protected_contracts": [
+    "agent-system-contract/v4",
+    "handoff/v1",
+    "existing ecosystem v3",
+    "Nomia/Mago/Magia ownership",
+    "Supervisor-only native delegation",
+    "required Runtime Harness and Local Graph sessions"
+  ],
+  "test_suites": [
+    {
+      "suite": "capability-discovery tests",
+      "ran": 13,
+      "passed": 13
+    },
+    {
+      "suite": "capability routing integration",
+      "ran": 6,
+      "passed": 6
+    },
+    {
+      "suite": "standalone installer",
+      "ran": 13,
+      "passed": 13
+    },
+    {
+      "suite": "agent validation cases",
+      "ran": 22,
+      "passed": 22
+    },
+    {
+      "suite": "marketplace manifests",
+      "ran": 10,
+      "passed": 10
+    },
+    {
+      "suite": "workspace agent contract",
+      "ran": 5,
+      "passed": 5
+    },
+    {
+      "suite": "release version tests",
+      "ran": 10,
+      "passed": 10
+    },
+    {
+      "suite": "required sessions",
+      "ran": 58,
+      "passed": 58
+    },
+    {
+      "suite": "runtime integration",
+      "ran": 11,
+      "passed": 11
+    },
+    {
+      "suite": "runtime harness",
+      "ran": 110,
+      "passed": 109,
+      "skipped": 1
+    },
+    {
+      "suite": "native artifact e2e",
+      "ran": 1,
+      "passed": 1
+    },
+    {
+      "suite": "native artifacts",
+      "ran": 13,
+      "passed": 13
+    },
+    {
+      "suite": "native execution",
+      "ran": 15,
+      "passed": 15
+    },
+    {
+      "suite": "native migration",
+      "ran": 14,
+      "passed": 14
+    },
+    {
+      "suite": "workspace lessons",
+      "ran": 8,
+      "passed": 8
+    },
+    {
+      "suite": "skill benchmark including metamorphic",
+      "ran": 51,
+      "passed": 51
+    },
+    {
+      "suite": "reproducibility engineer",
+      "ran": 27,
+      "passed": 27
+    },
+    {
+      "suite": "skill prompt/activation review",
+      "ran": 16,
+      "passed": 16
+    },
+    {
+      "suite": "decision engine script suites",
+      "ran": 2,
+      "passed": 2
+    },
+    {
+      "suite": "operational context",
+      "ran": 49,
+      "passed": 49
+    }
+  ],
+  "static_checks": {
+    "agents_and_ownership": "pass",
+    "agent_manifest": "pass",
+    "marketplace_manifest": "pass",
+    "version_contract": "pass",
+    "new_skill_structure": "pass",
+    "new_skill_structural_host_profiles": "pass (portable-core,OpenAI,Codex,Claude,Copilot,Cursor)",
+    "actual_host_execution": "not-run",
+    "installer_target_copy": "pass (temporary repository)",
+    "existing_skill_bytes_preserved": "pass",
+    "original_agent_text_preserved": "pass",
+    "full_grouped_root_suite": "timed-out, separate suite runs pass"
+  },
+  "limitations": [
+    "static validators do not establish model/host behavior",
+    "cross-host runtime activation tests not run",
+    "standalone installer targets VS Code/Copilot custom agent surface; other hosts use native skill/plugin installation"
+  ]
+}

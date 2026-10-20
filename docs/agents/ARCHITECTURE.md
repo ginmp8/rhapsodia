@@ -155,6 +155,8 @@ A workflow plan cannot change lifecycle ownership, tool authority, budgets, or t
 
 ## Supporting semantic capabilities
 
+In 0.13.0, specialist knowledge of the installed agent/Skill ecosystem can be discovered through the **optional installed `capability-discovery` Agent Skill** after mandatory session bootstrap. This Skill contains its own frontmatter, script and direct references, so installed agents never require `docs/agents/CAPABILITY-DISCOVERY.md` or a root-level `scripts/capability_directory.py`. Host-native discovery remains the source for actual availability. Repository-local lexical candidates are advisory only; an empty or partial scan is not proof of absence and cannot change ownership, native agent allowlist or permission. See `skills/capability-discovery/SKILL.md` **in the source distribution**; installed copies are resolved through the active host.
+
 Rhapsodia distinguishes **canonical domain skills** from **supporting Agent Skills**. Nomia, Mago, Magia, and `test-oracle-engineering` remain the canonical skill owners for their phases. Runtime Harness and Local Graph Engine are required session infrastructure. Other installed Agent Skills are supporting guidance unless the request or accepted plan makes a capability required.
 
 Supporting skills are resolved **at runtime by semantic capability**, not by a fixed repository catalog:

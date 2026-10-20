@@ -474,7 +474,19 @@
       "required_unavailable": "blocked",
       "optional_unavailable": "continue-with-not-run",
       "supporting_skill_may_expand_authority": false,
-      "supporting_skill_may_change_owner": false
+      "supporting_skill_may_change_owner": false,
+      "discovery_skill": {
+        "name": "capability-discovery",
+        "required": false,
+        "host_native_discovery_first": true,
+        "source_shortlist": "source-pinned-advisory-only",
+        "partial_or_unmatched_means": "unresolved",
+        "not_installed_fallback": "host-native-discovery",
+        "docs_runtime_required": false,
+        "new_agent_delegation": false,
+        "canonical_owner_may_change": false,
+        "authority_may_expand": false
+      }
     },
     "derived_workspace": {
       "agent": "rhapsodia-workspace",
