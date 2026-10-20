@@ -118,6 +118,87 @@ class InstallerTests(unittest.TestCase):
         finally:
             td.cleanup()
 
+    def test_default_installs_full_discovery_skill_and_checks_bytes(self):
+        td, target = self.make_target_with_skills()
+        try:
+            result = run_installer("--target", target)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            source = ROOT / "skills/capability-discovery"
+            installed = target / ".github/skills/capability-discovery"
+            for rel in ("SKILL.md", "VERSION", "CHANGELOG.md", "scripts/capability_directory.py",
+                        "references/routing.md", "references/research-basis.md", "agents/openai.yaml"):
+                self.assertEqual((source / rel).read_bytes(), (installed / rel).read_bytes())
+            self.assertFalse((target / "docs").exists())
+            check = run_installer("--target", target, "--check")
+            self.assertEqual(check.returncode, 0, check.stderr)
+        finally:
+            td.cleanup()
+
+    def test_agents_only_opt_out_has_native_fallback(self):
+        td, target = self.make_target_with_skills()
+        try:
+            result = run_installer("--target", target, "--agents-only")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse((target / ".github/skills/capability-discovery").exists())
+            self.assertEqual(run_installer("--target", target, "--check", "--agents-only").returncode, 0)
+            self.assertNotEqual(run_installer("--target", target, "--check").returncode, 0)
+        finally:
+            td.cleanup()
+
+    def test_installed_skill_drift_requires_force(self):
+        td, target = self.make_target_with_skills()
+        try:
+            self.assertEqual(run_installer("--target", target).returncode, 0)
+            script = target / ".github/skills/capability-discovery/scripts/capability_directory.py"
+            script.write_text("corrupted but non-executable", encoding="utf-8")
+            self.assertNotEqual(run_installer("--target", target, "--check").returncode, 0)
+            self.assertNotEqual(run_installer("--target", target).returncode, 0)
+            self.assertEqual(run_installer("--target", target, "--force").returncode, 0)
+            self.assertEqual(run_installer("--target", target, "--check").returncode, 0)
+        finally:
+            td.cleanup()
+
+    def test_symlinked_install_destination_is_blocked(self):
+        td, target = self.make_target_with_skills()
+        try:
+            outer = target.parent / "external"
+            outer.mkdir()
+            shortcut = target / ".github/agents"
+            try:
+                shortcut.symlink_to(outer, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks unavailable")
+            outcome = run_installer("--target", target, "--dry-run")
+            self.assertNotEqual(outcome.returncode, 0)
+            self.assertFalse((outer / "agents").exists())
+        finally:
+            td.cleanup()
+
+    def test_existing_other_root_is_not_duplicated(self):
+        td, target = self.make_target_with_skills()
+        try:
+            other = target / ".claude/skills/capability-discovery"
+            source = ROOT / "skills/capability-discovery"
+            shutil.copytree(source, other)
+            result = run_installer("--target", target)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse((target / ".github/skills/capability-discovery").exists())
+            self.assertEqual(run_installer("--target", target, "--check").returncode, 0)
+        finally:
+            td.cleanup()
+
+    def test_repair_incomplete_installed_discovery_skill(self):
+        td, target = self.make_target_with_skills()
+        try:
+            self.assertEqual(run_installer("--target", target).returncode, 0)
+            script = target / ".github/skills/capability-discovery/scripts/capability_directory.py"
+            script.unlink()
+            self.assertNotEqual(run_installer("--target", target, "--check").returncode, 0)
+            self.assertEqual(run_installer("--target", target).returncode, 0)
+            self.assertEqual(run_installer("--target", target, "--check").returncode, 0)
+        finally:
+            td.cleanup()
+
 
 if __name__ == "__main__":
     unittest.main()

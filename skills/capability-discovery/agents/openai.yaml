@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capability Discovery"
+  short_description: "Find relevant installed skills and agents with bounded evidence"
+  default_prompt: "Discover relevant Agent Skills and permitted agents for this request. Compare their ownership boundaries and verify native availability; do not infer authority from a match."

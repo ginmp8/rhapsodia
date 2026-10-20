@@ -136,7 +136,7 @@ class MemoryPurposeGuardTests(RequiredSessionGuardTests):
         self.assertEqual(v2['properties']['kind']['const'], 'lesson')
         self.assertEqual(v2['properties']['schema']['const'], 'workspace-knowledge-v2')
         catalog = json.loads((ROOT / 'marketplace/catalog.json').read_text())
-        self.assertEqual(catalog['plugin']['version'], '0.12.0')
+        self.assertEqual(catalog['plugin']['version'], '0.13.0')
 
 
 if __name__ == '__main__':

@@ -14,6 +14,13 @@ AGENT_SURFACE=(
 "agents/rhapsodia-workspace.agent.md","docs/agents/ARCHITECTURE.md","docs/agents/ARTIFACT-ORCHESTRATION.md",
 "docs/agents/SOURCES.md","docs/agents/contracts/rhapsodia-agent-system.json",
 "scripts/install_agents.py","scripts/validate_agents.py","tests/agent-scenarios.json","tests/test_install_agents.py","tests/test_validate_agents.py")
+# The standalone installer deploys this self-contained Skill with the agents.
+DISCOVERY_SKILL_FILES = tuple(
+    f"skills/capability-discovery/{path.relative_to(ROOT / 'skills/capability-discovery').as_posix()}"
+    for path in sorted((ROOT / "skills/capability-discovery").rglob("*"))
+    if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+)
+AGENT_SURFACE = AGENT_SURFACE + DISCOVERY_SKILL_FILES
 def sha256(p:Path)->str:return hashlib.sha256(p.read_bytes()).hexdigest()
 def catalog_version()->str:
  d=json.loads(CATALOG.read_text(encoding="utf-8"))

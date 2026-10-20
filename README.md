@@ -1,5 +1,15 @@
 # RhapsodIA
 
+## 0.13.0 — deployable capability discovery and preserved 0.12.0 improvements
+
+RhapsodIA **0.13.0** includes **58 Agent Skills and eight native agent profiles**. It is rebased on the updated user-supplied 0.12.0 source, preserving the improved metamorphic-test work in Skill Benchmark, Reproducibility Engineer and Skill Prompt/Activation Review, plus previously corrected script/test behavior. The earlier 0.12.1 candidate is not the source baseline.
+
+When a task requires a specialist and the match is unclear, agents may load the installed optional **`capability-discovery`** Skill through host-native discovery after mandatory Runtime Harness/Local Graph bootstrap. The Skill owns its complete `SKILL.md`, read-only `scripts/capability_directory.py`, references, evals and tests; it does **not** rely on `docs/agents/` paths installed alongside agents. Matches are evidence-bounded candidates, never a list of all host-installed Skills, permission grants, or agent invocations. Existing Nomia/Mago/Magia ownership, Supervisor delegation allowlist and Adhoc inline execution are unchanged.
+
+The standalone `scripts/install_agents.py` now copies the eight agent profiles **and** the full optional discovery Skill into `.github/skills/capability-discovery/` by default (or recognizes an already installed compatible root); `--agents-only` explicitly skips the new copy and relies on host-native selection. Required domain and session Skills remain separately preinstalled prerequisites. Plugin installs expose the Skill via their native `skills/` component. Actual Cursor, Claude, Copilot and Codex invocation behavior requires separate host tests.
+
+[0.13.0 release notes](docs/releases/0.13.0.md).
+
 ## 0.12.0 — causal flow, selective decisions and evidence coverage
 
 ### Current distribution
@@ -483,11 +493,12 @@ Preferred deterministic installation:
 python scripts/install_agents.py --target <TARGET_REPOSITORY>
 ```
 
-The installer copies only:
+The installer copies eight native agent profiles and the self-contained optional capability-discovery Skill by default:
 
 ```text
 agents/*.agent.md
     -> <TARGET_REPOSITORY>/.github/agents/*.agent.md
+    -> <TARGET_REPOSITORY>/.github/skills/capability-discovery/{SKILL.md,scripts/,references/,VERSION,...}
 ```
 
 Useful modes:
@@ -496,13 +507,15 @@ Useful modes:
 python scripts/install_agents.py --target <TARGET_REPOSITORY> --dry-run
 python scripts/install_agents.py --target <TARGET_REPOSITORY> --check
 python scripts/install_agents.py --target <TARGET_REPOSITORY> --force
+python scripts/install_agents.py --target <TARGET_REPOSITORY> --agents-only
 ```
 
 - `--dry-run`: verify prerequisites and show the install plan without mutation.
-- `--check`: verify the installed profiles against this package and confirm required domain Skills plus Runtime Harness and Local Graph Engine and their session helpers are discoverable.
-- `--force`: replace a differing existing agent profile. Without it, differing files fail closed.
+- `--agents-only`: intentionally omit the optional installed `capability-discovery` Skill; native host selection remains the fallback, and `--check` should use the same flag.
+- `--check`: verify installed profiles, the optional deployed discovery Skill (unless `--agents-only`), and required domain Skills plus Runtime Harness and Local Graph Engine and their session helpers.
+- `--force`: replace differing installed agent or discovery-Skill files. Without it, differing files fail closed.
 
-Manual installation is also valid: copy the eight profiles from `agents/` to `.github/agents/` in the target repository.
+Manual installation is also valid: copy the eight profiles from `agents/` to `.github/agents/` in the target repository. For the optional discovery workflow, also install the **complete** `skills/capability-discovery/` directory in a host-recognized Skill root; without it, agents must use native host discovery and must not dereference repository `docs/` paths as runtime requirements.
 
 After installation, open the target repository in VS Code with GitHub Copilot/agent support enabled and confirm that eight custom agents, four canonical domain Skills, Runtime Harness and Local Graph Engine are discovered. Any additional installed Agent Skills remain independently discoverable as supporting semantic capabilities; they do not need to be copied into Rhapsodia.
 

@@ -183,6 +183,9 @@ def validate_agent_file(path, spec, findings):
             add(findings, "MANDATORY_SESSION", path, f"required session/memory rule missing in first 100 lines: {marker}")
     if "## optional runtime context" in control_plane:
         add(findings, "MANDATORY_SESSION", path, "runtime and graph must not revert to optional guidance")
+    for marker in ("capability-discovery", "host-native discovery", "partial/no local match", "after the mandatory session gate"):
+        if marker not in control_plane:
+            add(findings, "CAPABILITY_DISCOVERY", path, f"first-100-line skill discovery rule missing: {marker}")
     fm, body = parse_frontmatter(path, findings)
     if fm.get("name") != spec["name"]:
         add(findings, "AGENT_NAME", path, f"name must be {spec['name']!r}")
@@ -377,6 +380,19 @@ def validate_contract(path, findings):
         for key, value in expected_supporting.items():
             if supporting.get(key) != value:
                 add(findings, "SUPPORTING_CAPABILITY_RESOLUTION", path, f"routing.supporting_capability_resolution.{key} must be {value!r}")
+    discovery_expected = {
+        "name": "capability-discovery", "required": False,
+        "host_native_discovery_first": True,
+        "source_shortlist": "source-pinned-advisory-only",
+        "partial_or_unmatched_means": "unresolved",
+        "not_installed_fallback": "host-native-discovery",
+        "docs_runtime_required": False,
+        "new_agent_delegation": False,
+        "canonical_owner_may_change": False,
+        "authority_may_expand": False,
+    }
+    if not isinstance(supporting, dict) or supporting.get("discovery_skill") != discovery_expected:
+        add(findings, "CAPABILITY_DISCOVERY", path, "optional Skill discovery must remain native-first, bounded, documentation-independent and authority-neutral")
     budgets = doc.get("budgets", {})
     if budgets.get("max_reentries_per_owner") != 2:
         add(findings, "REENTRY_BUDGET", path, "max_reentries_per_owner must be 2")
@@ -535,6 +551,7 @@ def validate_manifest(root, path, findings):
                         "tests/test_required_session.py", "tests/test_required_session_guards.py"}
                 or rel.startswith("agents/")
                 or rel.startswith("docs/agents/")
+                or rel.startswith("skills/capability-discovery/")
             )
             if not in_agent_surface:
                 continue
@@ -618,6 +635,17 @@ def validate(target):
     else:
         add(findings, "MANIFEST_INTEGRITY", manifest, "agent package manifest is missing")
 
+    # The specialized discovery workflow must be distributable as a complete Skill,
+    # never a runtime requirement for a `docs/agents/...` file absent from installs.
+    discovery = root / "skills" / "capability-discovery"
+    for rel in ("SKILL.md", "VERSION", "CHANGELOG.md", "scripts/capability_directory.py", "references/routing.md"):
+        if not (discovery / rel).is_file():
+            add(findings, "CAPABILITY_DISCOVERY", discovery / rel, "installed discovery Skill resource missing")
+    if (discovery / "SKILL.md").is_file():
+        head = "\n".join((discovery / "SKILL.md").read_text(encoding="utf-8").splitlines()[:100])
+        for marker in ("host", "native", "agent", "skill", "authority", "references/routing.md"):
+            if marker not in head.lower():
+                add(findings, "CAPABILITY_DISCOVERY", discovery / "SKILL.md", "missing first-100-line control: " + marker)
     installer = root / "scripts" / "install_agents.py"
     if not installer.is_file():
         add(findings, "INSTALLER_MISSING", installer, "agent installer is missing")
