@@ -74,10 +74,8 @@ def metadata(path: Path) -> dict[str, str]:
 
 
 def checked_root(root: Path) -> bool:
-    if not root.is_dir() or root.is_symlink():
-        return False
-    # Reject symlinks in ancestors within each explicitly chosen root's chain.
-    return not any(ancestor.is_symlink() for ancestor in (root, *root.parents))
+    # Ancestors may include platform aliases such as macOS /var -> /private/var.
+    return root.is_dir() and not root.is_symlink()
 
 
 def relative_or_absolute(path: Path, workspace: Path) -> str:

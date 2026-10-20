@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "95a7571edbe1841b760a1d3a10e609009698e68fb16cb72e8cf61ba1c6e5341b",
+  "sha256": "1e8645521ad7e842d674df9e3c356671f1a886c94fa9a430d9134fc6b3a33438",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -574,7 +574,7 @@
     },
     {
       "path": "skills/capability-discovery/references/research-basis.md",
-      "sha256": "785401b22ddf5e3ae18b20a27e9138de7e123208e12887906b56832d6bb76a40"
+      "sha256": "62c796f36f09d12e11dcf9ee8b5cd6d0f55c24230bb593439ffb16795638fd5a"
     },
     {
       "path": "skills/capability-discovery/references/routing.md",
@@ -582,11 +582,11 @@
     },
     {
       "path": "skills/capability-discovery/scripts/capability_directory.py",
-      "sha256": "dd19c0f3a45e5e1f877ff3234a92582d69597a59c931bfb7fb650835678a5236"
+      "sha256": "a0d49801a1cba2f3f29e73a1b350e817ce2880f5cb354a24428efc9af5d60bc9"
     },
     {
       "path": "skills/capability-discovery/tests/test_capability_directory.py",
-      "sha256": "c69c8d8abad2ac597044c379967c6d5f379be1b9e28933cde3f523f6f96b257c"
+      "sha256": "24c4352421d18d5630a57af9154b0e3f5b3326f78eabc6612ce424ee52ad15e6"
     },
     {
       "path": "skills/causal-flow-comprehension/CHANGELOG.md",
