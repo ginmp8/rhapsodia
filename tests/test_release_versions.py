@@ -53,6 +53,13 @@ class Tests(unittest.TestCase):
    check=subprocess.run([*runner,"--check"],cwd=root,capture_output=True,text=True)
    self.assertNotEqual(check.returncode,0,"Check must catch byte-level EOL drift")
 
+ def test_agent_manifest_paths_use_portable_order(self):
+  src=ROOT/"scripts/generate_agent_manifest.py"
+  spec=importlib.util.spec_from_file_location("agent_manifest_generator",src)
+  generator=importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(generator)
+  self.assertEqual(generator.DISCOVERY_SKILL_FILES,tuple(sorted(generator.DISCOVERY_SKILL_FILES)))
+
  def test_release_archive_contains_expected_files(self):
   with tempfile.TemporaryDirectory() as td:
    out=Path(td)/"release.zip"
