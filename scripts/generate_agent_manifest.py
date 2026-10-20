@@ -17,7 +17,10 @@ AGENT_SURFACE=(
 # The standalone installer deploys this self-contained Skill with the agents.
 DISCOVERY_SKILL_FILES = tuple(
     f"skills/capability-discovery/{path.relative_to(ROOT / 'skills/capability-discovery').as_posix()}"
-    for path in sorted((ROOT / "skills/capability-discovery").rglob("*"))
+    for path in sorted(
+        (ROOT / "skills/capability-discovery").rglob("*"),
+        key=lambda path: path.relative_to(ROOT / "skills/capability-discovery").as_posix(),
+    )
     if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
 )
 AGENT_SURFACE = AGENT_SURFACE + DISCOVERY_SKILL_FILES

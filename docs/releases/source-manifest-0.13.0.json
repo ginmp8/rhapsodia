@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "1e8645521ad7e842d674df9e3c356671f1a886c94fa9a430d9134fc6b3a33438",
+  "sha256": "a0bdccd99113c1675e9f51c3b4b25968d9ab9e68a5ee2ba41e191c1a0c71ea9e",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -194,7 +194,7 @@
     },
     {
       "path": "scripts/generate_agent_manifest.py",
-      "sha256": "a5a0105d81663180af9386bb81cb2909894f25ee0c6fa2e63fba24f95d5109cd"
+      "sha256": "83d14938dd476c292562364b349dbb230f2f42c5a993d3533c9453f4bbd462a1"
     },
     {
       "path": "scripts/generate_marketplace_manifests.py",
@@ -9734,7 +9734,7 @@
     },
     {
       "path": "tests/test_release_versions.py",
-      "sha256": "e59c9b35a4683d6b0dfaf190381fbe73fca8053a7d6669a015a3e3044341468b"
+      "sha256": "f4e19c991069eab4f60a1e89db9f3f4fd9c104db17275a8e56554c66be8f15dd"
     },
     {
       "path": "tests/test_required_session.py",
