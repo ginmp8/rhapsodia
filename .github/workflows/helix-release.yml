@@ -58,6 +58,10 @@ jobs:
           python -m pytest -q --import-mode=importlib -p no:cacheprovider skills/causal-flow-comprehension/tests skills/decision-engine/tests skills/prompt-architect/tests skills/visual-code-intelligence/tests
           python -I -S -B skills/causal-flow-comprehension/scripts/validate_skill.py skills/causal-flow-comprehension
           python -I -S -B skills/decision-engine/scripts/validate_skill.py skills/decision-engine
+      - name: Install PDF OCR system test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils tesseract-ocr fonts-dejavu-core
       - name: Validate retained graph and PDF capabilities
         env:
           PYTHONDONTWRITEBYTECODE: "1"
