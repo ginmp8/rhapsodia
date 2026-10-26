@@ -217,8 +217,8 @@ def validate_agent_skill(target: Path, profile: str = "portable") -> dict[str, A
             errors.append(f"frontmatter.name must match parent directory: expected {target.name!r}, found {name!r}")
     if not description:
         errors.append("frontmatter.description is required")
-    elif len(description) > 1024:
-        errors.append("frontmatter.description exceeds 1024 characters")
+    elif len(description) > 500:
+        errors.append("frontmatter.description exceeds 500 characters")
 
     compatibility = (fm or {}).get("compatibility")
     if compatibility is not None and not (1 <= len(str(compatibility).strip()) <= 500):

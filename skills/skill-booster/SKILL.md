@@ -25,7 +25,7 @@ Do not use for net-new skill creation, workflow-to-skill conversion, or a major 
 
 Treat discovery and context loading as first-class optimization surfaces. Any accepted candidate with more than 100 lines in `SKILL.md` must expose its primary control plane inside the first 100 physical lines:
 
-1. discriminative, declarative frontmatter `description` with use/non-use boundary when overlap is plausible; avoid first-person assistant promises;
+1. frontmatter `description` of at most 500 Unicode characters (validated, not merely recommended), discriminative and declarative with a use/non-use boundary; concise routing metadata is not license to remove scope from the body. A description over the limit blocks promotion. with use/non-use boundary when overlap is plausible; avoid first-person assistant promises;
 2. purpose/scope and activation/routing boundary;
 3. mode/router choice when branches materially differ;
 4. workflow/quick-start sufficient to begin correctly;

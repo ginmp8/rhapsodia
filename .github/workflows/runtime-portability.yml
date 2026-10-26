@@ -51,6 +51,10 @@ jobs:
           python -I -S -B -m unittest discover -s tests -p "test_capability_routing.py" -q
       - name: Software Improvement Loop portable Skill
         run: python -I -S -B -m unittest discover -s skills/software-improvement-loop/scripts/tests -p 'test_*.py' -v
+      - name: Check skill descriptions on each host
+        run: python -I -S -B scripts/validate_skill_descriptions.py
+      - name: Run description validator regression tests
+        run: python -I -S -B -m unittest tests.test_skill_descriptions -v
       - name: Manifest and version checks
         run: python -B scripts/prepare_release.py --check
       - name: Verify 0.14.0 source inventory
