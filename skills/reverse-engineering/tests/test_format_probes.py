@@ -26,7 +26,7 @@ class FormatTests(unittest.TestCase):
         self.assertRaises(fp.ProbeError,fp.scan_wasm,b'\x00asm\x01\x00\x00\x00\x07\x99')
 
     def test_linux_elf_header(self):
-        exe=Path('/bin/ls')
+        exe=Path('/bin/ls').resolve()
         if not exe.exists() or exe.read_bytes()[:4]!=b'\x7fELF':
             self.skipTest('no ELF executable on this host')
         probe=fp.inspect(exe,32*1048576)
