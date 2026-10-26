@@ -1,6 +1,6 @@
 ---
 name: llm-wiki-maintainer
-description: 'use when the user wants to build or operate a persistent llm-maintained markdown wiki that compounds knowledge across sources over time: initialize the workspace, ingest immutable source material, update entity, concept, source-summary, claim, or synthesis pages, maintain index.md and log.md, answer cross-source questions with provenance, persist durable syntheses, lint for contradictions/stale claims/orphans/broken links, or evolve the wiki schema. do not use for one-off summarization, ordinary rag/search, generic note-taking, source-document mutation, or workflows that treat generated wiki pages as source truth.'
+description: "Build and operate a persistent, source-grounded Markdown wiki: ingest immutable sources, maintain linked entity/concept/claim/synthesis pages, indexes and logs, answer cross-source questions and detect contradictions, stale claims or broken links. Use for knowledge that compounds across updates. Do not use for one-off summaries, generic note-taking, source mutation or treating generated pages as primary evidence."
 ---
 
 # LLM Wiki Maintainer

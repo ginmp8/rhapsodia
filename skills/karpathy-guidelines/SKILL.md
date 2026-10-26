@@ -1,6 +1,6 @@
 ---
 name: karpathy-guidelines
-description: use as a general coding-discipline layer when asked to write, review, refactor, debug, test, plan, or audit code, diffs, pull requests, ci/cd, infrastructure-as-code, configuration, technical designs, or technical examples. use for bounded implementation help, bug fixes, code review, test design, risk audit, validation reporting, and pushback against overengineering, hidden assumptions, unsafe credentials, or unverifiable claims. when a narrower domain-specific skill owns the primary workflow, keep this skill secondary. do not use for non-code writing, product strategy, skill/package work, document artifacts, or tasks without code/config/technical artifact scope.
+description: "Apply pragmatic engineering discipline when writing, reviewing, debugging or planning code, PRs, CI, configuration and technical artifacts. Favor small verified changes, clear assumptions, sound tests and secure defaults; challenge overengineering and unverifiable claims. Use as a secondary coding layer when a narrower skill owns the task. Do not use for prose, strategy or skill-package work."
 ---
 # Karpathy Guidelines
 Keep software assistance small, explicit, and verifiable. This is a behavioral control plane for coding work, not a framework manual. A stricter domain-specific skill for security, databases, migrations, deployment, testing, or another specialized surface owns conflicting rules; retain this skill only for cross-cutting scope and evidence discipline.

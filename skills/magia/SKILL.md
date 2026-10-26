@@ -1,6 +1,6 @@
 ---
 name: magia
-description: "use for bounded repository execution when implementation intent is already defined: implement, debug, test, validate, harden, refactor, simplify, document, unblock, adapt legacy execution evidence, or package target work. supports adhoc direct repo work, ralph execution from validated mago planning contracts, and adapt conversion of legacy execution records. do not use to define or rewrite product intent, acceptance, architecture, public/data/security contracts, task sequencing, roadmap, release communication, priority, dates, stakeholders, or business-risk decisions; route planning changes to mago and governance commitments to nomia. never claim completion without current evidence."
+description: "Execute bounded repository tasks when implementation intent is already defined: code, debug, test, validate, refactor, harden, document or package work. Supports direct execution and validated Mago handoffs. Does not redefine architecture, acceptance, product intent, public contracts, task priority or release governance; route planning to Mago and delivery/status commitments to Nomia. Require current execution evidence before completion claims."
 ---
 
 # MAGIA

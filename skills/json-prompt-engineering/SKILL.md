@@ -1,6 +1,6 @@
 ---
 name: json-prompt-engineering
-description: design, review, improve, convert, validate, or standardize structured llm contracts using json/json schema, provider structured outputs, function or tool-call arguments, mcp schemas, or workflow manifests. use when machine-readable model/tool i/o, schema constraints, provider projection/portability, or contract validation is central. do not use for generic json syntax, ordinary application serialization/api payloads, data modeling without llm/tool behavior, or unstructured prompt writing.
+description: "Design, review, validate and standardize structured LLM I/O contracts with JSON Schema, provider structured outputs, tool calls, MCP schemas and workflow manifests. Use when machine-readable model/tool behavior, schema constraints or cross-provider compatibility is central. Do not use for ordinary JSON syntax, application serialization or unstructured prompt writing."
 ---
 
 # JSON Prompt Engineering

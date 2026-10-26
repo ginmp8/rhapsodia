@@ -1,6 +1,6 @@
 ---
 name: local-graph-engine
-description: Model, organize, ingest, query and analyze local data from any domain as an evidence-backed SQLite graph. Use for messy datasets, CSV/JSON/XML/SQLite, documents, code, relationships, source history, budgeted agent context, graph federation, local SQL/MCP access, GraphView exports, persistent workspace knowledge, graph-first source retrieval and recurring environment troubleshooting, and source-pinned execution lessons with read-only repeated-failure review. Do not assume software data, invent relationships, or render the graph UI; use a graph viewer for presentation.
+description: "Ingest, model, query and analyze local multi-domain data as an evidence-backed SQLite graph. Use for code or document relationships, source histories, bounded context retrieval, graph federation, GraphView exports and reusable execution lessons. Preserve provenance and distinguish inferred relations. Do not assume every dataset is software, invent edges or use this as a graph UI; use a viewer for presentation."
 ---
 # Local Graph Engine
 
