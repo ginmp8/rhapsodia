@@ -1,6 +1,6 @@
 ---
 name: reverse-engineering
-description: Perform evidence-backed reverse engineering of repositories, archives, binaries, APIs, JS/TS/Electron projects, and authorized web apps. Use for inventory, call-flow tracing, offline graphs/MCP, bounded browser or network capture, black-box characterization, independent reconstruction, legacy migration, and finite original/candidate comparison. Includes bounded functional, performance, and security analysis. Not for unauthorized testing, unknown-code execution, generic UX review, or equivalence guarantees.
+description: Perform evidence-backed reverse engineering of repositories, archives, binaries, APIs, JS/TS/Electron projects, and authorized web apps. Use for inventory, call-flow tracing, offline graphs/MCP, bounded browser or network capture, black-box characterization, reconstruction, legacy migration, and finite original/candidate comparison. Includes bounded functional, performance, and security analysis. Not for unauthorized testing, unknown-code execution, generic UX review, or equivalence guarantees.
 ---
 
 # Reverse Engineering + Behavioral Reconstruction
