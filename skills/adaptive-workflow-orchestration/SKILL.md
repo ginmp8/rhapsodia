@@ -1,6 +1,6 @@
 ---
 name: adaptive-workflow-orchestration
-description: Design and operate bounded task-specific execution workflows when runtime topology may adapt inside an already-authorized objective and domain owner. Use for runtime-discovered decomposition, classify-route, fan-out/synthesize, pipelines, adversarial verification, generate/filter, tournaments, bounded loops, dependency-aware parallelism, finite budgets, externalized runtime state, and compile-to-workflow execution. Do not use for checkpoint promotion/reference-grounded convergence (use checkpoint-convergence), reusable agent-role design (use agent-design), choosing domain ownership, skill optimization, or simple direct work that does not benefit from orchestration.
+description: "Design bounded workflows that adapt execution topology within an authorized task. Use for classify-route, fan-out/synthesis, pipelines, dependency-aware parallelism, bounded loops, adversarial verification, and finite-budget orchestration. Preserve external runtime state and validation gates. Do not use for checkpoint promotion, reusable agent-role design, choosing domain ownership, skill optimization, or simple direct tasks."
 ---
 
 # Adaptive Workflow Orchestration

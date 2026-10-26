@@ -1,6 +1,6 @@
 ---
 name: frontend-ai-token-efficient
-description: use when the primary goal is React/TypeScript frontend AI-maintainability or low-context change safety, including architecture, refactoring/review, frontend runtime validation, browser-side leak prevention, or concise repo guidance; covers Vite, Next.js, React Router, TanStack, Astro, contracts, forms, state, API boundaries, design systems, tests, accessibility, observability, and frontend security. do not use as the primary skill for generic frontend implementation without an AI-maintainability/context concern, pure visual design or branding, native mobile, backend/infrastructure work, or skill creation.
+description: "Improve React/TypeScript frontend architecture for AI maintainability and low-context change safety. Use for refactoring, reviews, runtime checks, leak prevention, concise repo guidance, state/forms/API boundaries, tests, accessibility and security in Vite, Next.js, React Router, TanStack or Astro. Do not use for generic frontend implementation without a context-maintainability issue, pure visual design, native apps, backend work or skill creation."
 ---
 
 # Frontend AI Token Efficient

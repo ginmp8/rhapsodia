@@ -1,6 +1,6 @@
 ---
 name: bug-security-hunter
-description: use when asked to review, audit, stress, threat-model, validate, or hunt bugs/security risks in code, pull requests, repositories, infrastructure, configs, event-driven flows, integrations, or technical process chains across any programming language. use for cross-language code review and language-neutral bug/security analysis; apply c#/.net hotspots only when the target is c#/.net. include visual severity labels, merge verdicts, and pr comments when reviewing pull requests. do not use for implementation, generic tutorials, product planning, or non-technical writing. (requires code execution)
+description: "Review code, PRs, repositories, infrastructure and technical workflows for defects and security risks across languages. Use for cross-language bug/security hunts, evidence-backed severity, merge decisions and actionable PR findings. Apply .NET-specific checks only to .NET targets. Do not use for implementation, non-technical writing, product planning, or generic tutorials."
 ---
 
 # Bug Security Hunter

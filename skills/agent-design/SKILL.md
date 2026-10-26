@@ -1,6 +1,6 @@
 ---
 name: agent-design
-description: use when asked to design, review, improve, validate, or structure reusable custom agents, agent prompts, router/supervisor/worker topology, authority boundaries, tool contracts, handoffs/delegation, context/state/termination, governance, or repository agentic structures. especially useful for portable multi-host agents, routers, supervisors, review/governance agents, controlled executors, and skill-agent coordination. do not use to create/package skills, execute the downstream technical task, or operate a task-specific runtime workflow after roles and authority are already defined.
+description: "Design or review reusable custom agents, prompts, router/supervisor/worker roles, tool and authority contracts, handoffs, state, termination, and portable multi-host structures. Use for agent topology, routing and governance. Do not use to package Agent Skills, execute downstream engineering tasks, or orchestrate an already-defined task-specific runtime."
 ---
 
 # Agent Design
