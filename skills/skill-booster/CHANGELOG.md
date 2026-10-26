@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1] - 2026-10-26
+
+- Enforced a maximum of 500 Unicode characters for YAML frontmatter descriptions to satisfy ChatGPT discovery compatibility.
+- Preserved existing skill ownership, runtime behavior and independent validation contracts.
+
 ## [0.3.0] - 2026-10-18
 
 - Added a conditional, research-backed long-context omission evaluation branch for relevant target skills and a clear division between static evidence coverage and model behavior.

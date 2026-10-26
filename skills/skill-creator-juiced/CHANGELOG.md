@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1] - 2026-10-26
+
+- Enforced a maximum of 500 Unicode characters for YAML frontmatter descriptions to satisfy ChatGPT discovery compatibility.
+- Preserved existing skill ownership, runtime behavior and independent validation contracts.
+
 ## [0.1.0] - 2026-10-14
 
 - First explicitly tracked package version; historical releases, if any, were not identified in this source snapshot.
