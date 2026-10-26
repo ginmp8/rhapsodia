@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "6d6beb22dac8d04784925f1299eb54f5a6ca828642cc00e758ffa61ff15d30d5",
+  "sha256": "d5c39fcfcb9a6e7a9d7ad5d3e6c41b89e12dd4e1c699e4154d1f2e4e9e361cc6",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -7066,7 +7066,7 @@
     },
     {
       "path": "skills/skill-booster/RELEASE_NOTES.md",
-      "sha256": "bb570588426d2fa4e8707f7625dba4f2133f99bd6371d748b6c5bbfcd1d7a72c"
+      "sha256": "7d948c1c19e25bb32a0a11ce8c93f6ff28f5f50845b5feed39ae22f3b19f0d20"
     },
     {
       "path": "skills/skill-booster/SKILL.md",
@@ -7650,7 +7650,7 @@
     },
     {
       "path": "skills/skill-creator-juiced/RELEASE_NOTES.md",
-      "sha256": "53ece9c15d09f017479f3ff46bf311c36698e78a1221da6f9119ae62584ed618"
+      "sha256": "aeb49f9d0b0a1936d3f9a4358ffc2c2207df301c22f191f5a377415580315edb"
     },
     {
       "path": "skills/skill-creator-juiced/SKILL.md",
