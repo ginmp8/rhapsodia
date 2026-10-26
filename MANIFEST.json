@@ -37,8 +37,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "b62730cbc54b19b150e5cf935d755274a923d3adfd8bcb0e8a9038d67ae4ee22",
-      "size": 51080
+      "sha256": "91b667ac2736f53588be0afa9fe4629a153538d45d9c5f5fdc849c392f253a82",
+      "size": 52828
     },
     {
       "path": "agents/magia.agent.md",
@@ -168,5 +168,5 @@
   ],
   "manifest_version": 1,
   "package": "rhapsodia-agents-vscode",
-  "package_version": "0.13.0"
+  "package_version": "0.14.0"
 }
