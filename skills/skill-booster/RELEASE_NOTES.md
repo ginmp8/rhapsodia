@@ -1,3 +1,15 @@
+# Skill Booster 0.3.1
+
+## ChatGPT discovery compatibility
+
+Enforce 1-500 Unicode characters in YAML frontmatter `description` fields before package acceptance. Preserve trigger and non-use intent while shortening descriptions. This patch leaves the existing ownership and execution contracts unchanged.
+
+## Validation
+
+Run the native package quality gates and the RhapsodIA-wide description regression suite before release.
+
+---
+
 # Skill Booster 0.3.0
 
 ## Compatible additions
