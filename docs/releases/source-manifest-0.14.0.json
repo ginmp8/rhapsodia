@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "64abfa6d5a48582f355d2608ecf7bd6f2bcd3cbb14b4df479abc34b32039393f",
+  "sha256": "54ce3e2075fced6c9a219f47aec01f9946595df55fb39a560c85ba84b34fe17a",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -6098,7 +6098,7 @@
     },
     {
       "path": "skills/reverse-engineering/tests/test_format_probes.py",
-      "sha256": "292a1bc75304991bcdf0b1f866d4b8a4c3c8b54dd1ff9e8d6397c4cf0dd2e87b"
+      "sha256": "bbda523c9badcc38753f37975737ac81098820d9c83a193402831004c813870e"
     },
     {
       "path": "skills/reverse-engineering/tests/test_investigation_stack.py",
@@ -6106,7 +6106,7 @@
     },
     {
       "path": "skills/reverse-engineering/tests/test_native_symbols.py",
-      "sha256": "537e7be3ed2a2f95953769ba8ba4fe8e4fdede1ffa96275d307c7a1ff023b631"
+      "sha256": "13cd463f4ae6c48ef2e83d1f0c59bf504149cb6a72bfdf74e356957641433833"
     },
     {
       "path": "skills/reverse-engineering/tests/test_oracle_runner.py",
