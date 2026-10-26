@@ -1,6 +1,6 @@
 ---
 name: test-oracle-engineering
-description: "Design, author, execute, and review bounded executable test oracles that prove or falsify one concrete behavior claim against one candidate. Use when a workflow needs evidence stronger than model self-assessment: public-stack/integration behavior, authorization boundaries, API/event contracts, data or migration invariants, concurrency/idempotency/retry semantics, CLI behavior, security findings, property/metamorphic/differential checks, or proof-receipt review. Do not use for production implementation/repair, broad test-suite maintenance, requirements changes, subjective visual/editorial approval, or checkpoint promotion."
+description: "Design and execute bounded test oracles to prove or falsify concrete behavior claims in a candidate. Use for authorization, API contracts, data invariants, concurrency, retries, CLI, integration and security behavior where evidence must exceed self-assessment. Do not implement the product fix, rewrite requirements, own broad test maintenance, approve subjective visuals or promote checkpoints."
 ---
 
 # Test Oracle Engineering

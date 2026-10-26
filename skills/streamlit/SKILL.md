@@ -1,6 +1,6 @@
 ---
 name: streamlit
-description: "build, debug, review, audit, test, deploy, optimize, migrate, and harden streamlit python apps, dashboards, data tools, machine-learning interfaces, chat/llm and agentic apps, multipage apps, custom components, widgets, forms, session state, caching, connections, authentication, secrets, AppTest tests, ASGI integration, deployment, troubleshooting, performance, and production-readiness reviews. use when the user asks for Streamlit code, architecture, UI patterns, state/rerun behavior, testing, components, server integration, deployment, migration, performance, or release readiness. do not use for unrelated web frameworks unless comparing or migrating to/from Streamlit."
+description: "Build, debug, test, optimize, deploy and secure Streamlit Python apps, dashboards, data tools and ML/LLM interfaces. Use for Streamlit state/reruns, widgets, forms, caching, components, connections, authentication, performance, testing and deployment. Do not use for unrelated web frameworks except comparison or migration."
 ---
 
 # Streamlit Skill

@@ -1,6 +1,6 @@
 ---
 name: skill-testing-and-validation
-description: use when the primary task is to plan, generate, run, validate, diagnose, or minimally repair tests, validators, build/test/lint commands, gate runners, package checks, benchmark helpers, or small polyglot validation packages. use for evidence-backed gate execution and test-plumbing fixes; do not use as the primary workflow for generic feature implementation, generic bug diagnosis, security review, documentation/governance work, standalone oracle engineering, or edits to protected fixtures, expected outputs, benchmark evidence, secrets, .git, or other blocked paths without exact authorization.
+description: "Design, run, diagnose and minimally repair tests, validators, lint/build gates and small polyglot test packages for existing skills. Use for evidence-backed execution and test plumbing, not generic feature development, security audit, governance, docs, or protected fixtures/evaluators without specific authorization."
 ---
 
 # Skill Testing and Validation
