@@ -1,6 +1,6 @@
 ---
 name: mago
-description: use when asked to plan, normalize, audit, define, refine, reconcile, or prepare tech-lead owned repository planning artifacts from governance intake, repository evidence, or existing mago state. covers prds, technical designs, planned adrs, refactoring/complexity-reduction plans, tasks, validation plans, contracts, migrations, observability, operations, security/risk notes, discovery, ordering, and execution handoffs. do not use for product-code implementation, runtime tests/evidence, deployments, commits/prs, delivery governance/status, release communication, stakeholder reporting, or magia execution records.
+description: "Plan and refine technical repository artifacts: PRDs, designs, ADRs, tasks, migration, security, testing, operations and observability plans, using governance intake and repository evidence. Own technical discovery, contracts and execution handoffs. Do not implement code, execute tests, deploy, commit, run delivery governance or publish release communications; route implementation to Magia and status to Nomia."
 ---
 
 # MAGO

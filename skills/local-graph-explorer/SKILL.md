@@ -1,6 +1,6 @@
 ---
 name: local-graph-explorer
-description: Explore directed graphs step by step with optional finite animation, start/end and cycle markers while preserving dragging. Validate and explore evidence-backed GraphView data from any domain as a standalone HTML workspace with a bundled offline default; custom executable extensions and local live access require explicit profiles. Use for interactive graph navigation, tables, timelines, relationship matrices, numeric summaries, filters, paths, source inspection or portable visualization. Do not infer canonical facts, mutate a database, or pretend an incomplete projection represents an entire dataset.
+description: "Explore evidence-backed GraphView directed graphs as a standalone offline HTML workspace. Use for paths, relationships, directed walkthroughs, timelines, tables, filters, matrices and numeric summaries, with optional finite animation and draggable nodes. Explicit profiles govern custom extensions/live access. Do not infer canonical facts, mutate the source database or treat partial projections as complete."
 ---
 # Local Graph Explorer
 
