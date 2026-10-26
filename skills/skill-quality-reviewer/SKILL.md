@@ -1,6 +1,6 @@
 ---
 name: skill-quality-reviewer
-description: Review, audit, score, compare, or validate existing Agent Skills-compatible packages or prior skill-review reports across ChatGPT/OpenAI, Codex, Claude, GitHub Copilot, Cursor, and other compatible hosts. Use for evidence-backed findings about activation, ownership, workflow correctness, architecture, progressive loading, obsolete compatibility, migration or runtime peer coupling, duplicated or contradictory contracts, structural noise, resource integration, validation gaps, package hygiene, portability, token efficiency, readiness, or remediation inputs. Do not use to implement fixes, create new skills, review ordinary application code, or perform security audits.
+description: "Review and compare existing Agent Skills packages and prior review reports for activation, ownership, architecture, context loading, resource usage, portability, validators, evidence, packaging and readiness. Use for evidence-backed quality findings and remediation inputs. Do not implement fixes, create skills, review ordinary application code or replace specialized security audits."
 ---
 
 # Skill Quality Reviewer

@@ -1,6 +1,6 @@
 ---
 name: skill-harness
-description: use when the primary task is to design, run, audit, validate, compare, harden, or package an evidence harness around one existing Agent Skills-compatible skill. Owns immutable baselines, target-trust preflight, scenario/evaluator design, isolated execution, evaluator visibility, reproducibility/provenance evidence, repeated trials, gates, and validated skill.zip delivery across portable/OpenAI/Codex/Claude/Copilot/Cursor hosts. Prefer skill-booster for end-to-end skill optimization when the harness is only supporting evidence; prefer skill-benchmark for a score/report without harness construction; use skill-creator for net-new skills or skill explanations. Do not use for generic code, ordinary docs/reports, product planning, or one-off prompt advice.
+description: "Design and execute evidence harnesses for existing Agent Skills. Own immutable baselines, trust preflight, scenarios, isolated trials, evaluator visibility, reproducibility and validation receipts across hosts. Use when harness design or execution is the primary task. Route broad optimization to Skill Booster, scoring to Skill Benchmark and net-new creation to Skill Creator. Do not use for generic code or product plans."
 ---
 
 # Skill Harness

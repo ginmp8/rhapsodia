@@ -1,6 +1,6 @@
 ---
 name: skill-consistency-repair
-description: use when one existing Agent Skills-compatible package has internal contract drift across SKILL.md, activation, scope, ownership, references, scripts, assets, examples, evals, validators, metadata, reports, or packaging. especially use for contradictions, broken or stale references, ownership/handoff drift, orphaned or duplicated resources, migration-only leakage, schema/validator drift, unsupported evidence claims, or package/receipt inconsistency. do not use for net-new skills, ordinary application code review, product/domain work, benchmark-only scoring, or generic hardening/cleanup unless consistency repair is the primary task.
+description: "Repair internal contract drift in an existing Agent Skills package across SKILL.md, references, ownership, metadata, examples, validators, evidence and packaging. Use for contradictions, broken/stale links, migration leakage, schema drift or unsupported claims. Do not use for new skills, application code, standalone benchmarking, generic hardening or cleanup not rooted in inconsistency."
 ---
 
 # Skill Consistency Repair

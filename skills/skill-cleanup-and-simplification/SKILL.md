@@ -1,6 +1,6 @@
 ---
 name: skill-cleanup-and-simplification
-description: 'Use when the primary task is to clean or simplify an existing Agent Skills-compatible package or small supporting project: classify dead or unreferenced resources, remove proven generated residue, consolidate real duplicates, eliminate stale scaffold, or plan cleanup debt without changing domain behavior. Do not use as the primary workflow for security review, benchmark scoring, full hardening, consistency repair, prompt redesign, token-only compression, net-new skill creation, ordinary application refactoring, or domain behavior changes.'
+description: "Clean existing Agent Skills packages or small supporting projects by identifying dead files, generated residue, duplicated resources and stale scaffolds without changing behavior. Use for evidence-backed cleanup and consolidation. Do not use for security review, benchmarking, prompt redesign, token-only compression, full hardening, net-new creation or ordinary application refactors."
 ---
 
 # Skill Cleanup and Simplification

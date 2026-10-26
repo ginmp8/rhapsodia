@@ -1,6 +1,6 @@
 ---
 name: skill-hypothesis-discovery
-description: use when an existing Agent Skills-compatible skill already has identified evidence and the next decision is which bounded improvement hypotheses, evidence gaps, or no-mutation outcome should be tested before any target mutation. Produces a small evidence-bound hypothesis pool with deterministic eligibility, deduplication, dependency/conflict handling, ranking, and one next experiment. Do not use to improve, patch, package, benchmark, or score the skill, design evaluators after seeing candidates, accept/reject concrete patches, or create a net-new skill.
+description: "Identify and rank bounded improvement hypotheses for an existing Agent Skill after baseline evidence exists. Check gaps, dependencies, conflicts and select one next experiment or no change. Use before mutation when choosing what to test. Do not implement, patch, package, benchmark, score candidates, edit evaluators or create a new skill."
 ---
 
 # Skill Hypothesis Discovery
