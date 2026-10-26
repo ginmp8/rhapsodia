@@ -8,8 +8,8 @@ from native_symbols import analyze_native,NativeError,parse_macho,parse_elf,pars
 
 class NativeTests(unittest.TestCase):
     def test_native_linux_binary(self):
-        p=Path('/usr/bin/ls')
-        if not p.exists():self.skipTest('ELF binary unavailable')
+        p=Path('/usr/bin/true').resolve()
+        if not p.is_file() or p.read_bytes()[:4]!=b'\x7fELF':self.skipTest('ELF binary unavailable')
         data=analyze_native(p.read_bytes())
         self.assertEqual(data['format'],'elf')
         self.assertGreater(len(data['symbols']),10)
