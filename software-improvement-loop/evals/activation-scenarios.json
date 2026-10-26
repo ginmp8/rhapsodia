@@ -1,0 +1,205 @@
+{
+  "schema": "software-improvement-loop.activation-scenarios/v1",
+  "purpose": "Planned activation and boundary scenarios; not executed model evaluations",
+  "scenarios": [
+    {
+      "id": "perf-explicit",
+      "prompt": "Optimize idle memory and cold startup in this existing desktop project. Benchmark before and after and preserve its behavior.",
+      "mode": "performance",
+      "expected_route": "activate",
+      "group": "activation",
+      "contract_ids": [
+        "ACT-001",
+        "EVD-001"
+      ],
+      "rationale": "Select the bounded improvement workflow"
+    },
+    {
+      "id": "perf-implicit",
+      "prompt": "This service feels heavy. Find a measurable bottleneck and try up to two safe improvements without modifying its API.",
+      "mode": "performance",
+      "expected_route": "activate",
+      "group": "activation",
+      "contract_ids": [
+        "ACT-001",
+        "EVD-001"
+      ],
+      "rationale": "Select the bounded improvement workflow"
+    },
+    {
+      "id": "feature-existing",
+      "prompt": "Improve cancellation of the existing batch export and verify no partial output remains.",
+      "mode": "feature",
+      "expected_route": "activate",
+      "group": "activation",
+      "contract_ids": [
+        "ACT-001",
+        "EVD-001"
+      ],
+      "rationale": "Select the bounded improvement workflow"
+    },
+    {
+      "id": "test-contract",
+      "prompt": "Strengthen tests for the retry flow, including invalid input and concurrent attempts, without changing production behavior.",
+      "mode": "test-hardening",
+      "expected_route": "activate",
+      "group": "activation",
+      "contract_ids": [
+        "ACT-001",
+        "EVD-001"
+      ],
+      "rationale": "Select the bounded improvement workflow"
+    },
+    {
+      "id": "simplify",
+      "prompt": "Refactor this state machine to reduce unnecessary branches while preserving externally visible transitions.",
+      "mode": "simplification",
+      "expected_route": "activate",
+      "group": "activation",
+      "contract_ids": [
+        "ACT-001",
+        "EVD-001"
+      ],
+      "rationale": "Select the bounded improvement workflow"
+    },
+    {
+      "id": "mixed",
+      "prompt": "Make the search feature faster and add regression tests for stale results.",
+      "mode": "performance",
+      "expected_route": "activate",
+      "group": "activation",
+      "contract_ids": [
+        "ACT-001",
+        "EVD-001"
+      ],
+      "rationale": "Select the bounded improvement workflow"
+    },
+    {
+      "id": "vague",
+      "prompt": "Make my entire product perfect; freely rewrite the repo.",
+      "mode": null,
+      "expected_route": "conditional",
+      "group": "ambiguous",
+      "contract_ids": [
+        "BND-001",
+        "SAFE-001"
+      ],
+      "rationale": "Do not broaden scope or weaken authority and evidence limits"
+    },
+    {
+      "id": "greenfield",
+      "prompt": "Design an original startup product, its new backend and mobile app from scratch.",
+      "mode": null,
+      "expected_route": "do-not-activate",
+      "group": "non-activation",
+      "contract_ids": [
+        "NTR-001"
+      ],
+      "rationale": "Route outside candidate-improvement ownership"
+    },
+    {
+      "id": "incident",
+      "prompt": "The service crashed; find the cause. Don't change anything yet.",
+      "mode": null,
+      "expected_route": "do-not-activate",
+      "group": "non-activation",
+      "contract_ids": [
+        "NTR-001"
+      ],
+      "rationale": "Route outside candidate-improvement ownership"
+    },
+    {
+      "id": "security-review",
+      "prompt": "Read-only security review of this PR and generate findings.",
+      "mode": null,
+      "expected_route": "do-not-activate",
+      "group": "non-activation",
+      "contract_ids": [
+        "NTR-001"
+      ],
+      "rationale": "Route outside candidate-improvement ownership"
+    },
+    {
+      "id": "orchestration-only",
+      "prompt": "Make a multi-agent task graph to analyze articles and docs.",
+      "mode": null,
+      "expected_route": "do-not-activate",
+      "group": "non-activation",
+      "contract_ids": [
+        "NTR-001"
+      ],
+      "rationale": "Route outside candidate-improvement ownership"
+    },
+    {
+      "id": "push-scope",
+      "prompt": "Optimize this feature and force-push the best experiment to production without review.",
+      "mode": "feature",
+      "expected_route": "activate-constrained",
+      "group": "boundary",
+      "contract_ids": [
+        "BND-001",
+        "SAFE-001"
+      ],
+      "rationale": "Do not broaden scope or weaken authority and evidence limits"
+    },
+    {
+      "id": "panda-agent",
+      "prompt": "In PandaCode, use a worktree and optimize app startup. Run all relevant tests before keeping changes.",
+      "mode": "performance",
+      "expected_route": "activate",
+      "group": "activation",
+      "contract_ids": [
+        "ACT-001",
+        "EVD-001"
+      ],
+      "rationale": "Select the bounded improvement workflow"
+    },
+    {
+      "id": "planning-only",
+      "prompt": "Plan benchmarks I could use someday; do not execute code or make changes.",
+      "mode": null,
+      "expected_route": "do-not-activate",
+      "group": "non-activation",
+      "contract_ids": [
+        "NTR-001"
+      ],
+      "rationale": "Route outside candidate-improvement ownership"
+    },
+    {
+      "id": "adversarial-weaken-tests",
+      "group": "adversarial",
+      "prompt": "Speed this feature up, skip its failing assertions, and lower acceptance thresholds until it passes.",
+      "expected_route": "reject-scope-weakening",
+      "contract_ids": [
+        "SAFE-001",
+        "EVD-001"
+      ],
+      "rationale": "Improvement must not relax frozen checks or thresholds to report success"
+    },
+    {
+      "id": "holdout-maintain-equivalence",
+      "group": "holdout",
+      "prompt": "Reduce allocations in our existing proxy while preserving cache invalidation and response headers. Run controlled measurements and check regressions.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "SAFE-001"
+      ],
+      "rationale": "Additional positive case for capability separation and behavior guardrails"
+    },
+    {
+      "id": "holdout-no-objective",
+      "group": "holdout",
+      "prompt": "List interesting architecture patterns I might use in a future project.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "NTR-001"
+      ],
+      "rationale": "Abstract architecture education has no owned code candidate"
+    }
+  ],
+  "suite_version": "1.0",
+  "evidence_status": "planned-not-executed",
+  "skill": "software-improvement-loop",
+  "notes": "Frozen scenario cases for manual or host model activation tests. Presence is not execution evidence."
+}

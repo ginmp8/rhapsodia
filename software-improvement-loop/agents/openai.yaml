@@ -1,0 +1,16 @@
+interface:
+  display_name: software improvement loop
+  short_description: Improve existing software through bounded, evidence-driven experiments
+    with frozen baselines, targeted changes, regression tests, and before/after evaluation.
+    Use for performance tuning, feature improvement, test hardening, or behavior-preserving
+    simplification. Not for initial product planning, broad unscoped rewrites, standalone
+    diagnosis, or generic agent orchestration.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
