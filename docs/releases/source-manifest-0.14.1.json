@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "fe6cd5930604568cff89755f1f40b8cf3dfc75e59ad424cbcb90b4add611d1f8",
+  "sha256": "6d6beb22dac8d04784925f1299eb54f5a6ca828642cc00e758ffa61ff15d30d5",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -50,11 +50,11 @@
     },
     {
       "path": ".github/workflows/helix-release.yml",
-      "sha256": "e2fc05b3053be98e71ef6f6d517b277180bf3004f37f6f1350c3299292d17e13"
+      "sha256": "be5eb3724e863eb1de538c5219f4759ea380d3e5fcfaa943cd0bf707f4c5c75e"
     },
     {
       "path": ".github/workflows/runtime-portability.yml",
-      "sha256": "4ac419dbf3af7dac4d03b5df24f8ae4d64994d18b4b809aafbba14dd65edd6ce"
+      "sha256": "8814dc2d9eac68ca47dc7f1bf572f08f7696e9226b170fe9d8f7dfac3ac7419f"
     },
     {
       "path": ".gitignore",
