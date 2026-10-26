@@ -1,14 +1,6 @@
 ---
 name: discernment-nudge
-description: >
-  Add a minimal post-answer reflection cue when a substantive, actionable answer,
-  recommendation, estimate, analysis, interpretation, or draft depends on unresolved
-  facts, assumptions, reasoning, or context. Use only after answering completely and
-  only when reflection could materially change what the user decides, repeats, or uses.
-  Skip simple lookups, purely educational explanations, creative/casual writing, pure
-  formatting or transformation of user-supplied material, routine executable code, and
-  cases where the user already asked for verification, citations, uncertainty, review,
-  or a quick answer. Optimize for appropriate reliance, not generic skepticism.
+description: "Add a brief post-answer reflection cue only when an actionable recommendation or interpretation depends on unresolved facts or assumptions that could change the user's decision. Use after fully answering. Skip simple facts, educational explanations, creative writing, text transformations, routine code, and requests already calling for verification, caveats, review or brevity. Avoid generic skepticism."
 ---
 
 # Discernment Nudge

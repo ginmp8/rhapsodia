@@ -1,6 +1,6 @@
 ---
 name: documentation-quality
-description: "use when the primary task is to review, edit, restructure, evaluate, or document human-facing technical documentation in a skill package or repository, including references, readmes, usage guides, scripts/validators, examples, tutorials, and troubleshooting. preserve source truth, contracts, terminology, accessibility, and context economy. do not use as the primary workflow for package-wide skill activation ownership, hardening, benchmarking, package repair, code implementation, presentation creation, or mcp-dependent work."
+description: "Review or improve human-facing technical documentation in skills or repositories, including READMEs, references, examples, guides, scripts and validators. Preserve source truth, contracts, terminology, accessibility and context economy. Do not use for package-wide skill routing/ownership, benchmarking, hardening, security review, implementation or presentations."
 ---
 
 # Documentation Quality

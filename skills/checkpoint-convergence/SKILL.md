@@ -1,6 +1,6 @@
 ---
 name: checkpoint-convergence
-description: Control reference-grounded incremental implementation through small checkpoints, frozen oracle identity, ordered non-overridable gates, bounded repair/re-review, live-state revalidation, accepted-feedback provenance, checkpoint materialization, and closure verification. Use when progress must not advance until an increment converges against a high-fidelity reference. Do not use for runtime-discovered topology/fan-out/pipelines (use adaptive-workflow-orchestration), simple direct work, or domain-owner selection.
+description: "Enforce incremental implementation against a frozen high-fidelity reference using checkpoints, ordered validation gates, bounded repair/review, provenance and closure verification. Use when progress cannot advance until a candidate converges. Do not use for runtime topology adaptation, simple direct tasks or generic skill lifecycle work."
 ---
 
 # Checkpoint Convergence
