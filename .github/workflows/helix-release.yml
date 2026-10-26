@@ -24,7 +24,7 @@ jobs:
       - name: Validate every skill description
         run: python -I -S -B scripts/validate_skill_descriptions.py
       - name: Test skill description validator
-        run: python -I -S -B -m unittest tests.test_skill_descriptions -v
+        run: python -I -S -B -m unittest discover -s tests -p test_skill_descriptions.py -v
       - name: Validate workflow control planes
         run: |
           python -m unittest discover -s skills/adaptive-workflow-orchestration/tests -p 'test_*.py' -v
