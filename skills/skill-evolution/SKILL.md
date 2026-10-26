@@ -1,6 +1,6 @@
 ---
 name: skill-evolution
-description: "use when explicitly invoked to control bounded multi-candidate/evolutionary search for one existing Agent Skills-compatible skill, or when an optimizer hands off a frozen search contract; owns search state, lineage/provenance, validated semantic recombination/backcross, hard-gate-first Pareto/scenario-specialist selection, derived diversity/stagnation, checkpoints, and finalist recommendation. do not use for single-candidate optimization, skill creation, target mutation, evaluator/benchmark/harness design, acceptance gates, or final promotion, packaging, or installation."
+description: "Run explicit bounded multi-candidate evolutionary optimization of one existing Agent Skill under a frozen search contract. Own candidate lineage, recombination, selection, diversity and checkpoints. Use when an optimizer requests evolutionary search, not for single-candidate edits, skill creation, evaluator design, final promotion, installation or packaging."
 ---
 
 # Skill Evolution

@@ -1,6 +1,6 @@
 ---
 name: skill-improver
-description: "use when improving one existing agent skills-compatible package through a bounded evidence-backed experiment: preserve an immutable baseline, freeze deciding evidence, test one hypothesis or inseparable batch, materialize the smallest candidate, gate regressions independently, accept/reject from evidence, and freeze exact passing bytes. also use for caller-routed evolution candidate materialization and externally controlled self-improvement generations. do not use for net-new skills (skill-creator-juiced), end-to-end multi-specialist optimization/strategy (skill-booster), standalone maturity scoring/reporting (skill-benchmark), broad package-integrity hardening (skill-hardening), generic repository/application code, evaluator-fixture edits, or unbounded automation."
+description: "Improve one existing Agent Skill with a bounded evidence-led experiment: freeze the baseline and evaluator, test a hypothesis, make the smallest candidate change, check independent regressions and accept or reject exact bytes. Supports delegated evolution candidate changes. Do not create new skills, own multi-specialist optimization, perform standalone scoring or unbounded searches."
 ---
 
 # Skill Improver
