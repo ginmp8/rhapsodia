@@ -1,6 +1,6 @@
 ---
 name: nuget-package-updater
-description: safely update, audit, and validate NuGet Central Package Management versions in Directory.Packages.props with deterministic NuGet V3 evidence, CPM/source guards, compatibility checks, NuGetAudit, receipts, and rollback. use when a repository centrally manages NuGet versions and package updates must be reproducible and fail-closed. do not use for generic PackageReference/csproj edits, package-install advice, or repositories whose effective versions require unsupported MSBuild evaluation. portable core uses repository files, Python 3 stdlib, NuGet V3 HTTP metadata, and dotnet only for runtime validation.
+description: "Update and audit centrally managed NuGet versions in Directory.Packages.props using reproducible NuGet V3 evidence, compatibility checks, CPM/source guards, NuGetAudit, receipts and rollback. Use only when effective versions are centrally managed and verifiable. Do not use for ordinary csproj PackageReference changes or generic package-install instructions."
 ---
 
 # NuGet Package Updater

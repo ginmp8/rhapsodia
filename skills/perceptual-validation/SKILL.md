@@ -1,6 +1,6 @@
 ---
 name: perceptual-validation
-description: "Compare reference and candidate visual artifacts with a bounded, auditable perceptual gate when semantic visual equivalence matters more than exact pixels. Use for screenshots, rendered UI, PDF/page renders, slides, charts, diagrams, and images; validate state/capture comparability first, then evaluate an explicit frozen rubric and gate policy with localized evidence. Do not use for executable behavior proof, image editing/design generation, or tasks whose real requirement is deterministic pixel identity."
+description: "Compare reference and candidate visual artifacts under a frozen perceptual rubric where semantic equivalence matters more than pixel identity. Use for UI screenshots, PDF renders, slides, charts and diagrams, after checking capture comparability. Do not use for behavioral proof, design generation or exact pixel-diff requirements."
 ---
 
 # Perceptual Validation

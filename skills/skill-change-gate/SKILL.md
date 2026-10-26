@@ -1,6 +1,6 @@
 ---
 name: skill-change-gate
-description: gate proposed changes to an existing Agent Skills-compatible package before acceptance. use for a diff, before/after package, experiment or search candidate, hardening patch, or package update that needs a read-only acceptance decision over activation and Top-100 loading, scope/authority, safety, portability, evidence identity/exposure/freshness, validation, consumer compatibility, packaging/recovery, waivers, or receipts. do not use to create skills, iteratively repair them, score benchmarks, rank candidates, or review generic application code.
+description: "Issue read-only acceptance decisions on proposed changes to existing Agent Skills packages. Evaluate activation, Top-100 coverage, ownership, safety, evidence identity, portability, consumers, packaging and regression gates. Use for patches and candidates before promotion, not for implementing fixes, skill creation, benchmarking, iterative repair or generic code review."
 ---
 
 # Skill Change Gate

@@ -1,6 +1,6 @@
 ---
 name: rhapsodia-workspace
-description: use when asked to discover, validate, catalog, correlate, or visualize source-owned skill artifacts that publish adjacent .artifact.json sidecars in a local repository, including portfolio, update timeline, relationship, and per-skill views. produces rebuildable derived projections and an offline html workspace. do not use for session bootstrap, environment/tool discovery, persistent development memory, generic repository/code visualization, agent execution monitoring, creating or moving canonical domain files, changing status or priorities, migrating legacy boards, running product tests, or orchestrating governance, planning, or implementation.
+description: "Explore source-owned skill artifacts with adjacent .artifact.json sidecars in a local repo, producing rebuildable offline HTML portfolio, timeline, relationship and per-skill views. Use for cataloging and visualizing published artifacts, not runtime discovery, persistent memory, generic code graphs, monitoring, canonical data mutation, governance planning or implementation."
 ---
 
 # Rhapsodia Workspace
