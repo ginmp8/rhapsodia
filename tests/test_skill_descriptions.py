@@ -43,7 +43,7 @@ class SkillDescriptionTests(unittest.TestCase):
             (target / "SKILL.md").write_text("---\ndescription: " + "x" * 501 + "\n---\n", encoding="utf-8")
             errors = mod.check(Path(td))
             self.assertEqual(len(errors), 1)
-            self.assertIn("skills/bad/SKILL.md", errors[0])
+            self.assertIn(str(Path("skills") / "bad" / "SKILL.md"), errors[0])
 
 if __name__ == "__main__":
     unittest.main()
