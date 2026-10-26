@@ -1,0 +1,39 @@
+{
+  "schema": "software-improvement-loop.metric-input/v1",
+  "experiment_id": "example-startup-test-only",
+  "baseline": {
+    "id": "sample:baseline-001",
+    "environment_id": "sample:local-machine-fixed-config",
+    "workload_id": "sample:startup-benchmark-v1",
+    "harness_id": "sample:timer-v1"
+  },
+  "candidate": {
+    "id": "sample:candidate-001",
+    "environment_id": "sample:local-machine-fixed-config",
+    "workload_id": "sample:startup-benchmark-v1",
+    "harness_id": "sample:timer-v1"
+  },
+  "metrics": [
+    {
+      "id": "startup_ms",
+      "role": "target",
+      "direction": "lower",
+      "unit": "ms",
+      "min_improvement_pct": 10,
+      "max_regression_pct": 0,
+      "noise_floor_pct": 1,
+      "baseline_samples": [300, 302, 299, 301, 300],
+      "candidate_samples": [250, 251, 249, 251, 250]
+    },
+    {
+      "id": "idle_memory_mb",
+      "role": "guardrail",
+      "direction": "lower",
+      "unit": "MB",
+      "max_regression_pct": 5,
+      "noise_floor_pct": 1,
+      "baseline_samples": [160, 160, 160, 160, 160],
+      "candidate_samples": [161, 161, 161, 161, 161]
+    }
+  ]
+}
