@@ -1,6 +1,6 @@
 ---
 name: skill-package-architecture-review
-description: review, map, compare, or assess the architecture of an Agent Skills-compatible skill package, including SKILL.md control-plane design, activation boundaries, architecture scope, references, scripts, assets, evals, validators, dependency/resource/ownership maps, progressive loading, evolution/change isolation, trust boundaries, handoffs, package cohesion, and whether to keep unified, split, extract a mode, create a router, merge resources, or make no structural change. use for evidence-based package architecture review, not generic implementation, hardening execution, benchmark ownership, full security audit, or target-domain rewrites.
+description: Review or compare an Agent Skills-compatible package: SKILL.md control-plane design, activation boundaries, scope, references, scripts, assets, evals, validators, dependency/resource/ownership maps, progressive loading, change isolation, trust boundaries, handoffs, cohesion, and whether to keep, split, extract, route, merge, or make no structural change. Use for evidence-based package architecture review, not generic implementation, hardening execution, benchmark ownership, full security audit, or domain rewrites.
 ---
 
 # Skill Package Architecture Review

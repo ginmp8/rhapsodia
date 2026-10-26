@@ -1,6 +1,6 @@
 ---
 name: pdf-workbench
-description: Work with PDF files reliably across reading/review, text or table extraction, merge/split/rotate/crop/watermark, creation/conversion, forms, OCR, redaction, encryption, images, repair, and PDF/A or PDF/UA validation. Use when PDF is the primary input or output, including scanned, fillable, signed, encrypted, tagged, or damaged PDFs. Do not use for ordinary DOCX/PPTX/XLSX work unless PDF conversion or PDF-specific validation is the actual goal.
+description: Work reliably with PDFs for review, text/table extraction, rendering, merge/split/rotate/crop/watermark, creation/conversion, forms, OCR, redaction, encryption, repair, and PDF/A or PDF/UA validation. Use when PDF is the primary input or output, including scanned, fillable, signed, encrypted, tagged, or damaged files. Do not use for ordinary DOCX/PPTX/XLSX work unless PDF conversion or validation is the goal.
 ---
 
 # PDF Processing

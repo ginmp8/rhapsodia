@@ -1,6 +1,6 @@
 ---
 name: migration-conflict-analyzer
-description: Use when asked to analyze Entity Framework Core (.NET) migration .cs files, repository paths, Git diffs, pull requests or PRs, or pasted migration code for schema conflicts, ordering hazards, data-loss or destructive changes, duplicate operations or migration lineage conflicts, ModelSnapshot divergence, raw SQL or reviewed SQL/deployment SQL drift, provider-specific SQL Server/PostgreSQL/SQLite risks, EF Core version-dependent runtime migration/deployment hazards including concurrent Database.Migrate or Database.MigrateAsync, and expand/contract compatibility. Do not use for generic EF Core tutorials, general database design, or ordinary application code review unless migration-specific conflict or deployment-risk analysis is requested.
+description: Analyze EF Core migrations, repository paths, Git diffs, pull requests, or pasted code for schema conflicts, ordering hazards, data loss, destructive or duplicate operations, lineage and ModelSnapshot divergence, SQL drift, provider-specific SQL Server/PostgreSQL/SQLite risks, deployment hazards, concurrent migrations, and expand/contract compatibility. Use only for migration conflict or deployment-risk analysis, not generic EF Core tutorials, database design, or ordinary code review.
 ---
 
 # Migration Conflict Analyzer
