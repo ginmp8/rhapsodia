@@ -1,7 +1,7 @@
 import importlib.util,json,shutil,subprocess,sys,tempfile,unittest,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-RELEASE="0.14.0"
+RELEASE="0.14.1"
 NEW_SKILLS=("local-graph-engine","local-graph-explorer","pdf-workbench","runtime-harness","operational-context","reverse-engineering","deep-research-suite","premortem-analysis","causal-flow-comprehension","capability-discovery","software-improvement-loop")
 class Tests(unittest.TestCase):
  def test_catalog_release_matches_current(self):

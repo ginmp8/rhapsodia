@@ -1,5 +1,12 @@
 # RhapsodIA
 
+## 0.14.1 — ChatGPT discovery metadata compatibility
+
+RhapsodIA **0.14.1** maintains 59 Skills and eight agent profiles. Every canonical `SKILL.md` description is now limited to 500 Unicode characters, preserving activation and exclusion boundaries. **Skill Booster** and **Skill Creator Juiced** enforce this limit when optimizing or creating Skills, and their frontmatter validators reject longer descriptions. A standard-library catalog validator and regression tests run in both release CI and the cross-platform matrix.
+
+The distribution remains otherwise compatible with 0.14.0; internal semantic contract versions are unchanged. See the [0.14.1 release notes](docs/releases/0.14.1.md) and [changelog](CHANGELOG.md).
+
+
 ## 0.14.0 — bounded, evidence-driven software improvement
 
 RhapsodIA **0.14.0** includes **59 portable Agent Skills and eight native agent profiles**. It adds the independently versioned [Software Improvement Loop v0.1.0](skills/software-improvement-loop/SKILL.md), distributed from the canonical `skills/` directory and available to host-native Skill discovery.

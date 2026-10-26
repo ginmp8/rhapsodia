@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.14.1] - 2026-10-26
+
+### Fixed
+- Shortened overlong discovery descriptions for ChatGPT compatibility without changing Skill responsibilities.
+- Corrected the existing 1024-character validator allowances in Skill Booster and Skill Creator Juiced to a hard maximum of 500 Unicode characters.
+
+### Added
+- Catalog-wide frontmatter description validation and regression tests, enforced by release CI and the portable-host matrix.
+
+### Changed
+- Release metadata, README and distribution documentation for 0.14.1; maintained the 59-Skill and eight-agent inventory.
+
+
 All notable changes to the RhapsodIA distribution are documented here. Individual Skills follow their own version histories and are not automatically bumped with the distribution.
 
 ## [0.14.0] - 2026-10-25
