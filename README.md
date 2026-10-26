@@ -1,5 +1,15 @@
 # RhapsodIA
 
+## 0.14.0 — bounded, evidence-driven software improvement
+
+RhapsodIA **0.14.0** includes **59 portable Agent Skills and eight native agent profiles**. It adds the independently versioned [Software Improvement Loop v0.1.0](skills/software-improvement-loop/SKILL.md), distributed from the canonical `skills/` directory and available to host-native Skill discovery.
+
+Software Improvement Loop supports four bounded modes: performance, feature improvement, test hardening, and behavior-preserving simplification. It freezes acceptance evidence before making changes, isolates candidate work, limits iteration, executes regression gates, and reports a defensible keep/revert/inconclusive/blocked outcome. Its standard-library-only metric comparator supports numeric analysis, but does not execute benchmarks or certify performance gains. A coding agent remains responsible for authorized execution; PandaCode integration is optional and is not a prerequisite.
+
+The release preserves previous agents, required Runtime Harness and Local Graph sessions, all existing Skill version identities, and internal semantic contract versions. Generated plugin manifests, archive paths, source provenance, version assertions, and release CI are synchronized to `0.14.0`. Pull requests now run the full release validation workflow in addition to the platform portability matrix.
+
+See the [0.14.0 release notes](docs/releases/0.14.0.md), [distribution changelog](CHANGELOG.md), and [Skill changelog](skills/software-improvement-loop/CHANGELOG.md). Structural and CI checks cannot establish native-host activation, real-world improvement, or cross-host model behavior.
+
 ## 0.13.0 — deployable capability discovery and preserved 0.12.0 improvements
 
 RhapsodIA **0.13.0** includes **58 Agent Skills and eight native agent profiles**. It is rebased on the updated user-supplied 0.12.0 source, preserving the improved metamorphic-test work in Skill Benchmark, Reproducibility Engineer and Skill Prompt/Activation Review, plus previously corrected script/test behavior. The earlier 0.12.1 candidate is not the source baseline.
@@ -153,6 +163,8 @@ audits. Structural host compatibility does not establish runtime equivalence acr
 
 ## Contents
 
+- 0.14.0 - Bounded, evidence-driven software improvement
+- 0.13.0 - Portable expertise discovery
 - 0.12.0 - Causal flow, selective decisions and evidence coverage
 - 0.11.0 (historical) - Required sessions, persistent workspace knowledge and direct Adhoc
 - 0.10.0 (historical) - Selective agent activation, bounded decisions and prospective risk review
