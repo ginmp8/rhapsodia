@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Diagnose bugs, regressions, test/build failures, flaky or nondeterministic behavior, performance/resource failures, hangs/crashes, and multi-component integration problems using evidence-driven hypothesis testing before permanent fixes. Use when the cause is unknown, disputed, or insufficiently evidenced and technical behavior must be reproduced, localized, or explained. During an active production incident, use after or alongside safe mitigation and evidence preservation. Do not use for implementing a known accepted fix, feature development, ordinary code review, or architecture/design work without an observed failure.
+description: "Diagnose unexplained bugs, regressions, failed builds, flaky tests, crashes, hangs and performance/resource issues by reproducing and testing evidence-based hypotheses before implementing a fix. Use for unknown or disputed causes, including production incidents after mitigation. Do not use for accepted known fixes, generic architecture planning, ordinary code review or feature implementation."
 ---
 
 # Systematic Debugging
