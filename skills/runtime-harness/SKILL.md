@@ -1,6 +1,6 @@
 ---
 name: runtime-harness
-description: Bootstrap required Rhapsodia agent sessions with explicit independent harness/graph opt-outs; discover, verify, publish, and reuse local runtime capabilities and reusable resource locations through lazy incremental immutable snapshots, exact logical URI queries, byte-bounded context, content-pinned full/delta handoffs, observed capabilities, and typed discovery outcomes. Use for repeated interpreter/tool/resource discovery, shared cross-agent environment knowledge, session bootstrap, freshness, compact handoffs, or optional read-only stdio MCP and GraphPatch export. The agent adapter initializes absent private runtime/graph state; standalone registry consumers remain graph-independent. Do not use as workflow owner, installer, credentials store, general search engine, arbitrary memory, or replacement for domain handoffs and validation evidence.
+description: "Bootstrap required RhapsodIA sessions and discover/reuse local capabilities through pinned snapshots, exact resource URIs, bounded context and portable handoffs. Support independent user-authorized harness/graph opt-outs, optional read-only MCP and GraphPatch exports. Use for environment discovery, session readiness and reusable locations, not general search, credential storage, installation, task orchestration or governance decisions."
 ---
 
 # Runtime Harness

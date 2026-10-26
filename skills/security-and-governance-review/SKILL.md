@@ -1,6 +1,6 @@
 ---
 name: security-and-governance-review
-description: 'Use when the primary task is an evidence-based security/governance review of a skill or agent package, script, validator, template, or nearby helper project, including secrets/sensitive logging, unsafe shell/file handling, dependency or supply-chain risk, agent/tool authority, responsible AI or compliance evidence, threat modeling, and remediation planning. Default read-only. Do not use for broad package hardening/optimization, ordinary application or PR security review, MCP-only security review, or direct risky remediation.'
+description: "Audit skill/agent packages and nearby helpers for security and governance risks: secrets, unsafe shell/file operations, supply-chain dependencies, tool authority, privacy and compliance evidence. Default read-only, evidence-driven review and remediation planning. Do not use for ordinary application/PR security, MCP-only reviews, full skill optimization or direct risky repairs."
 ---
 
 # Security and Governance Review

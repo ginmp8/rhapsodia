@@ -1,6 +1,6 @@
 ---
 name: nomia
-description: "use when asked to create, update, normalize, validate, audit, or report on nomia-owned product and delivery governance artifacts: intake and delivery metadata, requester, owner, dates, status, stakeholders, replanning, portfolio, roadmap and feature maps, governance rfc proposals and decision logs, feature reports, release and internal notes, readiness, contract validation, and roadmap-to-mago handoffs. do not use for architecture, technical planning, code, tests, deployments, pull requests, magia execution, or engineering decisions except as attributed read-only evidence."
+description: "Manage product and delivery governance artifacts: intake, ownership, roadmap, statuses, priorities, stakeholders, release notes, readiness, decisions and handoffs to Mago. Use for planning governance and reporting, not technical architecture, code, tests, deployments, PRs or Magia execution records. Engineering decisions are read-only evidence."
 ---
 
 # nomia
