@@ -29,7 +29,7 @@ Every skill created or substantially redesigned here must make its primary decis
 
 Within those first 100 lines, expose the smallest complete control plane needed to act correctly:
 
-1. frontmatter `name` and a discriminative, declarative `description` that states what the skill does, when to use it, and a material non-use boundary when overlap is plausible; avoid first-person assistant promises;
+1. frontmatter `name` and a declarative `description` of at most 500 Unicode characters (hard gate), that states what the skill does, when to use it, and a material non-use boundary when overlap is plausible; avoid first-person assistant promises;
 2. purpose/scope and activation or routing boundary;
 3. mode/router decision when the skill has materially different branches;
 4. workflow, quick start, or execution sequence sufficient to begin correctly;

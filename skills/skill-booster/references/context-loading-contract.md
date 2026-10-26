@@ -18,6 +18,8 @@
 
 ## Discovery Quality
 
+The `SKILL.md` YAML frontmatter `description` must contain 1-500 Unicode characters after YAML scalar parsing and trimming. Fail validation and package readiness on overflow; preserve essential activation and exclusion intent when editing. This is an enforced ChatGPT-compatible metadata bound, not a suggested length.
+
 Evaluate metadata independently from task outcome.
 
 Check:

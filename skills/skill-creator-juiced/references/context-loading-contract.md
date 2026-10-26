@@ -18,6 +18,8 @@
 
 ## Discovery Surface
 
+The `SKILL.md` YAML frontmatter `description` is required to contain 1-500 Unicode characters after YAML scalar parsing and trimming. Reject longer descriptions before packaging or publishing. Keep capability, trigger and non-use boundaries intact through concise wording.
+
 Treat `description` as a routing API, not as a catalog of implementation details.
 
 Include:

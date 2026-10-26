@@ -134,8 +134,8 @@ def parse_frontmatter(skill_md: Path) -> tuple[dict[str, str], list[str]]:
             errors.append(f"frontmatter.name must match parent directory name: {skill_md.parent.name}")
     if not description:
         errors.append("frontmatter.description is required")
-    elif len(description) > 1024:
-        errors.append("frontmatter.description exceeds 1024 characters")
+    elif len(description) > 500:
+        errors.append("frontmatter.description exceeds 500 characters")
     if compatibility and len(compatibility) > 500:
         errors.append("frontmatter.compatibility exceeds 500 characters")
     return data, errors
