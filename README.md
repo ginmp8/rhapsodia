@@ -1,5 +1,14 @@
 # RhapsodIA
 
+## 0.15.0 — Archify visualization and review suite
+
+RhapsodIA **0.15.0** distributes **62 independently versioned Agent Skills** and retains eight native agent profiles. It adds three source-attributed Archify packages: [Archify v3.2.0](skills/archify/SKILL.md) for ten types of interactive diagrams and one-page Explainers; [Archify Review v0.1.0](skills/archify-review/SKILL.md) for evidence-backed issue and PR decisions; and [Archify Tuning v0.1.0](skills/archify-tuning/SKILL.md) for controlled diagram-quality experiments.
+
+Archify is an independent adaptation of [tt-a1i/archify](https://github.com/tt-a1i/archify), based on `ginmp8/archify` commit `a4065941f12be7967436261d9934784e381d423c`. The renderer/runtime remains upstream-derived; packaging and authoring guidance are adapted for Agent Skills distribution. Original Apache-2.0, historical MIT, and relevant third-party notices are preserved in each package. The optional Tuning experiment scripts require a separate compatible Archify checkout and are not bundled.
+
+**Release scope:** additive Skill discovery and packaging. Existing 59 Skills, eight agents, Nomia/Mago/Magia boundaries, runtime session behavior and semantic contract identities remain unchanged. Validation distinguishes static/CLI checks from real browser and host-native behavior. See [0.15.0 release notes](docs/releases/0.15.0.md), [changelog](CHANGELOG.md), and [source attribution](docs/public-source-attribution-audit.md).
+
+
 ## 0.14.1 — ChatGPT discovery metadata compatibility
 
 RhapsodIA **0.14.1** maintains 59 Skills and eight agent profiles. Every canonical `SKILL.md` description is now limited to 500 Unicode characters, preserving activation and exclusion boundaries. **Skill Booster** and **Skill Creator Juiced** enforce this limit when optimizing or creating Skills, and their frontmatter validators reject longer descriptions. A standard-library catalog validator and regression tests run in both release CI and the cross-platform matrix.
