@@ -20,7 +20,7 @@ jobs:
           python scripts/generate_marketplace_manifests.py --check
           python scripts/generate_agent_manifest.py --check --package-version 0.15.0
       - name: Install test-only Python runner
-        run: python -m pip install pytest==9.0.2 Pillow pypdf reportlab PyMuPDF pdfplumber cryptography
+        run: python -m pip install pytest==9.0.2 Pillow 'pypdf>=5,<7' reportlab PyMuPDF pdfplumber cryptography
       - name: Validate every skill description
         run: python -I -S -B scripts/validate_skill_descriptions.py
       - name: Test skill description validator

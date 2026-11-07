@@ -12,6 +12,7 @@
 - 62 Skills and eight agents; previously 59 Skills and eight agents.
 - All host plugin and marketplace versions aligned to 0.15.0.
 - Release and portability workflows verify Archify package metadata; release CI smoke-tests the CLI.
+- Release CI temporarily restricts `pypdf` to versions below 7 for retained PDF Workbench test compatibility.
 
 ## Preserved
 
