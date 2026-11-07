@@ -69,6 +69,12 @@ def run_one(command: list[str], value: Any, cwd: Path, timeout: float, output_ca
         return 'invalid-output', {'error': {'kind': 'input_too_large'}}
     environment = {'PATH': os.environ.get('PATH', '/usr/bin:/bin'), 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8',
                    'HOME': str(cwd), 'TZ':'UTC', 'TMPDIR': str(cwd), 'PYTHONDONTWRITEBYTECODE':'1'}
+    # Windows needs these OS loader paths even for an absolute executable.
+    # Do not inherit credentials, cloud settings, or arbitrary user variables.
+    if os.name == 'nt':
+        for key in ('SystemRoot', 'WINDIR', 'SystemDrive', 'PATHEXT'):
+            if key in os.environ:
+                environment[key] = os.environ[key]
     def cap_resources() -> None:
         if os.name != 'posix':
             return

@@ -20,7 +20,7 @@ class OperationalTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name);(self.root/'src').mkdir()
-        (self.root/'src/a.txt').write_text('one\ntwo\nthree\n');(self.root/'contract.md').write_text('Mandatory gate stays required.\n')
+        (self.root/'src/a.txt').write_bytes(b'one\ntwo\nthree\n');(self.root/'contract.md').write_text('Mandatory gate stays required.\n')
         self.cache=Cache(self.root)
     def action(self):
         return {'task_class':'codegen','argv':['generator','--offline'],'input_roots':['src'],'toolchain_digest':'a'*64,
@@ -65,7 +65,7 @@ class OperationalTests(unittest.TestCase):
         with self.assertRaises(RuntimeFault):self.pack(include_text=True)
     def test_line_slice_pins_whole_file(self):
         p=self.pack(optional=[{'path':'src/a.txt','start_line':2,'end_line':2}],include_text=True,approved_content=True)
-        self.assertEqual(p['optional'][0]['text'],'two\n');(self.root/'src/a.txt').write_text('changed\ntwo\nthree\n')
+        self.assertEqual(p['optional'][0]['text'],'two\n');(self.root/'src/a.txt').write_bytes(b'changed\ntwo\nthree\n')
         self.assertEqual(context.verify(self.cache,p)['status'],'stale')
     def test_malformed_pack_fails_closed(self):
         p=self.pack();p['optional']=[None];p['pack_id']=sha({k:v for k,v in p.items() if k not in {'pack_id','output_bytes'}})

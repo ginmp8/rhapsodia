@@ -2,6 +2,7 @@
 from __future__ import annotations
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -25,7 +26,7 @@ class ExtraCases(unittest.TestCase):
         cmd=[sys.executable,'-c','print("hello")']
         out=self.p/'stdout';err=self.p/'stderr'
         code=tool_adapters.bounded_process(cmd,str(self.p),{'PATH':''},5,out,err)
-        self.assertEqual(code,0);self.assertEqual(out.read_bytes(),b'hello\n')
+        self.assertEqual(code,0);self.assertEqual(out.read_bytes(),b'hello'+os.linesep.encode('ascii'))
         large=[sys.executable,'-c','import sys;sys.stdout.write("X"*3000000)']
         with self.assertRaises(DataError):
             tool_adapters.bounded_process(large,str(self.p),{'PATH':''},5,out,err)
