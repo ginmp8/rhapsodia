@@ -7,6 +7,7 @@ local and append-only per exact source SHA. All raw untrusted reports are data.
 """
 from __future__ import annotations
 import argparse
+from contextlib import closing
 import hashlib
 import json
 from pathlib import Path
@@ -156,7 +157,7 @@ def create_schema(db:sqlite3.Connection)->None:
 def persist(db_path:Path,reports:list[dict])->list[dict]:
     db_path.parent.mkdir(parents=True,exist_ok=True)
     outcomes=[]
-    with sqlite3.connect(db_path) as db:
+    with closing(sqlite3.connect(db_path)) as db:
         db.execute('PRAGMA foreign_keys=ON')
         with db:
             create_schema(db)
@@ -176,7 +177,7 @@ def persist(db_path:Path,reports:list[dict])->list[dict]:
 
 def export(db_path:Path)->dict:
     if not db_path.is_file():raise DataError('SQLite graph file missing')
-    with sqlite3.connect(db_path.resolve().as_uri()+'?mode=ro',uri=True) as db:
+    with closing(sqlite3.connect(db_path.resolve().as_uri()+'?mode=ro',uri=True)) as db:
         db.execute('PRAGMA foreign_keys=ON')
         db.row_factory=sqlite3.Row
         sources=[dict(r) for r in db.execute('SELECT * FROM sources ORDER BY source_sha')]

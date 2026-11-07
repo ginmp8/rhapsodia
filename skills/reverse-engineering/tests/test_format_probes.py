@@ -1,4 +1,5 @@
 import json
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import struct
@@ -35,7 +36,7 @@ class FormatTests(unittest.TestCase):
 
     def test_sqlite_read_only_schema(self):
         db=self.root/'db.sqlite'
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(db)) as con, con:
             con.execute('CREATE TABLE demo(id INTEGER PRIMARY KEY, name TEXT)')
             con.execute("INSERT INTO demo(name) VALUES ('private')")
         result=fp.inspect(db,1048576)

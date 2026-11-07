@@ -74,9 +74,23 @@ def main() -> int:
         finally:
             Path(temporary).unlink(missing_ok=True)
     elif not target.is_file() or target.read_bytes() != output:
+        details = {}
+        if target.is_file():
+            try:
+                recorded = json.loads(target.read_text(encoding="utf-8"))
+                pinned = {item["path"]: item["sha256"] for item in recorded["files"]}
+                actual = {item["path"]: item["sha256"] for item in expected["files"]}
+                changed = sorted(p for p in actual.keys() & pinned.keys() if actual[p] != pinned[p])
+                added = sorted(actual.keys() - pinned.keys())
+                removed = sorted(pinned.keys() - actual.keys())
+                details = {"changed_count": len(changed), "added_count": len(added),
+                           "removed_count": len(removed), "changed_paths": changed[:30],
+                           "added_paths": added[:30], "removed_paths": removed[:30]}
+            except (OSError, ValueError, KeyError, TypeError):
+                details = {"diagnostic": "existing manifest could not be parsed"}
         print(json.dumps({"status": "fail", "reason": "source_manifest_out_of_sync",
                           "file": str(target.relative_to(ROOT)),
-                          "expected_identity": expected["sha256"]}))
+                          "expected_identity": expected["sha256"], **details}))
         return 1
     print(json.dumps({"status": "pass", "version": args.version, "file_count": len(expected["files"]),
                       "source_manifest_sha256": expected["sha256"], "action": "write" if args.write else "check"}))

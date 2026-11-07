@@ -84,6 +84,14 @@ def bounded_process(command:list[str],cwd:str,environment:dict,timeout:int,stdou
                                  stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     except OSError as exc:
         raise DataError('optional tool failed to start: '+type(exc).__name__) from exc
+    # Keep the caller's restricted environment while preserving the Windows
+    # loader paths required by native tools (including the Python interpreter).
+    if os.name == 'nt':
+        environment = dict(environment)
+        names = {key.casefold() for key in environment}
+        for key in ('SystemRoot', 'WINDIR', 'SystemDrive', 'PATHEXT'):
+            if key in os.environ and key.casefold() not in names:
+                environment[key] = os.environ[key]
     over=threading.Event()
     def copy(source,destination):
         written=0
