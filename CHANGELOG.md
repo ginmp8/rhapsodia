@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.15.0] - 2026-11-07
+
+### Added
+- Archify v3.2.0: upstream-derived diagram runtime with 10 native types, Explainer, deterministic CLI delivery, complete renderer/schema payload, license and source provenance.
+- Archify Review v0.1.0: evidence-based Value/Cost/Impact evaluation with current-branch handling and contribution readiness policy.
+- Archify Tuning v0.1.0: bounded, traceable visual-quality experiments; repository-only experiment scripts remain optional, not bundled.
+- Versioned provenance, attribution and static integration regression checks for all three new packages.
+
+### Changed
+- Distribution and host marketplace metadata, release CI, source manifest and docs for 0.15.0, increasing the Skill inventory from 59 to 62 with eight agents unchanged.
+- Cross-platform static validation and Linux Node.js CLI smoke checks for Archify, without claiming browser or host-activation parity.
+
+### Compatibility and licensing
+- Existing Skill packages, agent profiles and internal contracts are unchanged. New Archify packages preserve upstream Apache, historical MIT and pertinent third-party attributions. Commercial use of embedded marks remains subject to their own rights.
+
+
 ## [0.14.1] - 2026-10-26
 
 ### Fixed

@@ -174,3 +174,14 @@ Add or update an attribution note in the root README, this audit, or relevant pa
 5. distribute a skill package independently where attribution would otherwise be lost.
 
 Do not add source or license references to operational `SKILL.md` files unless the information changes how the skill executes. Keep license and attribution metadata in `README.md`, local `references/source-and-license.md`, local `references/upstream-source.md`, `LICENSE.txt`, `NOTICE`, or this audit document.
+
+## Archify suite added in RhapsodIA 0.15.0
+
+Three independently versioned packages are derived from the upstream Archify project (tt-a1i/archify), using `ginmp8/archify` commit `a4065941f12be7967436261d9934784e381d423c` as the immutable integration reference:
+
+- `skills/archify/`: Archify 3.2.0 runtime, schemas, examples, frontend assets and adapted Agent Skills discovery/reference guidance. This is upstream-derived code, not original RhapsodIA authorship.
+- `skills/archify-review/`: versioned portable rewrite of upstream Value/Cost/Impact reviewer and review references, with current-branch and evidence-readiness controls.
+- `skills/archify-tuning/`: portable methodology extracted from upstream internal experiment guidance; upstream repo-local experimental scripts are not included.
+
+Each package preserves its original author attribution and records the independently maintained changes in `SOURCE.md`, `NOTICE`, and `CHANGELOG.md`. Archify itself preserves the Cocoon AI lineage, Apache-2.0 license, historical MIT grant and `THIRD_PARTY_NOTICES.md` covering supplied components. This inclusion does not confer rights in brand marks or imply upstream approval. In particular, some embedded brand artwork has non-commercial or share-alike conditions independent of the software license; redistributors should consult the bundled notices for intended use.
+
