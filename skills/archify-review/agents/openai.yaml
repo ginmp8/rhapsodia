@@ -1,0 +1,10 @@
+interface:
+  display_name: Archify Review
+  short_description: "Review Archify changes through Value, Cost, Impact, compatibility, policy and verified evidence."
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - CHAT
+  - CODEX
+  allow_implicit_invocation: true
