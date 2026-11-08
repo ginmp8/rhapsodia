@@ -5,11 +5,13 @@
 ### Added
 - Seven independently versioned Matt Pocock-derived Agent Skills: Grilling, explicit Grill Me alias, Grill with Docs, Domain Modeling, Wayfinder, Retro, and two-axis Code Review.
 - Domain glossary/ADR reference formats, decision map contract, code smell reference, activation examples, package source identities and MIT license preservation.
-- An interview/decision workflow user guide and a deterministic distribution test for the new packages.
+- An interview/decision workflow user guide and deterministic distribution and portability tests for the new packages.
+- Seven independently designed SVG icons, OpenAI skill UI metadata, and portable fallback behavior for hosts without skill-to-skill dispatch.
 
 ### Changed
 - Distribution inventory from 69 to 76 Skills, retaining eight native agent profiles and all existing semantic contract identities.
 - Marketplace/plugin release metadata, documentation, portable CI checks and source-release evidence updated for 0.17.0.
+- All seven candidate skill packages advanced from 0.1.0 to 0.1.1 to track the portability/UI metadata repair and regression tests.
 - Audit Spec Implementation's existing optional Code Review dependency becomes satisfied by a bundled RhapsodIA specialist.
 
 ### Compatibility and source

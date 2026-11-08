@@ -73,7 +73,9 @@ jobs:
           python -I -S -B -m unittest discover -s skills/branch-reconciliation/tests -p 'test_*.py' -v
           python -I -S -B -m unittest discover -s tests -p test_branch_reconciliation_distribution.py -v
       - name: Validate 0.17.0 Grilling and decision skill distribution
-        run: python -I -S -B -m unittest discover -s tests -p 'test_mattpocock_adaptations.py' -v
+        run: |
+          python -I -S -B -m unittest discover -s tests -p 'test_mattpocock_adaptations.py' -v
+          python -I -S -B -m unittest discover -s tests -p 'test_017_skill_portability.py' -v
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

@@ -17,8 +17,8 @@ class MattPocockAdaptationTests(unittest.TestCase):
             with self.subTest(skill=name):
                 root = ROOT / "skills" / name
                 self.assertTrue((root / "SKILL.md").is_file())
-                self.assertEqual((root / "VERSION").read_text().strip(), "0.1.0")
-                self.assertIn("## [0.1.0]", (root / "CHANGELOG.md").read_text())
+                self.assertEqual((root / "VERSION").read_text().strip(), "0.1.1")
+                self.assertIn("## [0.1.1]", (root / "CHANGELOG.md").read_text())
                 source = (root / "SOURCE.md").read_text()
                 self.assertIn(REVISION, source)
                 self.assertIn("mattpocock/skills", source)

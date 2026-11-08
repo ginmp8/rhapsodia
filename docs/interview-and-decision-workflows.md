@@ -29,11 +29,11 @@
 
 **Grilling** owns an interactive dependency tree. Each round contains up to five answerable questions with a recommended choice whose acceptance means "yes." Facts that tools can establish should be investigated, not asked of the user. The default run is bounded; an explicit deep session may extend the budget. Grilling must not interpret its own advice as an approved decision.
 
-**Grill Me** is the explicit alias, not another interview implementation. Use it to invoke Grilling directly; it reports a missing dependency rather than silently creating a new questioning workflow.
+**Grill Me** is the explicit alias, not another interview implementation. It first attempts native Grilling invocation, then reads available Grilling instructions, then applies the same bounded interview semantics inline if the host cannot invoke or discover another skill. It reports which path was used; an inline interview must not claim independent delegation.
 
 ## Documentation and long-running work
 
-**Grill with Docs** composes Grilling and Domain Modeling. The user must settle each decision before canonical documents are changed. Existing Mago-owned technical specs and ADRs are handed to Mago for validation and authorship; independently authorized documents can be written by the agreed owner.
+**Grill with Docs** composes Grilling and Domain Modeling. On hosts without native composition, it asks the same decision-frontier questions and tests domain terms with concrete scenarios in the current conversation. The user must settle each decision before canonical documents are changed. Existing Mago-owned technical specs and ADRs are handed to Mago for validation and authorship; independently authorized documents can be written by the agreed owner.
 
 **Domain Modeling** handles `GLOSSARY.md`, `GLOSSARY-MAP.md`, scenarios and candidate ADRs. It preserves existing terminology and presents conflicts instead of renaming files automatically.
 
@@ -47,4 +47,4 @@
 
 ## Ownership, compatibility and license
 
-Nomia owns governance, Mago owns technical planning, Magia owns implementation. The new skills do not change internal schema/contract identities or permissions. Parallel subagents are optional; report actual availability and whether independent review ran. Each new skill includes an exact pinned upstream reference and the original MIT license (Matt Pocock); RhapsodIA adaptations are independently maintained.
+Nomia owns governance, Mago owns technical planning, Magia owns implementation. The new skills do not change internal schema/contract identities or permissions. All seven ship individual SVG icons through optional `agents/openai.yaml` adapters. Structural portability is checked for portable-core, OpenAI, Codex, Claude, Copilot and Cursor, but host-native UI activation remains untested until installed in each host. Parallel subagents are optional; report actual availability and whether independent review ran. Each new skill includes an exact pinned upstream reference and the original MIT license (Matt Pocock); RhapsodIA adaptations are independently maintained.
