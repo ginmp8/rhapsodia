@@ -9,6 +9,8 @@
 - Seven independently designed SVG icons, OpenAI skill UI metadata, and portable fallback behavior for hosts without skill-to-skill dispatch.
 
 ### Changed
+- Consolidated seven identical Matt Pocock MIT license copies into one repository-level legal notice; retained per-skill pinned source attribution and license-complete standalone ZIP export.
+- Replaced repeated boilerplate in seven `SOURCE.md` files with compact immutable source references, and advanced the seven skill package versions to 0.1.2.
 - Distribution inventory from 69 to 76 Skills, retaining eight native agent profiles and all existing semantic contract identities.
 - Marketplace/plugin release metadata, documentation, portable CI checks and source-release evidence updated for 0.17.0.
 - All seven candidate skill packages advanced from 0.1.0 to 0.1.1 to track the portability/UI metadata repair and regression tests.

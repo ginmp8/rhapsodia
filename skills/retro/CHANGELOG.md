@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2] - 2026-11-08
+
+### Changed
+- Consolidated the repeated Matt Pocock MIT license text at the repository root while preserving the complete original copyright and permission notice.
+- Kept pinned source provenance in a shorter `SOURCE.md`; standalone skill ZIPs still include the full notice through `scripts/package_attributed_skill.py`.
+- No workflow, activation, ownership, tools or runtime behavior changed.
+
 ## [0.1.1] - 2026-11-08
 
 ### Fixed
