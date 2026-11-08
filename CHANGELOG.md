@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.16.0] - 2026-11-08
+
+### Added
+- Spec-to-Implementation Audit coordinator v0.3.0 with frozen normative-source and candidate identities, five-stage dispatch, requirement-to-proof traceability and scoped verdicts.
+- Five v0.2.0 local audit adapters for source criteria, code reachability, causal counterpaths, falsifiable verification oracles and original/candidate regression parity.
+- Standard-library routing and report/stage-receipt validators, original activation fixtures and regression tests, and provenance notes for each new Skill.
+
+### Changed
+- Distribution count from 62 to 68 Skills, retaining eight agent profiles and independently versioned internal semantic contracts.
+- Marketplace/plugin manifests, release documentation, source inventory, package-version checks and cross-platform CI for 0.16.0.
+
+### Compatibility
+- Existing RhapsodIA specialists are composed rather than duplicated. `sdd-reviewer` and `code-review` are optional external skills; local adapters remain usable without them.
+- Audit workflows remain read-only by default and make no claims of unexecuted tests, independent delegation or full compliance without grounded evidence.
+
+
 ## [0.15.0] - 2026-11-07
 
 ### Added

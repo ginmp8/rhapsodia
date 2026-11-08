@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "f5ddb49886582a3ffb90932f3a61b1f91244ef00e7d1a9f539b9ceb680602d97",
+  "sha256": "871d38a0057f6c249ce042e38833cf67fee8fadf059f73262daad4e3aab39786",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -50,11 +50,11 @@
     },
     {
       "path": ".github/workflows/helix-release.yml",
-      "sha256": "1188e96a5b5db0033c68dbc9190891cfbd50b29ae6ad095dc4a6e3185c04b20b"
+      "sha256": "ccfd5f6d3bb3828fd0cd0dfc3637e604325047c74a75762c28ddee1dc419aeef"
     },
     {
       "path": ".github/workflows/runtime-portability.yml",
-      "sha256": "83372c805dd2edfb0a401fd9e900ca387d5fa244fa3f092b7d5c74ce60c889cc"
+      "sha256": "78145b0a1e8e185c3963f50e1e263a93978ea6deda42ae242733db10102a75bf"
     },
     {
       "path": ".gitignore",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d371fdc2ccab26c0e0edda6b52bd3909c45138ca802fb5bbbe62e61d94e78ec8"
+      "sha256": "09c3404c7af0a8bf8ddccb6f729c8f00ff2a2e718e3ad408aeff4d6a4f7a81c0"
     },
     {
       "path": "LICENSE",
@@ -74,7 +74,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "f92cde5a979e92fcde440e89978de2fcb5dcfe9c18040fe1198c58b8a558009e"
+      "sha256": "7d54f6d24b52bc54e5d1d9de7fe3f85ae3293125e0d3b942e772161559d8bd3c"
     },
     {
       "path": "agents/magia.agent.md",
@@ -110,11 +110,11 @@
     },
     {
       "path": "docs/JSON_VERSION_INVENTORY.md",
-      "sha256": "e4d9ccef098c3bb94a57ce5c123e204ddeda4511925581cd7b7402862d5ae5e3"
+      "sha256": "2439a7326310289ebf2aebd0c098f0f4a9dd2df9ffa3d8f4ef3666a139c883fd"
     },
     {
       "path": "docs/VERSIONING.md",
-      "sha256": "316a6df44bad7466ef51864afc373f667e70d7cbd71367bf37ad3e5fe61c5e31"
+      "sha256": "e2cd7a01008d9c3254372035bbaaefcf03137d7f414eb96dcda9eae1370d1ed6"
     },
     {
       "path": "docs/agents/ARCHITECTURE.md",
@@ -10906,7 +10906,7 @@
     },
     {
       "path": "tests/test_release_versions.py",
-      "sha256": "fadfab4a0fb3cf7fbc2201099c56d3063201d1095f30056aa215465518c9e725"
+      "sha256": "a7234e503f1261c7b3e683f54b648fe471610628b4a313ec643ec764150f82ff"
     },
     {
       "path": "tests/test_required_session.py",
@@ -10914,7 +10914,7 @@
     },
     {
       "path": "tests/test_required_session_guards.py",
-      "sha256": "d993219956d79f0546ef4cdeb368db7a768fd2cebe1ce26932dea6df8383081b"
+      "sha256": "3ec2c024b18bea0858ee2e52995938e81f83016ea8497b2dd031c7a8e6156bdc"
     },
     {
       "path": "tests/test_runtime_integration.py",
@@ -10923,6 +10923,10 @@
     {
       "path": "tests/test_skill_descriptions.py",
       "sha256": "dbccdc4a625a3a9b34c7fe09f477d7462d2d9b7252e72808be62b46d3c0f4f50"
+    },
+    {
+      "path": "tests/test_spec_conformance_distribution.py",
+      "sha256": "7e76ce5a942739e22c204dbc7c51b85e2bc2dff20142647813b052e17da4de6f"
     },
     {
       "path": "tests/test_validate_agents.py",
