@@ -2,9 +2,9 @@
 
 ## Added
 
-- Six independently activatable Spec Conformance Auditor Skill packages (one coordinator and five stage adapters).
+- Six independently activatable spec-conformance Skills (one coordinator and five stage adapters).
 - Frozen requirement/source identity, bounded reachability and causal checks, executable-proof distinction and fork parity workflows.
-- Standard-library report/receipt validators, deterministic routing helper, activation fixtures and source attribution notes.
+- Standard-library report/receipt validators, deterministic routing helper, activation fixtures and package identity notes.
 - Portable integration and coordinator regression tests.
 - Branch Reconciliation v0.1.0, a reusable Git three-way content integration skill with full-tree preservation checks, reviewed conflict resolutions, single-parent commits and non-force delivery guidance.
 - Real-Git synthetic reconciliation scenarios and cross-platform CI validation.

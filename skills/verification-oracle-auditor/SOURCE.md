@@ -1,5 +1,7 @@
-# Source and provenance
+# Package record
 
-Ported from the installed **Spec Conformance Auditor** plugin into RhapsodIA on 2026-11-08. Original entrypoint and supporting resources are retained with the canonical `SKILL.md` filename. Original Skill version: `0.2.0`.
+Verification stage for distinguishing defined tests, executed evidence and unverified behavior. It provides a local fallback when a compatible specialist is unavailable.
 
-This adapter is a fallback and reuses eligible specialist skills when available. The source was supplied through the installed plugin catalog; no public source commit is asserted.
+**RhapsodIA distribution:** 0.16.0. **Skill version:** `0.2.0`.
+
+The package records its own interfaces and validation resources; no external upstream Git revision is asserted.

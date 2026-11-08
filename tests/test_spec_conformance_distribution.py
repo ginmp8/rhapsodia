@@ -86,5 +86,25 @@ class SpecConformanceDistributionTests(unittest.TestCase):
                 self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
 
+    def test_public_release_notes_do_not_reveal_nonpublic_input_lineage(self):
+        source_paths = [ROOT / "skills" / name / "SOURCE.md" for name in PACKAGES]
+        reviewed_paths = source_paths + [
+            ROOT / "skills/branch-reconciliation/SOURCE.md",
+            ROOT / "docs/releases/0.16.0.md",
+            ROOT / "docs/releases/changelog-0.16.0.md",
+        ]
+        for source in reviewed_paths:
+            with self.subTest(path=source.relative_to(ROOT).as_posix()):
+                body = source.read_text(encoding="utf-8")
+                self.assertNotRegex(
+                    body,
+                    r"(?i)\b(?:ported from|installed plugin|plugin skill catalog|user-installed|private chat|private conversation|from chatgpt)\b",
+                )
+                self.assertNotRegex(
+                    body,
+                    r"(?i)[a-z0-9_.-]+/[a-z0-9_.-]+(?:\s+|[\x60 ]+)PRs?\s*#\d+",
+                )
+
+
 if __name__ == "__main__":
     unittest.main()

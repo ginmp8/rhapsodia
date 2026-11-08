@@ -1,5 +1,7 @@
-# Source and provenance
+# Package record
 
-Ported from the installed **Spec Conformance Auditor** plugin into RhapsodIA on 2026-11-08. Original entrypoint and supporting resources are retained with the canonical `SKILL.md` filename. Upstream package version: `0.3.0`.
+Coordinator for source-pinned requirement-to-implementation audits. This package includes the coordinator workflow, dispatch references, validation helpers and tests. Specialist skills are optional and are not bundled with this package.
 
-The source was supplied through the installed plugin skill catalog, not a public repository revision. No source Git commit is asserted. Specialist skills remain optional and are not bundled by this port.
+**RhapsodIA distribution:** 0.16.0. **Skill version:** `0.3.0`.
+
+The package records its own interfaces and validation resources; no external upstream Git revision is asserted.
