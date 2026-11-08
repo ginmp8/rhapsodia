@@ -8,6 +8,8 @@
 
 ## Contents
 
+- 0.17.0 decision and review skills
+
 - GitHub Copilot CLI
 - OpenAI Codex / ChatGPT
 - Claude Code
@@ -40,6 +42,12 @@ rhapsodia
 ```
 
 ---
+
+## 0.17.0 decision and review skills
+
+RhapsodIA 0.17.0 distributes seven new Agent Skills in the canonical `skills/` directory: `grilling`, `grill-me` (an explicit alias), `grill-with-docs`, `domain-modeling`, `wayfinder`, `retro` and `code-review`. Installation uses the existing marketplace for each host; no separate sub-plugin is required. See the [usage guide](interview-and-decision-workflows.md) and [attributed source inventory](releases/0.17.0.md). Native host discovery and tool access must still be validated independently.
+
+To try the candidate release before merging, point a compatible host at the `release/0.17.0` ref where that host supports Git refs. The release is not published or tagged by this PR.
 
 ## GitHub Copilot CLI
 
