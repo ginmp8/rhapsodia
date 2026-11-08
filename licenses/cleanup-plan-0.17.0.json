@@ -103,7 +103,7 @@
     {
       "path": "skills/premortem-analysis/LICENSE",
       "git_blob_sha": "892c3d6c03dd1d5dfe6704572de5c981f038e2e8",
-      "canonical": "licenses/third-party/premortem-analysis-MIT.txt"
+      "canonical": "licenses/first-party/premortem-analysis-MIT.txt"
     },
     {
       "path": "skills/runtime-harness/LICENSE",
@@ -121,9 +121,17 @@
       "canonical": "licenses/notices/visual-code-intelligence.txt"
     }
   ],
-  "restoration_contract": "Standalone exporter restores exact file bytes at original paths; complete plugin includes root licenses folder; Archify module resolves root/standalone sources",
+  "restoration_contract": "Standalone export restores current canonical legal text and historical filenames. The owner-requested root Apache copyright notice changes LICENSE bytes from the migration baseline; original Git blob identities remain in original_files.",
   "out_of_scope": [
     "Streamlit source-and-license reference (operational guidance)",
     "Archify software-notices.mjs (executable runtime module)"
+  ],
+  "post_cleanup_amendments": [
+    {
+      "canonical": "LICENSE",
+      "reason": "Append a first-party copyright statement for ginmp8 without changing the original Apache-2.0 terms; retain original Git blob identities as historical evidence.",
+      "original_blob_sha": "007878967ef4ef6c49c1491190806bdc8b92748d",
+      "current_blob_sha": "e4d4604347dd6676899dfac62aa56bf771d096c7"
+    }
   ]
 }

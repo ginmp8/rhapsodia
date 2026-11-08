@@ -15,6 +15,19 @@ NOTICE = ROOT / "licenses" / "third-party" / "mattpocock-skills-MIT.txt"
 
 
 class CentralLicenseTests(unittest.TestCase):
+    def test_first_party_premortem_and_root_owner_notice(self):
+        root_license = (ROOT / "LICENSE").read_text(encoding="utf-8")
+        self.assertIn("Apache License", root_license)
+        self.assertIn("Copyright (c) 2026 ginmp8", root_license)
+        owned = ROOT / "licenses/first-party/premortem-analysis-MIT.txt"
+        self.assertTrue(owned.is_file())
+        self.assertTrue(owned.read_bytes().startswith(b"MIT License\n\nCopyright (c) 2026 ginmp8"))
+        self.assertFalse((ROOT / "licenses/third-party/premortem-analysis-MIT.txt").exists())
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import skill_licenses
+        self.assertEqual(skill_licenses.restore("premortem-analysis")["LICENSE"], owned.read_bytes())
+
     def test_repository_has_one_verbatim_mit_notice(self):
         raw = NOTICE.read_bytes()
         self.assertTrue(raw.startswith(b"MIT License\n\nCopyright (c) 2026 Matt Pocock"))
@@ -95,11 +108,18 @@ class CentralLicenseTests(unittest.TestCase):
         plan = json.loads((ROOT / "licenses/cleanup-plan-0.17.0.json").read_text())
         self.assertEqual(len(plan["original_files"]), 22)
         self.assertEqual(sum(len(entries) for entries in registered.values()), 29)
+        amendments = {row["canonical"]: row for row in plan.get("post_cleanup_amendments", [])}
+        self.assertEqual(set(amendments), {"LICENSE"})
         for item in plan["original_files"]:
             source = item["path"].split("/")
             name, original = source[1], "/".join(source[2:])
-            self.assertEqual(observed[(name, original)]["blob_sha"], item["git_blob_sha"])
-            self.assertEqual(observed[(name, original)]["canonical"], item["canonical"])
+            current = observed[(name, original)]
+            self.assertEqual(current["canonical"], item["canonical"])
+            if current["blob_sha"] != item["git_blob_sha"]:
+                amendment = amendments.get(item["canonical"])
+                self.assertIsNotNone(amendment, item["path"])
+                self.assertEqual(amendment["original_blob_sha"], item["git_blob_sha"])
+                self.assertEqual(amendment["current_blob_sha"], current["blob_sha"])
         self.assertTrue((ROOT / "skills/streamlit/references/source-and-license.md").is_file())
         self.assertTrue((ROOT / "skills/archify/renderers/shared/software-notices.mjs").is_file())
 

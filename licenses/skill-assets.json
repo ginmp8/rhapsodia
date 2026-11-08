@@ -292,8 +292,8 @@
         {
           "path": "LICENSE",
           "canonical": "LICENSE",
-          "blob_sha": "007878967ef4ef6c49c1491190806bdc8b92748d",
-          "size": 11357
+          "blob_sha": "e4d4604347dd6676899dfac62aa56bf771d096c7",
+          "size": 11850
         }
       ]
     },
@@ -310,7 +310,7 @@
       "notices": [
         {
           "path": "LICENSE",
-          "canonical": "licenses/third-party/premortem-analysis-MIT.txt",
+          "canonical": "licenses/first-party/premortem-analysis-MIT.txt",
           "blob_sha": "892c3d6c03dd1d5dfe6704572de5c981f038e2e8",
           "size": 1063
         }
@@ -357,8 +357,8 @@
         {
           "path": "LICENSE",
           "canonical": "LICENSE",
-          "blob_sha": "007878967ef4ef6c49c1491190806bdc8b92748d",
-          "size": 11357
+          "blob_sha": "e4d4604347dd6676899dfac62aa56bf771d096c7",
+          "size": 11850
         }
       ]
     },

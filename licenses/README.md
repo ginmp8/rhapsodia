@@ -2,9 +2,9 @@
 
 ## Source tree policy
 
-All **76** skills keep their operational instructions, references, icons, scripts, and independent package metadata in `skills/`; complete third-party license grants, copyright notices, historical notices, vendored-component licenses and font OFL notices are centralized under `licenses/` or the repository's root `LICENSE`.
+All **76** skills keep their operational instructions, references, icons, scripts, and independent package metadata in `skills/`; original first-party license grants, third-party license grants, copyright notices, historical notices, vendored-component licenses and font OFL notices are centralized under `licenses/` or the repository's root `LICENSE`.
 
-[skill-assets.json](skill-assets.json) records each skill's exact **original path, canonical file, Git blob identity and byte count**. This includes **22** previously local legal texts/notices in the established skills plus the already-centralized Matt Pocock MIT notice used by seven new skills. Byte-identical grants share one canonical file; unique copyright holders and package-specific notices remain distinct. No legal terms were rewritten by the relocation.
+[skill-assets.json](skill-assets.json) records each skill's exact **original path, canonical file, Git blob identity and byte count**. This includes **22** previously local legal texts/notices in the established skills plus the already-centralized Matt Pocock MIT notice used by seven new skills. Byte-identical grants share one canonical file; unique copyright holders and package-specific notices remain distinct. No legal terms were rewritten by the relocation. An owner-requested follow-up identifies `ginmp8` as the copyright holder for original RhapsodIA work in the root Apache-2.0 `LICENSE` without changing Apache terms. The historical root LICENSE blob is preserved in the cleanup plan.
 
 ## Distribution contracts
 
@@ -19,14 +19,14 @@ Archify's `renderers/shared/software-notices.mjs` is live executable code, not a
 
 | Family | Canonical location |
 |---|---|
-| RhapsodIA original Apache-2.0 text | `../LICENSE` |
+| RhapsodIA Apache-2.0 license and ginmp8 copyright notice | `../LICENSE` |
 | Apache-2.0 byte variant reused by Archify and Skill Creator | `third-party/archify-apache-2.0.txt` |
 | Historical Archify/Cocoon AI MIT grant | `third-party/archify-historical-MIT.txt` |
 | Distinct Archify package notices | `notices/archify.txt`, `notices/archify-review.txt`, `notices/archify-tuning.txt` |
 | Archify third-party brands, vendor Pele and JetBrains Mono OFL | `notices/archify-third-party.md`, `third-party/pele-MIT.txt`, `third-party/JetBrainsMono-OFL.txt` |
 | Local Graph MIT and shared third-party notices | `third-party/local-graph-MIT.txt`, `notices/local-graph-third-party.md` |
 | Deep Research Suite MIT | `third-party/deep-research-suite-MIT.txt` |
-| Premortem Analysis MIT | `third-party/premortem-analysis-MIT.txt` |
+| Original ginmp8 Premortem Analysis MIT | `first-party/premortem-analysis-MIT.txt` |
 | Visual Code Intelligence distinct notice | `notices/visual-code-intelligence.txt` |
 | Seven Matt Pocock-derived skills MIT | `third-party/mattpocock-skills-MIT.txt` |
 
@@ -42,4 +42,4 @@ The central registry is the exhaustive per-skill mapping, not this illustrative 
 
 ## Verification and rollback
 
-The move is pinned to the Git baseline and original blobs in `licenses/cleanup-plan-0.17.0.json`. Test scripts validate all 76 catalog identities, original notice bytes, restored standalone ZIP notices, portable-plugin legal content, deterministic archives and Archify distribution contracts. Rollback is the previous Git commit from the unchanged release branch, not deleting the central record without restoration.
+The move is pinned to the Git baseline and original blobs in `licenses/cleanup-plan-0.17.0.json`. The owner-requested LICENSE notice amendment is recorded separately; the Premortem Analysis MIT notice was moved without changing its bytes. Test scripts validate all 76 catalog identities, original notice bytes, restored standalone ZIP notices, portable-plugin legal content, deterministic archives and Archify distribution contracts. Rollback is the previous Git commit from the unchanged release branch, not deleting the central record without restoration.

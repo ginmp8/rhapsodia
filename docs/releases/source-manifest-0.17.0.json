@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "77bc974bda5ddd892b856476273d5f21cc787cab10dd388add3814aacac5b04f",
+  "sha256": "a0cdd2b0038e4c9a878edeb2485271cadd25be288dad499368af3b2f5fc9c7a2",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -66,15 +66,15 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d43e2e4daee0eb41312ab709b2af37e273e530b68e9f7f69fbdcdaba95ca144b"
+      "sha256": "1383d9bee1d8111701ebdbd5fd6a3150c51286aedba5e0fd80ea08f12a3b8636"
     },
     {
       "path": "LICENSE",
-      "sha256": "3209218a8853c72ae5124b6911449a3486bcd61e361ca38a7ec7036c68ada1f0"
+      "sha256": "8fcaaf2126ceacee0a79954a5361a62b3fa6446bafaf50a43fc58e372442bf6f"
     },
     {
       "path": "README.md",
-      "sha256": "5a9f6160189e40f90a96a43c59f11904552ea5b4c3917738d5e2e8afa6594bab"
+      "sha256": "825044e44f5a7c9449f551d530d412edb2d91dac76949da0123bc4c11bb61309"
     },
     {
       "path": "agents/magia.agent.md",
@@ -178,11 +178,15 @@
     },
     {
       "path": "licenses/README.md",
-      "sha256": "73a4081319b8f669db6febd97881f795f16bd0be9ec3fb51241e55321cbe1f82"
+      "sha256": "41c3ac1676ae437ae761b4f3c4ee2672d015fbaf134118b5c262f96ee6ac3dee"
     },
     {
       "path": "licenses/cleanup-plan-0.17.0.json",
-      "sha256": "79f807867a782b2f7974e2eb108fe4e9b666ae32666a3c1073335d0ff65fa493"
+      "sha256": "4c71d9aedb56c52812179781bf9c083cbff2d4ff40c53189d9ada65c4bdbe69e"
+    },
+    {
+      "path": "licenses/first-party/premortem-analysis-MIT.txt",
+      "sha256": "3850e952a9ea33e70b121922e9a2186cb28cc47023e45b3c5833b541e9c161c2"
     },
     {
       "path": "licenses/notices/archify-review.txt",
@@ -210,7 +214,7 @@
     },
     {
       "path": "licenses/skill-assets.json",
-      "sha256": "2afde476201e313e576c5407b411a6cdf003ede5a30da5b3bc119e64f5f799ea"
+      "sha256": "1f12d84a5a4fa29e4b553ae99d4b0eef49a0f28a40b8e7405b4001abcb85a047"
     },
     {
       "path": "licenses/third-party/JetBrainsMono-OFL.txt",
@@ -239,10 +243,6 @@
     {
       "path": "licenses/third-party/pele-MIT.txt",
       "sha256": "311bccc30de6f7b9cbfb64232bb0c911ccb2191abe316550813ae25b2c7925b9"
-    },
-    {
-      "path": "licenses/third-party/premortem-analysis-MIT.txt",
-      "sha256": "3850e952a9ea33e70b121922e9a2186cb28cc47023e45b3c5833b541e9c161c2"
     },
     {
       "path": "marketplace/catalog.json",
@@ -6558,7 +6558,7 @@
     },
     {
       "path": "skills/premortem-analysis/README.md",
-      "sha256": "752ef965279cdbf5568744c13b152ad38dee20061e9ab0382456b6ded86540be"
+      "sha256": "c2bdce3c6324dc21565006b0360e333a71024da7480ea32768a678bf39a48c7a"
     },
     {
       "path": "skills/premortem-analysis/SKILL.md",
@@ -6626,7 +6626,7 @@
     },
     {
       "path": "skills/premortem-analysis/scripts/validate_traceability.py",
-      "sha256": "79a38da422680cda08acebcc871b8330d2a737724d52e80a1a18de91961e4679"
+      "sha256": "08e0aa0662e6b9e947b47520f97d823d03e7dbdb6aa2644c47cbe247effe88b1"
     },
     {
       "path": "skills/premortem-analysis/tests/test_skill.py",
@@ -11166,7 +11166,7 @@
     },
     {
       "path": "tests/test_release_legal_notices.py",
-      "sha256": "12b609ff8cb1770e72a9c82e352c6d6537fe49e0a2217b20df0c14639cfa3af4"
+      "sha256": "6a79223732c97c9dbaed5a4aed5b57f04a8d77f030c7e5324a4d47272c2331e8"
     },
     {
       "path": "tests/test_release_versions.py",
