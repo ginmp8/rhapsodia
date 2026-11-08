@@ -1,0 +1,129 @@
+{
+  "baseline_commit": "2a94ef242b4714d71c7379b61226d51ffbf83e65",
+  "root_registry": [
+    "skills/*/SKILL.md",
+    "agents/openai.yaml",
+    "scripts/package_attributed_skill.py",
+    "scripts/build_portable_agent_plugin.py",
+    "skills/archify/renderers/shared/software-notices.mjs",
+    "tests/*"
+  ],
+  "classification": "used content with canonical exact-byte relocation",
+  "original_files": [
+    {
+      "path": "skills/archify-review/LICENSE",
+      "git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "canonical": "licenses/third-party/archify-apache-2.0.txt"
+    },
+    {
+      "path": "skills/archify-review/LICENSE-MIT",
+      "git_blob_sha": "0f9f9397a0496ef63c7d555d36b40c3f932aff84",
+      "canonical": "licenses/third-party/archify-historical-MIT.txt"
+    },
+    {
+      "path": "skills/archify-review/NOTICE",
+      "git_blob_sha": "f0032d207425db1b940ecdcf37fbdfe3429bed38",
+      "canonical": "licenses/notices/archify-review.txt"
+    },
+    {
+      "path": "skills/archify-tuning/LICENSE",
+      "git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "canonical": "licenses/third-party/archify-apache-2.0.txt"
+    },
+    {
+      "path": "skills/archify-tuning/LICENSE-MIT",
+      "git_blob_sha": "0f9f9397a0496ef63c7d555d36b40c3f932aff84",
+      "canonical": "licenses/third-party/archify-historical-MIT.txt"
+    },
+    {
+      "path": "skills/archify-tuning/NOTICE",
+      "git_blob_sha": "023f82c26f599d24b8ef8f82452f4b4eb8617bca",
+      "canonical": "licenses/notices/archify-tuning.txt"
+    },
+    {
+      "path": "skills/archify/LICENSE",
+      "git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "canonical": "licenses/third-party/archify-apache-2.0.txt"
+    },
+    {
+      "path": "skills/archify/LICENSE-MIT",
+      "git_blob_sha": "0f9f9397a0496ef63c7d555d36b40c3f932aff84",
+      "canonical": "licenses/third-party/archify-historical-MIT.txt"
+    },
+    {
+      "path": "skills/archify/NOTICE",
+      "git_blob_sha": "b63fbccce2291058a9f4abec9d64b57b527e44d7",
+      "canonical": "licenses/notices/archify.txt"
+    },
+    {
+      "path": "skills/archify/THIRD_PARTY_NOTICES.md",
+      "git_blob_sha": "4060ce3d7ad11ab81a2f3915d970a8f951dcfc28",
+      "canonical": "licenses/notices/archify-third-party.md"
+    },
+    {
+      "path": "skills/archify/assets/JetBrainsMono-OFL.txt",
+      "git_blob_sha": "675d198b74b6f10b5ca149e6a21cf06dcc46b676",
+      "canonical": "licenses/third-party/JetBrainsMono-OFL.txt"
+    },
+    {
+      "path": "skills/archify/explainer/vendor/pele/LICENSE",
+      "git_blob_sha": "fd6f9c893d2feb140f6d1e853a8bc0908b3bdf5b",
+      "canonical": "licenses/third-party/pele-MIT.txt"
+    },
+    {
+      "path": "skills/deep-research-suite/LICENSE",
+      "git_blob_sha": "57d6df8dfc71cd3e6b35fd6c2776084843f2d73b",
+      "canonical": "licenses/third-party/deep-research-suite-MIT.txt"
+    },
+    {
+      "path": "skills/local-graph-engine/LICENSE",
+      "git_blob_sha": "e7521c34bb64c87209b116dd8278a9290b17e272",
+      "canonical": "licenses/third-party/local-graph-MIT.txt"
+    },
+    {
+      "path": "skills/local-graph-engine/THIRD_PARTY_NOTICES.md",
+      "git_blob_sha": "20be804aa1ea4de5c63c738403ce13a4b47d2e78",
+      "canonical": "licenses/notices/local-graph-third-party.md"
+    },
+    {
+      "path": "skills/local-graph-explorer/LICENSE",
+      "git_blob_sha": "e7521c34bb64c87209b116dd8278a9290b17e272",
+      "canonical": "licenses/third-party/local-graph-MIT.txt"
+    },
+    {
+      "path": "skills/local-graph-explorer/THIRD_PARTY_NOTICES.md",
+      "git_blob_sha": "20be804aa1ea4de5c63c738403ce13a4b47d2e78",
+      "canonical": "licenses/notices/local-graph-third-party.md"
+    },
+    {
+      "path": "skills/operational-context/LICENSE",
+      "git_blob_sha": "007878967ef4ef6c49c1491190806bdc8b92748d",
+      "canonical": "LICENSE"
+    },
+    {
+      "path": "skills/premortem-analysis/LICENSE",
+      "git_blob_sha": "892c3d6c03dd1d5dfe6704572de5c981f038e2e8",
+      "canonical": "licenses/third-party/premortem-analysis-MIT.txt"
+    },
+    {
+      "path": "skills/runtime-harness/LICENSE",
+      "git_blob_sha": "007878967ef4ef6c49c1491190806bdc8b92748d",
+      "canonical": "LICENSE"
+    },
+    {
+      "path": "skills/skill-creator/LICENSE.txt",
+      "git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "canonical": "licenses/third-party/archify-apache-2.0.txt"
+    },
+    {
+      "path": "skills/visual-code-intelligence/NOTICE.txt",
+      "git_blob_sha": "60a8ca967029d6ca7b619f8fcd3b1d99b98fcb42",
+      "canonical": "licenses/notices/visual-code-intelligence.txt"
+    }
+  ],
+  "restoration_contract": "Standalone exporter restores exact file bytes at original paths; complete plugin includes root licenses folder; Archify module resolves root/standalone sources",
+  "out_of_scope": [
+    "Streamlit source-and-license reference (operational guidance)",
+    "Archify software-notices.mjs (executable runtime module)"
+  ]
+}

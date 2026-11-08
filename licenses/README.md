@@ -1,34 +1,45 @@
-# Third-party license notices
+# RhapsodIA legal texts and source attribution
 
-## Purpose
+## Source tree policy
 
-Keep license texts and attribution traceable while avoiding repeated copies inside RhapsodIA's source skill directories. This folder is **distribution metadata** and is not a required runtime input for any skill.
+All **76** skills keep their operational instructions, references, icons, scripts, and independent package metadata in `skills/`; complete third-party license grants, copyright notices, historical notices, vendored-component licenses and font OFL notices are centralized under `licenses/` or the repository's root `LICENSE`.
 
-## Matt Pocock-derived skills (0.17.0)
+[skill-assets.json](skill-assets.json) records each skill's exact **original path, canonical file, Git blob identity and byte count**. This includes **22** previously local legal texts/notices in the established skills plus the already-centralized Matt Pocock MIT notice used by seven new skills. Byte-identical grants share one canonical file; unique copyright holders and package-specific notices remain distinct. No legal terms were rewritten by the relocation.
 
-The seven independently maintained adaptations `code-review`, `domain-modeling`, `grill-me`, `grill-with-docs`, `grilling`, `retro` and `wayfinder` share one **byte-identical** MIT grant and copyright notice:
+## Distribution contracts
 
-- Canonical notice: [mattpocock-skills-MIT.txt](third-party/mattpocock-skills-MIT.txt).
-- Original author: Matt Pocock, Copyright (c) 2026 Matt Pocock.
-- Immutable source: [ginmp8/mattpocock-skills at 4ae2317ddb22b046e26455e4f9c9b3aaaf62212d](https://github.com/ginmp8/mattpocock-skills/commit/4ae2317ddb22b046e26455e4f9c9b3aaaf62212d), derived from [mattpocock/skills](https://github.com/mattpocock/skills).
-- Each skill retains a small `SOURCE.md` with its own pinned original path, Git blob and adaptation statement.
-- Full-repository release archives include the canonical notice through the ordinary release packaging policy.
-- **Standalone redistributions:** a standalone skill ZIP or copied folder must carry the full MIT copyright and permission notice. Use `python scripts/package_attributed_skill.py --skill wayfinder --output dist/wayfinder.zip` (or copy the canonical notice as `LICENSE-MIT` alongside the skill when distributing manually). A bare folder copied without that notice does not constitute a license-complete standalone distribution.
+- **Full-repository release:** `scripts/build_release_archive.py` includes root `LICENSE` and every canonical file under `licenses/`.
+- **Portable Agent Plugins package:** `scripts/build_portable_agent_plugin.py` copies the source `skills/` as-is and includes root `LICENSE` and `licenses/`, keeping license texts outside individual skill folders.
+- **Standalone skill ZIP:** `python scripts/package_skill.py --skill archify --output dist/archify.zip` works for any one of the 76 skills. It restores each original legal filename at its historical location inside the ZIP and includes a root Apache license for packages without their own `LICENSE`. The original exporter `scripts/package_attributed_skill.py` is a backwards-compatible alias.
+- **Bare directory copy:** copying only `skills/<name>/` from this source tree is **not** a complete standalone redistribution unless the applicable original legal notices are included separately. Do not claim legal completeness for unvalidated host installers or copying workflows.
 
-The canonical MIT license text is **not** replaced by an SPDX string or a URL alone; one full notice remains in the root repository, and a full notice is restored when independently packaging a skill.
+Archify's `renderers/shared/software-notices.mjs` is live executable code, not a standalone legal text, and continues to embed the exact original notices in generated artifacts by resolving the central files in source/plugin mode or the restored files in standalone mode.
 
-## Other license and duplicate audit (0.17.0)
+## Canonical notice families
 
-| Existing skills/files | Finding | Decision |
-|---|---|---|
-| `archify`, `archify-review`, `archify-tuning` | Exactly identical Apache-2.0 and historical MIT texts; `NOTICE` files differ and describe package-specific attribution. | **Retain** per-skill notices for standalone Archify distributions, historical grants and third-party provenance. No automatic replacement. |
-| `local-graph-engine`, `local-graph-explorer` | Identical MIT text with Local Graph contributor attribution. | **Retain** for separately distributed runnable packages. |
-| `runtime-harness`, `operational-context`, root `LICENSE` | Repeated Apache-2.0 text. | **Retain** for standalone distributions and independent package rights; root notice remains authoritative for the overall repository. |
-| `skill-creator/LICENSE.txt` | Apache-2.0 text identical to Archify's license text, but independently distributed as a plugin/skill. | **Retain**; do not collapse independent package notices solely because bytes match. |
-| `deep-research-suite`, `premortem-analysis`, vendored Archify components | Different copyright holders or vendor notices. | **Retain** as distinct rights statements. |
-| `magia`, `mago`, `nomia`, `rhapsodia-workspace` | Several byte-identical scripts, schemas and integration tests, some larger than licenses. | **Retain pending dedicated consumer/contract audit**; these are not dead resources, and cross-skill deduplication could break standalone workflows. |
-| Shared `assets/icon.svg` files | Intentional identical icons across some skills. | **Retain** local paths required by the host UI and standalone skill installation. |
+| Family | Canonical location |
+|---|---|
+| RhapsodIA original Apache-2.0 text | `../LICENSE` |
+| Apache-2.0 byte variant reused by Archify and Skill Creator | `third-party/archify-apache-2.0.txt` |
+| Historical Archify/Cocoon AI MIT grant | `third-party/archify-historical-MIT.txt` |
+| Distinct Archify package notices | `notices/archify.txt`, `notices/archify-review.txt`, `notices/archify-tuning.txt` |
+| Archify third-party brands, vendor Pele and JetBrains Mono OFL | `notices/archify-third-party.md`, `third-party/pele-MIT.txt`, `third-party/JetBrainsMono-OFL.txt` |
+| Local Graph MIT and shared third-party notices | `third-party/local-graph-MIT.txt`, `notices/local-graph-third-party.md` |
+| Deep Research Suite MIT | `third-party/deep-research-suite-MIT.txt` |
+| Premortem Analysis MIT | `third-party/premortem-analysis-MIT.txt` |
+| Visual Code Intelligence distinct notice | `notices/visual-code-intelligence.txt` |
+| Seven Matt Pocock-derived skills MIT | `third-party/mattpocock-skills-MIT.txt` |
 
-**Token note:** license files are not injected automatically into model context merely because they exist beside `SKILL.md`. Moving them reduces duplicated repository/package files; it does not prove any reduction in model input tokens.
+The central registry is the exhaustive per-skill mapping, not this illustrative family table.
 
-This is a scoped cleanup, not a license change, a removal of attribution, or a claim of legal compliance for arbitrary third-party redistribution. The existing license and notice files of all other skills remain unchanged.
+## Deliberately retained inside skills
+
+- `skills/streamlit/references/source-and-license.md`: an **operational source policy and workflow reference**, not a full license grant. It is consumed by Streamlit's skill and validator.
+- `skills/archify/renderers/shared/software-notices.mjs`: **executable JavaScript** that embeds licensing content into rendered output; moving it would change code loading.
+- Other unrelated repeated Mago/Magia/Nomia scripts, tests, icons and contracts: they are not legal texts and are outside this cleanup's scope.
+
+**Context distinction:** a license file is not automatically loaded as model context merely by being present in a skill folder. This cleanup reduces duplicate source-tree bytes and improves attribution ownership, but does not claim a measured input-token reduction or a legal opinion.
+
+## Verification and rollback
+
+The move is pinned to the Git baseline and original blobs in `licenses/cleanup-plan-0.17.0.json`. Test scripts validate all 76 catalog identities, original notice bytes, restored standalone ZIP notices, portable-plugin legal content, deterministic archives and Archify distribution contracts. Rollback is the previous Git commit from the unchanged release branch, not deleting the central record without restoration.

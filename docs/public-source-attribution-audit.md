@@ -64,7 +64,7 @@ Representative searches included exact skill names and category searches such as
 
 Status: already covered.
 
-The repository includes OpenAI `skill-creator` content and preserves the Apache License 2.0 notice in `skills/skill-creator/LICENSE.txt`. The README already lists this package under known third-party or adapted content.
+The repository includes OpenAI `skill-creator` content and preserves its original Apache License 2.0 notice at `licenses/third-party/archify-apache-2.0.txt`; `licenses/skill-assets.json` restores the historical `LICENSE.txt` name for standalone packaging. The README already lists this package under known third-party or adapted content.
 
 ### `skills/streamlit/`
 
@@ -183,7 +183,7 @@ Three independently versioned packages are derived from the upstream Archify pro
 - `skills/archify-review/`: versioned portable rewrite of upstream Value/Cost/Impact reviewer and review references, with current-branch and evidence-readiness controls.
 - `skills/archify-tuning/`: portable methodology extracted from upstream internal experiment guidance; upstream repo-local experimental scripts are not included.
 
-Each package preserves its original author attribution and records the independently maintained changes in `SOURCE.md`, `NOTICE`, and `CHANGELOG.md`. Archify itself preserves the Cocoon AI lineage, Apache-2.0 license, historical MIT grant and `THIRD_PARTY_NOTICES.md` covering supplied components. This inclusion does not confer rights in brand marks or imply upstream approval. In particular, some embedded brand artwork has non-commercial or share-alike conditions independent of the software license; redistributors should consult the bundled notices for intended use.
+Each package preserves original author attribution and records changes in `SOURCE.md` and `CHANGELOG.md`, with each package's original `NOTICE` preserved centrally under `licenses/notices/`. Archify preserves the Cocoon AI lineage, Apache-2.0 license, historical MIT grant and third-party notices in the central license registry; standalone packaging restores the historical filenames. This inclusion does not confer rights in brand marks or imply upstream approval. In particular, some embedded brand artwork has non-commercial or share-alike conditions independent of the software license; redistributors should consult the bundled notices for intended use.
 
 ## 2026-11-08: RhapsodIA 0.17.0 Matt Pocock adaptations
 
@@ -192,3 +192,7 @@ The following seven new skill packages are independently maintained adaptations 
 Each directory preserves the exact original file and Git blob in `SOURCE.md`. The complete unchanged MIT notice (Copyright (c) 2026 Matt Pocock) is consolidated once in `licenses/third-party/mattpocock-skills-MIT.txt`; standalone skill export restores `LICENSE-MIT` into the resulting ZIP. RhapsodIA modifies the language for host portability, finite questioning, source/evidence discipline and non-conflicting Nomia/Mago/Magia ownership. The surrounding project retains its separate Apache-2.0 license. The fork is an attribution source, not evidence of upstream endorsement. These are not presented as official Matt Pocock releases.
 
 The seven SVG icons added during the 0.17.0 compatibility hardening are original RhapsodIA adaptation assets and are **not copied from** the upstream Matt Pocock repository. They remain distinct from the MIT-attributed workflow text and do not imply upstream endorsement.
+
+## 2026-11-08 — Catalog-wide license relocation
+
+All **76** installed RhapsodIA skill roots were inventoried. The 22 remaining license/NOTICE/OFL files in established skills were moved without modifying the original Git blob bytes and recorded in `licenses/skill-assets.json`. Identical texts are deduplicated; package-specific NOTICE content and vendor texts remain distinct. The seven previously centralized Matt Pocock MIT notices are also included in the catalog. The repository and portable plugin retain the full notice corpus; standalone skill ZIP exports restore the original path and exact bytes. `skills/archify/renderers/shared/software-notices.mjs` remains executable code (not a license text), and Streamlit's source-and-license reference remains skill-operational guidance. The 0.15.0 release notes remain a historical account of that earlier package layout.

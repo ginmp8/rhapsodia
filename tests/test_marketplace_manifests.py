@@ -105,6 +105,11 @@ class MarketplaceManifestTests(unittest.TestCase):
                 manifest["$schema"],
             )
             self.assertTrue((output / "skills").is_dir())
+            self.assertTrue((output / "licenses" / "skill-assets.json").is_file())
+            self.assertTrue((output / "LICENSE").is_file())
+            self.assertTrue((output / "licenses/notices/archify.txt").is_file())
+            self.assertFalse((output / "skills/archify/LICENSE").exists())
+            self.assertFalse((output / "skills/local-graph-engine/LICENSE").exists())
             self.assertFalse((output / "agents").exists())
             self.assertFalse((output / "com.github.copilot").exists())
 
