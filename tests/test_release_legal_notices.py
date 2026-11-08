@@ -21,7 +21,8 @@ class CentralLicenseTests(unittest.TestCase):
         self.assertIn(b"The above copyright notice and this permission notice", raw)
         self.assertIn(b"THE SOFTWARE IS PROVIDED", raw)
         self.assertEqual(raw.count(b"Copyright (c) 2026 Matt Pocock"), 1)
-        from scripts.package_policy import include
+        import runpy
+        include = runpy.run_path(str(ROOT / "scripts/package_policy.py"))["include"]
         self.assertTrue(include(NOTICE, ROOT))
         for name in NAMES:
             with self.subTest(skill=name):
