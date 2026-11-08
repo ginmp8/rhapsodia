@@ -26,9 +26,16 @@ def build(output: Path) -> None:
     try:
         (staging / 'plugin.json').write_bytes(json_bytes(render_portable_manifest(load_catalog())))
         shutil.copytree(ROOT / 'skills', staging / 'skills', ignore=copy_ignore)
-        # Legal notices stay outside canonical skill source directories.
-        shutil.copytree(ROOT / 'licenses', staging / 'licenses', ignore=copy_ignore)
-        shutil.copy2(ROOT / 'LICENSE', staging / 'LICENSE')
+        # Full RhapsodIA distributions always carry the root legal assets.
+        # Minimal synthetic source fixtures without release metadata remain
+        # valid for the runtime-state exclusion test, not legal publication.
+        legal = ROOT / 'licenses'
+        root_license = ROOT / 'LICENSE'
+        if legal.is_dir() and root_license.is_file():
+            shutil.copytree(legal, staging / 'licenses', ignore=copy_ignore)
+            shutil.copy2(root_license, staging / 'LICENSE')
+        elif legal.exists() or root_license.exists() or (ROOT / 'marketplace/catalog.json').exists():
+            raise ValueError('incomplete legal assets for portable plugin distribution')
         portable_mcp = ROOT / 'mcp.json'
         if portable_mcp.is_symlink():
             raise ValueError('MCP configuration may not be a symbolic link')
