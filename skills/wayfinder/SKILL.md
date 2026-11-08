@@ -18,7 +18,7 @@ Build a durable **decision map** for problems too large or ambiguous for one Gri
 ## Quick start
 
 1. Establish the user-approved destination and durable map location. Read any existing map and owner contracts. Use the smallest local Markdown map unless an issue tracker is already configured **and** issue publication is authorized.
-2. For a new map, invoke **grilling** (and **domain-modeling** when vocabulary matters) to locate unresolved decisions. Create only decisions that can be precisely stated now; defer vague future needs to *Not yet specified*.
+2. For a new map, use **grilling** (and **domain-modeling** when terminology matters) through native invocation or readable instructions when available; otherwise ask equivalent bounded frontier questions inline and test ambiguous terms with concrete scenarios. Missing a named-skill invocation API does not prevent decision discovery. Create only decisions that can be precisely stated now; defer vague future needs to *Not yet specified*.
 3. Each decision has an ID, human-readable title, type (`research`, `prototype`, `grilling`, `task`), dependencies, state and evidence pointer. Follow [decision-map contract](references/map-contract.md).
 4. During Resolve, choose an **unclaimed, unblocked** decision. Claim atomically only if the tracker supports a safe claim mechanism; on local files, check current state before updating. Never assume another worker has not claimed it.
 5. Resolve the selected decision through evidence retrieval, user interaction or an authorized optional specialist. Record the exact answer and primary source; close the decision only when required evidence exists.
@@ -33,3 +33,7 @@ Build a durable **decision map** for problems too large or ambiguous for one Gri
 - Publication, issue edits, branch pushes and assignment changes require explicit user/host authority and freshness checks.
 - Prefer no subagent over invented delegation. Fresh independent context is required where the host supports actual delegation.
 - In RhapsodIA agent sessions, preserve required runtime/graph setup and source-bound evidence; no skill text overrides the host session guard.
+
+## Host portability
+
+A RhapsodIA session uses its existing runtime/graph prerequisites; other Agent Skills hosts need no RhapsodIA bootstrap. If persistent storage or tracker writes are unavailable, return the complete Markdown map for the user to save and explicitly mark persistence, claims and issue creation as **not performed**. Do not silently infer a durable state transition.

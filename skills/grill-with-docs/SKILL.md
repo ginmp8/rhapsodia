@@ -12,7 +12,7 @@ Compose **grilling** (decision interview) with **domain-modeling** (terms, conte
 ## Workflow
 
 1. Resolve the user-approved topic, repository, available evidence, target document locations, authorized write scope and any Mago-owned canonical artifacts.
-2. Invoke **grilling** to develop the decision frontier and elicit actual choices. Use **domain-modeling** in parallel only for *read-only* discovery; write a term or decision only after the relevant user choice is settled.
+2. Prefer invoking **grilling** for the decision frontier and **domain-modeling** for terminology and context checks when the host supports named-skill composition. Otherwise, read available instructions or apply the same semantics inline: ask up to five answerable frontier questions per round, each with a recommendation and reason; challenge disputed terms using concrete scenarios; wait for actual user decisions before drafting documentation.
 3. As decisions are confirmed, draft concise glossary entries, scenario examples, and candidate ADRs. Only write to authorized user-owned documents; Mago-owned specs/ADRs require Mago's artifact pathway and validation.
 4. If the user wants the accepted outcomes published, hand grounded, provenance-linked decisions to **Mago** for canonical technical documentation and to **Nomia** only when delivery/governance fields change. Never bypass owner contracts.
 5. End with a short decision record: accepted, rejected, deferred, source evidence, unresolved dependencies and the exact document paths edited or proposed.
@@ -23,4 +23,5 @@ Compose **grilling** (decision interview) with **domain-modeling** (terms, conte
 - Do not create ADRs for trivial decisions; prefer an ADR when costly to reverse, surprising, and involving real alternatives.
 - Do not write into another skill's owned artifact storage, a remote tracker or repository without authorization.
 - Preserve existing glossary terminology and preexisting decisions; surface conflicts before editing.
-- If either composable skill is unavailable, report the missing capability instead of silently replacing it.
+- Missing named-skill invocation is **not** a blocker: the explicit inline interview + domain-scenario fallback remains usable. Disclose whether composition was invoked, instructions reused, or semantics applied inline.
+- Without authorized document writes, deliver proposed glossary/ADR text and do not claim persistence. Without source access, mark assumptions and avoid claiming verification.

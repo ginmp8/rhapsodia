@@ -25,3 +25,7 @@ Return: term/meaning/avoided synonyms, bounded context, tested scenarios, contra
 ## File conventions
 
 Default to root `GLOSSARY.md` for a single context. For multiple established contexts, `GLOSSARY-MAP.md` may point to context-local glossaries. Preserve existing naming and use migration proposals rather than renaming legacy files automatically.
+
+## Host portability
+
+If the filesystem or repository cannot be read, work from supplied excerpts and mark missing evidence. Without authorized writes, provide proposed glossary entries and ADRs without claiming files were updated. Mago handoff is required only when governed RhapsodIA ownership is active; independent hosts follow their own authorized artifact policy.
