@@ -15,6 +15,41 @@ KINDS = {"deterministic", "scenario", "review", "runtime"}
 STATUSES = {"pass", "fail", "not-run", "planned", "pass-with-limitations"}
 
 
+def recorded_license(root: Path, relative: str) -> bytes | None:
+    """Resolve an exact recorded license after source-tree centralization.
+
+    Standalone archives still contain the original local LICENSE. This
+    fallback is for the canonical repository source only, and preserves
+    the immutable original Git blob identity in the legal catalog.
+    """
+    if relative != "LICENSE" or root.name != "premortem-analysis":
+        return None
+    repository = root.resolve().parents[1]
+    registry = repository / "licenses" / "skill-assets.json"
+    if not registry.is_file() or registry.is_symlink():
+        return None
+    try:
+        data = json.loads(registry.read_text(encoding="utf-8"))
+        entries = [row for row in data.get("skills", []) if row.get("name") == root.name]
+        if len(entries) != 1:
+            return None
+        notice = next((row for row in entries[0]["notices"] if row["path"] == relative), None)
+        if notice is None or notice["canonical"] != "licenses/third-party/premortem-analysis-MIT.txt":
+            return None
+        canonical = repository / notice["canonical"]
+        if (not canonical.is_file() or canonical.is_symlink() or
+                not canonical.resolve().is_relative_to(repository)):
+            return None
+        content = canonical.read_bytes()
+        import hashlib
+        identity = hashlib.sha1(b"blob " + str(len(content)).encode("ascii") + b"\0" + content).hexdigest()
+        if identity != notice["blob_sha"] or len(content) != notice["size"]:
+            return None
+        return content
+    except (OSError, ValueError, KeyError, TypeError, StopIteration):
+        return None
+
+
 def validate_traceability(doc: dict[str, Any], root: Path | None = None) -> list[str]:
     errors: list[str] = []
     blocks = ("sources", "findings", "requirements", "changes", "evaluations")
@@ -86,7 +121,9 @@ def validate_traceability(doc: dict[str, Any], root: Path | None = None) -> list
             errors.append(f"{c_id}: no files or justification")
         if root is not None:
             for file in change.get("files", []):
-                if not isinstance(file, str) or not (root / file).is_file() or not (root / file).resolve().is_relative_to(root.resolve()):
+                local = isinstance(file, str) and (root / file).is_file() and (root / file).resolve().is_relative_to(root.resolve())
+                migrated = isinstance(file, str) and recorded_license(root, file) is not None
+                if not (local or migrated):
                     errors.append(f"{c_id}: missing or escaping implementation file {file!r}")
         for r in change.get("requirement_ids", []):
             if r not in sections["requirements"] or c_id not in sections["requirements"][r].get("change_ids", []):
