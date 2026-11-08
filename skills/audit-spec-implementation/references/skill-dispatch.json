@@ -1,0 +1,12 @@
+{
+  "schema_version": "audit-dispatch/v1",
+  "stages": [
+    {"id":"criteria","adapter":"spec-criteria-extractor","required":true,"external":["sdd-reviewer"]},
+    {"id":"implementation","adapter":"implementation-reachability-auditor","required":true,"external":["code-review","reverse-engineering"]},
+    {"id":"causal","adapter":"causal-behavior-auditor","required":false,"external":["causal-flow-comprehension"]},
+    {"id":"verification","adapter":"verification-oracle-auditor","required":true,"external":["test-oracle-engineering"]},
+    {"id":"parity","adapter":"regression-parity-auditor","required":false,"external":["reverse-engineering"]}
+  ],
+  "causal_risk_factors": ["authorization","security","privacy","state-machine","concurrency","idempotency","retry","multi-writer","data-loss","migration","distributed","eventual-consistency","critical-regression"],
+  "cross_check": {"skill":"sdd-reviewer","mode":"convergence-review","optional":true}
+}
