@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "0f7eb4b44548cfae641f1d5be00be8905021d94e561ecb4e61a5fbc575270b29",
+  "sha256": "94f91988423455045b867ee776a569e1874574a811bc30b5703646e1fa59fe6b",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "6d694bd0669ceefc1adafaa4c232463369582244881d5230a80ee192a58e8995"
+      "sha256": "d43e2e4daee0eb41312ab709b2af37e273e530b68e9f7f69fbdcdaba95ca144b"
     },
     {
       "path": "LICENSE",
@@ -138,11 +138,11 @@
     },
     {
       "path": "docs/marketplace.md",
-      "sha256": "d24e7bbbca9e8e9401fa111970ed6aa394851a546d7622cbece525e95a8b4a47"
+      "sha256": "4b4057501d8583e36b8a203fdb9eff40f14a753d3d7778f875b87ab36882894b"
     },
     {
       "path": "docs/public-source-attribution-audit.md",
-      "sha256": "69065ecd5402df27ba1bfd1227f47282fc486e9b1bc45aacc8373381592d3522"
+      "sha256": "f6e36371f0a308840d10e40000685efd793b7bdaa9b0a769e9f7fa6d5ee1f0cc"
     },
     {
       "path": "docs/runtime/MIGRATION-0.7.0.md",
@@ -178,11 +178,71 @@
     },
     {
       "path": "licenses/README.md",
-      "sha256": "26aabb09b0a0781105766c9fe3f864f0e29d5bec24b9ae1cc35e2bcd1bd6f523"
+      "sha256": "73a4081319b8f669db6febd97881f795f16bd0be9ec3fb51241e55321cbe1f82"
+    },
+    {
+      "path": "licenses/cleanup-plan-0.17.0.json",
+      "sha256": "79f807867a782b2f7974e2eb108fe4e9b666ae32666a3c1073335d0ff65fa493"
+    },
+    {
+      "path": "licenses/notices/archify-review.txt",
+      "sha256": "24581077aad013931ae8b10941478f5ad568ff6aec30d687ee3ff9e2503ff2d4"
+    },
+    {
+      "path": "licenses/notices/archify-third-party.md",
+      "sha256": "b5e129197f391568f7abf287c74b24f4835f10e5388f600407c8788feaeb9015"
+    },
+    {
+      "path": "licenses/notices/archify-tuning.txt",
+      "sha256": "974be21f2b12978cfefc1dfc640a27b4d2d240078d3d10b30263dd154aadd730"
+    },
+    {
+      "path": "licenses/notices/archify.txt",
+      "sha256": "665eb53e6fcf09cee183c9f23c8052645dc95570d9ccbbf53dc0f5213a1b5edd"
+    },
+    {
+      "path": "licenses/notices/local-graph-third-party.md",
+      "sha256": "7982a4ae8318e515ce7c9497db5542584791e146aa0fdb0f0c210cd74afe1a04"
+    },
+    {
+      "path": "licenses/notices/visual-code-intelligence.txt",
+      "sha256": "1954e42abd9528d68d3064c76e5fc7985871ae1a344e3b315a7bb3a6b5f394d7"
+    },
+    {
+      "path": "licenses/skill-assets.json",
+      "sha256": "2afde476201e313e576c5407b411a6cdf003ede5a30da5b3bc119e64f5f799ea"
+    },
+    {
+      "path": "licenses/third-party/JetBrainsMono-OFL.txt",
+      "sha256": "c1ab7c666206842a02b35b30770dac0d7a10156ed401c9defc3f02a754d89e90"
+    },
+    {
+      "path": "licenses/third-party/archify-apache-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "licenses/third-party/archify-historical-MIT.txt",
+      "sha256": "b799ab081703e7821ae5096d2c1abdf14bbdc75e8ea1c4045998c36ed6db9706"
+    },
+    {
+      "path": "licenses/third-party/deep-research-suite-MIT.txt",
+      "sha256": "1883a89d5fe9b87f5137eb7f2755df95a95c6c75aaf8eb1d9eec2cb794471c72"
+    },
+    {
+      "path": "licenses/third-party/local-graph-MIT.txt",
+      "sha256": "7c6b25fe1bc47c3dd42ff22bdbddc818143edbfe2f9c82aab65c1b85d1ed27e5"
     },
     {
       "path": "licenses/third-party/mattpocock-skills-MIT.txt",
       "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+    },
+    {
+      "path": "licenses/third-party/pele-MIT.txt",
+      "sha256": "311bccc30de6f7b9cbfb64232bb0c911ccb2191abe316550813ae25b2c7925b9"
+    },
+    {
+      "path": "licenses/third-party/premortem-analysis-MIT.txt",
+      "sha256": "3850e952a9ea33e70b121922e9a2186cb28cc47023e45b3c5833b541e9c161c2"
     },
     {
       "path": "marketplace/catalog.json",
@@ -202,7 +262,7 @@
     },
     {
       "path": "scripts/build_portable_agent_plugin.py",
-      "sha256": "38e2db54dcee5b6212e46e19ff47096694f3dfcc044bf11056d4be34a86f5ab4"
+      "sha256": "50da302fb07b24d08c78537dba38801cad6f5dc15c1668f6802246e889bacd6a"
     },
     {
       "path": "scripts/build_release_archive.py",
@@ -230,11 +290,15 @@
     },
     {
       "path": "scripts/package_attributed_skill.py",
-      "sha256": "16cab962856f72368c8de7a78808fea323ad8fa815a0887441fb40bdf5418aa4"
+      "sha256": "cba4b3fa065cda6ecdd5bfcd09eb81c75e0dc6041a28c4ba480ca8e71c0237cd"
     },
     {
       "path": "scripts/package_policy.py",
       "sha256": "648a2292713a4d62ec0a77c19f7313b69348e970e145c2e6421768e526a2f3f1"
+    },
+    {
+      "path": "scripts/package_skill.py",
+      "sha256": "db6a640ec5b54c9dfd3c9b425bd6222e3dec65ff186a588bf886d7c191f6d29e"
     },
     {
       "path": "scripts/prepare_release.py",
@@ -247,6 +311,10 @@
     {
       "path": "scripts/session.py",
       "sha256": "65a28df838e8e23099948a4202a66ea773a9df5461206f728fa3164f1fabbd79"
+    },
+    {
+      "path": "scripts/skill_licenses.py",
+      "sha256": "801adcca6c54ebfd660661a270b291540bf3518ac761f17e8f9d2efa605a2f12"
     },
     {
       "path": "scripts/upload_zip_files.py",
@@ -437,24 +505,12 @@
       "sha256": "c7cc0596817eeb5fddc82c5ea67de4a0ebd2bb4826e8223c7992a5518c6fec96"
     },
     {
-      "path": "skills/archify-review/LICENSE",
-      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
-    },
-    {
-      "path": "skills/archify-review/LICENSE-MIT",
-      "sha256": "b799ab081703e7821ae5096d2c1abdf14bbdc75e8ea1c4045998c36ed6db9706"
-    },
-    {
-      "path": "skills/archify-review/NOTICE",
-      "sha256": "24581077aad013931ae8b10941478f5ad568ff6aec30d687ee3ff9e2503ff2d4"
-    },
-    {
       "path": "skills/archify-review/SKILL.md",
       "sha256": "04ed4b8c655f8c89f6850f8b6584879ea41896d3879fe004d6333ca0d57b1028"
     },
     {
       "path": "skills/archify-review/SOURCE.md",
-      "sha256": "162b6cd8f305553e83372676f2bb08f7718512900efcaa77e374ed59b4ed2ab7"
+      "sha256": "b0444f82fb6b04e7f56ed8fd9689275a667a87c3ab49c7e982cd878c8a46a070"
     },
     {
       "path": "skills/archify-review/VERSION",
@@ -481,24 +537,12 @@
       "sha256": "666c6ce69aa37e3827cbaeeed4d1abb702a3c4c9fab59ac0807536a35eee4d83"
     },
     {
-      "path": "skills/archify-tuning/LICENSE",
-      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
-    },
-    {
-      "path": "skills/archify-tuning/LICENSE-MIT",
-      "sha256": "b799ab081703e7821ae5096d2c1abdf14bbdc75e8ea1c4045998c36ed6db9706"
-    },
-    {
-      "path": "skills/archify-tuning/NOTICE",
-      "sha256": "974be21f2b12978cfefc1dfc640a27b4d2d240078d3d10b30263dd154aadd730"
-    },
-    {
       "path": "skills/archify-tuning/SKILL.md",
       "sha256": "154fd12fb575d9d4006c7a2a6b49fb33e41498b3ab55981aa5512f385e69e7e6"
     },
     {
       "path": "skills/archify-tuning/SOURCE.md",
-      "sha256": "8adc1d959b81c04e41ec0a3340e07dd23649681e129550192f8299249a85c190"
+      "sha256": "6ba954a633de59fdd1c65ea67cf1fa623aafd0234bb6437e586ad9b52a551f97"
     },
     {
       "path": "skills/archify-tuning/VERSION",
@@ -521,36 +565,16 @@
       "sha256": "7fb6a25c114c4fe3f3c804a961634093c360c7294cbed1e13a4d99508089fdc5"
     },
     {
-      "path": "skills/archify/LICENSE",
-      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
-    },
-    {
-      "path": "skills/archify/LICENSE-MIT",
-      "sha256": "b799ab081703e7821ae5096d2c1abdf14bbdc75e8ea1c4045998c36ed6db9706"
-    },
-    {
-      "path": "skills/archify/NOTICE",
-      "sha256": "665eb53e6fcf09cee183c9f23c8052645dc95570d9ccbbf53dc0f5213a1b5edd"
-    },
-    {
       "path": "skills/archify/SKILL.md",
       "sha256": "6140f46c1e29258fe053b19044a6768f82495393fa1d98771d903edaec659038"
     },
     {
       "path": "skills/archify/SOURCE.md",
-      "sha256": "16cbb96913765212a31170727d4620687933ea8bfb6a7ac547a6c5e771a4434f"
-    },
-    {
-      "path": "skills/archify/THIRD_PARTY_NOTICES.md",
-      "sha256": "b5e129197f391568f7abf287c74b24f4835f10e5388f600407c8788feaeb9015"
+      "sha256": "afb05f19eb897b8ea92e9e238fe1302ec2915f325b796fe276bd0cd825700ef6"
     },
     {
       "path": "skills/archify/VERSION",
       "sha256": "33bdaf9e2d6bcbde2e4e613e865e403f8fe21fc621078d34c30b0bdc7f68d903"
-    },
-    {
-      "path": "skills/archify/assets/JetBrainsMono-OFL.txt",
-      "sha256": "c1ab7c666206842a02b35b30770dac0d7a10156ed401c9defc3f02a754d89e90"
     },
     {
       "path": "skills/archify/assets/template.html",
@@ -855,10 +879,6 @@
     {
       "path": "skills/archify/explainer/validate.mjs",
       "sha256": "4e14063082b4bced482e0d2f771de5b29ef805677fcc354dfd283b9e16bd1b0a"
-    },
-    {
-      "path": "skills/archify/explainer/vendor/pele/LICENSE",
-      "sha256": "311bccc30de6f7b9cbfb64232bb0c911ccb2191abe316550813ae25b2c7925b9"
     },
     {
       "path": "skills/archify/explainer/vendor/pele/README.md",
@@ -1198,7 +1218,7 @@
     },
     {
       "path": "skills/archify/renderers/shared/software-notices.mjs",
-      "sha256": "8bfc9ee3dc35eb0aa9860f71e7038f15647ed24d6ce7386e0e24870766e10bfe"
+      "sha256": "8754b6ce4d84bb808ed9227ee682356beef8cb89fa251e2aec4c9b662b0e20a7"
     },
     {
       "path": "skills/archify/renderers/shared/spatial-grid.mjs",
@@ -2049,10 +2069,6 @@
       "sha256": "70bc4e50bb2fd34de7c7cf708f40cfc63eb7ff23d5df828d8171815c0088a73d"
     },
     {
-      "path": "skills/deep-research-suite/LICENSE",
-      "sha256": "1883a89d5fe9b87f5137eb7f2755df95a95c6c75aaf8eb1d9eec2cb794471c72"
-    },
-    {
       "path": "skills/deep-research-suite/SKILL.md",
       "sha256": "4ef7e0bf964a96cb7b793ff1291c1b8c0daa9d0067dedbc50cf32401dc860d5d"
     },
@@ -2773,12 +2789,8 @@
       "sha256": "e949a0c8f7749e630586c3ae929d8cabf9ef41b8ccf75fc5306532c594b4af73"
     },
     {
-      "path": "skills/local-graph-engine/LICENSE",
-      "sha256": "7c6b25fe1bc47c3dd42ff22bdbddc818143edbfe2f9c82aab65c1b85d1ed27e5"
-    },
-    {
       "path": "skills/local-graph-engine/README.md",
-      "sha256": "1b5064c5ddfd7c96361c9d843bafacc297c9fcadeb4be6c475a469dbdd0b0fa5"
+      "sha256": "d7dd6021d42e83a735ae7ee91a64f6586f4fababa9c2205b8544ee80e3dbb2b6"
     },
     {
       "path": "skills/local-graph-engine/RELEASE_NOTES.md",
@@ -2786,11 +2798,7 @@
     },
     {
       "path": "skills/local-graph-engine/SKILL.md",
-      "sha256": "bcb6a80aa3803d7082fe93c6b9f73758e20042cab469cc828481bda628031540"
-    },
-    {
-      "path": "skills/local-graph-engine/THIRD_PARTY_NOTICES.md",
-      "sha256": "7982a4ae8318e515ce7c9497db5542584791e146aa0fdb0f0c210cd74afe1a04"
+      "sha256": "99e37d78efe2eaaabae9a3791b4053f839332889484e07eb237203825fa88faa"
     },
     {
       "path": "skills/local-graph-engine/VERSION",
@@ -3113,12 +3121,8 @@
       "sha256": "bf6e2a56c5651a6f44d71745dd1fe814aa01412737f17d8ede6b94fb7e900b8f"
     },
     {
-      "path": "skills/local-graph-explorer/LICENSE",
-      "sha256": "7c6b25fe1bc47c3dd42ff22bdbddc818143edbfe2f9c82aab65c1b85d1ed27e5"
-    },
-    {
       "path": "skills/local-graph-explorer/README.md",
-      "sha256": "e8088726beb56c5bd3b438ea5fb9c9d63b7a6e38ef2d2ddf6f9459086709f52e"
+      "sha256": "c5f24f30b3d1ab0eeae4b02eaf0f5b36d07c853e38f76ed84168db2852580ba0"
     },
     {
       "path": "skills/local-graph-explorer/RELEASE_NOTES.md",
@@ -3126,11 +3130,7 @@
     },
     {
       "path": "skills/local-graph-explorer/SKILL.md",
-      "sha256": "cc8cf250608969a9c1f40a6b1dbd6aa9dff8f76dedbf8bf261aa6edb88d5bfba"
-    },
-    {
-      "path": "skills/local-graph-explorer/THIRD_PARTY_NOTICES.md",
-      "sha256": "7982a4ae8318e515ce7c9497db5542584791e146aa0fdb0f0c210cd74afe1a04"
+      "sha256": "13abc6d29677784fb80018fe87d9185b0a7692fefb501e9478629dc22bebabe7"
     },
     {
       "path": "skills/local-graph-explorer/VERSION",
@@ -6221,10 +6221,6 @@
       "sha256": "009fbd86e42f0aa10fa272698c6d669200380ad10ec5c9060d1be4cd737720c9"
     },
     {
-      "path": "skills/operational-context/LICENSE",
-      "sha256": "3209218a8853c72ae5124b6911449a3486bcd61e361ca38a7ec7036c68ada1f0"
-    },
-    {
       "path": "skills/operational-context/SKILL.md",
       "sha256": "5bc43d42beb7107c37ed16c920cbc33554c20fb81f5c0635e3dfaed2c54ebbcc"
     },
@@ -6559,10 +6555,6 @@
     {
       "path": "skills/premortem-analysis/CHANGELOG.md",
       "sha256": "fdc9a59832603d0b848e3af13b9434682be368afc9214bf075bb17ae3b5127e2"
-    },
-    {
-      "path": "skills/premortem-analysis/LICENSE",
-      "sha256": "3850e952a9ea33e70b121922e9a2186cb28cc47023e45b3c5833b541e9c161c2"
     },
     {
       "path": "skills/premortem-analysis/README.md",
@@ -7547,10 +7539,6 @@
     {
       "path": "skills/runtime-harness/CHANGELOG.md",
       "sha256": "13388047bd4dca73eb52b2c339130ed2aaf3811265002f01a42d33c73de3b7fa"
-    },
-    {
-      "path": "skills/runtime-harness/LICENSE",
-      "sha256": "3209218a8853c72ae5124b6911449a3486bcd61e361ca38a7ec7036c68ada1f0"
     },
     {
       "path": "skills/runtime-harness/README.md",
@@ -9043,10 +9031,6 @@
     {
       "path": "skills/skill-creator-juiced/tests/test_top100_context_contract.py",
       "sha256": "725966c0e8ad981478420db7a2754fd0c3b59d0846a6c53cba4ffa06f19889d8"
-    },
-    {
-      "path": "skills/skill-creator/LICENSE.txt",
-      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
     },
     {
       "path": "skills/skill-creator/SKILL.md",
@@ -11029,10 +11013,6 @@
       "sha256": "1a7d64609934103f2876762bcffb8fde4c2491e9bac7eb7cf928b9b64d5252ed"
     },
     {
-      "path": "skills/visual-code-intelligence/NOTICE.txt",
-      "sha256": "1954e42abd9528d68d3064c76e5fc7985871ae1a344e3b315a7bb3a6b5f394d7"
-    },
-    {
       "path": "skills/visual-code-intelligence/SKILL.md",
       "sha256": "4d9c0acc577813d0e5c983009f51eb310a9fe9480e9185a0358cd81952275b60"
     },
@@ -11146,7 +11126,7 @@
     },
     {
       "path": "tests/test_archify_distribution.py",
-      "sha256": "c422d84205c7a606dc8fe4da0e93e6c3cb82869302e7595e267232b0bc4581cc"
+      "sha256": "b71b55fddf9df3b3af092688e3a85dc9122f5c3eb74e1f97ae337e0245ad89ba"
     },
     {
       "path": "tests/test_artifact_native_e2e.py",
@@ -11166,7 +11146,7 @@
     },
     {
       "path": "tests/test_marketplace_manifests.py",
-      "sha256": "8f8919009128d71ba3b844a12f50a911fbdfba581069f59e83a990153c6d00c9"
+      "sha256": "c2c46a3755e71f85636d0bc44334d44c872118976adaee9c92e6a6f5d92a8009"
     },
     {
       "path": "tests/test_mattpocock_adaptations.py",
@@ -11186,7 +11166,7 @@
     },
     {
       "path": "tests/test_release_legal_notices.py",
-      "sha256": "2eea2812067073cfa0a8c2c4fb06c02fe442cc87e898866444b8ebd1ac0dbd8d"
+      "sha256": "12b609ff8cb1770e72a9c82e352c6d6537fe49e0a2217b20df0c14639cfa3af4"
     },
     {
       "path": "tests/test_release_versions.py",
