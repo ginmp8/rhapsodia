@@ -1,8 +1,12 @@
 interface:
   display_name: "Retro"
-  short_description: "Improve future agent runs from evidence-backed engineering retrospectives."
+  short_description: "Extract validated improvements from engineering sessions"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#17344F"
+  default_prompt: "Use $retro to review this engineering session for repeatable improvements."
 policy:
   products:
-    - CHAT
-    - CODEX
+    - "CHAT"
+    - "CODEX"
   allow_implicit_invocation: false

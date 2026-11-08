@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Wayfinder">
+  <rect x="1" y="1" width="62" height="62" rx="15" fill="#17344F"/>
+  <path d="M16 45V30c0-9 8-13 16-13s16 5 16 14v8" fill="none" stroke="#D2F2F0" stroke-width="3.5" stroke-linecap="round"/><circle cx="16" cy="48" r="5" fill="#67D9CA"/><circle cx="32" cy="17" r="5" fill="#67D9CA"/><circle cx="48" cy="44" r="5" fill="none" stroke="#67D9CA" stroke-width="3"/><path d="m43 39 5 5 5-5" fill="none" stroke="#67D9CA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

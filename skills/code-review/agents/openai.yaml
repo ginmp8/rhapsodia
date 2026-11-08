@@ -1,8 +1,12 @@
 interface:
   display_name: "Code Review"
-  short_description: "Review code standards and spec conformance as separate evidence axes."
+  short_description: "Review standards and spec compliance as separate axes"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#17344F"
+  default_prompt: "Use $code-review to review this PR against standards and the original spec."
 policy:
   products:
-    - CHAT
-    - CODEX
+    - "CHAT"
+    - "CODEX"
   allow_implicit_invocation: true
