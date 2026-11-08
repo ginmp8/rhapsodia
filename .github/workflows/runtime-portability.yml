@@ -57,13 +57,17 @@ jobs:
         run: python -I -S -B -m unittest discover -s tests -p test_skill_descriptions.py -v
       - name: Check Archify integration and attribution
         run: python -I -S -B -m unittest discover -s tests -p test_archify_distribution.py -v
+      - name: Spec-conformance portable package and coordinator checks
+        run: |
+          python -I -S -B -m unittest discover -s tests -p test_spec_conformance_distribution.py -v
+          python -I -S -B -m unittest discover -s skills/audit-spec-implementation/tests -p 'test_*.py' -v
       - name: Manifest and version checks
         run: python -B scripts/prepare_release.py --check
-      - name: Verify 0.15.0 source inventory
-        run: python -B scripts/validate_release_source_manifest.py --version 0.15.0 --check
+      - name: Verify 0.16.0 source inventory
+        run: python -B scripts/validate_release_source_manifest.py --version 0.16.0 --check
       - name: Build once on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.15.0 --output dist/a/rhapsodia-0.15.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.16.0 --output dist/a/rhapsodia-0.16.0.zip
       - name: Build again on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.15.0 --output dist/b/rhapsodia-0.15.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.16.0 --output dist/b/rhapsodia-0.16.0.zip
       - name: Compare exact archive bytes and inspect integrity
-        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.15.0.zip'); b=Path('dist/b/rhapsodia-0.15.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"
+        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.16.0.zip'); b=Path('dist/b/rhapsodia-0.16.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"
