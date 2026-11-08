@@ -1,5 +1,7 @@
-# Provenance
+# Package record
 
-New RhapsodIA capability adapted from a verified integration workflow on 2026-11-08, involving `ginmp8/pandacode-extended` PRs #119 and #120. The source was a source-tree reconciliation, not a Git rebase. Generic Git mechanics are implemented independently for reuse across repositories and do not embed or copy application code from PandaCode.
+Portable Git reconciliation workflow for integrating divergent source and destination trees without merge commits. Its implementation uses Git's three-way tree engine, reviewed conflict resolutions and a single-parent commit. Tests use synthetic temporary Git repositories and require no repository-specific application code.
 
-The first tracked release is `0.1.0`. The package requires local Git 2.38+ and Python 3.10+ for its deterministic helper. Execution tests use generated temporary repositories with no real credentials or network access.
+**RhapsodIA distribution:** 0.16.0. **Skill version:** `0.1.0`.
+
+The package records its own interfaces and validation resources; no external upstream Git revision is asserted.

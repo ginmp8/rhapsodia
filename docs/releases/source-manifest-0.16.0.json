@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "e13602578b47fb2a8e343c1b703d49fe5d232c23f13c5d09de2dd416062a00ca",
+  "sha256": "d23194a4cf092394935aed067353ea3c2bc381c30e1dfac85f957aa1fe587889",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "7ca30469d435e7c7663d7c5b59cb7dda7f70863ac34bea7d084d52294c8a19f3"
+      "sha256": "fb1fdcfe33b3540c039873c21226a2385d9536801f52ff50778920a526487053"
     },
     {
       "path": "LICENSE",
@@ -1330,11 +1330,11 @@
     },
     {
       "path": "skills/audit-spec-implementation/SKILL.md",
-      "sha256": "a1c29eef42e10729aa1996a1b1d24e5c8e7128660bbc1493ca238e6aef047971"
+      "sha256": "adf86be5aa51f302607a989820691c0fa4823420519c222c65897f6a529dc009"
     },
     {
       "path": "skills/audit-spec-implementation/SOURCE.md",
-      "sha256": "f95d23d672de8f0edc7e6c80b8e25877d518c302e699a0f0ac52c2a5015f7a6a"
+      "sha256": "8943909ac03e5ff8d889e5778f1b973e58fc009155b2ed40d89493bba5351b5e"
     },
     {
       "path": "skills/audit-spec-implementation/VERSION",
@@ -1354,7 +1354,7 @@
     },
     {
       "path": "skills/audit-spec-implementation/references/external-skill-integration.md",
-      "sha256": "c1b254e855bf580af5963ae7421d680dbc40a78027a914ca8dd5cc31bb4e9fda"
+      "sha256": "c69def9582dcf2c1ccb4e798a7463c2b465e9b63415ac4fec38f96dade9f4387"
     },
     {
       "path": "skills/audit-spec-implementation/references/report-contract.md",
@@ -1394,7 +1394,7 @@
     },
     {
       "path": "skills/branch-reconciliation/SOURCE.md",
-      "sha256": "4c4342a286c6dac7734f453bea857fc79e11ff581838c471b8000326283133be"
+      "sha256": "46587d687c86b00833ef452341ef01e9e9770214cbf1083f620bb7eb2f6e0fe1"
     },
     {
       "path": "skills/branch-reconciliation/VERSION",
@@ -1614,7 +1614,7 @@
     },
     {
       "path": "skills/causal-behavior-auditor/SOURCE.md",
-      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+      "sha256": "7e3d603e215a77d88b0018604a784c1e2eca0f11a262dc296fdb4295073976f2"
     },
     {
       "path": "skills/causal-behavior-auditor/VERSION",
@@ -2318,7 +2318,7 @@
     },
     {
       "path": "skills/implementation-reachability-auditor/SOURCE.md",
-      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+      "sha256": "52142a7c5c9c4259eae13389f5c0ce6c7d0e89f93e09dc22dca64a0caf7f7998"
     },
     {
       "path": "skills/implementation-reachability-auditor/VERSION",
@@ -6610,7 +6610,7 @@
     },
     {
       "path": "skills/regression-parity-auditor/SOURCE.md",
-      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+      "sha256": "a207ac4b30479a6ac8504d85ea3dd3202c308bd69ccc3b515b7543acc264754d"
     },
     {
       "path": "skills/regression-parity-auditor/VERSION",
@@ -10390,7 +10390,7 @@
     },
     {
       "path": "skills/spec-criteria-extractor/SOURCE.md",
-      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+      "sha256": "b1d18d5136c751aaa1e08ab6db06e6636a051cf536be09021a8cd655e3849382"
     },
     {
       "path": "skills/spec-criteria-extractor/VERSION",
@@ -10814,7 +10814,7 @@
     },
     {
       "path": "skills/verification-oracle-auditor/SOURCE.md",
-      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+      "sha256": "9b063f004ffc41debae3620ccb15c9e165940bfb84c86af9d3700393cfffa06f"
     },
     {
       "path": "skills/verification-oracle-auditor/VERSION",
@@ -10970,7 +10970,7 @@
     },
     {
       "path": "tests/test_spec_conformance_distribution.py",
-      "sha256": "7e76ce5a942739e22c204dbc7c51b85e2bc2dff20142647813b052e17da4de6f"
+      "sha256": "6a10a38c167ca3189787643914cdae614fdb90a11ba3bd6d68248e496adc4ad9"
     },
     {
       "path": "tests/test_validate_agents.py",

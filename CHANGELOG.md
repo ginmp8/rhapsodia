@@ -5,7 +5,7 @@
 ### Added
 - Spec-to-Implementation Audit coordinator v0.3.0 with frozen normative-source and candidate identities, five-stage dispatch, requirement-to-proof traceability and scoped verdicts.
 - Five v0.2.0 local audit adapters for source criteria, code reachability, causal counterpaths, falsifiable verification oracles and original/candidate regression parity.
-- Standard-library routing and report/stage-receipt validators, original activation fixtures and regression tests, and provenance notes for each new Skill.
+- Standard-library routing and report/stage-receipt validators, original activation fixtures and regression tests, and package identity notes for each new Skill.
 - Branch Reconciliation v0.1.0: generic Git three-way tree synchronization, source/destination change preservation, reviewed conflict resolutions, single-parent commits, compare-and-swap local ref updates and real-Git regression tests.
 
 ### Changed
