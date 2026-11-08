@@ -15,13 +15,20 @@ class ArchifyDistributionTests(unittest.TestCase):
         for name, version in SKILLS.items():
             with self.subTest(name=name):
                 base = ROOT / "skills" / name
-                for path in ("SKILL.md", "LICENSE", "LICENSE-MIT", "NOTICE", "VERSION", "CHANGELOG.md", "SOURCE.md"):
+                for path in ("SKILL.md", "VERSION", "CHANGELOG.md", "SOURCE.md"):
                     self.assertTrue((base / path).is_file(), f"{name}: missing {path}")
+                legal = json.loads((ROOT / "licenses/skill-assets.json").read_text(encoding="utf-8"))
+                entry = next(entry for entry in legal["skills"] if entry["name"] == name)
+                originals = {notice["path"]: notice for notice in entry["notices"]}
+                for path in ("LICENSE", "LICENSE-MIT", "NOTICE"):
+                    self.assertIn(path, originals, f"{name}: missing source license mapping: {path}")
+                    self.assertFalse((base / path).exists(), f"{name}: source license must be centralized")
+                    self.assertTrue((ROOT / originals[path]["canonical"]).is_file())
                 self.assertEqual((base / "VERSION").read_text(encoding="utf-8").strip(), version)
                 self.assertIn(f"## [{version}]", (base / "CHANGELOG.md").read_text(encoding="utf-8"))
                 self.assertIn(SOURCE_REVISION, (base / "SOURCE.md").read_text(encoding="utf-8"))
-                self.assertIn("tt-a1i", (base / "NOTICE").read_text(encoding="utf-8"))
-                self.assertIn("Apache License", (base / "LICENSE").read_text(encoding="utf-8"))
+                self.assertIn("tt-a1i", (ROOT / originals["NOTICE"]["canonical"]).read_text(encoding="utf-8"))
+                self.assertIn("Apache License", (ROOT / originals["LICENSE"]["canonical"]).read_text(encoding="utf-8"))
 
     def test_archify_runtime_covers_all_ten_native_types_and_explainer(self):
         base = ROOT / "skills" / "archify"
@@ -32,8 +39,14 @@ class ArchifyDistributionTests(unittest.TestCase):
                 self.assertTrue((base / "schemas" / f"{name}.schema.json").is_file())
                 data = json.loads((base / "schemas" / f"{name}.schema.json").read_text(encoding="utf-8"))
                 self.assertIsInstance(data, dict)
-        for path in ("THIRD_PARTY_NOTICES.md", "assets/JetBrainsMono-OFL.txt", "explainer/vendor/pele/LICENSE", "skill-release.json"):
-            self.assertTrue((base / path).is_file(), path)
+        self.assertTrue((base / "skill-release.json").is_file())
+        legal = json.loads((ROOT / "licenses/skill-assets.json").read_text(encoding="utf-8"))
+        archify = next(entry for entry in legal["skills"] if entry["name"] == "archify")
+        mapped = {notice["path"]: notice for notice in archify["notices"]}
+        for path in ("THIRD_PARTY_NOTICES.md", "assets/JetBrainsMono-OFL.txt", "explainer/vendor/pele/LICENSE"):
+            self.assertIn(path, mapped)
+            self.assertFalse((base / path).exists(), path)
+            self.assertTrue((ROOT / mapped[path]["canonical"]).is_file())
 
     def test_tuning_is_open_about_external_script_dependency(self):
         base = ROOT / "skills" / "archify-tuning"

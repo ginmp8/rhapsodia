@@ -70,6 +70,6 @@ Animation is a reading aid, not a claim that a workflow executed. Reduced motion
 Run `python -B -m unittest discover -s tests -v`. Actual browser tests additionally
 need installed Playwright and Chromium. Without them, the browser class skips;
 static tests alone do not establish browser compatibility.
-This package is MIT-licensed. See LICENSE and THIRD_PARTY_NOTICES.md.
+This package is MIT-licensed. The exact license and component notices are centralized at `licenses/third-party/local-graph-MIT.txt` and `licenses/notices/local-graph-third-party.md` in the full repository. Standalone skill archives generated with `scripts/package_skill.py` restore the original `LICENSE` and `THIRD_PARTY_NOTICES.md` files.
 Host-neutral instructions require a capable agent runtime; an arbitrary text-only
 chat cannot execute Python or preview HTML simply because this skill exists.

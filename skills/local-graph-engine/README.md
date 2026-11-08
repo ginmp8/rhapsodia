@@ -100,7 +100,7 @@ No LLM, tokenizer download, hidden cache or reference-project dependency is intr
 
 Run `python -B -m unittest discover -s tests -v` from this directory. Missing
 optional libraries cause only their tests to skip; a skip is not runtime proof.
-This package is MIT-licensed. See LICENSE and THIRD_PARTY_NOTICES.md.
+This package is MIT-licensed. The exact license and component notices are centralized at `licenses/third-party/local-graph-MIT.txt` and `licenses/notices/local-graph-third-party.md` in the full repository. Standalone skill archives generated with `scripts/package_skill.py` restore the original `LICENSE` and `THIRD_PARTY_NOTICES.md` files.
 The same package can be consumed by capable Agent Skills hosts. A text-only chat
 cannot execute local Python or persist a database without a filesystem/tool.
 

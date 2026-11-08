@@ -26,6 +26,9 @@ def build(output: Path) -> None:
     try:
         (staging / 'plugin.json').write_bytes(json_bytes(render_portable_manifest(load_catalog())))
         shutil.copytree(ROOT / 'skills', staging / 'skills', ignore=copy_ignore)
+        # Legal notices stay outside canonical skill source directories.
+        shutil.copytree(ROOT / 'licenses', staging / 'licenses', ignore=copy_ignore)
+        shutil.copy2(ROOT / 'LICENSE', staging / 'LICENSE')
         portable_mcp = ROOT / 'mcp.json'
         if portable_mcp.is_symlink():
             raise ValueError('MCP configuration may not be a symbolic link')

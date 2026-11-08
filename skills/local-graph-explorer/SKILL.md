@@ -50,7 +50,7 @@ Read [interaction design](references/interaction-design.md) for display caps and
 - [Human quick start](README.md) for installation-independent example commands.
 - [Walkthrough](references/walkthrough.md), [GraphView](references/graphview.md), [layout policy](references/layout-policy.md), [interaction design](references/interaction-design.md).
 - [Security profiles and migration](references/security-profiles.md), [G6 local integration](references/g6.md), [portability](references/portability.md), [reproducibility](references/reproducibility.md), [validation](references/validation.md).
-- [Research sources](references/sources.md), [third-party notices](THIRD_PARTY_NOTICES.md), [release changes](CHANGELOG.md), [version 3 migration notes](RELEASE_NOTES.md).
+- [Research sources](references/sources.md), third-party notices (repository legal registry: `licenses/notices/local-graph-third-party.md`), [release changes](CHANGELOG.md), [version 3 migration notes](RELEASE_NOTES.md).
 - [GraphView JSON Schema](contracts/graph-view-v1.schema.json) and `examples/fieldwork-view.json` for interoperability.
 
 ## Output contract and mechanics

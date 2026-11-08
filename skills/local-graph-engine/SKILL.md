@@ -57,7 +57,7 @@ When two or more **independent** verified-at-source feature failures suggest rec
 - [Context efficiency](references/context-efficiency.md), [context contract](contracts/graph-context-v1.schema.json), [Queries](references/queries.md), [analytics](references/analytics.md), [adapters](references/adapters.md), [interoperability/history](references/interoperability.md).
 - [Local access](references/access.md), [live HTML trust contract](references/live-viewer-contract.md), [capabilities](references/capabilities.md), [portability](references/portability.md), [migration](references/migration.md).
 - [Safety](references/safety.md), [reproducibility](references/reproducibility.md), [validation](references/validation.md), [research sources](references/sources.md).
-- [Optional Roslyn adapter](adapters/roslyn/README.md), [third-party notices](THIRD_PARTY_NOTICES.md), [release changes](CHANGELOG.md), [version 3 migration notes](RELEASE_NOTES.md).
+- [Optional Roslyn adapter](adapters/roslyn/README.md), third-party notices (repository legal registry: `licenses/notices/local-graph-third-party.md`), [release changes](CHANGELOG.md), [version 3 migration notes](RELEASE_NOTES.md).
 
 ## Output contract and mechanics
 Use `scripts/graph.py` for the complete CLI; `scripts/graph_engine.py` keeps v1 command compatibility. `scripts/graph_store.py`, `scripts/graph_data.py`, `scripts/graph_adapters.py`, `scripts/graph_query.py`, `scripts/graph_analysis.py`, `scripts/graph_interop.py` and `scripts/graph_access.py` implement the focused storage, input, query, analysis and access boundaries. `scripts/graph_context.py` owns compact context; `scripts/measure_context.py` measures same-selection bytes. `scripts/networkx_adapter.py` is an optional compatibility adapter.

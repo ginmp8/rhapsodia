@@ -1,0 +1,503 @@
+{
+  "schema": "rhapsodia-skill-legal-assets/v1",
+  "scope": "All 76 canonical skills in release 0.17.0",
+  "root_default_license": "LICENSE",
+  "skills": [
+    {
+      "name": "adaptive-workflow-orchestration",
+      "notices": []
+    },
+    {
+      "name": "agent-design",
+      "notices": []
+    },
+    {
+      "name": "archify",
+      "notices": [
+        {
+          "path": "assets/JetBrainsMono-OFL.txt",
+          "canonical": "licenses/third-party/JetBrainsMono-OFL.txt",
+          "blob_sha": "675d198b74b6f10b5ca149e6a21cf06dcc46b676",
+          "size": 4398
+        },
+        {
+          "path": "explainer/vendor/pele/LICENSE",
+          "canonical": "licenses/third-party/pele-MIT.txt",
+          "blob_sha": "fd6f9c893d2feb140f6d1e853a8bc0908b3bdf5b",
+          "size": 1934
+        },
+        {
+          "path": "LICENSE",
+          "canonical": "licenses/third-party/archify-apache-2.0.txt",
+          "blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+          "size": 11358
+        },
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/archify-historical-MIT.txt",
+          "blob_sha": "0f9f9397a0496ef63c7d555d36b40c3f932aff84",
+          "size": 1102
+        },
+        {
+          "path": "NOTICE",
+          "canonical": "licenses/notices/archify.txt",
+          "blob_sha": "b63fbccce2291058a9f4abec9d64b57b527e44d7",
+          "size": 1340
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "canonical": "licenses/notices/archify-third-party.md",
+          "blob_sha": "4060ce3d7ad11ab81a2f3915d970a8f951dcfc28",
+          "size": 5669
+        }
+      ]
+    },
+    {
+      "name": "archify-review",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "licenses/third-party/archify-apache-2.0.txt",
+          "blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+          "size": 11358
+        },
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/archify-historical-MIT.txt",
+          "blob_sha": "0f9f9397a0496ef63c7d555d36b40c3f932aff84",
+          "size": 1102
+        },
+        {
+          "path": "NOTICE",
+          "canonical": "licenses/notices/archify-review.txt",
+          "blob_sha": "f0032d207425db1b940ecdcf37fbdfe3429bed38",
+          "size": 1540
+        }
+      ]
+    },
+    {
+      "name": "archify-tuning",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "licenses/third-party/archify-apache-2.0.txt",
+          "blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+          "size": 11358
+        },
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/archify-historical-MIT.txt",
+          "blob_sha": "0f9f9397a0496ef63c7d555d36b40c3f932aff84",
+          "size": 1102
+        },
+        {
+          "path": "NOTICE",
+          "canonical": "licenses/notices/archify-tuning.txt",
+          "blob_sha": "023f82c26f599d24b8ef8f82452f4b4eb8617bca",
+          "size": 1540
+        }
+      ]
+    },
+    {
+      "name": "audit-spec-implementation",
+      "notices": []
+    },
+    {
+      "name": "branch-reconciliation",
+      "notices": []
+    },
+    {
+      "name": "bug-security-hunter",
+      "notices": []
+    },
+    {
+      "name": "capability-discovery",
+      "notices": []
+    },
+    {
+      "name": "causal-behavior-auditor",
+      "notices": []
+    },
+    {
+      "name": "causal-flow-comprehension",
+      "notices": []
+    },
+    {
+      "name": "checkpoint-convergence",
+      "notices": []
+    },
+    {
+      "name": "code-review",
+      "notices": [
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/mattpocock-skills-MIT.txt",
+          "blob_sha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+          "size": 1068
+        }
+      ]
+    },
+    {
+      "name": "context-architect",
+      "notices": []
+    },
+    {
+      "name": "decision-engine",
+      "notices": []
+    },
+    {
+      "name": "deep-research-suite",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "licenses/third-party/deep-research-suite-MIT.txt",
+          "blob_sha": "57d6df8dfc71cd3e6b35fd6c2776084843f2d73b",
+          "size": 1066
+        }
+      ]
+    },
+    {
+      "name": "discernment-nudge",
+      "notices": []
+    },
+    {
+      "name": "documentation-quality",
+      "notices": []
+    },
+    {
+      "name": "domain-modeling",
+      "notices": [
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/mattpocock-skills-MIT.txt",
+          "blob_sha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+          "size": 1068
+        }
+      ]
+    },
+    {
+      "name": "frontend-ai-token-efficient",
+      "notices": []
+    },
+    {
+      "name": "grill-me",
+      "notices": [
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/mattpocock-skills-MIT.txt",
+          "blob_sha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+          "size": 1068
+        }
+      ]
+    },
+    {
+      "name": "grill-with-docs",
+      "notices": [
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/mattpocock-skills-MIT.txt",
+          "blob_sha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+          "size": 1068
+        }
+      ]
+    },
+    {
+      "name": "grilling",
+      "notices": [
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/mattpocock-skills-MIT.txt",
+          "blob_sha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+          "size": 1068
+        }
+      ]
+    },
+    {
+      "name": "implementation-reachability-auditor",
+      "notices": []
+    },
+    {
+      "name": "json-prompt-engineering",
+      "notices": []
+    },
+    {
+      "name": "karpathy-guidelines",
+      "notices": []
+    },
+    {
+      "name": "llm-wiki-maintainer",
+      "notices": []
+    },
+    {
+      "name": "local-graph-engine",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "licenses/third-party/local-graph-MIT.txt",
+          "blob_sha": "e7521c34bb64c87209b116dd8278a9290b17e272",
+          "size": 1081
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "canonical": "licenses/notices/local-graph-third-party.md",
+          "blob_sha": "20be804aa1ea4de5c63c738403ce13a4b47d2e78",
+          "size": 1061
+        }
+      ]
+    },
+    {
+      "name": "local-graph-explorer",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "licenses/third-party/local-graph-MIT.txt",
+          "blob_sha": "e7521c34bb64c87209b116dd8278a9290b17e272",
+          "size": 1081
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "canonical": "licenses/notices/local-graph-third-party.md",
+          "blob_sha": "20be804aa1ea4de5c63c738403ce13a4b47d2e78",
+          "size": 1061
+        }
+      ]
+    },
+    {
+      "name": "magia",
+      "notices": []
+    },
+    {
+      "name": "mago",
+      "notices": []
+    },
+    {
+      "name": "migration-conflict-analyzer",
+      "notices": []
+    },
+    {
+      "name": "modern-dotnet-engineering",
+      "notices": []
+    },
+    {
+      "name": "nomia",
+      "notices": []
+    },
+    {
+      "name": "nuget-package-updater",
+      "notices": []
+    },
+    {
+      "name": "operational-context",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "LICENSE",
+          "blob_sha": "007878967ef4ef6c49c1491190806bdc8b92748d",
+          "size": 11357
+        }
+      ]
+    },
+    {
+      "name": "pdf-workbench",
+      "notices": []
+    },
+    {
+      "name": "perceptual-validation",
+      "notices": []
+    },
+    {
+      "name": "premortem-analysis",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "licenses/third-party/premortem-analysis-MIT.txt",
+          "blob_sha": "892c3d6c03dd1d5dfe6704572de5c981f038e2e8",
+          "size": 1063
+        }
+      ]
+    },
+    {
+      "name": "prompt-architect",
+      "notices": []
+    },
+    {
+      "name": "regression-parity-auditor",
+      "notices": []
+    },
+    {
+      "name": "reproducibility-engineer",
+      "notices": []
+    },
+    {
+      "name": "research-traceability",
+      "notices": []
+    },
+    {
+      "name": "retro",
+      "notices": [
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/mattpocock-skills-MIT.txt",
+          "blob_sha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+          "size": 1068
+        }
+      ]
+    },
+    {
+      "name": "reverse-engineering",
+      "notices": []
+    },
+    {
+      "name": "rhapsodia-workspace",
+      "notices": []
+    },
+    {
+      "name": "runtime-harness",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "canonical": "LICENSE",
+          "blob_sha": "007878967ef4ef6c49c1491190806bdc8b92748d",
+          "size": 11357
+        }
+      ]
+    },
+    {
+      "name": "secure-code-review",
+      "notices": []
+    },
+    {
+      "name": "security-and-governance-review",
+      "notices": []
+    },
+    {
+      "name": "sequential-work-packaging",
+      "notices": []
+    },
+    {
+      "name": "skill-benchmark",
+      "notices": []
+    },
+    {
+      "name": "skill-booster",
+      "notices": []
+    },
+    {
+      "name": "skill-change-gate",
+      "notices": []
+    },
+    {
+      "name": "skill-cleanup-and-simplification",
+      "notices": []
+    },
+    {
+      "name": "skill-consistency-repair",
+      "notices": []
+    },
+    {
+      "name": "skill-creator",
+      "notices": [
+        {
+          "path": "LICENSE.txt",
+          "canonical": "licenses/third-party/archify-apache-2.0.txt",
+          "blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+          "size": 11358
+        }
+      ]
+    },
+    {
+      "name": "skill-creator-juiced",
+      "notices": []
+    },
+    {
+      "name": "skill-evolution",
+      "notices": []
+    },
+    {
+      "name": "skill-hardening",
+      "notices": []
+    },
+    {
+      "name": "skill-harness",
+      "notices": []
+    },
+    {
+      "name": "skill-hypothesis-discovery",
+      "notices": []
+    },
+    {
+      "name": "skill-improver",
+      "notices": []
+    },
+    {
+      "name": "skill-package-architecture-review",
+      "notices": []
+    },
+    {
+      "name": "skill-prompt-and-activation-review",
+      "notices": []
+    },
+    {
+      "name": "skill-quality-reviewer",
+      "notices": []
+    },
+    {
+      "name": "skill-testing-and-validation",
+      "notices": []
+    },
+    {
+      "name": "skill-token-efficient",
+      "notices": []
+    },
+    {
+      "name": "software-improvement-loop",
+      "notices": []
+    },
+    {
+      "name": "spec-criteria-extractor",
+      "notices": []
+    },
+    {
+      "name": "streamlit",
+      "notices": []
+    },
+    {
+      "name": "systematic-debugging",
+      "notices": []
+    },
+    {
+      "name": "test-oracle-engineering",
+      "notices": []
+    },
+    {
+      "name": "thinking-token-efficient",
+      "notices": []
+    },
+    {
+      "name": "verification-oracle-auditor",
+      "notices": []
+    },
+    {
+      "name": "visual-code-intelligence",
+      "notices": [
+        {
+          "path": "NOTICE.txt",
+          "canonical": "licenses/notices/visual-code-intelligence.txt",
+          "blob_sha": "60a8ca967029d6ca7b619f8fcd3b1d99b98fcb42",
+          "size": 400
+        }
+      ]
+    },
+    {
+      "name": "wayfinder",
+      "notices": [
+        {
+          "path": "LICENSE-MIT",
+          "canonical": "licenses/third-party/mattpocock-skills-MIT.txt",
+          "blob_sha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+          "size": 1068
+        }
+      ]
+    }
+  ]
+}
