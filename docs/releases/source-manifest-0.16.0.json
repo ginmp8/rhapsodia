@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "871d38a0057f6c249ce042e38833cf67fee8fadf059f73262daad4e3aab39786",
+  "sha256": "298131434db8dc73545c09a343d12c01b37483e2f8a47063a0ab5f909f221372",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -10,23 +10,23 @@
     },
     {
       "path": ".claude-plugin/marketplace.json",
-      "sha256": "e0c3b336848d8cb09658e4b4bfa5f2a8962bf916a664dfa519970bdc3a5e4c52"
+      "sha256": "aa6103beaa44ceabd5726a6ea582975d816dd3d7cf124be71d5d078f7e476aec"
     },
     {
       "path": ".claude-plugin/plugin.json",
-      "sha256": "d6a6f08cc4d168d2f32aa5d7131ff70741484de0bf50c44d899603ebf49be767"
+      "sha256": "a97f719e64b4fd98f70ab5bc9831c51ef63ff2a62d44cb8693006ca0b8f16f31"
     },
     {
       "path": ".codex-plugin/plugin.json",
-      "sha256": "dda7eef70983e172569ce09f2a0831265ee588161ed72794655ffa41a933084b"
+      "sha256": "8190830614fe7ec8f1f0b6077bbed6841edff77f781a6ff4606f63de159de87a"
     },
     {
       "path": ".cursor-plugin/marketplace.json",
-      "sha256": "b1bd5d5ab0ec0b83491f56850fdcac96af2363930927d604d03628768a958827"
+      "sha256": "5b58eec5bc37720b586f58094a95dcbfbdc824d348797770f09accc2089d75d3"
     },
     {
       "path": ".cursor-plugin/plugin.json",
-      "sha256": "a260e613298ecb4d4409ad9e4a96a93a37c5925f14f4b0e76fcba5341c0c1aad"
+      "sha256": "97e40db0dff2161f8210fdd2fea622505bc2ca23d6cf764709b680dbe860336d"
     },
     {
       "path": ".env.example",
@@ -42,11 +42,11 @@
     },
     {
       "path": ".github/plugin/marketplace.json",
-      "sha256": "b1bd5d5ab0ec0b83491f56850fdcac96af2363930927d604d03628768a958827"
+      "sha256": "5b58eec5bc37720b586f58094a95dcbfbdc824d348797770f09accc2089d75d3"
     },
     {
       "path": ".github/plugin/plugin.json",
-      "sha256": "a260e613298ecb4d4409ad9e4a96a93a37c5925f14f4b0e76fcba5341c0c1aad"
+      "sha256": "97e40db0dff2161f8210fdd2fea622505bc2ca23d6cf764709b680dbe860336d"
     },
     {
       "path": ".github/workflows/helix-release.yml",
@@ -174,7 +174,7 @@
     },
     {
       "path": "marketplace/catalog.json",
-      "sha256": "a8b807f09203611745ec616e31ee953c70f423dd8bbfd815723db281d711edd3"
+      "sha256": "08891a9ad7958f2a7d1907759457a2c359eaa64ee02dffc7d6af4aaacb7c2717"
     },
     {
       "path": "prompts/skill-booster.prompt.md",
