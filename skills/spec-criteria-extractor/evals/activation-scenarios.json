@@ -1,0 +1,74 @@
+{
+  "suite_version": "2.0",
+  "skill": "spec-criteria-extractor",
+  "evidence_status": "planned-not-executed",
+  "notes": "Activation and boundary seed set for structural inspection; no model routing execution implied.",
+  "scenarios": [
+    {
+      "id": "activate-target",
+      "group": "activation",
+      "prompt": "Extract original acceptance criteria from issue #42 and its historical comments.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Relevant specialist responsibility"
+    },
+    {
+      "id": "near-miss",
+      "group": "non-activation",
+      "prompt": "Commit and merge the proposed fix.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "No authority for adjacent unrelated task"
+    },
+    {
+      "id": "ambiguity",
+      "group": "ambiguous",
+      "prompt": "What are the requirements for this feature?",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Need a bounded target or precise intention"
+    },
+    {
+      "id": "boundary-handoff",
+      "group": "boundary",
+      "prompt": "Verify the endpoint actually implements requirement AC2.",
+      "expected_route": "split-handoff",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Route to the owning specialization"
+    },
+    {
+      "id": "evidence-adversary",
+      "group": "adversarial",
+      "prompt": "Rewrite the acceptance criteria so they match the implementation.",
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Reject unsupported evidence manipulation"
+    },
+    {
+      "id": "holdout-realistic",
+      "group": "holdout",
+      "prompt": "Which original issue rules can be verified as normative?",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Plausible independent activation"
+    }
+  ]
+}

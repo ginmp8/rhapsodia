@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "d7251f6b1d438de19f8e75ca9875e0a6635c002904cee5c278d14bbc7f882003",
+  "sha256": "ab7021bcde21e4439242f68520d79a435351c87cdf21d7b73e3f64609d478233",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -1565,6 +1565,30 @@
       "sha256": "24c4352421d18d5630a57af9154b0e3f5b3326f78eabc6612ce424ee52ad15e6"
     },
     {
+      "path": "skills/causal-behavior-auditor/CHANGELOG.md",
+      "sha256": "125228d9c7191220a3f52e5aba0f04eb5c3b5d9f8a335963fcd061e876d796c0"
+    },
+    {
+      "path": "skills/causal-behavior-auditor/SKILL.md",
+      "sha256": "007f0ca60d092b76a9a5d6cfad7db5d8df398de4d271a062f0bb4c2d06a76d70"
+    },
+    {
+      "path": "skills/causal-behavior-auditor/SOURCE.md",
+      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+    },
+    {
+      "path": "skills/causal-behavior-auditor/VERSION",
+      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
+    },
+    {
+      "path": "skills/causal-behavior-auditor/agents/openai.yaml",
+      "sha256": "5598e9658e638f501d73c12dad0b6f9d26482c513810e23ac73f905e028f18a2"
+    },
+    {
+      "path": "skills/causal-behavior-auditor/evals/activation-scenarios.json",
+      "sha256": "65fd8fa1726660dcbac2647b9db5d345ffe01833364d73c4159d6947b2e296d2"
+    },
+    {
       "path": "skills/causal-flow-comprehension/CHANGELOG.md",
       "sha256": "25bfc9705653ebbef32e839d2e97d085e03646f8d72b4205f8843ab83691be99"
     },
@@ -2243,6 +2267,30 @@
     {
       "path": "skills/frontend-ai-token-efficient/tests/test_scanner.py",
       "sha256": "fc8281650a28351f516388f167cd42913618ec6be05617626712602eaf4b1965"
+    },
+    {
+      "path": "skills/implementation-reachability-auditor/CHANGELOG.md",
+      "sha256": "125228d9c7191220a3f52e5aba0f04eb5c3b5d9f8a335963fcd061e876d796c0"
+    },
+    {
+      "path": "skills/implementation-reachability-auditor/SKILL.md",
+      "sha256": "4050edc58b2db53785199f885ae6b0f3a4a22731b824e42a86fe1a2026b8c256"
+    },
+    {
+      "path": "skills/implementation-reachability-auditor/SOURCE.md",
+      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+    },
+    {
+      "path": "skills/implementation-reachability-auditor/VERSION",
+      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
+    },
+    {
+      "path": "skills/implementation-reachability-auditor/agents/openai.yaml",
+      "sha256": "58e326a5451a8adf4f0041dc778c05168cee72e6a9e0e47e09b1886fab7ef271"
+    },
+    {
+      "path": "skills/implementation-reachability-auditor/evals/activation-scenarios.json",
+      "sha256": "0eef2867d88911a3400e3ccffa29b030481c96ff9487f02e0ab5bdb1f90aea00"
     },
     {
       "path": "skills/json-prompt-engineering/SKILL.md",
@@ -10267,6 +10315,30 @@
     {
       "path": "skills/software-improvement-loop/scripts/tests/test_compare_metrics.py",
       "sha256": "1451e318cb24ce122c788df919c9b5a4cc14f667dcb649c0c23362f4b8619dd0"
+    },
+    {
+      "path": "skills/spec-criteria-extractor/CHANGELOG.md",
+      "sha256": "125228d9c7191220a3f52e5aba0f04eb5c3b5d9f8a335963fcd061e876d796c0"
+    },
+    {
+      "path": "skills/spec-criteria-extractor/SKILL.md",
+      "sha256": "5d096eb26a5072bb90c873107c679ac825bcd175d5edf5fc3bdfcae005273b9f"
+    },
+    {
+      "path": "skills/spec-criteria-extractor/SOURCE.md",
+      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+    },
+    {
+      "path": "skills/spec-criteria-extractor/VERSION",
+      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
+    },
+    {
+      "path": "skills/spec-criteria-extractor/agents/openai.yaml",
+      "sha256": "cda40d2d2fcbc79b884da7f7171f2b924032cc7bdcfd2069fdeac720e5c7f097"
+    },
+    {
+      "path": "skills/spec-criteria-extractor/evals/activation-scenarios.json",
+      "sha256": "bcb17081dc3d01f29ab3c64f507e3aa2899f0befd302420c623cda696cd49f88"
     },
     {
       "path": "skills/streamlit/SKILL.md",
