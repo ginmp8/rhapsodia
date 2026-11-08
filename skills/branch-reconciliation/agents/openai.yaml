@@ -1,0 +1,9 @@
+interface:
+  display_name: Branch Reconciliation
+  short_description: Reconcile diverged Git branches with preserved features and linear commits
+policy:
+  products:
+    - chatgpt
+    - codex
+    - api
+  allow_implicit_invocation: true

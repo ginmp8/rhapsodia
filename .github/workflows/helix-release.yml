@@ -68,6 +68,10 @@ jobs:
         run: |
           python -I -S -B -m unittest discover -s tests -p test_spec_conformance_distribution.py -v
           python -I -S -B -m unittest discover -s skills/audit-spec-implementation/tests -p 'test_*.py' -v
+      - name: Validate Branch Reconciliation with real Git trees
+        run: |
+          python -I -S -B -m unittest discover -s skills/branch-reconciliation/tests -p 'test_*.py' -v
+          python -I -S -B -m unittest discover -s tests -p test_branch_reconciliation_distribution.py -v
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
