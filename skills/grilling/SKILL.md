@@ -37,3 +37,7 @@ For each question use **Q1 — [decision title]**, the question, then **Recommen
 - Use a fresh context for independent fact-finding only when the host supports real delegation; otherwise investigate sequentially and report that limitation.
 - Use **domain-modeling** when terminology or aggregates are disputed; **grill-with-docs** when the user wants a documented result; **wayfinder** when work spans sessions; **premortem-analysis** for a concrete plan's prospective failures.
 - A Grilling recommendation cannot approve risk, alter deadlines, create GitHub issues or grant write authority.
+
+## Host portability
+
+Interview questions require only a conversation. Network access, named-skill invocation, filesystem access and subagents are optional capabilities. When fact-finding tools are unavailable, use supplied evidence and mark unverified assumptions; when delegation is unavailable, investigate sequentially without claiming an independent agent ran.

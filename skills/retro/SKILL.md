@@ -22,3 +22,7 @@ Review an **observed** engineering/agent work session and propose concrete impro
 ## Scope protections
 
 Review only the agreed session. Do not auto-edit code, protected evidence, tests, policies, issue labels, or agent instructions; prepare an actionable patch plan or handoff instead. No owner receives additional authority through a retrospective.
+
+## Host portability
+
+Use supplied session logs, diffs and verification results or authorized read-only connectors when a local repository/terminal is unavailable. If primary evidence is insufficient, provide a limited retrospective and list missing inputs, rather than inventing causal observations. Proposing a Graph lesson is not evidence it was stored.

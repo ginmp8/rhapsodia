@@ -28,3 +28,7 @@ Use for ordinary PR and branch reviews. For exhaustive requirement-to-reachable-
 - Do not copy sensitive code into public comments or external tools without authorization. Do not post, approve, merge, push, or rewrite the issue/spec.
 - No automatic single reviewer substitutes for independent verification or gives two axes the false appearance of two agents.
 - Keep explicit source pointers and note where a stricter RhapsodIA specialist should be invoked.
+
+## Host portability
+
+Git and independent subagents are optional. Without Git, use a supplied or authorized connector-provided diff pinned to exact refs; disclose when those identities cannot be verified. If no reliable diff exists, provide a scoped review checklist rather than a code verdict. A single context must never be presented as independent parallel review.
