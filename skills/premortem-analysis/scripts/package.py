@@ -17,7 +17,7 @@ from pathlib import Path
 
 from validate_package import validate_package
 from validate_report import validate_report
-from validate_traceability import validate_traceability
+from validate_traceability import recorded_license, validate_traceability
 
 FIXED_TIME = (1980, 1, 1, 0, 0, 0)
 
@@ -53,6 +53,11 @@ def _payload(root: Path) -> list[tuple[str, bytes]]:
         if any(chunk in ("__pycache__", ".git") for chunk in path.relative_to(root).parts):
             raise ValueError(f"generated or forbidden bytes in package: {rel}")
         out.append((f"{root.name}/{rel}", path.read_bytes()))
+    if not (root / "LICENSE").is_file():
+        recovered = recorded_license(root, "LICENSE")
+        if recovered is None:
+            raise ValueError("missing original or centrally verified MIT license")
+        out.append((f"{root.name}/LICENSE", recovered))
     return out
 
 
