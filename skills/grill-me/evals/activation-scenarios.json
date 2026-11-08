@@ -1,0 +1,11 @@
+{
+  "schema": "activation-scenarios/v1",
+  "skill": "grill-me",
+  "note": "Declarative examples; no executed model harness results are claimed.",
+  "positive": [
+    "@grill-me pressure-test my proposal."
+  ],
+  "negative": [
+    "Draft a product requirements document without interviewing me."
+  ]
+}

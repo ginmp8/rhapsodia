@@ -1,0 +1,8 @@
+interface:
+  display_name: "Grill with Docs"
+  short_description: "Grill technical decisions and propose traceable glossary and ADR updates."
+policy:
+  products:
+    - CHAT
+    - CODEX
+  allow_implicit_invocation: false

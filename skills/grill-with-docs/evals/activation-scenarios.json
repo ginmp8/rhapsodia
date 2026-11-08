@@ -1,0 +1,11 @@
+{
+  "schema": "activation-scenarios/v1",
+  "skill": "grill-with-docs",
+  "note": "Declarative examples; no executed model harness results are claimed.",
+  "positive": [
+    "Grill this design and draft a glossary/ADR for approved decisions."
+  ],
+  "negative": [
+    "Fix this CI error now."
+  ]
+}

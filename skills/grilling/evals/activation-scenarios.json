@@ -1,0 +1,12 @@
+{
+  "schema": "activation-scenarios/v1",
+  "skill": "grilling",
+  "note": "Declarative examples; no executed model harness results are claimed.",
+  "positive": [
+    "Grill me on the risks of this technical design before we commit.",
+    "Challenge my assumptions about the API migration plan."
+  ],
+  "negative": [
+    "What is the latest Python version?"
+  ]
+}

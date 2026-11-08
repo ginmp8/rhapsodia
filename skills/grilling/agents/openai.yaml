@@ -1,0 +1,8 @@
+interface:
+  display_name: "Grilling"
+  short_description: "Challenge decisions through evidence-based, dependency-aware interviews."
+policy:
+  products:
+    - CHAT
+    - CODEX
+  allow_implicit_invocation: true
