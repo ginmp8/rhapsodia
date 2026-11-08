@@ -185,3 +185,8 @@ Three independently versioned packages are derived from the upstream Archify pro
 
 Each package preserves its original author attribution and records the independently maintained changes in `SOURCE.md`, `NOTICE`, and `CHANGELOG.md`. Archify itself preserves the Cocoon AI lineage, Apache-2.0 license, historical MIT grant and `THIRD_PARTY_NOTICES.md` covering supplied components. This inclusion does not confer rights in brand marks or imply upstream approval. In particular, some embedded brand artwork has non-commercial or share-alike conditions independent of the software license; redistributors should consult the bundled notices for intended use.
 
+## 2026-11-08: RhapsodIA 0.17.0 Matt Pocock adaptations
+
+The following seven new skill packages are independently maintained adaptations of [Matt Pocock's Skills](https://github.com/mattpocock/skills), from the user-owned fork [ginmp8/mattpocock-skills](https://github.com/ginmp8/mattpocock-skills) pinned to commit `4ae2317ddb22b046e26455e4f9c9b3aaaf62212d`: `grilling`, `grill-me`, `grill-with-docs`, `domain-modeling`, `wayfinder`, `retro`, and `code-review`.
+
+Each directory contains `SOURCE.md` with the exact original file and Git blob SHA and a preserved `LICENSE-MIT` naming Copyright (c) 2026 Matt Pocock. RhapsodIA modifies the language for host portability, finite questioning, source/evidence discipline and non-conflicting Nomia/Mago/Magia ownership. The surrounding project retains its separate Apache-2.0 license. The fork is an attribution source, not evidence of upstream endorsement. These are not presented as official Matt Pocock releases.

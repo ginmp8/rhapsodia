@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.17.0] - 2026-11-08
+
+### Added
+- Seven independently versioned Matt Pocock-derived Agent Skills: Grilling, explicit Grill Me alias, Grill with Docs, Domain Modeling, Wayfinder, Retro, and two-axis Code Review.
+- Domain glossary/ADR reference formats, decision map contract, code smell reference, activation examples, package source identities and MIT license preservation.
+- An interview/decision workflow user guide and a deterministic distribution test for the new packages.
+
+### Changed
+- Distribution inventory from 69 to 76 Skills, retaining eight native agent profiles and all existing semantic contract identities.
+- Marketplace/plugin release metadata, documentation, portable CI checks and source-release evidence updated for 0.17.0.
+- Audit Spec Implementation's existing optional Code Review dependency becomes satisfied by a bundled RhapsodIA specialist.
+
+### Compatibility and source
+- Grilling owns interview questions; Grill Me is only a command alias, while Grill with Docs composes Grilling and Domain Modeling.
+- Nomia/Mago/Magia retain governance, technical planning and implementation ownership. No unauthorized issue writes, CI runs, releases or auto-promoted policy changes.
+- Derived material is attributed to Matt Pocock's MIT-licensed mattpocock/skills via ginmp8/mattpocock-skills at commit `4ae2317ddb22b046e26455e4f9c9b3aaaf62212d`.
+
 ## [0.16.0] - 2026-11-08
 
 ### Added

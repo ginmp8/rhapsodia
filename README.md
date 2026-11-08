@@ -1,5 +1,13 @@
 # RhapsodIA
 
+## 0.17.0 — Decision interviews, mapping and evidence-based review
+
+RhapsodIA **0.17.0** prepares **76 independently versioned Agent Skills** and retains eight native agent profiles. Seven [MIT-attributed adaptations](docs/releases/0.17.0.md) based on Matt Pocock's skills introduce [Grilling](skills/grilling/SKILL.md), [Grill Me](skills/grill-me/SKILL.md), [Grill with Docs](skills/grill-with-docs/SKILL.md), [Domain Modeling](skills/domain-modeling/SKILL.md), [Wayfinder](skills/wayfinder/SKILL.md), [Retro](skills/retro/SKILL.md), and [Code Review](skills/code-review/SKILL.md).
+
+**Grill Me is an explicit alias of Grilling**, not a second interview engine. Grill with Docs composes Grilling and Domain Modeling for approved decision documentation; Wayfinder carries unresolved decisions across sessions. Code Review adds separate coding-standards and spec-conformance axes, complementary to the existing [Audit Spec Implementation](skills/audit-spec-implementation/SKILL.md) coordinator. Retro proposes evidence-backed improvements without silently changing tests or policy.
+
+The new Skills preserve RhapsodIA's existing [Nomia](skills/nomia/SKILL.md) (governance), [Mago](skills/mago/SKILL.md) (technical planning), and [Magia](skills/magia/SKILL.md) (implementation) authority boundaries. Original author, pinned fork revision and MIT license accompany each package; this is an independently maintained adaptation, not an upstream endorsement. Existing agent profiles, package-independent semantic contracts and previous release history remain unchanged. See [0.17.0 release notes](docs/releases/0.17.0.md), the [interview guide](docs/interview-and-decision-workflows.md), [source attribution](docs/public-source-attribution-audit.md) and [changelog](CHANGELOG.md).
+
 ## 0.16.0 — Spec conformance and Git branch reconciliation
 
 RhapsodIA **0.16.0** distributes **69 independently versioned Agent Skills** and retains eight native agent profiles. The six new [spec-conformance skills](skills/audit-spec-implementation/SKILL.md) add a frozen-requirements audit coordinator and dedicated adapters for criteria extraction, implementation reachability, causal behavior, verification oracles, and regression/parity checks.
