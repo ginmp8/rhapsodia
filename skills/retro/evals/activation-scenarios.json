@@ -1,0 +1,11 @@
+{
+  "schema": "activation-scenarios/v1",
+  "skill": "retro",
+  "note": "Declarative examples; no executed model harness results are claimed.",
+  "positive": [
+    "Review the coding session and recommend missing guardrails."
+  ],
+  "negative": [
+    "Diagnose a currently failing production service."
+  ]
+}

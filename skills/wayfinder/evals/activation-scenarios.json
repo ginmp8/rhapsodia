@@ -1,0 +1,11 @@
+{
+  "schema": "activation-scenarios/v1",
+  "skill": "wayfinder",
+  "note": "Declarative examples; no executed model harness results are claimed.",
+  "positive": [
+    "I have a multi-month migration idea with unresolved dependencies; map what we need to decide."
+  ],
+  "negative": [
+    "Implement this already-approved small bug fix."
+  ]
+}

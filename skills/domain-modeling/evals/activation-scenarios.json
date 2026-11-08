@@ -1,0 +1,11 @@
+{
+  "schema": "activation-scenarios/v1",
+  "skill": "domain-modeling",
+  "note": "Declarative examples; no executed model harness results are claimed.",
+  "positive": [
+    "Define the Order and Invoice bounded contexts before coding."
+  ],
+  "negative": [
+    "Explain how to run a git merge."
+  ]
+}

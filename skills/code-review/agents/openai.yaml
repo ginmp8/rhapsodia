@@ -1,0 +1,8 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review code standards and spec conformance as separate evidence axes."
+policy:
+  products:
+    - CHAT
+    - CODEX
+  allow_implicit_invocation: true

@@ -1,0 +1,8 @@
+interface:
+  display_name: "Wayfinder"
+  short_description: "Map unresolved decisions and dependencies across multiple sessions."
+policy:
+  products:
+    - CHAT
+    - CODEX
+  allow_implicit_invocation: true

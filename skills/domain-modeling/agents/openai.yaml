@@ -1,0 +1,8 @@
+interface:
+  display_name: "Domain Modeling"
+  short_description: "Sharpen domain language, context boundaries and meaningful ADRs."
+policy:
+  products:
+    - CHAT
+    - CODEX
+  allow_implicit_invocation: true

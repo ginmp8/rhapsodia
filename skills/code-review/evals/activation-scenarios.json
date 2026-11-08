@@ -1,0 +1,11 @@
+{
+  "schema": "activation-scenarios/v1",
+  "skill": "code-review",
+  "note": "Declarative examples; no executed model harness results are claimed.",
+  "positive": [
+    "Review the changes on this pull request against our coding standards and spec."
+  ],
+  "negative": [
+    "Merge this pull request."
+  ]
+}
