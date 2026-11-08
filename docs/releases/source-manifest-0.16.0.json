@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "89203ac3a71eb6dde937a12b0c9382476bcca5b3a7f454ad582cc2a6340ac887",
+  "sha256": "029f281a253aa64e99fae4f36bb893e6773dba3b88d488396bbdbffb102db860",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -50,11 +50,11 @@
     },
     {
       "path": ".github/workflows/helix-release.yml",
-      "sha256": "ccfd5f6d3bb3828fd0cd0dfc3637e604325047c74a75762c28ddee1dc419aeef"
+      "sha256": "eff10eaf08ed13b8f132295cb695079c768b74a7ad768ab353f2f9dc2d05de4f"
     },
     {
       "path": ".github/workflows/runtime-portability.yml",
-      "sha256": "78145b0a1e8e185c3963f50e1e263a93978ea6deda42ae242733db10102a75bf"
+      "sha256": "6942befb4e214a728d8899ef5c77126235ab36caa2e70ef68caa3ffe840a6315"
     },
     {
       "path": ".gitignore",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "09c3404c7af0a8bf8ddccb6f729c8f00ff2a2e718e3ad408aeff4d6a4f7a81c0"
+      "sha256": "7ca30469d435e7c7663d7c5b59cb7dda7f70863ac34bea7d084d52294c8a19f3"
     },
     {
       "path": "LICENSE",
@@ -74,7 +74,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "7d54f6d24b52bc54e5d1d9de7fe3f85ae3293125e0d3b942e772161559d8bd3c"
+      "sha256": "2489d8079edff5918731e45082ef6450d2de1a40b4cde79a45d6040adef156ab"
     },
     {
       "path": "agents/magia.agent.md",
@@ -1383,6 +1383,46 @@
     {
       "path": "skills/audit-spec-implementation/tests/test_validator.py",
       "sha256": "d9fd38d3cd31ef52ff8f7464fabf0143a977a1497ee394f73f805caa51710349"
+    },
+    {
+      "path": "skills/branch-reconciliation/CHANGELOG.md",
+      "sha256": "bc52b33c31b3e30a5bbc9c584c296f4ae296166c05c5776f59060fda6eb679fe"
+    },
+    {
+      "path": "skills/branch-reconciliation/SKILL.md",
+      "sha256": "c96f45eee4d2490af8ea8b1ccd3547394a5e51ca170ecc166f3be89d645342e4"
+    },
+    {
+      "path": "skills/branch-reconciliation/SOURCE.md",
+      "sha256": "4c4342a286c6dac7734f453bea857fc79e11ff581838c471b8000326283133be"
+    },
+    {
+      "path": "skills/branch-reconciliation/VERSION",
+      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
+    },
+    {
+      "path": "skills/branch-reconciliation/agents/openai.yaml",
+      "sha256": "db3fd7e1ab89f81285eb7996d33616bd4bdaf9b4348232d865f57a25d41bd388"
+    },
+    {
+      "path": "skills/branch-reconciliation/evals/activation-scenarios.json",
+      "sha256": "e9096332b64ce93009b96f39003a7c0384ed7e2cf2f46668503eefdc6a029bb9"
+    },
+    {
+      "path": "skills/branch-reconciliation/references/manual-resolution.md",
+      "sha256": "0b0486cd1b83ae6e4671b2b7a53245d7c788961bbc6ade6a59f0d1bc37cb961d"
+    },
+    {
+      "path": "skills/branch-reconciliation/references/validation-and-remote.md",
+      "sha256": "6ab5a52eec9a343ac17ea7d23bff7ab3730e225c66f9db87d11e164a1a0e0447"
+    },
+    {
+      "path": "skills/branch-reconciliation/scripts/reconcile.py",
+      "sha256": "ae813b08336928e53e8a5bb7a77762a7f7ee8e9259877e62162cc28c7eeebee8"
+    },
+    {
+      "path": "skills/branch-reconciliation/tests/test_reconcile.py",
+      "sha256": "379c5aa2e49ecd3825ba3fa41b64c8102b448137b181a39562befcb97c166b22"
     },
     {
       "path": "skills/bug-security-hunter/SKILL.md",
@@ -10881,6 +10921,10 @@
       "sha256": "6ccec5e7c784c7b63141558413d01808834c8c5d65d7a4d184c2ab1b04af8a1d"
     },
     {
+      "path": "tests/test_branch_reconciliation_distribution.py",
+      "sha256": "5d5392d9910f08b32d4e056a768e18a4a4c7ba21fa1805fbbc51920a17889db7"
+    },
+    {
       "path": "tests/test_capability_routing.py",
       "sha256": "71acd07bff398cbe4a811081ebfbd88f1b45e4258b2ff73d70ac59c8c1e299ea"
     },
@@ -10906,7 +10950,7 @@
     },
     {
       "path": "tests/test_release_versions.py",
-      "sha256": "a7234e503f1261c7b3e683f54b648fe471610628b4a313ec643ec764150f82ff"
+      "sha256": "620e1060ec2dd978c754dd31ea5c700788eef0d2539f3252156d251f19f108b0"
     },
     {
       "path": "tests/test_required_session.py",
