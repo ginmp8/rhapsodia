@@ -41,3 +41,7 @@ For each question use **Q1 — [decision title]**, the question, then **Recommen
 ## Host portability
 
 Interview questions require only a conversation. Network access, named-skill invocation, filesystem access and subagents are optional capabilities. When fact-finding tools are unavailable, use supplied evidence and mark unverified assumptions; when delegation is unavailable, investigate sequentially without claiming an independent agent ran.
+
+## Output contract and stop conditions
+
+During each round show numbered decision-ready questions and a recommended answer with rationale. Finish with approved choices, explicit unknowns and deferrals. Stop at the agreed round limit, an empty frontier or the user's explicit request; never turn interview recommendations into approvals.

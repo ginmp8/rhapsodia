@@ -24,7 +24,7 @@ Constrains states, dependency closure, claims, scope boundaries and handoffs; av
 <user-approved owner, source revision and map path>
 
 ## Decisions so far
-- [<decision title>](<actual relative path or issue URL>): <one-line confirmed answer>
+- <decision title> (`<actual relative path or issue URL>`): <one-line confirmed answer>
 
 ## Frontier
 - <stable decision ID and exact title; no unresolved blockers>
@@ -45,3 +45,5 @@ Each child decision contains `id`, `title`, `type`, `status`, `blocked_by`, `evi
 - A decision is resolved only with its actual answer and a primary evidence pointer or a recorded user decision. Agent recommendations are not acceptance.
 - Names and IDs must be real. Do not invent issue numbers or rewrite canonical owner artifacts.
 - When a previously resolved answer is contradicted, preserve history and record a supersession; never erase the earlier decision as if it never happened.
+
+Replace each placeholder with a verified real path or URL; create a Markdown link only when its destination exists. Do not treat this example as a link to a bundled asset.

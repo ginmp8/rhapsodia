@@ -25,3 +25,7 @@ Compose **grilling** (decision interview) with **domain-modeling** (terms, conte
 - Preserve existing glossary terminology and preexisting decisions; surface conflicts before editing.
 - Missing named-skill invocation is **not** a blocker: the explicit inline interview + domain-scenario fallback remains usable. Disclose whether composition was invoked, instructions reused, or semantics applied inline.
 - Without authorized document writes, deliver proposed glossary/ADR text and do not claim persistence. Without source access, mark assumptions and avoid claiming verification.
+
+## Output contract and stop conditions
+
+Return approved/deferred decisions, evidence or uncertainty, proposed glossary/ADR text and exact changed or proposed locations. Stop before protected writes without authorization and do not claim documentation was persisted when only a draft was produced.

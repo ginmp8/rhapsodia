@@ -29,3 +29,7 @@ Default to root `GLOSSARY.md` for a single context. For multiple established con
 ## Host portability
 
 If the filesystem or repository cannot be read, work from supplied excerpts and mark missing evidence. Without authorized writes, provide proposed glossary entries and ADRs without claiming files were updated. Mago handoff is required only when governed RhapsodIA ownership is active; independent hosts follow their own authorized artifact policy.
+
+## Output contract and stop conditions
+
+Return accepted vocabulary, avoided synonyms, affected bounded contexts, scenarios, contradictions and source-linked draft or written updates. Stop before changing an unapproved canonical artifact or guessing domain facts absent adequate evidence.

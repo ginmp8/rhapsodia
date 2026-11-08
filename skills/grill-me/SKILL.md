@@ -13,3 +13,7 @@ This skill is an invocation alias, **not** an independent interview workflow.
 4. Never claim that a skill tool, subagent or another host executed when only the inline fallback ran. Missing skill-invocation APIs do not block an ordinary interview.
 
 Do not independently write specs, issue tickets, ADRs or code. For interviews producing canonical technical documentation, the user can explicitly choose **grill-with-docs** instead.
+
+## Output contract and stop conditions
+
+Return the same Grilling questions and decision synthesis, with a truthful indication of native invocation, read-only reuse or inline fallback when material. Stop at the user-approved round limit or resolved frontier; do not invent a second interview engine.
