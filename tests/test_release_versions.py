@@ -70,4 +70,7 @@ class Tests(unittest.TestCase):
    self.assertIn(f"rhapsodia-{RELEASE}/.env.example",names)
    self.assertNotIn(f"rhapsodia-{RELEASE}/.env",names)
    for skill in NEW_SKILLS:self.assertIn(f"rhapsodia-{RELEASE}/skills/{skill}/SKILL.md",names)
+   for skill in ("grilling","grill-me","grill-with-docs","domain-modeling","wayfinder","retro","code-review"):
+    self.assertIn(f"rhapsodia-{RELEASE}/skills/{skill}/assets/icon.svg",names)
+    self.assertIn(f"rhapsodia-{RELEASE}/skills/{skill}/agents/openai.yaml",names)
 if __name__=="__main__":unittest.main()

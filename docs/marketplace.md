@@ -45,7 +45,7 @@ rhapsodia
 
 ## 0.17.0 decision and review skills
 
-RhapsodIA 0.17.0 distributes seven new Agent Skills in the canonical `skills/` directory: `grilling`, `grill-me` (an explicit alias), `grill-with-docs`, `domain-modeling`, `wayfinder`, `retro` and `code-review`. Installation uses the existing marketplace for each host; no separate sub-plugin is required. See the [usage guide](interview-and-decision-workflows.md) and [attributed source inventory](releases/0.17.0.md). Native host discovery and tool access must still be validated independently.
+RhapsodIA 0.17.0 distributes seven new Agent Skills in the canonical `skills/` directory: `grilling`, `grill-me` (an explicit alias), `grill-with-docs`, `domain-modeling`, `wayfinder`, `retro` and `code-review`. Installation uses the existing marketplace for each host; no separate sub-plugin is required. See the [usage guide](interview-and-decision-workflows.md) and [attributed source inventory](releases/0.17.0.md). Each skill includes its own `assets/icon.svg` and `agents/openai.yaml` icon paths, brand color and default prompt for ChatGPT/Codex UI; other hosts ignore those optional UI files and consume the same portable `SKILL.md`. Structural validation covers portable-core, OpenAI, Codex, Claude, Copilot and Cursor. When native skill-to-skill invocation is missing, the composed interview skills retain an inline capability-based fallback. Actual host installation and behavior still require independent validation.
 
 To try the candidate release before merging, point a compatible host at the `release/0.17.0` ref where that host supports Git refs. The release is not published or tagged by this PR.
 
