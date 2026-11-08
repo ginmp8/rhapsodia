@@ -3,6 +3,7 @@
 from __future__ import annotations
 import ast
 import json
+import hashlib
 from pathlib import Path
 import re
 import sys
@@ -13,11 +14,41 @@ from oc_core.cli import COMMANDS
 from oc_core import VERSION
 
 
+def _license_available(root: Path) -> bool:
+    local = root / 'LICENSE'
+    if local.is_file() and not local.is_symlink():
+        return True
+    # Source-tree installs centralize notices; detached standalone skills
+    # must still carry their original LICENSE in the exported package.
+    if root.name != 'operational-context':
+        return False
+    repository = root.resolve().parents[1]
+    registry = repository / 'licenses' / 'skill-assets.json'
+    if not registry.is_file() or registry.is_symlink():
+        return False
+    try:
+        doc = json.loads(registry.read_text(encoding='utf-8'))
+        rows = [row for row in doc.get('skills', []) if row.get('name') == root.name]
+        if len(rows) != 1:
+            return False
+        notices = [n for n in rows[0]['notices'] if n.get('path') == 'LICENSE']
+        if len(notices) != 1 or notices[0].get('canonical') != 'LICENSE':
+            return False
+        original = notices[0]
+        content = (repository / 'LICENSE').read_bytes()
+        identity = hashlib.sha1(b'blob ' + str(len(content)).encode('ascii') + b'\0' + content).hexdigest()
+        return identity == original.get('blob_sha') and len(content) == original.get('size')
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
 def validate(root):
     errors = []
-    for rel in ('SKILL.md', 'VERSION', 'LICENSE', 'contracts/commands.json', 'evals/activation-scenarios.json'):
+    for rel in ('SKILL.md', 'VERSION', 'contracts/commands.json', 'evals/activation-scenarios.json'):
         if not (root / rel).is_file():
             errors.append('Missing ' + rel)
+    if not _license_available(root):
+        errors.append('Missing LICENSE')
     if errors:
         return {'status': 'fail', 'errors': errors}
     entry = (root / 'SKILL.md').read_text(encoding='utf-8')
