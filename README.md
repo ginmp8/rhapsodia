@@ -1,12 +1,14 @@
 # RhapsodIA
 
-## 0.16.0 — Spec-to-implementation conformance auditing
+## 0.16.0 — Spec conformance and Git branch reconciliation
 
-RhapsodIA **0.16.0** distributes **68 independently versioned Agent Skills** and retains eight native agent profiles. The six new [spec-conformance skills](skills/audit-spec-implementation/SKILL.md) add a frozen-requirements audit coordinator and dedicated adapters for criteria extraction, implementation reachability, causal behavior, verification oracles, and regression/parity checks.
+RhapsodIA **0.16.0** distributes **69 independently versioned Agent Skills** and retains eight native agent profiles. The six new [spec-conformance skills](skills/audit-spec-implementation/SKILL.md) add a frozen-requirements audit coordinator and dedicated adapters for criteria extraction, implementation reachability, causal behavior, verification oracles, and regression/parity checks.
 
 The coordinator preserves requirement IDs, original source revisions, exact base/head commit identities and separate proof classifications. It prefers existing RhapsodIA specialists ([Reverse Engineering](skills/reverse-engineering/SKILL.md), [Causal Flow Comprehension](skills/causal-flow-comprehension/SKILL.md), and [Test Oracle Engineering](skills/test-oracle-engineering/SKILL.md)) when available and eligible, with documented local fallback adapters. External `sdd-reviewer` and `code-review` remain optional; this release does not bundle them.
 
-**Release scope:** additive read-only audit workflows with Python standard-library validation utilities. The existing eight agents, governance boundaries, semantic contract identities and previous Skill behavior are unchanged. Routing plans do not execute tests or imply independent review. See [0.16.0 release notes](docs/releases/0.16.0.md) and [changelog](CHANGELOG.md).
+The [Branch Reconciliation v0.1.0](skills/branch-reconciliation/SKILL.md) Skill adds source-to-destination Git tree integration with frozen SHAs, complete tracked-path checks, explicit conflict resolutions, and single-parent commits. The helper never fetches, force-pushes, publishes, or executes project tests implicitly. Source-only changes and destination-only customizations are preserved, while concurrently edited paths require semantic review and separate regression evidence.
+
+**Release scope:** additive read-only audits and a separately authorized local Git reconciliation workflow, with Python standard-library validation utilities. The existing eight agents, governance boundaries, semantic contract identities and previous Skill behavior are unchanged. Routing plans do not execute tests or imply independent review. See [0.16.0 release notes](docs/releases/0.16.0.md) and [changelog](CHANGELOG.md).
 
 ## 0.15.0 — Archify visualization and review suite
 

@@ -1,0 +1,14 @@
+{
+  "skill": "branch-reconciliation",
+  "evidence_status": "planned-not-executed",
+  "scenarios": [
+    {"id":"import-branch","kind":"activate","prompt":"Copy all changes from my upstream branch into a customized destination, resolving overlapping files without merge commits."},
+    {"id":"cross-pr","kind":"activate","prompt":"Take all functionality and docs from PR A's branch into PR B while preserving B-only code and a linear history."},
+    {"id":"overlap","kind":"activate","prompt":"Synchronize these diverged branches and keep both versions of a changed config file."},
+    {"id":"ambiguous","kind":"clarify-authority","prompt":"Reconcile two protected branches but do not push anything until I approve."},
+    {"id":"regular-code","kind":"do-not-activate","prompt":"Fix the deadlock in this application service."},
+    {"id":"review","kind":"do-not-activate","prompt":"Review this PR for security vulnerabilities."},
+    {"id":"release","kind":"do-not-activate","prompt":"Publish the finalized release notes and tag 1.2.0."},
+    {"id":"repo-migration","kind":"do-not-activate","prompt":"Move my GitHub repository to GitLab with history intact."}
+  ]
+}
