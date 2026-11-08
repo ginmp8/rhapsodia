@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "94f91988423455045b867ee776a569e1874574a811bc30b5703646e1fa59fe6b",
+  "sha256": "77bc974bda5ddd892b856476273d5f21cc787cab10dd388add3814aacac5b04f",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -262,7 +262,7 @@
     },
     {
       "path": "scripts/build_portable_agent_plugin.py",
-      "sha256": "50da302fb07b24d08c78537dba38801cad6f5dc15c1668f6802246e889bacd6a"
+      "sha256": "7b4dad23bc9aa176459bed5e64d4bce1da34cba27a4f19f882dd88ffd7004b5c"
     },
     {
       "path": "scripts/build_release_archive.py",
@@ -6346,7 +6346,7 @@
     },
     {
       "path": "skills/operational-context/scripts/validate_package.py",
-      "sha256": "6c859a0fb3d609339fb4b87f92db8455c06b562f8e338f432af96d5fab99e651"
+      "sha256": "7cb6f24b43558622eafc2a5f39da1aec885073d3cf987fbc142c3b418bbc9347"
     },
     {
       "path": "skills/operational-context/tests/test_boundaries.py",
@@ -6614,7 +6614,7 @@
     },
     {
       "path": "skills/premortem-analysis/scripts/package.py",
-      "sha256": "0d4e822999309e9f08fe95890b4b8ef352875c43f34c25641c4df4cfb8f7fe2a"
+      "sha256": "9be1d5b9fec4f6d67e66e01b214cd8ce788dd7d0a1abbd8496af9370856b807a"
     },
     {
       "path": "skills/premortem-analysis/scripts/validate_package.py",
@@ -6626,7 +6626,7 @@
     },
     {
       "path": "skills/premortem-analysis/scripts/validate_traceability.py",
-      "sha256": "69cd3c7c5e19047b29e451c27d2b7ee9ab39c0bae2a0b68e1c7260c8a9455587"
+      "sha256": "79a38da422680cda08acebcc871b8330d2a737724d52e80a1a18de91961e4679"
     },
     {
       "path": "skills/premortem-analysis/tests/test_skill.py",
