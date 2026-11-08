@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "cec4da0daffc3cc44b4c4b82fb635c2b6b91ae4006d842f0aa54d304e84fdd25",
+  "sha256": "4fc2cc749d57c3f0da47855f6fd68c7f17b5afa65ce4ad98bb745903e0190b89",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -50,11 +50,11 @@
     },
     {
       "path": ".github/workflows/helix-release.yml",
-      "sha256": "3fc1c306cdc6d06edbdd07e94e83865ac01dd6bb2d7d5f8e3288f70854e7cad9"
+      "sha256": "aee813deffb4a3a9b67102bcbf5482d0b172c0f26d677b68949c7c52b9c16db9"
     },
     {
       "path": ".github/workflows/runtime-portability.yml",
-      "sha256": "f7eb41a5c2733fe077ea7d2af59276d832a7ed964b15301ba9517b0ede324979"
+      "sha256": "9426710645fedc526dd6a8a0aa01f4d6a0201f59575a161b14a689b11ed68af5"
     },
     {
       "path": ".gitignore",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "cc0ed3f4c61f42ed76ff2745d35af46244f0f584924241406af63eb2870920bc"
+      "sha256": "6d694bd0669ceefc1adafaa4c232463369582244881d5230a80ee192a58e8995"
     },
     {
       "path": "LICENSE",
@@ -138,11 +138,11 @@
     },
     {
       "path": "docs/marketplace.md",
-      "sha256": "64baaab95fe70c0fd005b999871c4405315df9bc561e4a3e7ebc4d95d694d187"
+      "sha256": "d24e7bbbca9e8e9401fa111970ed6aa394851a546d7622cbece525e95a8b4a47"
     },
     {
       "path": "docs/public-source-attribution-audit.md",
-      "sha256": "83f54ac31dd202c7c6d5ea3f8e5c4a0c4896185923a015c579ddc38ff6cfd839"
+      "sha256": "69065ecd5402df27ba1bfd1227f47282fc486e9b1bc45aacc8373381592d3522"
     },
     {
       "path": "docs/runtime/MIGRATION-0.7.0.md",
@@ -175,6 +175,14 @@
     {
       "path": "docs/workspace/demo.html",
       "sha256": "9a396a60459e8d83da734602fb3220fad554f7fbe49aa8640ffae0d4854f9f76"
+    },
+    {
+      "path": "licenses/README.md",
+      "sha256": "26aabb09b0a0781105766c9fe3f864f0e29d5bec24b9ae1cc35e2bcd1bd6f523"
+    },
+    {
+      "path": "licenses/third-party/mattpocock-skills-MIT.txt",
+      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
     },
     {
       "path": "marketplace/catalog.json",
@@ -219,6 +227,10 @@
     {
       "path": "scripts/operational.py",
       "sha256": "3b533f5e04167aba83c1171ade1cbc0d05cbfa4bd6f1d47ecc5cf27038828527"
+    },
+    {
+      "path": "scripts/package_attributed_skill.py",
+      "sha256": "16cab962856f72368c8de7a78808fea323ad8fa815a0887441fb40bdf5418aa4"
     },
     {
       "path": "scripts/package_policy.py",
@@ -1758,11 +1770,7 @@
     },
     {
       "path": "skills/code-review/CHANGELOG.md",
-      "sha256": "c37165f4a4a5d834e5d099e156d01b889ede84f93734b3d0860333fb699741e3"
-    },
-    {
-      "path": "skills/code-review/LICENSE-MIT",
-      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+      "sha256": "e7a83bc0e4a164afa1bca0a2645a42d360019877900798bccc8087cd877af93c"
     },
     {
       "path": "skills/code-review/SKILL.md",
@@ -1770,11 +1778,11 @@
     },
     {
       "path": "skills/code-review/SOURCE.md",
-      "sha256": "6d772589208a65f57ef9cf26feda7717d1b77c1101d7c956812cff3cd53abe03"
+      "sha256": "c5e20f464edc6b1656cda0034aec076419dc19f7cf8a8e91a73cd8c5c3153e58"
     },
     {
       "path": "skills/code-review/VERSION",
-      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
+      "sha256": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792"
     },
     {
       "path": "skills/code-review/agents/openai.yaml",
@@ -2278,15 +2286,11 @@
     },
     {
       "path": "skills/domain-modeling/CHANGELOG.md",
-      "sha256": "41a61a433614ece1dbf415804a3c2110814ca8783d4b3c9b6eb5f7369405fa01"
+      "sha256": "8235ecd918ef65ed95776d96d88395f3d51c53ec83b33d4bbc238117effeb5ef"
     },
     {
       "path": "skills/domain-modeling/GLOSSARY-FORMAT.md",
       "sha256": "2a6e23bbca246f3458c2995387ee2c075640e1ba4c3838477d0c249816ef0367"
-    },
-    {
-      "path": "skills/domain-modeling/LICENSE-MIT",
-      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
     },
     {
       "path": "skills/domain-modeling/SKILL.md",
@@ -2294,11 +2298,11 @@
     },
     {
       "path": "skills/domain-modeling/SOURCE.md",
-      "sha256": "51a493c4cf708370672af9d4b42788876088fcf05a3a134e6a749c76cd737c85"
+      "sha256": "bacfd9bb4427831bc64d5c56211c5dd65e65da5b9039a22238199771871e29d2"
     },
     {
       "path": "skills/domain-modeling/VERSION",
-      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
+      "sha256": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792"
     },
     {
       "path": "skills/domain-modeling/agents/openai.yaml",
@@ -2390,11 +2394,7 @@
     },
     {
       "path": "skills/grill-me/CHANGELOG.md",
-      "sha256": "8b81f5f487e387b61eb04157f2cc92473d9a986959d3dbdfb43807616edf5cda"
-    },
-    {
-      "path": "skills/grill-me/LICENSE-MIT",
-      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+      "sha256": "e5a34a58de8af7fe8b3370ff09059cc8627bbe77ba24e09fd85aec23a42a4a7a"
     },
     {
       "path": "skills/grill-me/SKILL.md",
@@ -2402,11 +2402,11 @@
     },
     {
       "path": "skills/grill-me/SOURCE.md",
-      "sha256": "14503e054b3e481fe97a9678d0621b21bc89909ab8147d4ea0cd530e0d9cd205"
+      "sha256": "a81e1c67e56cb9e7db239d5c01d67f1bd900d433ec8ae294bf6f6721a94fea63"
     },
     {
       "path": "skills/grill-me/VERSION",
-      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
+      "sha256": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792"
     },
     {
       "path": "skills/grill-me/agents/openai.yaml",
@@ -2422,11 +2422,7 @@
     },
     {
       "path": "skills/grill-with-docs/CHANGELOG.md",
-      "sha256": "781cc7bc42e979d309c7ba645f27989cbe6edceccf968abc9b8e730f70470e9c"
-    },
-    {
-      "path": "skills/grill-with-docs/LICENSE-MIT",
-      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+      "sha256": "a3a14a5c4ea250ac18d9bdb8524483a3ccf3572804081aa5fd184dc3f2becd05"
     },
     {
       "path": "skills/grill-with-docs/SKILL.md",
@@ -2434,11 +2430,11 @@
     },
     {
       "path": "skills/grill-with-docs/SOURCE.md",
-      "sha256": "54f023b0d9d3761ad4613d19aa910145b3c55afb1a2e0190003b64908476083e"
+      "sha256": "57e51cf86b1117a8035ecfbefb4e382999c17f90bbb270caf9c44f6f549ff7cb"
     },
     {
       "path": "skills/grill-with-docs/VERSION",
-      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
+      "sha256": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792"
     },
     {
       "path": "skills/grill-with-docs/agents/openai.yaml",
@@ -2454,11 +2450,7 @@
     },
     {
       "path": "skills/grilling/CHANGELOG.md",
-      "sha256": "217f0c160cab966d8f6c524b4d36d1bbfe849573aef015f264e21bc64637ce27"
-    },
-    {
-      "path": "skills/grilling/LICENSE-MIT",
-      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+      "sha256": "2e5650f1d850f531e087323dc3c8e62996d0e170b1d1edec68e88474a376f334"
     },
     {
       "path": "skills/grilling/SKILL.md",
@@ -2466,11 +2458,11 @@
     },
     {
       "path": "skills/grilling/SOURCE.md",
-      "sha256": "9e943576201ae3f07539da89a09459bfb116c97ed7a6682221ed4af02c1ccc11"
+      "sha256": "15f3d7fd9773af94809cdafac7fbc36da334b02a2edc86f225211fd8e05887c4"
     },
     {
       "path": "skills/grilling/VERSION",
-      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
+      "sha256": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792"
     },
     {
       "path": "skills/grilling/agents/openai.yaml",
@@ -7070,11 +7062,7 @@
     },
     {
       "path": "skills/retro/CHANGELOG.md",
-      "sha256": "3bc9074a6aea953a3ba566da29f6d8a7a24d770bd5f5bbdd22a31fca38bc6414"
-    },
-    {
-      "path": "skills/retro/LICENSE-MIT",
-      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+      "sha256": "f3ed924632e2c70c79311f34b1f910ebec4bf656efe5f45adb8c1d9fac180a47"
     },
     {
       "path": "skills/retro/SKILL.md",
@@ -7082,11 +7070,11 @@
     },
     {
       "path": "skills/retro/SOURCE.md",
-      "sha256": "6bd29393d8b13ea8a3a2fdbc9836e350ec8c8de09621a508ea8a63a3fb55426b"
+      "sha256": "02e308d9be3046f6eec24e39f51c4a018430b89ae39ee96b892619ce12bdf7fa"
     },
     {
       "path": "skills/retro/VERSION",
-      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
+      "sha256": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792"
     },
     {
       "path": "skills/retro/agents/openai.yaml",
@@ -11118,11 +11106,7 @@
     },
     {
       "path": "skills/wayfinder/CHANGELOG.md",
-      "sha256": "9f2baf8f2682988380ec0fa17ed0f8b1fe04b97e462bd7022ff179f3ffae072f"
-    },
-    {
-      "path": "skills/wayfinder/LICENSE-MIT",
-      "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5"
+      "sha256": "d66424576c62c53d614d01353ad9a727478f316c00b7b42c2c117c6cb9226ebf"
     },
     {
       "path": "skills/wayfinder/SKILL.md",
@@ -11130,11 +11114,11 @@
     },
     {
       "path": "skills/wayfinder/SOURCE.md",
-      "sha256": "072e2c3ad21d58d2a58149ffced3cce2058a7b9a4a308aba185881fb59b6e885"
+      "sha256": "a346e289372606add88a5d6795d021411d1c10738ea012a599e5364720fed64a"
     },
     {
       "path": "skills/wayfinder/VERSION",
-      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
+      "sha256": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792"
     },
     {
       "path": "skills/wayfinder/agents/openai.yaml",
@@ -11158,7 +11142,7 @@
     },
     {
       "path": "tests/test_017_skill_portability.py",
-      "sha256": "2fa9aef6162d490d3970ca21727628b2a598081d867db6c9123fb83c860339e3"
+      "sha256": "2d54e445bec10cc825d8f36e5c31731c6fb0211632499d53dd960dbc74cf8956"
     },
     {
       "path": "tests/test_archify_distribution.py",
@@ -11186,7 +11170,7 @@
     },
     {
       "path": "tests/test_mattpocock_adaptations.py",
-      "sha256": "c41d15db5191eec4e61f92a2c97e1f9735955f061a9e5658ea51f0a0a8624f8e"
+      "sha256": "52e8c3af13ed763ad59fe05c552a71f8425980ace0bf2c269ae854161539cd9a"
     },
     {
       "path": "tests/test_native_artifacts.py",
@@ -11199,6 +11183,10 @@
     {
       "path": "tests/test_native_migration.py",
       "sha256": "e792de470cd3dbb36b2dc6636eb42881cdf6a8a85930306e51b995bf4ee4f477"
+    },
+    {
+      "path": "tests/test_release_legal_notices.py",
+      "sha256": "dcacae155f02374d0a22c1e9e3fb404c71547872a55d98c7db5e0b13f9b4791e"
     },
     {
       "path": "tests/test_release_versions.py",
