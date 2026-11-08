@@ -1,8 +1,12 @@
 interface:
   display_name: "Grilling"
-  short_description: "Challenge decisions through evidence-based, dependency-aware interviews."
+  short_description: "Stress-test decisions with evidence and structured questions"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#17344F"
+  default_prompt: "Use $grilling to challenge my proposal and document my decisions."
 policy:
   products:
-    - CHAT
-    - CODEX
+    - "CHAT"
+    - "CODEX"
   allow_implicit_invocation: true

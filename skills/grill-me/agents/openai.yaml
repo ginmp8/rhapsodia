@@ -1,8 +1,12 @@
 interface:
   display_name: "Grill Me"
-  short_description: "Explicit command alias for the Grilling interview skill."
+  short_description: "Explicit alias for the structured Grilling workflow"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#17344F"
+  default_prompt: "Use $grill-me to challenge this plan before I commit."
 policy:
   products:
-    - CHAT
-    - CODEX
+    - "CHAT"
+    - "CODEX"
   allow_implicit_invocation: false

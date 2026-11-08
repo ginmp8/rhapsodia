@@ -1,8 +1,12 @@
 interface:
   display_name: "Wayfinder"
-  short_description: "Map unresolved decisions and dependencies across multiple sessions."
+  short_description: "Map decision dependencies across multiple sessions"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#17344F"
+  default_prompt: "Use $wayfinder to map the decisions blocking this complex initiative."
 policy:
   products:
-    - CHAT
-    - CODEX
+    - "CHAT"
+    - "CODEX"
   allow_implicit_invocation: true

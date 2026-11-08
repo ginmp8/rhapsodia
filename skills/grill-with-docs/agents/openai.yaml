@@ -1,8 +1,12 @@
 interface:
   display_name: "Grill with Docs"
-  short_description: "Grill technical decisions and propose traceable glossary and ADR updates."
+  short_description: "Turn a decision interview into traceable technical drafts"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#17344F"
+  default_prompt: "Use $grill-with-docs to question this design and draft approved decisions."
 policy:
   products:
-    - CHAT
-    - CODEX
+    - "CHAT"
+    - "CODEX"
   allow_implicit_invocation: false

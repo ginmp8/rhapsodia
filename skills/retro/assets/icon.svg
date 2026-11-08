@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Retro">
+  <rect x="1" y="1" width="62" height="62" rx="15" fill="#17344F"/>
+  <path d="M49 25a19 19 0 1 0 2 16" fill="none" stroke="#D2F2F0" stroke-width="3.5" stroke-linecap="round"/><path d="M49 15v13H36" fill="none" stroke="#67D9CA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="m24 34 6 6 11-13" fill="none" stroke="#67D9CA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

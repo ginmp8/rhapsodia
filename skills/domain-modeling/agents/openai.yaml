@@ -1,8 +1,12 @@
 interface:
   display_name: "Domain Modeling"
-  short_description: "Sharpen domain language, context boundaries and meaningful ADRs."
+  short_description: "Clarify bounded contexts and the language of the domain"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#17344F"
+  default_prompt: "Use $domain-modeling to refine these domain concepts and scenarios."
 policy:
   products:
-    - CHAT
-    - CODEX
+    - "CHAT"
+    - "CODEX"
   allow_implicit_invocation: true
