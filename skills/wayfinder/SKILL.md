@@ -15,7 +15,7 @@ Build a durable **decision map** for problems too large or ambiguous for one Gri
 - **Resolve:** select one unclaimed frontier decision and complete its fact-finding, scenario or user interview.
 - **Reconcile:** update the map after new evidence, resolved decisions, stale pointers or concurrent changes; never fabricate progress.
 
-## Quick start
+## Workflow
 
 1. Establish the user-approved destination and durable map location. Read any existing map and owner contracts. Use the smallest local Markdown map unless an issue tracker is already configured **and** issue publication is authorized.
 2. For a new map, use **grilling** (and **domain-modeling** when terminology matters) through native invocation or readable instructions when available; otherwise ask equivalent bounded frontier questions inline and test ambiguous terms with concrete scenarios. Missing a named-skill invocation API does not prevent decision discovery. Create only decisions that can be precisely stated now; defer vague future needs to *Not yet specified*.
@@ -37,3 +37,7 @@ Build a durable **decision map** for problems too large or ambiguous for one Gri
 ## Host portability
 
 A RhapsodIA session uses its existing runtime/graph prerequisites; other Agent Skills hosts need no RhapsodIA bootstrap. If persistent storage or tracker writes are unavailable, return the complete Markdown map for the user to save and explicitly mark persistence, claims and issue creation as **not performed**. Do not silently infer a durable state transition.
+
+## Output contract and stop conditions
+
+Return a bounded decision-map identity, settled decisions with evidence pointers, open frontier, blockers, unclassified fog and next authorized owner. Stop before unapproved issue/tracker writes or implementation, and explicitly mark unpersisted maps as drafts.

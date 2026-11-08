@@ -32,3 +32,7 @@ Use for ordinary PR and branch reviews. For exhaustive requirement-to-reachable-
 ## Host portability
 
 Git and independent subagents are optional. Without Git, use a supplied or authorized connector-provided diff pinned to exact refs; disclose when those identities cannot be verified. If no reliable diff exists, provide a scoped review checklist rather than a code verdict. A single context must never be presented as independent parallel review.
+
+## Output contract and stop conditions
+
+Report the fixed-point comparison and separate Standards and Spec findings, each with severity, source location, consequence, corrective direction and test/evidence limitations. Stop without a complete verdict when the diff or normative requirements are unavailable; never approve or merge a PR.

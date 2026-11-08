@@ -26,3 +26,7 @@ Review only the agreed session. Do not auto-edit code, protected evidence, tests
 ## Host portability
 
 Use supplied session logs, diffs and verification results or authorized read-only connectors when a local repository/terminal is unavailable. If primary evidence is insufficient, provide a limited retrospective and list missing inputs, rather than inventing causal observations. Proposing a Graph lesson is not evidence it was stored.
+
+## Output contract and stop conditions
+
+Provide evidence-backed findings, minimal proposed safeguards, expected verification and the responsible owner; distinguish observed failure from a hypothesis. Stop without a full retrospective verdict when sufficient session evidence is missing, and never self-promote policy or stored lessons.
