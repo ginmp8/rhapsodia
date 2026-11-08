@@ -785,9 +785,10 @@ These patterns are adapted into RhapsodIA-specific, host-neutral contracts and e
 
 ## License
 
-Copyright 2026 ginmp8
+Copyright (c) 2026 ginmp8
 
 Unless otherwise stated in an included file, this distribution is licensed under the [Apache License 2.0](LICENSE).
+The original [Premortem Analysis](skills/premortem-analysis/SKILL.md) skill is a first-party ginmp8 work separately licensed under [MIT](licenses/first-party/premortem-analysis-MIT.txt); it is not third-party content.
 
 The Apache License 2.0 applies to prompts, agents, skills, scripts, examples, templates, and documentation created specifically for RhapsodIA when those artifacts do not declare another license.
 

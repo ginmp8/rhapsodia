@@ -9,6 +9,7 @@
 - Seven independently designed SVG icons, OpenAI skill UI metadata, and portable fallback behavior for hosts without skill-to-skill dispatch.
 
 ### Changed
+- Corrected first-party ownership of Premortem Analysis: moved its unchanged ginmp8 MIT license out of third-party notices and added explicit `Copyright (c) 2026 ginmp8` attribution to the root Apache-2.0 LICENSE, with source manifests and standalone-export references updated.
 - Consolidated the seven Matt Pocock notices and **all 22 remaining legal notice files** across the 76-skill catalog into a central, exact-byte license registry; retained source attribution, Archify runtime notice embedding, and license-complete standalone exports.
 - Replaced repeated boilerplate in seven `SOURCE.md` files with compact immutable source references, and advanced the seven skill package versions to 0.1.2.
 - Distribution inventory from 69 to 76 Skills, retaining eight native agent profiles and all existing semantic contract identities.

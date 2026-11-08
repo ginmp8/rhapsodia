@@ -32,13 +32,13 @@
     },
     {
       "path": "LICENSE",
-      "sha256": "3209218a8853c72ae5124b6911449a3486bcd61e361ca38a7ec7036c68ada1f0",
-      "size": 11357
+      "sha256": "8fcaaf2126ceacee0a79954a5361a62b3fa6446bafaf50a43fc58e372442bf6f",
+      "size": 11850
     },
     {
       "path": "README.md",
-      "sha256": "5a9f6160189e40f90a96a43c59f11904552ea5b4c3917738d5e2e8afa6594bab",
-      "size": 58717
+      "sha256": "825044e44f5a7c9449f551d530d412edb2d91dac76949da0123bc4c11bb61309",
+      "size": 58939
     },
     {
       "path": "agents/magia.agent.md",

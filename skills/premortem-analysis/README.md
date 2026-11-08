@@ -8,6 +8,10 @@ Ask: "Run a governed premortem on this service migration plan before release. Id
 
 Select `quick` for lightweight plans, `standard` normally, or `governed` for security/privacy/safety/compliance/irreversibility. Outputs are readable Markdown by default; a typed JSON contract exists when machine-to-machine handoff matters.
 
+## License
+
+Premortem Analysis is original work by `ginmp8`, Copyright (c) 2026 ginmp8, licensed under MIT. In the RhapsodIA repository the complete MIT text is stored at `licenses/first-party/premortem-analysis-MIT.txt`; standalone archives restore it as `premortem-analysis/LICENSE`. This skill is not third-party material.
+
 ## Install / distribute
 
 Copy the root `premortem-analysis/` folder (including `SKILL.md`) to the appropriate Agent Skills discovery location configured by your host. Do not duplicate or modify the canonical core for different IDEs. Review the supported discovery mechanism in your client; a ZIP is not evidence that a host installed or executed it.

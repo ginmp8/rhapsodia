@@ -34,7 +34,7 @@ def recorded_license(root: Path, relative: str) -> bytes | None:
         if len(entries) != 1:
             return None
         notice = next((row for row in entries[0]["notices"] if row["path"] == relative), None)
-        if notice is None or notice["canonical"] != "licenses/third-party/premortem-analysis-MIT.txt":
+        if notice is None or notice["canonical"] != "licenses/first-party/premortem-analysis-MIT.txt":
             return None
         canonical = repository / notice["canonical"]
         if (not canonical.is_file() or canonical.is_symlink() or
