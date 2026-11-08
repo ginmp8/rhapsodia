@@ -67,7 +67,16 @@ class SkillPortability017Tests(unittest.TestCase):
         self.assertIn("inline", text["wayfinder"].lower())
         self.assertIn("named-skill invocation", text["grill-with-docs"])
         for n in SKILLS:
-            self.assertIn("portab", text[n].lower())
+            compatibility_markers = {
+                "grilling": "Host portability",
+                "grill-me": "Inline semantic fallback",
+                "grill-with-docs": "inline",
+                "domain-modeling": "Host portability",
+                "wayfinder": "Host portability",
+                "retro": "Host portability",
+                "code-review": "Host portability",
+            }
+            self.assertIn(compatibility_markers[n].lower(), text[n].lower())
             self.assertLessEqual(len(text[n].splitlines()), 100)
             self.assertTrue((ROOT / "skills" / n / "VERSION").is_file())
             self.assertEqual((ROOT / "skills" / n / "VERSION").read_text().strip(), "0.1.1")

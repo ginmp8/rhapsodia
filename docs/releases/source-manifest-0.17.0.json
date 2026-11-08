@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "1b16346a492c0f6aa353cc4e78c87d0b56ab3a49455c2cc6a3c92e097227fcb0",
+  "sha256": "cec4da0daffc3cc44b4c4b82fb635c2b6b91ae4006d842f0aa54d304e84fdd25",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -11158,7 +11158,7 @@
     },
     {
       "path": "tests/test_017_skill_portability.py",
-      "sha256": "6728ebcfb839ac1529abdd61f8896e442bd4e08cd4a3fffd83f88437804fb755"
+      "sha256": "2fa9aef6162d490d3970ca21727628b2a598081d867db6c9123fb83c860339e3"
     },
     {
       "path": "tests/test_archify_distribution.py",
