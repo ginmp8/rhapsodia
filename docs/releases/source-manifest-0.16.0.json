@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "ab7021bcde21e4439242f68520d79a435351c87cdf21d7b73e3f64609d478233",
+  "sha256": "f5ddb49886582a3ffb90932f3a61b1f91244ef00e7d1a9f539b9ceb680602d97",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -6561,6 +6561,30 @@
       "sha256": "3189ee37a011508c146e2b78383d54002bfb1d429f7c390a02c904b0a4b33faf"
     },
     {
+      "path": "skills/regression-parity-auditor/CHANGELOG.md",
+      "sha256": "125228d9c7191220a3f52e5aba0f04eb5c3b5d9f8a335963fcd061e876d796c0"
+    },
+    {
+      "path": "skills/regression-parity-auditor/SKILL.md",
+      "sha256": "a1231908dd2d5db460364493fa66b6537c0679fd4cdd55134f165406a6e4234e"
+    },
+    {
+      "path": "skills/regression-parity-auditor/SOURCE.md",
+      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+    },
+    {
+      "path": "skills/regression-parity-auditor/VERSION",
+      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
+    },
+    {
+      "path": "skills/regression-parity-auditor/agents/openai.yaml",
+      "sha256": "3a2f3976bd9af6edae61362d5a80fad692d8aed39e899258390c3b6411db6672"
+    },
+    {
+      "path": "skills/regression-parity-auditor/evals/activation-scenarios.json",
+      "sha256": "80c49b14a86daeff56a2506b375d117e2a12ae79f30bcaebe54e5fa741d9bd44"
+    },
+    {
       "path": "skills/reproducibility-engineer/CHANGELOG.md",
       "sha256": "3cf4e6de0621acb17636141976050eb87fe3799bc1032301f42a6b147b4bd338"
     },
@@ -10739,6 +10763,30 @@
     {
       "path": "skills/thinking-token-efficient/scripts/validate_skill.py",
       "sha256": "9e610ef1adb5e95d848080f00edb7a20a664280c5dee718779b46bcd53506bde"
+    },
+    {
+      "path": "skills/verification-oracle-auditor/CHANGELOG.md",
+      "sha256": "125228d9c7191220a3f52e5aba0f04eb5c3b5d9f8a335963fcd061e876d796c0"
+    },
+    {
+      "path": "skills/verification-oracle-auditor/SKILL.md",
+      "sha256": "1bc27445ca65e4b900cabf386b02b39270423ead2898b2b8d81c77b69c7c2a0e"
+    },
+    {
+      "path": "skills/verification-oracle-auditor/SOURCE.md",
+      "sha256": "9d9ed4fc59dd84abff0ae8baeb88001dccd0d83d95e225c8b2b1865a000151dc"
+    },
+    {
+      "path": "skills/verification-oracle-auditor/VERSION",
+      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
+    },
+    {
+      "path": "skills/verification-oracle-auditor/agents/openai.yaml",
+      "sha256": "16fb33c3beb12a3f11dcada075deae9865074e266231512f8b7725d54d139723"
+    },
+    {
+      "path": "skills/verification-oracle-auditor/evals/activation-scenarios.json",
+      "sha256": "83c3f7f9ef5a41e8ef4d6fa2e3f13bd70f8247b328f5788d2c824f9e4aed9a95"
     },
     {
       "path": "skills/visual-code-intelligence/CHANGELOG.md",

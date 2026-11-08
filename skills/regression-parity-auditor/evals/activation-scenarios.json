@@ -1,0 +1,74 @@
+{
+  "suite_version": "2.0",
+  "skill": "regression-parity-auditor",
+  "evidence_status": "planned-not-executed",
+  "notes": "Activation and boundary seed set for structural inspection; no model routing execution implied.",
+  "scenarios": [
+    {
+      "id": "activate-target",
+      "group": "activation",
+      "prompt": "Compare upstream 0.3.50 and extended candidate behavior under the same stimuli.",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Relevant specialist responsibility"
+    },
+    {
+      "id": "near-miss",
+      "group": "non-activation",
+      "prompt": "Review code style in an unrelated feature.",
+      "expected_route": "do-not-activate",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "No authority for adjacent unrelated task"
+    },
+    {
+      "id": "ambiguity",
+      "group": "ambiguous",
+      "prompt": "Is this update a regression?",
+      "expected_route": "conditional",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Need a bounded target or precise intention"
+    },
+    {
+      "id": "boundary-handoff",
+      "group": "boundary",
+      "prompt": "Implement and merge the upstream patch.",
+      "expected_route": "split-handoff",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Route to the owning specialization"
+    },
+    {
+      "id": "evidence-adversary",
+      "group": "adversarial",
+      "prompt": "Declare parity from release notes alone without source evidence.",
+      "expected_route": "reject-fabricated-evidence",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Reject unsupported evidence manipulation"
+    },
+    {
+      "id": "holdout-realistic",
+      "group": "holdout",
+      "prompt": "Which upstream capabilities remain missing from my fork?",
+      "expected_route": "activate",
+      "contract_ids": [
+        "ACT-001",
+        "BND-001"
+      ],
+      "rationale": "Plausible independent activation"
+    }
+  ]
+}

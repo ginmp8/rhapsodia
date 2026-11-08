@@ -1,0 +1,3 @@
+interface:
+  display_name: Verification Oracle Auditor
+  short_description: Review one bounded stage of a frozen spec conformance audit.
