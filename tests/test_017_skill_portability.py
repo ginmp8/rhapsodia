@@ -79,8 +79,8 @@ class SkillPortability017Tests(unittest.TestCase):
             self.assertIn(compatibility_markers[n].lower(), text[n].lower())
             self.assertLessEqual(len(text[n].splitlines()), 100)
             self.assertTrue((ROOT / "skills" / n / "VERSION").is_file())
-            self.assertEqual((ROOT / "skills" / n / "VERSION").read_text().strip(), "0.1.1")
-            self.assertIn("## [0.1.1]", (ROOT / "skills" / n / "CHANGELOG.md").read_text())
+            self.assertEqual((ROOT / "skills" / n / "VERSION").read_text().strip(), "0.1.2")
+            self.assertIn("## [0.1.2]", (ROOT / "skills" / n / "CHANGELOG.md").read_text())
         for n in ("grill-with-docs", "domain-modeling", "wayfinder"):
             self.assertIn("Mago", text[n])
 

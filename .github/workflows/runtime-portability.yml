@@ -69,6 +69,7 @@ jobs:
         run: |
           python -I -S -B -m unittest discover -s tests -p 'test_mattpocock_adaptations.py' -v
           python -I -S -B -m unittest discover -s tests -p 'test_017_skill_portability.py' -v
+          python -I -S -B -m unittest discover -s tests -p 'test_release_legal_notices.py' -v
       - name: Manifest and version checks
         run: python -B scripts/prepare_release.py --check
       - name: Verify 0.17.0 source inventory

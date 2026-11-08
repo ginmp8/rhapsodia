@@ -76,6 +76,7 @@ jobs:
         run: |
           python -I -S -B -m unittest discover -s tests -p 'test_mattpocock_adaptations.py' -v
           python -I -S -B -m unittest discover -s tests -p 'test_017_skill_portability.py' -v
+          python -I -S -B -m unittest discover -s tests -p 'test_release_legal_notices.py' -v
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
