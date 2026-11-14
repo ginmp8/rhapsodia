@@ -1,0 +1,340 @@
+#!/usr/bin/env python3
+"""Frozen, evidence-backed PR/issue scoring. No network for replay/score.
+
+External commands: gh for read-only capture; git for read-only inspection;
+explicit local tests only with --execute.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import platform
+import re
+import signal
+import subprocess
+import sys
+import threading
+from pathlib import Path
+
+from audit_core import (
+    AuditError, SOURCE_SCHEMA, EXECUTIONS_SCHEMA, REPORT_SCHEMA, canonical,
+    compare_reports, digest, extract_requirements, git_bytes, init_checks,
+    inspect, markdown_report, normalize_source, read_json, require_schema,
+    score, suggest_paths, validate_checks, verify_commit_available, write_immutable,
+)
+
+
+def gh_api(endpoint: str) -> dict | list:
+    try:
+        r = subprocess.run(["gh", "api", endpoint], capture_output=True, text=True, timeout=60)
+    except FileNotFoundError as exc:
+        raise AuditError("GitHub CLI `gh` not found. Install/authenticate gh, or use --from-json fixture.") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise AuditError("GitHub API request timed out") from exc
+    if r.returncode:
+        raise AuditError(f"GitHub API request failed ({endpoint}): {r.stderr.strip()[:400]}")
+    try:
+        return json.loads(r.stdout)
+    except json.JSONDecodeError as exc:
+        raise AuditError(f"Invalid JSON from gh API for {endpoint}") from exc
+
+
+def gh_paginated(endpoint: str, max_items: int = 5000) -> list:
+    items = []
+    page = 1
+    while True:
+        separator = "&" if "?" in endpoint else "?"
+        response = gh_api(f"{endpoint}{separator}per_page=100&page={page}")
+        if not isinstance(response, list):
+            raise AuditError(f"Paginated endpoint returned non-array: {endpoint}")
+        items.extend(response)
+        if len(items) > max_items:
+            raise AuditError(f"Unbounded API content: more than {max_items} items at {endpoint}")
+        if len(response) < 100:
+            break
+        page += 1
+    return items
+
+
+def collect_github(repo: str, pr_number: int, issue_number: int) -> dict:
+    pr = gh_api(f"repos/{repo}/pulls/{pr_number}")
+    issue = gh_api(f"repos/{repo}/issues/{issue_number}")
+    comments = gh_paginated(f"repos/{repo}/issues/{issue_number}/comments")
+    files = gh_paginated(f"repos/{repo}/pulls/{pr_number}/files")
+    # To avoid inconsistency during capture, verify that the PR did not advance
+    # while its files and issue comments were being fetched.
+    pr_second = gh_api(f"repos/{repo}/pulls/{pr_number}")
+    issue_second = gh_api(f"repos/{repo}/issues/{issue_number}")
+    if pr["head"]["sha"] != pr_second["head"]["sha"] or pr["base"]["sha"] != pr_second["base"]["sha"]:
+        raise AuditError("PR advanced during capture; retry with a new frozen snapshot")
+    if issue.get("updated_at") != issue_second.get("updated_at") or issue.get("comments") != issue_second.get("comments"):
+        raise AuditError("Issue changed during capture; retry")
+    if len(comments) != issue.get("comments", len(comments)):
+        raise AuditError("Incomplete issue comments; cannot certify complete capture")
+    if len(files) != pr.get("changed_files", len(files)):
+        raise AuditError("Incomplete PR file listing; GitHub limits file endpoints for very large PRs")
+    return {
+        "repository": repo,
+        "pull_request": {
+            "number": pr["number"], "title": pr.get("title"), "body": pr.get("body"),
+            "url": pr.get("html_url"), "head_sha": pr["head"]["sha"],
+            "base_sha": pr["base"]["sha"], "files": files,
+        },
+        "issue": {
+            "number": issue["number"], "title": issue.get("title"),
+            "body": issue.get("body"), "url": issue.get("html_url"),
+            "comments": comments,
+        },
+    }
+
+
+def source_input_args(args: argparse.Namespace) -> dict:
+    if args.from_json:
+        return read_json(args.from_json)
+    if args.pr_url:
+        m = re.fullmatch(r"https://github\.com/([^/]+)/([^/]+)/pull/(\d+)/?", args.pr_url)
+        if not m:
+            raise AuditError("--pr-url must be https://github.com/owner/repo/pull/NUMBER")
+        repo, num = f"{m.group(1)}/{m.group(2)}", int(m.group(3))
+    else:
+        if not args.repo or not args.pr:
+            raise AuditError("Supply --pr-url, or --repo owner/repo --pr NUMBER")
+        repo, num = args.repo, args.pr
+    if not args.issue:
+        raise AuditError("--issue is required. Never infer normative issue from PR description alone.")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+        raise AuditError("Invalid owner/repo")
+    return collect_github(repo, num, args.issue)
+
+
+def capture(args: argparse.Namespace) -> None:
+    raw = source_input_args(args)
+    specs = raw.get("spec_files", [])
+    for path in args.spec_file or []:
+        content = Path(path).read_text(encoding="utf-8")
+        specs.append({"name": Path(path).name, "body": content})
+    source = normalize_source(raw, specs)
+    requirements = extract_requirements(source)
+    out = Path(args.out)
+    write_immutable(out / "source.json", canonical(source))
+    write_immutable(out / "requirements.json", canonical(requirements))
+    print(f"Captured: PR #{source['pull_request']['number']} at {source['pull_request']['head_sha']}")
+    print(f"Extracted: {len(requirements['criteria'])} criteria; {len(requirements['warnings'])} warnings")
+    print(f"Spec SHA-256: {requirements['spec_digest']}")
+    print(f"Output: {out}")
+
+
+def init_command(args: argparse.Namespace) -> None:
+    req = read_json(args.requirements)
+    plan = init_checks(req)
+    write_immutable(args.out, canonical(plan))
+    print(f"Initialized {len(plan['requirements'])} requirements in {args.out}")
+    print("IMPORTANT: Empty plans are UNVERIFIED, never automatically PASS.")
+
+
+def inspect_command(args: argparse.Namespace) -> None:
+    source, req, plan = read_json(args.source), read_json(args.requirements), read_json(args.checks)
+    executions = read_json(args.executions) if args.executions else None
+    evidence = inspect(source, req, plan, args.repo_path, executions)
+    write_immutable(args.out, canonical(evidence))
+    statuses = {"PASS": 0, "FAIL": 0, "NOT_RUN": 0}
+    for rec in evidence["results"].values():
+        for check in rec.values():
+            statuses[check["status"]] += 1
+    print(f"Evidence captured: {statuses}; SHA-256 {digest(evidence)}")
+
+
+def suggest_command(args: argparse.Namespace) -> None:
+    source, req = read_json(args.source), read_json(args.requirements)
+    hints = suggest_paths(source, req, args.repo_path)
+    write_immutable(args.out, canonical(hints))
+    print(f"Generated non-scoring lexical hints for {len(hints['candidates'])} criteria: {args.out}")
+
+
+def verify_evidence_command(args: argparse.Namespace) -> None:
+    source, req, plan = read_json(args.source), read_json(args.requirements), read_json(args.checks)
+    frozen = read_json(args.evidence)
+    executions = read_json(args.executions) if args.executions else None
+    actual = inspect(source, req, plan, args.repo_path, executions)
+    if canonical(actual) != canonical(frozen):
+        raise AuditError("Frozen evidence differs from pinned Git inspection and/or test receipts")
+    print(f"VERIFIED: evidence reinspection is byte-identical: {digest(actual)}")
+
+
+def score_command(args: argparse.Namespace) -> None:
+    source, req, plan, evidence = (read_json(x) for x in (args.source, args.requirements, args.checks, args.evidence))
+    report = score(source, req, plan, evidence)
+    out = Path(args.out)
+    write_immutable(out / "report.json", canonical(report))
+    write_immutable(out / "report.md", markdown_report(report).encode("utf-8"))
+    value = report['overall']['completion_verified_pct']
+    print(f"Verified completion: {value}%" if value is not None else "Verified completion: N/A")
+    print(f"Verdict: {report['verdict']}; report: {out / 'report.md'}")
+
+
+def verify_command(args: argparse.Namespace) -> None:
+    report = score(*[read_json(x) for x in (args.source, args.requirements, args.checks, args.evidence)])
+    json_bytes = Path(args.report_json).read_bytes()
+    md_bytes = Path(args.report_md).read_bytes()
+    if json_bytes != canonical(report) or md_bytes != markdown_report(report).encode("utf-8"):
+        raise AuditError("Report does not match canonical recomputation. Possible input/report drift or tampering.")
+    print(f"VERIFIED: byte-identical report; report SHA-256 {hashlib.sha256(json_bytes).hexdigest()}")
+
+
+def compare_command(args: argparse.Namespace) -> None:
+    left, right = read_json(args.left), read_json(args.right)
+    result = compare_reports(left, right)
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
+
+
+def run_tests_command(args: argparse.Namespace) -> None:
+    if not args.execute:
+        raise AuditError("Executing repo commands requires explicit --execute (untrusted code may run).")
+    source, req, plan = read_json(args.source), read_json(args.requirements), read_json(args.checks)
+    validate_checks(req, plan)
+    require_schema(source, SOURCE_SCHEMA)
+    head = source["pull_request"]["head_sha"]
+    verify_commit_available(args.repo_path, head)
+    current_head = git_bytes(args.repo_path, "rev-parse", "HEAD").decode().strip()
+    if current_head != head:
+        raise AuditError(f"Checkout HEAD {current_head} differs from pinned candidate {head}")
+    dirty = git_bytes(args.repo_path, "status", "--porcelain")
+    if dirty.strip():
+        raise AuditError("Checkout is not clean. Run tests in a clean disposable clone/worktree.")
+    tests = []
+    for ident, binding in plan["requirements"].items():
+        for check in binding["checks"]:
+            if check["kind"] == "test":
+                tests.append((ident, check))
+    if not tests:
+        raise AuditError("No test checks are defined in the evidence plan")
+    print(f"Executing {len(tests)} explicitly declared test command(s) at {head}", file=sys.stderr)
+    results = {}
+    for ident, check in tests:
+        key = f"{ident}/{check['id']}"
+        command = check["argv"]
+        limit = check.get("timeout_seconds", 120)
+        try:
+            # Drain output directly into SHA-256, never onto disk or into RAM.
+            # This avoids accumulating Playwright/build/test logs in the audit.
+            h = hashlib.sha256()
+            size = [0]
+            proc = subprocess.Popen(command, cwd=args.repo_path, stdin=subprocess.DEVNULL,
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                    shell=False, start_new_session=(os.name != "nt"))
+            def drain():
+                assert proc.stdout is not None
+                while True:
+                    chunk = proc.stdout.read(65536)
+                    if not chunk:
+                        break
+                    size[0] += len(chunk)
+                    h.update(chunk)
+                proc.stdout.close()
+            drain_thread = threading.Thread(target=drain, daemon=True)
+            drain_thread.start()
+            try:
+                exit_code = proc.wait(timeout=limit)
+                status = "PASS" if exit_code == 0 else "FAIL"
+            except subprocess.TimeoutExpired:
+                if os.name != "nt":
+                    os.killpg(proc.pid, signal.SIGKILL)
+                else:
+                    proc.kill()
+                proc.wait()
+                exit_code, status = None, "TIMEOUT"
+            drain_thread.join(timeout=5)
+            if drain_thread.is_alive():
+                # A child process kept stdout open; incomplete evidence is not proof.
+                status, exit_code = "ERROR", None
+            results[key] = {"argv": command, "status": status, "exit_code": exit_code,
+                            "output_sha256": h.hexdigest(), "output_size_bytes": size[0]}
+        except OSError as exc:
+            results[key] = {"argv": command, "status": "ERROR", "exit_code": None,
+                            "error": f"{type(exc).__name__}: {str(exc)[:200]}"}
+        print(f"{key}: {results[key]['status']}", file=sys.stderr)
+    if git_bytes(args.repo_path, "rev-parse", "HEAD").decode().strip() != head:
+        raise AuditError("Test execution changed HEAD; cannot certify receipts")
+    if git_bytes(args.repo_path, "status", "--porcelain").strip():
+        raise AuditError("Test execution left checkout dirty; use a disposable clean worktree and rerun")
+    executions = {
+        "schema": EXECUTIONS_SCHEMA, "source_digest": digest(source),
+        "requirements_digest": digest(req), "checks_digest": digest(plan),
+        "head_sha": head, "runtime": {"platform": platform.platform(),
+                                       "python": platform.python_version()},
+        "results": results,
+    }
+    write_immutable(args.out, canonical(executions))
+    print(f"Test receipts written to {args.out}")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="Deterministic PR-vs-issue scoring with frozen checks and evidence")
+    sub = p.add_subparsers(dest="action", required=True)
+    cap = sub.add_parser("capture", help="Freeze PR+issue+comments; fetch with gh or import JSON")
+    cap.add_argument("--from-json", help="Offline source input")
+    cap.add_argument("--pr-url")
+    cap.add_argument("--repo")
+    cap.add_argument("--pr", type=int)
+    cap.add_argument("--issue", type=int)
+    cap.add_argument("--spec-file", action="append", help="Additional normative Markdown; may repeat")
+    cap.add_argument("--out", required=True, help="New directory for source.json and requirements.json")
+    cap.set_defaults(handler=capture)
+    init = sub.add_parser("init-checks", help="Create evidence contract with one entry per criterion")
+    init.add_argument("--requirements", required=True)
+    init.add_argument("--out", required=True)
+    init.set_defaults(handler=init_command)
+    sugg = sub.add_parser("suggest", help="Lexical file candidates, never counted as proof")
+    sugg.add_argument("--source", required=True)
+    sugg.add_argument("--requirements", required=True)
+    sugg.add_argument("--repo-path", required=True)
+    sugg.add_argument("--out", required=True)
+    sugg.set_defaults(handler=suggest_command)
+    for name, handler in (("inspect", inspect_command), ("score", score_command), ("verify", verify_command),
+                          ("verify-evidence", verify_evidence_command), ("run-tests", run_tests_command)):
+        cmd = sub.add_parser(name)
+        cmd.add_argument("--source", required=True)
+        cmd.add_argument("--requirements", required=True)
+        cmd.add_argument("--checks", required=True)
+        if name == "inspect":
+            cmd.add_argument("--repo-path", help="Local Git repository containing exact PR HEAD commit")
+            cmd.add_argument("--executions", help="Frozen test receipts (optional)")
+            cmd.add_argument("--out", required=True)
+        elif name == "score":
+            cmd.add_argument("--evidence", required=True)
+            cmd.add_argument("--out", required=True, help="Report output directory")
+        elif name == "verify":
+            cmd.add_argument("--evidence", required=True)
+            cmd.add_argument("--report-json", required=True)
+            cmd.add_argument("--report-md", required=True)
+        elif name == "verify-evidence":
+            cmd.add_argument("--evidence", required=True)
+            cmd.add_argument("--repo-path", required=True)
+            cmd.add_argument("--executions")
+        else:
+            cmd.add_argument("--repo-path", required=True)
+            cmd.add_argument("--execute", action="store_true")
+            cmd.add_argument("--out", required=True)
+        cmd.set_defaults(handler=handler)
+    comp = sub.add_parser("compare", help="Compare only reports with the same spec/plan/algorithm")
+    comp.add_argument("--left", required=True)
+    comp.add_argument("--right", required=True)
+    comp.set_defaults(handler=compare_command)
+    return p
+
+
+def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+    try:
+        args.handler(args)
+        return 0
+    except (AuditError, OSError, json.JSONDecodeError, KeyError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

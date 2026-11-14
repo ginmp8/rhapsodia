@@ -34,8 +34,8 @@ def registry(root: Path = ROOT) -> dict:
     if doc.get("schema") != SCHEMA:
         raise ValueError("unsupported legal registry schema")
     rows = doc.get("skills")
-    if not isinstance(rows, list) or len(rows) != 76:
-        raise ValueError("expected one legal registry entry for each of 76 skills")
+    if not isinstance(rows, list) or len(rows) != 77:
+        raise ValueError("expected one legal registry entry for each of 77 skills")
     names = [x.get("name") for x in rows]
     if names != sorted(names) or len(set(names)) != len(names):
         raise ValueError("legal registry must have unique sorted skill names")

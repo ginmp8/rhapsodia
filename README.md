@@ -1,5 +1,11 @@
 # RhapsodIA
 
+## 0.18.0 — Deterministic PR audits and reproducible scoring
+
+RhapsodIA **0.18.0** prepares **77 independently versioned Agent Skills** and retains eight native agent profiles. The new [Deterministic PR Audit](skills/deterministic-pr-audit/SKILL.md) v0.1.0 adds a Python standard-library CLI to capture GitHub PR/issue snapshots, map acceptance criteria to explicit checks, validate pinned Git objects and test receipts, and produce repeatable evidence-backed completion scores. A repository-level entrypoint is available at `python scripts/deterministic_pr_audit.py --help`.
+
+**Reproducibility boundary:** identical frozen source, requirements, check plan, evidence and algorithm yield byte-identical JSON/Markdown reports. The initial mapping of natural-language requirements and the adequacy of test assertions require independent review; the tool does not infer semantic correctness or award completion for unchecked work. Live GitHub capture needs authenticated `gh`; focused test execution is explicit and isolated. See [0.18.0 release notes](docs/releases/0.18.0.md), [usage guide](skills/deterministic-pr-audit/README.md) and [changelog](CHANGELOG.md).
+
 ## 0.17.0 — Decision interviews, mapping and evidence-based review
 
 RhapsodIA **0.17.0** prepares **76 independently versioned Agent Skills** and retains eight native agent profiles. Seven [MIT-attributed adaptations](docs/releases/0.17.0.md) based on Matt Pocock's skills introduce [Grilling](skills/grilling/SKILL.md), [Grill Me](skills/grill-me/SKILL.md), [Grill with Docs](skills/grill-with-docs/SKILL.md), [Domain Modeling](skills/domain-modeling/SKILL.md), [Wayfinder](skills/wayfinder/SKILL.md), [Retro](skills/retro/SKILL.md), and [Code Review](skills/code-review/SKILL.md).

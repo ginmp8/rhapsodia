@@ -1,0 +1,147 @@
+# Deterministic PR Audit
+
+A **working Python CLI plus ChatGPT Skill** for comparing PRs to GitHub issues with a stable, evidence-backed score. Python 3.10+ and `git` are required for source inspection. The GitHub CLI (`gh`) is needed only to capture live GitHub data (`gh auth login` if needed). There are no Python dependencies.
+
+> Deterministic **calculation** is not the same as automated understanding of an arbitrary specification. The first-time mapping from each acceptance criterion to meaningful code and test checks must be reviewed and frozen. Without checks or runtime proof, the tool reports `UNVERIFIED` instead of fabricating progress.
+
+## Fast start (example: PR #154, issue #148)
+
+From the extracted Skill folder, run:
+
+```bash
+# 1. Freeze issue, all issue comments, PR metadata, full SHAs, and changed files.
+python scripts/pr_audit.py capture \
+  --pr-url https://github.com/ginmp8/pandacode-extended/pull/154 \
+  --issue 148 --out audits/pr154-a
+
+# 2. Generate one reviewable evidence plan. Do this only once per spec version.
+python scripts/pr_audit.py init-checks \
+  --requirements audits/pr154-a/requirements.json \
+  --out audits/issue148-checks.json
+
+# 3. Find possible code locations (advisory only).
+python scripts/pr_audit.py suggest \
+  --source audits/pr154-a/source.json \
+  --requirements audits/pr154-a/requirements.json \
+  --repo-path /path/to/pandacode-extended \
+  --out audits/pr154-a/hints.json
+
+# 4. Edit audits/issue148-checks.json once, adding real assertions.
+# 5. Inspect immutable Git objects at the captured SHA.
+python scripts/pr_audit.py inspect \
+  --source audits/pr154-a/source.json \
+  --requirements audits/pr154-a/requirements.json \
+  --checks audits/issue148-checks.json \
+  --repo-path /path/to/pandacode-extended \
+  --out audits/pr154-a/evidence.json
+
+# 6. Deterministic calculation and byte-exact verification.
+python scripts/pr_audit.py score \
+  --source audits/pr154-a/source.json \
+  --requirements audits/pr154-a/requirements.json \
+  --checks audits/issue148-checks.json \
+  --evidence audits/pr154-a/evidence.json \
+  --out audits/pr154-a/output
+
+python scripts/pr_audit.py verify \
+  --source audits/pr154-a/source.json \
+  --requirements audits/pr154-a/requirements.json \
+  --checks audits/issue148-checks.json \
+  --evidence audits/pr154-a/evidence.json \
+  --report-json audits/pr154-a/output/report.json \
+  --report-md audits/pr154-a/output/report.md
+```
+
+**Windows:** Run the same commands in PowerShell, placing each command on one line (or using PowerShell's backtick continuation); replace `/path/to/pandacode-extended` with `C:\work\pandacode-extended`. Do not type shell `\` line continuations into PowerShell.
+
+The local repository must contain the SHA captured from GitHub. If missing, fetch the PR ref read-only from GitHub into that local repository, e.g. `git -C C:\work\pandacode-extended fetch origin pull/154/head`.
+
+### Evidence plan example
+
+`init-checks` creates one object per extracted criterion with empty checks and `proof_policy: runtime`. Add checks like the following **inside** the entry for a real requirement, without removing IDs or changing `requirements_digest`:
+
+```json
+{
+  "weight": 1,
+  "proof_policy": "runtime",
+  "checks": [
+    {"id": "implementation", "kind": "contains", "path": "src/feature.py", "text": "def execute_feature("},
+    {"id": "acceptance-test", "kind": "test", "argv": ["python", "-m", "unittest", "tests.test_feature"], "timeout_seconds": 120}
+  ]
+}
+```
+
+The `contains` check by itself yields `PARTIAL` under runtime policy. The test check is `NOT_RUN` until a test receipt is produced. Prefer assertions that discriminate correct and incorrect behavior, not a generic `npm test` unrelated to the criterion. `path_exists` and `not_contains` are also supported.
+
+For an **inherently static** requirement only (e.g. a config file must exist), set `"proof_policy":"static"` and declare objective static checks. Avoid setting runtime requirements to static merely to make them pass. To exclude a criterion, set `"not_applicable":true`, `"reason":"...specific grounded rationale..."` and clear its checks.
+
+### Optional: run targeted tests (explicit authorization)
+
+Test commands in the plan may execute arbitrary code from the repository. Use a **clean disposable checkout** at the captured HEAD. There is no automatic test execution from a GitHub issue or PR.
+
+```bash
+python scripts/pr_audit.py run-tests \
+  --source audits/pr154-a/source.json \
+  --requirements audits/pr154-a/requirements.json \
+  --checks audits/issue148-checks.json \
+  --repo-path /path/to/clean-disposable-checkout \
+  --execute --out audits/pr154-a/executions.json
+```
+
+Then pass `--executions audits/pr154-a/executions.json` to `inspect` **before** creating `evidence.json`. If a frozen `evidence.json` already exists, use a new output directory. For accurate evidence receipts, the test command must return the correct exit status and checkout must remain clean. Tests that create build caches or reports in the checkout may be blocked by that cleanliness gate; use a disposable test environment and output paths outside the checkout.
+
+### Compare two PRs or successive commits
+
+1. Capture each candidate into a different directory (`pr154-a`, `pr155-a`).
+2. Reuse the **same** `requirements.json` content and `checks.json` contract (same hashes) when the normative issue hasn't changed. Generate evidence/results for each SHA.
+3. Compare outputs:
+
+```bash
+python scripts/pr_audit.py compare \
+  --left audits/pr154-a/output/report.json \
+  --right audits/pr155-a/output/report.json
+```
+
+A changed spec or check plan blocks direct comparison; intentionally rebaseline both candidates under one agreed contract.
+
+### Offline fixture mode
+
+With a local source JSON object containing `repository`, `pull_request`, `issue` and `issue.comments`, capture without network:
+
+```bash
+python scripts/pr_audit.py capture --from-json source-input.json --out audits/offline
+```
+
+Required source fields: `repository` (`owner/repo`), `pull_request.number`, `pull_request.head_sha` and `.base_sha` (full 40-character SHA), `issue.number`; optional fields include title/body, URL, `pull_request.files`, `issue.comments` (each with stable `id` and `body`), `spec_files` (`name`, `body`). Live capture uses read-only `gh api` endpoints with pagination and checks for source changes during capture.
+
+### Verify evidence against Git
+
+```bash
+python scripts/pr_audit.py verify-evidence \
+  --source audits/pr154-a/source.json \
+  --requirements audits/pr154-a/requirements.json \
+  --checks audits/issue148-checks.json \
+  --repo-path /path/to/pandacode-extended \
+  --evidence audits/pr154-a/evidence.json
+```
+
+Add `--executions` when the evidence contains test results. The command re-inspects all static checks and validates that the frozen result matches. `verify` recomputes the score and checks output bytes. These are consistency checks, not cryptographic source authentication.
+
+## Design and limitations
+
+- Score is **verified completion**: PASS weight / all applicable requirement weight. A separate metric reports percent of declared checks passing. Neither code length nor checkboxes drive these values.
+- `PARTIAL`, `FAIL`, `UNVERIFIED`, and `NOT_APPLICABLE` remain distinct; unresolved criteria appear in `report.md` with check-level detail.
+- Extraction recognizes explicit `REQ-01`, `AC-01`, and checkboxes inside acceptance headings. Unstructured prose or requirements spanning multiple lines need a structured spec before a comprehensive assessment. Duplicated IDs with conflicting meaning abort extraction.
+- All issue comments are captured, but comments without extractable criteria produce a warning. The tool does not decide which conversational comments are normative.
+- The same canonical inputs yield byte-identical `report.json` and `report.md`. Re-running tests or changing evidence creates new observations, not a nondeterministic replay.
+- GitHub capture is best-effort consistent at API request boundaries, not an atomic GitHub transaction.
+- A passing test receipt demonstrates the declared command exited as expected at the pinned SHA; it does not independently prove assertions adequately cover the requirement.
+- GitHub capture is not exercised against a live repository in the bundled offline test suite; it is tested through a simulated `gh api` client.
+
+## Self-tests
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+All scripts are read-only with respect to GitHub and the target repository except for **explicit test command execution**, which may write local files. Script outputs are immutable by default: if the requested output exists with different bytes, the tool refuses to overwrite it.

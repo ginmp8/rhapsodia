@@ -1,6 +1,6 @@
 {
   "schema": "rhapsodia-skill-legal-assets/v1",
-  "scope": "All 76 canonical skills in release 0.17.0",
+  "scope": "All 77 canonical skills in release 0.18.0",
   "root_default_license": "LICENSE",
   "skills": [
     {
@@ -155,6 +155,10 @@
           "size": 1066
         }
       ]
+    },
+    {
+      "name": "deterministic-pr-audit",
+      "notices": []
     },
     {
       "name": "discernment-nudge",

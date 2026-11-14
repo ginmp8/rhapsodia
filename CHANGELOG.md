@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.18.0] - 2026-11-14
+
+### Added
+- Deterministic PR Audit v0.1.0, a first-party Agent Skill with SHA-pinned GitHub issue/PR capture, explicit criterion checks, immutable evidence, byte-identical report replay, and candidate comparison.
+- Standard-library Python CLI under `skills/deterministic-pr-audit/scripts/` plus the repository-level `scripts/deterministic_pr_audit.py` entrypoint.
+- Fifteen offline regression tests for snapshot integrity, scoped requirement scoring, source SHA pinning, verification receipts, repeatability, and comparison guards.
+- Cross-host icon and optional ChatGPT/Codex metadata for the new skill.
+
+### Changed
+- Distribution from 76 to 77 Skills and package metadata from 0.17.0 to 0.18.0; retained eight agents and independent existing semantic contract versions.
+- License registry and standalone packaging inventory synchronized with the added first-party skill.
+
+### Limitations
+- Repeatability applies only to frozen evidence and approved assertions; arbitrary requirements are not automatically understood or proven. Live GitHub capture and full-repository CI were not exercised by the standalone offline test suite.
+
 ## [0.17.0] - 2026-11-08
 
 ### Added

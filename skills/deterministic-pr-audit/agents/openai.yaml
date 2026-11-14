@@ -1,0 +1,12 @@
+interface:
+  display_name: "Deterministic PR Audit"
+  short_description: "Reproducible PR-to-issue evidence and scoring"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#153C57"
+  default_prompt: "Use $deterministic-pr-audit to freeze a PR and issue, verify explicit criteria and produce reproducible evidence-backed scores."
+policy:
+  products:
+    - "CHAT"
+    - "CODEX"
+  allow_implicit_invocation: true

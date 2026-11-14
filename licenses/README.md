@@ -2,7 +2,7 @@
 
 ## Source tree policy
 
-All **76** skills keep their operational instructions, references, icons, scripts, and independent package metadata in `skills/`; original first-party license grants, third-party license grants, copyright notices, historical notices, vendored-component licenses and font OFL notices are centralized under `licenses/` or the repository's root `LICENSE`.
+All **77** skills keep their operational instructions, references, icons, scripts, and independent package metadata in `skills/`; original first-party license grants, third-party license grants, copyright notices, historical notices, vendored-component licenses and font OFL notices are centralized under `licenses/` or the repository's root `LICENSE`.
 
 [skill-assets.json](skill-assets.json) records each skill's exact **original path, canonical file, Git blob identity and byte count**. This includes **22** previously local legal texts/notices in the established skills plus the already-centralized Matt Pocock MIT notice used by seven new skills. Byte-identical grants share one canonical file; unique copyright holders and package-specific notices remain distinct. No legal terms were rewritten by the relocation. An owner-requested follow-up identifies `ginmp8` as the copyright holder for original RhapsodIA work in the root Apache-2.0 `LICENSE` without changing Apache terms. The historical root LICENSE blob is preserved in the cleanup plan.
 
@@ -10,7 +10,7 @@ All **76** skills keep their operational instructions, references, icons, script
 
 - **Full-repository release:** `scripts/build_release_archive.py` includes root `LICENSE` and every canonical file under `licenses/`.
 - **Portable Agent Plugins package:** `scripts/build_portable_agent_plugin.py` copies the source `skills/` as-is and includes root `LICENSE` and `licenses/`, keeping license texts outside individual skill folders.
-- **Standalone skill ZIP:** `python scripts/package_skill.py --skill archify --output dist/archify.zip` works for any one of the 76 skills. It restores each original legal filename at its historical location inside the ZIP and includes a root Apache license for packages without their own `LICENSE`. The original exporter `scripts/package_attributed_skill.py` is a backwards-compatible alias.
+- **Standalone skill ZIP:** `python scripts/package_skill.py --skill archify --output dist/archify.zip` works for any one of the 77 skills. It restores each original legal filename at its historical location inside the ZIP and includes a root Apache license for packages without their own `LICENSE`. The original exporter `scripts/package_attributed_skill.py` is a backwards-compatible alias.
 - **Bare directory copy:** copying only `skills/<name>/` from this source tree is **not** a complete standalone redistribution unless the applicable original legal notices are included separately. Do not claim legal completeness for unvalidated host installers or copying workflows.
 
 Archify's `renderers/shared/software-notices.mjs` is live executable code, not a standalone legal text, and continues to embed the exact original notices in generated artifacts by resolving the central files in source/plugin mode or the restored files in standalone mode.
