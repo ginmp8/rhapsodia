@@ -126,7 +126,7 @@ class JVMTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as t:
             path=Path(t)
             (path/'Sample.java').write_text('public class Sample { public static int a(int x) { return Math.abs(x); } }')
-            subprocess.run(['javac','Sample.java'],cwd=path,check=True,timeout=10,capture_output=True)
+            subprocess.run(['javac','Sample.java'],cwd=path,check=True,timeout=30,capture_output=True)
             data=parse_class((path/'Sample.class').read_bytes())
             self.assertEqual(data['class_name'],'Sample')
             m=next(m for m in data['methods'] if m['name']=='a')

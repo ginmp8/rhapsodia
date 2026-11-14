@@ -7,6 +7,7 @@
 ## Fixed
 - Branch Reconciliation v0.1.1 uses explicit `git diff --check` whitespace settings that accept CRLF resolution files while continuing to reject trailing spaces.
 - Offline GitHub capture tests mock the subprocess boundary across operating systems and verify GitHub endpoint pagination without invoking a Windows `.cmd` launcher.
+- Reverse Engineering v0.3.1 repairs Windows loader-variable propagation before spawning restricted subprocesses and raises the bounded Java compilation test timeout to 30 seconds; a dedicated CI step prevents masking of reverse-engineering test failures.
 
 ## Changed
 - Canonical Skill inventory from 76 to 77; package/plugin release metadata, agent manifest, license catalog and release documentation aligned to 0.18.0.

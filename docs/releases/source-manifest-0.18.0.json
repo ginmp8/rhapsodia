@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "ef8d8c56f1bbb5b002841f7384edc8f712052ceb0ed5058825c6a88eef24bf44",
+  "sha256": "2baed3b6feb701ba40e1ab7e5db3d39cb5f22dbe9f3e7c3a1db283a1d386c811",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -54,7 +54,7 @@
     },
     {
       "path": ".github/workflows/runtime-portability.yml",
-      "sha256": "7d4db7278367af140111e179d6b5faccc774fda0f61b686d2dc1f11c6c8a6e38"
+      "sha256": "31ac0a6a13b093b8c89d9df56dd941cad9918e62f098e4afeae34ec2a14d2047"
     },
     {
       "path": ".gitignore",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "f8d3c84c5aa409c7302d8566ce1a660078102e481e6320839d2c57f6768b36b4"
+      "sha256": "05bc07c2474256373560386c6b474862d9a9051b7e1ffd4df01f7ed1d8a43f35"
     },
     {
       "path": "LICENSE",
@@ -7126,7 +7126,7 @@
     },
     {
       "path": "skills/reverse-engineering/CHANGELOG.md",
-      "sha256": "fd7d6c3219fb4385528d2dbc99638e9443583ffd5c72aa078a6f93d6738f6c9e"
+      "sha256": "41c732ebf92aeb26f7c3e6e5b2540e6bea7e39a2ec5ab8e53d84449fa0c10446"
     },
     {
       "path": "skills/reverse-engineering/README.md",
@@ -7138,7 +7138,7 @@
     },
     {
       "path": "skills/reverse-engineering/VERSION",
-      "sha256": "d915cc95d6ca8f47ae297713ed46d4e5c5d99ddd29fc3c61e263bdf305f2b5b0"
+      "sha256": "79e3f22ca37c7fdf4c29ae3648d6b008c3cb6547260a453409275470919dc674"
     },
     {
       "path": "skills/reverse-engineering/agents/openai.yaml",
@@ -7366,7 +7366,7 @@
     },
     {
       "path": "skills/reverse-engineering/scripts/tool_adapters.py",
-      "sha256": "51eb9401e195b159e8a913ef41d50049e8b752b2210f884005c4f6d74fe6f8a6"
+      "sha256": "1049a06a41d948ad3fb4bcfa72a4dc91c5295f354c08564c1f9e0c3e73e23493"
     },
     {
       "path": "skills/reverse-engineering/scripts/wasm_semantics.py",
@@ -7434,7 +7434,7 @@
     },
     {
       "path": "skills/reverse-engineering/tests/test_semantic_decoders.py",
-      "sha256": "8af14a6072700414eea7bf85d91f8697e6df72d7280cb04c54690cdcd1959c93"
+      "sha256": "e80512b6b431cb6f665716bc8011f3e8fd9d8a34b949d04bd60873929382f8d4"
     },
     {
       "path": "skills/reverse-engineering/tests/test_web_and_dex.py",

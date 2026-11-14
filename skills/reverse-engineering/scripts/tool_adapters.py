@@ -79,19 +79,19 @@ def manifest(root:Path)->list[dict]:
 
 def bounded_process(command:list[str],cwd:str,environment:dict,timeout:int,stdout_path:Path,stderr_path:Path)->int:
     """Consume both subprocess pipes with strict caps, without unbounded PIPE buffers."""
-    try:
-        process=subprocess.Popen(command,cwd=cwd,env=environment,stdin=subprocess.DEVNULL,
-                                 stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    except OSError as exc:
-        raise DataError('optional tool failed to start: '+type(exc).__name__) from exc
-    # Keep the caller's restricted environment while preserving the Windows
-    # loader paths required by native tools (including the Python interpreter).
+    # Preserve Windows loader variables before spawning native child processes,
+    # while keeping the rest of the caller's restricted environment unchanged.
     if os.name == 'nt':
         environment = dict(environment)
         names = {key.casefold() for key in environment}
         for key in ('SystemRoot', 'WINDIR', 'SystemDrive', 'PATHEXT'):
             if key in os.environ and key.casefold() not in names:
                 environment[key] = os.environ[key]
+    try:
+        process=subprocess.Popen(command,cwd=cwd,env=environment,stdin=subprocess.DEVNULL,
+                                 stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    except OSError as exc:
+        raise DataError('optional tool failed to start: '+type(exc).__name__) from exc
     over=threading.Event()
     def copy(source,destination):
         written=0

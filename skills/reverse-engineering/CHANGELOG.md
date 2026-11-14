@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1] - 2026-11-14
+
+### Fixed
+- Restore the Windows loader variables to the restricted child environment **before** launching external tools, preventing spurious failures when PATH is intentionally empty.
+- Extend the real `javac` integration-test timeout to 30 seconds to accommodate cold-start compiler latency under shared CI runners, without skipping compilation or semantic assertions.
+- Preserve bounded execution, authorization requirements, output limits and existing API contracts.
+
 ## [0.3.0] - 2026-10-18
 
 ### Added / clarified

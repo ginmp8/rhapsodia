@@ -15,6 +15,7 @@
 ### Fixed
 - Branch Reconciliation v0.1.1 accepts ordinary CRLF resolution files during deterministic whitespace checks on Windows while retaining rejection of genuine trailing whitespace.
 - Deterministic PR Audit mocks the GitHub CLI subprocess boundary during offline capture tests, preserving pagination checks without platform-specific shell parsing or access to the runner's real `gh`.
+- Reverse Engineering v0.3.1 fixes restricted-environment Windows subprocess startup and accommodates bounded Java compiler cold-start latency; CI reports reverse-engineering regression failures in a dedicated step instead of masking an earlier nonzero exit.
 
 ### Limitations
 - Repeatability applies only to frozen evidence and approved assertions; arbitrary requirements are not automatically understood or proven. Live GitHub capture and full-repository CI were not exercised by the standalone offline test suite.
