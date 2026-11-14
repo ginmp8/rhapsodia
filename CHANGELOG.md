@@ -12,6 +12,10 @@
 - Distribution from 76 to 77 Skills and package metadata from 0.17.0 to 0.18.0; retained eight agents and independent existing semantic contract versions.
 - License registry and standalone packaging inventory synchronized with the added first-party skill.
 
+### Fixed
+- Branch Reconciliation v0.1.1 accepts ordinary CRLF resolution files during deterministic whitespace checks on Windows while retaining rejection of genuine trailing whitespace.
+- Deterministic PR Audit uses a platform-native fake GitHub CLI launcher for offline capture tests on Windows, preventing accidental invocation of the runner's authenticated `gh`.
+
 ### Limitations
 - Repeatability applies only to frozen evidence and approved assertions; arbitrary requirements are not automatically understood or proven. Live GitHub capture and full-repository CI were not exercised by the standalone offline test suite.
 

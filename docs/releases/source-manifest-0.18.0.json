@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "eb6c8e07dc04861f8ae04dec20ff538fac98e40d29901718f9bc137fe36809ba",
+  "sha256": "058019a96cb10738a137d5c7abd5a16b0244cc0a2f82a080dd2c4788ffebc36d",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d77298e8a59af831947674e10d43d142695d438c1adbd2fddcf114074343b946"
+      "sha256": "ccb90f6d4cef876915a98ba6824134bd679390b7323c1d50d0eb4124e3ed202b"
     },
     {
       "path": "LICENSE",
@@ -1426,7 +1426,7 @@
     },
     {
       "path": "skills/branch-reconciliation/CHANGELOG.md",
-      "sha256": "bc52b33c31b3e30a5bbc9c584c296f4ae296166c05c5776f59060fda6eb679fe"
+      "sha256": "4de379445ac1d986bcc475acf2941148f440500ad0728351e9a6a7dfcad17d49"
     },
     {
       "path": "skills/branch-reconciliation/SKILL.md",
@@ -1438,7 +1438,7 @@
     },
     {
       "path": "skills/branch-reconciliation/VERSION",
-      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
+      "sha256": "80447316529fc62014fbaa047fb67c51ac30e32830cda370405349d8d66d196c"
     },
     {
       "path": "skills/branch-reconciliation/agents/openai.yaml",
@@ -1458,11 +1458,11 @@
     },
     {
       "path": "skills/branch-reconciliation/scripts/reconcile.py",
-      "sha256": "ae813b08336928e53e8a5bb7a77762a7f7ee8e9259877e62162cc28c7eeebee8"
+      "sha256": "d4becc307c55c5f8819ec7cf3d00c5a06603fccd45a501ebe52cd62cc343fe48"
     },
     {
       "path": "skills/branch-reconciliation/tests/test_reconcile.py",
-      "sha256": "379c5aa2e49ecd3825ba3fa41b64c8102b448137b181a39562befcb97c166b22"
+      "sha256": "040964537c8281da5c51654781b409a544037f065edcecaad258e3b8ca7c4b97"
     },
     {
       "path": "skills/bug-security-hunter/SKILL.md",
@@ -2206,7 +2206,7 @@
     },
     {
       "path": "skills/deterministic-pr-audit/CHANGELOG.md",
-      "sha256": "4757445a654019992264fdb0c2481d2f80a82d01723b140f183e6b50e330f610"
+      "sha256": "219fef80a55e1b05bb6f9e2c67755e769a9ee6b8651c6b21c63036d80d3021dd"
     },
     {
       "path": "skills/deterministic-pr-audit/README.md",
@@ -2238,11 +2238,11 @@
     },
     {
       "path": "skills/deterministic-pr-audit/scripts/pr_audit.py",
-      "sha256": "649a917c2c8f06a5c5325a4335cf7a2861970bd744f0e7f0aa9dbf8091120c7c"
+      "sha256": "b7054121d3d628ad48f2eddd9d1267837aa16edc1b4096f200d0df6008d6912a"
     },
     {
       "path": "skills/deterministic-pr-audit/tests/test_pr_audit.py",
-      "sha256": "dac8085ab42a73f862a3bc43ed319e0a4a0c8e9c3478f0cb144e1687a76bea3d"
+      "sha256": "9f03680fb930111ea7b4f71f653640df8364f399ceae213ef38cc2b2c38171f5"
     },
     {
       "path": "skills/discernment-nudge/SKILL.md",
@@ -11178,7 +11178,7 @@
     },
     {
       "path": "tests/test_branch_reconciliation_distribution.py",
-      "sha256": "5d5392d9910f08b32d4e056a768e18a4a4c7ba21fa1805fbbc51920a17889db7"
+      "sha256": "437ee7a4b216a82e300f67e70cd006d3441649a15182397ff1ae8e5f02b37be1"
     },
     {
       "path": "tests/test_capability_routing.py",

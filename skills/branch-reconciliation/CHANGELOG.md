@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1] - 2026-11-14
+
+### Fixed
+- Handle CRLF reviewed resolution files on Windows during Git whitespace validation without disabling detection of actual trailing spaces, blank lines or space-before-tab defects.
+- Add focused real-Git regression cases for valid CRLF resolutions and invalid trailing whitespace.
+
 ## [0.1.0] - 2026-11-08
 
 ### Added

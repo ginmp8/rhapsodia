@@ -4,6 +4,10 @@
 - New first-party `deterministic-pr-audit` v0.1.0 Skill and executable Python standard-library CLI for SHA-pinned PR-to-issue scoring.
 - Frozen requirements/check plans, explicit evidence receipts, reproducible JSON/Markdown scoring, candidate comparability checks, and offline regression tests.
 
+## Fixed
+- Branch Reconciliation v0.1.1 uses explicit `git diff --check` whitespace settings that accept CRLF resolution files while continuing to reject trailing spaces.
+- Offline GitHub CLI capture tests use a Windows `.cmd` launcher instead of resolving the runner's real `gh` executable.
+
 ## Changed
 - Canonical Skill inventory from 76 to 77; package/plugin release metadata, agent manifest, license catalog and release documentation aligned to 0.18.0.
 

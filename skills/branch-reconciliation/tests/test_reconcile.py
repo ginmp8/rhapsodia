@@ -121,6 +121,42 @@ class ReconcileTests(unittest.TestCase):
         self.assertEqual(self.git("show", "target:shared.txt"), "combined target and source")
         self.assertEqual(self.git("show", "target:only-source.txt"), "source kept")
 
+    def test_crlf_resolution_is_accepted(self):
+        self.target_change()
+        self.source_change(conflicting=True)
+        root = self.root / "resolutions"
+        root.mkdir()
+        (root / "shared.txt").write_bytes(b"combined target and source\r\n")
+        manifest = self.root / "resolutions.json"
+        manifest.write_text(json.dumps({"schema": "branch-reconciliation-resolutions/v1",
+                                        "paths": {"shared.txt": {"file": "shared.txt", "mode": "100644", "reason": "reviewed both changes"}}}), encoding="utf-8")
+        code, plan, approved = self.make_resolved_plan(manifest, root)
+        self.assertEqual(code, 0, plan)
+        code, result = self.cli("apply", "--plan", str(approved), "--message", "integrate both",
+                                "--reviewed", "--confirm", "--resolutions", str(manifest),
+                                "--resolution-root", str(root))
+        self.assertEqual(code, 0, result)
+        saved = subprocess.run(["git", "-C", str(self.repo), "show", "target:shared.txt"],
+                               capture_output=True, check=True).stdout
+        self.assertEqual(saved, b"combined target and source\r\n")
+
+    def test_trailing_space_in_crlf_resolution_is_rejected(self):
+        self.target_change()
+        self.source_change(conflicting=True)
+        root = self.root / "resolutions"
+        root.mkdir()
+        (root / "shared.txt").write_bytes(b"combined with trailing space \r\n")
+        manifest = self.root / "resolutions.json"
+        manifest.write_text(json.dumps({"schema": "branch-reconciliation-resolutions/v1",
+                                        "paths": {"shared.txt": {"file": "shared.txt", "mode": "100644", "reason": "reviewed both changes"}}}), encoding="utf-8")
+        code, plan, approved = self.make_resolved_plan(manifest, root)
+        self.assertEqual(code, 0, plan)
+        code, result = self.cli("apply", "--plan", str(approved), "--message", "integrate both",
+                                "--reviewed", "--confirm", "--resolutions", str(manifest),
+                                "--resolution-root", str(root))
+        self.assertEqual(code, 2, result)
+        self.assertIn("git diff --check rejected candidate", result["reason"])
+
     def make_resolved_plan(self, manifest: Path, root: Path) -> tuple[int, dict, Path]:
         file = self.root / "resolved-plan.json"
         code, output = self.cli("plan", "--source", "source", "--target", "target", "--output", str(file),

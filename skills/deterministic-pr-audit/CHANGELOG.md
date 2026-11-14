@@ -8,6 +8,9 @@
 - Standard-library CLI commands for capture, checks, code inspection, optional targeted tests, score, verify, evidence verification and comparison.
 - Offline tests covering score replay, capture drift, plan mismatch, Git object pinning and input safety.
 
+### Fixed
+- Resolve the platform-native `gh` executable so Windows offline capture tests use their isolated `.cmd` fixture.
+
 ### Limitations
 - Natural-language requirements and assertion sufficiency need independent review. The CLI guarantees repeatable calculation over frozen evidence, not automatic semantic correctness.
 - Live GitHub capture requires authenticated `gh`; optional test execution requires explicit authorization and an isolated checkout.

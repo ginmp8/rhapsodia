@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -245,7 +246,7 @@ class AuditTests(unittest.TestCase):
                "comments": [{"id": 12, "body": "AC-08: Unit tests pass"}],
                "files": [{"filename": "app.py"}, {"filename": "README.md"}]}
         data.write_text(json.dumps(raw))
-        fakegh = fakebin / "gh"
+        fakegh = fakebin / ("gh.py" if os.name == "nt" else "gh")
         fakegh.write_text("""#!/usr/bin/env python3
 import sys, json, os
 d = json.load(open(os.environ['GH_TEST_DATA']))
@@ -262,10 +263,19 @@ else:
     sys.exit(20)
 """)
         fakegh.chmod(0o755)
+        shim = fakegh
+        if os.name == "nt":
+            # Windows CreateProcess does not resolve extensionless Python scripts.
+            # Use a real .cmd launcher and ensure our CLI selects it from PATH.
+            shim = fakebin / "gh.cmd"
+            shim.write_text(f'@echo off\n"{sys.executable}" "{fakegh}" %*\n', encoding="utf-8")
         target = self.root / "captured"
         env = os.environ.copy()
         env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
         env["GH_TEST_DATA"] = str(data)
+        resolved = shutil.which("gh", path=env["PATH"])
+        self.assertIsNotNone(resolved)
+        self.assertEqual(Path(resolved).resolve(), shim.resolve())
         cmd = [sys.executable, str(CLI), "capture", "--repo", "example/example", "--pr", "5", "--issue", "7", "--out", str(target)]
         for _ in range(2):
             process = subprocess.run(cmd, env=env, capture_output=True, text=True)

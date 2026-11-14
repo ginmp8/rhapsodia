@@ -12,6 +12,7 @@ import json
 import os
 import platform
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -27,8 +28,11 @@ from audit_core import (
 
 
 def gh_api(endpoint: str) -> dict | list:
+    gh = shutil.which("gh")
+    if gh is None:
+        raise AuditError("GitHub CLI `gh` not found. Install/authenticate gh, or use --from-json fixture.")
     try:
-        r = subprocess.run(["gh", "api", endpoint], capture_output=True, text=True, timeout=60)
+        r = subprocess.run([gh, "api", endpoint], capture_output=True, text=True, timeout=60)
     except FileNotFoundError as exc:
         raise AuditError("GitHub CLI `gh` not found. Install/authenticate gh, or use --from-json fixture.") from exc
     except subprocess.TimeoutExpired as exc:
