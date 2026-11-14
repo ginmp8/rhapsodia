@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "2874b3aae126945879e08ad771da342b166703e95612d6657a6c105f68722544",
+  "sha256": "eb6c8e07dc04861f8ae04dec20ff538fac98e40d29901718f9bc137fe36809ba",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -11210,7 +11210,7 @@
     },
     {
       "path": "tests/test_release_legal_notices.py",
-      "sha256": "6a79223732c97c9dbaed5a4aed5b57f04a8d77f030c7e5324a4d47272c2331e8"
+      "sha256": "3910f5523c59d84800ae34fbfd541e1d5e5fee4135790c2580191c4c09b05b82"
     },
     {
       "path": "tests/test_release_versions.py",
@@ -11226,7 +11226,7 @@
     },
     {
       "path": "tests/test_runtime_integration.py",
-      "sha256": "619cf62bad5cb68528d84d82d9abaa4e9461d0e386780e1d18b420b68c3a9565"
+      "sha256": "3a1282a8d02b0bb3032277b70c0a8bc38fe719bf5487f2c00a25350f7bee74f7"
     },
     {
       "path": "tests/test_skill_descriptions.py",
