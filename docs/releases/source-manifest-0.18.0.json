@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "058019a96cb10738a137d5c7abd5a16b0244cc0a2f82a080dd2c4788ffebc36d",
+  "sha256": "dfbafab00a354f73b95227e6e2d706ee233a69ab665ae8ff50f828888359c626",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -2242,7 +2242,7 @@
     },
     {
       "path": "skills/deterministic-pr-audit/tests/test_pr_audit.py",
-      "sha256": "9f03680fb930111ea7b4f71f653640df8364f399ceae213ef38cc2b2c38171f5"
+      "sha256": "48c8a4c18ebdc8646febd25e7dbc8ec1da52e98adc9bb4a1e0a1e950203d865f"
     },
     {
       "path": "skills/discernment-nudge/SKILL.md",

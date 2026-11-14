@@ -268,7 +268,7 @@ else:
             # Windows CreateProcess does not resolve extensionless Python scripts.
             # Use a real .cmd launcher and ensure our CLI selects it from PATH.
             shim = fakebin / "gh.cmd"
-            shim.write_text(f'@echo off\n"{sys.executable}" "{fakegh}" %*\n', encoding="utf-8")
+            shim.write_text(f'@echo off\n"{sys.executable}" "{fakegh}" "%~1" "%~2"\n', encoding="utf-8")
         target = self.root / "captured"
         env = os.environ.copy()
         env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
