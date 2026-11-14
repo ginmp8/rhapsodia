@@ -9,7 +9,7 @@
 - Offline tests covering score replay, capture drift, plan mismatch, Git object pinning and input safety.
 
 ### Fixed
-- Resolve the platform-native `gh` executable so Windows offline capture tests use their isolated `.cmd` fixture.
+- Resolve the platform-native `gh` executable for live requests; offline capture tests mock the subprocess boundary while asserting exact endpoint and pagination arguments.
 
 ### Limitations
 - Natural-language requirements and assertion sufficiency need independent review. The CLI guarantees repeatable calculation over frozen evidence, not automatic semantic correctness.

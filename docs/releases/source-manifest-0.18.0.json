@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "dfbafab00a354f73b95227e6e2d706ee233a69ab665ae8ff50f828888359c626",
+  "sha256": "ef8d8c56f1bbb5b002841f7384edc8f712052ceb0ed5058825c6a88eef24bf44",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ccb90f6d4cef876915a98ba6824134bd679390b7323c1d50d0eb4124e3ed202b"
+      "sha256": "f8d3c84c5aa409c7302d8566ce1a660078102e481e6320839d2c57f6768b36b4"
     },
     {
       "path": "LICENSE",
@@ -2206,7 +2206,7 @@
     },
     {
       "path": "skills/deterministic-pr-audit/CHANGELOG.md",
-      "sha256": "219fef80a55e1b05bb6f9e2c67755e769a9ee6b8651c6b21c63036d80d3021dd"
+      "sha256": "a5360514e64edd3eab80a83d5a47d74e6cd307008943decf384d0598d6241b79"
     },
     {
       "path": "skills/deterministic-pr-audit/README.md",
@@ -2242,7 +2242,7 @@
     },
     {
       "path": "skills/deterministic-pr-audit/tests/test_pr_audit.py",
-      "sha256": "48c8a4c18ebdc8646febd25e7dbc8ec1da52e98adc9bb4a1e0a1e950203d865f"
+      "sha256": "7ec3ae276dd50f2cfc3ed17ab1ab335b2b2e6a0acb2efcc6288c84b771a9d34a"
     },
     {
       "path": "skills/discernment-nudge/SKILL.md",

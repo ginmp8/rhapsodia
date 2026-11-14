@@ -5,15 +5,16 @@ import copy
 import hashlib
 import json
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+import pr_audit
 from audit_core import (
     AuditError, canonical, compare_reports, digest, extract_requirements,
     init_checks, inspect, markdown_report, normalize_source, score, suggest_paths, validate_checks,
@@ -234,52 +235,45 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(bad.returncode, 2)
 
     def test_fake_gh_capture_includes_issue_comments_and_pr_files(self):
-        # Simulate `gh api` read-only endpoints. This test never accesses GitHub.
-        fakebin = self.root / "bin"
-        fakebin.mkdir()
-        data = self.root / "gh_data.json"
+        # Exercise the real capture and subprocess argument construction without
+        # launching a shell-dependent .cmd shim or calling the real GitHub API.
         raw_pr = {"number": 5, "title": "Feature", "body": "desc", "head": {"sha": self.head},
                   "base": {"sha": "a" * 40}, "changed_files": 2}
         raw_issue = {"number": 7, "title": "Feature spec", "body": self.src["issue"]["body"],
                      "comments": 1, "updated_at": "2026-11-14T00:00:00Z"}
-        raw = {"pr": raw_pr, "issue": raw_issue,
-               "comments": [{"id": 12, "body": "AC-08: Unit tests pass"}],
-               "files": [{"filename": "app.py"}, {"filename": "README.md"}]}
-        data.write_text(json.dumps(raw))
-        fakegh = fakebin / ("gh.py" if os.name == "nt" else "gh")
-        fakegh.write_text("""#!/usr/bin/env python3
-import sys, json, os
-d = json.load(open(os.environ['GH_TEST_DATA']))
-ep = sys.argv[2]
-if ep.startswith('repos/example/example/pulls/5/files?'):
-    print(json.dumps(d['files']))
-elif ep.startswith('repos/example/example/issues/7/comments?'):
-    print(json.dumps(d['comments']))
-elif ep == 'repos/example/example/pulls/5':
-    print(json.dumps(d['pr']))
-elif ep == 'repos/example/example/issues/7':
-    print(json.dumps(d['issue']))
-else:
-    sys.exit(20)
-""")
-        fakegh.chmod(0o755)
-        shim = fakegh
-        if os.name == "nt":
-            # Windows CreateProcess does not resolve extensionless Python scripts.
-            # Use a real .cmd launcher and ensure our CLI selects it from PATH.
-            shim = fakebin / "gh.cmd"
-            shim.write_text(f'@echo off\n"{sys.executable}" "{fakegh}" "%~1" "%~2"\n', encoding="utf-8")
+        data = {"pr": raw_pr, "issue": raw_issue,
+                "comments": [{"id": 12, "body": "AC-08: Unit tests pass"}],
+                "files": [{"filename": "app.py"}, {"filename": "README.md"}]}
+        endpoints = []
+
+        def fake_run(argv, **kwargs):
+            self.assertEqual(argv[:2], ["fake-gh", "api"])
+            self.assertFalse(kwargs.get("shell", False))
+            ep = argv[2]
+            endpoints.append(ep)
+            if ep == "repos/example/example/pulls/5":
+                result = data["pr"]
+            elif ep == "repos/example/example/issues/7":
+                result = data["issue"]
+            elif ep == "repos/example/example/issues/7/comments?per_page=100&page=1":
+                result = data["comments"]
+            elif ep == "repos/example/example/pulls/5/files?per_page=100&page=1":
+                result = data["files"]
+            else:
+                self.fail(f"Unexpected GitHub request: {ep}")
+            return subprocess.CompletedProcess(argv, 0, stdout=json.dumps(result), stderr="")
+
         target = self.root / "captured"
-        env = os.environ.copy()
-        env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
-        env["GH_TEST_DATA"] = str(data)
-        resolved = shutil.which("gh", path=env["PATH"])
-        self.assertIsNotNone(resolved)
-        self.assertEqual(Path(resolved).resolve(), shim.resolve())
-        cmd = [sys.executable, str(CLI), "capture", "--repo", "example/example", "--pr", "5", "--issue", "7", "--out", str(target)]
-        for _ in range(2):
-            process = subprocess.run(cmd, env=env, capture_output=True, text=True)
-            self.assertEqual(process.returncode, 0, process.stderr)
+        argv = ["pr_audit.py", "capture", "--repo", "example/example", "--pr", "5",
+                "--issue", "7", "--out", str(target)]
+        with patch.object(pr_audit.shutil, "which", return_value="fake-gh"), \
+                patch.object(pr_audit.subprocess, "run", side_effect=fake_run), \
+                patch.object(sys, "argv", argv):
+            for _ in range(2):
+                self.assertEqual(pr_audit.main(), 0)
+        self.assertEqual(len(endpoints), 12)
+        self.assertIn("repos/example/example/issues/7/comments?per_page=100&page=1", endpoints)
+        self.assertIn("repos/example/example/pulls/5/files?per_page=100&page=1", endpoints)
         source = json.loads((target / "source.json").read_text())
         requirements = json.loads((target / "requirements.json").read_text())
         self.assertEqual(source["pull_request"]["head_sha"], self.head)

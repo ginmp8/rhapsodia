@@ -14,7 +14,7 @@
 
 ### Fixed
 - Branch Reconciliation v0.1.1 accepts ordinary CRLF resolution files during deterministic whitespace checks on Windows while retaining rejection of genuine trailing whitespace.
-- Deterministic PR Audit uses a platform-native fake GitHub CLI launcher for offline capture tests on Windows, preventing accidental invocation of the runner's authenticated `gh`.
+- Deterministic PR Audit mocks the GitHub CLI subprocess boundary during offline capture tests, preserving pagination checks without platform-specific shell parsing or access to the runner's real `gh`.
 
 ### Limitations
 - Repeatability applies only to frozen evidence and approved assertions; arbitrary requirements are not automatically understood or proven. Live GitHub capture and full-repository CI were not exercised by the standalone offline test suite.

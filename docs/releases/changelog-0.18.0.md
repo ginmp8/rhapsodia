@@ -6,7 +6,7 @@
 
 ## Fixed
 - Branch Reconciliation v0.1.1 uses explicit `git diff --check` whitespace settings that accept CRLF resolution files while continuing to reject trailing spaces.
-- Offline GitHub CLI capture tests use a Windows `.cmd` launcher instead of resolving the runner's real `gh` executable.
+- Offline GitHub capture tests mock the subprocess boundary across operating systems and verify GitHub endpoint pagination without invoking a Windows `.cmd` launcher.
 
 ## Changed
 - Canonical Skill inventory from 76 to 77; package/plugin release metadata, agent manifest, license catalog and release documentation aligned to 0.18.0.
