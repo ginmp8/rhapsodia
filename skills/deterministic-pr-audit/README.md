@@ -2,7 +2,7 @@
 
 A **working Python CLI plus ChatGPT Skill** for comparing PRs to GitHub issues with a stable, evidence-backed score. Python 3.10+ and `git` are required for source inspection. The GitHub CLI (`gh`) is needed only to capture live GitHub data (`gh auth login` if needed). There are no Python dependencies.
 
-> Deterministic **calculation** is not the same as automated understanding of an arbitrary specification. The first-time mapping from each acceptance criterion to meaningful code and test checks must be reviewed and frozen. Without checks or runtime proof, the tool reports `UNVERIFIED` instead of fabricating progress.
+> Deterministic **calculation** is not the same as automated understanding of an arbitrary specification. The first-time mapping from each acceptance criterion to meaningful code and test checks must be reviewed and frozen. **No executed checks yields `NOT ASSESSED` and an N/A verified evidence floor, NOT 0% implementation.** An incomplete plan is not a full audit. The CLI cannot honestly estimate implemented percentage from source presence, PR size, or green CI alone.
 
 ## Fast start (example: PR #154, issue #148)
 
@@ -27,7 +27,14 @@ python scripts/pr_audit.py suggest \
   --out audits/pr154-a/hints.json
 
 # 4. Edit audits/issue148-checks.json once, adding real assertions.
-# 5. Inspect immutable Git objects at the captured SHA.
+# 5. REQUIRED PREFLIGHT: fail if no evidence, no plan, or incomplete mapping.
+python scripts/pr_audit.py preflight \
+  --source audits/pr154-a/source.json \
+  --requirements audits/pr154-a/requirements.json \
+  --checks audits/issue148-checks.json \
+  --repo-path /path/to/pandacode-extended
+
+# 6. Inspect immutable Git objects at the captured SHA.
 python scripts/pr_audit.py inspect \
   --source audits/pr154-a/source.json \
   --requirements audits/pr154-a/requirements.json \
@@ -35,7 +42,7 @@ python scripts/pr_audit.py inspect \
   --repo-path /path/to/pandacode-extended \
   --out audits/pr154-a/evidence.json
 
-# 6. Deterministic calculation and byte-exact verification.
+# 7. Deterministic calculation and byte-exact verification.
 python scripts/pr_audit.py score \
   --source audits/pr154-a/source.json \
   --requirements audits/pr154-a/requirements.json \
@@ -55,6 +62,18 @@ python scripts/pr_audit.py verify \
 **Windows:** Run the same commands in PowerShell, placing each command on one line (or using PowerShell's backtick continuation); replace `/path/to/pandacode-extended` with `C:\work\pandacode-extended`. Do not type shell `\` line continuations into PowerShell.
 
 The local repository must contain the SHA captured from GitHub. If missing, fetch the PR ref read-only from GitHub into that local repository, e.g. `git -C C:\work\pandacode-extended fetch origin pull/154/head`.
+
+### Missing checkout or executable test evidence
+
+Do not create an empty plan and call the resulting 0% an audit. The `preflight` gate fails with:
+
+- `NO_VERIFICATION_PLAN`: no assertions were authored.
+- `INCOMPLETE_VERIFICATION_PLAN`: some applicable criteria have no check; add checks, justified NOT_APPLICABLE exclusions, or use `--allow-partial` only for a clearly incomplete diagnostic.
+- `NO_AUDIT_EVIDENCE`: no pinned Git object and no executed, frozen test receipts.
+
+Try a **bounded, read-only** Git fetch into a disposable repository before giving up on source inspection. If the environment cannot obtain a Git checkout, use the authorized GitHub connector to read the **entire issue and comments**, current PR metadata, implementation (including code outside the diff), focused tests and exact-SHA Actions logs. Produce a source-grounded, *qualitative* implementation assessment and a gap list. Do **not** invent 0%, a completion percentage, a fake report, or test receipts from CI log summaries. Green CI is only evidence that the executed jobs passed.
+
+`capture --from-json` marks the issue's completeness unverified, because an offline JSON file can be a truncated excerpt. A manually constructed `source.json` with only REQ/AC lines is not a complete normative snapshot. Only a live paginated `gh api` capture marks comment pagination as verified. For connected GitHub data, explicitly check full content, provenance, exact SHA and any unstructured normative amendments before claiming known-scope completeness.
 
 ### Evidence plan example
 
@@ -129,7 +148,9 @@ Add `--executions` when the evidence contains test results. The command re-inspe
 
 ## Design and limitations
 
-- Score is **verified completion**: PASS weight / all applicable requirement weight. A separate metric reports percent of declared checks passing. Neither code length nor checkboxes drive these values.
+- The numeric output is a **verified evidence floor**, not an implementation-completion estimate. It is `null`/N/A if no check ran, if the plan is incomplete, or if no applicable criterion achieved a conclusive `PASS` or `FAIL` despite preliminary probes. A 0% floor is possible only if a fully mapped plan has conclusive evaluated criteria and none passed. `assessment_state` is `NOT_ASSESSED`, `INCOMPLETE_PLAN`, `PARTIALLY_ASSESSED` or `EVALUATED_KNOWN_SCOPE`.
+- The report separately exposes `acceptance_criteria` and `parent_requirements` groups. The combined all-explicit count may overlap (e.g. 40 AC + 14 parent REQ), so do **not** report that combined ratio as feature completion.
+- A separate metric reports percent of declared checks passing; when none ran, it is N/A. Neither code length nor checkboxes drive these values.
 - `PARTIAL`, `FAIL`, `UNVERIFIED`, and `NOT_APPLICABLE` remain distinct; unresolved criteria appear in `report.md` with check-level detail.
 - Extraction recognizes explicit `REQ-01`, `AC-01`, and checkboxes inside acceptance headings. Unstructured prose or requirements spanning multiple lines need a structured spec before a comprehensive assessment. Duplicated IDs with conflicting meaning abort extraction.
 - All issue comments are captured, but comments without extractable criteria produce a warning. The tool does not decide which conversational comments are normative.
@@ -137,6 +158,7 @@ Add `--executions` when the evidence contains test results. The command re-inspe
 - GitHub capture is best-effort consistent at API request boundaries, not an atomic GitHub transaction.
 - A passing test receipt demonstrates the declared command exited as expected at the pinned SHA; it does not independently prove assertions adequately cover the requirement.
 - GitHub capture is not exercised against a live repository in the bundled offline test suite; it is tested through a simulated `gh api` client.
+- A GitHub connector source/CI inspection can support a strong qualitative review while the CLI is unable to score; it is **not** a substitute for verified local Git objects or genuine runtime receipts in deterministic numeric scoring.
 
 ## Self-tests
 

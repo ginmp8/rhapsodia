@@ -3,9 +3,9 @@
 ## [0.18.0] - 2026-11-14
 
 ### Added
-- Deterministic PR Audit v0.1.0, a first-party Agent Skill with SHA-pinned GitHub issue/PR capture, explicit criterion checks, immutable evidence, byte-identical report replay, and candidate comparison.
+- Deterministic PR Audit v0.2.0, a first-party Agent Skill with SHA-pinned GitHub issue/PR capture, explicit criterion checks, immutable evidence, byte-identical report replay, and candidate comparison.
 - Standard-library Python CLI under `skills/deterministic-pr-audit/scripts/` plus the repository-level `scripts/deterministic_pr_audit.py` entrypoint.
-- Fifteen offline regression tests for snapshot integrity, scoped requirement scoring, source SHA pinning, verification receipts, repeatability, and comparison guards.
+- Twenty-three offline regression tests for snapshot integrity, scoped requirement scoring, source SHA pinning, verification receipts, repeatability, and comparison guards.
 - Cross-host icon and optional ChatGPT/Codex metadata for the new skill.
 
 ### Changed
@@ -13,6 +13,7 @@
 - License registry and standalone packaging inventory synchronized with the added first-party skill.
 
 ### Fixed
+- Deterministic PR Audit no longer reports 0% implementation when no checks were executed; adds a preflight evidence gate and separates parent REQs from acceptance criteria.
 - Branch Reconciliation v0.1.1 accepts ordinary CRLF resolution files during deterministic whitespace checks on Windows while retaining rejection of genuine trailing whitespace.
 - Deterministic PR Audit mocks the GitHub CLI subprocess boundary during offline capture tests, preserving pagination checks without platform-specific shell parsing or access to the runner's real `gh`.
 - Reverse Engineering v0.3.1 fixes restricted-environment Windows subprocess startup and accommodates bounded Java compiler cold-start latency; CI reports reverse-engineering regression failures in a dedicated step instead of masking an earlier nonzero exit.

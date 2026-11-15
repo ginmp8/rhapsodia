@@ -23,6 +23,7 @@ from audit_core import (
     AuditError, SOURCE_SCHEMA, EXECUTIONS_SCHEMA, REPORT_SCHEMA, canonical,
     compare_reports, digest, extract_requirements, git_bytes, init_checks,
     inspect, markdown_report, normalize_source, read_json, require_schema,
+    spec_material,
     score, suggest_paths, validate_checks, verify_commit_available, write_immutable,
 )
 
@@ -81,6 +82,7 @@ def collect_github(repo: str, pr_number: int, issue_number: int) -> dict:
         raise AuditError("Incomplete PR file listing; GitHub limits file endpoints for very large PRs")
     return {
         "repository": repo,
+        "capture": {"method": "gh_api_live", "issue_completeness": "verified_by_pagination"},
         "pull_request": {
             "number": pr["number"], "title": pr.get("title"), "body": pr.get("body"),
             "url": pr.get("html_url"), "head_sha": pr["head"]["sha"],
@@ -96,7 +98,11 @@ def collect_github(repo: str, pr_number: int, issue_number: int) -> dict:
 
 def source_input_args(args: argparse.Namespace) -> dict:
     if args.from_json:
-        return read_json(args.from_json)
+        raw = read_json(args.from_json)
+        # This route can contain hand-picked excerpts rather than the full issue.
+        # Never silently upgrade it to a fully captured normative issue.
+        raw["capture"] = {"method": "offline_input", "issue_completeness": "not_verified"}
+        return raw
     if args.pr_url:
         m = re.fullmatch(r"https://github\.com/([^/]+)/([^/]+)/pull/(\d+)/?", args.pr_url)
         if not m:
@@ -150,6 +156,47 @@ def inspect_command(args: argparse.Namespace) -> None:
     print(f"Evidence captured: {statuses}; SHA-256 {digest(evidence)}")
 
 
+def preflight_command(args: argparse.Namespace) -> None:
+    """Fail early rather than convert absent inspection into a progress score."""
+    source = read_json(args.source)
+    requirements = read_json(args.requirements)
+    checks = read_json(args.checks)
+    require_schema(source, SOURCE_SCHEMA)
+    validate_checks(requirements, checks)
+    if requirements["spec_digest"] != digest(spec_material(source)):
+        raise AuditError("The criteria do not match the frozen issue/spec source")
+    declared = sum(len(x["checks"]) for x in checks["requirements"].values() if not x.get("not_applicable"))
+    if not declared:
+        raise AuditError("NO_VERIFICATION_PLAN: no checks declared. Build and review criterion-specific assertions before inspecting or scoring.")
+    applicable = [x for x in checks["requirements"].values() if not x.get("not_applicable")]
+    mapped = sum(bool(x["checks"]) for x in applicable)
+    if mapped < len(applicable) and not args.allow_partial:
+        raise AuditError(f"INCOMPLETE_VERIFICATION_PLAN: {mapped}/{len(applicable)} applicable criteria have checks. Map every applicable criterion or use --allow-partial for an explicitly incomplete diagnostic (never full issue completion).")
+    available = []
+    if args.repo_path:
+        verify_commit_available(args.repo_path, source["pull_request"]["head_sha"])
+        available.append("pinned Git commit")
+    if args.executions:
+        executions = read_json(args.executions)
+        require_schema(executions, EXECUTIONS_SCHEMA)
+        expected = {
+            "source_digest": digest(source), "requirements_digest": digest(requirements),
+            "checks_digest": digest(checks), "head_sha": source["pull_request"]["head_sha"],
+        }
+        if any(executions.get(k) != v for k, v in expected.items()):
+            raise AuditError("Execution receipts belong to a different source, plan, or HEAD")
+        if not any(r.get("status") in ("PASS", "FAIL") for r in executions.get("results", {}).values()):
+            raise AuditError("NO_EXECUTED_TESTS: execution file has no evaluated test receipts")
+        available.append("frozen execution receipts")
+    if not available:
+        raise AuditError("NO_AUDIT_EVIDENCE: no local repository containing the pinned HEAD and no executed test receipts. Try a read-only Git fetch. If unavailable, inspect GitHub source and CI using an authorized connector and report a QUALITATIVE evidence-backed analysis; do not report a completion percentage.")
+    print(f"READY: {mapped}/{len(applicable)} criteria mapped, {declared} checks declared; evidence inputs: {', '.join(available)}")
+    if mapped < len(applicable):
+        print("WARNING: PARTIAL PLAN; output cannot claim full issue completion or implementation progress")
+    if source.get("capture", {}).get("method") == "offline_input":
+        print("WARNING: offline issue body/comments may be partial; confirm the full normative issue before claiming complete scope")
+
+
 def suggest_command(args: argparse.Namespace) -> None:
     source, req = read_json(args.source), read_json(args.requirements)
     hints = suggest_paths(source, req, args.repo_path)
@@ -174,7 +221,7 @@ def score_command(args: argparse.Namespace) -> None:
     write_immutable(out / "report.json", canonical(report))
     write_immutable(out / "report.md", markdown_report(report).encode("utf-8"))
     value = report['overall']['completion_verified_pct']
-    print(f"Verified completion: {value}%" if value is not None else "Verified completion: N/A")
+    print(f"Verified evidence floor (NOT implementation progress): {value}%" if value is not None else "NOT ASSESSED: N/A; zero observed checks is not 0% implementation")
     print(f"Verdict: {report['verdict']}; report: {out / 'report.md'}")
 
 
@@ -296,6 +343,14 @@ def build_parser() -> argparse.ArgumentParser:
     sugg.add_argument("--repo-path", required=True)
     sugg.add_argument("--out", required=True)
     sugg.set_defaults(handler=suggest_command)
+    ready = sub.add_parser("preflight", help="Require usable exact-SHA evidence inputs before numeric audit")
+    ready.add_argument("--source", required=True)
+    ready.add_argument("--requirements", required=True)
+    ready.add_argument("--checks", required=True)
+    ready.add_argument("--repo-path", help="Local Git repository containing the captured HEAD")
+    ready.add_argument("--executions", help="Exact-SHA frozen test receipts")
+    ready.add_argument("--allow-partial", action="store_true", help="Permit an explicitly incomplete diagnostic; not a final compliance assessment")
+    ready.set_defaults(handler=preflight_command)
     for name, handler in (("inspect", inspect_command), ("score", score_command), ("verify", verify_command),
                           ("verify-evidence", verify_evidence_command), ("run-tests", run_tests_command)):
         cmd = sub.add_parser(name)

@@ -2,7 +2,7 @@
   "schema": "release-source-manifest/v1",
   "algorithm": "sha256(canonical sorted-key compact UTF-8 JSON files array)",
   "scope": "Release-eligible source files from scripts/package_policy.py, excluding MANIFEST.json, docs/releases/ and docs/research/; .zip and caches are excluded by release policy.",
-  "sha256": "2baed3b6feb701ba40e1ab7e5db3d39cb5f22dbe9f3e7c3a1db283a1d386c811",
+  "sha256": "80ce7a455b787b2d95e60caf3a6bdb62e7616300dbe26c58b8c89c7ed56f352e",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -66,7 +66,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "05bc07c2474256373560386c6b474862d9a9051b7e1ffd4df01f7ed1d8a43f35"
+      "sha256": "35a139392c99702221b7515773863d66046c3648ebf0b2fe71646513fa9a1194"
     },
     {
       "path": "LICENSE",
@@ -74,7 +74,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "4738d1a061f4fa1ba36beab135426d786cb6bea1c38f0a2538c8a38e944dc935"
+      "sha256": "4ddbc7dc9ce1719f37864d41c0f411b7f607f990c7a27c582270b01d9fbf4f4d"
     },
     {
       "path": "agents/magia.agent.md",
@@ -2206,19 +2206,19 @@
     },
     {
       "path": "skills/deterministic-pr-audit/CHANGELOG.md",
-      "sha256": "a5360514e64edd3eab80a83d5a47d74e6cd307008943decf384d0598d6241b79"
+      "sha256": "96f93a77f5483df77a21d2e995e0d94f1c14f63bcb09a04c20cc393cad545259"
     },
     {
       "path": "skills/deterministic-pr-audit/README.md",
-      "sha256": "a24ae4e2839023e9fb0130bbc9f85370c293395a91920c426440d3f7af3d1c53"
+      "sha256": "932f2a861ec111f447c357a63786493ba49b8c772cde0970a6c4e2206d856307"
     },
     {
       "path": "skills/deterministic-pr-audit/SKILL.md",
-      "sha256": "6b1846de942116f540fef06000ea5cc5b6a640210dd7c1a3a585de5c7418f748"
+      "sha256": "dd0e7cdb300e4c9f0ab90fb264fabf2f8caf03cf6a51a7e496f206d99edcc9e4"
     },
     {
       "path": "skills/deterministic-pr-audit/VERSION",
-      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
+      "sha256": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9"
     },
     {
       "path": "skills/deterministic-pr-audit/agents/openai.yaml",
@@ -2230,19 +2230,19 @@
     },
     {
       "path": "skills/deterministic-pr-audit/references/scoring-contract.md",
-      "sha256": "10246ae46ea385fa5d3ba3690bab3234bd734fc348042e002b37d14757a3a1ce"
+      "sha256": "11a2f5b22a984515cc0bf9abe7dff79c5435f53210054b0567031034361aaf7e"
     },
     {
       "path": "skills/deterministic-pr-audit/scripts/audit_core.py",
-      "sha256": "1b7d5ee29353a08eadcb0f39346beb9dc0dba72f20354809af88beeae6652610"
+      "sha256": "946a65778de5e84e625f9f600d99d84878c011113e1379d1f96ea710b15a33ff"
     },
     {
       "path": "skills/deterministic-pr-audit/scripts/pr_audit.py",
-      "sha256": "b7054121d3d628ad48f2eddd9d1267837aa16edc1b4096f200d0df6008d6912a"
+      "sha256": "b1d0afad2b95080e8be225c86f6fd98f05b6164e3f82449d67f9cc3a0197f2b7"
     },
     {
       "path": "skills/deterministic-pr-audit/tests/test_pr_audit.py",
-      "sha256": "7ec3ae276dd50f2cfc3ed17ab1ab335b2b2e6a0acb2efcc6288c84b771a9d34a"
+      "sha256": "4c3f269aefe7ec9b006d29397a20a06f77f7ef1891fd557b64849907472e8553"
     },
     {
       "path": "skills/discernment-nudge/SKILL.md",

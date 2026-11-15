@@ -9,8 +9,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from pathlib import Path
 from unittest.mock import patch
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -107,7 +107,58 @@ class AuditTests(unittest.TestCase):
         self.configure()
         evidence = inspect(self.src, self.requirements, self.plan)
         report = score(self.src, self.requirements, self.plan, evidence)
+        self.assertIsNone(report["overall"]["completion_verified_pct"])
+        self.assertEqual(report["overall"]["assessment_state"], "NOT_ASSESSED")
+        self.assertEqual(report["overall"]["observed_checks"], 0)
+        self.assertIn("NOT ASSESSED", markdown_report(report))
+        self.assertNotIn("Verified completion: 0.00%", markdown_report(report))
+
+    def test_empty_plan_cannot_claim_zero_percent_implemented(self):
+        evidence = inspect(self.src, self.requirements, self.plan)
+        report = score(self.src, self.requirements, self.plan, evidence)
+        self.assertIsNone(report["overall"]["completion_verified_pct"])
+        self.assertEqual(report["overall"]["assessment_state"], "NOT_ASSESSED")
+        self.assertEqual(report["overall"]["requirements_mapped_pct"], "0.00")
+        self.assertIn("No checks were evaluated", markdown_report(report))
+
+    def test_real_failed_inspection_can_report_zero_verified_floor(self):
+        self.configure()
+        self.plan["requirements"]["REQ-12"]["checks"] = [
+            {"id": "exists", "kind": "path_exists", "path": "nonexistent-flag.py"}
+        ]
+        evidence = inspect(self.src, self.requirements, self.plan, self.repo)
+        report = score(self.src, self.requirements, self.plan, evidence)
         self.assertEqual(report["overall"]["completion_verified_pct"], "0.00")
+        self.assertEqual(report["overall"]["assessment_state"], "PARTIALLY_ASSESSED")
+        self.assertGreater(report["overall"]["observed_checks"], 0)
+
+    def test_partial_plan_and_runtime_only_static_probes_never_earn_numeric_floor(self):
+        self.configure()
+        self.plan["requirements"]["AC-08"]["checks"] = []
+        report = score(self.src, self.requirements, self.plan,
+                       inspect(self.src, self.requirements, self.plan, self.repo))
+        self.assertEqual(report["overall"]["assessment_state"], "INCOMPLETE_PLAN")
+        self.assertIsNone(report["overall"]["completion_verified_pct"])
+        self.configure()
+        self.plan["requirements"]["AC-08"]["checks"] = [
+            {"id": "text", "kind": "contains", "path": "app.py", "text": "FEATURE_ENABLED"}
+        ]
+        # One static REQ does pass, so the all-criteria floor is still a valid
+        # evidence lower bound. The runtime AC itself remains unproved.
+        report = score(self.src, self.requirements, self.plan,
+                       inspect(self.src, self.requirements, self.plan, self.repo))
+        self.assertEqual(report["overall"]["acceptance_criteria"]["counts"]["PARTIAL"], 1)
+        self.assertIsNone(report["overall"]["acceptance_criteria"]["completion_verified_pct"])
+
+    def test_acceptance_metrics_do_not_double_count_parent_requirements(self):
+        self.configure()
+        evidence = inspect(self.src, self.requirements, self.plan, self.repo)
+        report = score(self.src, self.requirements, self.plan, evidence)
+        acceptance = report["overall"]["acceptance_criteria"]
+        self.assertEqual(acceptance["eligible_count"], 1)
+        self.assertEqual(acceptance["counts"]["UNVERIFIED"], 1)
+        self.assertIsNone(acceptance["completion_verified_pct"])
+        self.assertIn("Acceptance criteria", markdown_report(report))
 
     def test_changed_source_or_plan_invalidates_evidence(self):
         self.configure()
@@ -154,9 +205,39 @@ class AuditTests(unittest.TestCase):
         right["criteria"][0]["status"] = "PASS"
         changes = compare_reports(left, right)
         self.assertEqual(len(changes["changed_requirements"]), 1)
+        self.assertIn("Evidence-floor comparison", changes["scope_warning"])
         right["identity"]["checks_digest"] = "bad"
         with self.assertRaisesRegex(AuditError, "Not comparable"):
             compare_reports(left, right)
+
+    def test_unassessed_candidates_cannot_be_reported_as_equally_complete(self):
+        self.configure()
+        unassessed = score(self.src, self.requirements, self.plan, inspect(self.src, self.requirements, self.plan))
+        with self.assertRaisesRegex(AuditError, "NOT ASSESSED"):
+            compare_reports(unassessed, copy.deepcopy(unassessed))
+
+    def test_14_parent_requirements_and_40_acs_no_checkout_never_become_zero_progress(self):
+        body = "\n".join([
+            *[f"REQ-{i:02d}: Implement feature group {i}" for i in range(1, 15)],
+            *[f"AC-{i:02d}: Verify observable outcome {i}" for i in range(1, 41)],
+        ])
+        src = normalize_source({
+            "repository": "example/complex-project",
+            "pull_request": {"number": 152, "head_sha": self.head, "base_sha": "a" * 40},
+            "issue": {"number": 147, "body": body, "comments": []},
+        })
+        req = extract_requirements(src)
+        plan = init_checks(req)
+        self.assertEqual(len(req["criteria"]), 54)
+        # A misleading prior workflow mapped only 7 of 54 acceptance/parent items.
+        for ident in list(plan["requirements"])[:7]:
+            plan["requirements"][ident]["checks"] = [{"id": "probe", "kind": "path_exists", "path": "app.py"}]
+        report = score(src, req, plan, inspect(src, req, plan))
+        self.assertEqual(report["overall"]["assessment_state"], "NOT_ASSESSED")
+        self.assertIsNone(report["overall"]["completion_verified_pct"])
+        self.assertEqual(report["overall"]["acceptance_criteria"]["eligible_count"], 40)
+        self.assertEqual(report["overall"]["parent_requirements"]["eligible_count"], 14)
+        self.assertIn("NOT ASSESSED", markdown_report(report))
 
     def test_cli_end_to_end_offline_and_verify(self):
         source_path = self.root / "source-input.json"
@@ -214,8 +295,8 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(canonical(hints1), canonical(hints2))
         self.assertIn("never used for completion", hints1["warning"])
         self.assertIn("REQ-12", hints1["candidates"])
-        self.assertEqual(score(self.src, self.requirements, self.plan,
-                               inspect(self.src, self.requirements, self.plan))["overall"]["completion_verified_pct"], "0.00")
+        self.assertIsNone(score(self.src, self.requirements, self.plan,
+                                inspect(self.src, self.requirements, self.plan))["overall"]["completion_verified_pct"])
 
     def test_cli_verify_evidence_against_git(self):
         self.configure()
@@ -277,9 +358,48 @@ class AuditTests(unittest.TestCase):
         source = json.loads((target / "source.json").read_text())
         requirements = json.loads((target / "requirements.json").read_text())
         self.assertEqual(source["pull_request"]["head_sha"], self.head)
+        self.assertEqual(source["capture"]["method"], "gh_api_live")
+        self.assertEqual(source["capture"]["issue_completeness"], "verified_by_pagination")
         self.assertEqual(len(source["issue"]["comments"]), 1)
         self.assertEqual(source["pull_request"]["files"], ["README.md", "app.py"])
         self.assertIn("AC-08", [r["id"] for r in requirements["criteria"]])
+
+    def test_offline_capture_cannot_claim_complete_issue_intake(self):
+        source_path = self.root / "offline.json"
+        source_path.write_bytes(canonical(self.src))
+        out = self.root / "captured-offline"
+        run(sys.executable, str(CLI), "capture", "--from-json", str(source_path), "--out", str(out))
+        source = json.loads((out / "source.json").read_text())
+        self.assertEqual(source["capture"]["method"], "offline_input")
+        self.assertEqual(source["capture"]["issue_completeness"], "not_verified")
+
+    def test_preflight_rejects_unmapped_and_missing_evidence(self):
+        files = [self.root / f for f in ("source.json", "requirements.json", "checks.json")]
+        for file, value in zip(files[:2], (self.src, self.requirements)):
+            file.write_bytes(canonical(value))
+        self.configure()
+        test_check = self.plan["requirements"]["AC-08"]["checks"]
+        self.plan["requirements"]["AC-08"]["checks"] = []
+        files[2].write_bytes(canonical(self.plan))
+        cmd = [sys.executable, str(CLI), "preflight", "--source", str(files[0]),
+               "--requirements", str(files[1]), "--checks", str(files[2])]
+        unmapped = subprocess.run(cmd, capture_output=True, text=True)
+        self.assertEqual(unmapped.returncode, 2)
+        self.assertIn("INCOMPLETE_VERIFICATION_PLAN", unmapped.stderr)
+        no_evidence = subprocess.run([*cmd, "--allow-partial"], capture_output=True, text=True)
+        self.assertEqual(no_evidence.returncode, 2)
+        self.assertIn("NO_AUDIT_EVIDENCE", no_evidence.stderr)
+        present = run(*cmd, "--allow-partial", "--repo-path", str(self.repo))
+        self.assertIn("READY:", present)
+        self.assertIn("PARTIAL PLAN", present)
+        self.plan["requirements"]["AC-08"]["checks"] = test_check
+        for ident, binding in self.plan["requirements"].items():
+            if not binding["checks"]:
+                binding["checks"] = [{"id": "exists", "kind": "path_exists", "path": "README.md"}]
+                binding["proof_policy"] = "static"
+        files[2].write_bytes(canonical(self.plan))
+        full = run(*cmd, "--repo-path", str(self.repo))
+        self.assertIn("4/4 criteria mapped", full)
 
 
 if __name__ == "__main__":

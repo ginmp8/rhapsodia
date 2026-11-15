@@ -1,8 +1,8 @@
 # RhapsodIA distribution changelog — 0.18.0
 
 ## Added
-- New first-party `deterministic-pr-audit` v0.1.0 Skill and executable Python standard-library CLI for SHA-pinned PR-to-issue scoring.
-- Frozen requirements/check plans, explicit evidence receipts, reproducible JSON/Markdown scoring, candidate comparability checks, and offline regression tests.
+- New first-party `deterministic-pr-audit` v0.2.0 Skill and executable Python standard-library CLI for SHA-pinned PR-to-issue scoring.
+- Frozen requirements/check plans, explicit evidence receipts, reproducible JSON/Markdown scoring, candidate comparability checks, explicit NOT ASSESSED state/preflight validation, separated AC/REQ views, and offline regression tests.
 
 ## Fixed
 - Branch Reconciliation v0.1.1 uses explicit `git diff --check` whitespace settings that accept CRLF resolution files while continuing to reject trailing spaces.

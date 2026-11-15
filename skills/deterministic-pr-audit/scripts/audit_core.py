@@ -122,9 +122,17 @@ def normalize_source(src: dict, specs: list[dict] | None = None) -> dict:
     names = [s["name"] for s in norm_specs]
     if len(set(names)) != len(names):
         raise AuditError("Duplicate spec file names")
+    capture = src.get("capture") or {}
+    if not isinstance(capture, dict):
+        raise AuditError("capture provenance must be an object")
+    method = capture.get("method", "unspecified")
+    if method not in ("gh_api_live", "offline_input"):
+        method = "unspecified"
+    completeness = "verified_by_pagination" if method == "gh_api_live" and capture.get("issue_completeness") == "verified_by_pagination" else "not_verified"
     return {
         "schema": SOURCE_SCHEMA,
         "repository": repo,
+        "capture": {"method": method, "issue_completeness": completeness},
         "pull_request": {
             "number": pr["number"],
             "title": normalize_text(pr.get("title")),
@@ -390,6 +398,54 @@ def two_dec(n: Decimal) -> str:
     return str(n.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 
+def score_group(criteria: list[dict]) -> dict:
+    """Evidence lower bounds, never inferred feature-implementation progress.
+
+    A zero is meaningful only after at least one declared check was evaluated.
+    In particular, no checkout and no test receipts must yield N/A, not 0%.
+    """
+    counts = {k: 0 for k in ("PASS", "PARTIAL", "FAIL", "UNVERIFIED", "NOT_APPLICABLE")}
+    weights = {k: 0 for k in counts}
+    total_checks = observed_checks = mapped = assessed = 0
+    for c in criteria:
+        counts[c["status"]] += 1
+        weights[c["status"]] += c["weight"]
+        if c["status"] == "NOT_APPLICABLE":
+            continue
+        probes = c["checks"]
+        total_checks += len(probes)
+        observed = sum(p["status"] in ("PASS", "FAIL") for p in probes)
+        observed_checks += observed
+        mapped += bool(probes)
+        assessed += bool(observed)
+    eligible_weight = sum(weights.values()) - weights["NOT_APPLICABLE"]
+    eligible_count = len(criteria) - counts["NOT_APPLICABLE"]
+    pct = lambda a, b: two_dec(Decimal(a) * 100 / Decimal(b)) if b else None
+    plan_complete = mapped == eligible_count
+    any_terminal_result = bool(counts["PASS"] or counts["FAIL"])
+    numeric_ready = bool(observed_checks and plan_complete and any_terminal_result)
+    assessment = (
+        "NOT_ASSESSED" if not observed_checks else
+        "INCOMPLETE_PLAN" if not plan_complete else
+        "PARTIALLY_ASSESSED" if counts["UNVERIFIED"] or counts["PARTIAL"] else
+        "EVALUATED_KNOWN_SCOPE"
+    )
+    return {
+        "counts": counts,
+        "eligible_count": eligible_count,
+        "eligible_weight": eligible_weight,
+        "assessment_state": assessment,
+        "observed_checks": observed_checks,
+        "declared_checks": total_checks,
+        "checks_not_run": total_checks - observed_checks,
+        "requirements_with_observations": assessed,
+        "completion_verified_pct": pct(weights["PASS"], eligible_weight) if numeric_ready else None,
+        "completion_possible_upper_pct": pct(weights["PASS"] + weights["PARTIAL"] + weights["UNVERIFIED"], eligible_weight) if numeric_ready else None,
+        "probes_pass_pct": pct(sum(p["status"] == "PASS" for c in criteria if c["status"] != "NOT_APPLICABLE" for p in c["checks"]), total_checks) if observed_checks else None,
+        "requirements_mapped_pct": pct(mapped, eligible_count),
+    }
+
+
 def score(source: dict, requirements: dict, checks: dict, evidence: dict) -> dict:
     require_schema(source, SOURCE_SCHEMA)
     validate_checks(requirements, checks)
@@ -400,9 +456,6 @@ def score(source: dict, requirements: dict, checks: dict, evidence: dict) -> dic
     if set(evidence.get("results", {})) != set(checks["requirements"]):
         raise AuditError("Evidence has missing or extra requirement results")
     criteria = []
-    counts = {k: 0 for k in ("PASS", "PARTIAL", "FAIL", "UNVERIFIED", "NOT_APPLICABLE")}
-    weights = {k: 0 for k in counts}
-    total_probes = passed_probes = mapped_requirements = 0
     for crit in requirements["criteria"]:
         ident = crit["id"]
         binding = checks["requirements"][ident]
@@ -431,40 +484,41 @@ def score(source: dict, requirements: dict, checks: dict, evidence: dict) -> dic
             status = "PARTIAL"
         else:
             status = "PASS"
-        counts[status] += 1
-        weights[status] += binding["weight"]
-        if status != "NOT_APPLICABLE":
-            total_probes += len(declared)
-            passed_probes += statuses.count("PASS")
-            mapped_requirements += int(bool(declared))
         criteria.append({
             "id": ident, "text": crit["text"], "source": crit["source"], "line": crit["line"],
             "weight": binding["weight"], "proof_policy": binding["proof_policy"],
             "status": status, "checks": [{"id": c["id"], **observed[c["id"]]} for c in declared],
             **({"reason": binding["reason"]} if binding.get("not_applicable") else {}),
         })
-    eligible = sum(weights.values()) - weights["NOT_APPLICABLE"]
-    eligible_count = len(criteria) - counts["NOT_APPLICABLE"]
-    pct = lambda a, b: two_dec(Decimal(a) * 100 / Decimal(b)) if b else None
-    overall = {
-        "counts": counts,
-        "eligible_count": eligible_count,
-        "eligible_weight": eligible,
-        "completion_verified_pct": pct(weights["PASS"], eligible),
-        "completion_possible_upper_pct": pct(weights["PASS"] + weights["PARTIAL"] + weights["UNVERIFIED"], eligible),
-        "probes_pass_pct": pct(passed_probes, total_probes),
-        "requirements_mapped_pct": pct(mapped_requirements, eligible_count),
-    }
+    overall = score_group(criteria)
+    # Parent REQs and executable ACs are two views of one specification. They
+    # must not be silently presented as a single 54-step implementation rate.
+    overall["acceptance_criteria"] = score_group([c for c in criteria if c["id"].startswith("AC-")])
+    overall["parent_requirements"] = score_group([c for c in criteria if c["id"].startswith("REQ-")])
+    overall["scoring_scope"] = "all_explicit_criteria_including_parent_requirements"
+    counts = overall["counts"]
+    eligible = overall["eligible_weight"]
+    eligible_count = overall["eligible_count"]
     warnings = list(requirements.get("warnings", []))
+    if source.get("capture", {}).get("issue_completeness") != "verified_by_pagination":
+        warnings.append("Normative issue coverage is NOT independently verified: offline/manual input may omit context, amendments or comments. Confirm the full issue before claiming closure.")
     if not eligible:
         warnings.append("No applicable explicit criteria: no defensible completion percentage")
-    elif mapped_requirements < eligible_count:
+    elif overall["assessment_state"] == "NOT_ASSESSED":
+        warnings.append("No checks were evaluated: NOT ASSESSED. N/A is not 0% implemented. Acquire the pinned repository and/or exact-SHA test receipts; use a qualitative source-backed review if neither is available.")
+    elif overall["assessment_state"] == "INCOMPLETE_PLAN":
+        warnings.append("INCOMPLETE PLAN: some applicable requirements have no checks. N/A is not 0% implemented; complete the evidence plan before any numeric headline.")
+    elif overall["completion_verified_pct"] is None:
+        warnings.append("No fully PASS or FAIL criterion was established despite some observed probes; runtime proof may still be missing. Do not emit a numerical implementation-progress headline.")
+    elif counts["UNVERIFIED"]:
         warnings.append("Unmapped requirements are UNVERIFIED; 0% verified does not imply 0% implemented")
+    if overall["parent_requirements"]["eligible_count"] and overall["acceptance_criteria"]["eligible_count"]:
+        warnings.append("REQ parent objectives and AC acceptance criteria overlap; their combined all-criteria evidence floor is NOT a functional-completion percentage. Report acceptance and parent evidence separately.")
     if any(c["status"] == "PARTIAL" and c["proof_policy"] == "runtime" for c in criteria):
         warnings.append("Static checks alone cannot prove runtime behavior")
     return {
         "schema": REPORT_SCHEMA,
-        "algorithm_version": "score-v1.0.0",
+        "algorithm_version": "score-v1.1.0",
         "repository": source["repository"],
         "pull_request": {k: source["pull_request"][k] for k in ("number", "url", "base_sha", "head_sha")},
         "issue": {k: source["issue"][k] for k in ("number", "url")},
@@ -484,18 +538,32 @@ def markdown_report(report: dict) -> str:
     require_schema(report, REPORT_SCHEMA)
     total = report["overall"]
     pct_string = lambda value: f"{value}%" if value is not None else "N/A"
+    if total["assessment_state"] == "NOT_ASSESSED":
+        verified_line = "**Verified completion:** NOT ASSESSED (N/A; no checks were evaluated; not 0% implementation)"
+    elif total["completion_verified_pct"] is None:
+        verified_line = f"**Verified evidence floor:** N/A ({total['assessment_state']}; no defensible numeric result)"
+    else:
+        verified_line = f"**Verified evidence floor:** {pct_string(total['completion_verified_pct'])} (not functional implementation progress)"
     lines = [
         f"# Deterministic PR audit — {report['repository']} PR #{report['pull_request']['number']}", "",
         f"- **Verdict:** {report['verdict']}",
-        f"- **Verified completion:** {pct_string(total['completion_verified_pct'])} (only requirements with sufficient proof)",
-        f"- **Possible upper bound:** {pct_string(total['completion_possible_upper_pct'])} (includes unverified/partial items)",
+        f"- **Audit readiness:** {total['assessment_state']} ({total['observed_checks']}/{total['declared_checks']} checks evaluated)",
+        f"- {verified_line}",
+        f"- **Possible mathematical ceiling:** {pct_string(total['completion_possible_upper_pct'])} (NOT a forecast)",
         f"- **Passing declared checks:** {pct_string(total['probes_pass_pct'])} (not functional completion)",
         f"- **Requirements with check plans:** {pct_string(total['requirements_mapped_pct'])}",
         f"- **Head SHA:** `{report['pull_request']['head_sha']}`",
         f"- **Requirements digest:** `{report['identity']['requirements_digest']}`",
         f"- **Check plan digest:** `{report['identity']['checks_digest']}`", "",
-        "| Status | Count |", "|---|---:|",
     ]
+    ac = total["acceptance_criteria"]
+    parent = total["parent_requirements"]
+    if ac["eligible_count"]:
+        lines += ["## Acceptance criteria (AC), separate from parent REQs", "",
+                  f"- **Acceptance criteria:** {ac['eligible_count']}; {ac['requirements_with_observations']} with observed checks",
+                  f"- **Acceptance evidence floor:** {pct_string(ac['completion_verified_pct'])} ({ac['assessment_state']}; not implementation progress)",
+                  f"- **Parent REQ evidence floor:** {pct_string(parent['completion_verified_pct'])} ({parent['eligible_count']} parent requirements; not added to AC denominator)", ""]
+    lines += ["| Status | Count |", "|---|---:|"]
     for status, count in total["counts"].items():
         lines.append(f"| {status} | {count} |")
     lines += ["", "## Criteria", "", "| Criterion | Status | Passed checks | Source |", "|---|---|---:|---|"]
@@ -528,6 +596,11 @@ def compare_reports(left: dict, right: dict) -> dict:
     )
     if not comparable:
         raise AuditError("Not comparable: requirements, check plan, or scoring algorithm differs. Rebaseline first.")
+    if left["algorithm_version"] != "score-v1.1.0":
+        raise AuditError("Not comparable: legacy reports predate the no-evidence readiness guard. Recompute under score-v1.1.0.")
+    if (left["overall"].get("completion_verified_pct") is None or
+        right["overall"].get("completion_verified_pct") is None):
+        raise AuditError("Not comparable: at least one candidate was NOT ASSESSED or has incomplete evidence/plan. Missing proof cannot count as equal progress.")
     old = {c["id"]: c for c in left["criteria"]}
     changes = []
     for c in right["criteria"]:
@@ -539,6 +612,10 @@ def compare_reports(left: dict, right: dict) -> dict:
         "left": {"head_sha": left["pull_request"]["head_sha"], "verified_pct": left["overall"]["completion_verified_pct"]},
         "right": {"head_sha": right["pull_request"]["head_sha"], "verified_pct": right["overall"]["completion_verified_pct"]},
         "changed_requirements": changes,
+        "scope_warning": "Evidence-floor comparison only; not a functional-implementation-progress comparison." if (
+            left["overall"].get("assessment_state") != "EVALUATED_KNOWN_SCOPE" or
+            right["overall"].get("assessment_state") != "EVALUATED_KNOWN_SCOPE"
+        ) else None,
     }
 
 
