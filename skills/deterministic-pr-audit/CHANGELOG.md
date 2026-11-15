@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1] - 2026-11-15
+
+### Packaging compatibility
+
+- Remove optional SVG icon and icon references to avoid image processing during ChatGPT skill import.
+- Preserve audit behavior, scripts, requirements and tests from v0.3.0.
+- Validate the single-root ZIP with no SVG/images, unsupported entry types or unresolved references.
+
 ## [0.3.0] - 2026-11-15
 
 ### Added
