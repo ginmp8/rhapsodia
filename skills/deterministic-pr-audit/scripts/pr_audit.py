@@ -19,6 +19,7 @@ import sys
 import threading
 from pathlib import Path
 
+from implementation_review import compare_grades, grade, init_review, markdown_grade
 from audit_core import (
     AuditError, SOURCE_SCHEMA, EXECUTIONS_SCHEMA, REPORT_SCHEMA, canonical,
     compare_reports, digest, extract_requirements, git_bytes, init_checks,
@@ -321,6 +322,39 @@ def run_tests_command(args: argparse.Namespace) -> None:
     print(f"Test receipts written to {args.out}")
 
 
+def init_code_review_command(args: argparse.Namespace) -> None:
+    source, requirements = read_json(args.source), read_json(args.requirements)
+    review = init_review(source, requirements)
+    write_immutable(args.out, canonical(review))
+    print(f"Code-review rubric created for {len(review['criteria'])} frozen criteria: {args.out}")
+
+
+def code_grade_command(args: argparse.Namespace) -> None:
+    source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
+    snapshots = read_json(args.snapshots) if args.snapshots else None
+    result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots)
+    output = Path(args.out)
+    write_immutable(output / "implementation-grade.json", canonical(result))
+    write_immutable(output / "implementation-grade.md", markdown_grade(result).encode("utf-8"))
+    print(f"Implementation progress (assessed scope, CI-independent): {result['summary']['development_progress_assessed_pct'] or 'N/A'}")
+    print(f"Frozen code-grade: {output / 'implementation-grade.md'}")
+
+
+def verify_code_grade_command(args: argparse.Namespace) -> None:
+    source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
+    snapshots = read_json(args.snapshots) if args.snapshots else None
+    result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots)
+    if Path(args.report_json).read_bytes() != canonical(result) or Path(args.report_md).read_bytes() != markdown_grade(result).encode("utf-8"):
+        raise AuditError("Code-delivery report differs from reproducible frozen review")
+    print(f"VERIFIED: deterministic code-delivery grade {digest(result)}")
+
+
+def compare_code_grade_command(args: argparse.Namespace) -> None:
+    left, right = read_json(args.left), read_json(args.right)
+    result = compare_grades(left, right)
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Deterministic PR-vs-issue scoring with frozen checks and evidence")
     sub = p.add_subparsers(dest="action", required=True)
@@ -377,6 +411,28 @@ def build_parser() -> argparse.ArgumentParser:
             cmd.add_argument("--execute", action="store_true")
             cmd.add_argument("--out", required=True)
         cmd.set_defaults(handler=handler)
+    initial = sub.add_parser("init-code-review", help="Scaffold every AC/REQ for CI-independent code analysis")
+    initial.add_argument("--source", required=True)
+    initial.add_argument("--requirements", required=True)
+    initial.add_argument("--out", required=True)
+    initial.set_defaults(handler=init_code_review_command)
+    for action, handler in (("code-grade", code_grade_command), ("verify-code-grade", verify_code_grade_command)):
+        cmd = sub.add_parser(action, help="Score validated source-code implementation without CI inputs")
+        cmd.add_argument("--source", required=True)
+        cmd.add_argument("--requirements", required=True)
+        cmd.add_argument("--review", required=True)
+        cmd.add_argument("--repo-path", help="Local Git checkout with candidate commit")
+        cmd.add_argument("--snapshots", help="Frozen code-file contents collected from GitHub connector")
+        if action == "code-grade":
+            cmd.add_argument("--out", required=True)
+        else:
+            cmd.add_argument("--report-json", required=True)
+            cmd.add_argument("--report-md", required=True)
+        cmd.set_defaults(handler=handler)
+    comp_code = sub.add_parser("compare-code-grade", help="Compare common reviewed AC scope without using CI")
+    comp_code.add_argument("--left", required=True)
+    comp_code.add_argument("--right", required=True)
+    comp_code.set_defaults(handler=compare_code_grade_command)
     comp = sub.add_parser("compare", help="Compare only reports with the same spec/plan/algorithm")
     comp.add_argument("--left", required=True)
     comp.add_argument("--right", required=True)

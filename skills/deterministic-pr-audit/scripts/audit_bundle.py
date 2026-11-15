@@ -20,15 +20,18 @@ from audit_core import (
     write_immutable,
 )
 from pr_audit import collect_github
+from implementation_review import grade, init_review, markdown_grade
 
 
 OUTPUT_FILES = ("source.json", "requirements.json", "checks.json", "evidence.json",
-                "report.json", "report.md", "manifest.json", "README.txt")
+                "report.json", "report.md", "implementation-review.json", "implementation-grade.json",
+                "implementation-grade.md", "manifest.json", "README.txt")
 
 
 def build_bundle(*, source_input: dict, output: str | Path,
                  checks: dict | None = None, repo_path: str | None = None,
-                 executions: dict | None = None) -> dict:
+                 executions: dict | None = None, review: dict | None = None,
+                 snapshots: dict | None = None) -> dict:
     """Produce deterministic audit inputs, report and ZIP from source evidence.
 
     The input is always treated as offline/manual unless it was collected by
@@ -40,6 +43,8 @@ def build_bundle(*, source_input: dict, output: str | Path,
     validate_checks(requirements, plan)
     evidence = inspect(source, requirements, plan, repo_path, executions)
     report = score(source, requirements, plan, evidence)
+    code_review = review if review is not None else init_review(source, requirements)
+    code_grade = grade(source, requirements, code_review, repo_path=repo_path, snapshots=snapshots)
     out = Path(output)
     payloads = {
         "source.json": canonical(source),
@@ -48,7 +53,12 @@ def build_bundle(*, source_input: dict, output: str | Path,
         "evidence.json": canonical(evidence),
         "report.json": canonical(report),
         "report.md": markdown_report(report).encode("utf-8"),
+        "implementation-review.json": canonical(code_review),
+        "implementation-grade.json": canonical(code_grade),
+        "implementation-grade.md": markdown_grade(code_grade).encode("utf-8"),
     }
+    if snapshots is not None:
+        payloads["code-snapshots.json"] = canonical(snapshots)
     assessed = report["overall"]["assessment_state"]
     readme = (
         "DETERMINISTIC PR AUDIT - REPLAYABLE OUTPUT\n"
@@ -60,6 +70,9 @@ def build_bundle(*, source_input: dict, output: str | Path,
         "For a defensible numeric evidence floor, review and fill checks.json,\n"
         "obtain pinned source/test evidence, then regenerate in a new directory.\n"
         "Offline/manual capture completeness must be independently confirmed.\n"
+        "The implementation-grade report is based on code-traced frozen judgments,\n"
+        "not CI. Supply --review and --repo-path or --snapshots for a numerical grade.\n"
+        "Unknown criteria remain unknown; see assessed coverage and score bounds.\n"
     ).encode("utf-8")
     payloads["README.txt"] = readme
     manifest = {
@@ -95,6 +108,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--checks", help="Reviewed frozen checks.json, optional")
     parser.add_argument("--repo-path", help="Local Git repository with exact HEAD, optional")
     parser.add_argument("--executions", help="Frozen runtime receipts, optional")
+    parser.add_argument("--review", help="Frozen CI-independent code-review ledger; one entry per AC/REQ")
+    parser.add_argument("--snapshots", help="Frozen source-code snapshots when a local Git checkout is unavailable")
     parser.add_argument("--out", required=True, help="Output directory")
     args = parser.parse_args(argv)
     try:
@@ -108,12 +123,15 @@ def main(argv: list[str] | None = None) -> int:
         report = build_bundle(source_input=raw, output=args.out,
                               checks=read_json(args.checks) if args.checks else None,
                               repo_path=args.repo_path,
-                              executions=read_json(args.executions) if args.executions else None)
+                              executions=read_json(args.executions) if args.executions else None,
+                              review=read_json(args.review) if args.review else None,
+                              snapshots=read_json(args.snapshots) if args.snapshots else None)
     except (AuditError, OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     print(f"Generated {Path(args.out) / 'audit-bundle.zip'}")
-    print(f"State: {report['overall']['assessment_state']}; verified evidence floor: {report['overall']['completion_verified_pct'] or 'N/A'}")
+    print(f"State: {report['overall']['assessment_state']}; separate CI/verification evidence floor: {report['overall']['completion_verified_pct'] or 'N/A'}")
+    print(f"Code-delivery grade: {Path(args.out) / 'implementation-grade.md'} (CI-independent; N/A until code review)")
     return 0
 
 

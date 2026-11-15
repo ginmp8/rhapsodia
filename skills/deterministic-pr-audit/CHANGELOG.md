@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0] - 2026-11-15
+
+### Code-delivery grading independent of CI
+
+- Add an explicit frozen per-criterion semantic source-review ledger and Git-blob/line validation.
+- Compute reproducible functional completion, development progress, assessment coverage and issue-wide bounds without using CI status or test outcomes.
+- Keep the prior verified-check evidence floor separate for optional targeted tests; include both channels in the deterministic audit ZIP.
+- Provide CLI generation, scoring and verification for code-based reviews, GitHub-connector source snapshot support, and 13 offline regressions.
+- Model-authored semantic classification is not automatically deterministic: only the frozen adjudication plus source and algorithm has reproducible grades.
+
 ## [0.3.1] - 2026-11-15
 
 ### Packaging compatibility

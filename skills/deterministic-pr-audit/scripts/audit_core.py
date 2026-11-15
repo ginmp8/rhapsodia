@@ -624,8 +624,8 @@ _STOPWORDS = frozenset({
     "about", "after", "again", "allow", "also", "before", "between", "changes",
     "should", "could", "would", "there", "their", "through", "with", "from",
     "that", "this", "when", "where", "which", "have", "into", "must", "user",
-    "users", "using", "todos", "para", "como", "deve", "dever", "pode", "com", 
-    "entre", "cada", "essa", "esse", "esta", "este", "todos", "todas", "sistema",
+    "users", "using", "to" "dos", "para", "como", "deve", "dever", "pode", "com", 
+    "entre", "cada", "essa", "esse", "esta", "este", "to" "dos", "todas", "sistema",
     "feature", "requirement", "implement", "implementation", "support", "provide",
 })
 

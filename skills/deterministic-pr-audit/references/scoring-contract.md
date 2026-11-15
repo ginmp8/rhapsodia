@@ -1,11 +1,29 @@
-# Frozen scoring contract (v1.1.0)
+# Frozen scoring contract
 
-All numerical values are derived from canonical JSON `source.json`, `requirements.json`, `checks.json`, `evidence.json` and the algorithm. SHA-pinned Git objects and frozen genuine test receipts are the only supported direct pass/fail inputs. Deterministic replay does **not** independently certify semantic completeness.
+## Primary: source-code implementation grade (code-delivery-v1)
 
-A requirement is `PASS` only when every declared check passes and the proof policy is fulfilled; `PARTIAL` when some checks pass but others failed or are unobserved (including runtime criteria lacking an actual passing test); `FAIL` when all observed checks fail; `UNVERIFIED` when no check result was observed; or `NOT_APPLICABLE` with a documented rationale.
+**Implementation scoring is CI-independent.** Freeze the full issue and every AC/REQ, select HEAD and code evidence, then populate `implementation-review.json` using the source paths and Git blob SHA/line ranges at that HEAD. `code-grade` validates the ledger and source anchors; the score function has no CI-status or test-exit input.
 
-`completion_verified_pct = 100 * PASS_weight / applicable_weight`, rounded half-up to two decimal places, only when a complete plan has actual observed checks and at least one conclusive PASS/FAIL criterion. Otherwise it is `null` and MUST NOT be represented as 0% implementation. The report also includes `assessment_state` (`NOT_ASSESSED`, `INCOMPLETE_PLAN`, `PARTIALLY_ASSESSED`, `EVALUATED_KNOWN_SCOPE`), check coverage, separate AC and REQ groups, and an arithmetic possible upper bound (never a forecast).
+A criterion is `COMPLETE` only when every required behavior is traced as implemented/reachable through its entrypoint, guards and final effects. `PARTIAL` requires implemented code plus a concrete remaining obligation. `MISSING` requires observed counterexample code, not merely absent lexical matches. `UNVERIFIED` remains unknown, never missing. Code evidence validation proves the blob/line reference, **not the analyst's semantic conclusion**; inspect the entire relevant path before adjudicating.
 
-`preflight` is mandatory before presenting a numeric result. It rejects no checks, unmapped requirements, stale source or inadequate pinned evidence. `audit_bundle.py` is the default **artifact generator**, including diagnostic cases where preflight cannot pass; it does not waive preflight for numeric claims. Unexecuted checks and stale/foreign receipts cannot become proof. Parent REQs and child ACs overlap and must never be combined into a misleading completion denominator.
+One AC = one equally weighted obligation. A composite AC with several requirements is `COMPLETE` only when all required parts work; `PARTIAL` is a fixed half-credit modeling assumption, not a measured 50% of code. Never split or weight ACs differently after viewing the candidate to manipulate the note; if a spec's AC granularity is inappropriate, version an explicit subcriterion rubric before comparison and state its limitations.
 
-Byte-for-byte replay applies to identical inputs and algorithm; new tests or code observations generate a new evidence version. Live GitHub capture, semantic mapping, test quality and source completeness require separate verification. Compare reports only with matching frozen requirements/checks/algorithm; unassessed candidates are not valid completion comparisons.
+For the main AC group, let `C` = COMPLETE count, `P` = PARTIAL, `M` = MISSING, `U` = UNVERIFIED and `N=C+P+M+U`. Then:
+
+- **Functional completion (assessed scope)** = `100 × C/(C+P+M)`, or N/A if denominator zero.
+- **Development progress (assessed scope)** = `100 × (C+0.5×P)/(C+P+M)`, or N/A if denominator zero.
+- **Assessment coverage** = `100 × (C+P+M)/N`.
+- **Issue-wide completion lower/upper** = `100×C/N` and `100×(C+U)/N`.
+- **Issue-wide progress lower/upper** = `100×(C+0.5×P)/N` and `100×(C+0.5×P+U)/N`.
+
+Round half-up to two decimal places using the standard-library `Decimal` scorer. Parent `REQ` metrics use a separate denominator and **never** inflate AC progress. The report binds source, requirements, review ledger, algorithm, candidate HEAD, and optional code snapshots by digest. Source snapshots without a local checkout have checked Git blob bytes but lack an independent SHA-to-tree proof; disclose as weaker provenance. An offline issue capture is not authoritative until independently verified complete.
+
+**Determinism boundary:** the same frozen source+requirements+ledger+code snapshot+algorithm reproduces byte-identical scores; a different semantic judgment can legitimately change the score. Never claim an independently repeated free-form LLM review is deterministic without freezing the adjudications. CI failures may be noted in a separate operational section but cannot move the code-delivery percentage.
+
+## Secondary: executable verification evidence floor (score-v1.1.0)
+
+The original `report.json` uses `source.json`, `requirements.json`, `checks.json`, `evidence.json` and its algorithm. A requirement is `PASS` only when its reviewed checks passed and proof policy is fulfilled, `PARTIAL` when some observed checks passed but others failed/missing, `FAIL` when none passed and at least one failed, `UNVERIFIED` with no observed proof, `NOT_APPLICABLE` with a reason. Its `completion_verified_pct` is an **evidence floor**, NOT a grade of delivered code.
+
+`preflight` requires a complete check map, pinned source and real test/static evidence before numeric verified claims. Empty plans produce `NOT_ASSESSED` / N/A, never 0% implemented. `audit_bundle.py` still always generates a ZIP. Its legacy verification evidence is not allowed into `implementation-grade.json`; a green or red generic CI workflow cannot certify the semantic delivery grade.
+
+Both modes require exact source/evaluator identity. Comparisons should freeze the same issue and rubric; changing requirements, review judgments or scoring version creates a different evidence version. A running test only proves what its actual assertions tested. A source reference only proves what its text shows when the interpretation is valid.
