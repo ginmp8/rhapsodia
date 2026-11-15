@@ -1,4 +1,4 @@
-# Deterministic PR Audit v0.3.0
+# Deterministic PR Audit v0.3.1
 
 An evidence-backed, standard-library Python skill for auditing a GitHub PR against the full linked issue, comments and acceptance criteria. It creates an on-disk artifact **even when no source checkout or runtime test is available**. It never equates missing evidence to missing implementation.
 
