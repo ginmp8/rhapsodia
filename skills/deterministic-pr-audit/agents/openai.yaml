@@ -1,0 +1,10 @@
+interface:
+  display_name: "Deterministic PR Audit"
+  short_description: "Code-delivery grades from source, never CI"
+  brand_color: "#153C57"
+  default_prompt: "Use $deterministic-pr-audit to grade current PR implementation against full issue acceptance criteria using pinned code evidence. CI never affects the code-delivery grade. Always create a replayable evidence ZIP."
+policy:
+  products:
+    - "CHAT"
+    - "CODEX"
+  allow_implicit_invocation: true

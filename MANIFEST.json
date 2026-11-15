@@ -27,7 +27,7 @@
     },
     {
       "path": "tests/test_required_session_guards.py",
-      "sha256": "6f4c6e09c57b34eb042862e0669f044e680bc033bb5ec7b8cbcfd6c8934d1c37",
+      "sha256": "f957ab8dea8a1535810ca0bfc8ce9872d4f7d40ccdd47e037fc6bc5a2f5b65d9",
       "size": 7681
     },
     {
@@ -37,8 +37,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "825044e44f5a7c9449f551d530d412edb2d91dac76949da0123bc4c11bb61309",
-      "size": 58939
+      "sha256": "4ddbc7dc9ce1719f37864d41c0f411b7f607f990c7a27c582270b01d9fbf4f4d",
+      "size": 60185
     },
     {
       "path": "agents/magia.agent.md",
@@ -168,5 +168,5 @@
   ],
   "manifest_version": 1,
   "package": "rhapsodia-agents-vscode",
-  "package_version": "0.17.0"
+  "package_version": "0.18.0"
 }
