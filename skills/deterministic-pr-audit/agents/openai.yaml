@@ -1,10 +1,10 @@
 interface:
   display_name: "Deterministic PR Audit"
-  short_description: "Reproducible PR-to-issue evidence and scoring"
+  short_description: "Reproducible PR-to-issue audit, with a downloadable bundle"
   icon_small: "./assets/icon.svg"
   icon_large: "./assets/icon.svg"
   brand_color: "#153C57"
-  default_prompt: "Use $deterministic-pr-audit to freeze a PR and issue, verify explicit criteria and produce reproducible evidence-backed scores."
+  default_prompt: "Use $deterministic-pr-audit to audit a PR, save the SHA-pinned evidence bundle even if runtime proof is missing, and avoid fabricated percentages."
 policy:
   products:
     - "CHAT"
