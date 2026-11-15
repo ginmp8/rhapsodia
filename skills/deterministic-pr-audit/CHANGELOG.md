@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.0] - 2026-11-15
+
+### Evidence-bounded numeric grading and GitHub capture fallback
+
+- Expose an always-numeric conservative delivery grade independently of CI, while preserving assessed-only percentages and issue-wide confidence bounds; make zero-coverage diagnostics unmistakable.
+- Add an explicit `--require-review` gate so all-`UNVERIFIED` scaffolds cannot masquerade as substantive completed audits.
+- Add `capture-code-snapshots` to fetch complete referenced source files directly through authenticated GitHub Contents at the pinned SHA, validating blob integrity without a local checkout.
+- Permit `--allow-provisional` only for a substantive source-traced review when Git/blob verification is unavailable, with explicit unverified provenance and reproducible output.
+- Cover no-code diagnostics, provisional fallback, exact-SHA fetch/mismatch/invalid data and bundle review gates in offline regression tests.
+
 ## [0.4.0] - 2026-11-15
 
 ### Code-delivery grading independent of CI

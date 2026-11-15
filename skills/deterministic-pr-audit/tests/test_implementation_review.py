@@ -1,6 +1,7 @@
 """Frozen implementation grades use source code, NEVER CI outcomes."""
 from __future__ import annotations
 
+import base64
 import copy
 import json
 import subprocess
@@ -16,6 +17,7 @@ from implementation_review import (
     REVIEW_SCHEMA, SNAPSHOTS_SCHEMA, blob_sha, compare_grades, grade, init_review, markdown_grade,
 )
 from audit_bundle import build_bundle
+from pr_audit import collect_code_snapshots
 
 
 def shell(*args, cwd=None):
@@ -157,6 +159,62 @@ def old_mode(value):
         snapshots["files"][0]["content"] = "tampered"
         with self.assertRaisesRegex(AuditError, "blob integrity failure"):
             grade(self.source, self.req, self.review, snapshots=snapshots)
+
+    def test_numerical_floor_is_not_fabricated_completion(self):
+        result = grade(self.source, self.req, self.review)
+        self.assertEqual(result["summary"]["numeric_delivery_grade_pct"], "0.00")
+        self.assertEqual(result["summary"]["numeric_delivery_grade_kind"], "conservative_lower_bound")
+        self.assertIsNone(result["summary"]["development_progress_assessed_pct"])
+        self.assertEqual(result["summary"]["assessed_pct"], "0.00")
+        self.assertIn("zero DEMONSTRATED", " ".join(result["limitations"]))
+        self.assertIn("not an assessment", markdown_grade(result))
+
+    def test_explicit_connector_provisional_mode_requires_real_source_trace(self):
+        self.assess("AC-01")
+        with self.assertRaisesRegex(AuditError, "SOURCE_REQUIRED"):
+            grade(self.source, self.req, self.review)
+        first = grade(self.source, self.req, self.review, allow_provisional=True)
+        second = grade(self.source, self.req, self.review, allow_provisional=True)
+        self.assertEqual(canonical(first), canonical(second))
+        self.assertEqual(first["summary"]["numeric_delivery_grade_pct"], "25.00")
+        self.assertEqual(first["source_evidence_level"], "provisional_unchecked")
+        self.assertEqual(first["code_provenance"], "provisional_connector_refs_unverified")
+        self.assertIn("PROVISIONAL", " ".join(first["limitations"]))
+        bundle = self.root / "provisional-bundle"
+        build_bundle(source_input=self.raw, output=bundle, review=self.review,
+                     allow_provisional=True, require_review=True)
+        report = json.loads((bundle / "implementation-grade.json").read_text())
+        self.assertEqual(report["summary"]["numeric_delivery_grade_pct"], "25.00")
+
+    def test_pinned_gh_snapshot_capture_validates_full_git_blobs(self):
+        self.assess("AC-01")
+        seen = []
+        def fake_fetch(endpoint):
+            seen.append(endpoint)
+            return {"type": "file", "encoding": "base64", "sha": self.sha,
+                    "content": base64.b64encode(self.code.encode("utf-8")).decode("ascii")}
+        snapshots = collect_code_snapshots(self.source, self.req, self.review, fake_fetch)
+        self.assertEqual(seen, [f"repos/test/code-review/contents/app.py?ref={self.head}"])
+        self.assertEqual(snapshots["files"][0]["blob_sha"], self.sha)
+        result = grade(self.source, self.req, self.review, snapshots=snapshots)
+        self.assertEqual(result["summary"]["numeric_delivery_grade_pct"], "25.00")
+        self.assertEqual(result["source_evidence_level"], "blob_integrity_checked")
+        def wrong_fetch(endpoint):
+            result = fake_fetch(endpoint)
+            return dict(result, sha="f" * 40)
+        with self.assertRaisesRegex(AuditError, "blob SHA mismatch"):
+            collect_code_snapshots(self.source, self.req, self.review, wrong_fetch)
+
+    def test_pinned_gh_snapshot_capture_rejects_non_utf8_or_wrong_file(self):
+        self.assess("AC-01")
+        def non_utf8(_):
+            raw = b"\xff\xfe"
+            return {"type": "file", "encoding": "base64", "sha": blob_sha(raw),
+                    "content": base64.b64encode(raw).decode("ascii")}
+        with self.assertRaisesRegex(AuditError, "Invalid UTF-8/base64"):
+            collect_code_snapshots(self.source, self.req, self.review, non_utf8)
+        with self.assertRaisesRegex(AuditError, "Missing or unsupported"):
+            collect_code_snapshots(self.source, self.req, self.review, lambda _: {"type": "dir"})
 
     def test_reject_changed_normative_issue(self):
         self.assess()

@@ -7,6 +7,8 @@ explicit local tests only with --execute.
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import hashlib
 import json
 import os
@@ -18,8 +20,12 @@ import subprocess
 import sys
 import threading
 from pathlib import Path
+from urllib.parse import quote
 
-from implementation_review import compare_grades, grade, init_review, markdown_grade
+from implementation_review import (
+    MAX_FILES, MAX_FILE_BYTES, SNAPSHOTS_SCHEMA, blob_sha, compare_grades,
+    grade, init_review, markdown_grade, validate_review,
+)
 from audit_core import (
     AuditError, SOURCE_SCHEMA, EXECUTIONS_SCHEMA, REPORT_SCHEMA, canonical,
     compare_reports, digest, extract_requirements, git_bytes, init_checks,
@@ -329,21 +335,77 @@ def init_code_review_command(args: argparse.Namespace) -> None:
     print(f"Code-review rubric created for {len(review['criteria'])} frozen criteria: {args.out}")
 
 
+
+def collect_code_snapshots(source: dict, requirements: dict, review: dict, fetch=gh_api) -> dict:
+    """Fetch cited full files at the pinned commit, without cloning or executing PR code."""
+    validate_review(source, requirements, review)
+    expected = {}
+    for entry in review["criteria"].values():
+        if entry["status"] == "UNVERIFIED":
+            continue
+        for citation in entry["evidence"]:
+            path, sha = citation["path"], citation["blob_sha"]
+            if path in expected and expected[path] != sha:
+                raise AuditError(f"Conflicting blob identities for source path: {path}")
+            expected[path] = sha
+    if not expected:
+        raise AuditError("NO_SUBSTANTIVE_REVIEW: capture-code-snapshots needs assessed source references")
+    if len(expected) > MAX_FILES:
+        raise AuditError(f"Too many cited files: {len(expected)} > {MAX_FILES}")
+    head, repo = source["pull_request"]["head_sha"], source["repository"]
+    files = []
+    for path, expected_sha in sorted(expected.items()):
+        item = fetch(f"repos/{repo}/contents/{quote(path, safe='/')}?ref={head}")
+        if not isinstance(item, dict) or item.get("type") != "file" or item.get("encoding") != "base64":
+            raise AuditError(f"Missing or unsupported pinned GitHub file: {path}")
+        encoded = item.get("content")
+        if not isinstance(encoded, str):
+            raise AuditError(f"Invalid GitHub file payload: {path}")
+        try:
+            raw = base64.b64decode("".join(encoded.split()), validate=True)
+            content = raw.decode("utf-8")
+        except (ValueError, UnicodeDecodeError, binascii.Error) as exc:
+            raise AuditError(f"Invalid UTF-8/base64 from GitHub for {path}") from exc
+        if len(raw) > MAX_FILE_BYTES:
+            raise AuditError(f"Pinned source file exceeds maximum size: {path}")
+        actual_sha = blob_sha(raw)
+        if actual_sha != item.get("sha") or actual_sha != expected_sha:
+            raise AuditError(f"Pinned GitHub blob SHA mismatch: {head}:{path}")
+        files.append({"path": path, "blob_sha": actual_sha, "content": content})
+    return {"schema": SNAPSHOTS_SCHEMA, "source_digest": digest(source),
+            "head_sha": head, "files": files}
+
+
+def capture_code_snapshots_command(args: argparse.Namespace) -> None:
+    source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
+    snapshots = collect_code_snapshots(source, requirements, review)
+    write_immutable(args.out, canonical(snapshots))
+    print(f"Captured {len(snapshots['files'])} full source blobs at pinned HEAD: {args.out}")
+
+
 def code_grade_command(args: argparse.Namespace) -> None:
     source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
     snapshots = read_json(args.snapshots) if args.snapshots else None
-    result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots)
+    result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
+                   allow_provisional=args.allow_provisional)
+    if args.require_review and not result["summary"]["assessed"]:
+        raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     output = Path(args.out)
     write_immutable(output / "implementation-grade.json", canonical(result))
     write_immutable(output / "implementation-grade.md", markdown_grade(result).encode("utf-8"))
-    print(f"Implementation progress (assessed scope, CI-independent): {result['summary']['development_progress_assessed_pct'] or 'N/A'}")
+    print(f"Numeric delivery grade (conservative floor, CI-independent): {result['summary']['numeric_delivery_grade_pct']}/100; "
+          f"reviewed: {result['summary']['assessed']}/{result['summary']['total']}; "
+          f"provenance: {result['code_provenance']}")
     print(f"Frozen code-grade: {output / 'implementation-grade.md'}")
 
 
 def verify_code_grade_command(args: argparse.Namespace) -> None:
     source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
     snapshots = read_json(args.snapshots) if args.snapshots else None
-    result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots)
+    result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
+                   allow_provisional=args.allow_provisional)
+    if args.require_review and not result["summary"]["assessed"]:
+        raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     if Path(args.report_json).read_bytes() != canonical(result) or Path(args.report_md).read_bytes() != markdown_grade(result).encode("utf-8"):
         raise AuditError("Code-delivery report differs from reproducible frozen review")
     print(f"VERIFIED: deterministic code-delivery grade {digest(result)}")
@@ -416,13 +478,19 @@ def build_parser() -> argparse.ArgumentParser:
     initial.add_argument("--requirements", required=True)
     initial.add_argument("--out", required=True)
     initial.set_defaults(handler=init_code_review_command)
+    code_cap = sub.add_parser("capture-code-snapshots", help="Fetch referenced HEAD blobs via gh (no checkout)")
+    for required in ("source", "requirements", "review", "out"):
+        code_cap.add_argument(f"--{required}", required=True)
+    code_cap.set_defaults(handler=capture_code_snapshots_command)
     for action, handler in (("code-grade", code_grade_command), ("verify-code-grade", verify_code_grade_command)):
         cmd = sub.add_parser(action, help="Score validated source-code implementation without CI inputs")
         cmd.add_argument("--source", required=True)
         cmd.add_argument("--requirements", required=True)
         cmd.add_argument("--review", required=True)
         cmd.add_argument("--repo-path", help="Local Git checkout with candidate commit")
-        cmd.add_argument("--snapshots", help="Frozen code-file contents collected from GitHub connector")
+        cmd.add_argument("--snapshots", help="Frozen code-file contents collected at candidate HEAD")
+        cmd.add_argument("--allow-provisional", action="store_true", help="Explicitly grade source-traced citations without Git object verification; marked provisional")
+        cmd.add_argument("--require-review", action="store_true", help="Reject all-UNVERIFIED diagnostics as final audits")
         if action == "code-grade":
             cmd.add_argument("--out", required=True)
         else:

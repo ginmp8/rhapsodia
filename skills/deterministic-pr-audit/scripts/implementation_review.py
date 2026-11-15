@@ -127,16 +127,23 @@ def validate_snapshots(source: dict, snapshots: dict) -> dict[str, bytes]:
 
 
 def verify_code_refs(source: dict, review: dict, *, repo_path: str | Path | None = None,
-                     snapshots: dict | None = None) -> str:
+                     snapshots: dict | None = None, allow_provisional: bool = False) -> str:
     head = source["pull_request"]["head_sha"]
-    if repo_path is None and snapshots is None and any(r["status"] != "UNVERIFIED" for r in review["criteria"].values()):
-        raise AuditError("SOURCE_REQUIRED: code grading requires pinned Git objects or complete hashed source-file snapshots")
+    assessed = any(r["status"] != "UNVERIFIED" for r in review["criteria"].values())
+    if repo_path is None and snapshots is None and assessed and not allow_provisional:
+        raise AuditError("SOURCE_REQUIRED: code grading requires pinned Git objects or complete hashed source-file snapshots; explicitly use --allow-provisional only for a source-traced connector review")
     if repo_path is not None:
         verify_commit_available(repo_path, head)
         provenance = "git_commit_verified"
     else:
-        provenance = "captured_blob_only_unverified_tree_membership" if snapshots else "no_source_code_reviewed"
+        provenance = ("captured_blob_only_unverified_tree_membership" if snapshots else
+                      "provisional_connector_refs_unverified" if allow_provisional and assessed else
+                      "no_source_code_reviewed")
     external = validate_snapshots(source, snapshots) if snapshots is not None else {}
+    # Explicit fallback only: citation SHAs and line ranges are declared in the
+    # review ledger but have NOT been independently checked against candidate HEAD.
+    if provenance == "provisional_connector_refs_unverified":
+        return provenance
     cache: dict[str, bytes] = {}
     for ident, entry in review["criteria"].items():
         for ref in entry["evidence"]:
@@ -176,6 +183,10 @@ def _group(ids: list[str], review: dict) -> dict:
     return {
         "total": len(ids), "assessed": known, "counts": counts,
         "assessed_pct": _percent(known, len(ids)),
+        # Always numeric. UNVERIFIED criteria contribute no credit: this is a
+        # conservative evidence floor, never an imputed progress estimate.
+        "numeric_delivery_grade_pct": _percent(partial_units, len(ids) * 2) if ids else "0.00",
+        "numeric_delivery_grade_kind": "complete_review" if ids and known == len(ids) else "conservative_lower_bound",
         "functional_completion_assessed_pct": _percent(counts["COMPLETE"], known),
         "development_progress_assessed_pct": _percent(partial_units, known * 2),
         "functional_completion_lower_pct": _percent(counts["COMPLETE"], len(ids)),
@@ -186,10 +197,11 @@ def _group(ids: list[str], review: dict) -> dict:
 
 
 def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Path | None = None,
-          snapshots: dict | None = None) -> dict:
+          snapshots: dict | None = None, allow_provisional: bool = False) -> dict:
     """Semantic coding judgments are frozen inputs; scores are deterministic and CI-free."""
     validate_review(source, requirements, review)
-    provenance = verify_code_refs(source, review, repo_path=repo_path, snapshots=snapshots)
+    provenance = verify_code_refs(source, review, repo_path=repo_path, snapshots=snapshots,
+                                  allow_provisional=allow_provisional)
     ids = [item["id"] for item in requirements["criteria"]]
     ac = [ident for ident in ids if ident.startswith("AC-") or ident.startswith("CHK-")]
     parent = [ident for ident in ids if ident.startswith("REQ-")]
@@ -208,6 +220,10 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
                      "head_sha": source["pull_request"]["head_sha"]},
         "repository": source["repository"], "pr_number": source["pull_request"]["number"],
         "issue_number": source["issue"]["number"], "code_provenance": provenance,
+        "source_evidence_level": ("git_verified" if provenance == "git_commit_verified" else
+                                  "blob_integrity_checked" if snapshots is not None else
+                                  "provisional_unchecked" if provenance == "provisional_connector_refs_unverified"
+                                  else "no_code_review"),
         "ci_affects_grade": False, "rubric": {"COMPLETE": 1, "PARTIAL": "0.5", "MISSING": 0,
                                                "UNVERIFIED": "excluded from assessed-only; included in bounds"},
         "summary": _group(chosen, review),
@@ -219,6 +235,8 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
             "Source-line and Git-blob identity validation does not prove the analyst's semantic claim or reachability; inspect the control flow.",
             "No CI status, generic test pass, diff size, self-reported issue ledger or PR checkbox enters this grade.",
             "Assessed-only percentages omit UNVERIFIED requirements; inspect coverage and lower/upper bounds before interpreting the grade.",
+            "Numeric grade is the conservative issue-wide progress floor. With zero assessed criteria, 0/100 means zero DEMONSTRATED implementation, not zero implemented code; it is a diagnostic.",
+            *(["PROVISIONAL: cited Git blobs and line spans were NOT checked against candidate HEAD; validate full blobs to upgrade provenance."] if provenance == "provisional_connector_refs_unverified" else []),
             *(["Captured code snapshots verify blob contents but do not independently prove Git commit tree membership."] if repo_path is None else []),
             *(["Normative issue completeness was not independently verified."] if source.get("capture", {}).get("issue_completeness") != "verified_by_pagination" else []),
         ],
@@ -232,12 +250,15 @@ def markdown_grade(report: dict) -> str:
     lines = [
         f"# Code-delivery audit — {report['repository']} PR #{report['pr_number']}", "",
         f"- **HEAD:** `{report['identity']['head_sha']}`",
+        f"- **Numeric delivery grade (0–100, conservative floor):** {g['numeric_delivery_grade_pct']}/100",
+        f"- **Grade basis:** {g['numeric_delivery_grade_kind']} ({report['source_evidence_level']})",
         f"- **Development progress (assessed scope):** {fmt(g['development_progress_assessed_pct'])}",
         f"- **Functional completion (assessed scope):** {fmt(g['functional_completion_assessed_pct'])}",
         f"- **Requirements assessed:** {g['assessed']}/{g['total']} ({fmt(g['assessed_pct'])})",
         f"- **Issue-wide development range:** {fmt(g['development_progress_lower_pct'])}–{fmt(g['development_progress_upper_pct'])}",
         f"- **Issue-wide functional completion range:** {fmt(g['functional_completion_lower_pct'])}–{fmt(g['functional_completion_upper_pct'])}",
         "- **CI influence on all scores:** none", "",
+        "**Interpretation:** no completion credit is invented for unknown criteria. With 0 assessed criteria, a numeric 0/100 is ONLY an evidence floor, not an assessment of how much code was built; do not use this diagnostic as a final review.", "",
         "The progress score counts `COMPLETE=1`, `PARTIAL=0.5`, `MISSING=0` for reviewed requirements. Functional completion counts only `COMPLETE`. An unreviewed criterion is **UNKNOWN, not missing**. Both scores are implementation assessments, not test-pass rates.", "",
         "## Acceptance-criteria inventory", "",
         "| Status | Count |", "|---|---:|",

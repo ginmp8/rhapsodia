@@ -1,4 +1,4 @@
-# Deterministic PR Audit v0.4.0
+# Deterministic PR Audit v0.5.0
 
 An evidence-backed, standard-library Python skill for auditing a GitHub PR against the full linked issue, comments and acceptance criteria. It creates an on-disk artifact **even when no source checkout or runtime test is available**. It never equates missing evidence to missing implementation. **The main metric is now code-delivery progress independent of CI.**
 
@@ -11,6 +11,7 @@ An evidence-backed, standard-library Python skill for auditing a GitHub PR again
 ## Contents
 
 - One-shot audit: default
+- Numeric delivery grade and source-access fallback
 - Primary: deterministic implementation progress from source code (CI-independent)
 - Separate optional executable verification (not implementation grade)
 - Scoring model and boundaries
@@ -46,13 +47,30 @@ When GitHub is accessible only through a connector, collect PR and normative iss
 }
 ```
 
-The example SHAs are placeholders, not evidence. Replace every field with observed GitHub data. Then:
+The example SHAs are placeholders, not evidence. Replace every field with observed GitHub data. A diagnostic bundle alone does not establish a substantive delivery grade. Then:
 
 ```bash
 python scripts/audit_bundle.py --from-json source-input.json --out /mnt/data/pr155-audit
 ```
 
 The output contains the original verification artifacts plus `implementation-review.json`, `implementation-grade.json`, `implementation-grade.md`, `manifest.json`, `README.txt`, and `audit-bundle.zip` (and `code-snapshots.json` when supplied). **No checks or no observed evidence is `NOT_ASSESSED` with `null` numeric evidence floor**, not 0% implemented. All explicit ACs are included with `UNVERIFIED` as appropriate. `audit-bundle.zip` has deterministic member order, fixed timestamps, and a SHA-256 file inventory for reproducible replay.
+
+## Numeric delivery grade and source-access fallback
+
+The implementation report **always** exposes `summary.numeric_delivery_grade_pct` (0–100): the conservative **issue-wide development-progress lower bound**. Its formula is `100 × (COMPLETE + 0.5 × PARTIAL) / all ACs`. This is fully numerical, deterministic and independent of CI. With 0 adjudicated ACs it is `0.00`, but that means **no implementation proved by the supplied evidence**, not “0% built.” Never present an empty diagnostic as the final audit. The separate assessed-only score stays `null` when coverage is zero; the report discloses the full upper bound.
+
+A substantive final run uses `--require-review` to reject all-`UNVERIFIED` scaffolds. If Git is unavailable but authenticated GitHub CLI exists, first capture referenced complete files at the fixed SHA:
+
+```bash
+python scripts/pr_audit.py capture-code-snapshots --source audit/source.json \
+  --requirements audit/requirements.json --review audit/implementation-review.json \
+  --out audit/code-snapshots.json
+python scripts/audit_bundle.py --from-json source-input.json \
+  --review audit/implementation-review.json --snapshots audit/code-snapshots.json \
+  --require-review --out audit/graded
+```
+
+For ChatGPT GitHub-connector-only access, trace the actual source paths, guards and effects; include the cited GitHub file's complete 40-character blob SHA and line ranges in the ledger. If full snapshots cannot be moved into the runner, use explicit `--allow-provisional --require-review`: this **calculates a numerical judgment but does NOT verify referenced Git object bytes**. It identifies provenance as `provisional_connector_refs_unverified`, must retain the limitation, and cannot be labeled a verified grade. Prefer verified snapshots whenever possible. Do not infer `PARTIAL` from keywords, file lists or CI status.
 
 ## Primary: deterministic implementation progress from source code (CI-independent)
 
@@ -69,7 +87,7 @@ python scripts/pr_audit.py verify-code-grade --source audit/source.json --requir
   --review audit/implementation-review.json --repo-path /path/to/repo \
   --report-json audit/grade-001/implementation-grade.json --report-md audit/grade-001/implementation-grade.md
 python scripts/audit_bundle.py --from-json source-input.json --review audit/implementation-review.json \
-  --repo-path /path/to/repo --out audit/bundle-001
+  --repo-path /path/to/repo --require-review --out audit/bundle-001
 ```
 
 When a checkout is inaccessible, use `--snapshots code-snapshots.json` in place of `--repo-path`. Each snapshot must include the exact frozen `source_digest`, `head_sha` and full `files` list:

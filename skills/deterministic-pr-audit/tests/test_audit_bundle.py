@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from audit_bundle import build_bundle
-from audit_core import digest, extract_requirements, init_checks, normalize_source
+from audit_core import AuditError, digest, extract_requirements, init_checks, normalize_source
 
 
 class AlwaysArtifactTests(unittest.TestCase):
@@ -42,6 +42,16 @@ class AlwaysArtifactTests(unittest.TestCase):
         manifest = json.loads((self.dir / 'audit' / 'manifest.json').read_text())
         for path, expected in manifest['files_sha256'].items():
             self.assertEqual(hashlib.sha256((self.dir / 'audit' / path).read_bytes()).hexdigest(), expected)
+
+    def test_numeric_lower_bound_and_explicit_final_review_gate(self):
+        build_bundle(source_input=self.source, output=self.dir / "numeric")
+        result = json.loads((self.dir / "numeric" / "implementation-grade.json").read_text())
+        self.assertEqual(result["summary"]["numeric_delivery_grade_pct"], "0.00")
+        self.assertEqual(result["summary"]["assessed"], 0)
+        with self.assertRaisesRegex(AuditError, "NO_SUBSTANTIVE_REVIEW"):
+            build_bundle(source_input=self.source, output=self.dir / "no-empty-final",
+                         require_review=True)
+        self.assertFalse((self.dir / "no-empty-final" / "audit-bundle.zip").exists())
 
     def test_replay_is_byte_exact_in_separate_directories(self):
         build_bundle(source_input=self.source, output=self.dir / 'a')

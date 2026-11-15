@@ -31,7 +31,8 @@ OUTPUT_FILES = ("source.json", "requirements.json", "checks.json", "evidence.jso
 def build_bundle(*, source_input: dict, output: str | Path,
                  checks: dict | None = None, repo_path: str | None = None,
                  executions: dict | None = None, review: dict | None = None,
-                 snapshots: dict | None = None) -> dict:
+                 snapshots: dict | None = None, allow_provisional: bool = False,
+                 require_review: bool = False) -> dict:
     """Produce deterministic audit inputs, report and ZIP from source evidence.
 
     The input is always treated as offline/manual unless it was collected by
@@ -44,7 +45,10 @@ def build_bundle(*, source_input: dict, output: str | Path,
     evidence = inspect(source, requirements, plan, repo_path, executions)
     report = score(source, requirements, plan, evidence)
     code_review = review if review is not None else init_review(source, requirements)
-    code_grade = grade(source, requirements, code_review, repo_path=repo_path, snapshots=snapshots)
+    code_grade = grade(source, requirements, code_review, repo_path=repo_path,
+                       snapshots=snapshots, allow_provisional=allow_provisional)
+    if require_review and not code_grade["summary"]["assessed"]:
+        raise AuditError("NO_SUBSTANTIVE_REVIEW: a final graded audit needs at least one source-adjudicated AC; an all-UNVERIFIED bundle is diagnostic only")
     out = Path(output)
     payloads = {
         "source.json": canonical(source),
@@ -71,7 +75,7 @@ def build_bundle(*, source_input: dict, output: str | Path,
         "obtain pinned source/test evidence, then regenerate in a new directory.\n"
         "Offline/manual capture completeness must be independently confirmed.\n"
         "The implementation-grade report is based on code-traced frozen judgments,\n"
-        "not CI. Supply --review and --repo-path or --snapshots for a numerical grade.\n"
+        "not CI. Supply --review plus --repo-path, --snapshots or explicit --allow-provisional.\n"
         "Unknown criteria remain unknown; see assessed coverage and score bounds.\n"
     ).encode("utf-8")
     payloads["README.txt"] = readme
@@ -110,6 +114,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--executions", help="Frozen runtime receipts, optional")
     parser.add_argument("--review", help="Frozen CI-independent code-review ledger; one entry per AC/REQ")
     parser.add_argument("--snapshots", help="Frozen source-code snapshots when a local Git checkout is unavailable")
+    parser.add_argument("--allow-provisional", action="store_true", help="Explicitly allow unverified source-traced connector citations; mark provenance provisional")
+    parser.add_argument("--require-review", action="store_true", help="Reject all-UNVERIFIED diagnostics as final graded audits")
     parser.add_argument("--out", required=True, help="Output directory")
     args = parser.parse_args(argv)
     try:
@@ -125,13 +131,19 @@ def main(argv: list[str] | None = None) -> int:
                               repo_path=args.repo_path,
                               executions=read_json(args.executions) if args.executions else None,
                               review=read_json(args.review) if args.review else None,
-                              snapshots=read_json(args.snapshots) if args.snapshots else None)
+                              snapshots=read_json(args.snapshots) if args.snapshots else None,
+                               allow_provisional=args.allow_provisional,
+                               require_review=args.require_review)
     except (AuditError, OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     print(f"Generated {Path(args.out) / 'audit-bundle.zip'}")
     print(f"State: {report['overall']['assessment_state']}; separate CI/verification evidence floor: {report['overall']['completion_verified_pct'] or 'N/A'}")
-    print(f"Code-delivery grade: {Path(args.out) / 'implementation-grade.md'} (CI-independent; N/A until code review)")
+    code_summary = read_json(Path(args.out) / "implementation-grade.json")
+    print(f"Numeric delivery grade (conservative floor): {code_summary['summary']['numeric_delivery_grade_pct']}/100; "
+          f"coverage: {code_summary['summary']['assessed']}/{code_summary['summary']['total']}; "
+          f"provenance: {code_summary['code_provenance']}")
+    print(f"Code-delivery report: {Path(args.out) / 'implementation-grade.md'} (CI-independent)")
     return 0
 
 
