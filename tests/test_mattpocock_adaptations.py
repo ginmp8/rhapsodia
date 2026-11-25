@@ -68,8 +68,8 @@ class MattPocockAdaptationTests(unittest.TestCase):
 
     def test_release_documents_and_catalog(self):
         d = json.loads((ROOT / "marketplace/catalog.json").read_text())
-        self.assertEqual(d["plugin"]["version"], "0.17.0")
-        self.assertEqual(d["marketplace"]["version"], "0.17.0")
+        self.assertEqual(d["plugin"]["version"], "0.18.0")
+        self.assertEqual(d["marketplace"]["version"], "0.18.0")
         readme = (ROOT / "README.md").read_text()
         self.assertIn("76 independently versioned Agent Skills", readme.split("## 0.16.0")[0])
         for path in ("docs/releases/0.17.0.md",

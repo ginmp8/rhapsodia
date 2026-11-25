@@ -242,7 +242,9 @@ def apply(repo: Path, saved: dict, message: str, reviewed: bool,
     checked = git(repo, "worktree", "list", "--porcelain").stdout.splitlines()
     if any(row == "branch " + branch for row in checked):
         raise Blocked("Destination branch is checked out in a worktree; switch to a detached worktree")
-    if git(repo, "diff", "--check", expected["target_sha"], expected["candidate_tree"], check=False).returncode:
+    # Preserve CRLF resolutions on Windows without overlooking real whitespace defects.
+    if git(repo, "-c", "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+           "diff", "--check", expected["target_sha"], expected["candidate_tree"], check=False).returncode:
         raise Blocked("git diff --check rejected candidate")
     new_commit = git(repo, "commit-tree", expected["candidate_tree"], "-p", expected["target_sha"], stdin=message.rstrip() + "\n").stdout.strip()
     parent = git(repo, "rev-list", "--parents", "-n", "1", new_commit).stdout.strip().split()

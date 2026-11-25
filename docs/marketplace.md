@@ -8,6 +8,7 @@
 
 ## Contents
 
+- 0.18.0 deterministic PR audits
 - 0.17.0 decision and review skills
 
 - GitHub Copilot CLI
@@ -43,11 +44,15 @@ rhapsodia
 
 ---
 
+## 0.18.0 deterministic PR audits
+
+The new [Deterministic PR Audit](../skills/deterministic-pr-audit/SKILL.md) v0.1.0 supplies a portable Agent Skill and a standard-library CLI. From the repository root, run `python scripts/deterministic_pr_audit.py --help` or invoke the skill-local script. The audit works offline with frozen JSON sources; live GitHub capture requires authenticated `gh`, and Git object inspections require a local clone containing the exact candidate SHA. Review the assertion plan once before scoring: checks and code references are not equivalent to semantic proof. See [release 0.18.0 notes](releases/0.18.0.md).
+
 ## 0.17.0 decision and review skills
 
 RhapsodIA 0.17.0 distributes seven new Agent Skills in the canonical `skills/` directory: `grilling`, `grill-me` (an explicit alias), `grill-with-docs`, `domain-modeling`, `wayfinder`, `retro` and `code-review`. Installation uses the existing marketplace for each host; no separate sub-plugin is required. See the [usage guide](interview-and-decision-workflows.md) and [attributed source inventory](releases/0.17.0.md). Each skill includes its own `assets/icon.svg` and `agents/openai.yaml` icon paths, brand color and default prompt for ChatGPT/Codex UI; other hosts ignore those optional UI files and consume the same portable `SKILL.md`. Structural validation covers portable-core, OpenAI, Codex, Claude, Copilot and Cursor. When native skill-to-skill invocation is missing, the composed interview skills retain an inline capability-based fallback. Actual host installation and behavior still require independent validation.
 
-All 76 skills have legal metadata indexed outside their source folders in [licenses/skill-assets.json](../licenses/skill-assets.json). For a standalone skill, run `python scripts/package_skill.py --skill archify --output dist/archify.zip` (or any of the 76 skill names): the ZIP restores each required legal notice at its original relative filename. Existing `scripts/package_attributed_skill.py` remains a compatibility alias. The portable Agent Plugins builder includes `LICENSE` and the central `licenses/` directory. Do not distribute a bare skill folder without the applicable notice content.
+All 77 skills have legal metadata indexed outside their source folders in [licenses/skill-assets.json](../licenses/skill-assets.json). For a standalone skill, run `python scripts/package_skill.py --skill archify --output dist/archify.zip` (or any of the 77 skill names): the ZIP restores each required legal notice at its original relative filename. Existing `scripts/package_attributed_skill.py` remains a compatibility alias. The portable Agent Plugins builder includes `LICENSE` and the central `licenses/` directory. Do not distribute a bare skill folder without the applicable notice content.
 
 To try the candidate release before merging, point a compatible host at the `release/0.17.0` ref where that host supports Git refs. The release is not published or tagged by this PR.
 

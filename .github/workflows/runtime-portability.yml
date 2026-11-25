@@ -28,9 +28,10 @@ jobs:
         run: |
           python -I -S -B -m unittest discover -s skills/operational-context/tests -p "test_*.py" -v
           python -I -S -B skills/operational-context/scripts/validate_package.py
+      - name: Reverse engineering regression tests
+        run: python -I -S -B -m unittest discover -s skills/reverse-engineering/tests -p 'test_*.py' -q
       - name: New feature regression tests
         run: |
-          python -I -S -B -m unittest discover -s skills/reverse-engineering/tests -p 'test_*.py' -q
           python -I -S -B -m unittest discover -s skills/deep-research-suite/tests -p 'test_*.py' -q
           python -I -S -B -m unittest discover -s skills/premortem-analysis/tests -p 'test_*.py' -q
           python -B skills/premortem-analysis/scripts/validate_package.py skills/premortem-analysis
@@ -65,18 +66,19 @@ jobs:
         run: |
           python -I -S -B -m unittest discover -s skills/branch-reconciliation/tests -p 'test_*.py' -v
           python -I -S -B -m unittest discover -s tests -p test_branch_reconciliation_distribution.py -v
-      - name: Validate portable 0.17.0 decision skill packages
+          python -I -S -B -m unittest discover -s skills/deterministic-pr-audit/tests -p 'test_*.py' -v
+      - name: Validate portable 0.18.0 decision skill packages
         run: |
           python -I -S -B -m unittest discover -s tests -p 'test_mattpocock_adaptations.py' -v
           python -I -S -B -m unittest discover -s tests -p 'test_017_skill_portability.py' -v
           python -I -S -B -m unittest discover -s tests -p 'test_release_legal_notices.py' -v
       - name: Manifest and version checks
         run: python -B scripts/prepare_release.py --check
-      - name: Verify 0.17.0 source inventory
-        run: python -B scripts/validate_release_source_manifest.py --version 0.17.0 --check
+      - name: Verify 0.18.0 source inventory
+        run: python -B scripts/validate_release_source_manifest.py --version 0.18.0 --check
       - name: Build once on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.17.0 --output dist/a/rhapsodia-0.17.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.18.0 --output dist/a/rhapsodia-0.18.0.zip
       - name: Build again on this platform
-        run: python -I -S -B scripts/build_release_archive.py --version 0.17.0 --output dist/b/rhapsodia-0.17.0.zip
+        run: python -I -S -B scripts/build_release_archive.py --version 0.18.0 --output dist/b/rhapsodia-0.18.0.zip
       - name: Compare exact archive bytes and inspect integrity
-        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.17.0.zip'); b=Path('dist/b/rhapsodia-0.17.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"
+        run: python -I -S -c "from pathlib import Path; from zipfile import ZipFile; a=Path('dist/a/rhapsodia-0.18.0.zip'); b=Path('dist/b/rhapsodia-0.18.0.zip'); assert a.read_bytes()==b.read_bytes(); z=ZipFile(a); assert z.testzip() is None; assert not any('/.rhapsodia/' in p or '/__pycache__/' in p for p in z.namelist())"

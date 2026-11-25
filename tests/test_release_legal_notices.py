@@ -73,12 +73,12 @@ class CentralLicenseTests(unittest.TestCase):
                         self.assertIn(f"{name}/agents/openai.yaml", archive.namelist())
                         self.assertIn(f"{name}/assets/icon.svg", archive.namelist())
 
-    def test_all_76_skills_use_only_central_legal_notices(self):
+    def test_all_77_skills_use_only_central_legal_notices(self):
         import hashlib
         doc = json.loads((ROOT / "licenses/skill-assets.json").read_text(encoding="utf-8"))
         self.assertEqual(doc["schema"], "rhapsodia-skill-legal-assets/v1")
         registered = {entry["name"]: entry["notices"] for entry in doc["skills"]}
-        self.assertEqual(len(registered), 76)
+        self.assertEqual(len(registered), 77)
         self.assertEqual(sorted(registered), sorted(
             path.name for path in (ROOT / "skills").iterdir()
             if path.is_dir() and (path / "SKILL.md").is_file()

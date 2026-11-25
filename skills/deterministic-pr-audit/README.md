@@ -1,0 +1,174 @@
+# Deterministic PR Audit v0.7.0
+
+An evidence-backed, standard-library Python skill for auditing a GitHub PR against the full linked issue, comments and acceptance criteria. It creates an on-disk artifact **even when no source checkout or runtime test is available**. It never equates missing evidence to missing implementation. **The main metric is now code-delivery progress independent of CI.**
+
+## At a Glance
+
+- **Purpose:** Reproduce evidence-bound PR-vs-spec implementation grades independently of CI and preserve the original runnable-test evidence floor as a separate signal.
+- **Load when:** Auditing a code PR, preparing its source review ledger, running the CLI, comparing candidate HEADs, or packaging the skill.
+- **Decision impact:** An analyst must trace source code before grading; frozen AC statuses and Git blob references control the grade, while CI cannot change it. Missing proof remains unknown with disclosed coverage and bounds.
+
+## Contents
+
+- One-shot audit: default
+- Numeric delivery grade and source-access fallback
+- Primary: deterministic implementation progress from source code (CI-independent)
+- Separate optional executable verification (not implementation grade)
+- Scoring model and boundaries
+- Testing and packaging
+
+## One-shot audit: default
+
+```bash
+# Authenticated gh API capture, no local Git checkout required for a diagnostic bundle
+python scripts/audit_bundle.py --repo ginmp8/pandacode-extended --pr 155 --issue 147 --require-coverage --out /mnt/data/pr155-audit
+# Deliver /mnt/data/pr155-audit/audit-bundle.zip
+```
+
+When GitHub is accessible only through a connector, collect PR and normative issue **in full** and save an offline JSON source input. Preserve the exact head/base 40-character SHA, every issue comment with stable ID, changed paths and the full issue body. An offline capture is intentionally marked completeness-unverified:
+
+```json
+{
+  "repository": "owner/repo",
+  "pull_request": {
+    "number": 155,
+    "title": "PR title",
+    "body": "Full PR body",
+    "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "base_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "files": ["src/path.py"]
+  },
+  "issue": {
+    "number": 147,
+    "title": "Normative issue title",
+    "body": "Full normative issue body with explicit AC-01 etc.",
+    "comments": [{"id": 123456, "body": "Full issue comment"}]
+  }
+}
+```
+
+The example SHAs are placeholders, not evidence. Replace every field with observed GitHub data. A diagnostic bundle alone does not establish a substantive delivery grade. Then:
+
+```bash
+python scripts/audit_bundle.py --from-json source-input.json --require-coverage --out /mnt/data/pr155-audit
+```
+
+The output contains the original verification artifacts plus `implementation-review.json`, `implementation-grade.json`, `implementation-grade.md`, `manifest.json`, `README.txt`, and `audit-bundle.zip` (and `code-snapshots.json` when supplied). **No checks or no observed evidence is `NOT_ASSESSED` with `null` numeric evidence floor**, not 0% implemented. All explicit ACs are included with `UNVERIFIED` as appropriate. `audit-bundle.zip` has deterministic member order, fixed timestamps, and a SHA-256 file inventory for reproducible replay.
+
+## Numeric delivery grade and source-access fallback
+
+The implementation report **always** exposes `summary.numeric_delivery_grade_pct` (0–100): the conservative **issue-wide development-progress lower bound**. Its formula is `100 × (COMPLETE + 0.5 × PARTIAL) / all ACs`. This is fully numerical, deterministic and independent of CI. With 0 adjudicated ACs it is `0.00`, but that means **no implementation proved by the supplied evidence**, not “0% built.” Never present an empty diagnostic as the final audit. The separate assessed-only score stays `null` when coverage is zero; the report discloses the full upper bound.
+
+New substantive audits use v3 with a separate frozen obligation plan and prior audit inventory. Read [the adjudication protocol](references/adjudication.md) and [reproducibility protocol](references/reproducibility.md). `--require-review --require-coverage` retains the symmetric evidence gate; additionally supply `--obligation-plan` and `--audit-history` to initialize, capture snapshots, grade, verify and bundle v3. V2 is retained for replay using `--require-coverage` alone; v1 penalty-only replay uses `--require-adjudication`. Do not silently downgrade a new audit to replay mode. If Git is unavailable but authenticated GitHub CLI exists, first capture referenced complete files at the fixed SHA:
+
+```bash
+python scripts/pr_audit.py capture-code-snapshots --source audit/source.json \
+  --requirements audit/requirements.json --review audit/implementation-review.json \
+  --obligation-plan audit/obligation-plan.json --audit-history audit/audit-history.json \
+  --out audit/code-snapshots.json
+python scripts/audit_bundle.py --from-json source-input.json \
+  --review audit/implementation-review.json --snapshots audit/code-snapshots.json \
+  --obligation-plan audit/obligation-plan.json --audit-history audit/audit-history.json \
+  --require-review --require-coverage --out audit/graded
+```
+
+For ChatGPT GitHub-connector-only access, trace the actual source paths, guards and effects; include the cited GitHub file's complete 40-character blob SHA and line ranges in the ledger. If full snapshots cannot be moved into the runner, use explicit `--allow-provisional --require-review --require-coverage` with the v3 plan and history: this **calculates a numerical judgment but does NOT verify referenced Git object bytes**. It identifies provenance as `provisional_connector_refs_unverified`, must retain the limitation, and cannot be labeled a verified grade. Prefer verified snapshots whenever possible. Do not infer `PARTIAL` from keywords, file lists or CI status.
+
+## Primary: deterministic implementation progress from source code (CI-independent)
+
+Start with `capture --require-coverage` using the complete normative source. The canonical extractor recognizes explicit IDs in acceptance checkboxes and suffix IDs in requirement headings; never rewrite the issue to make it parse. Freeze every obligation descriptor before examining candidate results. Scaffold a v3 review ledger; **read the code of the exact HEAD** (including reachable files outside the diff), trace behaviors and fill all ACs with code references:
+
+```bash
+python scripts/pr_audit.py capture --from-json source-input.json --require-coverage --out audit
+# obligation-draft.json must contain specification-only descriptors for EVERY AC/REQ; see references/reproducibility.md.
+python scripts/pr_audit.py freeze-obligations --source audit/source.json --requirements audit/requirements.json \
+  --draft obligation-draft.json --out audit/obligation-plan.json
+# Repeat --prior-grade for all available reports, or omit only if no prior report is available.
+python scripts/pr_audit.py prepare-audit-history --search "Searched current workspace and supplied prior audit artifacts" \
+  --prior-grade previous/implementation-grade.json --out audit/audit-history.json
+python scripts/pr_audit.py init-code-review --source audit/source.json --requirements audit/requirements.json \
+  --obligation-plan audit/obligation-plan.json --audit-history audit/audit-history.json --out audit/implementation-review.json
+# Fill verdicts and source witnesses; do not modify frozen coverage descriptors.
+# Source reference: {"path":"src/handler.py", "blob_sha":"<40-digit Git blob SHA>", "line_start":17,
+#                    "line_end":41, "role":"implementation", "claim":"Entry point enforces the guarded transition"}
+python scripts/pr_audit.py code-grade --source audit/source.json --requirements audit/requirements.json \
+  --review audit/implementation-review.json --repo-path /path/to/repo \
+  --obligation-plan audit/obligation-plan.json --audit-history audit/audit-history.json --require-review --require-coverage --out audit/grade-001
+python scripts/pr_audit.py verify-code-grade --source audit/source.json --requirements audit/requirements.json \
+  --review audit/implementation-review.json --repo-path /path/to/repo \
+  --obligation-plan audit/obligation-plan.json --audit-history audit/audit-history.json \
+  --require-review --require-coverage --report-json audit/grade-001/implementation-grade.json --report-md audit/grade-001/implementation-grade.md
+python scripts/audit_bundle.py --from-json source-input.json --review audit/implementation-review.json \
+  --obligation-plan audit/obligation-plan.json --audit-history audit/audit-history.json \
+  --repo-path /path/to/repo --require-review --require-coverage --out audit/bundle-001
+```
+
+When a checkout is inaccessible, use `--snapshots code-snapshots.json` in place of `--repo-path`. Each snapshot must include the exact frozen `source_digest`, `head_sha` and full `files` list:
+
+```json
+{
+  "schema": "pr-audit/code-snapshots/v1",
+  "source_digest": "<sha256 of canonical source.json>",
+  "head_sha": "<40-character PR HEAD>",
+  "files": [{"path": "src/handler.py", "blob_sha": "<Git blob SHA>", "content": "<full UTF-8 file at HEAD>"}]
+}
+```
+
+The code snapshot validates blob integrity, but unlike a local Git object it does not prove remote tree membership; separately attest that the connector fetched it at that HEAD. The scoring model is **one vote per AC**, with no weighting of parent REQs: `COMPLETE=1`, `PARTIAL=0.5`, `MISSING=0`, and `UNVERIFIED=unknown`. The report includes **functional completion**, **development progress**, **reviewed coverage**, and **issue-wide conservative bounds**. These are AC-level conformance proxies, not measured code/effort percentages. Classify mandatory test, documentation and delivery-configuration gaps separately from runtime behavior deficits; keep generic CI outcomes separate. An unreviewed criterion cannot be scored as missing. A code path's semantics must be reviewed; correct SHA and lines alone do not make a claim true.
+
+V3 adds an explicit audit-closure state and a reconciliation queue, without changing the numeric formula. Resolve prior same-HEAD divergences and shared-counterexample leads; retain incomplete/unreconciled bundles as diagnostics. A full audit with proven gaps may be REVIEW_COMPLETE while the software is not complete. See [reproducibility](references/reproducibility.md) for the resolution contract.
+
+Compare two review reports only when their normative spec, adjudication policy, obligation coverage scope and assessed AC scope match. Conflicting verdicts at the same HEAD require reconciliation; they are not code progress:
+
+```bash
+python scripts/pr_audit.py compare-code-grade \
+  --left first/implementation-grade.json --right second/implementation-grade.json
+```
+
+**Important:** An LLM's semantic classification is not inherently deterministic. Reproducibility applies to the exact **frozen adjudication ledger**, source, requirement set and formula. Freeze the same obligation scope before comparing PRs and reuse verified adjudications for identical inputs; reject source/issue drift and unresolved same-HEAD verdict disagreements. Generic CI outcomes do not enter this calculation. For the full scoring contract, see `references/scoring-contract.md`.
+
+## Separate optional executable verification (not implementation grade)
+
+A **separate verified-check score** is defensible only after mapping each applicable requirement to an assertion that meaningfully tests it. The model must not create superficial path/text checks to inflate progress. Tests must be actually executed at a pinned commit with explicit authorization; source text or green generic CI is not enough.
+
+```bash
+python scripts/pr_audit.py capture --pr-url https://github.com/owner/repo/pull/155 --issue 147 --out audit/frozen
+python scripts/pr_audit.py init-checks --requirements audit/frozen/requirements.json --out audit/checks.json
+# Review and populate every applicable AC's checks; prefer targeted native tests.
+python scripts/pr_audit.py preflight --source audit/frozen/source.json --requirements audit/frozen/requirements.json --checks audit/checks.json --repo-path /path/to/repo
+# After preflight succeeds, build a new versioned bundle with these verified inputs:
+python scripts/audit_bundle.py --from-json source-input.json --checks audit/checks.json --repo-path /path/to/repo --out audit/verified-001
+python scripts/pr_audit.py verify --source audit/verified-001/source.json --requirements audit/verified-001/requirements.json --checks audit/verified-001/checks.json --evidence audit/verified-001/evidence.json --report-json audit/verified-001/report.json --report-md audit/verified-001/report.md
+```
+
+**Important:** the connector-supplied `source-input.json` used for `audit_bundle.py` must describe the *same frozen issue/source* used to create `audit/checks.json`; otherwise digests reject it. Prefer generating the check plan from the bundle's own requirements, then rerunning the bundle:
+
+```bash
+cp audit/frozen/requirements.json audit/requirements.json
+python scripts/pr_audit.py init-checks --requirements audit/frozen/requirements.json --out audit/checks.json
+# Or use /mnt/data/pr155-audit/requirements.json generated by the default bundle.
+```
+
+For optional execution receipts, the existing CLI `run-tests --execute` requires a clean disposable checkout pinned to the exact HEAD and an explicit user authorization. Do not run untrusted code from the PR by default. Use `--executions path/to/executions.json` only for receipts generated for the same source, plan and SHA.
+
+## Scoring model and boundaries
+
+| Field | Meaning |
+|---|---|
+| `assessment_state` | NOT_ASSESSED, INCOMPLETE_PLAN, PARTIALLY_ASSESSED or EVALUATED_KNOWN_SCOPE |
+| `completion_verified_pct` | **Verified evidence floor**, not a feature completion estimate; null without adequate checks |
+| `completion_possible_upper_pct` | Mathematical upper bound only; not a forecast |
+| `acceptance_criteria` | AC-specific denominator and counts |
+| `parent_requirements` | Parent REQ summary, excluded from the AC-only headline |
+| `capture.issue_completeness` | Completeness of normative issue capture; offline input is not independently attested |
+
+The implementation grade is computed by `implementation_review.py`; the independent check-evidence floor is computed by `audit_core.py`. Both calculators use frozen source observations and deterministic formulas. No numeric score should be invented by the reviewing model. Identical JSON inputs and algorithm produce byte-identical `report.json` and Markdown. Any source, check, evidence or algorithm change is a new evidence version. A passing test receipt only proves the declared command exited as expected; the adequacy of its assertions is reviewed separately.
+
+## Testing and packaging
+
+```bash
+python -m unittest discover -s tests -v
+python scripts/audit_bundle.py --help
+```
+
+Installable ChatGPT archive layout: `deterministic-pr-audit/SKILL.md`, `deterministic-pr-audit/scripts/`, `tests/`, `agents/openai.yaml`, `references/`, and `assets/`. Zip the folder itself, not just its contents. The skill requires Python 3.10+ for CLI use; `gh` is optional with `--from-json` and Git is optional when no static checks are evaluated. No third-party Python dependencies are required.

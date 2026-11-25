@@ -9,7 +9,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "branch-reconciliation"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 
 class BranchReconciliationDistributionTests(unittest.TestCase):
