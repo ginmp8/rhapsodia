@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.1] - 2026-11-25
+
+### Semantic adjudication and penalty evidence
+
+- Require new audits to reconcile the full PR discussion, normative exceptions and actual composed/parameterized test assertions against pinned code, and challenge proposed penalties before scoring.
+- Add `--require-adjudication` to grade, verify and bundle commands: every PARTIAL/MISSING gap must identify its type, exact normative quote, pinned negative source anchor, observed result and contrary-evidence reconciliation. Unknowns and optional improvements cannot be treated as proven gaps.
+- Separate runtime behavior deficits from mandatory test/documentation/delivery-configuration gaps. Describe the existing AC score as a conformance proxy, not measured code or effort.
+- Preserve legacy v1 ledger and score replay; gated reports explicitly identify their policy and refuse cross-policy comparisons. CI remains excluded from scoring.
+
 ## [0.5.0] - 2026-11-15
 
 ### Evidence-bounded numeric grading and GitHub capture fallback

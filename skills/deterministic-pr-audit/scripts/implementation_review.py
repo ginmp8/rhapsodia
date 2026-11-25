@@ -105,6 +105,44 @@ def validate_review(source: dict, requirements: dict, review: dict) -> None:
             raise AuditError(f"{ident}: MISSING needs an observed negative code path, not an absence guess")
 
 
+ADJUDICATION_POLICY = "normative-gap-evidence-v1"
+GAP_KINDS = ("behavior", "mandatory_test", "documentation", "delivery_config")
+
+
+def validate_adjudication(source: dict, requirements: dict, review: dict) -> None:
+    """Require a cited normative obligation and negative evidence for each penalty.
+
+    This is a structural admission gate, not an automated semantic oracle. The
+    reviewer must reconcile counterevidence and classify the actual obligation.
+    Existing frozen v1 ledgers remain replayable without this opt-in gate.
+    """
+    normative = " ".join(" ".join(text.split()) for text in [
+        source["issue"]["body"],
+        *(c["body"] for c in source["issue"]["comments"]),
+        *(s["body"] for s in source["spec_files"]),
+    ])
+    criteria = {c["id"]: c["text"] for c in requirements["criteria"]}
+    for ident, row in review["criteria"].items():
+        if row["status"] not in ("PARTIAL", "MISSING"):
+            continue
+        negative = {f"{r['path']}:L{r['line_start']}-L{r['line_end']}"
+                    for r in row["evidence"] if r["role"] == "counterexample"}
+        for remaining in row["remaining"]:
+            parts = [p.strip() for p in remaining.split(" | ", 4)]
+            if len(parts) != 5:
+                raise AuditError(f"{ident}: adjudication gap needs kind | normative quote | counterexample anchor | observed gap | counterevidence reconciliation")
+            kind, obligation, anchor, observed, reconciliation = parts
+            if kind not in GAP_KINDS:
+                raise AuditError(f"{ident}: unsupported normative gap kind: {kind}")
+            quote_text = " ".join(obligation.split())
+            if len(quote_text) < 12 or (quote_text not in criteria[ident] and quote_text not in normative):
+                raise AuditError(f"{ident}: gap needs an exact quote from the frozen normative specification")
+            if anchor not in negative:
+                raise AuditError(f"{ident}: gap needs its own cited counterexample source anchor")
+            if len(observed) < 20 or len(reconciliation) < 20:
+                raise AuditError(f"{ident}: gap needs a specific observed result and counterevidence reconciliation")
+
+
 def validate_snapshots(source: dict, snapshots: dict) -> dict[str, bytes]:
     require_schema(snapshots, SNAPSHOTS_SCHEMA)
     if snapshots.get("source_digest") != digest(source) or snapshots.get("head_sha") != source["pull_request"]["head_sha"]:
@@ -197,9 +235,12 @@ def _group(ids: list[str], review: dict) -> dict:
 
 
 def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Path | None = None,
-          snapshots: dict | None = None, allow_provisional: bool = False) -> dict:
+          snapshots: dict | None = None, allow_provisional: bool = False,
+          require_adjudication: bool = False) -> dict:
     """Semantic coding judgments are frozen inputs; scores are deterministic and CI-free."""
     validate_review(source, requirements, review)
+    if require_adjudication:
+        validate_adjudication(source, requirements, review)
     provenance = verify_code_refs(source, review, repo_path=repo_path, snapshots=snapshots,
                                   allow_provisional=allow_provisional)
     ids = [item["id"] for item in requirements["criteria"]]
@@ -215,6 +256,7 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
                      "remaining": row["remaining"], "evidence": row["evidence"]})
     return {
         "schema": GRADE_SCHEMA, "algorithm": ALGORITHM,
+        **({"adjudication_policy": ADJUDICATION_POLICY} if require_adjudication else {}),
         "identity": {"source_digest": digest(source), "requirements_digest": digest(requirements),
                      "review_digest": digest(review), "snapshots_digest": digest(snapshots) if snapshots else None,
                      "head_sha": source["pull_request"]["head_sha"]},
@@ -231,6 +273,7 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
         "parent_requirements": _group(parent, review),
         "rows": rows,
         "limitations": [
+            *(["Strict adjudication verifies gap structure, not semantic correctness. Scores are equal-weight normative AC conformance proxies, not measured implementation effort or percentage of code written. Mandatory test/documentation/configuration gaps are not necessarily runtime defects."] if require_adjudication else []),
             "Only identical frozen requirements, reviewed code judgments and algorithm replay identically; independent model re-adjudication can differ.",
             "Source-line and Git-blob identity validation does not prove the analyst's semantic claim or reachability; inspect the control flow.",
             "No CI status, generic test pass, diff size, self-reported issue ledger or PR checkbox enters this grade.",
@@ -252,6 +295,7 @@ def markdown_grade(report: dict) -> str:
         f"- **HEAD:** `{report['identity']['head_sha']}`",
         f"- **Numeric delivery grade (0–100, conservative floor):** {g['numeric_delivery_grade_pct']}/100",
         f"- **Grade basis:** {g['numeric_delivery_grade_kind']} ({report['source_evidence_level']})",
+        *([f"- **Adjudication gate:** {report['adjudication_policy']} (structural only)"] if "adjudication_policy" in report else []),
         f"- **Development progress (assessed scope):** {fmt(g['development_progress_assessed_pct'])}",
         f"- **Functional completion (assessed scope):** {fmt(g['functional_completion_assessed_pct'])}",
         f"- **Requirements assessed:** {g['assessed']}/{g['total']} ({fmt(g['assessed_pct'])})",
@@ -290,6 +334,8 @@ def compare_grades(left: dict, right: dict) -> dict:
     require_schema(right, GRADE_SCHEMA)
     if left.get("algorithm") != ALGORITHM or right.get("algorithm") != ALGORITHM:
         raise AuditError("Code-delivery reports use different algorithms")
+    if left.get("adjudication_policy") != right.get("adjudication_policy"):
+        raise AuditError("Not comparable: adjudication policies differ; re-adjudicate both candidates under one policy")
     if left["identity"]["requirements_digest"] != right["identity"]["requirements_digest"]:
         raise AuditError("Not comparable: normative requirements changed")
     a, b = {r["id"]: r["status"] for r in left["rows"]}, {r["id"]: r["status"] for r in right["rows"]}

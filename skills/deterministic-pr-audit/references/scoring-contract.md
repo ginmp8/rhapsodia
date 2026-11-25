@@ -6,6 +6,8 @@
 
 A criterion is `COMPLETE` only when every required behavior is traced as implemented/reachable through its entrypoint, guards and final effects. `PARTIAL` requires implemented code plus a concrete remaining obligation. `MISSING` requires observed counterexample code, not merely absent lexical matches. `UNVERIFIED` remains unknown, never missing. Code evidence validation proves the blob/line reference, **not the analyst's semantic conclusion**; inspect the entire relevant path before adjudicating.
 
+For new substantive audits the [semantic adjudication protocol](adjudication.md) is mandatory; `--require-adjudication` structurally gates each penalty on a typed normative gap, exact quote, pinned counterexample anchor and counterevidence reconciliation. The unchanged v1 formula remains replayable for legacy ledgers without the gate. Do not compare different adjudication policies without re-reviewing both candidates. PR discussion and CI never enter the formula. Distinguish actual runtime deficits from required test/document/config gaps; the composite AC score is a conformance proxy, not a measured fraction of code or effort.
+
 One AC = one equally weighted obligation. A composite AC with several requirements is `COMPLETE` only when all required parts work; `PARTIAL` is a fixed half-credit modeling assumption, not a measured 50% of code. Never split or weight ACs differently after viewing the candidate to manipulate the note; if a spec's AC granularity is inappropriate, version an explicit subcriterion rubric before comparison and state its limitations.
 
 For the main AC group, let `C` = COMPLETE count, `P` = PARTIAL, `M` = MISSING, `U` = UNVERIFIED and `N=C+P+M+U`. Then:

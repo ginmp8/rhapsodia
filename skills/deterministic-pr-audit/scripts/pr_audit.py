@@ -387,7 +387,7 @@ def code_grade_command(args: argparse.Namespace) -> None:
     source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
     snapshots = read_json(args.snapshots) if args.snapshots else None
     result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
-                   allow_provisional=args.allow_provisional)
+                   allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication)
     if args.require_review and not result["summary"]["assessed"]:
         raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     output = Path(args.out)
@@ -403,7 +403,7 @@ def verify_code_grade_command(args: argparse.Namespace) -> None:
     source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
     snapshots = read_json(args.snapshots) if args.snapshots else None
     result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
-                   allow_provisional=args.allow_provisional)
+                   allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication)
     if args.require_review and not result["summary"]["assessed"]:
         raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     if Path(args.report_json).read_bytes() != canonical(result) or Path(args.report_md).read_bytes() != markdown_grade(result).encode("utf-8"):
@@ -491,6 +491,7 @@ def build_parser() -> argparse.ArgumentParser:
         cmd.add_argument("--snapshots", help="Frozen code-file contents collected at candidate HEAD")
         cmd.add_argument("--allow-provisional", action="store_true", help="Explicitly grade source-traced citations without Git object verification; marked provisional")
         cmd.add_argument("--require-review", action="store_true", help="Reject all-UNVERIFIED diagnostics as final audits")
+        cmd.add_argument("--require-adjudication", action="store_true", help="Require normative quotes, typed gaps, negative source anchors and counterevidence reconciliation for penalties; use for new semantic audits")
         if action == "code-grade":
             cmd.add_argument("--out", required=True)
         else:
