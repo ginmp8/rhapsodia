@@ -8,6 +8,7 @@ this exact ledger and its rubric are reused.
 from __future__ import annotations
 
 import hashlib
+from copy import deepcopy
 import re
 import subprocess
 from decimal import Decimal, ROUND_HALF_UP
@@ -19,9 +20,14 @@ from audit_core import (
     digest, extract_requirements, git_bytes, require_schema, verify_commit_available,
 )
 
+from reproducible_review import validate_plan, scaffold, validate_scope, reconcile, review_closure, obligation_id, history_identity
+
 REVIEW_SCHEMA = "pr-audit/implementation-review/v1"
 COVERAGE_REVIEW_SCHEMA = "pr-audit/implementation-review/v2"
 COVERAGE_POLICY = "symmetric-obligation-evidence-v2"
+FROZEN_REVIEW_SCHEMA = "pr-audit/implementation-review/v3"
+FROZEN_POLICY = "frozen-obligation-reconciliation-v3"
+COVERAGE_SCHEMAS = (COVERAGE_REVIEW_SCHEMA, FROZEN_REVIEW_SCHEMA)
 SNAPSHOTS_SCHEMA = "pr-audit/code-snapshots/v1"
 GRADE_SCHEMA = "pr-audit/implementation-grade/v1"
 ALGORITHM = "code-delivery-v1"
@@ -36,7 +42,8 @@ def blob_sha(content: bytes) -> str:
     return hashlib.sha1(f"blob {len(content)}\0".encode("ascii") + content).hexdigest()
 
 
-def init_review(source: dict, requirements: dict, *, coverage: bool = False) -> dict:
+def init_review(source: dict, requirements: dict, *, coverage: bool = False, obligation_plan: dict | None = None,
+                audit_history: dict | None = None) -> dict:
     require_schema(source, SOURCE_SCHEMA)
     require_schema(requirements, REQUIREMENTS_SCHEMA)
     if requirements["spec_digest"] != digest({
@@ -44,29 +51,44 @@ def init_review(source: dict, requirements: dict, *, coverage: bool = False) -> 
         "spec_files": source["spec_files"],
     }):
         raise AuditError("Review requirements are not bound to the current normative specification")
+    frozen = obligation_plan is not None
+    coverage = coverage or frozen
+    if frozen != (audit_history is not None):
+        raise AuditError("V3 initialization requires the frozen plan and explicit prior audit inventory together")
+    if frozen:
+        validate_plan(source, requirements, obligation_plan)
     if coverage and requirements != extract_requirements(source, canonical_ids=True):
         raise AuditError("Coverage review requires canonical requirements from the frozen original specification; capture with --require-coverage")
     return {
-        "schema": COVERAGE_REVIEW_SCHEMA if coverage else REVIEW_SCHEMA,
+        "schema": FROZEN_REVIEW_SCHEMA if frozen else COVERAGE_REVIEW_SCHEMA if coverage else REVIEW_SCHEMA,
+        **({"obligation_plan_digest": digest(obligation_plan),
+            "history_inventory_digest": history_identity(audit_history)} if frozen else {}),
         "source_digest": digest(source),
         "requirements_digest": digest(requirements),
         "head_sha": source["pull_request"]["head_sha"],
         "algorithm": ALGORITHM,
         "criteria": {item["id"]: {"status": "UNVERIFIED", "rationale": "", "trace": "", "evidence": [], "remaining": [],
-                                  **({"coverage": []} if coverage else {})}
+                                  **({"coverage": scaffold(obligation_plan, item["id"]) if frozen else []} if coverage else {})}
                      for item in requirements["criteria"]},
     }
 
 
-def validate_review(source: dict, requirements: dict, review: dict) -> None:
+def validate_review(source: dict, requirements: dict, review: dict, *, obligation_plan: dict | None = None,
+                    audit_history: dict | None = None) -> None:
     require_schema(source, SOURCE_SCHEMA)
     require_schema(requirements, REQUIREMENTS_SCHEMA)
-    coverage = review.get("schema") == COVERAGE_REVIEW_SCHEMA
+    frozen = review.get("schema") == FROZEN_REVIEW_SCHEMA
+    coverage = review.get("schema") in COVERAGE_SCHEMAS
+    if frozen != (obligation_plan is not None):
+        raise AuditError("V3 review requires the separate frozen obligation plan; legacy review cannot use it")
     if not coverage:
         require_schema(review, REVIEW_SCHEMA)
-    if set(review) != {"schema", "source_digest", "requirements_digest", "head_sha", "algorithm", "criteria"}:
+    fields = {"schema", "source_digest", "requirements_digest", "head_sha", "algorithm", "criteria"}
+    if frozen:
+        fields.update(("obligation_plan_digest", "history_inventory_digest"))
+    if set(review) != fields:
         raise AuditError("Code-review ledger forbids extra fields (including CI) and missing required fields")
-    expected = init_review(source, requirements, coverage=coverage)
+    expected = init_review(source, requirements, coverage=coverage, obligation_plan=obligation_plan, audit_history=audit_history)
     for key in ("source_digest", "requirements_digest", "head_sha", "algorithm"):
         if review.get(key) != expected[key]:
             raise AuditError(f"Code-review ledger {key} differs from frozen source/rubric")
@@ -113,6 +135,11 @@ def validate_review(source: dict, requirements: dict, review: dict) -> None:
             raise AuditError(f"{ident}: source-code implementation/result trace required")
         if status == "MISSING" and "counterexample" not in roles:
             raise AuditError(f"{ident}: MISSING needs an observed negative code path, not an absence guess")
+
+    if frozen:
+        if review["history_inventory_digest"] != expected["history_inventory_digest"]:
+            raise AuditError("Prior audit inventory changed after initialization; use a new review with the same frozen plan")
+        validate_scope(review, obligation_plan)
 
 
 ADJUDICATION_POLICY = "normative-gap-evidence-v1"
@@ -282,7 +309,7 @@ def verify_code_refs(source: dict, review: dict, *, repo_path: str | Path | None
                      snapshots: dict | None = None, allow_provisional: bool = False) -> str:
     head = source["pull_request"]["head_sha"]
     assessed = any(r["status"] != "UNVERIFIED" for r in review["criteria"].values())
-    cited = assessed or (review.get("schema") == COVERAGE_REVIEW_SCHEMA and
+    cited = assessed or (review.get("schema") in COVERAGE_SCHEMAS and
                          any(r["evidence"] for r in review["criteria"].values()))
     if repo_path is None and snapshots is None and cited and not allow_provisional:
         raise AuditError("SOURCE_REQUIRED: code grading requires pinned Git objects or complete hashed source-file snapshots; explicitly use --allow-provisional only for a source-traced connector review")
@@ -352,18 +379,24 @@ def _group(ids: list[str], review: dict) -> dict:
 
 def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Path | None = None,
           snapshots: dict | None = None, allow_provisional: bool = False,
-          require_adjudication: bool = False, require_coverage: bool = False) -> dict:
+          require_adjudication: bool = False, require_coverage: bool = False,
+          obligation_plan: dict | None = None, audit_history: dict | None = None) -> dict:
     """Semantic coding judgments are frozen inputs; scores are deterministic and CI-free."""
-    validate_review(source, requirements, review)
-    coverage = review.get("schema") == COVERAGE_REVIEW_SCHEMA
+    validate_review(source, requirements, review, obligation_plan=obligation_plan, audit_history=audit_history)
+    frozen = review.get("schema") == FROZEN_REVIEW_SCHEMA
+    coverage = review.get("schema") in COVERAGE_SCHEMAS
+    if frozen != (audit_history is not None):
+        raise AuditError("V3 review requires explicit audit history; legacy review cannot use it")
     if require_coverage and not coverage:
-        raise AuditError("New coverage-gated audit requires a v2 review; initialize with --require-coverage")
+        raise AuditError("Coverage-gated audit requires a v2 review or v3 frozen review; initialize with --require-coverage or the separate plan/history")
     if require_adjudication or coverage:
         validate_adjudication(source, requirements, review)
     if coverage:
         validate_coverage(source, requirements, review)
     provenance = verify_code_refs(source, review, repo_path=repo_path, snapshots=snapshots,
                                   allow_provisional=allow_provisional)
+    reconciliation = reconcile(source, requirements, review, obligation_plan, audit_history) if frozen else None
+    closure = review_closure(review, reconciliation, provenance, source) if frozen else None
     ids = [item["id"] for item in requirements["criteria"]]
     ac = [ident for ident in ids if ident.startswith("AC-") or ident.startswith("CHK-")]
     parent = [ident for ident in ids if ident.startswith("REQ-")]
@@ -378,11 +411,13 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
                      **({"coverage": row["coverage"]} if coverage else {})})
     return {
         "schema": GRADE_SCHEMA, "algorithm": ALGORITHM,
-        **({"adjudication_policy": COVERAGE_POLICY if coverage else ADJUDICATION_POLICY} if require_adjudication or coverage else {}),
+        **({"adjudication_policy": FROZEN_POLICY if frozen else COVERAGE_POLICY if coverage else ADJUDICATION_POLICY} if require_adjudication or coverage else {}),
         **({"coverage_scope_digest": digest({ident: sorted([
             [obligation["kind"], " ".join(obligation["quote"].split()),
              " ".join(obligation["subject"].split()).casefold(), obligation["polarity"]]
             for obligation in row["coverage"]]) for ident, row in review["criteria"].items()})} if coverage else {}),
+        **({"obligation_plan_digest": digest(obligation_plan), "reconciliation": reconciliation,
+            "review_closure": closure} if frozen else {}),
         "identity": {"source_digest": digest(source), "requirements_digest": digest(requirements),
                      "review_digest": digest(review), "snapshots_digest": digest(snapshots) if snapshots else None,
                      "head_sha": source["pull_request"]["head_sha"]},
@@ -397,10 +432,11 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
         "summary": _group(chosen, review),
         "acceptance_criteria": _group(ac, review),
         "parent_requirements": _group(parent, review),
-        "rows": rows,
+        "rows": deepcopy(rows) if frozen else rows,
         "limitations": [
             *(["Symmetric obligation evidence is structurally validated for both positive completion and proven gaps. It is not a semantic oracle or evidence that tests ran."] if coverage else []),
             *(["Strict adjudication verifies gap structure, not semantic correctness. Scores are equal-weight normative AC conformance proxies, not measured implementation effort or percentage of code written. Mandatory test/documentation/configuration gaps are not necessarily runtime defects."] if require_adjudication else []),
+            *(["Frozen plan and supplied prior-audit history are mechanically bound. Semantic decomposition, completeness of prior-audit discovery and resolution quality still require reviewer judgment. Shared source overlap is a review lead, not a propagated defect. Incomplete/unreconciled grades are diagnostic floors, not final implementation assessments."] if frozen else []),
             "Only identical frozen requirements, reviewed code judgments and algorithm replay identically; independent model re-adjudication can differ.",
             "Source-line and Git-blob identity validation does not prove the analyst's semantic claim or reachability; inspect the control flow.",
             "No CI status, generic test pass, diff size, self-reported issue ledger or PR checkbox enters this grade.",
@@ -434,6 +470,11 @@ def markdown_grade(report: dict) -> str:
         "## Acceptance-criteria inventory", "",
         "| Status | Count |", "|---|---:|",
     ]
+    if "review_closure" in report:
+        closure = report["review_closure"]
+        state = closure["state"]
+        lines[2:2] = [f"**Audit state: {state}.** {closure['unknown_obligation_count']} unknown obligations; {closure['unresolved_reconciliation_count']} unresolved reconciliation leads. "
+                      + ("Diagnostic evidence floor; NOT a final audit." if state != "REVIEW_COMPLETE" else "All planned obligations adjudicated; not independent proof of semantic correctness."), ""]
     for state, count in report["acceptance_criteria"]["counts"].items():
         lines.append(f"| {state} | {count} |")
     lines += ["", "## Criterion-by-criterion code evidence", ""]
@@ -451,6 +492,24 @@ def markdown_grade(report: dict) -> str:
             lines.append(f"- **Obligation ({obligation['kind']}, {obligation['polarity']}) — {obligation['verdict']}:** {obligation['subject']} | {obligation['quote']} | {obligation['anchor']} | {obligation['witness']}")
         for remaining in item["remaining"]:
             lines.append(f"- **Remaining:** {remaining}")
+        lines.append("")
+    if "reconciliation" in report:
+        rec = report["reconciliation"]
+        lines += ["## Reconciliation and unresolved coverage", "",
+                  f"- Frozen obligation plan: `{report['obligation_plan_digest']}`",
+                  f"- Prior audit search: {rec['search']}",
+                  f"- Prior reports inspected: {len(rec['prior_reports'])}",
+                  "- Unknown criteria: " + (", ".join(report["review_closure"]["unverified_criteria"]) or "none"), ""]
+        for prior in rec["prior_reports"]:
+            details = (f"; matched {prior['matched_criteria']}/{prior['prior_criteria']} prior criteria; plan {prior['plan_identity']}"
+                       if "matched_criteria" in prior else "")
+            lines.append(f"- Prior `{prior['digest']}` ({prior['format']}): {prior['disposition']}{details}")
+        for lead in rec["leads"]:
+            key = lead["id"]
+            detail = (f"{lead['prior_status']} -> {lead['current_status']}" if lead["kind"].startswith("prior_") else
+                      f"{lead['path']}:{lead['line_start']}-{lead['line_end']} shared with {', '.join(lead['gap_criteria'])}")
+            lines.append(f"- `{key}` — {lead['criterion']} / {lead['kind']}: {detail}; " +
+                         ("RESOLVED — " + rec["resolutions"][key]["rationale"] if key in rec["resolutions"] else "UNRESOLVED"))
         lines.append("")
     lines += ["## Limits of deterministic scoring", ""]
     lines.extend(f"- {value}" for value in report["limitations"])
@@ -470,6 +529,16 @@ def compare_grades(left: dict, right: dict) -> dict:
     a, b = {r["id"]: r["status"] for r in left["rows"]}, {r["id"]: r["status"] for r in right["rows"]}
     if set(a) != set(b):
         raise AuditError("Not comparable: acceptance criterion inventory differs")
+    if left.get("adjudication_policy") == FROZEN_POLICY:
+        if left.get("obligation_plan_digest") != right.get("obligation_plan_digest"):
+            raise AuditError("Not comparable: frozen obligation plans differ")
+        if any(r.get("review_closure", {}).get("state") not in ("REVIEW_COMPLETE", "PROVISIONAL") for r in (left, right)):
+            raise AuditError("Not comparable: incomplete or unreconciled audit; resolve evidence before reporting progress")
+        if left["identity"]["head_sha"] == right["identity"]["head_sha"]:
+            def verdicts(report):
+                return {(r["id"], obligation_id(r["id"], o)): o["verdict"] for r in report["rows"] for o in r.get("coverage", [])}
+            if a != b or verdicts(left) != verdicts(right):
+                raise AuditError("Same HEAD has divergent semantic verdicts; reconcile before reporting progress")
     if {k for k in a if a[k] == "UNVERIFIED"} != {k for k in b if b[k] == "UNVERIFIED"}:
         raise AuditError("Not comparable: assessed code coverage differs; review both candidates on a fixed common AC set")
     if left.get("adjudication_policy") == COVERAGE_POLICY and left.get("coverage_scope_digest") != right.get("coverage_scope_digest"):
@@ -488,5 +557,7 @@ def compare_grades(left: dict, right: dict) -> dict:
         "right": {"head_sha": right["identity"]["head_sha"], "progress_pct": str(after)},
         "progress_delta_points": str((after - before).quantize(Decimal("0.01"))),
         "transitions": [{"id": ident, "before": a[ident], "after": b[ident]} for ident in sorted(a) if a[ident] != b[ident]],
+        **({"review_states": [left["review_closure"]["state"], right["review_closure"]["state"]]}
+           if left.get("adjudication_policy") == FROZEN_POLICY else {}),
         "scope": "Same frozen issue and assessed acceptance set; semantic adjudications remain review inputs, not runtime proof",
     }

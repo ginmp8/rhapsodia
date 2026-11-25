@@ -23,9 +23,10 @@ from pathlib import Path
 from urllib.parse import quote
 
 from implementation_review import (
-    MAX_FILES, MAX_FILE_BYTES, SNAPSHOTS_SCHEMA, COVERAGE_REVIEW_SCHEMA, blob_sha, compare_grades,
+    MAX_FILES, MAX_FILE_BYTES, SNAPSHOTS_SCHEMA, COVERAGE_SCHEMAS, blob_sha, compare_grades,
     grade, init_review, markdown_grade, validate_review,
 )
+from reproducible_review import freeze_plan, prepare_history
 from audit_core import (
     AuditError, SOURCE_SCHEMA, EXECUTIONS_SCHEMA, REPORT_SCHEMA, canonical,
     compare_reports, digest, extract_requirements, git_bytes, init_checks,
@@ -328,20 +329,35 @@ def run_tests_command(args: argparse.Namespace) -> None:
     print(f"Test receipts written to {args.out}")
 
 
+def freeze_obligations_command(args: argparse.Namespace) -> None:
+    source, requirements, draft = (read_json(p) for p in (args.source, args.requirements, args.draft))
+    plan = freeze_plan(source, requirements, draft)
+    write_immutable(args.out, canonical(plan))
+    print(f"Frozen normative obligation plan {digest(plan)}: {args.out}")
+
+
+def prepare_audit_history_command(args: argparse.Namespace) -> None:
+    history = prepare_history(args.search, args.prior_grade or [])
+    write_immutable(args.out, canonical(history))
+    print(f"Prior audit history: {args.out}; supplied reports: {len(history['reports'])}")
+
+
 def init_code_review_command(args: argparse.Namespace) -> None:
     source, requirements = read_json(args.source), read_json(args.requirements)
-    review = init_review(source, requirements, coverage=args.require_coverage)
+    review = init_review(source, requirements, coverage=args.require_coverage,
+                         obligation_plan=read_json(args.obligation_plan) if args.obligation_plan else None,
+                         audit_history=read_json(args.audit_history) if args.audit_history else None)
     write_immutable(args.out, canonical(review))
     print(f"Code-review rubric created for {len(review['criteria'])} frozen criteria: {args.out}")
 
 
 
-def collect_code_snapshots(source: dict, requirements: dict, review: dict, fetch=gh_api) -> dict:
+def collect_code_snapshots(source: dict, requirements: dict, review: dict, fetch=gh_api, *, obligation_plan: dict | None = None, audit_history: dict | None = None) -> dict:
     """Fetch cited full files at the pinned commit, without cloning or executing PR code."""
-    validate_review(source, requirements, review)
+    validate_review(source, requirements, review, obligation_plan=obligation_plan, audit_history=audit_history)
     expected = {}
     for entry in review["criteria"].values():
-        if entry["status"] == "UNVERIFIED" and review.get("schema") != COVERAGE_REVIEW_SCHEMA:
+        if entry["status"] == "UNVERIFIED" and review.get("schema") not in COVERAGE_SCHEMAS:
             continue
         for citation in entry["evidence"]:
             path, sha = citation["path"], citation["blob_sha"]
@@ -378,7 +394,9 @@ def collect_code_snapshots(source: dict, requirements: dict, review: dict, fetch
 
 def capture_code_snapshots_command(args: argparse.Namespace) -> None:
     source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
-    snapshots = collect_code_snapshots(source, requirements, review)
+    snapshots = collect_code_snapshots(source, requirements, review,
+                                       obligation_plan=read_json(args.obligation_plan) if args.obligation_plan else None,
+                                       audit_history=read_json(args.audit_history) if args.audit_history else None)
     write_immutable(args.out, canonical(snapshots))
     print(f"Captured {len(snapshots['files'])} full source blobs at pinned HEAD: {args.out}")
 
@@ -388,7 +406,9 @@ def code_grade_command(args: argparse.Namespace) -> None:
     snapshots = read_json(args.snapshots) if args.snapshots else None
     result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
                    allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication,
-                   require_coverage=args.require_coverage)
+                   require_coverage=args.require_coverage,
+                   obligation_plan=read_json(args.obligation_plan) if args.obligation_plan else None,
+                   audit_history=read_json(args.audit_history) if args.audit_history else None)
     if args.require_review and not result["summary"]["assessed"]:
         raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     output = Path(args.out)
@@ -405,7 +425,9 @@ def verify_code_grade_command(args: argparse.Namespace) -> None:
     snapshots = read_json(args.snapshots) if args.snapshots else None
     result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
                    allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication,
-                   require_coverage=args.require_coverage)
+                   require_coverage=args.require_coverage,
+                   obligation_plan=read_json(args.obligation_plan) if args.obligation_plan else None,
+                   audit_history=read_json(args.audit_history) if args.audit_history else None)
     if args.require_review and not result["summary"]["assessed"]:
         raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     if Path(args.report_json).read_bytes() != canonical(result) or Path(args.report_md).read_bytes() != markdown_grade(result).encode("utf-8"):
@@ -476,15 +498,28 @@ def build_parser() -> argparse.ArgumentParser:
             cmd.add_argument("--execute", action="store_true")
             cmd.add_argument("--out", required=True)
         cmd.set_defaults(handler=handler)
+    freeze = sub.add_parser("freeze-obligations", help="Freeze a specification-only obligation plan before inspecting candidate code")
+    for required in ("source", "requirements", "draft", "out"):
+        freeze.add_argument(f"--{required}", required=True)
+    freeze.set_defaults(handler=freeze_obligations_command)
+    history = sub.add_parser("prepare-audit-history", help="Capture available prior JSON/Markdown grades and search limitations")
+    history.add_argument("--search", required=True)
+    history.add_argument("--prior-grade", action="append", help="Prior grade JSON or Markdown file; repeat for every available report")
+    history.add_argument("--out", required=True)
+    history.set_defaults(handler=prepare_audit_history_command)
     initial = sub.add_parser("init-code-review", help="Scaffold every AC/REQ for CI-independent code analysis")
     initial.add_argument("--source", required=True)
     initial.add_argument("--requirements", required=True)
     initial.add_argument("--out", required=True)
     initial.add_argument("--require-coverage", action="store_true", help="Initialize symmetric obligation-evidence v2 review")
+    initial.add_argument("--obligation-plan", help="Separate frozen plan for v3 review (required for new audits)")
+    initial.add_argument("--audit-history", help="Prior audit inventory frozen before candidate adjudication")
     initial.set_defaults(handler=init_code_review_command)
     code_cap = sub.add_parser("capture-code-snapshots", help="Fetch referenced HEAD blobs via gh (no checkout)")
     for required in ("source", "requirements", "review", "out"):
         code_cap.add_argument(f"--{required}", required=True)
+    code_cap.add_argument("--obligation-plan", help="Frozen plan required for v3 reviews")
+    code_cap.add_argument("--audit-history", help="Prior audit inventory bound to v3 review")
     code_cap.set_defaults(handler=capture_code_snapshots_command)
     for action, handler in (("code-grade", code_grade_command), ("verify-code-grade", verify_code_grade_command)):
         cmd = sub.add_parser(action, help="Score validated source-code implementation without CI inputs")
@@ -497,6 +532,8 @@ def build_parser() -> argparse.ArgumentParser:
         cmd.add_argument("--require-review", action="store_true", help="Reject all-UNVERIFIED diagnostics as final audits")
         cmd.add_argument("--require-adjudication", action="store_true", help="Require normative quotes, typed gaps, negative source anchors and counterevidence reconciliation for penalties; use for new semantic audits")
         cmd.add_argument("--require-coverage", action="store_true", help="Require symmetric obligation-evidence v2 review for all adjudicated criteria")
+        cmd.add_argument("--obligation-plan", help="Separate frozen plan required for v3 reviews")
+        cmd.add_argument("--audit-history", help="Explicit prior audit inventory and reconciliation decisions for v3 reviews")
         if action == "code-grade":
             cmd.add_argument("--out", required=True)
         else:

@@ -1,4 +1,4 @@
-# Mandatory symmetric semantic adjudication gate for new audits
+# Mandatory symmetric semantic adjudication gate
 
 The objective is to reduce false penalties and false completion claims, not to make a self-reported acceptance ledger authoritative. Follow this protocol before freezing a new code-review ledger. Use the entire normative issue and exact candidate HEAD; the equal-weight scoring algorithm is unchanged.
 
@@ -11,7 +11,7 @@ The objective is to reduce false penalties and false completion claims, not to m
 
 ## Record symmetric obligation coverage (v2)
 
-Initialize with `init-code-review --require-coverage`. Each row gains a `coverage` array. Freeze its descriptors (`kind`, `quote`, `subject`, `polarity`) before observing candidate results; reuse the same descriptors for the same normative scope. Do not create extra obligations for optional tests or an arbitrary Cartesian product. For each mandatory part, record:
+For new audits, initialize a v3 review with the separately frozen `obligation-plan.json` and `audit-history.json` as specified in [reproducibility.md](reproducibility.md). V3 retains every v2 coverage and counterevidence rule below. The older `init-code-review --require-coverage` initializes v2 for historical replay only. Each row has a `coverage` array with immutable descriptors (`kind`, `quote`, `subject`, `polarity`); freeze them before observing candidate results and reuse the plan for the same normative scope. Do not create extra obligations for optional tests or an arbitrary Cartesian product. For each mandatory part, record:
 
 ```json
 {
@@ -42,7 +42,7 @@ For PARTIAL/MISSING, keep the existing v1 `remaining` array of strings but use o
 - The anchor must match a pinned `counterexample` evidence reference in that row. For a missing mandatory test/document/config deliverable, establish the relevant closed inspection scope and cite the concrete source/test/doc/config evidence that demonstrates the gap. Merely citing an implementation that exists or not finding a keyword does not qualify. PARTIAL also needs implementation/result evidence. Record precise observed behavior, not just a desired fix.
 - Reconciliation must describe the strongest contrary evidence examined and why it does not fulfill this obligation, or which bounded alternative paths/coverage were ruled out. Do not use a generic assertion that no counterevidence exists.
 
-Run `capture`, `init-code-review`, `code-grade`, `verify-code-grade` and `audit_bundle.py` with `--require-coverage` for **every new substantive audit**; keep `--require-review` on grade/verify/bundle. The v2 review automatically includes the v1 penalty gate even without flags. Do not bypass it to obtain a desired score. Replay a frozen v0.5.1 v1 ledger with `--require-adjudication` alone (older v1 without either flag). Re-adjudicate before comparing reports with different policies or scopes.
+Run canonical `capture --require-coverage` and use the v3 plan/history workflow for **every new substantive audit**; keep `--require-review --require-coverage` on grade/verify/bundle. V2 and v3 automatically include the v1 penalty gate even without flags. Do not bypass it to obtain a desired score. Replay a frozen v0.6.0 v2 ledger with `--require-coverage` alone; a v0.5.1 v1 ledger uses `--require-adjudication` alone (older v1 without either flag). Re-adjudicate before comparing reports with different policies or scopes.
 
 ## Report distinct dimensions
 

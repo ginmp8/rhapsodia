@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0] - 2026-11-25
+
+### Frozen scope and same-HEAD reconciliation
+
+- Freeze specification-only obligation descriptors and stable IDs in a separate canonical plan before code adjudication. Bind the review to that plan and retain every obligation even when UNKNOWN.
+- Freeze the inventory of available prior JSON/Markdown grades; require source-anchored reconciliation of same-HEAD verdict disagreements and shared counterexample leads. Do not infer semantic contradictions from source overlap alone.
+- Distinguish complete adjudication from incomplete, unreconciled and provisional evidence floors, including unknown obligations inside PARTIAL rows. Preserve diagnostic bundles and reject misleading new-policy progress comparisons.
+- Preserve v1/v2 replay, original AC weights, CI independence, and all numeric formulas. This is a structural reproducibility improvement, not a guarantee of identical independent model judgments.
+
 ## [0.6.0] - 2026-11-25
 
 ### Symmetric source-backed obligation adjudication
