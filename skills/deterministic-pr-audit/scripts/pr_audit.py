@@ -23,7 +23,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from implementation_review import (
-    MAX_FILES, MAX_FILE_BYTES, SNAPSHOTS_SCHEMA, blob_sha, compare_grades,
+    MAX_FILES, MAX_FILE_BYTES, SNAPSHOTS_SCHEMA, COVERAGE_REVIEW_SCHEMA, blob_sha, compare_grades,
     grade, init_review, markdown_grade, validate_review,
 )
 from audit_core import (
@@ -133,7 +133,7 @@ def capture(args: argparse.Namespace) -> None:
         content = Path(path).read_text(encoding="utf-8")
         specs.append({"name": Path(path).name, "body": content})
     source = normalize_source(raw, specs)
-    requirements = extract_requirements(source)
+    requirements = extract_requirements(source, canonical_ids=args.require_coverage)
     out = Path(args.out)
     write_immutable(out / "source.json", canonical(source))
     write_immutable(out / "requirements.json", canonical(requirements))
@@ -330,7 +330,7 @@ def run_tests_command(args: argparse.Namespace) -> None:
 
 def init_code_review_command(args: argparse.Namespace) -> None:
     source, requirements = read_json(args.source), read_json(args.requirements)
-    review = init_review(source, requirements)
+    review = init_review(source, requirements, coverage=args.require_coverage)
     write_immutable(args.out, canonical(review))
     print(f"Code-review rubric created for {len(review['criteria'])} frozen criteria: {args.out}")
 
@@ -341,7 +341,7 @@ def collect_code_snapshots(source: dict, requirements: dict, review: dict, fetch
     validate_review(source, requirements, review)
     expected = {}
     for entry in review["criteria"].values():
-        if entry["status"] == "UNVERIFIED":
+        if entry["status"] == "UNVERIFIED" and review.get("schema") != COVERAGE_REVIEW_SCHEMA:
             continue
         for citation in entry["evidence"]:
             path, sha = citation["path"], citation["blob_sha"]
@@ -387,7 +387,8 @@ def code_grade_command(args: argparse.Namespace) -> None:
     source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
     snapshots = read_json(args.snapshots) if args.snapshots else None
     result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
-                   allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication)
+                   allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication,
+                   require_coverage=args.require_coverage)
     if args.require_review and not result["summary"]["assessed"]:
         raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     output = Path(args.out)
@@ -403,7 +404,8 @@ def verify_code_grade_command(args: argparse.Namespace) -> None:
     source, requirements, review = (read_json(p) for p in (args.source, args.requirements, args.review))
     snapshots = read_json(args.snapshots) if args.snapshots else None
     result = grade(source, requirements, review, repo_path=args.repo_path, snapshots=snapshots,
-                   allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication)
+                   allow_provisional=args.allow_provisional, require_adjudication=args.require_adjudication,
+                   require_coverage=args.require_coverage)
     if args.require_review and not result["summary"]["assessed"]:
         raise AuditError("NO_SUBSTANTIVE_REVIEW: final graded audit needs at least one source-adjudicated AC")
     if Path(args.report_json).read_bytes() != canonical(result) or Path(args.report_md).read_bytes() != markdown_grade(result).encode("utf-8"):
@@ -428,6 +430,7 @@ def build_parser() -> argparse.ArgumentParser:
     cap.add_argument("--issue", type=int)
     cap.add_argument("--spec-file", action="append", help="Additional normative Markdown; may repeat")
     cap.add_argument("--out", required=True, help="New directory for source.json and requirements.json")
+    cap.add_argument("--require-coverage", action="store_true", help="Canonical explicit criterion IDs for v2 coverage audits")
     cap.set_defaults(handler=capture)
     init = sub.add_parser("init-checks", help="Create evidence contract with one entry per criterion")
     init.add_argument("--requirements", required=True)
@@ -477,6 +480,7 @@ def build_parser() -> argparse.ArgumentParser:
     initial.add_argument("--source", required=True)
     initial.add_argument("--requirements", required=True)
     initial.add_argument("--out", required=True)
+    initial.add_argument("--require-coverage", action="store_true", help="Initialize symmetric obligation-evidence v2 review")
     initial.set_defaults(handler=init_code_review_command)
     code_cap = sub.add_parser("capture-code-snapshots", help="Fetch referenced HEAD blobs via gh (no checkout)")
     for required in ("source", "requirements", "review", "out"):
@@ -492,6 +496,7 @@ def build_parser() -> argparse.ArgumentParser:
         cmd.add_argument("--allow-provisional", action="store_true", help="Explicitly grade source-traced citations without Git object verification; marked provisional")
         cmd.add_argument("--require-review", action="store_true", help="Reject all-UNVERIFIED diagnostics as final audits")
         cmd.add_argument("--require-adjudication", action="store_true", help="Require normative quotes, typed gaps, negative source anchors and counterevidence reconciliation for penalties; use for new semantic audits")
+        cmd.add_argument("--require-coverage", action="store_true", help="Require symmetric obligation-evidence v2 review for all adjudicated criteria")
         if action == "code-grade":
             cmd.add_argument("--out", required=True)
         else:

@@ -20,7 +20,7 @@ from audit_core import (
     write_immutable,
 )
 from pr_audit import collect_github
-from implementation_review import grade, init_review, markdown_grade
+from implementation_review import COVERAGE_REVIEW_SCHEMA, grade, init_review, markdown_grade
 
 
 OUTPUT_FILES = ("source.json", "requirements.json", "checks.json", "evidence.json",
@@ -32,22 +32,24 @@ def build_bundle(*, source_input: dict, output: str | Path,
                  checks: dict | None = None, repo_path: str | None = None,
                  executions: dict | None = None, review: dict | None = None,
                  snapshots: dict | None = None, allow_provisional: bool = False,
-                 require_review: bool = False, require_adjudication: bool = False) -> dict:
+                 require_review: bool = False, require_adjudication: bool = False,
+                 require_coverage: bool = False) -> dict:
     """Produce deterministic audit inputs, report and ZIP from source evidence.
 
     The input is always treated as offline/manual unless it was collected by
     our live, paginated gh API capture in the same invocation.
     """
     source = normalize_source(source_input)
-    requirements = extract_requirements(source)
+    coverage = require_coverage or (review is not None and review.get("schema") == COVERAGE_REVIEW_SCHEMA)
+    requirements = extract_requirements(source, canonical_ids=coverage)
     plan = checks if checks is not None else init_checks(requirements)
     validate_checks(requirements, plan)
     evidence = inspect(source, requirements, plan, repo_path, executions)
     report = score(source, requirements, plan, evidence)
-    code_review = review if review is not None else init_review(source, requirements)
+    code_review = review if review is not None else init_review(source, requirements, coverage=coverage)
     code_grade = grade(source, requirements, code_review, repo_path=repo_path,
                        snapshots=snapshots, allow_provisional=allow_provisional,
-                       require_adjudication=require_adjudication)
+                       require_adjudication=require_adjudication, require_coverage=require_coverage)
     if require_review and not code_grade["summary"]["assessed"]:
         raise AuditError("NO_SUBSTANTIVE_REVIEW: a final graded audit needs at least one source-adjudicated AC; an all-UNVERIFIED bundle is diagnostic only")
     out = Path(output)
@@ -118,6 +120,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-provisional", action="store_true", help="Explicitly allow unverified source-traced connector citations; mark provenance provisional")
     parser.add_argument("--require-review", action="store_true", help="Reject all-UNVERIFIED diagnostics as final graded audits")
     parser.add_argument("--require-adjudication", action="store_true", help="Require source-anchored normative gaps and counterevidence reconciliation for penalties")
+    parser.add_argument("--require-coverage", action="store_true", help="Use canonical requirements and require v2 symmetric obligation evidence")
     parser.add_argument("--out", required=True, help="Output directory")
     args = parser.parse_args(argv)
     try:
@@ -136,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
                               snapshots=read_json(args.snapshots) if args.snapshots else None,
                                allow_provisional=args.allow_provisional,
                                require_review=args.require_review,
-                               require_adjudication=args.require_adjudication)
+                               require_adjudication=args.require_adjudication, require_coverage=args.require_coverage)
     except (AuditError, OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2

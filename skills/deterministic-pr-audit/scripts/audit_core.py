@@ -168,7 +168,7 @@ def clean_criterion_text(s: str) -> str:
     return re.sub(r"\s+", " ", s.strip().strip("| ").strip("* ")).strip()
 
 
-def extract_requirements(source: dict) -> dict:
+def extract_requirements(source: dict, *, canonical_ids: bool = False) -> dict:
     """Explicit REQ/AC markers and checkboxes in acceptance sections only.
 
     Does not pretend prose elsewhere has been completely captured.
@@ -197,10 +197,24 @@ def extract_requirements(source: dict) -> dict:
                     active_section_level = None
                 if AC_SECTION.search(heading.group(2)):
                     active_section_level = depth
-            explicit = EXPLICIT.match(line)
-            if explicit:
+            # v2 extraction preserves explicit IDs even in acceptance checkboxes
+            # and recognizes parent IDs at the end of a heading. Legacy extraction
+            # stays available for byte-identical replay of historical bundles.
+            explicit_line = line
+            if canonical_ids:
+                check = CHECKBOX.match(line)
+                if check:
+                    explicit_line = check.group(1)
+            explicit = EXPLICIT.match(explicit_line)
+            suffix = (re.fullmatch(r"(.+?)\s+\(((?:REQ|AC)[-_ ]?\d+)\)", heading.group(2), re.I)
+                      if canonical_ids and heading and not explicit else None)
+            if suffix:
+                prefix, number = re.fullmatch(r"(REQ|AC)[-_ ]?(\d+)", suffix.group(2), re.I).groups()
+                records.append({"id": f"{prefix.upper()}-{int(number):02d}",
+                                "text": clean_criterion_text(suffix.group(1)), "source": origin, "line": lineno})
+            elif explicit:
                 raw_id = explicit.group(1).upper().replace("_", "-").replace(" ", "-")
-                prefix, number = re.match(r"(REQ|AC)-(\d+)", raw_id).groups()
+                prefix, number = re.match(r"(REQ|AC)-?(\d+)" if canonical_ids else r"(REQ|AC)-(\d+)", raw_id).groups()
                 crit_id = f"{prefix}-{int(number):02d}"
                 description = clean_criterion_text(explicit.group(2))
                 if not description:

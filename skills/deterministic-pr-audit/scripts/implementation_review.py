@@ -16,10 +16,12 @@ from urllib.parse import quote
 
 from audit_core import (
     AuditError, REQUIREMENTS_SCHEMA, SOURCE_SCHEMA, assert_valid_path,
-    digest, git_bytes, require_schema, verify_commit_available,
+    digest, extract_requirements, git_bytes, require_schema, verify_commit_available,
 )
 
 REVIEW_SCHEMA = "pr-audit/implementation-review/v1"
+COVERAGE_REVIEW_SCHEMA = "pr-audit/implementation-review/v2"
+COVERAGE_POLICY = "symmetric-obligation-evidence-v2"
 SNAPSHOTS_SCHEMA = "pr-audit/code-snapshots/v1"
 GRADE_SCHEMA = "pr-audit/implementation-grade/v1"
 ALGORITHM = "code-delivery-v1"
@@ -34,7 +36,7 @@ def blob_sha(content: bytes) -> str:
     return hashlib.sha1(f"blob {len(content)}\0".encode("ascii") + content).hexdigest()
 
 
-def init_review(source: dict, requirements: dict) -> dict:
+def init_review(source: dict, requirements: dict, *, coverage: bool = False) -> dict:
     require_schema(source, SOURCE_SCHEMA)
     require_schema(requirements, REQUIREMENTS_SCHEMA)
     if requirements["spec_digest"] != digest({
@@ -42,13 +44,16 @@ def init_review(source: dict, requirements: dict) -> dict:
         "spec_files": source["spec_files"],
     }):
         raise AuditError("Review requirements are not bound to the current normative specification")
+    if coverage and requirements != extract_requirements(source, canonical_ids=True):
+        raise AuditError("Coverage review requires canonical requirements from the frozen original specification; capture with --require-coverage")
     return {
-        "schema": REVIEW_SCHEMA,
+        "schema": COVERAGE_REVIEW_SCHEMA if coverage else REVIEW_SCHEMA,
         "source_digest": digest(source),
         "requirements_digest": digest(requirements),
         "head_sha": source["pull_request"]["head_sha"],
         "algorithm": ALGORITHM,
-        "criteria": {item["id"]: {"status": "UNVERIFIED", "rationale": "", "trace": "", "evidence": [], "remaining": []}
+        "criteria": {item["id"]: {"status": "UNVERIFIED", "rationale": "", "trace": "", "evidence": [], "remaining": [],
+                                  **({"coverage": []} if coverage else {})}
                      for item in requirements["criteria"]},
     }
 
@@ -56,10 +61,12 @@ def init_review(source: dict, requirements: dict) -> dict:
 def validate_review(source: dict, requirements: dict, review: dict) -> None:
     require_schema(source, SOURCE_SCHEMA)
     require_schema(requirements, REQUIREMENTS_SCHEMA)
-    require_schema(review, REVIEW_SCHEMA)
+    coverage = review.get("schema") == COVERAGE_REVIEW_SCHEMA
+    if not coverage:
+        require_schema(review, REVIEW_SCHEMA)
     if set(review) != {"schema", "source_digest", "requirements_digest", "head_sha", "algorithm", "criteria"}:
         raise AuditError("Code-review ledger forbids extra fields (including CI) and missing required fields")
-    expected = init_review(source, requirements)
+    expected = init_review(source, requirements, coverage=coverage)
     for key in ("source_digest", "requirements_digest", "head_sha", "algorithm"):
         if review.get(key) != expected[key]:
             raise AuditError(f"Code-review ledger {key} differs from frozen source/rubric")
@@ -67,8 +74,11 @@ def validate_review(source: dict, requirements: dict, review: dict) -> None:
     if not isinstance(rows, dict) or set(rows) != set(expected["criteria"]):
         raise AuditError("Code-review ledger must contain every AC/REQ exactly once")
     for ident, entry in rows.items():
-        if not isinstance(entry, dict) or set(entry) != {"status", "rationale", "trace", "evidence", "remaining"}:
-            raise AuditError(f"{ident}: expected status/rationale/trace/evidence/remaining")
+        fields = {"status", "rationale", "trace", "evidence", "remaining"}
+        if coverage:
+            fields.add("coverage")
+        if not isinstance(entry, dict) or set(entry) != fields:
+            raise AuditError(f"{ident}: expected review fields {sorted(fields)}")
         status, rationale, trace, refs, remaining = (entry[key] for key in ("status", "rationale", "trace", "evidence", "remaining"))
         if status not in STATES:
             raise AuditError(f"{ident}: unsupported code-delivery status")
@@ -143,6 +153,110 @@ def validate_adjudication(source: dict, requirements: dict, review: dict) -> Non
                 raise AuditError(f"{ident}: gap needs a specific observed result and counterevidence reconciliation")
 
 
+def polarity_subjects(text: str) -> list[str]:
+    """Recognize the explicit grammar 'X, Y and Z have positive and negative tests'.
+
+    This is a narrow safeguard, not a natural-language completeness oracle.
+    Other formulations must be decomposed by the reviewer under the protocol.
+    """
+    match = re.search(r"(?:^|[;.!?]\s*)([^;.!?]+?)\s+(?:have|has)\s+positive\s+and\s+negative\s+tests\b", text, re.I)
+    if not match:
+        return []
+    return [part.strip().casefold() for part in re.split(r",\s*(?:and\s+)?|\s+and\s+", match.group(1), flags=re.I) if part.strip()]
+
+
+def validate_coverage(source: dict, requirements: dict, review: dict) -> None:
+    """Symmetric, structural admission gate for both completion and deficits.
+
+    Witnesses are analyst observations, not executed tests. The gate cannot
+    prove that the decomposition or described causal path is semantically true.
+    """
+    criteria = {c["id"]: c["text"] for c in requirements["criteria"]}
+    normative = " ".join(" ".join(text.split()) for text in [
+        source["issue"]["body"], *(c["body"] for c in source["issue"]["comments"]),
+        *(s["body"] for s in source["spec_files"]),
+    ])
+    for ident, row in review["criteria"].items():
+        obligations = row["coverage"]
+        if not isinstance(obligations, list) or (row["status"] != "UNVERIFIED" and not obligations):
+            raise AuditError(f"{ident}: every adjudicated criterion needs obligation coverage")
+        if not obligations:
+            continue
+        text = " ".join(criteria[ident].split())
+        anchors = {}
+        for ref in row["evidence"]:
+            anchor = f"{ref['path']}:L{ref['line_start']}-L{ref['line_end']}"
+            anchors.setdefault(anchor, set()).add(ref["role"])
+        seen = set()
+        paired = set()
+        outcomes = set()
+        gap_anchors = set()
+        fields = {"kind", "quote", "subject", "polarity", "verdict", "anchor", "witness"}
+        for obligation in obligations:
+            if not isinstance(obligation, dict) or set(obligation) != fields or not all(isinstance(v, str) for v in obligation.values()):
+                raise AuditError(f"{ident}: malformed obligation coverage; expected {sorted(fields)}")
+            kind, quote_text, subject, polarity, verdict, anchor, witness = (obligation[k].strip() for k in ("kind", "quote", "subject", "polarity", "verdict", "anchor", "witness"))
+            if kind not in GAP_KINDS or polarity not in ("positive", "negative", "none") or verdict not in ("SATISFIED", "GAP", "UNKNOWN"):
+                raise AuditError(f"{ident}: invalid obligation kind, polarity or verdict")
+            quote_text = " ".join(quote_text.split())
+            subject = " ".join(subject.split()).casefold()
+            if (not quote_text or (quote_text not in text and not (ident.startswith("REQ-") and quote_text in normative))
+                    or not subject or len(witness) < 40):
+                raise AuditError(f"{ident}: coverage needs an exact criterion quote, subject and specific causal witness")
+            key = (kind, subject, polarity)
+            if key in seen:
+                raise AuditError(f"{ident}: duplicate obligation coverage: {key}")
+            seen.add(key)
+            outcomes.add(verdict)
+            if kind == "mandatory_test" and polarity != "none":
+                if subject in polarity_subjects(text) and (subject not in quote_text.casefold() or
+                        not re.search(r"\bpositive\s+and\s+negative\s+tests\b", quote_text, re.I)):
+                    raise AuditError(f"{ident}: explicit test polarity witness must quote its named subject and test obligation")
+                paired.add((subject, polarity))
+            if verdict == "UNKNOWN":
+                if anchor and anchor not in anchors:
+                    raise AuditError(f"{ident}: unknown obligation anchor must cite inspected source")
+                continue
+            roles = anchors.get(anchor, set())
+            if verdict == "GAP":
+                if "counterexample" not in roles:
+                    raise AuditError(f"{ident}: proven obligation gap requires counterexample anchor")
+                gap_anchors.add((kind, anchor))
+            elif kind == "mandatory_test":
+                if not roles.intersection({"test", "result"}):
+                    raise AuditError(f"{ident}: satisfied mandatory test requires a test/result anchor, not production code alone")
+                # Three explicit observations, not mere test presence. Each
+                # witness must describe the actual stimulus, causal reachability
+                # through the tested branch, and externally asserted effect.
+                parts = [v.strip() for v in witness.split(" | ", 2)]
+                if len(parts) != 3 or any(len(part) < 12 for part in parts):
+                    raise AuditError(f"{ident}: test witness needs input | reached predicate/path | asserted effect")
+            elif not roles.intersection({"implementation", "result", "entrypoint", "guard", "test"}):
+                raise AuditError(f"{ident}: satisfied obligation requires affirmative source evidence")
+        if row["status"] != "UNVERIFIED":
+            required = {(subject, polarity) for subject in polarity_subjects(text) for polarity in ("positive", "negative")}
+            if not required.issubset(paired):
+                raise AuditError(f"{ident}: missing explicit test polarity coverage: {sorted(required - paired)}")
+            if re.search(r"\bpositive\s+and\s+negative\b", text, re.I) and not required:
+                positives = {s for s, p in paired if p == "positive"}
+                negatives = {s for s, p in paired if p == "negative"}
+                if not positives or positives != negatives:
+                    raise AuditError(f"{ident}: positive and negative test obligations require paired subjects")
+        expected = ("COMPLETE" if outcomes == {"SATISFIED"} else
+                    "MISSING" if outcomes == {"GAP"} else
+                    "PARTIAL" if {"SATISFIED", "GAP"}.issubset(outcomes) else "UNVERIFIED")
+        if row["status"] != expected:
+            raise AuditError(f"{ident}: obligation verdicts imply {expected}, not {row['status']}")
+        if expected in ("PARTIAL", "MISSING"):
+            # Cross-link every proved gap with the existing typed remaining ledger.
+            remaining_anchors = set()
+            for remaining in row["remaining"]:
+                kind, _, anchor, _, _ = [v.strip() for v in remaining.split(" | ", 4)]
+                remaining_anchors.add((kind, anchor))
+            if gap_anchors != remaining_anchors:
+                raise AuditError(f"{ident}: obligation gaps and typed remaining anchors disagree")
+
+
 def validate_snapshots(source: dict, snapshots: dict) -> dict[str, bytes]:
     require_schema(snapshots, SNAPSHOTS_SCHEMA)
     if snapshots.get("source_digest") != digest(source) or snapshots.get("head_sha") != source["pull_request"]["head_sha"]:
@@ -168,14 +282,16 @@ def verify_code_refs(source: dict, review: dict, *, repo_path: str | Path | None
                      snapshots: dict | None = None, allow_provisional: bool = False) -> str:
     head = source["pull_request"]["head_sha"]
     assessed = any(r["status"] != "UNVERIFIED" for r in review["criteria"].values())
-    if repo_path is None and snapshots is None and assessed and not allow_provisional:
+    cited = assessed or (review.get("schema") == COVERAGE_REVIEW_SCHEMA and
+                         any(r["evidence"] for r in review["criteria"].values()))
+    if repo_path is None and snapshots is None and cited and not allow_provisional:
         raise AuditError("SOURCE_REQUIRED: code grading requires pinned Git objects or complete hashed source-file snapshots; explicitly use --allow-provisional only for a source-traced connector review")
     if repo_path is not None:
         verify_commit_available(repo_path, head)
         provenance = "git_commit_verified"
     else:
         provenance = ("captured_blob_only_unverified_tree_membership" if snapshots else
-                      "provisional_connector_refs_unverified" if allow_provisional and assessed else
+                      "provisional_connector_refs_unverified" if allow_provisional and cited else
                       "no_source_code_reviewed")
     external = validate_snapshots(source, snapshots) if snapshots is not None else {}
     # Explicit fallback only: citation SHAs and line ranges are declared in the
@@ -236,11 +352,16 @@ def _group(ids: list[str], review: dict) -> dict:
 
 def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Path | None = None,
           snapshots: dict | None = None, allow_provisional: bool = False,
-          require_adjudication: bool = False) -> dict:
+          require_adjudication: bool = False, require_coverage: bool = False) -> dict:
     """Semantic coding judgments are frozen inputs; scores are deterministic and CI-free."""
     validate_review(source, requirements, review)
-    if require_adjudication:
+    coverage = review.get("schema") == COVERAGE_REVIEW_SCHEMA
+    if require_coverage and not coverage:
+        raise AuditError("New coverage-gated audit requires a v2 review; initialize with --require-coverage")
+    if require_adjudication or coverage:
         validate_adjudication(source, requirements, review)
+    if coverage:
+        validate_coverage(source, requirements, review)
     provenance = verify_code_refs(source, review, repo_path=repo_path, snapshots=snapshots,
                                   allow_provisional=allow_provisional)
     ids = [item["id"] for item in requirements["criteria"]]
@@ -253,10 +374,15 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
         row = review["criteria"][ident]
         rows.append({"id": ident, "text": crit["text"], "status": row["status"],
                      "rationale": row["rationale"], "trace": row["trace"],
-                     "remaining": row["remaining"], "evidence": row["evidence"]})
+                     "remaining": row["remaining"], "evidence": row["evidence"],
+                     **({"coverage": row["coverage"]} if coverage else {})})
     return {
         "schema": GRADE_SCHEMA, "algorithm": ALGORITHM,
-        **({"adjudication_policy": ADJUDICATION_POLICY} if require_adjudication else {}),
+        **({"adjudication_policy": COVERAGE_POLICY if coverage else ADJUDICATION_POLICY} if require_adjudication or coverage else {}),
+        **({"coverage_scope_digest": digest({ident: sorted([
+            [obligation["kind"], " ".join(obligation["quote"].split()),
+             " ".join(obligation["subject"].split()).casefold(), obligation["polarity"]]
+            for obligation in row["coverage"]]) for ident, row in review["criteria"].items()})} if coverage else {}),
         "identity": {"source_digest": digest(source), "requirements_digest": digest(requirements),
                      "review_digest": digest(review), "snapshots_digest": digest(snapshots) if snapshots else None,
                      "head_sha": source["pull_request"]["head_sha"]},
@@ -273,6 +399,7 @@ def grade(source: dict, requirements: dict, review: dict, *, repo_path: str | Pa
         "parent_requirements": _group(parent, review),
         "rows": rows,
         "limitations": [
+            *(["Symmetric obligation evidence is structurally validated for both positive completion and proven gaps. It is not a semantic oracle or evidence that tests ran."] if coverage else []),
             *(["Strict adjudication verifies gap structure, not semantic correctness. Scores are equal-weight normative AC conformance proxies, not measured implementation effort or percentage of code written. Mandatory test/documentation/configuration gaps are not necessarily runtime defects."] if require_adjudication else []),
             "Only identical frozen requirements, reviewed code judgments and algorithm replay identically; independent model re-adjudication can differ.",
             "Source-line and Git-blob identity validation does not prove the analyst's semantic claim or reachability; inspect the control flow.",
@@ -320,6 +447,8 @@ def markdown_grade(report: dict) -> str:
             path = quote(ref["path"], safe="/")
             url = f"https://github.com/{report['repository']}/blob/{report['identity']['head_sha']}/{path}#L{ref['line_start']}-L{ref['line_end']}"
             lines.append(f"- `{ref['role']}` — [{ref['path']}:{ref['line_start']}-{ref['line_end']}]({url}), blob `{ref['blob_sha']}` — {ref['claim']}")
+        for obligation in item.get("coverage", []):
+            lines.append(f"- **Obligation ({obligation['kind']}, {obligation['polarity']}) — {obligation['verdict']}:** {obligation['subject']} | {obligation['quote']} | {obligation['anchor']} | {obligation['witness']}")
         for remaining in item["remaining"]:
             lines.append(f"- **Remaining:** {remaining}")
         lines.append("")
@@ -343,6 +472,10 @@ def compare_grades(left: dict, right: dict) -> dict:
         raise AuditError("Not comparable: acceptance criterion inventory differs")
     if {k for k in a if a[k] == "UNVERIFIED"} != {k for k in b if b[k] == "UNVERIFIED"}:
         raise AuditError("Not comparable: assessed code coverage differs; review both candidates on a fixed common AC set")
+    if left.get("adjudication_policy") == COVERAGE_POLICY and left.get("coverage_scope_digest") != right.get("coverage_scope_digest"):
+        raise AuditError("Not comparable: obligation coverage scopes differ; freeze and reconcile the same scope")
+    if left.get("adjudication_policy") == COVERAGE_POLICY and left["identity"]["head_sha"] == right["identity"]["head_sha"] and a != b:
+        raise AuditError("Same HEAD has divergent semantic verdicts; reconcile obligation evidence before reporting progress")
     if not left["summary"]["assessed"] or not right["summary"]["assessed"]:
         raise AuditError("Not comparable: no code-observed requirements")
     before = Decimal(left["summary"]["development_progress_assessed_pct"])

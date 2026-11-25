@@ -1,4 +1,4 @@
-# Deterministic PR Audit v0.5.1
+# Deterministic PR Audit v0.6.0
 
 An evidence-backed, standard-library Python skill for auditing a GitHub PR against the full linked issue, comments and acceptance criteria. It creates an on-disk artifact **even when no source checkout or runtime test is available**. It never equates missing evidence to missing implementation. **The main metric is now code-delivery progress independent of CI.**
 
@@ -21,7 +21,7 @@ An evidence-backed, standard-library Python skill for auditing a GitHub PR again
 
 ```bash
 # Authenticated gh API capture, no local Git checkout required for a diagnostic bundle
-python scripts/audit_bundle.py --repo ginmp8/pandacode-extended --pr 155 --issue 147 --out /mnt/data/pr155-audit
+python scripts/audit_bundle.py --repo ginmp8/pandacode-extended --pr 155 --issue 147 --require-coverage --out /mnt/data/pr155-audit
 # Deliver /mnt/data/pr155-audit/audit-bundle.zip
 ```
 
@@ -50,7 +50,7 @@ When GitHub is accessible only through a connector, collect PR and normative iss
 The example SHAs are placeholders, not evidence. Replace every field with observed GitHub data. A diagnostic bundle alone does not establish a substantive delivery grade. Then:
 
 ```bash
-python scripts/audit_bundle.py --from-json source-input.json --out /mnt/data/pr155-audit
+python scripts/audit_bundle.py --from-json source-input.json --require-coverage --out /mnt/data/pr155-audit
 ```
 
 The output contains the original verification artifacts plus `implementation-review.json`, `implementation-grade.json`, `implementation-grade.md`, `manifest.json`, `README.txt`, and `audit-bundle.zip` (and `code-snapshots.json` when supplied). **No checks or no observed evidence is `NOT_ASSESSED` with `null` numeric evidence floor**, not 0% implemented. All explicit ACs are included with `UNVERIFIED` as appropriate. `audit-bundle.zip` has deterministic member order, fixed timestamps, and a SHA-256 file inventory for reproducible replay.
@@ -59,7 +59,7 @@ The output contains the original verification artifacts plus `implementation-rev
 
 The implementation report **always** exposes `summary.numeric_delivery_grade_pct` (0–100): the conservative **issue-wide development-progress lower bound**. Its formula is `100 × (COMPLETE + 0.5 × PARTIAL) / all ACs`. This is fully numerical, deterministic and independent of CI. With 0 adjudicated ACs it is `0.00`, but that means **no implementation proved by the supplied evidence**, not “0% built.” Never present an empty diagnostic as the final audit. The separate assessed-only score stays `null` when coverage is zero; the report discloses the full upper bound.
 
-A substantive new final run uses `--require-review --require-adjudication` to reject all-`UNVERIFIED` scaffolds and structurally validate each normative penalty. Read [the adjudication protocol](references/adjudication.md) before deciding statuses. Use the new flag for grading, bundling and verifying new audits; omit it only to replay legacy frozen ledgers. If Git is unavailable but authenticated GitHub CLI exists, first capture referenced complete files at the fixed SHA:
+A substantive new final run uses `--require-review --require-coverage` to reject all-`UNVERIFIED` scaffolds and structurally validate both completion and penalty evidence under the v2 review schema. Read [the adjudication protocol](references/adjudication.md) before deciding statuses. Use `--require-coverage` for all new capture/init/grade/bundle/verify commands. It includes the v1 penalty gate; `--require-adjudication` alone replays v0.5.1 reports, and neither flag replays older reports. Do not silently downgrade a new audit to replay mode. If Git is unavailable but authenticated GitHub CLI exists, first capture referenced complete files at the fixed SHA:
 
 ```bash
 python scripts/pr_audit.py capture-code-snapshots --source audit/source.json \
@@ -67,27 +67,28 @@ python scripts/pr_audit.py capture-code-snapshots --source audit/source.json \
   --out audit/code-snapshots.json
 python scripts/audit_bundle.py --from-json source-input.json \
   --review audit/implementation-review.json --snapshots audit/code-snapshots.json \
-  --require-review --require-adjudication --out audit/graded
+  --require-review --require-coverage --out audit/graded
 ```
 
-For ChatGPT GitHub-connector-only access, trace the actual source paths, guards and effects; include the cited GitHub file's complete 40-character blob SHA and line ranges in the ledger. If full snapshots cannot be moved into the runner, use explicit `--allow-provisional --require-review --require-adjudication`: this **calculates a numerical judgment but does NOT verify referenced Git object bytes**. It identifies provenance as `provisional_connector_refs_unverified`, must retain the limitation, and cannot be labeled a verified grade. Prefer verified snapshots whenever possible. Do not infer `PARTIAL` from keywords, file lists or CI status.
+For ChatGPT GitHub-connector-only access, trace the actual source paths, guards and effects; include the cited GitHub file's complete 40-character blob SHA and line ranges in the ledger. If full snapshots cannot be moved into the runner, use explicit `--allow-provisional --require-review --require-coverage`: this **calculates a numerical judgment but does NOT verify referenced Git object bytes**. It identifies provenance as `provisional_connector_refs_unverified`, must retain the limitation, and cannot be labeled a verified grade. Prefer verified snapshots whenever possible. Do not infer `PARTIAL` from keywords, file lists or CI status.
 
 ## Primary: deterministic implementation progress from source code (CI-independent)
 
-Start with `capture` or a complete connector snapshot and its generated source and requirements files. Scaffold a review ledger; **read the code of the exact HEAD** (including reachable files outside the diff), trace behaviors and fill all ACs with code references:
+Start with `capture --require-coverage` using the complete normative source. The canonical extractor recognizes explicit IDs in acceptance checkboxes and suffix IDs in requirement headings; never rewrite the issue to make it parse. Freeze the obligation subjects and polarities before examining candidate results. Scaffold a v2 review ledger; **read the code of the exact HEAD** (including reachable files outside the diff), trace behaviors and fill all ACs with code references:
 
 ```bash
-python scripts/pr_audit.py init-code-review --source audit/source.json --requirements audit/requirements.json --out audit/implementation-review.json
-# Edit every criterion with COMPLETE, PARTIAL, MISSING or UNVERIFIED, an explicit source trace and source evidence.
+python scripts/pr_audit.py capture --from-json source-input.json --require-coverage --out audit
+python scripts/pr_audit.py init-code-review --source audit/source.json --requirements audit/requirements.json --require-coverage --out audit/implementation-review.json
+# Fill each criterion with its frozen coverage subjects/polarities, verdicts, source witnesses and derived status.
 # Source reference: {"path":"src/handler.py", "blob_sha":"<40-digit Git blob SHA>", "line_start":17,
 #                    "line_end":41, "role":"implementation", "claim":"Entry point enforces the guarded transition"}
 python scripts/pr_audit.py code-grade --source audit/source.json --requirements audit/requirements.json \
-  --review audit/implementation-review.json --repo-path /path/to/repo --require-review --require-adjudication --out audit/grade-001
+  --review audit/implementation-review.json --repo-path /path/to/repo --require-review --require-coverage --out audit/grade-001
 python scripts/pr_audit.py verify-code-grade --source audit/source.json --requirements audit/requirements.json \
   --review audit/implementation-review.json --repo-path /path/to/repo \
-  --require-review --require-adjudication --report-json audit/grade-001/implementation-grade.json --report-md audit/grade-001/implementation-grade.md
+  --require-review --require-coverage --report-json audit/grade-001/implementation-grade.json --report-md audit/grade-001/implementation-grade.md
 python scripts/audit_bundle.py --from-json source-input.json --review audit/implementation-review.json \
-  --repo-path /path/to/repo --require-review --require-adjudication --out audit/bundle-001
+  --repo-path /path/to/repo --require-review --require-coverage --out audit/bundle-001
 ```
 
 When a checkout is inaccessible, use `--snapshots code-snapshots.json` in place of `--repo-path`. Each snapshot must include the exact frozen `source_digest`, `head_sha` and full `files` list:
@@ -103,14 +104,14 @@ When a checkout is inaccessible, use `--snapshots code-snapshots.json` in place 
 
 The code snapshot validates blob integrity, but unlike a local Git object it does not prove remote tree membership; separately attest that the connector fetched it at that HEAD. The scoring model is **one vote per AC**, with no weighting of parent REQs: `COMPLETE=1`, `PARTIAL=0.5`, `MISSING=0`, and `UNVERIFIED=unknown`. The report includes **functional completion**, **development progress**, **reviewed coverage**, and **issue-wide conservative bounds**. These are AC-level conformance proxies, not measured code/effort percentages. Classify mandatory test, documentation and delivery-configuration gaps separately from runtime behavior deficits; keep generic CI outcomes separate. An unreviewed criterion cannot be scored as missing. A code path's semantics must be reviewed; correct SHA and lines alone do not make a claim true.
 
-Compare two review reports only when their normative spec, adjudication policy and assessed AC scope match:
+Compare two review reports only when their normative spec, adjudication policy, obligation coverage scope and assessed AC scope match. Conflicting verdicts at the same HEAD require reconciliation; they are not code progress:
 
 ```bash
 python scripts/pr_audit.py compare-code-grade \
   --left first/implementation-grade.json --right second/implementation-grade.json
 ```
 
-**Important:** An LLM's semantic classification is not inherently deterministic. Reproducibility applies to the exact **frozen adjudication ledger**, source, requirement set and formula. Freeze the same ledger before comparing PRs; reject source/issue drift. Generic CI outcomes do not enter this calculation. For the full scoring contract, see `references/scoring-contract.md`.
+**Important:** An LLM's semantic classification is not inherently deterministic. Reproducibility applies to the exact **frozen adjudication ledger**, source, requirement set and formula. Freeze the same obligation scope before comparing PRs and reuse verified adjudications for identical inputs; reject source/issue drift and unresolved same-HEAD verdict disagreements. Generic CI outcomes do not enter this calculation. For the full scoring contract, see `references/scoring-contract.md`.
 
 ## Separate optional executable verification (not implementation grade)
 

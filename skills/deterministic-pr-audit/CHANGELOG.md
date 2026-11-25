@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.0] - 2026-11-25
+
+### Symmetric source-backed obligation adjudication
+
+- Add canonical explicit checkbox and heading-suffix IDs for new audits, preserving historical extraction for replay.
+- Add coverage review v2 and `--require-coverage`: affirmative completion and proven gaps require typed obligation verdicts and pinned witnesses. Require both polarities for each explicitly enumerated test subject; trace actual input, reached predicate and asserted effect to avoid false credit from short circuits.
+- Reject inconsistent criterion/obligation verdicts, coverage scope drift and divergent same-HEAD comparisons; preserve v1 replay, equal-weight scores and CI independence.
+- Add structural/causal regression cases and CLI/bundle verification. Semantic claims remain analyst-reviewed, not automatically proven by the validator.
+
 ## [0.5.1] - 2026-11-25
 
 ### Semantic adjudication and penalty evidence
